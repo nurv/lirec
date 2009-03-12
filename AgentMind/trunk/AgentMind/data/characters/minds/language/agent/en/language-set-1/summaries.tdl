@@ -1,0 +1,1265 @@
+# Episode summarys
+absOrder: e1_0, e1_1, default, e3_1, e3_2
+
+
+######################################
+# some technical stuff: pre-processing for events
+
+# add dummy location
+e1_0: $E=Event(not(location:))
+-> $E(location:" ")
+
+# set order of main phrase constituents: subject, verb, object, additional parameters, adverbials (location + time)
+#e1_1: $E=Event(subject:$SB,action:$AC,%$T=target:,%$P=param:,gender:$G) 
+#-> Summary(value:($SB," ")) Action(value:$AC,gender:$G,$T,$P) $E
+e1_1: $E=Event(%$S=sameSubject:,subject:$SB,action:$AC,%$T=target:,%$P=param:,gender:$G)
+-> Summary(value:($SB," ")) Action(value:$AC,gender:$G,$T,$P) $E
+
+# use pronoun instead of name if the subject of the preceding event 
+# was the same as this
+#e1_1: $E=Event($S=sameSubject:yes,subject:$SB,action:$AC,%$T=target:,%$P=param:,gender:$G)
+#-> Summary(value:(Lex(semCat:ppn_3,number:sg,gender:$G,case:nom)," ")) Action(value:$AC,gender:$G,$T,$P) $E
+e1_1: $E=Event($SS=sameSubject:yes,$S=subject:$SB=not(I,me),action:$AC,%$T=target:,%$P=param:,gender:$G)
+-> Summary(value:(Lex(semCat:ppn_3,number:sg,gender:$G,case:nom)," ")) Action(value:$AC,gender:$G,$T,$P) $E
+
+e1_1: $E=Event(time:$T,location:$L,not(action:))
+-> Location(value:$L) $T $E
+
+e1_1: $E=Event(time:$T,location:$L,action:$A)
+-> $T Summary(value:",") $E(location:$L,action:$A)
+
+e1_1: $E=Event(location:$L,not(time:),not(action:))
+-> Location(value:$L) $E
+
+
+######################################
+# add, edit and remove constituent values here
+
+# transitional phrases
+
+Connection() 
+-> Summary(value:". Then ")
+
+Connection() 
+-> Summary(value:"and ")
+
+Connection() 
+-> Summary(value:"and then ")
+
+Connection() 
+-> Summary(value:". Afterwards ")
+
+Connection() 
+-> Summary(value:". The next moment, ")
+
+Connection() 
+-> Summary(value:", next ")
+
+Connection() 
+-> Summary(value:". You know, ")
+
+Connection() 
+-> Summary(value:". Can you believe it, ")
+
+Connection() 
+-> Summary(value:". Did you see that, ")
+
+Connection() 
+-> Summary(value:", ")
+
+Connection() 
+-> Summary(value:". ")
+
+
+###
+# list of all actions
+
+# property changed actions
+Action(value:PROPERTY-CHANGED,target:hurt,param:True)
+-> Summary(value:"got hurt ") 
+
+Action(value:PROPERTY-CHANGED,target:hurt,param:False)
+-> Summary(value:"stopped being hurt ") 
+
+
+# Goal Related actions
+Action(value:activate,target:$T,param:%$P)
+-> Summary(value:"wanted to ") @if($P,goal2text(value:$T,parameter:$P),goal2text(value:$T)) Summary(value:" ")
+
+#Action(value:activate,target:$T,param:%$P)
+#-> Summary(value:"was planning to ") @if($P,goal2text(value:$T,parameter:$P),goal2text(value:$T)) Summary(value:" ")
+
+Action(value:fail,target:$T,param:%$P)
+-> Summary(value:"failed to ") @if($P,goal2text(value:$T,parameter:$P),goal2text(value:$T)) Summary(value:" ")
+
+Action(value:fail,target:$T,param:%$P)
+-> Summary(value:"didn't manage to ") @if($P,goal2text(value:$T,parameter:$P),goal2text(value:$T)) Summary(value:" ")
+
+Action(value:succeed,target:$T,param:%$P)
+-> Summary(value:"was able to ") @if($P,goal2text(value:$T,parameter:$P),goal2text(value:$T)) Summary(value:" ")
+
+Action(value:succeed,target:$T,param:%$P)
+-> Summary(value:"managed to ") @if($P,goal2text(value:$T,parameter:$P),goal2text(value:$T)) Summary(value:" ")
+
+Action(value:succeed,target:$T,param:%$P)
+-> Summary(value:"could ") @if($P,goal2text(value:$T,parameter:$P),goal2text(value:$T)) Summary(value:" ")
+
+Action(value:sit)
+-> Summary(value:"sat ")
+
+Action(value:look-at,target:$T)
+-> Summary(value:("looked at ",$T," "))
+
+Action(value:get-up)
+-> Summary(value:"got up ")
+
+Action(value:get-up)
+-> Summary(value:"stood up ")
+
+Action(value:crouch)
+-> Summary(value:"crouched ")
+
+Action(value:crouch)
+-> Summary(value:"hid ")
+
+Action(value:move-to)
+-> Summary(value:"moved to ")
+
+Action(value:run-to)
+-> Summary(value:"ran to ")
+
+Action(value:walk-away)
+-> Summary(value:"walked away ")
+
+Action(value:run-away)
+-> Summary(value:"ran away ")
+
+Action(value:cry)
+-> Summary(value:"cried ")
+
+Action(value:laugh) # at ?
+-> Summary(value:"laughed ")
+
+Action(value:attack,target:$T)
+-> Summary(value:("attacked ",$T," "))
+
+Action(value:pick,target:$T) # picked on?
+-> Summary(value:("picked ",$T," "))
+
+Action(value:steal,target:$T) # the/a?
+-> Summary(value:("stole ",$T," "))
+
+Action(value:throw,target:$T)
+-> Summary(value:("threw ",$T," "))
+
+Action(value:sweep,target:$T)
+-> Summary(value:("swept ",$T," "))
+
+Action(value:swipe,target:$T)
+-> Summary(value:("swiped ",$T," "))
+
+Action(value:destroy,target:$T) #the/a?
+-> Summary(value:("destroyed ",$T," "))
+
+Action(value:destroy,target:$T) #the/a?
+-> Summary(value:("damaged ",$T," "))
+
+Action(value:destroy,target:$T) #the/a?
+-> Summary(value:("ruined ",$T," "))
+
+Action(value:drop,target:$T) #the/a?
+-> Summary(value:("dropped ",$T," "))
+
+Action(value:poke)
+-> Summary(value:"poked ")
+
+
+#SpeechActs here
+
+Action(value:greeting,target:$T)
+-> Summary(value:("said hello to ",$T," "))
+
+Action(value:insult,target:$T)
+-> Summary(value:("insulted ",$T," "))
+
+Action(value:insultgreeting,target:$T)
+-> Summary(value:("insulted ",$T," "))
+
+Action(value:insultinsultback,target:$T)
+-> Summary(value:("insulted ",$T," "))
+
+Action(value:cryanswer)
+-> Summary(value:"cried ")
+
+Action(value:cryanswer)
+-> Summary(value:"started to cry ")
+
+Action(value:mock,target:$T)
+-> Summary(value:("mocked ",$T," "))
+
+Action(value:mockreinforce,target:$T)
+-> Summary(value:("mocked ",$T," "))
+
+Action(value:laughoff,target:$T)
+-> Summary(value:("joked with ",$T," "))
+
+Action(value:laughoffpositiveanswer,target:$T)
+-> Summary(value:("left ",$T," alone "))
+
+Action(value:laughoffnegativeanswer,target:$T)
+-> Summary(value:("didn't find ",$T," funny"))
+
+Action(value:threattalkto,target:$T)
+-> Summary(value:("told ",$T," to keep quiet"))
+
+Action(value:threattalkto,target:$T)
+-> Summary(value:("told ",$T," not to say anything"))
+
+Action(value:threattalktoreinforce,target:$T)
+-> Summary(value:("told ",$T," to keep quiet"))
+
+Action(value:threattalktoreinforce,target:$T)
+-> Summary(value:("told ",$T," not to say anything"))
+
+Action(value:threattalktopositiveanswer,target:$T)
+-> Summary(value:("agreed to keep quiet"))
+
+Action(value:threattalktonegativeanswer,target:$T)
+-> Summary(value:("didn't agree to keep quiet"))
+
+Action(value:tease,target:$T)
+-> Summary(value:("teased ",$T," "))
+
+Action(value:tease,target:$T)
+-> Summary(value:("made fun of ",$T," "))
+
+Action(value:tease,target:$T)
+-> Summary(value:("made jokes about ",$T," "))
+
+Action(value:teasereinforce,target:$T)
+-> Summary(value:("teased ",$T," "))
+
+Action(value:teasereinforce,target:$T)
+-> Summary(value:("made fun of ",$T," "))
+
+Action(value:teasereinforce,target:$T)
+-> Summary(value:("made jokes about ",$T," "))
+
+Action(value:teasedefend,target:$T)
+-> Summary(value:("stood up to the teasing of ",$T," "))
+
+Action(value:teasedefendpositiveanswer,target:$T)
+-> Summary(value:("stopped teasing ",$T," "))
+
+Action(value:teasedefendnegativeanswer,target:$T)
+-> Summary(value:("continued teasing ",$T," "))
+
+Action(value:askforhelp,target:$T)
+-> Summary(value:("asked ",$T," for help "))
+
+Action(value:askforhelppositiveanswer,target:$T)
+-> Summary(value:("agreed to help ",$T," "))
+
+Action(value:askforhelpnegativeanswer,target:$T)
+-> Summary(value:("didn't agree to help ",$T," "))
+
+Action(value:makefriend,target:$T)
+-> Summary(value:("asked ",$T," to be friends "))
+
+Action(value:makefriendpositiveanswer,target:$T)
+-> Summary(value:("agreed to be friends with ",$T," "))
+
+Action(value:makefriendnegativeanswer,target:$T)
+-> Summary(value:("didn't agree to be friends with ",$T," "))
+
+Action(value:makefriendnegativeanswerreply,target:$T)
+-> Summary(value:("told ",$T," that I wasn't bothered "))
+
+Action(value:helpquestion,target:$T)
+-> Summary(value:("asked ",$T," if everything was OK "))
+
+Action(value:helpquestionpositiveanswer,target:$T)
+-> Summary(value:("told ",$T," about my bullying problem "))
+
+Action(value:helpquestionnegativeanswer,target:$T)
+-> Summary(value:("told ",$T," there is no problem "))
+
+Action(value:helprefusal,target:$T,gender:$G)
+-> Summary(value:("said ",Lex(semCat:ppn_3,number:sg,gender:$G,case:nom)," would like to help ",$T," "))
+
+Action(value:helpunknown,target:$T,gender:$G)
+-> Summary(value:("told ",$T," ",Lex(semCat:ppn_3,number:sg,gender:$G,case:nom)," has no solution for my bullying problem "))
+
+Action(value:helpunknownanswer,target:$T)
+-> Summary(value:("thanked ",$T," for listening to my problems "))
+
+Action(value:helpintroducefriend,target:$T)
+-> Summary(value:("offered to help ",$T," making some new friends "))
+
+Action(value:helpintroducefriendpositiveanswer,target:$T)
+-> Summary(value:("agreed to meet the friends of ",$T," "))
+
+Action(value:helpintroducefriendnegativeanswer,target:$T)
+-> Summary(value:("didn't want to meet the friends of ",$T," "))
+
+Action(value:helpinvitation,target:$T)
+-> Summary(value:("invited ",$T," "))
+
+Action(value:helpinvitationpositiveanswer,target:$T)
+-> Summary(value:("accepted the invitation of ",$T," "))
+
+Action(value:helpinvitationnegativeanswer,target:$T)
+-> Summary(value:("didn't want to go to ",$T," "))
+
+Action(value:helpprotection,target:$T)
+-> Summary(value:("offered to protect ",$T," "))
+
+Action(value:helpprotectionpositiveanswer,target:$T,gender:$G)
+-> Summary(value:("told ",$T," it would be nice if ",Lex(semCat:ppn_3,number:sg,gender:$G,case:nom)," could protect me "))
+
+Action(value:helpprotectionnegativeanswer,target:$T,gender:$G)
+-> Summary(value:("told ",$T," I could look after myself "))
+
+Action(value:confrontationorder,target:$T)
+-> Summary(value:("told ",$T," to get out of the way "))
+
+Action(value:confrontationorderreinforce,target:$T)
+-> Summary(value:("told ",$T," to get out of the way "))
+
+Action(value:confrontationorderpositiveanswer,target:$T)
+-> Summary(value:("obeyed the orders given by ",$T," "))
+
+Action(value:confrontationordernegativeanswer,target:$T,gender:$G)
+-> Summary(value:("told ",$T," that ",Lex(semCat:ppn_3,number:sg,gender:$G,case:nom)," can't give me orders "))
+
+Action(value:confrontationforbid,target:$T)
+-> Summary(value:("forbid ",$T," from entering the room "))
+
+Action(value:confrontationforbidpositiveanswer,target:$T)
+-> Summary(value:("obeyed to the orders given by ",$T," "))
+
+Action(value:confrontationforbidnegativeanswer,target:$T,gender:$G)
+-> Summary(value:("told ",$T," that ",Lex(semCat:ppn_3,number:sg,gender:$G,case:nom)," can't give me orders "))
+
+Action(value:confrontationhelper,target:$T,gender:$G)
+-> Summary(value:("told ",$T," that ",Lex(semCat:ppn_3,number:sg,gender:$G,case:nom)," should stop bullying me "))
+
+Action(value:confrontationhelperpositiveanswer,target:$T,gender:$G)
+-> Summary(value:("said that ",Lex(semCat:ppn_3,number:sg,gender:$G,case:nom)," will stop bullying me "))
+
+Action(value:confrontationhelpernegativeanswer,target:$T,gender:$G)
+-> Summary(value:("told ",$T," that ",Lex(semCat:ppn_3,number:sg,gender:$G,case:nom)," shouldn't interfere "))
+
+Action(value:confrontationhelperdeny,target:$T,gender:$G)
+-> Summary(value:("denied that ",Lex(semCat:ppn_3,number:sg,gender:$G,case:nom)," is bullying me "))
+
+Action(value:confrontationagressivequestionning)
+-> Summary(value:("asked me very rudely where I was going "))
+
+Action(value:confrontationagressivequestionningpositiveanswer,target:$T)
+-> Summary(value:("told ",$T," where I was going "))
+
+Action(value:confrontationagressivequestionningnegativeanswer,target:$T)
+-> Summary(value:("told ",$T," to leave me alone "))
+
+Action(value:confrontationappology)
+-> Summary(value:("apologized for bullying me all the time "))
+
+Action(value:confrontationappologypositiveanswer,target:$T)
+-> Summary(value:("accepted the apology from ",$T," "))
+
+Action(value:confrontationappologynegativeanswer,target:$T)
+-> Summary(value:("couldn't accept the apology from ",$T," "))
+
+Action(value:confrontationaskwhy,target:$T,gender:$G)
+-> Summary(value:("asked ",$T," why ",Lex(semCat:ppn_3,number:sg,gender:$G,case:nom)," is bullying me all the time "))
+
+Action(value:confrontationaskwhypositiveanswer,target:$T)
+-> Summary(value:("insulted ",$T," "))
+
+Action(value:confrontationaskwhynegativeanswer,target:$T,gender:$G)
+-> Summary(value:("threatened ",$T," "))
+
+Action(value:confrontationbeg,target:$T)
+-> Summary(value:("asked ",$T," to stop bullying me "))
+
+Action(value:confrontationbeg,target:$T)
+-> Summary(value:("begged ",$T," to stop bullying me "))
+
+Action(value:confrontationleave,target:$T)
+-> Summary(value:("told ",$T," that I was going to leave "))
+
+Action(value:confrontationleavenegativeanswer,target:$T)
+-> Summary(value:("asked ",$T," to stay "))
+
+Action(value:confrontationleavepositiveanswer,target:$T)
+-> Summary(value:("told ",$T," to get lost "))
+
+Action(value:confrontationstruggle)
+-> Summary(value:("said ouch "))
+
+Action(value:confrontationletgo,target:$T)
+-> Summary(value:("let ",$T," go "))
+
+Action(value:confrontationtoldteacher)
+-> Summary(value:("complained that I went to the teacher "))
+
+Action(value:confrontationbullyassistant,target:$T,gender:$G)
+-> Summary(value:("asked ",$T," why ",Lex(semCat:ppn_3,number:sg,gender:$G,case:nom)," helps bullying me "))
+
+Action(value:confrontationbullyassistantpositiveanswer,target:$T,gender:$G)
+-> Summary(value:("said sorry, but ",Lex(semCat:ppn_3,number:sg,gender:$G,case:nom)," couldn't help me "))
+
+Action(value:confrontationbullyassistantnegativeanswer,target:$T)
+-> Summary(value:("made fun of ",$T," "))
+
+Action(value:socialgreeting,target:$T)
+-> Summary(value:("said hello to ",$T," "))
+
+Action(value:socialgreetingpositiveanswer,target:$T)
+-> Summary(value:("said hello to ",$T," "))
+
+Action(value:socialgreetingnegativeanswer,target:$T)
+-> Summary(value:("said hello to ",$T," "))
+
+Action(value:socialgreetingend,target:$T)
+-> Summary(value:("said bye to ",$T," "))
+
+Action(value:threatfightback,target:$T,gender:$G)
+-> Summary(value:("told ",$T," I will hit ",Lex(semCat:ppn_3,number:sg,gender:$G,case:dat)," if ",Lex(semCat:ppn_3,number:sg,gender:$G,case:nom)," doesn't stop "))
+
+Action(value:threatfightbackpositiveanswer,target:$T,gender:$G)
+-> Summary(value:("got scared when I threatend ",Lex(semCat:ppn_3,number:sg,gender:$G,case:dat)," "))
+
+Action(value:threatfightbacknegativeanswer,target:$T)
+-> Summary(value:("warned ",$T," not to fight back "))
+
+Action(value:fightstart,target:$T)
+-> Summary(value:("told ",$T," that I had enough "))
+
+Action(value:gloatvictory,target:$T)
+-> Summary(value:("bragged about beating ",$T," "))
+
+Action(value:gloatvictoryreinforce)
+-> Summary(value:("boasted about my lost fight "))
+
+Action(value:victimfightsuccess,target:$T,gender:$G)
+-> Summary(value:("teased ",$T," because I beat ",Lex(semCat:ppn_3,number:sg,gender:$G,case:dat)," "))
+
+Action(value:victimfightsuccesspositiveanswer,gender:$G)
+-> Summary(value:("accepted that I beat ",Lex(semCat:ppn_3,number:sg,gender:$G,case:dat)," "))
+
+Action(value:victimfightsuccessnegativeanswer,gender:$G)
+-> Summary(value:("couldn't accept that I beat ",Lex(semCat:ppn_3,number:sg,gender:$G,case:dat)," "))
+
+Action(value:deception,target:$T)
+-> Summary(value:("asked ",$T," to wait "))
+
+Action(value:deceptionreinforce,target:$T)
+-> Summary(value:("asked ",$T," to wait "))
+
+Action(value:deceptionpositiveanswer,target:$T)
+-> Summary(value:("agreed to wait for ",$T," "))
+
+Action(value:deceptionnegativeanswer,target:$T)
+-> Summary(value:("knew that ",$T," just tried to trick me "))
+
+Action(value:deceptionreveal,target:$T)
+-> Summary(value:("told ",$T," that they never wanted to walk to school with ",$T," "))
+
+Action(value:deceptionreveal,target:$T)
+-> Summary(value:("told ",$T," that they were just playing a trick on ",$T," "))
+
+
+Action(value:partyinvitation,target:$T,gender:$G)
+-> Summary(value:("invited ",$T," to ",Lex(semCat:ppn_3,number:sg,gender:$G,case:gen)," party "))
+
+Action(value:partyinvitationpositiveanswer,target:$T)
+-> Summary(value:("agreed to come to ",$T,"'s party "))
+
+Action(value:partyinvitationnegativeanswer,target:$T,gender:$G)
+-> Summary(value:("told ",$T," that I don't want to come to ",Lex(semCat:ppn_3,number:sg,gender:$G,case:gen)," party "))
+
+Action(value:partyinvitationsabotagehost)
+-> Summary(value:"didn't want me to go the party ")
+
+Action(value:partyinvitationwithdraw)
+-> Summary(value:"said I couldn't go to the party anymore ")
+
+Action(value:partyinvitationwithdraw,target:$T)
+-> Summary(value:("didn't want ",$T," to come anymore "))
+
+Action(value:partyinvitationsabotageguest,target:$T)
+-> Summary(value:("told ",$T," not to go to my party "))
+
+Action(value:protest,target:$T)
+-> Summary(value:("told ",$T," to stop picking on me "))
+
+Action(value:protestnegativeanswer,target:$T)
+-> Summary(value:("made fun of ",$T," "))
+
+Action(value:protestpositiveanswer,target:$T)
+-> Summary(value:("stopped annoying ",$T," "))
+
+
+# ############
+#
+# TO DO - itemclaim stuff here, need to find a way to reference item
+#
+# ###########
+
+
+Action(value:footballpassball,target:$T)
+-> Summary(value:("passed the ball to ",$T," "))
+
+Action(value:footballrequestball,target:$T)
+-> Summary(value:("wanted the ball from ",$T," "))
+
+Action(value:footballreceiveball,target:$T)
+-> Summary(value:("got the ball from ",$T," "))
+
+Action(value:footballencourage,target:$T)
+-> Summary(value:("cheered for the team "))
+
+Action(value:requestapology,target:$T,gender:$G)
+-> Summary(value:("told ",$T," that ",Lex(semCat:ppn_3,number:sg,gender:$G,case:nom)," should apologize "))
+
+Action(value:requestapologypositiveanswer)
+-> Summary(value:("wanted to apologize "))
+
+Action(value:requestapologynegativeanswer)
+-> Summary(value:("didn't want to apologize "))
+
+Action(value:bullywithobject,target:$T)
+-> Summary(value:("tried to throw stuff at ",$T," "))
+
+Action(value:bullywithobjectpositiveanswer,target:$T)
+-> Summary(value:("wasn't hit by ",$T," "))
+
+Action(value:bullywithobjectpositiveanswer,target:$T)
+-> Summary(value:("complained that ",$T," hit me "))
+
+Action(value:annoy,target:$T)
+-> Summary(value:("annoyed ",$T," "))
+
+Action(value:annoyrequeststop,target:$T)
+-> Summary(value:("told ",$T," to stop annoying me "))
+
+Action(value:annoydeny,target:$T,gender:$G)
+-> Summary(value:("denied that ",Lex(semCat:ppn_3,number:sg,gender:$G,case:nom)," annoyed ",$T," "))
+
+Action(value:humiliate,target:$T)
+-> Summary(value:("wanted me to say that I can't tie my shoes "))
+
+Action(value:humiliatereinforce,target:$T)
+-> Summary(value:("said that I can't tie my shoes "))
+
+Action(value:humiliatepositivereply,target:$T)
+-> Summary(value:("said that I can't tie my shoes so that ",$T," would leave me alone "))
+
+Action(value:humiliatepositivereply,target:$T)
+-> Summary(value:("gave in to ",$T,"'s mocking "))
+
+Action(value:humiliatenegativereply,target:$T)
+-> Summary(value:("told ",$T," that I'm not a baby and can tie my shoes very well "))
+
+Action(value:humiliatethreat,target:$T)
+-> Summary(value:("forced ",$T," to say that I can't tie my shoes "))
+
+Action(value:humiliatevictory,target:$T)
+-> Summary(value:("boasted about his stupid joke "))
+
+Action(value:humiliatevictory,target:$T,gender:$G)
+-> Summary(value:("was so pleased that ",Lex(semCat:ppn_3,number:sg,gender:$G,case:nom)," could humiliate ",$T," "))
+
+Action(value:joingroupquestion)
+-> Summary(value:("asked if I could join "))
+
+Action(value:joingroupquestionpositiveanswer,target:$T)
+-> Summary(value:("allowed ",$T," to join "))
+
+Action(value:joingroupquestionnegativeanswer,target:$T)
+-> Summary(value:("didn't want ",$T," to join "))
+
+Action(value:joingroupquestionnegativeanswerreinforce,target:$T)
+-> Summary(value:("didn't want ",$T," to join "))
+
+Action(value:joingroupconvince)
+-> Summary(value:("asked a second time if I could join "))
+
+Action(value:joingroupconvincepositiveanswer,target:$T)
+-> Summary(value:("finally allowed ",$T," to join "))
+
+Action(value:joingroupconvincenegativeanswer,target:$T)
+-> Summary(value:("still didn't want ",$T," to join "))
+
+Action(value:hideandseekinstructions,target:$T)
+-> Summary(value:("told ",$T," to hide first "))
+
+Action(value:hideandseekpositiveanswer)
+-> Summary(value:("hid somewhere "))
+
+Action(value:hideandseeknegativeanswer)
+-> Summary(value:("didn't want to play hide and seek with them "))
+
+Action(value:hideandseekrunoff)
+-> Summary(value:("told the others to run off "))
+
+Action(value:hideandseekrunoffpositiveanswer)
+-> Summary(value:("agreed to run off "))
+
+Action(value:hideandseekrunoffnegativeanswer)
+-> Summary(value:("didn't want to run off "))
+
+Action(value:hideandseekrunoffreport,target:$T)
+-> Summary(value:("told ",$T," that the others had just left without telling ",$T," "))
+
+Action(value:hideandseekrealizerunoff)
+-> Summary(value:("realized that the others had just left without telling me "))
+
+Action(value:hideandseekrunoffreportsadanswer,target:$T)
+-> Summary(value:("told ",$T," that I was sad "))
+
+Action(value:hideandseekrunoffreportangryanswer,target:$T)
+-> Summary(value:("told ",$T," that I was angry "))
+
+Action(value:hideandseekrunoffreportdontcareanswer,target:$T)
+-> Summary(value:("told ",$T," that I wasn't bothered "))
+
+Action(value:gossip)
+-> Summary(value:("gossiped about me "))
+
+Action(value:gossipreinforce)
+-> Summary(value:("gossiped about me "))
+
+Action(value:gossipobject,target:$T)
+-> Summary(value:("told ",$T," to stop gossiping "))
+
+Action(value:gossipobjectpositiveanswer,target:$T)
+-> Summary(value:("told ",$T," to stop gossiping "))
+
+Action(value:gossipobjectnegativeanswer,target:$T,gender:$G)
+-> Summary(value:("told ",$T," it's none of ",Lex(semCat:ppn_3,number:sg,gender:$G,case:gen)," business "))
+
+Action(value:gossipstop)
+-> Summary(value:("stopped gossiping and left "))
+
+Action(value:gossipreport,target:$T)
+-> Summary(value:("told ",$T," that the others were gossiping about me "))
+
+Action(value:gossipreport,target:$T)
+-> Summary(value:("told ",$T," that the others were saying nasty things about me "))
+
+Action(value:gossipreportangryanswer,target:$T)
+-> Summary(value:("told ",$T," that I was angry "))
+
+Action(value:gossipreportsadanswer,target:$T)
+-> Summary(value:("told ",$T," that I was sad "))
+
+Action(value:gossipreportdontcareanswer,target:$T)
+-> Summary(value:("told ",$T," that I wasn't bothered "))
+
+Action(value:gossipreporthelplessanswer,target:$T)
+-> Summary(value:("told ",$T," that I didn't know what to do "))
+
+Action(value:gossipreportprotestanswer,target:$T)
+-> Summary(value:("told ",$T," that the others lied "))
+
+Action(value:follow,target:$T)
+-> Summary(value:("followed ",$T," around to annoy me "))
+
+Action(value:followaskwhy,target:$T,gender:$G)
+-> Summary(value:("asked ",$T," why ",Lex(semCat:ppn_3,number:sg,gender:$G,case:nom)," is following me "))
+
+Action(value:followaskwhypositiveanswer)
+-> Summary(value:("insulted me "))
+
+Action(value:followaskwhynegativeanswer)
+-> Summary(value:("insulted me "))
+
+Action(value:followdontcare,target:$T,gender:$G)
+-> Summary(value:("told ",$T," I dont care what ",Lex(semCat:ppn_3,number:sg,gender:$G,case:nom)," does "))
+
+Action(value:followleave,target:$T)
+-> Summary(value:("told ",$T," I was leaving "))
+
+Action(value:followleavefollow,target:$T,gender:$G)
+-> Summary(value:("told ",$T,Lex(semCat:ppn_3,number:sg,gender:$G,case:nom)," would follow ",$T," if I was leaving "))
+
+Action(value:abandon,target:$T)
+-> Summary(value:("left because I was coming "))
+
+Action(value:joingroupsuccess,target:$T)
+-> Summary(value:("thanked the others for letting me join "))
+
+Action(value:joingroupquestionnegativeanswerobject,target:$T)
+-> Summary(value:("tried to persuade ",$T," to let me play "))
+
+Action(value:joingroupquestionnegativeanswerobjectaccept,target:$T)
+-> Summary(value:("finally let me join the game "))
+
+Action(value:joingroupquestionnegativeanswerobjectacceptanswer,target:$T,gender:$G)
+-> Summary(value:("was happy that ",Lex(semCat:ppn_3,number:sg,gender:$G,case:nom)," could convince ",$T," to let me play "))
+
+Action(value:joingroupquestionthreatleave,gender:$G)
+-> Summary(value:("said ",Lex(semCat:ppn_3,number:sg,gender:$G,case:nom)," would leave if I join "))
+
+Action(value:joingroupquestionthreatleavepositiveanswer)
+-> Summary(value:("told me I couldn't play anymore "))
+
+Action(value:joingroupquestionthreatleavenegativeanswer,target:$T,gender:$G)
+-> Summary(value:("told ",$T," to leave if ",Lex(semCat:ppn_3,number:sg,gender:$G,case:nom),"'s behaving like this "))
+
+Action(value:joingroupquestionpositiveanswerobject,target:$T)
+-> Summary(value:("tried to persuade ",$T," to not let me play "))
+
+Action(value:joingroupquestionpositiveanswerobjectpositiveanswer)
+-> Summary(value:("told me I couldn't play anymore "))
+
+Action(value:joingroupquestionpositiveanswerobjectnegativeanswer,target:$T,gender:$G)
+-> Summary(value:("stood up to ",$T," and let me join on ",Lex(semCat:ppn_3,number:sg,gender:$G,case:gen)," team "))
+
+Action(value:joinparty,target:$T,gender:$G)
+-> Summary(value:("tried to convince ",$T," to let me come to ",Lex(semCat:ppn_3,number:sg,gender:$G,case:gen)," party "))
+
+Action(value:joinpartypositiveanswer,target:$T)
+-> Summary(value:("allowed ",$T," to come "))
+
+Action(value:joinpartynegativeanswer,target:$T)
+-> Summary(value:("didn't allow ",$T," to come "))
+
+
+# Goal descriptions
+
+
+goal2text(value:AvoidGettingHarmed)
+-> Summary(value:"stay safe")
+
+goal2text(value:AvoidGettingHarmed)
+-> Summary(value:"avoid getting hurt")
+
+goal2text(value:AvoidAnyRisk)
+-> Summary(value:"avoid any risk")
+
+goal2text(value:AvoidLookCoward)
+-> Summary(value:"avoid looking like a coward")
+
+goal2text(value:ReplyPositively)
+-> Summary(value:"say yes")
+
+goal2text(value:ReplyPositively,parameter:$P)
+-> Summary(value:("say yes to ",$P))
+
+goal2text(value:ReplyNegatively)
+-> Summary(value:"say no")
+
+goal2text(value:ReplyNegatively,parameter:$P)
+-> Summary(value:("say no to ",$P))
+
+goal2text(value:ReplyPositivelyNoChoice)
+-> Summary(value:"say yes, because I couldn't say no")
+
+goal2text(value:ReplyPositivelyNoChoice,parameter:$P)
+-> Summary(value:("say yes to ",$P,", because I couldn't say no"))
+
+goal2text(value:JoinGroup)
+-> Summary(value:"join the others")
+
+goal2text(value:JoinGroup)
+-> Summary(value:"be part of the group")
+
+goal2text(value:JoinGroup)
+-> Summary(value:"join them")
+
+goal2text(value:Ignore)
+-> Summary(value:"ignore the bullying")
+
+goal2text(value:Ignore,parameter:$P)
+-> Summary(value:("ignore ",$P))
+
+goal2text(value:StandUp)
+-> Summary(value:"stand up to the bullying")
+
+goal2text(value:StandUp,parameter:$P)
+-> Summary(value:("stand up to ",$P))
+
+goal2text(value:StandUp,parameter:$P)
+-> Summary(value:("tell ",$P," to stop bullying me"))
+
+goal2text(value:MakeNewFriend)
+-> Summary(value:"make a new friend")
+
+goal2text(value:MakeNewFriend,parameter:$P)
+-> Summary(value:("make friends with ",$P))
+
+goal2text(value:MakeNewFriend,parameter:$P)
+-> Summary(value:("become the friend of ",$P))
+
+goal2text(value:TellFriend)
+-> Summary(value:"tell a friend about my problems")
+
+goal2text(value:TellFriend,parameter:$P)
+-> Summary(value:("tell ",$P," about my problems"))
+
+goal2text(value:RunAway)
+-> Summary(value:"run away")
+
+goal2text(value:RunAway,parameter:$P)
+-> Summary(value:("run away from ",$P))
+
+goal2text(value:WalkAway)
+-> Summary(value:"walk away")
+
+goal2text(value:WalkAway,parameter:$P)
+-> Summary(value:("walk away from ",$P))
+
+goal2text(value:LaughOff)
+-> Summary(value:"not take it so serious")
+
+goal2text(value:LaughOff)
+-> Summary(value:"joke about the bullying")
+
+goal2text(value:LaughOff,parameter:$P)
+-> Summary(value:("joke with ",$P))
+
+goal2text(value:FightBack)
+-> Summary(value:"fight back")
+
+goal2text(value:FightBack,parameter:$P)
+-> Summary(value:("fight ",$P," back"))
+
+goal2text(value:Insult,parameter:$P)
+-> Summary(value:("insult ",$P))
+
+goal2text(value:Insult,parameter:$P)
+-> Summary(value:("offend ",$P))
+
+goal2text(value:InsultBack,parameter:$P)
+-> Summary(value:("insult ",$P," after he insulted me"))
+
+goal2text(value:FightSuccess,parameter:$P)
+-> Summary(value:("warn ",$P," not to bully me again"))
+
+goal2text(value:Fight,parameter:$P)
+-> Summary(value:("start a fight with ",$P))
+
+goal2text(value:TeaseDefend)
+-> Summary(value:"defend myself")
+
+goal2text(value:AcceptInvitation)
+-> Summary(value:"go to the party")
+
+goal2text(value:AcceptInvitation)
+-> Summary(value:"accept the invitation")
+
+goal2text(value:AcceptInvitation,parameter:$P)
+-> Summary(value:("accept ",$P,"'s invitation"))
+
+goal2text(value:AcceptInvitation,parameter:$P)
+-> Summary(value:("go to ",$P,"'s party"))
+
+goal2text(value:PickFromFloor,parameter:$P)
+-> Summary(value:("pick ",$P," up from the floor"))
+
+goal2text(value:ClaimBackItem,parameter:$P)
+-> Summary(value:("have ",$P," back"))
+
+goal2text(value:ItemDestroyedComplain)
+-> Summary(value:"complain about losing it")
+
+goal2text(value:ItemDestroyedComplain,parameter:$P)
+-> Summary(value:("complain that ",$P," destroyed it"))
+
+goal2text(value:AskNotToThrowObject)
+-> Summary(value:"ask them not to throw stuff at me")
+
+goal2text(value:AskNotToThrowObject,parameter:$P)
+-> Summary(value:("ask them not to throw ",$P," at me"))
+
+goal2text(value:GotHitComplain)
+-> Summary(value:"complain that I was hit")
+
+goal2text(value:GotHitComplain,parameter:$P)
+-> Summary(value:("complain that ",$P," hit me"))
+
+goal2text(value:Attack,parameter:$P)
+-> Summary(value:("attack ",$P))
+
+goal2text(value:AskPity,parameter:$P)
+-> Summary(value:("ask ",$P," for pity"))
+
+goal2text(value:AskPity,parameter:$P)
+-> Summary(value:("ask ",$P," for mercy"))
+
+goal2text(value:respondtohumiliationnegativereply,parameter:$P)
+-> Summary(value:("say no to ",$P))
+
+goal2text(value:respondtohumiliationpositivereply,parameter:$P)
+-> Summary(value:("say yes to ",$P))
+
+goal2text(value:respondtohumiliationthreatpositivereply,parameter:$P)
+-> Summary(value:("say yes to ",$P))
+
+goal2text(value:FollowAskWhy,parameter:$P)
+-> Summary(value:("ask why ",$P," is following me"))
+
+goal2text(value:FollowDontCare,parameter:$P)
+-> Summary(value:("say I don't care that ",$P," is following me"))
+
+goal2text(value:FollowLeave)
+-> Summary(value:"leave")
+
+goal2text(value:GossipReportAngryAnswer)
+-> Summary(value:"say I'm angry that they were gossiping about me")
+
+goal2text(value:GossipReportAngryAnswer)
+-> Summary(value:"say I don't care that they were gossiping about me")
+
+goal2text(value:GossipReportAngryAnswer)
+-> Summary(value:"say I don't know what to do against their gossiping")
+
+
+
+# location: translate them as is?
+Location(value:" ")
+-> Summary(value:" ")
+
+Location(value:classroom)
+-> Summary(value:"in the classroom ")
+
+Location(value:library)
+-> Summary(value:"in the library ")
+
+Location(value:school-hallway)
+-> Summary(value:"in the hallway ")
+
+Location(value:playground)
+-> Summary(value:"at the playground ")
+
+Location(value:bedroom)
+-> Summary(value:"in my bedroom ")
+
+Location(value:street)
+-> Summary(value:"on the street ")
+
+Location(value:football-pitch)
+-> Summary(value:"on the football pitch ")
+
+Location(value:netball-court)
+-> Summary(value:"on the netball court ")
+
+
+# different expressions for points in time
+Time(count:1,value:$U=or(month,week))
+-> Summary(value:("last ",$U," "))
+
+Time(count:1,value:month)
+-> Summary(value:"one month ago ")
+
+Time(count:$C=not(1),value:month)
+-> Quantity(count:$C) Summary(value:"months ago ")
+
+Time(count:1,value:week)
+-> Summary(value:"one week ago ")
+
+Time(count:$C=not(1),value:week)
+-> Quantity(count:$C) Summary(value:"weeks ago ")
+
+Time(count:1,value:day)
+-> Summary(value:"yesterday ")
+
+Time(count:$C=not(1),value:day)
+-> Quantity(count:$C) Summary(value:"days ago ")
+
+Time(count:0,value:hour)
+-> Summary(value:"just recently ")
+
+Time(count:0,value:hour)
+-> Summary(value:"just a few minutes ago ")
+
+Time(count:0,value:hour)
+-> Summary(value:"a few minutes ago ")
+
+Time(count:0,value:hour)
+-> Summary(value:"only just ")
+
+Time(count:0,value:hour)
+-> Summary(value:"just now ")
+
+Time(count:1,value:hour)
+-> Quantity(count:1) Summary(value:("hour ago "))
+
+Time(count:$C=or(2,3),value:hour)
+-> Quantity(count:$C) Summary(value:("hours ago "))
+
+Time(count:not(0,1,2,3),value:hour)
+-> Summary(value:"this morning ")
+
+Time(count:not(0,1,2,3),value:hour)
+-> Summary(value:"today ")
+
+
+
+Quantity()
+-> Summary(value:"a couple of ")
+
+Quantity()
+-> Summary(value:"some ")
+
+Quantity()
+-> Summary(value:"a few ")
+
+Quantity()
+-> Summary(value:"several ")
+
+Quantity(count:$C)
+-> Summary(value:($C," "))
+
+Quantity(count:$C)
+-> Summary(value:("about ",$C," "))
+
+
+# different expressions for emotions
+$E=Emotion(value:$V,intensity:$I,%$D=direction:)
+-> EConnector(pos:adj) EIntensity(value:$I,pos:adj) EWord(value:$V,pos:adj,$D)
+
+$E=Emotion(value:$V,intensity:$I,%$D=direction:)
+-> EConnector(pos:noun) EIntensity(value:$I,pos:noun) EWord(value:$V,pos:noun,$D)
+
+$E=Emotion(value:$V,intensity:$I,%$D=direction:)
+-> EConnector(pos:verb) EWord(value:$V,pos:verb,$D) EIntensity(value:$I,pos:verb)
+
+
+
+#$E=Emotion(value:Fears-Confirmed,intensity:$I)
+#-> Summary(value:". My fears were ") EIntensity(pos:verb,value:$I) Summary(value:"confirmed ")
+
+
+
+EConnector(pos:verb)
+-> Summary(value:". I ")
+
+EConnector(pos:verb)
+-> Summary(value:"and I ")
+
+EConnector(pos:adj)
+-> Summary(value:". I was ")
+
+EConnector(pos:adj)
+-> Summary(value:". I was feeling ")
+
+EConnector(pos:or(adj,noun))
+-> Summary(value:"which made me feel ")
+
+EConnector(pos:or(adj,noun))
+-> Summary(value:". I felt ")
+
+
+EIntensity(pos:or(adj,verb),value:little)
+-> Summary(value:"a bit ")
+
+EIntensity(pos:noun,value:little)
+-> Summary(value:"a bit of ")
+
+EIntensity(pos:adj,value:little)
+-> Summary(value:"slightly ")
+
+EIntensity(pos:noun,value:little)
+-> Summary(value:"slight ")
+
+EIntensity(value:normal)
+-> Summary(value:"")
+
+EIntensity(pos:adj,value:high)
+-> Summary(value:"very ")
+
+EIntensity(pos:adj,value:high)
+-> Summary(value:"so ")
+
+EIntensity(pos:or(adj,verb),value:high)
+-> Summary(value:"really ")
+
+EIntensity(pos:verb,value:high)
+-> Summary(value:"very much ")
+
+EIntensity(pos:verb,value:high)
+-> Summary(value:"so much ")
+
+EIntensity(pos:verb,value:high)
+-> Summary(value:"a lot ")
+
+EIntensity(pos:noun,value:high)
+-> Summary(value:"lots of ")
+
+EIntensity(pos:noun,value:high)
+-> Summary(value:"a lot of ")
+
+
+
+EWord(pos:verb,value:Love,direction:$D)
+-> Summary(value:("like ",$D," "))
+
+EWord(pos:verb,value:Love,direction:$D)
+-> Summary(value:("fancy ",$D," "))
+
+EWord(pos:verb,value:Love,direction:$D)
+-> Summary(value:("love ",$D," "))
+
+EWord(pos:verb,value:Hate,direction:$D)
+-> Summary(value:("hate ",$D," "))
+
+EWord(pos:adj,value:Hope)
+-> Summary(value:"hopeful ")
+
+EWord(pos:noun,value:Hope)
+-> Summary(value:"hope ")
+
+EWord(pos:adj,value:Fear)
+-> Summary(value:"scared ")
+
+EWord(pos:adj,value:Fear)
+-> Summary(value:"frightened ")
+
+EWord(pos:adj,value:Fear)
+-> Summary(value:"afraid ")
+
+EWord(pos:adj,value:Fear)
+-> Summary(value:"anxious ")
+
+EWord(pos:noun,value:Fear)
+-> Summary(value:"fear ")
+
+EWord(pos:adj,value:Satisfaction)
+-> Summary(value:"satisfied ")
+
+EWord(pos:adj,value:Satisfaction)
+-> Summary(value:"pleased ")
+
+EWord(pos:noun,value:Satisfaction)
+-> Summary(value:"satisfaction ")
+
+EWord(pos:adj,value:Relief)
+-> Summary(value:"relieved ")
+
+EWord(pos:noun,value:Relief)
+-> Summary(value:"relief ")
+
+EWord(pos:noun,value:Fears-Confirmed)
+-> Summary(value:"my fears confirmed ")
+
+EWord(pos:adj,value:Disappointment)
+-> Summary(value:"disappointed ")
+
+EWord(pos:noun,value:Disappointment)
+-> Summary(value:"disappointment ")
+
+EWord(pos:adj,value:Joy)
+-> Summary(value:"happy ")
+
+EWord(pos:adj,value:Joy)
+-> Summary(value:"glad ")
+
+EWord(pos:noun,value:Joy)
+-> Summary(value:"joy ")
+
+EWord(pos:adj,value:Distress)
+-> Summary(value:"desperate ")
+
+EWord(pos:adj,value:Distress)
+-> Summary(value:"sad ")
+
+EWord(pos:adj,value:Distress)
+-> Summary(value:"upset ")
+
+EWord(pos:adj,value:Happy-For,direction:$D)
+-> Summary(value:("happy for ",$D," "))
+
+EWord(pos:verb,value:Pitty,direction:$D)
+-> Summary(value:("pitied ",$D," "))
+
+EWord(pos:verb,value:Pitty,direction:$D)
+-> Summary(value:("pitied ",$D," "))
+
+EWord(pos:verb,value:Pitty,direction:$D)
+-> Summary(value:("had pity with ",$D," "))
+
+EWord(pos:noun,value:Pitty,direction:$D)
+-> Summary(value:("pity for ",$D," "))
+
+EWord(pos:verb,value:Resentment,direction:$D)
+-> Summary(value:("don't like ",$D," "))
+
+EWord(pos:verb,value:Resentment,direction:$D)
+-> Summary(value:("don't care for ",$D," "))
+
+EWord(pos:verb,value:Resentment,direction:$D)
+-> Summary(value:("don't fancy ",$D," "))
+
+EWord(pos:verb,value:Gloating,direction:$D)
+-> Summary(value:("gloated over ",$D," "))
+
+EWord(pos:adj,value:Pride)
+-> Summary(value:"proud ")
+
+EWord(pos:noun,value:Pride)
+-> Summary(value:"pride ")
+
+EWord(pos:adj,value:Shame)
+-> Summary(value:"ashamed ")
+
+EWord(pos:noun,value:Shame)
+-> Summary(value:"shame ")
+
+# what is the difference to satisfaction?
+EWord(pos:noun,value:Gratification)
+-> Summary(value:"gratification ")
+
+EWord(pos:verb,value:Remorse)
+-> Summary(value:"was hit by remorse ")
+
+EWord(pos:verb,value:Remorse)
+-> Summary(value:"had a bad conscience ")
+
+EWord(pos:verb,value:Admiration,direction:$D)
+-> Summary(value:("adore ",$D," "))
+
+EWord(pos:verb,value:Admiration,direction:$D)
+-> Summary(value:("look up to ",$D," "))
+
+EWord(pos:noun,value:Admiration,direction:$D)
+-> Summary(value:("admiration for ",$D," "))
+
+EWord(pos:verb,value:reproach)
+-> Summary(value:"reproached ")
+
+EWord(pos:adj,value:Gratitude,direction:$D)
+-> Summary(value:("grateful towards ",$D," "))
+
+EWord(pos:adj,value:Gratitude,direction:$D)
+-> Summary(value:("thankful towards ",$D," "))
+
+EWord(pos:noun,value:Gratitude,direction:$D)
+-> Summary(value:("gratitude towards ",$D," "))
+
+EWord(pos:adj,value:Anger,direction:$D)
+-> Summary(value:("angry at ",$D," "))
+
+EWord(pos:adj,value:Anger,direction:$D)
+-> Summary(value:("mad at ",$D," "))
+
+EWord(pos:adj,value:Anger,direction:$D)
+-> Summary(value:("upset because of ",$D," "))
+
+
+######################################
+#technical stuff: post-processing
+
+# add up all text constituents
+e3_1: [Summary(value:+$S1) Summary(value:+$S2)]
+-> Summary(value:$S1,value:$S2)
+
+e3_2: Summary(value:+$S)
+-> FinalSummary(value:$S)
+
+
+

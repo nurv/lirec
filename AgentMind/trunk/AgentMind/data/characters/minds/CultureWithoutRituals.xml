@@ -1,0 +1,88 @@
+<Culture name="CultureWithoutRituals">
+
+	<CulturalDimension name="Collectivism" value="100"/>
+	<CulturalDimension name="PowerDistance" value="100"/>	
+	<CulturalDimension name="Masculinity" value="70"/>
+	<CulturalDimension name="UncertaintyAvoidance" value="60"/>
+	<CulturalDimension name="LongTermOrientation" value="50"/>
+	
+	<Praiseworthiness> 
+		<Action name="AttendTo" value="3"/>
+		<Action name="GreetGesture" value="2"/>
+		<Action name="AngryGesture" value="0"/>
+		<Action name="Eat" value="0"/>
+		<Action name="Drink" value="0"/>
+		<Action name="PickFromGround" value="3"/>
+		<Action name="PickFromTable" value="2"/>
+		<Action name="PickFromTree" value="-10"/>
+		<Action name="PickFromMachine" value="3"/>
+		<Action name="DemonstratePickFromTree" value="-10"/>
+		<Action name="Forgive" value="5"/>	
+		<Action name="ForgiveOnHealing" value="3"/>	
+		<Action name="ForgiveOnDance" value="5"/>	
+		<Action name="OfferGesture" value="0"/>	
+		<Action name="PointsAt" value="0"/>
+		<Action name="PressButton" value="0"/>		
+		<Action name="SpeechAct" parameters="introduction" value="3"/>
+		<Action name="SpeechAct" parameters="chat" value="5"/>
+		<Action name="SpeechAct" parameters="askToPick" value="4"/>
+		<Action name="SpeechAct" parameters="[activity]" value="4"/>	
+		<Action name="SpeechAct" parameters="[item]" value="3"/>	
+		<Action name="SpeechAct" parameters="attractAttention" value="0"/>	
+		<Action name="SpeechAct" parameters="educate" value="5"/>	
+		<Action name="SpeechAct" parameters="warn" value="3"/>	
+		<Action name="SpeechAct" parameters="blame" value="0"/>
+		<Action name="SpeechAct" parameters="apologiseFor" value="5"/>	
+		<Action name="SpeechAct" parameters="angryTreeDied" value="5"/>
+		<Action name="SpeechAct" parameters="angryMachineBroke" value="3"/>		
+		<Action name="SpeechAct" parameters="askToFollow" value="0"/>	
+		<Action name="SpeechAct" parameters="getAdoptionApproval" value="2"/>	
+		<Action name="SpeechAct" parameters="fightForChild" value="4"/>	
+		<Action name="SpeechAct" parameters="approveAdoption" value="4"/>
+		<Action name="SpeechAct" parameters="explainLifeCycle" value="3"/>	
+		<Action name="SpeechAct" parameters="explainFoodProduction" value="3"/>	
+		<Action name="SpeechAct" parameters="explainRecyclingMachine" value="3"/>	
+		<Action name="SpeechAct" parameters="askToProduceLiquid" value="4"/>	
+		<Action name="SpeechAct" parameters="explainSoilProduction" value="3"/>	
+		<Action name="ShowSoilProduction" value="5"/>
+		<Action name="SpeechAct" parameters="askForSoil" value="3"/>	
+		<Action name="GreetBack" value="4"/>	
+		<Action name="GreetWrongly" value="-4"/>	
+		<Action name="ApproachTree" value="-6"/>
+		<Action name="UserPickFromGround" value="3"/>
+		<Action name="UserPickFromTree" value="-10"/>	
+		<Action name="ApproachMachine" value="-6"/>
+		<Action name="HealDyingSpryte" value="8"/>	
+		<Action name="AcceptInvitation" value="8"/>	
+		<Action name="RejectInvitation" value="-8"/>	
+		<Action name="AcceptSoil" value="7"/>	
+		<Action name="AcceptFood" value="3"/>
+		<Action name="AcceptDrink" value="8"/>	
+		<Action name="RejectOffer" value="-7"/>	
+		<Action name="GiveAttention" value="3"/>	
+		<Action name="Follow" value="3"/>	
+		<Action name="AskGardeningQuestion" value="2"/>
+		<Action name="StepOnTree" value="-10"/>	
+		<Action name="PressWrongButton" value="-10"/>
+		<Action name="Apologise" value="3"/>
+		<Action name="PerformDance" value="7"/>	
+		<Action name="AskRecyclingQuestion" value="3"/>		
+		<Action name="ProduceLiquid" value="5"/>
+		<Action name="HandOverSoil" value="6"/>												
+	</Praiseworthiness>
+	
+	
+	<Goals>	
+		<Goal name="AttendTo([target])"/>
+		<Goal name="Greet([target])"/>
+		<Goal name="RestOn([place])"/>
+		<Goal name="Eat([food])"/>
+		<Goal name="Drink([liquid])"/>
+		<Goal name="Socialise([target])"/>
+		<Goal name="IntroduceSelfTo([target])"/>
+		<Goal name="Educate([target])"/>
+		<Goal name="Forgive([target])"/>
+		<Goal name="ForgiveOnHealing([target])"/>
+	</Goals>
+	
+</Culture>

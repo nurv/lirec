@@ -1,0 +1,332 @@
+
+####################################
+# Culture Stuff!					
+####################################
+
+Type(value:reason-to-tell-jokes)
+-> Utterance(value:"Ich habe neue Ideen um Dich zum lachen zu bringen. Willst Du sie hören?")
+
+Type(value:tell-joke)
+-> Utterance(value:"Was ist lang, gelb und haarig? Ein Ultrapor, in einen Keurbel gewickelt.") 
+
+Type(value:tell-joke)
+-> Utterance(value:"Was ist grün und hat einen Surfantrieb? Terantib… das mit dem Surfantrieb war gelogen...") 
+
+Type(value:tell-joke)
+-> Utterance(value:"Was ist braun und sieht aus wie ein Stock? Ein Stock!") 
+
+Type(value:tell-joke)
+-> Utterance(value:"Hast du jemals einen MeK gesehen, der sich hinter einer Samenhülse versteckt hat? Genau, sie verstecken sich nämlich gut!") 
+
+Type(value:tell-joke)
+-> Utterance(value:"Warum geht ein Cog nicht über eine Kettenbrücke? Es fällt durch die Ketten!")
+
+Type(value:tell-joke)
+-> Utterance(value:"Wie fängt man ein Bäumchen? Grab tief in den Erdboden und rufe 'hruna'.");
+
+Type(value:tell-joke)
+-> Utterance(value:"Warum essen Kannibalen nicht die Witzeerzähler? Weil die komisch schmecken!")
+
+Type(value:tell-joke)
+-> Utterance(value:"Ein Cog und ein MeK kommen in eine Bar. Einer grübelt die Tastel und der andere liest die Musik.")
+
+Type(value:tell-joke)
+-> Utterance(value:"Wie fängt man einen MeK? Klettere auf einen Baum und rutsch die Eiswand runter...")
+
+Type(value:tell-joke)
+-> Utterance(value:"Was sagt ein Mathebuch zu einem anderem? Lass mich in Ruhe! Ich habe meine eigenen Probleme!!!")
+
+Type(value:laugh-at-joke)
+-> Utterance(value:"HAHA! Guter Witz!")
+
+Type(value:laugh-at-joke)
+-> Utterance(value:"HEHEHE!")
+
+Type(value:laugh-at-joke)
+-> Utterance(value:"HAHA!")
+
+Type(value:laugh-at-joke)
+-> Utterance(value:"Du bist echt witzig!")
+
+Type(value:laugh-at-joke)
+-> Utterance(value:"HEHE! HEHE! HEHE!")
+
+Type(value:mock-joke)
+-> Utterance(value:"I have to teach you some good jokes. That one is awful!")
+
+Type(value:mock-joke)
+-> Utterance(value:"The jokes you tell keep getting worse.")
+
+Type(value:mock-joke)
+-> Utterance(value:"Don't you know any good jokes?")
+
+Type(value:ask-for-money)
+-> Utterance(value:"Ich bin im Moment nicht so gut bei Kasse. Könntest du mir welches leihen?")
+
+Type(value:offer-financial-help)
+-> Utterance(value:"Keine Sorge! Ich helfe dir gerne")
+
+Type(value:reason-for-giving-money)
+-> Utterance(value:"Klar, ich kann Dir Geld leihen")
+
+Type(value:advice-for-obtaining-money)
+-> Utterance(value:"Ich denke, du solltest dich mal nach einem besseren Job umsehen, nach so einem wie meinem!" )
+
+Type(value:reason-for-gift)
+-> Utterance(value:"Nimm dieses kleinen Geschenk an als Zeichen unserer Freundschaft")
+
+Type(value:show-smallgift-discontentment)
+-> Utterance(value:"Weißt du, dieses Geschenk ist nicht gerade das, was ich erwartet habe!")
+
+Type(value:show-smallgift-contentment)
+-> Utterance(value:"Vielen Dank! Das ist wirklich sehr nett von dir!")
+
+Type(value:generic-express-admiration)
+-> Utterance(value:"Wow!")
+
+Type(value:generic-express-admiration)
+-> Utterance(value:"Großartig!")
+
+Type(value:generic-express-admiration)
+-> Utterance(value:"Schön!")
+
+Type(value:generic-express-admiration)
+-> Utterance(value:"Cool!")
+
+# Culture A, Cogs 1, High Power Distance
+
+Type(value:welcome-to-party-a) 
+-> Utterance(value:"Willkommen zum Festessen.")
+
+Type(value:gratitude-to-party-invitation-a) 
+-> Utterance(value:"Es ist mir eine große Ehre.")
+
+Type(value:gratitude-to-party-invitation-a) 
+-> Utterance(value:"Ich freue mich sehr über die Einladung.")
+
+Type(value:gratitude-to-party-invitation-a) 
+-> Utterance(value:"Es ist eine Freude zu Eurem Abendessen zu kommen.")
+
+Type(value:gratitude-to-party-invitation-a) 
+-> Utterance(value:"Du bist so ein guter Gastgeber!")
+
+Type(value:welcome-to-party-b) 
+-> Utterance(value:"Welcome to the dinner.")
+
+Type(value:gratitude-to-party-invitation-b) 
+-> Utterance(value:"Thanks! Where's the food?")
+
+Type(value:gratitude-to-party-invitation-b) 
+-> Utterance(value:"Thank you!")
+
+Type(value:gratitude-to-party-invitation-b) 
+-> Utterance(value:"I hope the food is better this time.")
+
+Type(value:culture-a-greeting-higher) 
+-> Utterance(value:"Ah, ich sehe Du bist auch hier...")
+
+Type(value:culture-a-greeting-higher) 
+-> Utterance(value:"Hallo...")
+
+Type(value:culture-a-greeting-higher) 
+-> Utterance(value:"Hi...")
+
+Type(value:culture-a-greeting-reply-lower) 
+-> Utterance(value:"Ich grüße Dich, Falling-Seed. Es ist eine Freude, dich zu sehen.")
+
+Type(value:culture-a-greeting-reply-lower) 
+-> Utterance(value:"Ich grüße dich")
+
+Type(value:culture-a-greeting-reply-lower) 
+-> Utterance(value:"Guten Abend!")
+
+Type(value:culture-a-greeting-reply-lower) 
+-> Utterance(value:"Es ist wie immer eine Freude, dich zu sehen!")
+
+Type(value:culture-a-greeting) 
+-> Utterance(value:"Hallo, schön dich hier zu sehen.")
+
+Type(value:culture-a-greeting) 
+-> Utterance(value:"Hallo!!!")
+
+Type(value:culture-a-greeting) 
+-> Utterance(value:"Hi!")
+
+Type(value:culture-a-greeting) 
+-> Utterance(value:"Ich grüße Dich")
+
+Type(value:culture-a-greeting) 
+-> Utterance(value:"Guten Abend")
+
+Type(value:dinner-is-starting) 
+-> Utterance(value:"Ich bitte um Aufmerksamkeit... Das Abendessen fängt gleich an, bitte nehmt Platz.")
+
+Type(value:culture-a-elder-entering) 
+-> Utterance(value:"Das Mitglied des Ältstenrates betritt den Raum...")
+
+
+# Culture B, Cogs 2, Low Power Distance
+
+Type(value:culture-b-greeting) 
+-> Utterance(value:"Hi, nice to see you!")
+
+Type(value:culture-b-greeting) 
+-> Utterance(value:"Hello!")
+
+Type(value:culture-b-greeting) 
+-> Utterance(value:"Hi!")
+
+Type(value:culture-b-greeting) 
+-> Utterance(value:"Hello mate!")
+
+Type(value:culture-b-greeting) 
+-> Utterance(value:"Cheers!")
+
+Type(value:welcome-to-party-b) 
+-> Utterance(value:"Namaste! Hope you have a great time at the dinner!")
+
+####################################
+# speech act types of agent-agent communication
+# 		Self introduction
+
+Type(value:introduction) $N=me(value:$M)
+-> Utterance(value: ("Grüße Dich Fremder! In meinem Volk kennt man mich als ",$M,"."))
+
+Type(value:introduction) $N=me(value:$M)
+-> Utterance(value: ("Willkommen Person mit Haaren! Ich bin ",$M,"."))
+
+Type(value:introduction) $N=me(value:$M)
+-> Utterance(value: ("Heil dir. Ich bin ",$M,". Dein Gesicht erfreut mich auf seltsame Art, Ich freue mich Dich vor mir zu haben!"))
+
+# 		Ask the user to pick food
+Type(value:askToPick)
+-> Utterance(value: "Haariger Fremder, hilf uns die Samen zu sammeln.")
+
+Type(value:askToPick)
+-> Utterance(value: "Haariger Außenseiter, nimm ein paar von den Wunderfrüchten.")
+
+# 		Invitation to an activity
+Type(value:meal) 
+-> Utterance(value: "Es ist nötig zu essen und das Fasten brechen?) Willst Du uns bei diesem schönen und glorreichen Anlass dabei sein?")
+
+Type(value:recycling) 
+-> Utterance(value: "Wir kehren zu dem Boden zurück aus dem wir gekommen sind. Komm, mach mit bei diesem Ritual dass es uns erlaubt den Kreis des Lebens zu vollenden.")
+
+Type(value:drink) 
+-> Utterance(value: "Ich würde Dich gerne einladen dieses Getränk mit uns zu genießen.")
+
+
+# 		Educating the child
+Type(value:educate)
+-> Utterance(value: "Stop! Diese Samen sind nicht für Leute wie Dich und mich.")
+
+Type(value:educate)
+-> Utterance(value: "Diese Samen sind für diejenigen die gesegnet sind und deren Ende naht.")
+
+# 		Offers user an item
+Type(value:seedpod)
+-> Utterance(value: "Komm, probiere unser köstliches Essen.")
+
+Type(value:greenDrink)
+-> Utterance(value: "Hier ist das Elixier des Lebens.")
+
+Type(value:soil)
+-> Utterance(value: "Nimm diese Erde! Es ist ein Geschenk für Dich. Auf Wiedersehen")
+
+# 		Attracts the user's attention
+Type(value:attractAttention)
+-> Utterance(value: "Haariger Fremder! Hier drüben!")
+
+# 		Warns the user for getting too near to a tree or the recycling machine
+Type(value:warn) it(value:tree)
+-> Utterance(value: ("Vorsichtig! Alien bleibe von dem Baum weg!"))
+
+Type(value:warn) it(value:tree)
+-> Utterance(value: ("Riskiere nichts! Bleibe von dem Baum weg!"))
+
+Type(value:warn) it(value:machine)
+-> Utterance(value: ("Vorsichtig! Alien bleibe von der Maschine weg!"))
+
+Type(value:warn) it(value:machine)
+-> Utterance(value: ("Riskiere nichts! Bleibe von der Maschine weg!"))
+
+# 		Blames the user for picking apple from tree
+Type(value:blame)
+-> Utterance(value: "Schändliches Exemplar! Du hattest kein Recht die Samen von unseren Bäumen zunehmen! Diese sind verbotenr Früchte, und nicht für solche wie Euch!")
+
+# 		Apologise for the user for picking apple from tree
+Type(value:apologiseFor)
+-> Utterance(value: "Lass die Taten der unwissenden Fremden Dir nicht missfallen. Die mit dem komischen Haar und Geruch wissen nichts über unser Leben und Gewohnheiten.")
+
+# 		Angry with the user for stepping on tree
+Type(value:angryTreeDied)
+-> Utterance(value: "Tollpatsch! Du hast die neue Saat in unserem Garten zertrampelt! Ist Dir unser Ernte völlig egal?")
+
+# 		Angry with the user for breaking recycling machine
+Type(value:angryMachineBroke)
+-> Utterance(value: "Du haariges Nichts, Du hast unsere Maschine kaputt gemacht! Es dauert ewig die zu reparieren. Warum hast Du es nicht richtig gemacht?")
+
+# 		Ask the user to follow
+Type(value:askToFollow)
+-> Utterance(value: "Folge meinen Fußspuren, Neuling und bleibe dicht hinter mir!")
+
+# 		Get felling approval
+Type(value:getFellingApproval)
+-> Utterance(value: "Ich bin bereit gefällt zu werden und ich brauche einen Platz zum hinlegen. So, ehrenwerter Gärtner, weise mir meinen Bepflanzung -Platz zu")
+
+Type(value:getFellingApproval)
+-> Utterance(value: "Erlaube mir, hier gefällt zu warden.")
+
+# 		Fight for the right to be felled
+Type(value:fightToBeFelled) 
+-> Utterance(value: "Dieser Platz passt zu meiner Seele und meinem Körper, akzeptiere meine Wünsche. Fällt mich und meine Wiedergeburt soll hier stattfinden.")
+
+Type(value:fightToBeFelled) 
+-> Utterance(value: "Nein! Diese Stelle ist nicht gut für mich. Meine Seele sagt mir deutlich dass das hier mein Platz ist, um gefällt zu werden.")
+
+# 		Approve felling
+Type(value:approveFelling) 
+-> Utterance(value: "Sehr gut. Deine Worte sind akzeptiert. Deine Wiedergeburt findet hier und jetzt statt.")
+
+# 		Explaining food production
+Type(value:explainFoodProduction) 
+-> Utterance(value: "Haariger, lass mich Dir von der Pracht des Gartens erzählen. Der zarte Kreis des Lebens findet hier statt. Die mächtigen Bäume verlieren hier ihre Früchte, reif, schmackhaft und süß. Saft recycelt von den Alten erhält uns am Leben. Aber Vorsicht, Früchte die noch am Ast hängen bringen den Tod mit sich!")
+
+# 		Explaining life cycle
+Type(value:explainLifeCycle) 
+-> Utterance(value: "Der Kreis des Lebens vollzieht sich so: wir sähen die Pflanze, die in uns gedeiht, in die weise Erde, die von unseren Vorfahren fruchtbar gemacht wurde. An dem Tag unserer Geburt entspringen wir dem Waldboden, um viele Jahre auf unserem Planeten zu leben. Wenn die Zeit uns schließlich fällt und wir zum Boden zurückkehren, werden auch wir zum Lebensspender.")
+
+# 		Ask for soil from the user
+Type(value:askForSoil) 
+-> Utterance(value: "Gut gemacht, Außenseiter. Die Erde, die du brings, wird unser Volk ernähren. Können wir es auf dem Boden verteilen?")
+
+# 		Ask the user to produce liquid
+Type(value:askToProduceLiquid)
+-> Utterance(value: "Entziehe dem Körper das Wasser und produzieren das Elixier.")
+
+# 		Explaining the recycling machine and its buttons' function
+Type(value:explainRecyclingMachine)
+-> Utterance(value: "Mit dieser technologischen Hilfe bekommen wir die Essenz derer, die unter uns waren. Obwohl der Geist sie verlassen hat, sind ihre sterblichen Überreste recycelt und werden erneut genutzt, um das Leben auf unserem Planeten weiter am Leben zu erhalten. Diese Maschine versetzt uns in die Lage, aus unseren Verstorbenen ein starkes Elixier zu gewinnen, den Saft, der uns mit Energie versorgt. Was bleibt, macht unsere Erde fruchtbar und lässt unsere Gärten erblühen. Um die Maschine zu bedienen, drücke zunächst den grünen Knopf, dadurch wird dem Körper die Flüssigkeit entzogen. Dann muss der rote Knopf gedrückt werden. Nun wir die trockene Hülle in Erde verwandelt, durch die neues Leben entsteht.")
+
+# 		Explaining the soil production
+Type(value:explainSoilProduction)
+-> Utterance(value: "Den roten Knopf zu drücken verwandelt den Körper in Erde. Um ein neues Spryte wachsen zu lassen, brauchen wir Erde, damit es gepflanzt werden kann. Diese Erde gewinnen wir aus den Körpern der toten Sprytes.")
+
+#		Socialising with other agents
+Type(value:chat)
+-> Utterance(value: "Efd sdyyyrs xfehfs df dwe dfsd")
+
+Type(value:chat)
+-> Utterance(value: "Ienf erbs")
+
+Type(value:chat)
+-> Utterance(value: "Pndf vdf fbsjew fss")
+
+Type(value:chat)
+-> Utterance(value: "Efkdni emfke")
+
+Type(value:chat)
+-> Utterance(value: "Urbejf duks")
+
+Type(value:chat)
+-> Utterance(value: "Ofuen fjdgwu sfsf")
