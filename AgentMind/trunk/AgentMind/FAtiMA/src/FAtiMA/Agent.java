@@ -40,6 +40,7 @@ import FAtiMA.sensorEffector.Parameter;
 import FAtiMA.sensorEffector.RemoteAgent;
 import FAtiMA.sensorEffector.SpeechAct;
 import FAtiMA.sensorEffector.WorldSimulatorRemoteAgent;
+import FAtiMA.shortTermMemory.ShortTermMemory;
 import FAtiMA.socialRelations.LikeRelation;
 import FAtiMA.util.AgentLogger;
 import FAtiMA.util.enumerables.AgentPlatform;
@@ -72,7 +73,8 @@ public class Agent {
 			ScenarioLoaderHandler scenHandler = new ScenarioLoaderHandler(args[0],args[1]);
 			SAXParserFactory factory = SAXParserFactory.newInstance();
 			SAXParser parser = factory.newSAXParser();
-			parser.parse(new File(MIND_PATH + "scenarios.xml"), scenHandler);
+			parser.parse(new File(MIND_PATH + "Scenarios.xml"), scenHandler);
+			//parser.parse(new File(MIND_PATH + "LIRECScenarios.xml"), scenHandler);
 			args = scenHandler.getAgentArguments();
 		}
 		
@@ -185,6 +187,7 @@ public class Agent {
 		}
 
 		AutobiographicalMemory.GetInstance().setSelf(_self);
+		ShortTermMemory.GetInstance().setSelf(_self);
 
 		try{
 			AgentLogger.GetInstance().initialize(name);
@@ -336,6 +339,7 @@ public class Agent {
 		EmotionalState.SaveState(fileName+"-EmotionalState.dat");
 		KnowledgeBase.SaveState(fileName+"-KnowledgeBase.dat");
 		AutobiographicalMemory.SaveState(fileName+"-AutobiographicalMemory.dat");
+		ShortTermMemory.SaveState(fileName+"-ShortTermMemory.dat");
 		ActionLibrary.SaveState(fileName+"-ActionLibrary.dat");
 		_remoteAgent.SaveState(fileName+"-RemoteAgent.dat");
 
@@ -383,6 +387,22 @@ public class Agent {
 		}
 	}
 	
+	public void SaveSTM(String agentName)
+	{
+		String fileName = _saveDirectory + agentName + "-STM.txt";
+		try
+		{
+			FileOutputStream out = new FileOutputStream(fileName);
+			out.write(AutobiographicalMemory.GetInstance().toXML().getBytes());
+			out.flush();
+			out.close();
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+	
 	public void LoadAgentState(String fileName) 
 		throws IOException, ClassNotFoundException{
 		
@@ -408,6 +428,7 @@ public class Agent {
 		EmotionalState.LoadState(fileName+"-EmotionalState.dat");
 		AgentSimulationTime.LoadState(fileName+"-Timer.dat");
 		AutobiographicalMemory.LoadState(fileName+"-AutobiographicalMemory.dat");
+		ShortTermMemory.LoadState(fileName+"-ShortTermMemory.dat");
 		ActionLibrary.LoadState(fileName+"-ActionLibrary.dat");
 		
 		_remoteAgent.LoadState(fileName+"-RemoteAgent.dat");
@@ -542,7 +563,11 @@ public class Agent {
 							Event e = (Event) li.next();
 							AgentLogger.GetInstance().log("Perceiving event: " + e.toName());
 							//inserting the event in AM
-						    AutobiographicalMemory.GetInstance().StoreAction(e);
+						    //AutobiographicalMemory.GetInstance().StoreAction(e);
+							
+							// Meiyii 11/03/09
+							ShortTermMemory.GetInstance().StoreAction(e);
+							
 						    //registering an Action Context property in the KB
 							KnowledgeBase.GetInstance().Tell(ACTION_CONTEXT,e.toName().toString());
 							
@@ -562,7 +587,7 @@ public class Agent {
 					
 					//if there was new data or knowledge added we must apply inference operators
 					//update any inferred property to the outside and appraise the events
-					if(AutobiographicalMemory.GetInstance().HasNewData() ||
+					if(ShortTermMemory.GetInstance().HasNewData() ||
 							KnowledgeBase.GetInstance().HasNewKnowledge())
 					{
 						
@@ -731,6 +756,54 @@ public class Agent {
 		}
 		else return null;
 	}
+	
+	/*public ActiveEmotion simulateAppraisal(String action, String name, ArrayList parameters)
+	{
+		ArrayList emotions;
+		BaseEmotion em;
+		Event e;
+		ActiveEmotion aem;
+		ActiveEmotion maxEmotion = null;
+		
+		if(action.equals("INSERT_CHARACTER")||action.equals("INSERT_OBJECT"))
+		{
+			e = new Event(AutobiographicalMemory.GetInstance().getSelf(), "look-at", name);
+			int like = Math.round(LikeRelation.getRelation(AutobiographicalMemory.GetInstance().getSelf(), name).getValue());
+			em = EmotionalState.GetInstance().OCCAppraiseAttribution(e, like);
+			return EmotionalState.GetInstance().DetermineActiveEmotion(em);
+		}
+		else if(action.equals("ACT_FOR_CHARACTER"))
+		{
+			if(parameters.size() == 0)
+			{
+				e = new Event(AutobiographicalMemory.GetInstance().getSelf(),name, null);
+			}
+			else
+			{
+				e = new Event(AutobiographicalMemory.GetInstance().getSelf(),name, (String) parameters.get(0));
+				for(int i = 1; i < parameters.size(); i++)
+				{
+					e.AddParameter(new Parameter("param",parameters.get(i)));
+				}
+			}
+			
+			emotions = _reactiveLayer.AppraiseEvent(e);
+			ListIterator li = emotions.listIterator();
+			
+			while(li.hasNext())
+			{
+				em = (BaseEmotion) li.next();
+				aem = EmotionalState.GetInstance().DetermineActiveEmotion(em);
+				if(aem != null && (maxEmotion == null || aem.GetIntensity() > maxEmotion.GetIntensity()))
+				{
+					maxEmotion = aem;
+				}	
+			}
+			
+			return maxEmotion;
+		}
+		else return null;
+	}*/
 	
 	
 	protected ValuedAction SelectBestAction() {

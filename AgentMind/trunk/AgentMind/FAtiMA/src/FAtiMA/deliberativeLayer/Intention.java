@@ -38,7 +38,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
-import FAtiMA.autobiographicalMemory.AutobiographicalMemory;
+//import FAtiMA.autobiographicalMemory.AutobiographicalMemory;
 import FAtiMA.culture.Ritual;
 import FAtiMA.deliberativeLayer.goals.ActivePursuitGoal;
 import FAtiMA.deliberativeLayer.goals.Goal;
@@ -47,6 +47,7 @@ import FAtiMA.emotionalState.ActiveEmotion;
 import FAtiMA.emotionalState.EmotionalState;
 import FAtiMA.motivationalSystem.MotivationalState;
 import FAtiMA.sensorEffector.Event;
+import FAtiMA.shortTermMemory.ShortTermMemory;
 import FAtiMA.util.AgentLogger;
 
 
@@ -357,7 +358,9 @@ public class Intention implements Serializable {
 	    
 	    AgentLogger.GetInstance().logAndPrint("Adding a new Strong Intention: " + _goal.getName().toString());
 	  
-	    AutobiographicalMemory.GetInstance().StoreAction(e);
+	    // AutobiographicalMemory.GetInstance().StoreAction(e);
+	    // Meiyii 11/03/09
+	    ShortTermMemory.GetInstance().StoreAction(e);
 	    
 	    float probability = GetProbability();
 		ActiveEmotion hope = EmotionalState.GetInstance().AppraiseGoalSucessProbability(_goal, probability);
@@ -389,8 +392,9 @@ public class Intention implements Serializable {
 	    MotivationalState.GetInstance().UpdateCertainty(-deltaError);
 	    _goal.setUncertainty(newExpectedError);
 	    
-	    
-	    AutobiographicalMemory.GetInstance().StoreAction(e);
+	    //AutobiographicalMemory.GetInstance().StoreAction(e);
+	    // Meiyii 11/03/09
+	    ShortTermMemory.GetInstance().StoreAction(e);
 	    EmotionalState.GetInstance().AppraiseGoalFailure(GetHope(),GetFear(), _goal);
 	    
 	    if(!isRootIntention())
@@ -421,10 +425,10 @@ public class Intention implements Serializable {
 	    float deltaError = newExpectedError - previousExpectedError;
 	    MotivationalState.GetInstance().UpdateCertainty(-deltaError);
 	    _goal.setUncertainty(newExpectedError);
-	    
-	    
-	    
-	    AutobiographicalMemory.GetInstance().StoreAction(e);
+	    	    
+	    //AutobiographicalMemory.GetInstance().StoreAction(e);
+	    // Meiyii 11/03/09
+	    ShortTermMemory.GetInstance().StoreAction(e);
 	    EmotionalState.GetInstance().AppraiseGoalSuccess(GetHope(), GetFear(), _goal);
 	    
 	    if(!isRootIntention())

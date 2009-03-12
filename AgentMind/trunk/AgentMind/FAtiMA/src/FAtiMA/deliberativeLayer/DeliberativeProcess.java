@@ -126,6 +126,7 @@ import java.util.Set;
 import FAtiMA.AgentProcess;
 import FAtiMA.ValuedAction;
 import FAtiMA.autobiographicalMemory.AutobiographicalMemory;
+import FAtiMA.shortTermMemory.ShortTermMemory;
 import FAtiMA.conditions.Condition;
 import FAtiMA.culture.Ritual;
 import FAtiMA.deliberativeLayer.goals.ActivePursuitGoal;

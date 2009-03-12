@@ -30,6 +30,7 @@
  * 						   or search for an event in Autobiographical Memory
  * João Dias: 24/03/2008 - Restructure, changed the way EventConditions Hierarchy. Now, PastEventConditions
  * 						   is the super class, and RecentEventConditions is the child class
+ * Meiyii Lim: 12/03/2009 - Search for recent events in Short Term Memory instead of Autobiographical Memory
  */
 
 package FAtiMA.conditions;
@@ -38,6 +39,7 @@ import java.util.ArrayList;
 import java.util.ListIterator;
 
 import FAtiMA.autobiographicalMemory.AutobiographicalMemory;
+import FAtiMA.shortTermMemory.ShortTermMemory;
 import FAtiMA.autobiographicalMemory.SearchKey;
 import FAtiMA.sensorEffector.Event;
 import FAtiMA.wellFormedNames.Name;
@@ -188,12 +190,14 @@ public class RecentEventCondition extends PastEventCondition {
 		
 		if(!_name.isGrounded()) return false;
 		
-		return _positive == AutobiographicalMemory.GetInstance().ContainsRecentEvent(GetSearchKeys()); 
+		//Meiyii 12/03/09 Search for recent events in STM
+		return _positive == ShortTermMemory.GetInstance().ContainsRecentEvent(GetSearchKeys()); 
 	}
 	
 	protected ArrayList GetPossibleBindings()
 	{
-		return AutobiographicalMemory.GetInstance().
+		//Meiyii 12/03/09 Search for recent events in STM
+		return ShortTermMemory.GetInstance().
 				SearchForRecentEvents(GetSearchKeys());
 	}
 	

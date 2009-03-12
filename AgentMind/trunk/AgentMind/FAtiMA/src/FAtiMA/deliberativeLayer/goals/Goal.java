@@ -60,6 +60,7 @@ import java.util.ListIterator;
 
 import FAtiMA.IntegrityValidator;
 import FAtiMA.autobiographicalMemory.AutobiographicalMemory;
+import FAtiMA.shortTermMemory.ShortTermMemory;
 import FAtiMA.conditions.Condition;
 import FAtiMA.exceptions.UnreachableGoalException;
 import FAtiMA.knowledgeBase.KnowledgeBase;
@@ -305,7 +306,7 @@ public abstract class Goal implements IGroundable, Cloneable, Serializable {
 		
 	}
 	
-	private Event generateEventDescription(String action)
+	/*private Event generateEventDescription(String action)
 	{
 		Event e = new Event(AutobiographicalMemory.GetInstance().getSelf(),action,this._name.GetFirstLiteral().toString());
 		ListIterator li = this._name.GetLiteralList().listIterator();
@@ -315,6 +316,18 @@ public abstract class Goal implements IGroundable, Cloneable, Serializable {
 	    	e.AddParameter(new Parameter("param",li.next().toString()));
 	    }
 	    
+	    return e;
+	}*/
+	
+	private Event generateEventDescription(String action)
+	{
+		Event e = new Event(AutobiographicalMemory.GetInstance().getSelf(),action,this._name.GetFirstLiteral().toString());
+		ListIterator li = this._name.GetLiteralList().listIterator();
+	    li.next();
+	    while(li.hasNext())
+	    {
+	    	e.AddParameter(new Parameter("param",li.next().toString()));
+	    }
 	    return e;
 	}
 	

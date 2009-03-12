@@ -94,7 +94,7 @@ public class Symbol extends Name implements Serializable
     {
         return this;
     }
-
+    
     /**
      * Generates a list with all symbols contained in the Name
      * 

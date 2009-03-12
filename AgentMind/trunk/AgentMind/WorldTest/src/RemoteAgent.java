@@ -8,6 +8,7 @@ import java.util.Random;
 import java.util.StringTokenizer;
 
 import FAtiMA.autobiographicalMemory.AutobiographicalMemory;
+import FAtiMA.shortTermMemory.ShortTermMemory;
 import FAtiMA.deliberativeLayer.plan.Effect;
 import FAtiMA.deliberativeLayer.plan.Step;
 import FAtiMA.sensorEffector.SpeechAct;
@@ -48,6 +49,7 @@ public class RemoteAgent extends SocketListener {
 		_world = world;
 		_r = new Random();
 		AutobiographicalMemory.GetInstance().setSelf(_name);
+		ShortTermMemory.GetInstance().setSelf(_name);
 		this.socket = s;
 
 		this.initializeSocket();

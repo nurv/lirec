@@ -9,6 +9,7 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 
 import FAtiMA.autobiographicalMemory.AutobiographicalMemory;
+import FAtiMA.shortTermMemory.ShortTermMemory;
 import FAtiMA.motivationalSystem.MotivationalState;
 import FAtiMA.util.enumerables.MotivatorType;
 

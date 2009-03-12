@@ -27,6 +27,7 @@
  * 
  * History: 
  * João Dias: 18/10/2005 - File created
+ * Meiyii Lim: 12/03/2009 - Added the STM panel
  */
 
 package FAtiMA.Display;
@@ -41,7 +42,7 @@ import FAtiMA.Agent;
 
 
 /**
- * @author  bruno
+ * @author  bruno, Meiyii
  */
 public class AgentDisplay {
     JFrame _frame;
@@ -54,7 +55,7 @@ public class AgentDisplay {
         _ag = ag;
         _frame = new JFrame(ag.displayName());
         _frame.getContentPane().setLayout(new BoxLayout(_frame.getContentPane(),BoxLayout.Y_AXIS));
-		_frame.setSize(650,650);
+		_frame.setSize(800,800);
 		_frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		_displayPane = new JTabbedPane();
@@ -84,6 +85,8 @@ public class AgentDisplay {
 		panel = new EpisodicMemoryPanel();
 		_displayPane.addTab("Episodic Memory", null, panel, "displays all the records in the character's episodic memory");
 	
+		panel = new ShortTermMemoryPanel();
+		_displayPane.addTab("Short Term Memory", null, panel, "displays all the records in the character's short term memory");
 		
 		JButton teste = new JButton("Save");
 		teste.addActionListener(new TestAction(ag));

@@ -66,10 +66,10 @@ public class MemoryEpisode implements Serializable {
 	private int _numberOfDominantActions;
 	//private ArrayList _dominantActions;
 	
-	public MemoryEpisode(String location)
+	public MemoryEpisode(String location, Time time)
 	{
 		this._location = location;
-		this._time = new Time();
+		this._time = time;
 		this._people = new ArrayList();
 		this._objects = new ArrayList();
 		//this._detailsByKey = new HashMap();
@@ -113,6 +113,7 @@ public class MemoryEpisode implements Serializable {
 		return this._details;
 	}
 	
+	// not called 
 	public ActionDetail getActionDetail(int actionID)
 	{
 		if(actionID < 0 || actionID >= this._details.size())
@@ -122,43 +123,12 @@ public class MemoryEpisode implements Serializable {
 		else return (ActionDetail) this._details.get(actionID);
 	}
 	
-	public void AddActionDetail(Event e)
-	{
-		ActionDetail action;
-		action = new ActionDetail(_details.size(),e);
-		
-		
+	public void AddActionDetail(ActionDetail action)
+	{		
 		_details.add(action);
-		//_detailsByKey.put(e.toString(),action);
 			
 		UpdateMemoryFields(action);
 	}
-	
-	public void AssociateEmotionToDetail(ActiveEmotion em, Event cause)
-	{
-		ActionDetail action;
-		if(cause != null)
-		{
-			String key = cause.toString();
-			
-			for(int i = _details.size() -1; i >= 0; i--){
-				action = (ActionDetail) _details.get(i);
-				if(action.ReferencesEvent(cause))
-				{
-					action.UpdateEmotionValues(em);
-					return;
-				}
-			}
-			
-			//if we get here it means that the event doesn't exist in the episode
-			// and we need to add it
-			action = new ActionDetail(_details.size(),cause);
-			_details.add(action);
-			UpdateMemoryFields(action);
-			action.UpdateEmotionValues(em);
-		}
-	}
-	
 	
 	private void UpdateMemoryFields(ActionDetail action)
 	{

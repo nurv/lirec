@@ -57,6 +57,7 @@ import FAtiMA.sensorEffector.Parameter;
 import FAtiMA.util.AgentLogger;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Symbol;
+import FAtiMA.shortTermMemory.ShortTermMemory;
 
 
 public class AutobiographicalMemory implements Serializable {
@@ -176,9 +177,34 @@ public class AutobiographicalMemory implements Serializable {
 		return keys;
 	}
 	
-	public void StoreAction(Event e)
+	public void StoreAction(ActionDetail action)
 	{
 		MemoryEpisode event;
+		String oldLocation;
+		
+		synchronized (this) {
+			if(this._memoryEvents.size() == 0)
+			{
+				event = new MemoryEpisode(action.getLocation(), action.getTime());
+				this._memoryEvents.add(event);
+			}
+			else
+			{
+				event = (MemoryEpisode) this._memoryEvents.get(this._memoryEvents.size()-1);
+				oldLocation = event.getLocation();
+				if(oldLocation == null) {
+					event.setLocation(action.getLocation());
+				}
+				else if(!event.getLocation().equals(action.getLocation()) ||
+						(AgentSimulationTime.GetInstance().Time() - event.getTime().getNarrativeTime()) > 900000)
+				{
+					event = new MemoryEpisode(action.getLocation(), action.getTime());
+					this._memoryEvents.add(event);
+				}
+			}
+			event.AddActionDetail(action);
+		}
+		/*MemoryEpisode event;
 		String oldLocation;
 		Name locationKey = Name.ParseName(_self + "(location)");
 		
@@ -206,21 +232,11 @@ public class AutobiographicalMemory implements Serializable {
 				}
 			}	
 			event.AddActionDetail(e);
+			//System.out.println("Memory Events size: " + _memoryEvents.size());
+			//System.out.println("Event: " + e.toString());
 			
 			this._newData = true;
-		}
-	}
-	
-	public void AssociateEmotionToAction(ActiveEmotion em, Event cause)
-	{
-		if(this._memoryEvents.size() > 0)
-		{
-			synchronized (this)
-			{
-				MemoryEpisode event = (MemoryEpisode) this._memoryEvents.get(this._memoryEvents.size()-1);
-				event.AssociateEmotionToDetail(em,cause);
-			}
-		}
+		}*/
 	}
 	
 	/**
@@ -266,14 +282,13 @@ public class AutobiographicalMemory implements Serializable {
 	{
 		int numberOfSuccess;
 		int numberOfTries;
-		numberOfTries = CountEvent(AutobiographicalMemory.GenerateSearchKeys(g.GetActivationEvent()));
+		numberOfTries = CountEvent(AutobiographicalMemory.GenerateSearchKeys(g.GetActivationEvent())); 						
 		if(numberOfTries == 0)
 		{
 			return null;
 		}
 		
-		numberOfSuccess = CountEvent(AutobiographicalMemory.GenerateSearchKeys(g.GetSuccessEvent()));
-		
+		numberOfSuccess = CountEvent(AutobiographicalMemory.GenerateSearchKeys(g.GetSuccessEvent()));					
 		return new Float(numberOfSuccess/numberOfTries);
 	}
 	
@@ -344,7 +359,7 @@ public class AutobiographicalMemory implements Serializable {
 		}
 	}
 	
-	public ArrayList SearchForRecentEvents(ArrayList searchKeys)
+	/*public ArrayList SearchForRecentEvents(ArrayList searchKeys)
 	{
 		MemoryEpisode currentEpisode;
 		
@@ -356,7 +371,7 @@ public class AutobiographicalMemory implements Serializable {
 			}
 			return new ArrayList();
 		}
-	}
+	}*/
 	
 	public ArrayList SearchForPastEvents(ArrayList keys) 
 	{
@@ -390,7 +405,7 @@ public class AutobiographicalMemory implements Serializable {
 		}
 	}
 	
-	public boolean ContainsRecentEvent(ArrayList searchKeys)
+	/*public boolean ContainsRecentEvent(ArrayList searchKeys)
 	{
 		MemoryEpisode currentEpisode;
 		
@@ -403,7 +418,7 @@ public class AutobiographicalMemory implements Serializable {
 			}
 			return false;
 		}
-	}
+	}*/
 	
 	public boolean ContainsPastEvent(ArrayList searchKeys)
 	{

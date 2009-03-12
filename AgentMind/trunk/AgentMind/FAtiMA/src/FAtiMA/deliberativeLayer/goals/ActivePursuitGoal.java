@@ -78,6 +78,7 @@ import java.util.ListIterator;
 
 import FAtiMA.IntegrityValidator;
 import FAtiMA.autobiographicalMemory.AutobiographicalMemory;
+import FAtiMA.shortTermMemory.ShortTermMemory;
 import FAtiMA.conditions.Condition;
 import FAtiMA.conditions.NewEventCondition;
 import FAtiMA.conditions.RecentEventCondition;
@@ -146,6 +147,7 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
 		
 		//IPlanningOperator
 		_agent = new Symbol(AutobiographicalMemory.GetInstance().getSelf());
+		//_agent = new Symbol(AutobiographicalMemory.GetInstance().getSelf());
 		_effects = new ArrayList();
 		
 	}

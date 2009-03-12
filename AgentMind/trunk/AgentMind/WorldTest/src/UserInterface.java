@@ -28,7 +28,7 @@ public class UserInterface implements ActionListener {
 	JFrame _frame;
 	JTextArea textArea;
 	JComboBox inputList;
-	JComboBox _placeOptions;
+	JComboBox _userOptions;
 	JComboBox _timeOptions;
 	WorldTest _world;
 	
@@ -59,11 +59,24 @@ public class UserInterface implements ActionListener {
         
         _frame.getContentPane().add(scrollPane);
         
+        /*
         _timeOptions = new JComboBox();
         _timeOptions.addItem("beforeDinner");
         _timeOptions.addItem("elderArrives");
 		_timeOptions.addItem("dinner");
 		_timeOptions.addItem("afterDinner");
+		_timeOptions.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent arg0) {
+				_world.ChangeTime(_timeOptions.getSelectedItem().toString());
+		    	WriteLine("=> Changing the time: " + _timeOptions.getSelectedItem().toString());
+			}
+		});*/
+        
+        // Meiyii 06/03/09
+        _timeOptions = new JComboBox();
+        _timeOptions.addItem("Morning");
+        _timeOptions.addItem("Afternoon");
+		_timeOptions.addItem("Evening");
 		_timeOptions.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0) {
 				_world.ChangeTime(_timeOptions.getSelectedItem().toString());
@@ -75,20 +88,23 @@ public class UserInterface implements ActionListener {
         timeBox.add(new JLabel("Time: "));
         timeBox.add(_timeOptions );
 		
-		_placeOptions = new JComboBox();
-		_placeOptions.addItem("Outdoor");
-		_placeOptions.addItem("Party");
-		_placeOptions.addActionListener(new ActionListener(){
+		_userOptions = new JComboBox();
+		_userOptions.addItem("User1");
+		_userOptions.addItem("User2");
+		_userOptions.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
-				_world.ChangePlace(_placeOptions.getSelectedItem().toString());
-				WriteLine("=> Changing the place: " + _placeOptions.getSelectedItem().toString());
+				_world.ChangePlace(_userOptions.getSelectedItem().toString());
+				WriteLine("=> Changing the user: " + _userOptions.getSelectedItem().toString());
+				String userOptionsFile = _world.GetUserOptionsFile() + _userOptions.getSelectedItem().toString() + ".txt";
+				
+				// Read user input options from a text file
+				ParseFile(userOptionsFile);
 			}
-			
 		});
         
         Box placeBox = new Box(BoxLayout.X_AXIS);
-        placeBox.add(new JLabel("Place: "));
-        placeBox.add(_placeOptions);
+        placeBox.add(new JLabel("User: "));
+        placeBox.add(_userOptions);
         
         _frame.getContentPane().add(timeBox);
         _frame.getContentPane().add(placeBox);
@@ -96,8 +112,10 @@ public class UserInterface implements ActionListener {
 		_frame.getContentPane().add(okButton);
 		_frame.setVisible(true);
 		
+		String userOptionsFile = _world.GetUserOptionsFile(); // + _userOptions.getSelectedItem().toString() + ".txt";
+		
 		// Read user input options from a text file
-		this.ParseFile(world_in.GetUserOptionsFile());
+		ParseFile(userOptionsFile);
 		
     }
     
@@ -133,6 +151,7 @@ public class UserInterface implements ActionListener {
 				data = data + new String(buffer,0,readCharacters);
 			}
 			StringTokenizer st = new StringTokenizer(data,"\r\n");
+			inputList.removeAllItems();
 			while(st.hasMoreTokens())
 				inputList.addItem(st.nextToken());
 				

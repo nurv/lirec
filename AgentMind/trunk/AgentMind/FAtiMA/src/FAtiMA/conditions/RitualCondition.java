@@ -36,6 +36,7 @@ import java.util.StringTokenizer;
 import org.xml.sax.Attributes;
 
 import FAtiMA.autobiographicalMemory.AutobiographicalMemory;
+import FAtiMA.shortTermMemory.ShortTermMemory;
 import FAtiMA.autobiographicalMemory.SearchKey;
 import FAtiMA.sensorEffector.Event;
 import FAtiMA.wellFormedNames.Name;
@@ -213,7 +214,7 @@ public class RitualCondition extends PredicateCondition {
 		}
 		
 		
-		return AutobiographicalMemory.GetInstance().ContainsRecentEvent(keys);
+		return ShortTermMemory.GetInstance().ContainsRecentEvent(keys);
 		
 	}
 	

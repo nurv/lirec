@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.ListIterator;
 
 import FAtiMA.autobiographicalMemory.AutobiographicalMemory;
+import FAtiMA.shortTermMemory.ShortTermMemory;
 import FAtiMA.autobiographicalMemory.SearchKey;
 import FAtiMA.sensorEffector.Event;
 import FAtiMA.wellFormedNames.Name;
@@ -78,7 +79,7 @@ public class NewEventCondition extends RecentEventCondition {
 			return true;
 		}
 	
-		conditionVerified = (_positive == AutobiographicalMemory.GetInstance().ContainsRecentEvent(GetSearchKeys()));
+		conditionVerified = (_positive == ShortTermMemory.GetInstance().ContainsRecentEvent(GetSearchKeys()));
 		
 		if(conditionVerified){
 			_conditionAlreadyVerified = true;

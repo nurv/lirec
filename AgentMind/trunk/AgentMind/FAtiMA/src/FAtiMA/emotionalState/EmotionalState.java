@@ -70,6 +70,7 @@ import FAtiMA.autobiographicalMemory.AutobiographicalMemory;
 import FAtiMA.deliberativeLayer.goals.Goal;
 import FAtiMA.reactiveLayer.Reaction;
 import FAtiMA.sensorEffector.Event;
+import FAtiMA.shortTermMemory.ShortTermMemory;
 import FAtiMA.socialRelations.LikeRelation;
 import FAtiMA.util.AgentLogger;
 import FAtiMA.util.enumerables.EmotionType;
@@ -208,7 +209,9 @@ public class EmotionalState implements Serializable {
 				auxEmotion = new ActiveEmotion(potEm, potential, threshold, decay);
 				_emotionPool.put(potEm.GetHashKey(), auxEmotion);
 				
-				AutobiographicalMemory.GetInstance().AssociateEmotionToAction(auxEmotion,auxEmotion.GetCause());
+				//AutobiographicalMemory.GetInstance().AssociateEmotionToAction(auxEmotion,auxEmotion.GetCause());
+				ShortTermMemory.GetInstance().AssociateEmotionToAction(auxEmotion,auxEmotion.GetCause());
+				
 				this.GenerateCompoundEmotions(potEm);
 			}
 			this._mood.UpdateMood(auxEmotion);

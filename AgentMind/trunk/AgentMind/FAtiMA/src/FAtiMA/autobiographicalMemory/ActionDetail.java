@@ -34,6 +34,7 @@
  * Bruno Azenha: 09/04/2007 - Reimplemented the method UpdateEmotionValues so that it uses the SocialRelation
  * 							  package
  * João Dias: 24/03/2008 - Added time to individual actions stored in AM
+ * Meiyii Lim: 11/03/2009 - Added location to individual actions 
  */
 package FAtiMA.autobiographicalMemory;
 
@@ -50,6 +51,7 @@ import FAtiMA.sensorEffector.Parameter;
 import FAtiMA.socialRelations.LikeRelation;
 import FAtiMA.socialRelations.RespectRelation;
 import FAtiMA.util.enumerables.EmotionType;
+import FAtiMA.shortTermMemory.ShortTermMemory;;
 
 
 /**
@@ -73,19 +75,21 @@ public class ActionDetail implements Serializable {
 	private KnowledgeSlot _subjectDetails = null;
 	private KnowledgeSlot _targetDetails = null;
 	private Time _time;
+	private String _location;
 
 	
 	private BaseEmotion _emotion;
 	
 	private ArrayList _evaluation;
 		
-	public ActionDetail(int ID, Event e)
+	public ActionDetail(int ID, Event e, String location)
 	{
 		this._id = ID;
 		
 		this._subject = e.GetSubject();
 		this._action = e.GetAction();
 		this._target = e.GetTarget();
+		this._location = location;
 		
 		this._time = new Time();
 		
@@ -122,6 +126,12 @@ public class ActionDetail implements Serializable {
 	public String getTarget()
 	{
 		return this._target;
+	}
+	
+	// Meiyii 11/03/09
+	public String getLocation()
+	{
+		return this._location;
 	}
 	
 	public ArrayList getParameters()
@@ -461,6 +471,9 @@ public class ActionDetail implements Serializable {
 		action += "<Action>" + this.getAction() + "</Action>";
 		action += "<Target>" + this.getTarget() + "</Target>";
 		action += "<Parameters>" + this.getParameters() + "</Parameters>";
+
+		action += "<Time>" + this.getTime() + "</Time>";
+		action += "<Location>" + this.getLocation() + "</Location>";
 		
 		action += "</Event>\n";
 		

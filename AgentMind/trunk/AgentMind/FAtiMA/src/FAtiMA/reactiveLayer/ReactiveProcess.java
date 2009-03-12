@@ -66,6 +66,7 @@ import java.util.ListIterator;
 import FAtiMA.AgentProcess;
 import FAtiMA.ValuedAction;
 import FAtiMA.autobiographicalMemory.AutobiographicalMemory;
+import FAtiMA.shortTermMemory.ShortTermMemory;
 import FAtiMA.emotionalState.BaseEmotion;
 import FAtiMA.emotionalState.EmotionalState;
 import FAtiMA.sensorEffector.Event;

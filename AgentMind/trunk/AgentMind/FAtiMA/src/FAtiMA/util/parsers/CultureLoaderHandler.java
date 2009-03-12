@@ -127,6 +127,7 @@ public class CultureLoaderHandler extends ReflectXMLHandler {
 		String action = attributes.getValue("name");
 		String parameters = attributes.getValue("parameters");
 		Event event = Event.ParseEvent(AutobiographicalMemory.GetInstance().getSelf(), subject, action, target, parameters);
+		//Event event = Event.ParseEvent(AutobiographicalMemory.GetInstance().getSelf(), subject, action, target, parameters);
 
 		//Create the reaction
 		Integer desirability = new Integer(0);
