@@ -20,7 +20,7 @@ import Language.LanguageEngine;
  */
 
 /**
- * @author João Dias, Samuel Mascarenhas
+ * @author João Dias, Samuel Mascarenhas, Meiyii Lim
  *
  * TODO To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Style - Code Templates
@@ -256,7 +256,6 @@ public class WorldTest {
 		return null;
 	}
 	
-	
 	public UserInterface GetUserInterface(){
 		return _userInterface;
 	}
@@ -267,9 +266,16 @@ public class WorldTest {
 		}
 	}
 	
-	public void ChangePlace( String place ){
+	public void ChangePlace( String location ){
 		for( int i = 0, limit = _agents.size(); i != limit; ++i ){
-			SendPerceptionToAll( "PROPERTY-CHANGED " + ((RemoteAgent)_agents.get(i)).Name() + " place " + place );
+			SendPerceptionToAll( "PROPERTY-CHANGED " + ((RemoteAgent)_agents.get(i)).Name() + " location " + location );
+		}
+	}
+	
+	// Meiyii 11/03/09 
+	public void ChangeUser( String user ){
+		for( int i = 0, limit = _agents.size(); i != limit; ++i ){
+			SendPerceptionToAll( "PROPERTY-CHANGED " + ((RemoteAgent)_agents.get(i)).Name() + " user " + user );
 		}
 	}
 	

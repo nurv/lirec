@@ -264,6 +264,7 @@
 				<Property name="power" value="10"/>
 				<Property name="hasAuthority" value="True"/>
 				<Property name="holds" value="none"/>
+				<Property name="location" value="LivingRoom"/>	
 			</Properties>	
 		</Agent>
 		

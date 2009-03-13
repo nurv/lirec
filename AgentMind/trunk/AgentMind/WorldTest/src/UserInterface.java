@@ -24,12 +24,19 @@ import FAtiMA.wellFormedNames.Unifier;
 import java.awt.Dimension;
 import java.awt.event.*;
 
+/**
+ * @author Meiyii Lim, Michael Kriegel
+ *
+ * An GUI to display the details of interaction and for the user to interact
+ */
+
 public class UserInterface implements ActionListener {
 	JFrame _frame;
 	JTextArea textArea;
 	JComboBox inputList;
 	JComboBox _userOptions;
 	JComboBox _timeOptions;
+	JComboBox _locationOptions;
 	WorldTest _world;
 	
 	private Random _r;
@@ -88,12 +95,26 @@ public class UserInterface implements ActionListener {
         timeBox.add(new JLabel("Time: "));
         timeBox.add(_timeOptions );
 		
+        _locationOptions = new JComboBox();
+        _locationOptions.addItem("LivingRoom");
+        _locationOptions.addItem("StudyRoom");
+        _locationOptions.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e) {
+				_world.ChangePlace(_locationOptions.getSelectedItem().toString());
+				WriteLine("=> Changing the location: " + _locationOptions.getSelectedItem().toString());
+			}
+		});
+        
+        Box locationBox = new Box(BoxLayout.X_AXIS);
+        locationBox.add(new JLabel("Location: "));
+        locationBox.add(_locationOptions);
+        
 		_userOptions = new JComboBox();
 		_userOptions.addItem("User1");
 		_userOptions.addItem("User2");
 		_userOptions.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
-				_world.ChangePlace(_userOptions.getSelectedItem().toString());
+				_world.ChangeUser(_userOptions.getSelectedItem().toString());
 				WriteLine("=> Changing the user: " + _userOptions.getSelectedItem().toString());
 				String userOptionsFile = _world.GetUserOptionsFile() + _userOptions.getSelectedItem().toString() + ".txt";
 				
@@ -102,12 +123,13 @@ public class UserInterface implements ActionListener {
 			}
 		});
         
-        Box placeBox = new Box(BoxLayout.X_AXIS);
-        placeBox.add(new JLabel("User: "));
-        placeBox.add(_userOptions);
+        Box userBox = new Box(BoxLayout.X_AXIS);
+        userBox.add(new JLabel("User: "));
+        userBox.add(_userOptions);
         
         _frame.getContentPane().add(timeBox);
-        _frame.getContentPane().add(placeBox);
+        _frame.getContentPane().add(locationBox);
+        _frame.getContentPane().add(userBox);
 		_frame.getContentPane().add(inputList);
 		_frame.getContentPane().add(okButton);
 		_frame.setVisible(true);
