@@ -34,11 +34,11 @@ import java.util.Iterator;
 
 import org.xml.sax.Attributes;
 
-import FAtiMA.autobiographicalMemory.AutobiographicalMemory;
 import FAtiMA.emotionalState.ActiveEmotion;
 import FAtiMA.emotionalState.EmotionalState;
 import FAtiMA.exceptions.InvalidEmotionTypeException;
 import FAtiMA.knowledgeBase.KnowledgeBase;
+import FAtiMA.memory.Memory;
 import FAtiMA.util.enumerables.EmotionType;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
@@ -123,7 +123,7 @@ public class EmotionCondition extends PredicateCondition {
 	
 	private void UpdateName()
 	{
-		String aux = AutobiographicalMemory.GetInstance().getSelf() + "(" + 
+		String aux = Memory.GetInstance().getSelf() + "(" + 
 		EmotionType.GetName(this._emotionType);
 		if(this._direction != null)
 		{

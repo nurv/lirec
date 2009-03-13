@@ -37,7 +37,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import FAtiMA.autobiographicalMemory.ActionDetail;
+import FAtiMA.memory.ActionDetail;
 import FAtiMA.util.enumerables.EmotionType;
 
 

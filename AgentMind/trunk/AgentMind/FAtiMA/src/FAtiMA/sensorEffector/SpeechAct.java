@@ -68,7 +68,7 @@ import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.InputSource;
 
 import FAtiMA.ValuedAction;
-import FAtiMA.autobiographicalMemory.AutobiographicalMemory;
+import FAtiMA.memory.Memory;
 import FAtiMA.util.parsers.SpeechActHandler;
 import FAtiMA.wellFormedNames.Name;
 
@@ -165,7 +165,7 @@ public class SpeechAct extends RemoteAction {
 	 */
 	public SpeechAct(ValuedAction speechAction)
 	{
-		_subject = AutobiographicalMemory.GetInstance().getSelf();
+		_subject = Memory.GetInstance().getSelf();
 		
 		Name action = speechAction.GetAction();
 		ListIterator li = action.GetLiteralList().listIterator();

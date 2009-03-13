@@ -51,10 +51,10 @@ import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.InputSource;
 
 import FAtiMA.ValuedAction;
-import FAtiMA.autobiographicalMemory.AutobiographicalMemory;
 import FAtiMA.culture.CulturalDimensions;
 import FAtiMA.culture.SymbolTranslator;
 import FAtiMA.emotionalState.ActiveEmotion;
+import FAtiMA.memory.Memory;
 import FAtiMA.util.parsers.RemoteActionHandler;
 
 
@@ -114,7 +114,7 @@ public class RemoteAction implements Serializable {
 		
 		actionName = li.next().toString();
 		_actionType = actionName;
-		_subject = AutobiographicalMemory.GetInstance().getSelf();
+		_subject = Memory.GetInstance().getSelf();
 		_parameters = new ArrayList();
 		_target = null;
 		

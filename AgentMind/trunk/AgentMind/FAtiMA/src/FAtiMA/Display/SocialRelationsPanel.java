@@ -10,7 +10,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import FAtiMA.Agent;
-import FAtiMA.autobiographicalMemory.AutobiographicalMemory;
+import FAtiMA.memory.Memory;
 import FAtiMA.socialRelations.LikeRelation;
 import FAtiMA.socialRelations.Relation;
 import FAtiMA.socialRelations.RespectRelation;
@@ -41,10 +41,8 @@ public class SocialRelationsPanel extends AgentDisplayPanel {
 	}
 
 	public boolean Update(Agent ag) {
-		ArrayList relations = LikeRelation.getAllRelations(AutobiographicalMemory
-				.GetInstance().getSelf());
-		relations.addAll(RespectRelation.getAllRelations(AutobiographicalMemory
-				.GetInstance().getSelf()));
+		ArrayList relations = LikeRelation.getAllRelations(Memory.GetInstance().getSelf());
+		relations.addAll(RespectRelation.getAllRelations(Memory.GetInstance().getSelf()));
 		boolean updated = false;
 
 		// in this case, there's a new relation added (it is not usual for

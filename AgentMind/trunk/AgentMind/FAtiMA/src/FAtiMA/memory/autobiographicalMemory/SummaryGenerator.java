@@ -28,15 +28,17 @@
  * João Dias: 04/April/2007 - File created
  * **/
 
-package FAtiMA.autobiographicalMemory;
+package FAtiMA.memory.autobiographicalMemory;
 
 import java.util.ArrayList;
 
 import FAtiMA.emotionalState.BaseEmotion;
 import FAtiMA.knowledgeBase.KnowledgeBase;
+import FAtiMA.memory.ActionDetail;
 import FAtiMA.sensorEffector.SpeechAct;
 import FAtiMA.util.enumerables.EmotionType;
 import FAtiMA.wellFormedNames.Name;
+import FAtiMA.memory.Memory;
 
 /**
  * Abstract class that acts as a method repository of methods
@@ -51,7 +53,7 @@ public abstract class SummaryGenerator {
 		
 		String actionSummary = "<Subject>";
 		
-		if(action.getSubject().equals(AutobiographicalMemory.GetInstance().getSelf()))
+		if(action.getSubject().equals(Memory.GetInstance().getSelf()))
 		{
 			actionSummary += "I";
 		}
@@ -98,7 +100,7 @@ public abstract class SummaryGenerator {
 		{
 			actionSummary += "<Target>";
 			
-			if(action.getTarget().equals(AutobiographicalMemory.GetInstance().getSelf()))
+			if(action.getTarget().equals(Memory.GetInstance().getSelf()))
 			{
 				actionSummary += "me";
 			}
@@ -112,7 +114,7 @@ public abstract class SummaryGenerator {
 						Object aux2 = action.getTargetDetails("owner");
 						if(aux2 != null)
 						{
-							if(AutobiographicalMemory.GetInstance().getSelf().equals(aux2))
+							if(Memory.GetInstance().getSelf().equals(aux2))
 							{
 								actionSummary += "my ";
 							

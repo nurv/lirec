@@ -40,8 +40,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-import FAtiMA.autobiographicalMemory.ActionDetail;
-import FAtiMA.autobiographicalMemory.MemoryEpisode;
+import FAtiMA.memory.ActionDetail;
+import FAtiMA.memory.autobiographicalMemory.MemoryEpisode;
 
 
 public class MemoryEpisodeDisplay {

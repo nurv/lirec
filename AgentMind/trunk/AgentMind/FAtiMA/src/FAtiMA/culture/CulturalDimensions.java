@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Random;
 
-import FAtiMA.autobiographicalMemory.AutobiographicalMemory;
+import FAtiMA.memory.Memory;
 import FAtiMA.deliberativeLayer.goals.ActivePursuitGoal;
 import FAtiMA.knowledgeBase.KnowledgeBase;
 import FAtiMA.knowledgeBase.KnowledgeSlot;
@@ -121,7 +121,7 @@ public class CulturalDimensions {
 	}
 
 	private float obtainLikeRelationshipFromKB(String targetAgent){
-		String agentName = AutobiographicalMemory.GetInstance().getSelf();
+		String agentName = Memory.GetInstance().getSelf();
 		Name likeProperty = Name.ParseName("Like("+ agentName + "," + targetAgent +")");
 		Float likeValue = (Float) KnowledgeBase.GetInstance().AskProperty(likeProperty);
 
@@ -134,7 +134,7 @@ public class CulturalDimensions {
 
 	private int obtainDifferenceInPowerFromKB(String targetAgent){
 
-		String agentName = AutobiographicalMemory.GetInstance().getSelf();
+		String agentName = Memory.GetInstance().getSelf();
 
 		Name selfPowerPropertyName = Name.ParseName(agentName+"(power)");
 		String selfPowerProperty = (String)KnowledgeBase.GetInstance().AskProperty(selfPowerPropertyName);

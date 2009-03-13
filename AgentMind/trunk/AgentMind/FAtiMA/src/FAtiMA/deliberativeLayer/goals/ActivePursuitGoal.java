@@ -77,8 +77,6 @@ import java.util.List;
 import java.util.ListIterator;
 
 import FAtiMA.IntegrityValidator;
-import FAtiMA.autobiographicalMemory.AutobiographicalMemory;
-import FAtiMA.shortTermMemory.ShortTermMemory;
 import FAtiMA.conditions.Condition;
 import FAtiMA.conditions.NewEventCondition;
 import FAtiMA.conditions.RecentEventCondition;
@@ -88,6 +86,7 @@ import FAtiMA.deliberativeLayer.plan.IPlanningOperator;
 import FAtiMA.exceptions.InvalidMotivatorTypeException;
 import FAtiMA.exceptions.UnreachableGoalException;
 import FAtiMA.knowledgeBase.KnowledgeBase;
+import FAtiMA.memory.Memory;
 import FAtiMA.motivationalSystem.MotivationalState;
 import FAtiMA.util.AgentLogger;
 import FAtiMA.util.enumerables.MotivatorType;
@@ -146,8 +145,7 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
 		_numberOfTries = 0;
 		
 		//IPlanningOperator
-		_agent = new Symbol(AutobiographicalMemory.GetInstance().getSelf());
-		//_agent = new Symbol(AutobiographicalMemory.GetInstance().getSelf());
+		_agent = new Symbol(Memory.GetInstance().getSelf());
 		_effects = new ArrayList();
 		
 	}
@@ -237,7 +235,7 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
 			cond = (Condition) li.next();
 			if(cond.isGrounded())
 			{
-				if(cond.getName().toString().contains(AutobiographicalMemory.GetInstance().getSelf()))
+				if(cond.getName().toString().contains(Memory.GetInstance().getSelf()))
 				{
 					return true;
 				}
@@ -349,7 +347,7 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
 	{
 		if (_familiarity == null)
 		{
-			_familiarity = new Float(AutobiographicalMemory.GetInstance().AssessGoalFamiliarity(this));
+			_familiarity = new Float(Memory.GetInstance().AssessGoalFamiliarity(this));
 		}
 		
 		return _familiarity.floatValue();
@@ -360,7 +358,7 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
 		if(!_probabilityDetermined)
 		{
 			_probabilityDetermined = true;
-			_probability = AutobiographicalMemory.GetInstance().AssessGoalProbability(this);
+			_probability = Memory.GetInstance().AssessGoalProbability(this);
 		}
 		
 		return _probability;

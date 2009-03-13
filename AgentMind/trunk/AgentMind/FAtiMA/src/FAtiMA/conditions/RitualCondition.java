@@ -35,9 +35,9 @@ import java.util.StringTokenizer;
 
 import org.xml.sax.Attributes;
 
-import FAtiMA.autobiographicalMemory.AutobiographicalMemory;
-import FAtiMA.shortTermMemory.ShortTermMemory;
-import FAtiMA.autobiographicalMemory.SearchKey;
+import FAtiMA.memory.SearchKey;
+import FAtiMA.memory.Memory;
+import FAtiMA.memory.shortTermMemory.ShortTermMemory;
 import FAtiMA.sensorEffector.Event;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
@@ -197,7 +197,7 @@ public class RitualCondition extends PredicateCondition {
 		
 		ArrayList keys = new ArrayList();
 		
-		keys.add(new SearchKey(SearchKey.SUBJECT,AutobiographicalMemory.GetInstance().getSelf()));
+		keys.add(new SearchKey(SearchKey.SUBJECT,Memory.GetInstance().getSelf()));
 		
 		keys.add(new SearchKey(SearchKey.ACTION,"succeed"));
 		

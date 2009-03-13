@@ -66,11 +66,11 @@ import java.util.Iterator;
 import java.util.Set;
 
 import FAtiMA.AgentSimulationTime;
-import FAtiMA.autobiographicalMemory.AutobiographicalMemory;
 import FAtiMA.deliberativeLayer.goals.Goal;
+import FAtiMA.memory.Memory;
+import FAtiMA.memory.shortTermMemory.ShortTermMemory;
 import FAtiMA.reactiveLayer.Reaction;
 import FAtiMA.sensorEffector.Event;
-import FAtiMA.shortTermMemory.ShortTermMemory;
 import FAtiMA.socialRelations.LikeRelation;
 import FAtiMA.util.AgentLogger;
 import FAtiMA.util.enumerables.EmotionType;
@@ -293,7 +293,7 @@ public class EmotionalState implements Serializable {
 	
 	public BaseEmotion OCCAppraisePraiseworthiness(Event event, int praiseworthiness) {
 		BaseEmotion em;
-		String self = AutobiographicalMemory.GetInstance().getSelf();
+		String self = Memory.GetInstance().getSelf();
 		
 		if(praiseworthiness >= 0) {
 			if(event.GetSubject().equals(self)) {
@@ -321,7 +321,7 @@ public class EmotionalState implements Serializable {
 		float subjectBias = 0;
 		float bias;
 		int newDesirability = 0;
-		String self = AutobiographicalMemory.GetInstance().getSelf();
+		String self = Memory.GetInstance().getSelf();
 		ArrayList emotions = new ArrayList();
 		
 		String target = event.GetTarget();

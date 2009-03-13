@@ -60,11 +60,11 @@ import java.util.ArrayList;
 import java.util.ListIterator;
 
 import FAtiMA.IntegrityValidator;
-import FAtiMA.autobiographicalMemory.AutobiographicalMemory;
 import FAtiMA.conditions.Condition;
 import FAtiMA.exceptions.UnknownSpeechActException;
 import FAtiMA.exceptions.UnspecifiedVariableException;
 import FAtiMA.knowledgeBase.KnowledgeBase;
+import FAtiMA.memory.Memory;
 import FAtiMA.motivationalSystem.MotivationalState;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
@@ -113,7 +113,7 @@ public class Step implements IPlanningOperator, Cloneable, Serializable {
 		_preconditions = new ArrayList(3);
 		
 		_selfExecutable = (!_agent.isGrounded()) || 
-				_agent.toString().equals(AutobiographicalMemory.GetInstance().getSelf());
+				_agent.toString().equals(Memory.GetInstance().getSelf());
 		
 		_baseprob = probability;
 	}
@@ -136,7 +136,7 @@ public class Step implements IPlanningOperator, Cloneable, Serializable {
 		_baseprob = probability;
 		
 		_selfExecutable = !_agent.isGrounded() || 
-		_agent.toString().equals(AutobiographicalMemory.GetInstance().getSelf());
+		_agent.toString().equals(Memory.GetInstance().getSelf());
 	}
 
 	private Step() {
@@ -763,7 +763,7 @@ public class Step implements IPlanningOperator, Cloneable, Serializable {
     	//true
     	this._selfExecutable = this._selfExecutable &&
     		(!_agent.isGrounded() || 
-   	 		 _agent.toString().equals(AutobiographicalMemory.GetInstance().getSelf()));
+   	 		 _agent.toString().equals(Memory.GetInstance().getSelf()));
     }
 
 	/**

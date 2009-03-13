@@ -32,10 +32,10 @@ import java.util.ArrayList;
 
 import org.xml.sax.Attributes;
 
-import FAtiMA.autobiographicalMemory.AutobiographicalMemory;
 import FAtiMA.emotionalState.EmotionalState;
 import FAtiMA.exceptions.InvalidMoodOperatorException;
 import FAtiMA.exceptions.NoMoodOperatorDefinedException;
+import FAtiMA.memory.Memory;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
 import FAtiMA.wellFormedNames.SubstitutionSet;
@@ -143,7 +143,7 @@ public class MoodCondition extends Condition {
 	
 	private void UpdateName()
 	{
-		String aux = AutobiographicalMemory.GetInstance().getSelf() + "(mood," + this._operator + ")";
+		String aux = Memory.GetInstance().getSelf() + "(mood," + this._operator + ")";
 		this._name = Name.ParseName(aux);
 	}
 	

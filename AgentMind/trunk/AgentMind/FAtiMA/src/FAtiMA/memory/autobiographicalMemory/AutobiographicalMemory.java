@@ -36,9 +36,12 @@
  * João Dias: 22/02/2007 - the Autobiographical memory now registers if new data was added to it and 
  * 						   provides a method that verifies if new data was added since last time it
  * 						   was verified
+ * Meiyii Lim: 12/03/2009 - remove the search for recent event in AM, it is now performed in STM,
+ * 							AM now stores only external events that have an emotional impact on the agent
+ * 							and internal events (ie. goal activation, success and failure) 
  * **/
 
-package FAtiMA.autobiographicalMemory;
+package FAtiMA.memory.autobiographicalMemory;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -50,15 +53,9 @@ import java.util.ListIterator;
 
 import FAtiMA.AgentSimulationTime;
 import FAtiMA.deliberativeLayer.goals.Goal;
-import FAtiMA.emotionalState.ActiveEmotion;
-import FAtiMA.knowledgeBase.KnowledgeBase;
+import FAtiMA.memory.ActionDetail;
 import FAtiMA.sensorEffector.Event;
-import FAtiMA.sensorEffector.Parameter;
 import FAtiMA.util.AgentLogger;
-import FAtiMA.wellFormedNames.Name;
-import FAtiMA.wellFormedNames.Symbol;
-import FAtiMA.shortTermMemory.ShortTermMemory;
-
 
 public class AutobiographicalMemory implements Serializable {
 	
@@ -129,52 +126,11 @@ public class AutobiographicalMemory implements Serializable {
 		}
 	}
 	
-	private String _self;
 	private ArrayList _memoryEvents;
-	private boolean _newData;
 	
 	private AutobiographicalMemory()
 	{
 		this._memoryEvents = new ArrayList();
-		this._newData = false;
-	}
-	
-	public void setSelf(String selfName)
-	{
-		this._self = selfName;
-	}
-	
-	public String getSelf()
-	{
-		return this._self; 
-	}
-	
-	public static ArrayList GenerateSearchKeys(Event e)
-	{	
-		ArrayList keys = new ArrayList();
-		ArrayList params = new ArrayList();
-		Parameter param;
-		
-		keys.add(new SearchKey(SearchKey.SUBJECT,e.GetSubject()));
-		
-		keys.add(new SearchKey(SearchKey.ACTION,e.GetAction()));
-		
-		if(e.GetTarget() != null)
-		{
-			keys.add(new SearchKey(SearchKey.TARGET, e.GetTarget()));
-		}
-		
-		if(e.GetParameters().size() > 0)
-		{
-			for(ListIterator li = e.GetParameters().listIterator();li.hasNext();)
-			{
-				param = (Parameter) li.next();
-				params.add(param.GetValue().toString());
-			}
-			keys.add(new SearchKey(SearchKey.PARAMETERS, params));
-		}
-		
-		return keys;
 	}
 	
 	public void StoreAction(ActionDetail action)
@@ -204,51 +160,6 @@ public class AutobiographicalMemory implements Serializable {
 			}
 			event.AddActionDetail(action);
 		}
-		/*MemoryEpisode event;
-		String oldLocation;
-		Name locationKey = Name.ParseName(_self + "(location)");
-		
-		
-		String newLocation = (String) KnowledgeBase.GetInstance().AskProperty(locationKey);
-		
-		synchronized (this) {
-			if(this._memoryEvents.size() == 0)
-			{
-				event = new MemoryEpisode(newLocation);
-				this._memoryEvents.add(event);
-			}
-			else
-			{
-				event = (MemoryEpisode) this._memoryEvents.get(this._memoryEvents.size()-1);
-				oldLocation = event.getLocation();
-				if(oldLocation == null) {
-					event.setLocation(newLocation);
-				}
-				else if(!event.getLocation().equals(newLocation) ||
-						(AgentSimulationTime.GetInstance().Time() - event.getTime().getNarrativeTime()) > 900000)
-				{
-					event = new MemoryEpisode(newLocation);
-					this._memoryEvents.add(event);
-				}
-			}	
-			event.AddActionDetail(e);
-			//System.out.println("Memory Events size: " + _memoryEvents.size());
-			//System.out.println("Event: " + e.toString());
-			
-			this._newData = true;
-		}*/
-	}
-	
-	/**
-	 * This methods verifies if any new data was added to the AutobiographicalMemory since
-	 * the last time this method was called. 
-	 * @return
-	 */
-	public boolean HasNewData()
-	{
-		boolean aux = this._newData;
-		this._newData = false;
-		return aux;
 	}
 	
 	public Object GetSyncRoot()
@@ -278,25 +189,10 @@ public class AutobiographicalMemory implements Serializable {
 		}	
 	}
 	
-	public Float AssessGoalProbability(Goal g)
-	{
-		int numberOfSuccess;
-		int numberOfTries;
-		numberOfTries = CountEvent(AutobiographicalMemory.GenerateSearchKeys(g.GetActivationEvent())); 						
-		if(numberOfTries == 0)
-		{
-			return null;
-		}
-		
-		numberOfSuccess = CountEvent(AutobiographicalMemory.GenerateSearchKeys(g.GetSuccessEvent()));					
-		return new Float(numberOfSuccess/numberOfTries);
-	}
-	
 	public float AssessGoalFamiliarity(Goal g)
 	{
 		MemoryEpisode episode;
 		float similarEvents = 0;
-		float familiarity = 0;
 		
 		synchronized(this)
 		{
@@ -305,16 +201,12 @@ public class AutobiographicalMemory implements Serializable {
 				episode = (MemoryEpisode) this._memoryEvents.get(i);
 				similarEvents += episode.AssessGoalFamiliarity(g);
 			}
-		}
-		
-		//familiarity function f(x) = 1 - 1/(x/2 +1)
-		// where x represents the number of similar events founds
-		familiarity = 1 - (1 / (similarEvents/2 + 1));
-		
-		return familiarity;
+		}		
+		return similarEvents;
 	}
 	
 	
+	// currently not used
 	public float AssessFamiliarity(Event e)
 	{
 		MemoryEpisode episode;
@@ -359,20 +251,6 @@ public class AutobiographicalMemory implements Serializable {
 		}
 	}
 	
-	/*public ArrayList SearchForRecentEvents(ArrayList searchKeys)
-	{
-		MemoryEpisode currentEpisode;
-		
-		synchronized (this) {
-			if(this._memoryEvents.size() > 0)
-			{
-				currentEpisode = (MemoryEpisode) this._memoryEvents.get(this._memoryEvents.size()-1);
-				return currentEpisode.GetDetailsByKeys(searchKeys);
-			}
-			return new ArrayList();
-		}
-	}*/
-	
 	public ArrayList SearchForPastEvents(ArrayList keys) 
 	{
 		MemoryEpisode episode;
@@ -404,21 +282,6 @@ public class AutobiographicalMemory implements Serializable {
 			return foundPastEvents;
 		}
 	}
-	
-	/*public boolean ContainsRecentEvent(ArrayList searchKeys)
-	{
-		MemoryEpisode currentEpisode;
-		
-		synchronized (this) {
-			if(this._memoryEvents.size() > 0)
-			{
-				currentEpisode = (MemoryEpisode) this._memoryEvents.get(this._memoryEvents.size()-1);
-				
-				return currentEpisode.VerifiesKeys(searchKeys);
-			}
-			return false;
-		}
-	}*/
 	
 	public boolean ContainsPastEvent(ArrayList searchKeys)
 	{

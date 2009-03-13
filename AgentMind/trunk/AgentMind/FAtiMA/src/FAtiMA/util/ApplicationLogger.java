@@ -3,7 +3,7 @@ package FAtiMA.util;
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
 
-import FAtiMA.autobiographicalMemory.AutobiographicalMemory;
+import FAtiMA.memory.Memory;
 
 public abstract class ApplicationLogger {
 	
@@ -14,7 +14,7 @@ public abstract class ApplicationLogger {
     {
     	try 
     	{
-    		String logFile = AutobiographicalMemory.GetInstance().getSelf() + LOG_FILE; 
+    		String logFile = Memory.GetInstance().getSelf() + LOG_FILE; 
     		FileOutputStream out = new FileOutputStream(logFile,true);
         	ObjectOutputStream s = new ObjectOutputStream(out);
         	

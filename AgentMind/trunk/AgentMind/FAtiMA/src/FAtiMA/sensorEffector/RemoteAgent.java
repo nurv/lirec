@@ -89,10 +89,11 @@ import java.util.StringTokenizer;
 import FAtiMA.Agent;
 import FAtiMA.AgentSimulationTime;
 import FAtiMA.ValuedAction;
-import FAtiMA.autobiographicalMemory.AutobiographicalMemory;
 import FAtiMA.emotionalState.ActiveEmotion;
 import FAtiMA.emotionalState.EmotionalState;
 import FAtiMA.knowledgeBase.KnowledgeBase;
+import FAtiMA.memory.Memory;
+import FAtiMA.memory.autobiographicalMemory.AutobiographicalMemory;
 import FAtiMA.motivationalSystem.MotivationalState;
 import FAtiMA.socialRelations.LikeRelation;
 import FAtiMA.socialRelations.RespectRelation;
@@ -481,7 +482,7 @@ public abstract class RemoteAgent extends SocketListener {
 			
 			if(speechAct.getMeaning().equals("episodesummary"))
 			{
-				_agent.SaveAM(AutobiographicalMemory.GetInstance().getSelf());
+				_agent.SaveAM(Memory.GetInstance().getSelf());
 				String summaryInfo = "<ABMemory><Receiver>" + you + "</Receiver>";
 				summaryInfo += AutobiographicalMemory.GetInstance().SummarizeLastEvent();
 				summaryInfo += "</ABMemory>";

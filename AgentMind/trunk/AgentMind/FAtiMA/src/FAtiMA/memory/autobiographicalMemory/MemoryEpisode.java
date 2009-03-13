@@ -32,7 +32,7 @@
  *						   ready to be used by the LanguageEngine 
  * **/
 
-package FAtiMA.autobiographicalMemory;
+package FAtiMA.memory.autobiographicalMemory;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -42,10 +42,14 @@ import java.util.ListIterator;
 import java.util.Random;
 
 import FAtiMA.deliberativeLayer.goals.Goal;
-import FAtiMA.emotionalState.ActiveEmotion;
 import FAtiMA.emotionalState.BaseEmotion;
+import FAtiMA.memory.ActionDetail;
+import FAtiMA.memory.ActionDetailComparator;
+import FAtiMA.memory.SearchKey;
+import FAtiMA.memory.Time;
 import FAtiMA.sensorEffector.Event;
 import FAtiMA.util.enumerables.EmotionValence;
+import FAtiMA.memory.Memory;
 
 
 public class MemoryEpisode implements Serializable {
@@ -497,7 +501,7 @@ public class MemoryEpisode implements Serializable {
 				
 				familiarity += 0.2;
 				
-				if(action.getSubject().equals(AutobiographicalMemory.GetInstance().getSelf()))
+				if(action.getSubject().equals(Memory.GetInstance().getSelf()))
 				{
 					//if the event was performed by me, I'm more familiar with it
 					familiarity += 0.4; 

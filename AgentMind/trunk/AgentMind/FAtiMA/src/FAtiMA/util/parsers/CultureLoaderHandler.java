@@ -34,7 +34,6 @@ import java.util.ArrayList;
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.AttributesImpl;
 
-import FAtiMA.autobiographicalMemory.AutobiographicalMemory;
 import FAtiMA.conditions.EmotionCondition;
 import FAtiMA.conditions.MoodCondition;
 import FAtiMA.conditions.NewEventCondition;
@@ -52,6 +51,7 @@ import FAtiMA.exceptions.DuplicateSymbolTranslatorEntry;
 import FAtiMA.exceptions.InvalidDimensionTypeException;
 import FAtiMA.exceptions.InvalidEmotionTypeException;
 import FAtiMA.exceptions.UnknownGoalException;
+import FAtiMA.memory.Memory;
 import FAtiMA.reactiveLayer.Reaction;
 import FAtiMA.reactiveLayer.ReactiveProcess;
 import FAtiMA.sensorEffector.Event;
@@ -126,8 +126,7 @@ public class CultureLoaderHandler extends ReflectXMLHandler {
 		String target = "*";
 		String action = attributes.getValue("name");
 		String parameters = attributes.getValue("parameters");
-		Event event = Event.ParseEvent(AutobiographicalMemory.GetInstance().getSelf(), subject, action, target, parameters);
-		//Event event = Event.ParseEvent(AutobiographicalMemory.GetInstance().getSelf(), subject, action, target, parameters);
+		Event event = Event.ParseEvent(Memory.GetInstance().getSelf(), subject, action, target, parameters);
 
 		//Create the reaction
 		Integer desirability = new Integer(0);

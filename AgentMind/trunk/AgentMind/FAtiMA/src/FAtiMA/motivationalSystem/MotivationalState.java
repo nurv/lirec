@@ -16,7 +16,6 @@ import java.util.Iterator;
 import java.util.ListIterator;
 
 import FAtiMA.AgentSimulationTime;
-import FAtiMA.autobiographicalMemory.AutobiographicalMemory;
 import FAtiMA.conditions.MotivatorCondition;
 import FAtiMA.culture.CulturalDimensions;
 import FAtiMA.deliberativeLayer.plan.EffectOnDrive;
@@ -26,6 +25,7 @@ import FAtiMA.emotionalState.BaseEmotion;
 import FAtiMA.emotionalState.EmotionalState;
 import FAtiMA.exceptions.InvalidMotivatorTypeException;
 import FAtiMA.knowledgeBase.KnowledgeBase;
+import FAtiMA.memory.Memory;
 import FAtiMA.sensorEffector.Event;
 import FAtiMA.sensorEffector.Parameter;
 import FAtiMA.util.AgentLogger;
@@ -200,7 +200,7 @@ public class MotivationalState implements Serializable {
 			float affiliationEffect = CulturalDimensions.GetInstance().determineAffiliationEffectFromLSignal(eventSubject,eventTarget,lSignalName,lSignalValue);
 			
 			
-			if(eventTarget.equalsIgnoreCase(AutobiographicalMemory.GetInstance().getSelf())){	
+			if(eventTarget.equalsIgnoreCase(Memory.GetInstance().getSelf())){	
 				Motivator [] selfMotivators = (Motivator[]) MotivationalState.GetInstance().getSelfMotivators();	
 				contributionToSelfNeeds += selfMotivators[MotivatorType.AFFILIATION].UpdateIntensity(affiliationEffect);
 				
@@ -235,7 +235,7 @@ public class MotivationalState implements Serializable {
 						motCondition = (MotivatorCondition) effectOnDrive.GetEffectOnDrive();
 						Name target = motCondition.GetTarget();
 
-						if (target.toString().equalsIgnoreCase(AutobiographicalMemory.GetInstance().getSelf()))
+						if (target.toString().equalsIgnoreCase(Memory.GetInstance().getSelf()))
 						{
 							AgentLogger.GetInstance().log("Updating self motivator " + motCondition.GetDrive());
 							try {

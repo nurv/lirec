@@ -3,9 +3,9 @@ package FAtiMA.conditions;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
-import FAtiMA.autobiographicalMemory.AutobiographicalMemory;
-import FAtiMA.shortTermMemory.ShortTermMemory;
-import FAtiMA.autobiographicalMemory.SearchKey;
+import FAtiMA.memory.SearchKey;
+import FAtiMA.memory.autobiographicalMemory.AutobiographicalMemory;
+import FAtiMA.memory.shortTermMemory.ShortTermMemory;
 import FAtiMA.sensorEffector.Event;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Symbol;

@@ -40,8 +40,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import FAtiMA.Agent;
-import FAtiMA.autobiographicalMemory.AutobiographicalMemory;
-import FAtiMA.autobiographicalMemory.MemoryEpisode;
+import FAtiMA.memory.autobiographicalMemory.AutobiographicalMemory;
+import FAtiMA.memory.autobiographicalMemory.MemoryEpisode;
 
 
 public class EpisodicMemoryPanel extends AgentDisplayPanel {

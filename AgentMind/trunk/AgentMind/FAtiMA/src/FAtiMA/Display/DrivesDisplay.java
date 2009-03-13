@@ -8,8 +8,8 @@ import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 
-import FAtiMA.autobiographicalMemory.AutobiographicalMemory;
-import FAtiMA.shortTermMemory.ShortTermMemory;
+import FAtiMA.memory.Memory;
+import FAtiMA.memory.shortTermMemory.ShortTermMemory;
 import FAtiMA.motivationalSystem.MotivationalState;
 import FAtiMA.util.enumerables.MotivatorType;
 
@@ -31,7 +31,7 @@ public class DrivesDisplay {
 		super();
 
 		_agentName = agentName;
-		boolean isSelf = (agentName.equalsIgnoreCase(AutobiographicalMemory.GetInstance().getSelf()));
+		boolean isSelf = (agentName.equalsIgnoreCase(Memory.GetInstance().getSelf()));
 
 		_panel = new JPanel();
 		

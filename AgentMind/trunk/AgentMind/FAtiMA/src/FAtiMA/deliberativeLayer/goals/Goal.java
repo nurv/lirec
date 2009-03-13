@@ -59,11 +59,10 @@ import java.util.ArrayList;
 import java.util.ListIterator;
 
 import FAtiMA.IntegrityValidator;
-import FAtiMA.autobiographicalMemory.AutobiographicalMemory;
-import FAtiMA.shortTermMemory.ShortTermMemory;
 import FAtiMA.conditions.Condition;
 import FAtiMA.exceptions.UnreachableGoalException;
 import FAtiMA.knowledgeBase.KnowledgeBase;
+import FAtiMA.memory.Memory;
 import FAtiMA.sensorEffector.Event;
 import FAtiMA.sensorEffector.Parameter;
 import FAtiMA.wellFormedNames.IGroundable;
@@ -321,7 +320,7 @@ public abstract class Goal implements IGroundable, Cloneable, Serializable {
 	
 	private Event generateEventDescription(String action)
 	{
-		Event e = new Event(AutobiographicalMemory.GetInstance().getSelf(),action,this._name.GetFirstLiteral().toString());
+		Event e = new Event(Memory.GetInstance().getSelf(),action,this._name.GetFirstLiteral().toString());
 		ListIterator li = this._name.GetLiteralList().listIterator();
 	    li.next();
 	    while(li.hasNext())

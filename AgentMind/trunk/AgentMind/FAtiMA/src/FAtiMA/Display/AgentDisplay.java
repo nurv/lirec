@@ -55,7 +55,7 @@ public class AgentDisplay {
         _ag = ag;
         _frame = new JFrame(ag.displayName());
         _frame.getContentPane().setLayout(new BoxLayout(_frame.getContentPane(),BoxLayout.Y_AXIS));
-		_frame.setSize(800,800);
+		_frame.setSize(800,600);
 		_frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		_displayPane = new JTabbedPane();

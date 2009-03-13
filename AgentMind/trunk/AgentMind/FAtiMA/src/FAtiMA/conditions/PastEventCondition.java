@@ -38,9 +38,9 @@ import java.util.StringTokenizer;
 
 import org.xml.sax.Attributes;
 
-import FAtiMA.autobiographicalMemory.ActionDetail;
-import FAtiMA.autobiographicalMemory.AutobiographicalMemory;
-import FAtiMA.autobiographicalMemory.SearchKey;
+import FAtiMA.memory.ActionDetail;
+import FAtiMA.memory.SearchKey;
+import FAtiMA.memory.autobiographicalMemory.AutobiographicalMemory;
 import FAtiMA.sensorEffector.Event;
 import FAtiMA.sensorEffector.Parameter;
 import FAtiMA.wellFormedNames.Name;

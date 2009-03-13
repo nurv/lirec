@@ -20,7 +20,6 @@ import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.SAXException;
 
 import FAtiMA.Display.AgentDisplay;
-import FAtiMA.autobiographicalMemory.AutobiographicalMemory;
 import FAtiMA.culture.CulturalDimensions;
 import FAtiMA.culture.Ritual;
 import FAtiMA.deliberativeLayer.DeliberativeProcess;
@@ -32,6 +31,9 @@ import FAtiMA.emotionalState.EmotionalState;
 import FAtiMA.exceptions.UnknownGoalException;
 import FAtiMA.knowledgeBase.KnowledgeBase;
 import FAtiMA.knowledgeBase.KnowledgeSlot;
+import FAtiMA.memory.Memory;
+import FAtiMA.memory.autobiographicalMemory.AutobiographicalMemory;
+import FAtiMA.memory.shortTermMemory.ShortTermMemory;
 import FAtiMA.motivationalSystem.MotivationalState;
 import FAtiMA.reactiveLayer.ReactiveProcess;
 import FAtiMA.sensorEffector.Event;
@@ -40,7 +42,6 @@ import FAtiMA.sensorEffector.Parameter;
 import FAtiMA.sensorEffector.RemoteAgent;
 import FAtiMA.sensorEffector.SpeechAct;
 import FAtiMA.sensorEffector.WorldSimulatorRemoteAgent;
-import FAtiMA.shortTermMemory.ShortTermMemory;
 import FAtiMA.socialRelations.LikeRelation;
 import FAtiMA.util.AgentLogger;
 import FAtiMA.util.enumerables.AgentPlatform;
@@ -185,9 +186,8 @@ public class Agent {
 			properties.put("role", _role);
 			properties.put("sex", _sex);	
 		}
-
-		AutobiographicalMemory.GetInstance().setSelf(_self);
-		ShortTermMemory.GetInstance().setSelf(_self);
+		
+		Memory.GetInstance().setSelf(_self);
 
 		try{
 			AgentLogger.GetInstance().initialize(name);
@@ -719,8 +719,8 @@ public class Agent {
 		
 		if(action.equals("INSERT_CHARACTER")||action.equals("INSERT_OBJECT"))
 		{
-			e = new Event(AutobiographicalMemory.GetInstance().getSelf(), "look-at", name);
-			int like = Math.round(LikeRelation.getRelation(AutobiographicalMemory.GetInstance().getSelf(), name).getValue());
+			e = new Event(Memory.GetInstance().getSelf(), "look-at", name);
+			int like = Math.round(LikeRelation.getRelation(Memory.GetInstance().getSelf(), name).getValue());
 			em = EmotionalState.GetInstance().OCCAppraiseAttribution(e, like);
 			return EmotionalState.GetInstance().DetermineActiveEmotion(em);
 		}
@@ -728,11 +728,11 @@ public class Agent {
 		{
 			if(parameters.size() == 0)
 			{
-				e = new Event(AutobiographicalMemory.GetInstance().getSelf(),name, null);
+				e = new Event(Memory.GetInstance().getSelf(),name, null);
 			}
 			else
 			{
-				e = new Event(AutobiographicalMemory.GetInstance().getSelf(),name, (String) parameters.get(0));
+				e = new Event(Memory.GetInstance().getSelf(),name, (String) parameters.get(0));
 				for(int i = 1; i < parameters.size(); i++)
 				{
 					e.AddParameter(new Parameter("param",parameters.get(i)));

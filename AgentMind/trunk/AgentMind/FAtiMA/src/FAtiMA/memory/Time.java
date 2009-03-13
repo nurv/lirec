@@ -25,9 +25,10 @@
  * 
  * History: 
  * João Dias: 18/Jul/2006 - File created
+ * Meiyii Lim: 13/03/2009 - Moved the class from FAtiMA.autobiographicalMemory package
  * **/
 
-package FAtiMA.autobiographicalMemory;
+package FAtiMA.memory;
 
 import java.io.Serializable;
 

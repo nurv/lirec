@@ -125,8 +125,6 @@ import java.util.Set;
 
 import FAtiMA.AgentProcess;
 import FAtiMA.ValuedAction;
-import FAtiMA.autobiographicalMemory.AutobiographicalMemory;
-import FAtiMA.shortTermMemory.ShortTermMemory;
 import FAtiMA.conditions.Condition;
 import FAtiMA.culture.Ritual;
 import FAtiMA.deliberativeLayer.goals.ActivePursuitGoal;
@@ -140,6 +138,7 @@ import FAtiMA.deliberativeLayer.plan.Step;
 import FAtiMA.emotionalState.ActiveEmotion;
 import FAtiMA.exceptions.InvalidMotivatorTypeException;
 import FAtiMA.exceptions.UnknownGoalException;
+import FAtiMA.memory.Memory;
 import FAtiMA.motivationalSystem.MotivationalState;
 import FAtiMA.sensorEffector.Event;
 import FAtiMA.sensorEffector.Parameter;
@@ -635,7 +634,7 @@ public class DeliberativeProcess extends AgentProcess {
 					if(_actionMonitor != null && _actionMonitor.MatchEvent(event)) {
 					    if(_actionMonitor.GetStep().getAgent().isGrounded() && 
 					    		!_actionMonitor.GetStep().getAgent().toString().equals(
-					    				AutobiographicalMemory.GetInstance().getSelf()))
+					    				Memory.GetInstance().getSelf()))
 					    {
 					    	//the agent was waiting for an action of other agent to be complete
 					    	//since the step of another agent may contain unbound variables,
@@ -706,7 +705,7 @@ public class DeliberativeProcess extends AgentProcess {
 			event = (Event) eventIterator.next();
 		
 			//this section detects if a ritual has started with another agent's action
-			if(!event.GetSubject().equals(AutobiographicalMemory.GetInstance().getSelf()))
+			if(!event.GetSubject().equals(Memory.GetInstance().getSelf()))
 			{
 				for(ListIterator rIterator = this._rituals.listIterator(); rIterator.hasNext();)
 				{
@@ -734,7 +733,7 @@ public class DeliberativeProcess extends AgentProcess {
 								
 								//the last thing we need to check is if the agent is included in the ritual's
 								//roles and if the ritual has not succeeded, because if not there is no sense in including the ritual as a goal
-								if(r3.GetRoles().contains(new Symbol(AutobiographicalMemory.GetInstance().getSelf()))
+								if(r3.GetRoles().contains(new Symbol(Memory.GetInstance().getSelf()))
 										&& !r3.CheckSucess())
 								{
 									ritualName = r3.getNameWithCharactersOrdered();

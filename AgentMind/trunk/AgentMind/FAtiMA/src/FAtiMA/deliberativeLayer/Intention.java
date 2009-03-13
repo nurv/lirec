@@ -45,9 +45,9 @@ import FAtiMA.deliberativeLayer.goals.Goal;
 import FAtiMA.deliberativeLayer.plan.Plan;
 import FAtiMA.emotionalState.ActiveEmotion;
 import FAtiMA.emotionalState.EmotionalState;
+import FAtiMA.memory.shortTermMemory.ShortTermMemory;
 import FAtiMA.motivationalSystem.MotivationalState;
 import FAtiMA.sensorEffector.Event;
-import FAtiMA.shortTermMemory.ShortTermMemory;
 import FAtiMA.util.AgentLogger;
 
 

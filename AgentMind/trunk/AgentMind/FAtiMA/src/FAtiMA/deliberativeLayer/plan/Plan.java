@@ -110,8 +110,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.ListIterator;
 
-import FAtiMA.autobiographicalMemory.AutobiographicalMemory;
 import FAtiMA.conditions.Condition;
+import FAtiMA.memory.Memory;
 import FAtiMA.util.AgentLogger;
 import FAtiMA.wellFormedNames.Inequality;
 import FAtiMA.wellFormedNames.Substitution;
@@ -240,7 +240,7 @@ public class Plan implements Cloneable, Serializable
         _probabilityChanged = false;
 
         _start = new Step(
-        		new Symbol(AutobiographicalMemory.GetInstance().getSelf()),
+        		new Symbol(Memory.GetInstance().getSelf()),
         		new Symbol("Start"),
         		1,
         		null,
@@ -248,7 +248,7 @@ public class Plan implements Cloneable, Serializable
         		null);
         _start.setID(new Integer(_stepCounter++));
         _finish = new Step(
-        		new Symbol(AutobiographicalMemory.GetInstance().getSelf()),
+        		new Symbol(Memory.GetInstance().getSelf()),
         		new Symbol("Finish"),
         		1,
         		finishConditions,
@@ -1239,7 +1239,7 @@ public class Plan implements Cloneable, Serializable
             	//additional restrictions, if the next action correspond to an action performed
             	//by self, it must necessarely be grounded
             	if(!op.getAgent().isGrounded() ||
-            			op.getAgent().toString().equals(AutobiographicalMemory.GetInstance().getSelf()))
+            			op.getAgent().toString().equals(Memory.GetInstance().getSelf()))
             	{
             		if(!op.getName().isGrounded())
             		{
@@ -1257,7 +1257,7 @@ public class Plan implements Cloneable, Serializable
             	 
                 //we give priority to actions that are executed by the agent itself
             	//AgentLogger.GetInstance().logAndPrint("Possible action for execution: " + op+ " - Agent: " + op.getAgent());
-            	if(op.getAgent().toString().equals(AutobiographicalMemory.GetInstance().getSelf()))
+            	if(op.getAgent().toString().equals(Memory.GetInstance().getSelf()))
             	{
             		return op;
             	}

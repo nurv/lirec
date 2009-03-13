@@ -116,7 +116,6 @@ import java.util.ListIterator;
 import java.util.Set;
 
 import FAtiMA.IntegrityValidator;
-import FAtiMA.autobiographicalMemory.AutobiographicalMemory;
 import FAtiMA.conditions.Condition;
 import FAtiMA.conditions.PropertyNotEqual;
 import FAtiMA.deliberativeLayer.goals.ActivePursuitGoal;
@@ -134,6 +133,7 @@ import FAtiMA.emotionalState.ActiveEmotion;
 import FAtiMA.emotionalState.EmotionalState;
 import FAtiMA.exceptions.UnknownSpeechActException;
 import FAtiMA.exceptions.UnspecifiedVariableException;
+import FAtiMA.memory.autobiographicalMemory.AutobiographicalMemory;
 import FAtiMA.motivationalSystem.MotivationalState;
 import FAtiMA.sensorEffector.Event;
 import FAtiMA.util.AgentLogger;

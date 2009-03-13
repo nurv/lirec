@@ -63,8 +63,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
-import FAtiMA.autobiographicalMemory.AutobiographicalMemory;
 import FAtiMA.knowledgeBase.KnowledgeBase;
+import FAtiMA.memory.autobiographicalMemory.AutobiographicalMemory;
 import FAtiMA.wellFormedNames.IGroundable;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.SubstitutionSet;

@@ -27,9 +27,10 @@
  * João Dias: 19/Jul/2006 - File created
  * João Dias: 02/10/2006 - Now its possible to have SearchKeys with objects instead
  * 						   of Strings
+ * Meiyii Lim: 13/03/2009 - Moved the class from FAtiMA.autobiographicalMemory package
  * **/
 
-package FAtiMA.autobiographicalMemory;
+package FAtiMA.memory;
 
 public class SearchKey {
 	

@@ -51,7 +51,6 @@ package FAtiMA.util.parsers;
 
 import org.xml.sax.Attributes;
 
-import FAtiMA.autobiographicalMemory.AutobiographicalMemory;
 import FAtiMA.conditions.EmotionCondition;
 import FAtiMA.conditions.RecentEventCondition;
 import FAtiMA.conditions.MoodCondition;
@@ -75,6 +74,7 @@ import FAtiMA.util.enumerables.EmotionType;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
 import FAtiMA.wellFormedNames.Symbol;
+import FAtiMA.memory.Memory;
 import FAtiMA.motivationalSystem.MotivationalState;
 import FAtiMA.motivationalSystem.Motivator;
 import FAtiMA.util.enumerables.MotivatorType;
@@ -285,7 +285,7 @@ public class AgentLoaderHandler extends ReflectXMLHandler {
     	float respect;
     	String target = attributes.getValue("target");
     	float like = Float.parseFloat(attributes.getValue("like"));
-    	LikeRelation.getRelation(AutobiographicalMemory.GetInstance().getSelf(), target).setValue(like);
+    	LikeRelation.getRelation(Memory.GetInstance().getSelf(), target).setValue(like);
     	
     	String auxRespect = attributes.getValue("respect");
     	if(auxRespect == null)
@@ -296,6 +296,6 @@ public class AgentLoaderHandler extends ReflectXMLHandler {
     	{
     		respect = Float.parseFloat(auxRespect);
     	}
-    	RespectRelation.getRelation(AutobiographicalMemory.GetInstance().getSelf(), target).setValue(respect);
+    	RespectRelation.getRelation(Memory.GetInstance().getSelf(), target).setValue(respect);
     }
 }

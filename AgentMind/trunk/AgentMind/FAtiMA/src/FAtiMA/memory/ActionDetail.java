@@ -35,8 +35,9 @@
  * 							  package
  * João Dias: 24/03/2008 - Added time to individual actions stored in AM
  * Meiyii Lim: 11/03/2009 - Added location to individual actions 
+ * Meiyii Lim: 13/03/2009 - Moved the class from FAtiMA.autobiographicalMemory package
  */
-package FAtiMA.autobiographicalMemory;
+package FAtiMA.memory;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -46,12 +47,12 @@ import FAtiMA.emotionalState.ActiveEmotion;
 import FAtiMA.emotionalState.BaseEmotion;
 import FAtiMA.knowledgeBase.KnowledgeBase;
 import FAtiMA.knowledgeBase.KnowledgeSlot;
+import FAtiMA.memory.Memory;
 import FAtiMA.sensorEffector.Event;
 import FAtiMA.sensorEffector.Parameter;
 import FAtiMA.socialRelations.LikeRelation;
 import FAtiMA.socialRelations.RespectRelation;
 import FAtiMA.util.enumerables.EmotionType;
-import FAtiMA.shortTermMemory.ShortTermMemory;;
 
 
 /**
@@ -202,57 +203,57 @@ public class ActionDetail implements Serializable {
 		{
 			case EmotionType.ADMIRATION:
 			{
-				String aux = LikeRelation.getRelation(AutobiographicalMemory.GetInstance().getSelf(),em.GetDirection().toString()).increment(em.GetIntensity());
-				RespectRelation.getRelation(AutobiographicalMemory.GetInstance().getSelf(),em.GetDirection().toString()).increment(em.GetIntensity());
+				String aux = LikeRelation.getRelation(Memory.GetInstance().getSelf(),em.GetDirection().toString()).increment(em.GetIntensity());
+				RespectRelation.getRelation(Memory.GetInstance().getSelf(),em.GetDirection().toString()).increment(em.GetIntensity());
 				this._evaluation.add(aux);
 				break;
 			}
 			case EmotionType.REPROACH:
 			{
-				String aux = LikeRelation.getRelation(AutobiographicalMemory.GetInstance().getSelf(),em.GetDirection().toString()).decrement(em.GetIntensity());
-				RespectRelation.getRelation(AutobiographicalMemory.GetInstance().getSelf(),em.GetDirection().toString()).decrement(em.GetIntensity());
+				String aux = LikeRelation.getRelation(Memory.GetInstance().getSelf(),em.GetDirection().toString()).decrement(em.GetIntensity());
+				RespectRelation.getRelation(Memory.GetInstance().getSelf(),em.GetDirection().toString()).decrement(em.GetIntensity());
 				this._evaluation.add(aux);
 				break;
 			}
 			case EmotionType.HAPPYFOR:
 			{
-				String aux = LikeRelation.getRelation(AutobiographicalMemory.GetInstance().getSelf(),em.GetDirection().toString()).increment(em.GetIntensity());
+				String aux = LikeRelation.getRelation(Memory.GetInstance().getSelf(),em.GetDirection().toString()).increment(em.GetIntensity());
 				this._evaluation.add(aux);
 				break;
 			}
 			case EmotionType.GLOATING:
 			{
-				String aux = LikeRelation.getRelation(AutobiographicalMemory.GetInstance().getSelf(),em.GetDirection().toString()).decrement(em.GetIntensity());
+				String aux = LikeRelation.getRelation(Memory.GetInstance().getSelf(),em.GetDirection().toString()).decrement(em.GetIntensity());
 				this._evaluation.add(aux);
 				break;
 			}
 			case EmotionType.PITTY:
 			{
-				String aux = LikeRelation.getRelation(AutobiographicalMemory.GetInstance().getSelf(),em.GetDirection().toString()).increment(em.GetIntensity());
+				String aux = LikeRelation.getRelation(Memory.GetInstance().getSelf(),em.GetDirection().toString()).increment(em.GetIntensity());
 				this._evaluation.add(aux);
 				break;
 			}
 			case EmotionType.RESENTMENT:
 			{
-				String aux = LikeRelation.getRelation(AutobiographicalMemory.GetInstance().getSelf(),em.GetDirection().toString()).decrement(em.GetIntensity());
+				String aux = LikeRelation.getRelation(Memory.GetInstance().getSelf(),em.GetDirection().toString()).decrement(em.GetIntensity());
 				this._evaluation.add(aux);
 				break;
 			}
 			
 			case EmotionType.JOY:
 			{
-				if(_target != null && _target.equals(AutobiographicalMemory.GetInstance().getSelf()))
+				if(_target != null && _target.equals(Memory.GetInstance().getSelf()))
 				{
-					String aux = LikeRelation.getRelation(AutobiographicalMemory.GetInstance().getSelf(),_subject).increment(em.GetIntensity());
+					String aux = LikeRelation.getRelation(Memory.GetInstance().getSelf(),_subject).increment(em.GetIntensity());
 					this._evaluation.add(aux);
 				}
 				break;
 			}
 			case EmotionType.DISTRESS:
 			{
-				if(_target != null && _target.equals(AutobiographicalMemory.GetInstance().getSelf()))
+				if(_target != null && _target.equals(Memory.GetInstance().getSelf()))
 				{
-					String aux = LikeRelation.getRelation(AutobiographicalMemory.GetInstance().getSelf(),_subject).decrement(em.GetIntensity());
+					String aux = LikeRelation.getRelation(Memory.GetInstance().getSelf(),_subject).decrement(em.GetIntensity());
 					this._evaluation.add(aux);
 				}
 				break;

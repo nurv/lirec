@@ -65,8 +65,8 @@ import java.util.ListIterator;
 
 import FAtiMA.AgentProcess;
 import FAtiMA.ValuedAction;
-import FAtiMA.autobiographicalMemory.AutobiographicalMemory;
-import FAtiMA.shortTermMemory.ShortTermMemory;
+import FAtiMA.memory.Memory;
+import FAtiMA.memory.shortTermMemory.ShortTermMemory;
 import FAtiMA.emotionalState.BaseEmotion;
 import FAtiMA.emotionalState.EmotionalState;
 import FAtiMA.sensorEffector.Event;
@@ -244,7 +244,7 @@ public class ReactiveProcess extends AgentProcess {
 	
 		if(event.GetAction().equals("look-at"))
 		{
-			int relationShip = Math.round(LikeRelation.getRelation(AutobiographicalMemory.GetInstance().getSelf(), event.GetTarget()).getValue());
+			int relationShip = Math.round(LikeRelation.getRelation(Memory.GetInstance().getSelf(), event.GetTarget()).getValue());
 			emotions.add(EmotionalState.GetInstance().OCCAppraiseAttribution(event, relationShip));
 			
 		}
