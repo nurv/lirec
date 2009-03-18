@@ -58,6 +58,7 @@ import java.util.ArrayList;
 import org.xml.sax.Attributes;
 
 import FAtiMA.knowledgeBase.KnowledgeBase;
+import FAtiMA.memory.Memory;
 import FAtiMA.util.AgentLogger;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
@@ -283,7 +284,7 @@ public abstract class PropertyCondition extends Condition {
 		if (!groundValue.isGrounded())
 			return null;
 		if (!value.isGrounded()) {
-			val = groundValue.evaluate(KnowledgeBase.GetInstance());
+			val = groundValue.evaluate(Memory.GetInstance());
 			if (val != null) {
 				bindings = new ArrayList();
 				if(Unifier.Unify(value, Name.ParseName((String) val), bindings))

@@ -63,7 +63,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
-import FAtiMA.knowledgeBase.KnowledgeBase;
+//import FAtiMA.knowledgeBase.KnowledgeBase;
+import FAtiMA.memory.Memory;
 import FAtiMA.memory.autobiographicalMemory.AutobiographicalMemory;
 import FAtiMA.wellFormedNames.IGroundable;
 import FAtiMA.wellFormedNames.Name;
@@ -238,7 +239,7 @@ public abstract class Condition implements IGroundable, Cloneable, Serializable 
 			return validSubstitutionSets;
 		}
 
-		bindingSets = KnowledgeBase.GetInstance().GetPossibleBindings(_name);
+		bindingSets = Memory.GetInstance().GetPossibleBindings(_name);
 		if (bindingSets == null)
 			return null;
 

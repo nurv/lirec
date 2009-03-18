@@ -32,11 +32,13 @@
  * João Dias: 22/05/2006 - Added comments to each public method's header 
  */
 
-package FAtiMA.knowledgeBase;
+package FAtiMA.memory;
 
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
+
+import FAtiMA.knowledgeBase.KnowledgeBase;
 
 /**
  * Class used to store knowledge in the KnowledgeBase. A KnowledgeSlot can store

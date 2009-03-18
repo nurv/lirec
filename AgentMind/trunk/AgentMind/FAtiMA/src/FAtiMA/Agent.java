@@ -30,7 +30,7 @@ import FAtiMA.emotionalState.BaseEmotion;
 import FAtiMA.emotionalState.EmotionalState;
 import FAtiMA.exceptions.UnknownGoalException;
 import FAtiMA.knowledgeBase.KnowledgeBase;
-import FAtiMA.knowledgeBase.KnowledgeSlot;
+import FAtiMA.memory.KnowledgeSlot;
 import FAtiMA.memory.Memory;
 import FAtiMA.memory.autobiographicalMemory.AutobiographicalMemory;
 import FAtiMA.memory.shortTermMemory.ShortTermMemory;
@@ -50,6 +50,7 @@ import FAtiMA.util.parsers.AgentLoaderHandler;
 import FAtiMA.util.parsers.CultureLoaderHandler;
 import FAtiMA.util.parsers.ScenarioLoaderHandler;
 import FAtiMA.wellFormedNames.Name;
+import FAtiMA.memory.shortTermMemory.WorkingMemory;
 
 public class Agent {
 	
@@ -74,8 +75,8 @@ public class Agent {
 			ScenarioLoaderHandler scenHandler = new ScenarioLoaderHandler(args[0],args[1]);
 			SAXParserFactory factory = SAXParserFactory.newInstance();
 			SAXParser parser = factory.newSAXParser();
-			parser.parse(new File(MIND_PATH + "Scenarios.xml"), scenHandler);
-			//parser.parse(new File(MIND_PATH + "LIRECScenarios.xml"), scenHandler);
+			//parser.parse(new File(MIND_PATH + "Scenarios.xml"), scenHandler);
+			parser.parse(new File(MIND_PATH + "LIRECScenarios.xml"), scenHandler);
 			args = scenHandler.getAgentArguments();
 		}
 		
@@ -569,7 +570,7 @@ public class Agent {
 							ShortTermMemory.GetInstance().StoreAction(e);
 							
 						    //registering an Action Context property in the KB
-							KnowledgeBase.GetInstance().Tell(ACTION_CONTEXT,e.toName().toString());
+							WorkingMemory.GetInstance().Tell(ACTION_CONTEXT,e.toName().toString());
 							
 							if(SpeechAct.isSpeechAct(e.GetAction()))
 							{
@@ -588,15 +589,15 @@ public class Agent {
 					//if there was new data or knowledge added we must apply inference operators
 					//update any inferred property to the outside and appraise the events
 					if(ShortTermMemory.GetInstance().HasNewData() ||
-							KnowledgeBase.GetInstance().HasNewKnowledge())
+							WorkingMemory.GetInstance().HasNewKnowledge())
 					{
 						
 						//calling the KnowledgeBase inference process
-						KnowledgeBase.GetInstance().PerformInference();
+						WorkingMemory.GetInstance().PerformInference();
 						
 						synchronized (KnowledgeBase.GetInstance())
 						{
-							ArrayList facts = KnowledgeBase.GetInstance().GetNewFacts();
+							ArrayList facts = WorkingMemory.GetInstance().GetNewFacts();
 							
 							for(ListIterator li = facts.listIterator();li.hasNext();)
 							{

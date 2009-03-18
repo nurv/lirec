@@ -50,6 +50,7 @@
 package FAtiMA.conditions;
 
 import FAtiMA.knowledgeBase.KnowledgeBase;
+import FAtiMA.memory.Memory;
 import FAtiMA.util.AgentLogger;
 import FAtiMA.wellFormedNames.Name;
 
@@ -88,12 +89,13 @@ public class PropertyEqual extends PropertyCondition
     {
         Object propertyValue;
         Object value;
-        KnowledgeBase kb = KnowledgeBase.GetInstance();
+        //KnowledgeBase kb = KnowledgeBase.GetInstance();
+        Memory memory = Memory.GetInstance();
 
         if (!super.CheckCondition())
             return false;
-        propertyValue = this._name.evaluate(kb);
-        value = this._value.evaluate(kb);
+        propertyValue = this._name.evaluate(memory);
+        value = this._value.evaluate(memory);
 
         if (propertyValue == null || value == null)
             return false;

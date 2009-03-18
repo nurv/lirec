@@ -31,6 +31,7 @@
 package FAtiMA.conditions;
 
 import FAtiMA.knowledgeBase.KnowledgeBase;
+import FAtiMA.memory.Memory;
 import FAtiMA.util.AgentLogger;
 import FAtiMA.wellFormedNames.Name;
 
@@ -74,9 +75,10 @@ public class PropertyGreaterEqual extends PropertyCondition {
 		if (!super.CheckCondition())
 			return false;
 		
-		KnowledgeBase kb = KnowledgeBase.GetInstance();
-		propertyValue = this._name.evaluate(kb);
-		value = this._value.evaluate(kb);
+		//KnowledgeBase kb = KnowledgeBase.GetInstance();
+		Memory memory = Memory.GetInstance();
+		propertyValue = this._name.evaluate(memory);
+		value = this._value.evaluate(memory);
 
 		if (propertyValue == null || value == null)
 			return false;

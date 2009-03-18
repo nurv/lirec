@@ -56,7 +56,7 @@ import java.util.ArrayList;
 
 import org.xml.sax.Attributes;
 
-import FAtiMA.knowledgeBase.KnowledgeBase;
+import FAtiMA.memory.Memory;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
 import FAtiMA.wellFormedNames.Symbol;
@@ -120,7 +120,7 @@ public class PredicateCondition extends Condition {
 	public boolean CheckCondition() {
 		boolean result;
 		if(!_name.isGrounded()) return false;
-		result = KnowledgeBase.GetInstance().AskPredicate(_name); 
+		result = Memory.GetInstance().AskPredicate(_name); 
 		return _positive == result;
 	}
 	

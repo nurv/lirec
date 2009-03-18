@@ -10,7 +10,9 @@ import java.util.StringTokenizer;
 
 import FAtiMA.Agent;
 import FAtiMA.culture.SymbolTranslator;
-import FAtiMA.knowledgeBase.KnowledgeBase;
+//import FAtiMA.knowledgeBase.KnowledgeBase;
+import FAtiMA.memory.Memory;
+import FAtiMA.memory.shortTermMemory.WorkingMemory;
 import FAtiMA.util.AgentLogger;
 import FAtiMA.wellFormedNames.Name;
 
@@ -79,7 +81,8 @@ public class WorldSimulatorRemoteAgent extends RemoteAgent {
 		}
 		
 		String value = st.nextToken();
-		KnowledgeBase.GetInstance().Tell(propertyName, value);
+		WorkingMemory.GetInstance().Tell(propertyName, value);
+		System.out.println("Property changed perception World SimulatorRemoteAgent");
 		
 		/*String value = null;
 		Name propertyName = null;
@@ -203,7 +206,7 @@ public class WorldSimulatorRemoteAgent extends RemoteAgent {
 					speechAct.getMeaning().equals("acceptreason"))
 			{
 				//the agent accepts the coping strategy
-				Object coping = KnowledgeBase.GetInstance().AskProperty(
+				Object coping = Memory.GetInstance().AskProperty(
 						Name.ParseName(_agent.name()+"(copingStrategy)"));
 				if(coping != null)
 				{

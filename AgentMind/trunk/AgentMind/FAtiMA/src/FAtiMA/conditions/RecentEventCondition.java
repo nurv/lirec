@@ -38,6 +38,7 @@ package FAtiMA.conditions;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
+import FAtiMA.memory.ActionDetail;
 import FAtiMA.memory.SearchKey;
 import FAtiMA.memory.autobiographicalMemory.AutobiographicalMemory;
 import FAtiMA.memory.shortTermMemory.ShortTermMemory;
@@ -191,14 +192,21 @@ public class RecentEventCondition extends PastEventCondition {
 		if(!_name.isGrounded()) return false;
 		
 		//Meiyii 12/03/09 Search for recent events in STM
-		return _positive == ShortTermMemory.GetInstance().ContainsRecentEvent(GetSearchKeys()); 
+		
+		ArrayList searchKeys = GetSearchKeys();
+		return _positive == (ShortTermMemory.GetInstance().ContainsRecentEvent(searchKeys)
+								|| AutobiographicalMemory.GetInstance().ContainsRecentEvent(searchKeys)); 
 	}
 	
 	protected ArrayList GetPossibleBindings()
 	{
+		ArrayList searchKeys = GetSearchKeys();
+		
+		ArrayList events = AutobiographicalMemory.GetInstance().SearchForRecentEvents(searchKeys);
+		events.addAll(ShortTermMemory.GetInstance().SearchForRecentEvents(searchKeys));
+		
 		//Meiyii 12/03/09 Search for recent events in STM
-		return ShortTermMemory.GetInstance().
-				SearchForRecentEvents(GetSearchKeys());
+		return events;
 	}
 	
 	

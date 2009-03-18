@@ -3,11 +3,13 @@ package FAtiMA.socialRelations;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
-import FAtiMA.knowledgeBase.KnowledgeBase;
+//import FAtiMA.knowledgeBase.KnowledgeBase;
 import FAtiMA.util.enumerables.RelationType;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
 import FAtiMA.wellFormedNames.SubstitutionSet;
+import FAtiMA.memory.Memory;
+import FAtiMA.memory.shortTermMemory.WorkingMemory;
 
 public class RespectRelation extends Relation{
 
@@ -45,11 +47,12 @@ public class RespectRelation extends Relation{
 	public float getValue()
 	{
 		Name respectProperty = Name.ParseName("Respect(" + this._subj1 + "," + this._subj2 + ")");
-		Float result = (Float) KnowledgeBase.GetInstance().AskProperty(respectProperty);
+		Float result = (Float) Memory.GetInstance().AskProperty(respectProperty);
 		//If relation doesn't exists, create it in a neutral state
 		if(result == null)
 		{
-			KnowledgeBase.GetInstance().Tell(respectProperty, new Float(0));
+			WorkingMemory.GetInstance().Tell(respectProperty, new Float(0));
+			System.out.println("Get value RespectRelation");
 			return 0;
 		}
 		return result.floatValue();
@@ -58,7 +61,8 @@ public class RespectRelation extends Relation{
 	public void setValue(float like)
 	{
 		Name respectProperty = Name.ParseName("Respect(" + this._subj1 + "," + this._subj2 + ")");
-		KnowledgeBase.GetInstance().Tell(respectProperty, new Float(like));
+		WorkingMemory.GetInstance().Tell(respectProperty, new Float(like));
+		System.out.println("Set value RespectRelation");
 	}
 	
 	public String getHashKey() {
@@ -81,7 +85,7 @@ public class RespectRelation extends Relation{
 		ArrayList relations = new ArrayList();
 
 		Name relationProperty = Name.ParseName("Respect(" + subject1 + ",[X])");
-		ArrayList bindingSets = KnowledgeBase.GetInstance()
+		ArrayList bindingSets = Memory.GetInstance()
 				.GetPossibleBindings(relationProperty);
 
 		if (bindingSets != null) {

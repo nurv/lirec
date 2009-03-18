@@ -82,6 +82,7 @@ import java.util.ListIterator;
 import FAtiMA.conditions.Condition;
 import FAtiMA.deliberativeLayer.plan.Effect;
 import FAtiMA.deliberativeLayer.plan.Step;
+import FAtiMA.memory.KnowledgeSlot;
 import FAtiMA.util.AgentLogger;
 import FAtiMA.util.ApplicationLogger;
 import FAtiMA.wellFormedNames.Name;
@@ -199,6 +200,15 @@ public class KnowledgeBase implements Serializable {
 	}
 	
 	/**
+     * Gets the list of inference operators
+     * @return inference operators
+     */
+	public ArrayList GetInferenceOperators()
+	{ 
+		return _inferenceOperators;
+	}
+	
+	/**
 	 * Gets the number of elements (predicates or properties) stored in the KnowledgeBase
 	 * @return the number of elements stored in the KB
 	 */
@@ -208,113 +218,13 @@ public class KnowledgeBase implements Serializable {
     }
     
     /**
-     * Gets a value that indicates whether new Knowledge has been added to the KnowledgeBase since
-     * the last inference process
-     * @return true if there is new Knowledge in the KB, false otherwise
-     */
-    public boolean HasNewKnowledge()
-    {
-    	return this._newKnowledge;
-    }
-    
-    public ArrayList GetNewFacts()
-    {
-    	return this._newFacts;
-    }
-    
-    /**
-     *  This method should be called every simulation cycle, and will try to apply InferenceOperators.
-     * 	Note, that if new knowledge results from this process, it will be added immediately to the
-     *  KB. However, the inference will not continue (by trying to use the new knowledge to activate
-     *  more operators) until the method PerformInference is called in next cycle.
-     * 
-     * @return true if the Inference resulted in new Knowledge being added, false if no
-     * new knowledge was infered
-     */
-    public boolean PerformInference()
-    {
-    	Step infOp;
-    	Step groundInfOp;
-    	ArrayList substitutionSets;
-    	SubstitutionSet sSet;
-    	
-    	_newKnowledge = false;
-    	_newFacts.clear();
-    	
-		for(ListIterator li = _inferenceOperators.listIterator();li.hasNext();)
-		{
-			infOp = (Step) li.next();
-			substitutionSets = Condition.CheckActivation(infOp.getPreconditions());
-			if(substitutionSets != null)
-			{
-				for(ListIterator li2 = substitutionSets.listIterator();li2.hasNext();)
-				{
-					sSet = (SubstitutionSet) li2.next();
-					groundInfOp = (Step) infOp.clone();
-					groundInfOp.MakeGround(sSet.GetSubstitutions());
-					InferEffects(groundInfOp);
-				}
-			}
-		}
-    	
-    	return _newKnowledge;
-    }
-    
-    private void InferEffects(Step infOp)
-    {
-    	Effect eff;
-    	for(ListIterator li = infOp.getEffects().listIterator();li.hasNext();)
-    	{
-    		eff = (Effect) li.next();
-    		if(eff.isGrounded())
-    		{
-    			Tell(eff.GetEffect().getName(),eff.GetEffect().GetValue().toString());
-    			
-    		}
-    	}
-    }
-    
-
-    /**
-     * Asks the KnowledgeBase the Truth value of the received predicate
-     * @param predicate - The predicate to search in the KnowledgeBase
-     * @return Under the Closed World Assumption, the predicate is considered 
-     * true if it is stored in the KB and false otherwise.
-     */
-    
-	public boolean AskPredicate(Name predicate) 
+	 * Gets the knowledge base slots
+	 * @return the knowledge base slots
+	 */
+    // Added 18/03/09
+	public KnowledgeSlot GetKnowledgeBase()
 	{
-        KnowledgeSlot ks = (KnowledgeSlot) Ask(predicate);
-        if (ks != null && ks.getValue() != null && ks.getValue().toString().equals("True"))
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-	}
-
-	/**
-	 * Asks the KnowledgeBase the value of a given property
-	 * @param property - the property to search in the KnowledgeBase
-	 * @return the value stored inside the property, if the property exists. If the 
-     *         property does not exist, it returns null
-	 */
-	public Object AskProperty(Name property) {
-		KnowledgeSlot prop = (KnowledgeSlot) Ask(property);
-		if (prop == null)
-			return null;
-		else
-			return prop.getValue();
-	}
-
-	/**
-	 * Inserts a Predicate in the KnowledgeBase
-	 * @param predicate - the predicate to be inserted
-	 */
-	public void Assert(Name predicate) {
-		this.Tell(predicate,new Symbol("True"));
+		return _kB;
 	}
 
 	/**
@@ -328,58 +238,6 @@ public class KnowledgeBase implements Serializable {
 			this._newFacts.clear();
 			this._newKnowledge = false;
 		}
-	}
-
-	/**
-	 * This method provides a way to search for properties/predicates in the KnowledgeBase 
-     * that match with a specified name with unbound variables.
-     *
-     * In order to understand this method, let’s examine the following example. Suppose that 
-     * the memory only contains properties about two characters: Luke and John.
-     * Furthermore, it only stores two properties: their name and strength. So the KB will 
-     * only store the following objects:
-     * - Luke(Name) : Luke
-     * - Luke(Strength) : 8
-     * - John(Name) : John 
-     * - John(Strength) : 4
-     * 
-     * The next table shows the result of calling the method with several distinct names. 
-     * The function works by finding substitutions for the unbound variables, which make 
-     * the received name equal to the name of an object stored in memory.
-     * 
-     * Name	        Substitutions returned
-     * Luke([x])	    {{[x]/Name},{[x]/Strength}}
-     * [x](Strength)    {{[x]/John},{[x]/Luke}}
-     * [x]([y])	        {{[x]/John,[y]/Name},{[x]/John,[y]/Strength},{[x]/Luke,[y]/Name},{[x]/Luke,[y]/Strength}}
-     * John(Name)	    {{}}
-     * John(Height)	    null
-     * Paul([x])	    null
-     *
-     * In the first example, there are two possible substitutions that make “Luke([x])”
-     * equal to the objects stored above. The third example has two unbound variables,
-     * so the returned set contains all possible combinations of variable attributions.
-     * 
-     * If this method receives a ground name, as seen on examples 4 and 5, it checks
-     * if the received name exists in memory. If so, a set with the empty substitution is
-     * returned, i.e. the empty substitution makes the received name equal to some object
-     * in memory. Otherwise, the function returns null, i.e. there is no substitution
-     * that applied to the name will make it equal to an object in memory. This same result
-     * is returned in the last example, since there is no object named Paul, and therefore no 
-     * substitution of [x] will match the received name with an existing object.
-	 * @param name - a name (that correspond to a predicate or property)
-	 * @return a list of SubstitutionSets that make the received name to match predicates or 
-     *         properties that do exist in the KnowledgeBase
-	 */
-	public ArrayList GetPossibleBindings(Name name) {
-		ArrayList bindingSets = null;
-
-		bindingSets = MatchLiteralList(name.GetLiteralList(), 0, _kB);
-		
-		if (bindingSets == null || bindingSets.size() == 0)
-			return null;
-		else
-			return bindingSets;
-
 	}
 
 	/**
@@ -465,6 +323,8 @@ public class KnowledgeBase implements Serializable {
 				KnowledgeSlot ksAux = new KnowledgeSlot(property.toString());
 				ksAux.setValue(value);
 				_newFacts.add(ksAux);
+				
+				System.out.println("New facts: " + ksAux.toString());
 			}
 			
 			if(newProperty)
@@ -473,6 +333,7 @@ public class KnowledgeBase implements Serializable {
 				ks.setValue(value);
 				_factList.add(ks);
 				_newFacts.add(ks);
+				System.out.println("New property knowledge: " + ks.toString());
 			}
 			else
 			{
@@ -484,133 +345,17 @@ public class KnowledgeBase implements Serializable {
 					if(ks.getName().equals(property.toString()))
 					{
 						ks.setValue(value);
+						System.out.println("New property value: " + ks.toString());
 					}
 				}
 			}
 		}
 	}
-	
-	public KnowledgeSlot GetObjectDetails(String objectName)
-	{
-		return _kB.get(objectName);
-	}
-	
-	/*public float GetInterpersonalRelationShip(String target)
-	{
-		Float result;
-		String self = AutobiographicalMemory.GetInstance().getSelf();
-		Name likeProperty = Name.ParseName("Like(" + self + "," + target + ")");
-		result = (Float) AskProperty(likeProperty);
-		if(result == null)
-		{
-			Tell(likeProperty, new Float(0));
-			return 0;
-		}
-		return result.floatValue();
-	}
-	
-	public void SetInterpersonalRelationShip(String target, float like)
-	{
-		String self = AutobiographicalMemory.GetInstance().getSelf();
-		Name likeProperty = Name.ParseName("Like(" + self + "," + target + ")");
-		Tell(likeProperty, new Float(like));
-	}
-	
-	public float GetRespect(String target)
-	{
-		Float result;
-		String self = AutobiographicalMemory.GetInstance().getSelf();
-		Name respectProperty = Name.ParseName("Respect(" + self + "," + target + ")");
-		result = (Float) AskProperty(respectProperty);
-		if(result == null)
-		{
-			Tell(respectProperty, new Float(0));
-			return 0;
-		}
-		return result.floatValue();
-	}
-	
-	public void SetRespect(String target, float like)
-	{
-		String self = AutobiographicalMemory.GetInstance().getSelf();
-		Name respectProperty = Name.ParseName("Respect(" + self + "," + target + ")");
-		Tell(respectProperty, new Float(like));
-	}*/
 	
 	public ListIterator GetFactList() {
 	    return _factList.listIterator();
 	}
 
-	private Object Ask(Name name) {
-		KnowledgeSlot aux = _kB;
-		KnowledgeSlot currentSlot;
-		ArrayList fetchList = name.GetLiteralList();
-		ListIterator li = fetchList.listIterator();
-		Symbol l;
-
-		synchronized (this) {
-			while (li.hasNext()) {
-					currentSlot = aux;
-					l = (Symbol) li.next();
-					if (currentSlot.containsKey(l.toString())) {
-						aux = currentSlot.get(l.toString());
-					} 
-					else return null;
-			}
-			return aux;
-		}
-	}
-
-	private ArrayList MatchLiteralList(ArrayList literals, int index, KnowledgeSlot kSlot) {
-		Symbol l;
-		String key;
-		ArrayList bindingSets;
-		ArrayList newBindingSets;
-		SubstitutionSet subSet;
-		ListIterator li;
-		Iterator it;
-
-		newBindingSets = new ArrayList();
-
-		if (index >= literals.size()) {
-			newBindingSets.add(new SubstitutionSet());
-			return newBindingSets;
-		}
-
-		synchronized (this) {
-			l = (Symbol) literals.get(index++);
-
-			if (l.isGrounded()) {
-				if (kSlot.containsKey(l.toString())) {
-					return MatchLiteralList(literals, index, kSlot.get(l
-							.toString()));
-				} else
-					return null;
-			}
-
-			it = kSlot.getKeyIterator();
-			while (it.hasNext()) {
-				key = (String) it.next();
-				bindingSets = MatchLiteralList(literals, index, kSlot
-						.get(key));
-				if (bindingSets != null) {
-					li = bindingSets.listIterator();
-					while (li.hasNext()) {
-						subSet = (SubstitutionSet) li.next();
-						subSet.AddSubstitution(new Substitution(l, new Symbol(
-								key)));
-						newBindingSets.add(subSet);
-					}
-				}
-			}
-		}
-
-		if (newBindingSets.size() == 0)
-			return null;
-		else
-			return newBindingSets;
-	}
-	
 	/**
 	 * Converts the Information stored in the KB to one String
 	 * @return the converted String

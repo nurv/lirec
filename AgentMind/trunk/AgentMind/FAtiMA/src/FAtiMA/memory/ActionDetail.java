@@ -46,7 +46,6 @@ import java.util.ListIterator;
 import FAtiMA.emotionalState.ActiveEmotion;
 import FAtiMA.emotionalState.BaseEmotion;
 import FAtiMA.knowledgeBase.KnowledgeBase;
-import FAtiMA.knowledgeBase.KnowledgeSlot;
 import FAtiMA.memory.Memory;
 import FAtiMA.sensorEffector.Event;
 import FAtiMA.sensorEffector.Parameter;
@@ -96,12 +95,12 @@ public class ActionDetail implements Serializable {
 		
 		if(this._subject != null)
 		{
-			_subjectDetails = KnowledgeBase.GetInstance().GetObjectDetails(this._subject);
+			_subjectDetails = Memory.GetInstance().GetObjectDetails(this._subject);
 		}
 		
 		if(this._target != null)
 		{
-			_targetDetails = KnowledgeBase.GetInstance().GetObjectDetails(this._target);
+			_targetDetails = Memory.GetInstance().GetObjectDetails(this._target);
 		}
 		
 		if(e.GetParameters() != null)
@@ -467,6 +466,7 @@ public class ActionDetail implements Serializable {
 	public String toXML()
 	{
 		String action = "<Event>";
+		action += "<EventID>" + this.getID() + "</EventID>";
 		action += "<Emotion>" + EmotionType.GetName(this.getEmotion().GetType()) + " " + this.getEmotion().GetPotential() + "</Emotion>";
 		action += "<Subject>" + this.getSubject() + "</Subject>";
 		action += "<Action>" + this.getAction() + "</Action>";

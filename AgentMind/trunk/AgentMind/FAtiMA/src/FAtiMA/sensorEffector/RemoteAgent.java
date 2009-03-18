@@ -94,6 +94,7 @@ import FAtiMA.emotionalState.EmotionalState;
 import FAtiMA.knowledgeBase.KnowledgeBase;
 import FAtiMA.memory.Memory;
 import FAtiMA.memory.autobiographicalMemory.AutobiographicalMemory;
+import FAtiMA.memory.shortTermMemory.WorkingMemory;
 import FAtiMA.motivationalSystem.MotivationalState;
 import FAtiMA.socialRelations.LikeRelation;
 import FAtiMA.socialRelations.RespectRelation;
@@ -429,21 +430,21 @@ public abstract class RemoteAgent extends SocketListener {
 			speechAct.AddContextVariable("role", _agent.role().toLowerCase());
 			
 			/* for the next context variables we need to retrieve them from the KB */
-			KnowledgeBase kb = KnowledgeBase.GetInstance();
+			Memory memory = Memory.GetInstance();
 			
-			Object yourole = kb.AskProperty(Name.ParseName(speechAct.getReceiver() + "(role)"));
+			Object yourole = memory.AskProperty(Name.ParseName(speechAct.getReceiver() + "(role)"));
 			if(yourole != null)
 			{
 				speechAct.AddContextVariable("yourole", yourole.toString().toLowerCase());
 			}
 			
-			Object you = kb.AskProperty(Name.ParseName(speechAct.getReceiver() + "(displayName)"));
+			Object you = memory.AskProperty(Name.ParseName(speechAct.getReceiver() + "(displayName)"));
 			if(you != null)
 			{
 				speechAct.AddContextVariable("you", you.toString());
 			}
 			
-			Object episode = kb.AskProperty(Name.ParseName("Episode(name)"));
+			Object episode = memory.AskProperty(Name.ParseName("Episode(name)"));
 			if(episode != null)
 			{
 				speechAct.AddContextVariable("episode", episode.toString());
@@ -458,7 +459,7 @@ public abstract class RemoteAgent extends SocketListener {
 			Name auxName;
 			String displayName;
 			String role;
-			ArrayList binds = kb.GetPossibleBindings(n1);
+			ArrayList binds = memory.GetPossibleBindings(n1);
 			
 			if(binds != null)
 			{
@@ -467,11 +468,11 @@ public abstract class RemoteAgent extends SocketListener {
 					ss = (SubstitutionSet) li.next();
 					auxName = (Name) n1.clone();
 					auxName.MakeGround(ss.GetSubstitutions());
-					role = (String) kb.AskProperty(auxName);
+					role = (String) memory.AskProperty(auxName);
 					
 					auxName = (Name) n2.clone();
 					auxName.MakeGround(ss.GetSubstitutions());
-					displayName = (String) kb.AskProperty(auxName);
+					displayName = (String) memory.AskProperty(auxName);
 					
 					if(displayName != null && role != null)
 					{
@@ -770,7 +771,8 @@ public abstract class RemoteAgent extends SocketListener {
 			propertyName = Name.ParseName(subject + "(" + properties[0] + ")");
 			AgentLogger.GetInstance().log("Look-At:" + propertyName.toString());
 			
-			KnowledgeBase.GetInstance().Tell(propertyName, properties[1]);
+			WorkingMemory.GetInstance().Tell(propertyName, properties[1]);
+			System.out.println("LookAtPerception remoteAgent");
 			
 			//If the agent looks at another agent it initializes it's needs
 			if(!subject.equalsIgnoreCase(_agent.displayName()) && 

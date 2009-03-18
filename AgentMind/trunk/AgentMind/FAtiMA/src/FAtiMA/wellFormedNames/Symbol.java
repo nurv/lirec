@@ -41,7 +41,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
-import FAtiMA.knowledgeBase.KnowledgeBase;
+import FAtiMA.memory.Memory;
 
 
 /**
@@ -122,7 +122,7 @@ public class Symbol extends Name implements Serializable
      * @param kb - a reference to the KnowledgeBase
      * @return the Symbol's name
      */
-    public Object evaluate(KnowledgeBase kb)
+    public Object evaluate(Memory memory)
     {
         if (!this._grounded) return null;
         return this._name;

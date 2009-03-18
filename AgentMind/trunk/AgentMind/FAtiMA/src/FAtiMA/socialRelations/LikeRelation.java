@@ -3,11 +3,13 @@ package FAtiMA.socialRelations;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
-import FAtiMA.knowledgeBase.KnowledgeBase;
+//import FAtiMA.knowledgeBase.KnowledgeBase;
 import FAtiMA.util.enumerables.RelationType;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
 import FAtiMA.wellFormedNames.SubstitutionSet;
+import FAtiMA.memory.shortTermMemory.WorkingMemory;
+import FAtiMA.memory.Memory;
 
 public class LikeRelation extends Relation {
 
@@ -39,11 +41,11 @@ public class LikeRelation extends Relation {
 	public float getValue() {
 		Name relationProperty = Name.ParseName("Like(" + this._subj1 + ","
 				+ this._subj2 + ")");
-		Float result = (Float) KnowledgeBase.GetInstance().AskProperty(
-				relationProperty);
+		Float result = (Float) Memory.GetInstance().AskProperty(relationProperty);
 		//If relation doesn't exists, create it in a neutral state
 		if (result == null) {
-			KnowledgeBase.GetInstance().Tell(relationProperty, new Float(0));
+			WorkingMemory.GetInstance().Tell(relationProperty, new Float(0));
+			System.out.println("get value LikeRelation");
 			return 0;
 		}
 		return result.floatValue();
@@ -52,7 +54,8 @@ public class LikeRelation extends Relation {
 	public void setValue(float like) {
 		Name relationProperty = Name.ParseName("Like(" + this._subj1 + ","
 				+ this._subj2 + ")");
-		KnowledgeBase.GetInstance().Tell(relationProperty, new Float(like));
+		WorkingMemory.GetInstance().Tell(relationProperty, new Float(like));
+		System.out.println("Set value LikeRelation");
 	}
 
 	public String getHashKey() {
@@ -75,7 +78,7 @@ public class LikeRelation extends Relation {
 		ArrayList relations = new ArrayList();
 
 		Name relationProperty = Name.ParseName("Like(" + subject1 + ",[X])");
-		ArrayList bindingSets = KnowledgeBase.GetInstance()
+		ArrayList bindingSets = Memory.GetInstance()
 				.GetPossibleBindings(relationProperty);
 
 		if (bindingSets != null) {

@@ -27,8 +27,8 @@ import Language.LanguageEngine;
  */
 public class WorldTest {
 	
-	//public static final String SCENARIOS_PATH = "data/characters/minds/LIRECScenarios.xml";
-	public static final String SCENARIOS_PATH = "data/characters/minds/Scenarios.xml";
+	public static final String SCENARIOS_PATH = "data/characters/minds/LIRECScenarios.xml";
+	//public static final String SCENARIOS_PATH = "data/characters/minds/Scenarios.xml";
 	private ServerSocket _ss;
 	private ArrayList _objects;
 	private ArrayList _agents;

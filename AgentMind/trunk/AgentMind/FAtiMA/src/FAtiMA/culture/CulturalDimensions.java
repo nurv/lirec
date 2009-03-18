@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Random;
 
+import FAtiMA.memory.KnowledgeSlot;
 import FAtiMA.memory.Memory;
 import FAtiMA.deliberativeLayer.goals.ActivePursuitGoal;
 import FAtiMA.knowledgeBase.KnowledgeBase;
-import FAtiMA.knowledgeBase.KnowledgeSlot;
 import FAtiMA.motivationalSystem.MotivationalState;
 import FAtiMA.motivationalSystem.Motivator;
 import FAtiMA.util.AgentLogger;
@@ -123,7 +123,7 @@ public class CulturalDimensions {
 	private float obtainLikeRelationshipFromKB(String targetAgent){
 		String agentName = Memory.GetInstance().getSelf();
 		Name likeProperty = Name.ParseName("Like("+ agentName + "," + targetAgent +")");
-		Float likeValue = (Float) KnowledgeBase.GetInstance().AskProperty(likeProperty);
+		Float likeValue = (Float) Memory.GetInstance().AskProperty(likeProperty);
 
 		if(likeValue == null){	
 			return 0f;
@@ -137,9 +137,9 @@ public class CulturalDimensions {
 		String agentName = Memory.GetInstance().getSelf();
 
 		Name selfPowerPropertyName = Name.ParseName(agentName+"(power)");
-		String selfPowerProperty = (String)KnowledgeBase.GetInstance().AskProperty(selfPowerPropertyName);
+		String selfPowerProperty = (String)Memory.GetInstance().AskProperty(selfPowerPropertyName);
 		Name targetPowerPropertyName = Name.ParseName(targetAgent+"(power)");
-		String targetPowerProperty = (String)KnowledgeBase.GetInstance().AskProperty(targetPowerPropertyName);
+		String targetPowerProperty = (String)Memory.GetInstance().AskProperty(targetPowerPropertyName);
 
 		if(selfPowerProperty == null || targetPowerProperty == null){
 			//AgentLogger.GetInstance().logAndPrint("WARNING! Agent power properties not present in KB");

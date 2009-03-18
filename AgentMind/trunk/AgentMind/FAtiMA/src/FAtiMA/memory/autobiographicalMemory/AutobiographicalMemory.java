@@ -36,7 +36,7 @@
  * João Dias: 22/02/2007 - the Autobiographical memory now registers if new data was added to it and 
  * 						   provides a method that verifies if new data was added since last time it
  * 						   was verified
- * Meiyii Lim: 12/03/2009 - remove the search for recent event in AM, it is now performed in STM,
+ * Meiyii Lim: 13/03/2009 - search for recent events is now also performed in STM,
  * 							AM now stores only external events that have an emotional impact on the agent
  * 							and internal events (ie. goal activation, success and failure) 
  * **/
@@ -67,16 +67,16 @@ public class AutobiographicalMemory implements Serializable {
 	/**
 	 * Singleton pattern 
 	 */
-	private static AutobiographicalMemory _memoryInstance;
+	private static AutobiographicalMemory _amInstance;
 	
 	public static AutobiographicalMemory GetInstance()
 	{
-		if(_memoryInstance == null)
+		if(_amInstance == null)
 		{
-			_memoryInstance = new AutobiographicalMemory();
+			_amInstance = new AutobiographicalMemory();
 		}
 		
-		return _memoryInstance;
+		return _amInstance;
 	} 
 	
 	/**
@@ -92,7 +92,7 @@ public class AutobiographicalMemory implements Serializable {
 			FileOutputStream out = new FileOutputStream(fileName);
 	    	ObjectOutputStream s = new ObjectOutputStream(out);
 	    	
-	    	s.writeObject(_memoryInstance);
+	    	s.writeObject(_amInstance);
         	s.flush();
         	s.close();
         	out.close();
@@ -116,7 +116,7 @@ public class AutobiographicalMemory implements Serializable {
 		{
 			FileInputStream in = new FileInputStream(fileName);
         	ObjectInputStream s = new ObjectInputStream(in);
-        	_memoryInstance = (AutobiographicalMemory) s.readObject();
+        	_amInstance = (AutobiographicalMemory) s.readObject();
         	s.close();
         	in.close();
 		}
@@ -224,7 +224,7 @@ public class AutobiographicalMemory implements Serializable {
 		
 		//familiarity function f(x) = 1 - 1/(x/2 +1)
 		// where x represents the number of similar events founds
-		familiarity = 1 - (1 / (similarEvents/2 + 1));
+		// familiarity = 1 - (1 / (similarEvents/2 + 1));
 		
 		return familiarity;
 	}
@@ -246,8 +246,21 @@ public class AutobiographicalMemory implements Serializable {
 					count+= episode.CountEvent(searchKeys);
 				}
 			}
-			
 			return count;
+		}
+	}
+	
+	public ArrayList SearchForRecentEvents(ArrayList searchKeys)
+	{
+		MemoryEpisode currentEpisode;
+		
+		synchronized (this) {
+			if(this._memoryEvents.size() > 0)
+			{
+				currentEpisode = (MemoryEpisode) this._memoryEvents.get(this._memoryEvents.size()-1);
+				return currentEpisode.GetDetailsByKeys(searchKeys);
+			}
+			return new ArrayList();
 		}
 	}
 	
@@ -280,6 +293,21 @@ public class AutobiographicalMemory implements Serializable {
 			}
 			
 			return foundPastEvents;
+		}
+	}
+	
+	public boolean ContainsRecentEvent(ArrayList searchKeys)
+	{
+		MemoryEpisode currentEpisode;
+		
+		synchronized (this) {
+			if(this._memoryEvents.size() > 0)
+			{
+				currentEpisode = (MemoryEpisode) this._memoryEvents.get(this._memoryEvents.size()-1);				
+				
+				return currentEpisode.VerifiesKeys(searchKeys);
+			}
+			return false;
 		}
 	}
 	

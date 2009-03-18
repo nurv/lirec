@@ -45,7 +45,7 @@ public class NewEventCondition extends RecentEventCondition {
 		{
 			newEvent._parameters.add(((Symbol)li.next()).clone());
 		}
-		
+	
 		return newEvent;
 	}
 	
@@ -79,7 +79,9 @@ public class NewEventCondition extends RecentEventCondition {
 			return true;
 		}
 	
-		conditionVerified = (_positive == ShortTermMemory.GetInstance().ContainsRecentEvent(GetSearchKeys()));
+		ArrayList searchKeys = GetSearchKeys();
+		conditionVerified = (_positive == (ShortTermMemory.GetInstance().ContainsRecentEvent(searchKeys)
+								|| AutobiographicalMemory.GetInstance().ContainsRecentEvent(searchKeys)));
 		
 		if(conditionVerified){
 			_conditionAlreadyVerified = true;

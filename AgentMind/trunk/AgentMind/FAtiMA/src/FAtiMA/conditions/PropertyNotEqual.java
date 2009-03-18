@@ -75,6 +75,7 @@ import java.util.ArrayList;
 import java.util.ListIterator;
 
 import FAtiMA.knowledgeBase.KnowledgeBase;
+import FAtiMA.memory.Memory;
 import FAtiMA.util.AgentLogger;
 import FAtiMA.wellFormedNames.Inequality;
 import FAtiMA.wellFormedNames.Name;
@@ -116,9 +117,10 @@ public class PropertyNotEqual extends PropertyCondition {
 
 		if (!super.CheckCondition())
 			return false;
-		KnowledgeBase kb = KnowledgeBase.GetInstance();
-		propertyValue = this._name.evaluate(kb);
-		value = this._value.evaluate(kb);
+		//KnowledgeBase kb = KnowledgeBase.GetInstance();
+		Memory memory = Memory.GetInstance();
+		propertyValue = this._name.evaluate(memory);
+		value = this._value.evaluate(memory);
 
 		if (propertyValue == null || value == null) 
 		{
@@ -161,7 +163,7 @@ public class PropertyNotEqual extends PropertyCondition {
 		}
 		
 		//if the name is not grounded we try to get all possible bindings for it
-		bindingSets = KnowledgeBase.GetInstance().GetPossibleBindings(_name);
+		bindingSets = Memory.GetInstance().GetPossibleBindings(_name);
 		if (bindingSets == null)
 			return null;
 

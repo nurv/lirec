@@ -86,6 +86,7 @@ import FAtiMA.deliberativeLayer.plan.IPlanningOperator;
 import FAtiMA.exceptions.InvalidMotivatorTypeException;
 import FAtiMA.exceptions.UnreachableGoalException;
 import FAtiMA.knowledgeBase.KnowledgeBase;
+import FAtiMA.memory.shortTermMemory.WorkingMemory;
 import FAtiMA.memory.Memory;
 import FAtiMA.motivationalSystem.MotivationalState;
 import FAtiMA.util.AgentLogger;
@@ -371,14 +372,15 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
 	
 	public float getUncertainty()
 	{
-		Float aux = (Float) KnowledgeBase.GetInstance().AskProperty(this.getName());
+		Float aux = (Float) Memory.GetInstance().AskProperty(this.getName());
 		if(aux != null) return aux.floatValue();
 		else return 0.0f;
 	}
 	
 	public void setUncertainty(float uncertainty)
 	{	
-		KnowledgeBase.GetInstance().Tell(this.getName(), new Float(uncertainty));
+		WorkingMemory.GetInstance().Tell(this.getName(), new Float(uncertainty));
+		System.out.println("Set uncertainty");
 	}
 	
 	

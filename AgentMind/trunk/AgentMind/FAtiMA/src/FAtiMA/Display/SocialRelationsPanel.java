@@ -21,13 +21,13 @@ public class SocialRelationsPanel extends AgentDisplayPanel {
 
 	JPanel _relationsPanel;
 
-	protected Hashtable _realationsDisplay;
+	protected Hashtable _relationsDisplay;
 
 	public SocialRelationsPanel() {
 		super();
 		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
-		_realationsDisplay = new Hashtable();
+		_relationsDisplay = new Hashtable();
 
 		_relationsPanel = new JPanel();
 		_relationsPanel.setLayout(new BoxLayout(_relationsPanel,
@@ -48,16 +48,16 @@ public class SocialRelationsPanel extends AgentDisplayPanel {
 		// in this case, there's a new relation added (it is not usual for
 		// relations to disapear)
 		// so we have to clear all relations and start displaying them all again
-		if (_realationsDisplay.size() != relations.size()) {
+		if (_relationsDisplay.size() != relations.size()) {
 			_relationsPanel.removeAll(); // removes all displayed emotions
 											// from the panel
-			_realationsDisplay.clear();
+			_relationsDisplay.clear();
 			Iterator it = relations.iterator();
 			while (it.hasNext()) {
 				Relation r = (Relation) it.next();
 				RelationDisplay display = new RelationDisplay(r);
 				_relationsPanel.add(display.getPanel());
-				_realationsDisplay.put(r.getHashKey(), display);
+				_relationsDisplay.put(r.getHashKey(), display);
 			}
 			updated = true;
 		}
@@ -65,7 +65,7 @@ public class SocialRelationsPanel extends AgentDisplayPanel {
 		Iterator it = relations.iterator();
 		while (it.hasNext()) {
 			Relation r = (Relation) it.next();
-			RelationDisplay display = (RelationDisplay) _realationsDisplay
+			RelationDisplay display = (RelationDisplay) _relationsDisplay
 					.get(r.getHashKey());
 			display.setValue(r.getValue());
 		}

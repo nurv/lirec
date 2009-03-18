@@ -201,7 +201,7 @@ public abstract class SummaryGenerator {
 	
 	public static String translateNameToDisplayName(String name)
 	{
-		Object displayName = KnowledgeBase.GetInstance().AskProperty(Name.ParseName(name + "(displayName)"));
+		Object displayName = Memory.GetInstance().AskProperty(Name.ParseName(name + "(displayName)"));
 		if(displayName != null)
 		{
 			return displayName.toString();

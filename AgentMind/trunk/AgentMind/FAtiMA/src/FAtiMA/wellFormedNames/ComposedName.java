@@ -49,8 +49,7 @@ import java.util.ArrayList;
 import java.util.ListIterator;
 import java.util.StringTokenizer;
 
-import FAtiMA.knowledgeBase.KnowledgeBase;
-
+import FAtiMA.memory.Memory;
 
 /**
  * @see Name
@@ -141,14 +140,14 @@ public class ComposedName extends Name implements Serializable {
 	 * @param kb - a reference to the KnowledgeBase
 	 * @return  the result of evaluation the ComposedName
 	 */
-	public Object evaluate(KnowledgeBase kb) 
+	public Object evaluate(Memory memory) 
 	{
 		if(_evaluate)
 		{
 			//All ComposedNames correspond to properties or predicates and in this case
 		    //we must retrieve its value from the KnowledgeBase
 		    if (!this._grounded) return null;
-		    return kb.AskProperty(this);
+		    return memory.AskProperty(this);
 		}
 		else return this.toString();
 	}

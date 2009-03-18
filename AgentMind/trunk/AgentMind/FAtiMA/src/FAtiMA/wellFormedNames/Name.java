@@ -40,8 +40,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
-import FAtiMA.knowledgeBase.KnowledgeBase;
-
+import FAtiMA.memory.Memory;
 
 /**
  * Abstract Well Formed Name
@@ -174,7 +173,7 @@ public abstract class Name implements IGroundable, Cloneable, Serializable {
 	 * @return if the name is a symbol, it returns its name, otherwise
 	 * 		   it returns the value associated to the name in the KB
 	 */
-	public abstract Object evaluate(KnowledgeBase kb);
+	public abstract Object evaluate(Memory memory);
 
 	/**
 	 * @deprecated please do not use. This is deprecated.

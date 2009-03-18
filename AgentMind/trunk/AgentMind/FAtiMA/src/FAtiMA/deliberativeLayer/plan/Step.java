@@ -63,7 +63,8 @@ import FAtiMA.IntegrityValidator;
 import FAtiMA.conditions.Condition;
 import FAtiMA.exceptions.UnknownSpeechActException;
 import FAtiMA.exceptions.UnspecifiedVariableException;
-import FAtiMA.knowledgeBase.KnowledgeBase;
+//import FAtiMA.knowledgeBase.KnowledgeBase;
+import FAtiMA.memory.shortTermMemory.WorkingMemory;
 import FAtiMA.memory.Memory;
 import FAtiMA.motivationalSystem.MotivationalState;
 import FAtiMA.wellFormedNames.Name;
@@ -193,7 +194,7 @@ public class Step implements IPlanningOperator, Cloneable, Serializable {
 		float newprob;
 		float newbias;
 		
-		bias = (Float) KnowledgeBase.GetInstance().AskProperty(GetBiasName());
+		bias = (Float) Memory.GetInstance().AskProperty(GetBiasName());
 		if(bias != null)
 		{
 			prob = bias.floatValue() + _baseprob;
@@ -206,7 +207,8 @@ public class Step implements IPlanningOperator, Cloneable, Serializable {
 		newprob = 0.6f * prob;
 		newbias = newprob - _baseprob;
 		
-		KnowledgeBase.GetInstance().Tell(GetBiasName(),new Float(newbias));   
+		WorkingMemory.GetInstance().Tell(GetBiasName(),new Float(newbias));  
+		System.out.println("Decrease probability step");
 	}
 	
 	/**
@@ -218,7 +220,7 @@ public class Step implements IPlanningOperator, Cloneable, Serializable {
 		float newprob;
 		float newbias;
 		
-		bias = (Float) KnowledgeBase.GetInstance().AskProperty(GetBiasName());
+		bias = (Float) Memory.GetInstance().AskProperty(GetBiasName());
 		if(bias != null)
 		{
 			prob = bias.floatValue() + _baseprob;
@@ -230,7 +232,8 @@ public class Step implements IPlanningOperator, Cloneable, Serializable {
 		
 		newprob = 0.6f * prob + 0.4f;
 		newbias = newprob - _baseprob;
-		KnowledgeBase.GetInstance().Tell(GetBiasName(),new Float(newbias));   
+		WorkingMemory.GetInstance().Tell(GetBiasName(),new Float(newbias));   
+		System.out.println("Increase probability step");
 	}
 	
 	/**
@@ -241,7 +244,7 @@ public class Step implements IPlanningOperator, Cloneable, Serializable {
 		
 		if(!_selfExecutable)
 		{
-			Float aux = (Float) KnowledgeBase.GetInstance().AskProperty(GetBiasName());
+			Float aux = (Float) Memory.GetInstance().AskProperty(GetBiasName());
 			if(aux != null)
 			{
 				return _baseprob + aux.floatValue();

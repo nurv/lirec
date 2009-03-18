@@ -41,6 +41,7 @@ import org.xml.sax.Attributes;
 import FAtiMA.memory.ActionDetail;
 import FAtiMA.memory.SearchKey;
 import FAtiMA.memory.autobiographicalMemory.AutobiographicalMemory;
+import FAtiMA.memory.shortTermMemory.ShortTermMemory;
 import FAtiMA.sensorEffector.Event;
 import FAtiMA.sensorEffector.Parameter;
 import FAtiMA.wellFormedNames.Name;
@@ -227,8 +228,7 @@ public class PastEventCondition extends PredicateCondition {
 	
 	protected ArrayList GetPossibleBindings()
 	{
-		return AutobiographicalMemory.GetInstance().
-				SearchForPastEvents(GetSearchKeys());
+		return AutobiographicalMemory.GetInstance().SearchForPastEvents(GetSearchKeys());		
 	}
 	
 	/**
@@ -236,8 +236,7 @@ public class PastEventCondition extends PredicateCondition {
      * will make it valid (true) according to the agent's AutobiographicalMemory 
      * @return A list with all SubstitutionsSets that make the condition valid
 	 * @see AutobiographicalMemory
-	 */
-	public ArrayList GetValidBindings() {
+	 */public ArrayList GetValidBindings() {
 		ActionDetail detail;
 		Substitution sub;
 		SubstitutionSet subSet;

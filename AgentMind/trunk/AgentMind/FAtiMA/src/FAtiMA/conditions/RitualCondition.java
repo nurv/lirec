@@ -37,6 +37,7 @@ import org.xml.sax.Attributes;
 
 import FAtiMA.memory.SearchKey;
 import FAtiMA.memory.Memory;
+import FAtiMA.memory.autobiographicalMemory.AutobiographicalMemory;
 import FAtiMA.memory.shortTermMemory.ShortTermMemory;
 import FAtiMA.sensorEffector.Event;
 import FAtiMA.wellFormedNames.Name;
@@ -213,8 +214,8 @@ public class RitualCondition extends PredicateCondition {
 			keys.add(new SearchKey(SearchKey.MAXELAPSEDTIME, new Long(1000)));
 		}
 		
-		
-		return ShortTermMemory.GetInstance().ContainsRecentEvent(keys);
+		return (ShortTermMemory.GetInstance().ContainsRecentEvent(keys) 
+			|| AutobiographicalMemory.GetInstance().ContainsRecentEvent(keys));
 		
 	}
 	

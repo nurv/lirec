@@ -39,7 +39,7 @@ import javax.swing.JScrollPane;
 
 import FAtiMA.Agent;
 import FAtiMA.knowledgeBase.KnowledgeBase;
-import FAtiMA.knowledgeBase.KnowledgeSlot;
+import FAtiMA.memory.KnowledgeSlot;
 
 
 public class KnowledgeBasePanel extends AgentDisplayPanel {

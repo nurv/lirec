@@ -43,6 +43,8 @@ import java.util.ArrayList;
 
 import FAtiMA.conditions.Condition;
 import FAtiMA.knowledgeBase.KnowledgeBase;
+import FAtiMA.memory.Memory;
+import FAtiMA.memory.shortTermMemory.WorkingMemory;
 import FAtiMA.wellFormedNames.IGroundable;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
@@ -80,6 +82,7 @@ public class Effect implements IGroundable, Cloneable, Serializable {
 		{
 			this._biasName = Name.ParseName("ProbBias(" + stepName + idCounter++ + ")");
 			KnowledgeBase.GetInstance().Tell(this._biasName, new Float(0));
+			System.out.println("Effect ");
 		}
 	}
 	
@@ -97,11 +100,12 @@ public class Effect implements IGroundable, Cloneable, Serializable {
 		float newprob;
 		float newbias;
 		
-		bias = ((Float) KnowledgeBase.GetInstance().AskProperty(_biasName)).floatValue();
+		bias = ((Float) Memory.GetInstance().AskProperty(_biasName)).floatValue();
 		prob = bias + _baseprob;
 		newprob = 0.6f * prob;
 		newbias = newprob - _baseprob;
-		KnowledgeBase.GetInstance().Tell(_biasName,new Float(newbias));   
+		WorkingMemory.GetInstance().Tell(_biasName,new Float(newbias));   
+		System.out.println("Decrease probability effect");
 	}
 	
 	/**
@@ -117,7 +121,7 @@ public class Effect implements IGroundable, Cloneable, Serializable {
 	 * @return the effect's probability
 	 */
 	public float GetProbability() {
-		return _baseprob + ((Float) KnowledgeBase.GetInstance().AskProperty(_biasName)).floatValue();
+		return _baseprob + ((Float) Memory.GetInstance().AskProperty(_biasName)).floatValue();
 	}
 	
 	/**
@@ -224,11 +228,12 @@ public class Effect implements IGroundable, Cloneable, Serializable {
 		float newprob;
 		float newbias;
 		
-		bias = ((Float) KnowledgeBase.GetInstance().AskProperty(_biasName)).floatValue(); 
+		bias = ((Float) Memory.GetInstance().AskProperty(_biasName)).floatValue(); 
 		prob = bias + _baseprob;
 		newprob = 0.6f * prob + 0.4f;
 		newbias = newprob - _baseprob;
-		KnowledgeBase.GetInstance().Tell(_biasName,new Float(newbias));   
+		WorkingMemory.GetInstance().Tell(_biasName,new Float(newbias));   
+		System.out.println("Increase probability effect");
 	}
 	
 	/**
