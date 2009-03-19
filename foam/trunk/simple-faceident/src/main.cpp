@@ -149,11 +149,11 @@ int main( int argc, char** argv )
             if( !frame )
                 break;
             if( !frame_copy )
-                frame_copy = cvCreateImage( cvSize(frame->width/2,frame->height/2),
+                frame_copy = cvCreateImage( cvSize(frame->width,frame->height),
                                             IPL_DEPTH_8U, frame->nChannels );
             if( frame->origin == IPL_ORIGIN_TL )
-				cvResize(frame, frame_copy, CV_INTER_LINEAR );
-                //cvCopy( frame, frame_copy, 0 );
+				//cvResize(frame, frame_copy, CV_INTER_LINEAR );
+                cvCopy( frame, frame_copy, 0 );
             else
                 cvFlip( frame, frame_copy, 0 );
             
@@ -252,19 +252,19 @@ void detect_and_draw( IplImage* img )
         t = (double)cvGetTickCount() - t;
         //printf( "detection time = %gms\n", t/((double)cvGetTickFrequency()*1000.) );
 		
-		framenum++;
+		/*framenum++;
 		if (framenum==100) 
 		{
 			cerr<<"next face"<<endl;
 			facenum++; 
 		}
 		
-		if (framenum==200) 
+		if (framenum==220) 
 		{
 			cerr<<"stopped learning"<<endl;
 			cerr<<facebank.GetFaceMap().size()<<" faces recorded"<<endl;
 			learn=false;  
-		}
+		}*/
 		
 		
 		int key=cvWaitKey(10);
@@ -318,7 +318,7 @@ void detect_and_draw( IplImage* img )
 				int x=(facebank.GetFaceWidth()+1)*ID;
 				int y=imgsize.height-facebank.GetFaceHeight();
 				cvLine(img, cvPoint(r->x+r->width/2,r->y+r->height/2),
-					cvPoint(x+facebank.GetFaceWidth()/2,y+facebank.GetFaceHeight()/2), color);
+					cvPoint(x+facebank.GetFaceWidth()/2,y), color);
 			}
 
 			cvRectangle(img, cvPoint(r->x,r->y), cvPoint(r->x+r->width,r->y+r->height), color);
@@ -360,7 +360,7 @@ void detect_and_draw( IplImage* img )
 
 	#ifdef SAVE_FRAMES
 	char name[256];
-	sprintf(name,"out-%0.4d.jpg",frame);
+	sprintf(name,"out-%0.4d.jpg",framenum);
 	cvSaveImage(name,img);
 	#endif
     
