@@ -19,7 +19,10 @@
 #ifndef IMAGE_UTILS
 #define IMAGE_UTILS
 
+// I need to sort this out before it grows too much...
+
 IplImage* SubImage(IplImage *image, CvRect roi);
+void BlitImage(IplImage *srcimage, IplImage *dstimage, CvPoint pos);
 void SubMean(IplImage *image);
 float Diff(IplImage *imagea, IplImage *imageb);
 

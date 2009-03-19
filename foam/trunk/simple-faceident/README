@@ -1,11 +1,15 @@
 Simple Face Identification
 --------------------------
 
-Just uses OpenCV's face finder and records faces it's seen for 100 frames 
-(tweakable at the top of main.cpp). After that it returns the id of the 
-nearest match in it's database of faces. The max number of faces it stores is 
-also set at the top of main.cpp.
- 
+Uses OpenCV's face finder to record and detect identity.
+
+Use the number keys to train the system against different individuals. The idea 
+is that one by one, individuals show their faces, after which the system will 
+recognise who is who in the camera's view. The program will avoid recording 
+faces which are too similar to existing recorded ones. Press 'd' to switch to 
+switch off the training and just detect against existing faces. The boxes 
+around the faces display the id and the confidence value of the match.
+
 Requires: OpenCV
 Written and tested on Linux, but it should work in Windows too.
 At the moment you'll probably have to run it with:
@@ -17,10 +21,7 @@ In order to find OpenCV's data, on my machine it's in:
 
 Todo:
 * Command line parameters
-* Calibration mode on a keypress
-* Play with better calibration modes
 * YARP interface
-* Use 'least recently detected' to remove faces from the database
 * Try normalised cross correlation instead of image differencing
 
 Questions to:

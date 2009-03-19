@@ -56,20 +56,20 @@ double scale = 1;
 //////////////////////////////////////////////////////////
 // These are the tweakable bits - see comments in FaceBank.h
 
-const int nfaces = 3;
-FaceBank facebank(nfaces, 30, 40, 0.05); 
+FaceBank facebank(30, 40, 0.15); 
 
 // number of frames to detect new faces for
-int calibrate_frames = 100;
+int calibrate_frames = 200;
 
 // show all faces currently detected 
-//#define SHOW_FACES
+#define SHOW_FACES
 
 //#define SAVE_FRAMES
 
 // globals
-int frame=0;
 bool learn=true;
+int facenum=0;
+int framenum=0;
 
 //////////////////////////////////////////////////////////
 
@@ -139,15 +139,6 @@ int main( int argc, char** argv )
 
     cvNamedWindow( "result", 1 );
 	
-	#ifdef SHOW_FACES
-	char name[256];
-	for (i=0; i<nfaces; i++)
-	{
-		sprintf(name,"face%i",i);
-    	cvNamedWindow(name, 1);
-	}
-	#endif
-	
     if( capture )
     {
         for(;;)
@@ -158,20 +149,17 @@ int main( int argc, char** argv )
             if( !frame )
                 break;
             if( !frame_copy )
-                frame_copy = cvCreateImage( cvSize(frame->width,frame->height),
+                frame_copy = cvCreateImage( cvSize(frame->width/2,frame->height/2),
                                             IPL_DEPTH_8U, frame->nChannels );
             if( frame->origin == IPL_ORIGIN_TL )
-                cvCopy( frame, frame_copy, 0 );
+				cvResize(frame, frame_copy, CV_INTER_LINEAR );
+                //cvCopy( frame, frame_copy, 0 );
             else
                 cvFlip( frame, frame_copy, 0 );
             
             detect_and_draw( frame_copy );
-
-            if( cvWaitKey( 10 ) >= 0 )
-                goto _cleanup_;
         }
 
-        cvWaitKey(0);
 _cleanup_:
         cvReleaseImage( &frame_copy );
         cvReleaseCapture( &capture );
@@ -181,7 +169,6 @@ _cleanup_:
         if( image )
         {
             detect_and_draw( image );
-            cvWaitKey(0);
             cvReleaseImage( &image );
         }
         else if( input_name )
@@ -202,10 +189,7 @@ _cleanup_:
                     image = cvLoadImage( buf, 1 );
                     if( image )
                     {
-                        detect_and_draw( image );
-                        c = cvWaitKey(0);
-                        if( c == 27 || c == 'q' || c == 'Q' )
-                            break;
+                        detect_and_draw( image );                        
                         cvReleaseImage( &image );
                     }
                 }
@@ -215,17 +199,8 @@ _cleanup_:
     }
     
     cvDestroyWindow("result");
-	#ifdef SHOW_FACES
-	for (i=0; i<nfaces; i++)
-	{
-		sprintf(name,"face%i",i);
-    	cvDestroyWindow(name);
-	}
-	#endif
-
     return 0;
 }
-
 
 void detect_and_draw( IplImage* img )
 {
@@ -243,6 +218,7 @@ void detect_and_draw( IplImage* img )
 
     IplImage *gray, *small_img;
     int j;
+	CvSize imgsize = cvGetSize(img);
 
     gray = cvCreateImage( cvSize(img->width,img->height), 8, 1 );
     small_img = cvCreateImage( cvSize( cvRound (img->width/scale),
@@ -255,6 +231,12 @@ void detect_and_draw( IplImage* img )
 
 	CvFont font;
     cvInitFont( &font, CV_FONT_HERSHEY_PLAIN, 2, 2, 0, 1, CV_AA );
+
+	CvFont infofont;
+    cvInitFont( &infofont, CV_FONT_HERSHEY_PLAIN, 1, 1, 0, 1, CV_AA );
+
+	CvFont helpfont;
+    cvInitFont( &helpfont, CV_FONT_HERSHEY_PLAIN, 0.5, 0.5, 0, 1, CV_AA );
 	
     if( cascade )
     {
@@ -270,57 +252,116 @@ void detect_and_draw( IplImage* img )
         t = (double)cvGetTickCount() - t;
         //printf( "detection time = %gms\n", t/((double)cvGetTickFrequency()*1000.) );
 		
-		if (frame==calibrate_frames) 
+		framenum++;
+		if (framenum==100) 
 		{
-			learn=false;
-			cerr<<"finished learning new faces"<<endl;
+			cerr<<"next face"<<endl;
+			facenum++; 
 		}
 		
-		frame++;
+		if (framenum==200) 
+		{
+			cerr<<"stopped learning"<<endl;
+			cerr<<facebank.GetFaceMap().size()<<" faces recorded"<<endl;
+			learn=false;  
+		}
 		
+		
+		int key=cvWaitKey(10);
+		
+		switch (key)
+		{
+			case 'd': learn=false; break;
+			case '1': facenum=1; learn=true; break;
+			case '2': facenum=2; learn=true; break;
+			case '3': facenum=3; learn=true; break;
+			case '4': facenum=4; learn=true; break;
+			case '5': facenum=5; learn=true; break;
+			case '6': facenum=6; learn=true; break;
+			case '7': facenum=7; learn=true; break;
+			case '8': facenum=8; learn=true; break;
+			case '9': facenum=9; learn=true; break;
+			case '0': facenum=0; learn=true; break;
+			case 'c': facebank.Clear(); break;
+		}
+		
+				
         for(int i = 0; i < (faces ? faces->total : 0); i++ )
         {
             CvRect* r = (CvRect*)cvGetSeqElem( faces, i );
             CvMat small_img_roi;
 			
 			unsigned int ID=999;
+			float error=0;
 			// get the face area as a sub image
 			IplImage *face = SubImage(img, *r);
 			// pass it into the face bank 
-			facebank.Identify(face,ID,learn);
-			cvReleaseImage(&face);
+			if (learn)
+			{
+				error=facebank.Suggest(face,facenum);
+				ID=facenum;
+			}
+			else
+			{	
+				error=facebank.Identify(face,ID);
+			}
 			
+			cvReleaseImage(&face);
+			CvScalar color = colors[ID%8];
+
 			// if it's recognised the face (should really check the confidence)
 			if (ID!=999)
 			{
 				char s[32];
-				sprintf(s,"%d",ID);
-				cvPutText(img, s, cvPoint(r->x,r->y+25), &font, CV_RGB(1,1,1));
+				sprintf(s,"%d %0.2f",ID,error);
+				cvPutText(img, s, cvPoint(r->x,r->y+25), &font, color);
+				int x=(facebank.GetFaceWidth()+1)*ID;
+				int y=imgsize.height-facebank.GetFaceHeight();
+				cvLine(img, cvPoint(r->x+r->width/2,r->y+r->height/2),
+					cvPoint(x+facebank.GetFaceWidth()/2,y+facebank.GetFaceHeight()/2), color);
 			}
 
-            CvScalar color = colors[ID%8];
 			cvRectangle(img, cvPoint(r->x,r->y), cvPoint(r->x+r->width,r->y+r->height), color);
         }
     }
 
+	char info[256];
+	if (learn)
+	{
+		snprintf(info,256,"learning user %d",facenum);
+	}
+	else
+	{
+		snprintf(info,256,"detecting faces");
+	}
+	cvPutText(img, info, cvPoint(20,30), &infofont, CV_RGB(0,0,0));
+
+	snprintf(info,256,"keys:");
+	cvPutText(img, info, cvPoint(20,50), &helpfont, CV_RGB(0,0,0));
+	snprintf(info,256,"number key 0-9 : learn face");
+	cvPutText(img, info, cvPoint(20,60), &helpfont, CV_RGB(0,0,0));
+	snprintf(info,256,"'d' : face detect mode");
+	cvPutText(img, info, cvPoint(20,70), &helpfont, CV_RGB(0,0,0));
+	snprintf(info,256,"'c' : clear all faces");
+	cvPutText(img, info, cvPoint(20,80), &helpfont, CV_RGB(0,0,0));
+
+
+	#ifdef SHOW_FACES
+	for(map<unsigned int,Face*>::iterator ii=facebank.GetFaceMap().begin(); 
+		ii!=facebank.GetFaceMap().end(); ++ii)
+	{
+		int x=(facebank.GetFaceWidth()+1)*ii->first;
+		int y=imgsize.height-facebank.GetFaceHeight();
+		BlitImage(ii->second->m_Image,img,cvPoint(x,y));
+	}
+	#endif
+	
     cvShowImage( "result", img );
 
 	#ifdef SAVE_FRAMES
 	char name[256];
 	sprintf(name,"out-%0.4d.jpg",frame);
 	cvSaveImage(name,img);
-	#endif
-	
-	#ifdef SHOW_FACES
-	char name[256];
-	int i=0;
-	for(list<Face*>::iterator ii=facebank.GetFaceList().begin(); 
-		ii!=facebank.GetFaceList().end(); ++ii)
-	{
-		sprintf(name,"face%i",i);
-    	cvShowImage(name,(*ii)->m_Image);
-		i++;
-	}
 	#endif
     
 	cvReleaseImage( &gray );

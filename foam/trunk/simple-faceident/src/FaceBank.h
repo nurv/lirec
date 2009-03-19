@@ -15,7 +15,7 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include <iostream>
-#include <list>
+#include <map>
 #include <assert.h>
 
 #include "cv.h"
@@ -46,27 +46,33 @@ public:
 class FaceBank
 {
 public:
-	// MaxFaces is the number of faces we want to restrict the facebank to storing, 
 	// FaceWidth and FaceHeight are the size for the internal stored image of the face for 
 	// comparison, ErrorThresh is the error amount which will trigger a new face to be stored
-	FaceBank(unsigned int MaxFaces, unsigned int FaceWidth, unsigned int FaceHeight, float ErrorThresh);
+	FaceBank(unsigned int FaceWidth, unsigned int FaceHeight, float ErrorThresh);
 	
 	~FaceBank();
+
+	void Clear();
 	
-	// gives the id, given a new face, and returns the confidence
-	// if it's a new face it returns 1 and stores the id, copying the face image
-	float Identify(IplImage *face, unsigned int &ID, bool learn);
+	// Learn this face, the face may be a false positive, so we'll discard the 
+	// suggestion if we've seen it before, and the error is greater than ErrorThresh
+	float Suggest(IplImage *face, unsigned int ID);
+
+	// Gives the id, given a face, and returns the confidence
+	float Identify(IplImage *face, unsigned int &ID);
 	
-	std::list<Face*> &GetFaceList() { return m_FaceList; }
+	std::map<unsigned int, Face*> &GetFaceMap() { return m_FaceMap; }
 	
+	unsigned int GetFaceWidth() { return m_FaceWidth; }
+	unsigned int GetFaceHeight() { return m_FaceHeight; }
+
 private:	
 
-	unsigned int m_MaxFaces;
 	unsigned int m_FaceWidth;
 	unsigned int m_FaceHeight;
 	float m_ErrorThresh;
 	
-	std::list<Face*> m_FaceList;
+	std::map<unsigned int, Face*> m_FaceMap;
 };
 
 #endif

@@ -32,6 +32,27 @@ IplImage* SubImage(IplImage *image, CvRect roi)
 }
 
 /////////////////////////////////////////////////////////////
+// paste an image over the top of another
+
+void BlitImage(IplImage *srcimage, IplImage *dstimage, CvPoint pos)
+{
+	CvSize size = cvGetSize(srcimage);
+	CvSize dstsize = cvGetSize(dstimage);
+	
+	for(int y=0; y<size.height; y++)
+	{
+        for(int x=0; x<size.width; x++)
+		{
+			if (x+pos.x>0 && x+pos.x<dstsize.width &&
+				y+pos.y>0 && y+pos.y<dstsize.height)
+			{
+            	cvSet2D(dstimage,y+pos.y,x+pos.x,cvGet2D(srcimage,y,x));
+			}
+		}
+	}
+}
+
+/////////////////////////////////////////////////////////////
 // subtract the mean (RGB)
 
 void SubMean(IplImage *image)

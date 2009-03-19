@@ -55,8 +55,7 @@ void Face::Learn(const IplImage *image, float blend)
 
 /////////////////////////////////////////////////////////////////////////////////
 	
-FaceBank::FaceBank(unsigned int MaxFaces, unsigned int FaceWidth, unsigned int FaceHeight, float ErrorThresh) : 
-m_MaxFaces(MaxFaces), 
+FaceBank::FaceBank(unsigned int FaceWidth, unsigned int FaceHeight, float ErrorThresh) : 
 m_FaceWidth(FaceWidth),
 m_FaceHeight(FaceHeight),
 m_ErrorThresh(ErrorThresh)
@@ -65,24 +64,72 @@ m_ErrorThresh(ErrorThresh)
 
 FaceBank::~FaceBank() 
 {	
-	for(list<Face*>::iterator i=m_FaceList.begin(); i!=m_FaceList.end(); ++i)
-	{
-		delete *i;
-	}
+	Clear();
 }
 
-float FaceBank::Identify(IplImage *face, unsigned int &ID, bool learn)
+void FaceBank::Clear()
+{
+	for(map<unsigned int,Face*>::iterator i=m_FaceMap.begin(); i!=m_FaceMap.end(); ++i)
+	{
+		delete i->second;
+	}
+	m_FaceMap.clear();
+}
+
+float FaceBank::Suggest(IplImage *face, unsigned int ID)
 {
 	IplImage *faceresized = cvCreateImage(cvSize(m_FaceWidth,m_FaceHeight),IPL_DEPTH_8U, face->nChannels);
 	cvResize(face, faceresized, CV_INTER_LINEAR );
-	// subtract the mean as an attempt to deal 
-	// with global lighting changes
+	// Subtract the mean as an attempt to deal with global lighting changes
+	SubMean(faceresized);
+	
+	// Get this face
+	map<unsigned int,Face*>::iterator i=m_FaceMap.find(ID);
+	
+	// If it's the first time we've seen this face then record it
+	if (i==m_FaceMap.end())
+	{		
+		// Check it doesn't look like any we have already recorded
+		unsigned int checkid=0;
+		if (Identify(faceresized,checkid)>0)
+		{
+			cerr<<"We've already seen this face: "<<checkid<<endl;	
+			return 0;
+		}
+
+		cerr<<"new face "<<ID<<endl;
+		m_FaceMap[ID]=new Face(faceresized);
+		return 1;
+	}
+	
+	// Does this face look like the one we already have for this id?
+	float error = Diff(faceresized,i->second->m_Image);
+
+	if (error<m_ErrorThresh) 
+	{
+		cerr<<"adding to face "<<ID<<endl;
+		// Blend this face into the one we have already
+		i->second->Learn(faceresized,0.2);
+		cvReleaseImage(&faceresized);
+		ID=i->first;
+		return 1-error;
+	}
+	
+	cerr<<"false positive? "<<error<<" "<<ID<<endl;
+	
+	return 0;
+}
+
+float FaceBank::Identify(IplImage *face, unsigned int &ID)
+{
+	IplImage *faceresized = cvCreateImage(cvSize(m_FaceWidth,m_FaceHeight),IPL_DEPTH_8U, face->nChannels);
+	cvResize(face, faceresized, CV_INTER_LINEAR );
+	// Subtract the mean as an attempt to deal with global lighting changes
 	SubMean(faceresized);
 
-	// the first face found?
-	if (m_FaceList.empty())
+	// No faces recorded?
+	if (m_FaceMap.empty())
 	{
-		m_FaceList.push_back(new Face(faceresized));
 		return 0;
 	}
 	
@@ -90,40 +137,29 @@ float FaceBank::Identify(IplImage *face, unsigned int &ID, bool learn)
 	unsigned int best=0;
 	Face* bestface=NULL;
 	
-	// look for the lowest error in the list of faces
-	int c=0;
-	for(list<Face*>::iterator i=m_FaceList.begin(); i!=m_FaceList.end(); ++i)
+	// look for the lowest error in the map of faces
+	for(map<unsigned int,Face*>::iterator i=m_FaceMap.begin(); i!=m_FaceMap.end(); ++i)
 	{
-		float tmp = Diff(faceresized,(*i)->m_Image);
+		float tmp = Diff(faceresized,i->second->m_Image);
 		if (tmp<error)
 		{
 			error=tmp;
-			best=c;
-			bestface=*i;
+			best=i->first;
+			bestface=i->second;
 		}
-		c++;
 	}
 	
 	// if the error is less than the threshold, return the id
-	if (!learn || error<m_ErrorThresh) 
+	if (error<m_ErrorThresh)
 	{
 		// blend this face into the one we have already
-		bestface->Learn(faceresized,0.5);
+		bestface->Learn(faceresized,0);
 		cvReleaseImage(&faceresized);
 		ID=best;
-		return error;
+		return 1-error;
 	}
 	
-	// we have a new face!
-	// if there is no space, drop the oldest face
-	// todo: drop least recently detected instead
-	if (m_FaceList.size()>=m_MaxFaces)
-	{
-		delete *m_FaceList.begin();
-		m_FaceList.pop_front();	
-	}
-		
-	cerr<<"new face found"<<endl;
-	m_FaceList.push_back(new Face(faceresized));
-	return 1;
+	cerr<<"unrecognised face"<<endl;
+	
+	return 0;
 }
