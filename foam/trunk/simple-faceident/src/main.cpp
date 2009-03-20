@@ -326,15 +326,17 @@ void detect_and_draw( IplImage* img )
 				int y=imgsize.height-facebank.GetFaceHeight();
 				cvLine(img, cvPoint(r->x+r->width/2,r->y+r->height/2),
 					cvPoint(x+facebank.GetFaceWidth()/2,y), color);
-
 				/////////////////////
 				// YARP send
 				
-				Bottle b;  
-				b.clear();
-				b.add((int)ID);
-				b.add(confidence);
-				YarpPort.write(b);
+				if (!learn)
+				{
+					Bottle b;  
+					b.clear();
+					b.add((int)ID);
+					b.add(confidence);
+					YarpPort.write(b);
+				}
 
 				////////////////////
 
