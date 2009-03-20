@@ -1,7 +1,8 @@
 Simple Face Identification
 --------------------------
 
-Uses OpenCV's face finder to record and detect identity.
+Uses OpenCV's face finder to record and detect identity. Sends bottles over 
+yarp on port /faceident containing the ID and confidence value.
 
 Use the number keys to train the system against different individuals. The idea 
 is that one by one, individuals show their faces, after which the system will 

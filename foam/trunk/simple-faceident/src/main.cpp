@@ -28,11 +28,13 @@
 #include <limits.h>
 #include <time.h>
 #include <ctype.h>
+#include <yarp/os/all.h>
 
 #include "FaceBank.h"
 #include "ImageUtils.h"
 
 using namespace std;
+using namespace yarp::os;
 
 #ifdef _EiC
 #define WIN32
@@ -55,21 +57,19 @@ double scale = 1;
 
 //////////////////////////////////////////////////////////
 // These are the tweakable bits - see comments in FaceBank.h
-
 FaceBank facebank(30, 40, 0.15); 
-
-// number of frames to detect new faces for
-int calibrate_frames = 200;
 
 // show all faces currently detected 
 #define SHOW_FACES
-
 //#define SAVE_FRAMES
 
 // globals
 bool learn=true;
 int facenum=0;
 int framenum=0;
+
+Network YarpNetwork;
+Port YarpPort;
 
 //////////////////////////////////////////////////////////
 
@@ -111,6 +111,13 @@ int main( int argc, char** argv )
         else
             input_name = argv[i];
     }
+
+	/////////////////////////////////
+	// yarp init
+	
+	YarpPort.open("/faceident");
+	
+	/////////////////////////////////
 
     cascade = (CvHaarClassifierCascade*)cvLoad( cascade_name, 0, 0, 0 );
 
@@ -243,9 +250,9 @@ void detect_and_draw( IplImage* img )
         double t = (double)cvGetTickCount();
         CvSeq* faces = cvHaarDetectObjects( small_img, cascade, storage,
                                             1.1, 2, 0
-                                            //|CV_HAAR_FIND_BIGGEST_OBJECT
+                                            |CV_HAAR_FIND_BIGGEST_OBJECT
                                             //|CV_HAAR_DO_ROUGH_SEARCH
-                                            |CV_HAAR_DO_CANNY_PRUNING
+                                            //|CV_HAAR_DO_CANNY_PRUNING
                                             //|CV_HAAR_SCALE_IMAGE
                                             ,
                                             cvSize(30, 30) );
@@ -292,18 +299,18 @@ void detect_and_draw( IplImage* img )
             CvMat small_img_roi;
 			
 			unsigned int ID=999;
-			float error=0;
+			float confidence=0;
 			// get the face area as a sub image
 			IplImage *face = SubImage(img, *r);
 			// pass it into the face bank 
 			if (learn)
 			{
-				error=facebank.Suggest(face,facenum);
+				confidence=facebank.Suggest(face,facenum);
 				ID=facenum;
 			}
 			else
 			{	
-				error=facebank.Identify(face,ID);
+				confidence=facebank.Identify(face,ID);
 			}
 			
 			cvReleaseImage(&face);
@@ -313,12 +320,24 @@ void detect_and_draw( IplImage* img )
 			if (ID!=999)
 			{
 				char s[32];
-				sprintf(s,"%d %0.2f",ID,error);
+				sprintf(s,"%d %0.2f",ID,confidence);
 				cvPutText(img, s, cvPoint(r->x,r->y+25), &font, color);
 				int x=(facebank.GetFaceWidth()+1)*ID;
 				int y=imgsize.height-facebank.GetFaceHeight();
 				cvLine(img, cvPoint(r->x+r->width/2,r->y+r->height/2),
 					cvPoint(x+facebank.GetFaceWidth()/2,y), color);
+
+				/////////////////////
+				// YARP send
+				
+				Bottle b;  
+				b.clear();
+				b.add((int)ID);
+				b.add(confidence);
+				YarpPort.write(b);
+
+				////////////////////
+
 			}
 
 			cvRectangle(img, cvPoint(r->x,r->y), cvPoint(r->x+r->width,r->y+r->height), color);
@@ -344,7 +363,6 @@ void detect_and_draw( IplImage* img )
 	cvPutText(img, info, cvPoint(20,70), &helpfont, CV_RGB(0,0,0));
 	snprintf(info,256,"'c' : clear all faces");
 	cvPutText(img, info, cvPoint(20,80), &helpfont, CV_RGB(0,0,0));
-
 
 	#ifdef SHOW_FACES
 	for(map<unsigned int,Face*>::iterator ii=facebank.GetFaceMap().begin(); 
