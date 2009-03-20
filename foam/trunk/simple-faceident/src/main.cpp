@@ -114,7 +114,7 @@ int main( int argc, char** argv )
 
 	/////////////////////////////////
 	// yarp init
-	
+	cerr<<"connecting to yarp..."<<endl;
 	YarpPort.open("/faceident");
 	
 	/////////////////////////////////
