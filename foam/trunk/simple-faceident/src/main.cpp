@@ -28,13 +28,12 @@
 #include <limits.h>
 #include <time.h>
 #include <ctype.h>
-#include <yarp/os/all.h>
 
 #include "FaceBank.h"
 #include "ImageUtils.h"
+#include "SceneState.h"
 
 using namespace std;
-using namespace yarp::os;
 
 #ifdef _EiC
 #define WIN32
@@ -58,6 +57,7 @@ double scale = 1;
 //////////////////////////////////////////////////////////
 // These are the tweakable bits - see comments in FaceBank.h
 FaceBank facebank(30, 40, 0.15); 
+SceneState scenestate;
 
 // show all faces currently detected 
 #define SHOW_FACES
@@ -67,9 +67,6 @@ FaceBank facebank(30, 40, 0.15);
 bool learn=true;
 int facenum=0;
 int framenum=0;
-
-Network YarpNetwork;
-Port YarpPort;
 
 //////////////////////////////////////////////////////////
 
@@ -111,13 +108,6 @@ int main( int argc, char** argv )
         else
             input_name = argv[i];
     }
-
-	/////////////////////////////////
-	// yarp init
-	cerr<<"connecting to yarp..."<<endl;
-	YarpPort.open("/faceident");
-	
-	/////////////////////////////////
 
     cascade = (CvHaarClassifierCascade*)cvLoad( cascade_name, 0, 0, 0 );
 
@@ -325,26 +315,19 @@ void detect_and_draw( IplImage* img )
 				int x=(facebank.GetFaceWidth()+1)*ID;
 				int y=imgsize.height-facebank.GetFaceHeight();
 				cvLine(img, cvPoint(r->x+r->width/2,r->y+r->height/2),
-					cvPoint(x+facebank.GetFaceWidth()/2,y), color);
-				/////////////////////
-				// YARP send
-				
+					cvPoint(x+facebank.GetFaceWidth()/2,y), color);			
+
 				if (!learn)
 				{
-					Bottle b;  
-					b.clear();
-					b.add((int)ID);
-					b.add(confidence);
-					YarpPort.write(b);
+					scenestate.AddPresent(ID, SceneState::User(confidence));
 				}
-
-				////////////////////
-
 			}
 
 			cvRectangle(img, cvPoint(r->x,r->y), cvPoint(r->x+r->width,r->y+r->height), color);
         }
     }
+
+	scenestate.Update();
 
 	char info[256];
 	if (learn)
