@@ -1,5 +1,1 @@
 isPerson True
-atGarden False
-isParent False
-hasSoil False
-holds none

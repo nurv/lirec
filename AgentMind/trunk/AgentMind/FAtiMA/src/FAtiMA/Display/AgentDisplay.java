@@ -55,7 +55,7 @@ public class AgentDisplay {
         _ag = ag;
         _frame = new JFrame(ag.displayName());
         _frame.getContentPane().setLayout(new BoxLayout(_frame.getContentPane(),BoxLayout.Y_AXIS));
-		_frame.setSize(800,600);
+		_frame.setSize(900,1000);
 		_frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		_displayPane = new JTabbedPane();
@@ -70,8 +70,7 @@ public class AgentDisplay {
 		_displayPane.addTab("Drives", null, panel, "displays the character's drives.");*/
 		
 		panel = new NeedsPanel(ag.name());
-		_displayPane.addTab("Needs",null,panel,"displays the characters needs");
-		
+		_displayPane.addTab("Needs",null,panel,"displays the characters needs");		
 		
 		panel = new SocialRelationsPanel();
 		_displayPane.addTab("Social Relations",null,panel,"displays the character's realtions state");

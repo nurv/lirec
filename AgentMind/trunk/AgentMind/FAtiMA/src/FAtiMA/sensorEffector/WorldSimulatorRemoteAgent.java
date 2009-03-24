@@ -147,7 +147,6 @@ public class WorldSimulatorRemoteAgent extends RemoteAgent {
 			symbol += ")";
 		}*/
 
-		
 		subject = st.nextToken();
 		symbol = st.nextToken();
 

@@ -279,6 +279,10 @@ public class WorldTest {
 		}
 	}
 	
+	public void ReadyForNextStep(){
+		SendPerceptionToAll( "READY-FOR-NEXT-STEP" );
+	}
+	
 	public synchronized void removeAgent(RemoteAgent ra){
 		_agents.remove(ra);
 		_userInterface.WriteLine(ra.Name() + " disconnected\n");

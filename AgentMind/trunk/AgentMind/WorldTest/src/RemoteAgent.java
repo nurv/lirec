@@ -41,6 +41,7 @@ public class RemoteAgent extends SocketListener {
 	private String _displayName;
 	private WorldTest _world;
 	private Random _r;
+	private boolean _readyForNextStep = false;
 
 	public RemoteAgent(WorldTest world, Socket s) {
 		_generator = new Random();
@@ -95,7 +96,6 @@ public class RemoteAgent extends SocketListener {
 	public String Name() {
 		return _name;
 	}
-
 
 	public void AddProperty(Property p) {
 		_properties.add(p);

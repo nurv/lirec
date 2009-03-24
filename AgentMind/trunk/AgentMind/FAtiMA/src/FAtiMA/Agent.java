@@ -166,6 +166,8 @@ public class Agent {
 	private String _saveDirectory;
 	public static final String MIND_PATH = "data/characters/minds/";
 	private static final Name ACTION_CONTEXT = Name.ParseName("ActionContext()");
+	
+	private boolean _readyForNextStep = false;
 
 	public Agent(short agentPlatform, String host, int port, String saveDirectory, boolean displayMode, String name,String lActDatabase, String userLActDatabase, String sex, String role, String displayName, String actionsFile, String goalsFile, String cultureName, HashMap properties, ArrayList goalList) {
 
@@ -341,6 +343,7 @@ public class Agent {
 		KnowledgeBase.SaveState(fileName+"-KnowledgeBase.dat");
 		AutobiographicalMemory.SaveState(fileName+"-AutobiographicalMemory.dat");
 		ShortTermMemory.SaveState(fileName+"-ShortTermMemory.dat");
+		WorkingMemory.SaveState(fileName+"-WorkingMemory.dat");
 		ActionLibrary.SaveState(fileName+"-ActionLibrary.dat");
 		_remoteAgent.SaveState(fileName+"-RemoteAgent.dat");
 
@@ -430,6 +433,7 @@ public class Agent {
 		AgentSimulationTime.LoadState(fileName+"-Timer.dat");
 		AutobiographicalMemory.LoadState(fileName+"-AutobiographicalMemory.dat");
 		ShortTermMemory.LoadState(fileName+"-ShortTermMemory.dat");
+		WorkingMemory.LoadState(fileName+"-WorkingMemory.dat");
 		ActionLibrary.LoadState(fileName+"-ActionLibrary.dat");
 		
 		_remoteAgent.LoadState(fileName+"-RemoteAgent.dat");
@@ -531,155 +535,177 @@ public class Agent {
 	}
 
 	/**
+	 * Set the value for readyForNextStep
+	 * @param boolean value of readyForNextStep
+	 */
+	public void setReadyForNextStep(boolean readyForNextStep){
+		this._readyForNextStep = readyForNextStep;
+	}
+	
+	/**
 	 * Runs the agent, endless loop until there is a shutdown
 	 */
 	public void Run() {
 		ValuedAction action;
 		long updateTime = System.currentTimeMillis();
 		
-		while (!_shutdown) {
-			try {
-				
-			    if(_remoteAgent.isShutDown()) {
-				    _shutdown = true;
-			    }
-				
-			    //updates the agent's simulation timer
-			    AgentSimulationTime.GetInstance().Tick();
-			    
-			    _numberOfCycles++;
-			    long startCycleTime = System.currentTimeMillis();
-			    
-				if (_remoteAgent.isRunning()) {
-					//decay the agent's emotional state
-					EmotionalState.GetInstance().Decay();
-					MotivationalState.GetInstance().Decay();
-					_dialogManager.DecayCauseIDontHaveABetterName();
+		while (!_shutdown) {			
+			if(_readyForNextStep)
+			{
+				try {
 					
-					//perceives and appraises new events
-					synchronized (this)
-					{
-						for(ListIterator li = this._perceivedEvents.listIterator(); li.hasNext();)
-						{
-							Event e = (Event) li.next();
-							AgentLogger.GetInstance().log("Perceiving event: " + e.toName());
-							//inserting the event in AM
-						    //AutobiographicalMemory.GetInstance().StoreAction(e);
-							
-							// Meiyii 11/03/09
-							ShortTermMemory.GetInstance().StoreAction(e);
-							
-						    //registering an Action Context property in the KB
-							WorkingMemory.GetInstance().Tell(ACTION_CONTEXT,e.toName().toString());
-							
-							if(SpeechAct.isSpeechAct(e.GetAction()))
-							{
-								_dialogManager.UpdateDialogState(e);
-							}
-									
-							//adds the event to the deliberative and reactive layers so that they can appraise
-							//the events
-							
-							_reactiveLayer.AddEvent(e);
-							_deliberativeLayer.AddEvent(e);
-						}
-						this._perceivedEvents.clear();
-					}
+				    if(_remoteAgent.isShutDown()) {
+					    _shutdown = true;
+				    }
 					
-					//if there was new data or knowledge added we must apply inference operators
-					//update any inferred property to the outside and appraise the events
-					if(ShortTermMemory.GetInstance().HasNewData() ||
-							WorkingMemory.GetInstance().HasNewKnowledge())
-					{
-						
-						//calling the KnowledgeBase inference process
-						WorkingMemory.GetInstance().PerformInference();
-						
-						synchronized (KnowledgeBase.GetInstance())
-						{
-							ArrayList facts = WorkingMemory.GetInstance().GetNewFacts();
-							
-							for(ListIterator li = facts.listIterator();li.hasNext();)
-							{
-								KnowledgeSlot ks = (KnowledgeSlot) li.next();
-								if(ks.getName().startsWith(this._self))
-								{
-									_remoteAgent.ReportInternalPropertyChange(Name.ParseName(ks.getName()),
-											ks.getValue());
-								}
-							}
-							
-							
-						}
-					}
-					
-					//Appraise the events and changes in data
-					_reactiveLayer.Appraisal();
-				    _deliberativeLayer.Appraisal();	
+				    //updates the agent's simulation timer
+				    AgentSimulationTime.GetInstance().Tick();
 				    
-					
-				    _reactiveLayer.Coping();
-					
-					
-					_deliberativeLayer.Coping();
-				
-					if(_remoteAgent.FinishedExecuting() && _remoteAgent.isRunning()) {
+				    _numberOfCycles++;
+				    long startCycleTime = System.currentTimeMillis();
+				    
+					if (_remoteAgent.isRunning()) {
+						//decay the agent's emotional state
+						EmotionalState.GetInstance().Decay();
+						MotivationalState.GetInstance().Decay();
+						_dialogManager.DecayCauseIDontHaveABetterName();
 						
-						action = FilterSpeechAction(_reactiveLayer.GetSelectedAction());
-						
-						if(action != null) 
+						//perceives and appraises new events
+						synchronized (this)
 						{
-							_reactiveLayer.RemoveSelectedAction();
-							_remoteAgent.AddAction(action);
-						}
-						else
-						{
-							action = FilterSpeechAction(_deliberativeLayer.GetSelectedAction());
-							if(action != null)
+							for(ListIterator li = this._perceivedEvents.listIterator(); li.hasNext();)
 							{
-								_deliberativeLayer.RemoveSelectedAction();
+								Event e = (Event) li.next();
+								AgentLogger.GetInstance().log("Perceiving event: " + e.toName());
+								//inserting the event in AM
+							    //AutobiographicalMemory.GetInstance().StoreAction(e);
+								
+								// Meiyii 11/03/09
+								ShortTermMemory.GetInstance().StoreAction(e);
+								
+							    //registering an Action Context property in the KB
+								WorkingMemory.GetInstance().Tell(ACTION_CONTEXT,e.toName().toString());
+								
+								if(SpeechAct.isSpeechAct(e.GetAction()))
+								{
+									_dialogManager.UpdateDialogState(e);
+								}
+										
+								//adds the event to the deliberative and reactive layers so that they can appraise
+								//the events
+								
+								_reactiveLayer.AddEvent(e);
+								_deliberativeLayer.AddEvent(e);
+							}
+							this._perceivedEvents.clear();
+						}
+						
+						//if there was new data or knowledge added we must apply inference operators
+						//update any inferred property to the outside and appraise the events
+						if(ShortTermMemory.GetInstance().HasNewData() ||
+								WorkingMemory.GetInstance().HasNewKnowledge())
+						{
+							
+							//calling the KnowledgeBase inference process
+							WorkingMemory.GetInstance().PerformInference();
+							
+							synchronized (KnowledgeBase.GetInstance())
+							{
+								ArrayList facts = WorkingMemory.GetInstance().GetNewFacts();
+								
+								for(ListIterator li = facts.listIterator();li.hasNext();)
+								{
+									KnowledgeSlot ks = (KnowledgeSlot) li.next();
+									if(ks.getName().startsWith(this._self))
+									{
+										_remoteAgent.ReportInternalPropertyChange(Name.ParseName(ks.getName()),
+												ks.getValue());
+									}
+								}
+								
+								
+							}
+						}
+						
+						//Appraise the events and changes in data
+						_reactiveLayer.Appraisal();
+					    _deliberativeLayer.Appraisal();	
+					    
+						
+					    _reactiveLayer.Coping();
+						
+						
+						_deliberativeLayer.Coping();
+					
+						if(_remoteAgent.FinishedExecuting() && _remoteAgent.isRunning()) {
+							
+							action = FilterSpeechAction(_reactiveLayer.GetSelectedAction());
+							
+							if(action != null) 
+							{
+								_reactiveLayer.RemoveSelectedAction();
 								_remoteAgent.AddAction(action);
 							}
+							else
+							{
+								action = FilterSpeechAction(_deliberativeLayer.GetSelectedAction());
+								if(action != null)
+								{
+									_deliberativeLayer.RemoveSelectedAction();
+									_remoteAgent.AddAction(action);
+								}
+							}
+			
+							_remoteAgent.ExecuteNextAction();
 						}
-		
-						_remoteAgent.ExecuteNextAction();
+						
+						if(System.currentTimeMillis() - updateTime > 1000)
+						{
+							if(_showStateWindow && _agentDisplay != null) 
+							{
+								_agentDisplay.update();
+							}
+							
+							_remoteAgent.ReportInternalState();
+							
+							/*ActiveEmotion auxEmotion = EmotionalState.GetInstance().GetStrongestEmotion();
+							short nextEmotion;
+							if(auxEmotion != null) {
+							    nextEmotion = auxEmotion.GetType(); 
+							}
+							else nextEmotion = EmotionType.NEUTRAL;
+							
+							if(_currentEmotion != nextEmotion) {
+							    _currentEmotion = nextEmotion;
+							    _remoteAgent.ExpressEmotion(EmotionType.GetName(_currentEmotion));
+							}*/
+							
+							updateTime = System.currentTimeMillis();
+						}
 					}
 					
-					if(System.currentTimeMillis() - updateTime > 1000)
-					{
-						if(_showStateWindow && _agentDisplay != null) 
-						{
-							_agentDisplay.update();
-						}
-						
-						_remoteAgent.ReportInternalState();
-						
-						/*ActiveEmotion auxEmotion = EmotionalState.GetInstance().GetStrongestEmotion();
-						short nextEmotion;
-						if(auxEmotion != null) {
-						    nextEmotion = auxEmotion.GetType(); 
-						}
-						else nextEmotion = EmotionType.NEUTRAL;
-						
-						if(_currentEmotion != nextEmotion) {
-						    _currentEmotion = nextEmotion;
-						    _remoteAgent.ExpressEmotion(EmotionType.GetName(_currentEmotion));
-						}*/
-						
-						updateTime = System.currentTimeMillis();
-					}
+					long cycleExecutionTime = System.currentTimeMillis() - startCycleTime;
+					_totalexecutingtime += cycleExecutionTime;
+					//System.out.println("Cycle execution (in Millis): " + cycleExecutionTime);
+					//System.out.println("Average time per cycle (in Millis): " + _totalexecutingtime / _numberOfCycles);
+					Thread.sleep(10);
+					this._readyForNextStep = false;
+					
 				}
-				
-				long cycleExecutionTime = System.currentTimeMillis() - startCycleTime;
-				_totalexecutingtime += cycleExecutionTime;
-				//System.out.println("Cycle execution (in Millis): " + cycleExecutionTime);
-				//System.out.println("Average time per cycle (in Millis): " + _totalexecutingtime / _numberOfCycles);
-				Thread.sleep(10);
+				catch (Exception ex) {
+				    //_shutdown = true;
+				    ex.printStackTrace();
+				    //System.out.println(ex);
+				}
 			}
-			catch (Exception ex) {
-			    //_shutdown = true;
-			    ex.printStackTrace();
-			    //System.out.println(ex);
+			else
+			{
+				try {
+					Thread.sleep(10);
+				}
+				catch (Exception ex) {				
+				    ex.printStackTrace();
+				}
 			}
 		}
 	}

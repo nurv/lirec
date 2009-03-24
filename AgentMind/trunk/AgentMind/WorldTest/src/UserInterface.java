@@ -5,6 +5,7 @@ import java.util.ListIterator;
 import java.util.Random;
 import java.util.StringTokenizer;
 
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JComboBox;
@@ -13,6 +14,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JPanel;
 
 import FAtiMA.deliberativeLayer.plan.Effect;
 import FAtiMA.deliberativeLayer.plan.Step;
@@ -49,7 +51,7 @@ public class UserInterface implements ActionListener {
     	
         _frame = new JFrame("WorldTest User Interface");
         _frame.getContentPane().setLayout(new BoxLayout(_frame.getContentPane(),BoxLayout.Y_AXIS));
-		_frame.setSize(650,650);
+		_frame.setSize(350,350);
 		_frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		textArea = new JTextArea(40, 200);
@@ -59,10 +61,6 @@ public class UserInterface implements ActionListener {
 
         // Create the combo box
         inputList = new JComboBox();
-        
-        // Create the OK button to confirm input
-        JButton okButton = new JButton("OK");
-        okButton.addActionListener(this);
         
         _frame.getContentPane().add(scrollPane);
         
@@ -126,12 +124,32 @@ public class UserInterface implements ActionListener {
         Box userBox = new Box(BoxLayout.X_AXIS);
         userBox.add(new JLabel("User: "));
         userBox.add(_userOptions);
+
+        
+        // Create the OK button to confirm input
+        JButton okButton = new JButton("OK");
+        okButton.addActionListener(this);
+        
+        // Button to perform the next step
+        JButton stepButton = new JButton("Next Step");;
+        stepButton.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent arg0) {
+				_world.ReadyForNextStep();
+			}
+		});
+        
+        JPanel buttonsPanel = new JPanel();
+        buttonsPanel.setLayout(new BoxLayout(buttonsPanel,BoxLayout.X_AXIS));
+        buttonsPanel.add(okButton);
+        buttonsPanel.add(stepButton);
         
         _frame.getContentPane().add(timeBox);
         _frame.getContentPane().add(locationBox);
         _frame.getContentPane().add(userBox);
 		_frame.getContentPane().add(inputList);
-		_frame.getContentPane().add(okButton);
+		_frame.getContentPane().add(buttonsPanel);
+		//_frame.getContentPane().add(okButton);
+		//_frame.getContentPane().add(stepButton);
 		_frame.setVisible(true);
 		
 		String userOptionsFile = _world.GetUserOptionsFile(); // + _userOptions.getSelectedItem().toString() + ".txt";

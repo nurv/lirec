@@ -132,6 +132,7 @@ public abstract class RemoteAgent extends SocketListener {
 	protected static final String ADVANCE_TIME = "ADVANCE-TIME";
 	protected static final String STOP_TIME = "STOP-TIME";
 	protected static final String RESUME_TIME = "RESUME-TIME";
+	protected static final String READY_FOR_NEXT_STEP = "READY-FOR-NEXT-STEP";
 	
 	protected ArrayList _actions;
 	
@@ -323,6 +324,10 @@ public abstract class RemoteAgent extends SocketListener {
 			else if(msgType.equals(RESUME_TIME))
 			{
 				ResumeTimePerception(perception);
+			}
+			else if(msgType.equals(READY_FOR_NEXT_STEP))
+			{
+				_agent.setReadyForNextStep(true);			
 			}
 			
 			while(_lookAtList.size() > 0)

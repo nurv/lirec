@@ -176,8 +176,6 @@ public class KnowledgeBase implements Serializable {
 	private KnowledgeSlot _kB;
 	private ArrayList _factList;
 	private ArrayList _inferenceOperators;
-	private boolean _newKnowledge;
-	private ArrayList _newFacts;
 
 	/**
 	 * Creates a new Empty KnowledgeBase
@@ -186,8 +184,6 @@ public class KnowledgeBase implements Serializable {
 		_kB = new KnowledgeSlot("KB");
 		_factList = new ArrayList();
 		_inferenceOperators = new ArrayList();
-		_newKnowledge = false;
-		_newFacts = new ArrayList();
 	}
 	
 	/**
@@ -197,15 +193,6 @@ public class KnowledgeBase implements Serializable {
 	public void AddInferenceOperator(Step op)
 	{
 		_inferenceOperators.add(op);
-	}
-	
-	/**
-     * Gets the list of inference operators
-     * @return inference operators
-     */
-	public ArrayList GetInferenceOperators()
-	{ 
-		return _inferenceOperators;
 	}
 	
 	/**
@@ -227,6 +214,16 @@ public class KnowledgeBase implements Serializable {
 		return _kB;
 	}
 
+	 /**
+	 * Gets the inference operators
+	 * @return the inference operators
+	 */
+    // Added 19/03/09
+	public ArrayList GetInferenceOperators()
+	{
+		return _inferenceOperators;
+	}
+	
 	/**
 	 * Empties the KnowledgeBase
 	 *
@@ -235,8 +232,6 @@ public class KnowledgeBase implements Serializable {
 		synchronized (this) {
 			this._kB.clear();
 			this._factList.clear();
-			this._newFacts.clear();
-			this._newKnowledge = false;
 		}
 	}
 
@@ -299,8 +294,7 @@ public class KnowledgeBase implements Serializable {
 		KnowledgeSlot currentSlot;
 		ArrayList fetchList = property.GetLiteralList();
 		ListIterator li = fetchList.listIterator();
-		Symbol l;
-		
+		Symbol l;		
 
 		synchronized (this) {
 			while (li.hasNext()) {
@@ -310,7 +304,6 @@ public class KnowledgeBase implements Serializable {
 					aux = currentSlot.get(l.toString());
 				} else {
 					newProperty = true;
-					_newKnowledge = true;
 					aux = new KnowledgeSlot(l.toString());
 					currentSlot.put(l.toString(), aux);
 				} 
@@ -319,12 +312,7 @@ public class KnowledgeBase implements Serializable {
 					!aux.getValue().equals(value))
 			{
 				aux.setValue(value);
-				_newKnowledge = true;
-				KnowledgeSlot ksAux = new KnowledgeSlot(property.toString());
-				ksAux.setValue(value);
-				_newFacts.add(ksAux);
-				
-				System.out.println("New facts: " + ksAux.toString());
+				System.out.println("New facts in KB: " + aux.toString());
 			}
 			
 			if(newProperty)
@@ -332,8 +320,7 @@ public class KnowledgeBase implements Serializable {
 				KnowledgeSlot ks = new KnowledgeSlot(property.toString());
 				ks.setValue(value);
 				_factList.add(ks);
-				_newFacts.add(ks);
-				System.out.println("New property knowledge: " + ks.toString());
+				System.out.println("New property knowledge in KB: " + ks.toString());
 			}
 			else
 			{
@@ -345,7 +332,7 @@ public class KnowledgeBase implements Serializable {
 					if(ks.getName().equals(property.toString()))
 					{
 						ks.setValue(value);
-						System.out.println("New property value: " + ks.toString());
+						System.out.println("New property value in KB: " + ks.toString());
 					}
 				}
 			}
