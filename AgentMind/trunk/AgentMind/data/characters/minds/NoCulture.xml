@@ -1,0 +1,16 @@
+<Culture name="NoCulture">	
+	
+	<Praiseworthiness> 
+		<Action name="GreetBack" value="3"/>	
+		<Action name="Accept" value="3"/>	
+		<Action name="Reject" value="-3"/>	
+		<Action name="Choose" value="3"/>	
+		<Action name="SpeechAct" parameters="greeting" value="4"/>
+		<Action name="SpeechAct" parameters="introduction" value="5"/>
+		<Action name="SpeechAct" parameters="apple" value="3"/>
+		<Action name="SpeechAct" parameters="banana" value="3"/>
+		<Action name="SpeechAct" parameters="orange" value="3"/>
+		<Action name="SpeechAct" parameters="cake" value="3"/>										
+	</Praiseworthiness>	
+	
+</Culture>

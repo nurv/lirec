@@ -777,7 +777,6 @@ public abstract class RemoteAgent extends SocketListener {
 			AgentLogger.GetInstance().log("Look-At:" + propertyName.toString());
 			
 			WorkingMemory.GetInstance().Tell(propertyName, properties[1]);
-			System.out.println("LookAtPerception remoteAgent");
 			
 			//If the agent looks at another agent it initializes it's needs
 			if(!subject.equalsIgnoreCase(_agent.displayName()) && 

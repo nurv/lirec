@@ -640,6 +640,8 @@ public class MemoryEpisode implements Serializable {
 		String episode = "<Episode>";
 		episode += "<Location>" + this._location + "</Location>";
 		episode += "<Time>" + this._time + "</Time>";
+		episode += "<People>" + this._people + "</People>";
+		episode += "<Objects>" + this._objects + "</Objects>";
 		for(ListIterator li = _details.listIterator();li.hasNext();)
 		{
 			detail = (ActionDetail) li.next();

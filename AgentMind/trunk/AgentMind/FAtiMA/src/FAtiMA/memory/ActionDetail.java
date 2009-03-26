@@ -113,6 +113,21 @@ public class ActionDetail implements Serializable {
 		this._evaluation = new ArrayList();
 	}
 	
+	public ActionDetail(int ID, String subject, String action, String target, ArrayList parameters, ArrayList evaluation, Time time, String location, BaseEmotion emotion)
+	{
+		this._id = ID;
+		
+		this._subject = subject;
+		this._action = action;
+		this._target = target;
+		this._location = location;
+		
+		this._time = time;
+		this._emotion = emotion;
+		
+		this._evaluation = evaluation;
+	}
+	
 	public String getSubject()
 	{
 		return this._subject;
@@ -472,8 +487,8 @@ public class ActionDetail implements Serializable {
 		action += "<Action>" + this.getAction() + "</Action>";
 		action += "<Target>" + this.getTarget() + "</Target>";
 		action += "<Parameters>" + this.getParameters() + "</Parameters>";
-
-		action += "<Time>" + this.getTime() + "</Time>";
+		action += "<Evaluation>" + this.getEvaluation() + "</Evaluation>";
+		action += "<Time>" + this.getTime().getNarrativeTime() + "</Time>";
 		action += "<Location>" + this.getLocation() + "</Location>";
 		
 		action += "</Event>\n";

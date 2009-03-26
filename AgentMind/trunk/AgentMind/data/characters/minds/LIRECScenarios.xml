@@ -1,0 +1,75 @@
+<Scenarios>	
+	
+	<Scenario name="Remembering">
+		<WorldSimulator port="46874" scenery="RobotHouse" actionsFile="data/characters/minds/LIRECActions.xml" 
+						agentLanguageFile="data/characters/minds/language/agent/en/language-set-1" 
+						userOptionsFile="LIRECOptions">		
+			<Objects>
+				<Object name="Amy"/>
+				<Object name="Jenny"/>
+				<Object name="Susan"/>
+				<Object name="apple"/>
+				<Object name="orange"/>
+				<Object name="banana"/>
+				<Object name="cake"/>
+			</Objects>
+	
+		</WorldSimulator>	
+		<Agent name="Greta" displayName="Greta" role="Greta" platform="worldsim" host="localhost" 
+			   port="46874" displayMode="True" sex="F" actionsFile="LIRECActions" 
+			   goalsFile="LIRECGoalLibrary" cultureName="NoCulture">
+			<Properties>				
+				<Property name="time" value="Morning"/>
+				<Property name="isPerson" value="True"/>
+				<Property name="location" value="LivingRoom"/>
+			</Properties>	
+		<!--Agent name="Greta" platform="worldsim" host="localhost" port="46874"-->
+		</Agent>
+	</Scenario>	
+	
+	<Scenario name="Forgetting">
+		<WorldSimulator port="46874" scenery="RobotHouse" actionsFile="data/characters/minds/LIRECActions.xml" 
+						agentLanguageFile="data/characters/minds/language/agent/en/language-set-1" 
+						userOptionsFile="LIRECOptions">		
+			<Objects>
+				<Object name="John"/>
+				<Object name="Luke"/>
+				<Object name="Paulie"/>
+			</Objects>
+	
+		</WorldSimulator>	
+		<Agent name="Sarah" displayName="Sarah" role="Sarah" platform="worldsim" host="localhost" 
+			   port="46874" displayMode="True" sex="F" actionsFile="LIRECActions" 
+			   goalsFile="LIRECGoalLibrary" cultureName="NoCulture">
+			<Properties>				
+				<Property name="time" value="Morning"/>
+				<Property name="isPerson" value="True"/>
+				<Property name="location" value="LivingRoom"/>
+			</Properties>		
+		</Agent>		
+	</Scenario>	
+	
+	<Scenario name="Meal">	
+		<WorldSimulator port="46874" scenery="Forest" actionsFile="data/characters/minds/Actions.xml" 
+						agentLanguageFile="data/characters/minds/language/agent/en/language-set-1" 
+						userOptionsFile="UserOptionsMeal.txt">
+			
+			<Objects>
+				<Object name="user"/>
+				<Object name="ground"/>			
+			</Objects>
+			
+		</WorldSimulator>
+
+		<Agent name="Abbuk" displayName="Abbuk" role="Abbuk" platform="worldsim" host="localhost" 
+			   port="46874" displayMode="True" sex="M" actionsFile="LIRECActions" 
+			   goalsFile="LIRECGoalLibrary" cultureName="NoCulture">
+			
+			<Properties>
+				<Property name="isPerson" value="True"/>
+				<Property name="location" value="LivingRoom"/>	
+			</Properties>	
+		</Agent>
+		
+	</Scenario>	
+</Scenarios>

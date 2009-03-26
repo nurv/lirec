@@ -97,6 +97,9 @@ public class UserInterface implements ActionListener {
         _locationOptions = new JComboBox();
         _locationOptions.addItem("LivingRoom");
         _locationOptions.addItem("StudyRoom");
+        _locationOptions.addItem("Kitchen");
+        _locationOptions.addItem("BedRoom");
+        _locationOptions.addItem("Garden");
         _locationOptions.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
 				_world.ChangePlace(_locationOptions.getSelectedItem().toString());
@@ -109,11 +112,12 @@ public class UserInterface implements ActionListener {
         locationBox.add(_locationOptions);
         
 		_userOptions = new JComboBox();
-		_userOptions.addItem("Amy");
+		/*_userOptions.addItem("Amy");
 		_userOptions.addItem("Jenny");
-		/*_userOptions.addItem("John");
+		_userOptions.addItem("Susan");*/
+		_userOptions.addItem("John");
 		_userOptions.addItem("Luke");
-		_userOptions.addItem("Paulie");*/
+		_userOptions.addItem("Paulie");
 		_userOptions.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
 				_world.ChangeUser(_previousUser, _userOptions.getSelectedItem().toString());

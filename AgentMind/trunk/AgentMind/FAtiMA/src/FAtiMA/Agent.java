@@ -49,6 +49,7 @@ import FAtiMA.util.enumerables.EmotionType;
 import FAtiMA.util.parsers.AgentLoaderHandler;
 import FAtiMA.util.parsers.CultureLoaderHandler;
 import FAtiMA.util.parsers.ScenarioLoaderHandler;
+import FAtiMA.util.parsers.AMLoaderHandler;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.memory.shortTermMemory.WorkingMemory;
 
@@ -218,23 +219,13 @@ public class Agent {
 			}else if (agentPlatform == AgentPlatform.ION){
 				_remoteAgent = new IONRemoteAgent(host, port, this);	
 			}
-			 
-			/*if(agentPlatform == AgentPlatform.ION)
-			{
-				_remoteAgent = new IONRemoteAgent(host,port,this);
-			}
-			else if (agentPlatform == AgentPlatform.WORLDSIM)
-			{
-				_remoteAgent = new WorldSimulatorRemoteAgent(host,port,this,new HashMap());
-			}
-			
+			 		
 			/*
 			 * This call will initialize the timer for the agent's
 			 * simulation time
 			 */
 			AgentSimulationTime.GetInstance();
 
-			//LoadAgentState(_saveDirectory + name);
 			_remoteAgent.start();
 
 			if(_showStateWindow){
@@ -254,6 +245,10 @@ public class Agent {
 	public Agent(short agentPlatform, String host, int port, String directory, String fileName)
 	{
 		try{
+			_self = fileName;
+			Memory.GetInstance().setSelf(_self);
+			AgentLogger.GetInstance().initialize(fileName);
+			
 			_shutdown = false;
 			_numberOfCycles = 0;
 			
@@ -341,6 +336,16 @@ public class Agent {
 		CulturalDimensions.GetInstance().changeNeedsWeightsAndDecays();
 	}
 	
+	private void loadMemory(String memoryName)
+	throws ParserConfigurationException, SAXException, IOException{
+
+		AgentLogger.GetInstance().log("LOADING AM: " + memoryName);
+		
+		AMLoaderHandler am = new AMLoaderHandler();
+		SAXParserFactory factory = SAXParserFactory.newInstance();
+		SAXParser parser = factory.newSAXParser();
+		parser.parse(new File(MIND_PATH + memoryName + ".xml"), am);
+	}
 	
 
 	public void SaveAgentState(String agentName)
@@ -466,7 +471,7 @@ public class Agent {
 		ShortTermMemory.LoadState(fileName+"-ShortTermMemory.dat");
 		System.out.println(ShortTermMemory.GetInstance().toXML());
 		WorkingMemory.LoadState(fileName+"-WorkingMemory.dat");
-		System.out.println(WorkingMemory.GetInstance().toXML());
+		System.out.println(WorkingMemory.GetInstance().toString());
 		ActionLibrary.LoadState(fileName+"-ActionLibrary.dat");	
 		System.out.println(ActionLibrary.GetInstance().toString());
 		_remoteAgent.LoadState(fileName+"-RemoteAgent.dat");
@@ -587,7 +592,7 @@ public class Agent {
 			{
 				try {
 					
-					Thread.sleep(2500);
+					//Thread.sleep(2000);
 					
 				    if(_remoteAgent.isShutDown()) {
 					    _shutdown = true;

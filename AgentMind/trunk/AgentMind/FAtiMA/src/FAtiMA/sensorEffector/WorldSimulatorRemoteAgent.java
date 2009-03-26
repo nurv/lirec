@@ -180,8 +180,6 @@ public class WorldSimulatorRemoteAgent extends RemoteAgent {
 							speechAct.AddParameter(p.GetValue().toString());
 						}
 					}
-
-
 				}
 				event = speechAct.toEvent();
 			}
