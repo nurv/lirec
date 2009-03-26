@@ -500,7 +500,8 @@ public class MotivationalState implements Serializable {
 
 		result = "<MotivationalState>";
 		for(int i = 0; i < _selfMotivators.length; i++){
-			result = result + _selfMotivators[i].toXml();
+			if(_selfMotivators[i] != null)
+				result = result + _selfMotivators[i].toXml();
 		}
 		
 		result = result + "</MotivationalState>";

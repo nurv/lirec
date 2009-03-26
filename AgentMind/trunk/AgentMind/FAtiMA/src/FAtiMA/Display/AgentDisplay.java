@@ -55,7 +55,7 @@ public class AgentDisplay {
         _ag = ag;
         _frame = new JFrame(ag.displayName());
         _frame.getContentPane().setLayout(new BoxLayout(_frame.getContentPane(),BoxLayout.Y_AXIS));
-		_frame.setSize(900,1000);
+		_frame.setSize(900,900);
 		_frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		_displayPane = new JTabbedPane();
@@ -98,7 +98,13 @@ public class AgentDisplay {
     
     public void update() {
         AgentDisplayPanel pnl = (AgentDisplayPanel) _displayPane.getSelectedComponent();
-        if(pnl.Update(_ag)) _frame.setVisible(true);
+        
+        //for (int i=0; i <_displayPane.getComponentCount(); i++)
+        {
+        	//pnl = (AgentDisplayPanel) _displayPane.getComponentAt(i);
+        	pnl = (AgentDisplayPanel) _displayPane.getSelectedComponent();
+        	if(pnl.Update(_ag)) _frame.setVisible(true);
+        }
     }
     
     public void dispose() {

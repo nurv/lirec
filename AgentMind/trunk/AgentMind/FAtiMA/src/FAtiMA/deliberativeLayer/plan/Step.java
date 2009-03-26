@@ -208,7 +208,6 @@ public class Step implements IPlanningOperator, Cloneable, Serializable {
 		newbias = newprob - _baseprob;
 		
 		WorkingMemory.GetInstance().Tell(GetBiasName(),new Float(newbias));  
-		System.out.println("Decrease probability step");
 	}
 	
 	/**
@@ -233,7 +232,6 @@ public class Step implements IPlanningOperator, Cloneable, Serializable {
 		newprob = 0.6f * prob + 0.4f;
 		newbias = newprob - _baseprob;
 		WorkingMemory.GetInstance().Tell(GetBiasName(),new Float(newbias));   
-		System.out.println("Increase probability step");
 	}
 	
 	/**

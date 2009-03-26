@@ -109,7 +109,7 @@ public class Agent {
 				break;
 				
 			case AgentPlatform.WORLDSIM:
-				String saveDirectory = "";
+				String saveDirectory = "data/log/";
 				if (args.length == 4){
 					new Agent(agentPlatform, args[1],Integer.parseInt(args[2]),saveDirectory,args[3]);
 				}else if(args.length >= 11){
@@ -211,7 +211,6 @@ public class Agent {
 			String personalityFile = MIND_PATH + "roles/" + role + "/" + role + ".xml";
 			loadPersonality(personalityFile,agentPlatform, goalList);
 			
-			
 			loadCulture(cultureName);
 			
 			if(agentPlatform == AgentPlatform.WORLDSIM){
@@ -220,12 +219,22 @@ public class Agent {
 				_remoteAgent = new IONRemoteAgent(host, port, this);	
 			}
 			 
+			/*if(agentPlatform == AgentPlatform.ION)
+			{
+				_remoteAgent = new IONRemoteAgent(host,port,this);
+			}
+			else if (agentPlatform == AgentPlatform.WORLDSIM)
+			{
+				_remoteAgent = new WorldSimulatorRemoteAgent(host,port,this,new HashMap());
+			}
+			
 			/*
 			 * This call will initialize the timer for the agent's
 			 * simulation time
 			 */
 			AgentSimulationTime.GetInstance();
 
+			//LoadAgentState(_saveDirectory + name);
 			_remoteAgent.start();
 
 			if(_showStateWindow){
@@ -340,6 +349,7 @@ public class Agent {
 
 		AgentSimulationTime.SaveState(fileName+"-Timer.dat");
 		EmotionalState.SaveState(fileName+"-EmotionalState.dat");
+		MotivationalState.SaveState(fileName+"-MotivationalState.dat");
 		KnowledgeBase.SaveState(fileName+"-KnowledgeBase.dat");
 		AutobiographicalMemory.SaveState(fileName+"-AutobiographicalMemory.dat");
 		ShortTermMemory.SaveState(fileName+"-ShortTermMemory.dat");
@@ -397,7 +407,23 @@ public class Agent {
 		try
 		{
 			FileOutputStream out = new FileOutputStream(fileName);
-			out.write(AutobiographicalMemory.GetInstance().toXML().getBytes());
+			out.write(ShortTermMemory.GetInstance().toXML().getBytes());
+			out.flush();
+			out.close();
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+	
+	public void SaveWM(String agentName)
+	{
+		String fileName = _saveDirectory + agentName + "-WM.txt";
+		try
+		{
+			FileOutputStream out = new FileOutputStream(fileName);
+			out.write(WorkingMemory.GetInstance().toXML().getBytes());
 			out.flush();
 			out.close();
 		}
@@ -429,13 +455,20 @@ public class Agent {
 		in.close();
 
 		KnowledgeBase.LoadState(fileName+"-KnowledgeBase.dat");
+		System.out.println(KnowledgeBase.GetInstance().toString());
 		EmotionalState.LoadState(fileName+"-EmotionalState.dat");
+		System.out.println(EmotionalState.GetInstance().toXml());
+		MotivationalState.LoadState(fileName+"-MotivationalState.dat");
+		System.out.println(MotivationalState.GetInstance().toXml());
 		AgentSimulationTime.LoadState(fileName+"-Timer.dat");
 		AutobiographicalMemory.LoadState(fileName+"-AutobiographicalMemory.dat");
+		System.out.println(AutobiographicalMemory.GetInstance().toXML());
 		ShortTermMemory.LoadState(fileName+"-ShortTermMemory.dat");
+		System.out.println(ShortTermMemory.GetInstance().toXML());
 		WorkingMemory.LoadState(fileName+"-WorkingMemory.dat");
-		ActionLibrary.LoadState(fileName+"-ActionLibrary.dat");
-		
+		System.out.println(WorkingMemory.GetInstance().toXML());
+		ActionLibrary.LoadState(fileName+"-ActionLibrary.dat");	
+		System.out.println(ActionLibrary.GetInstance().toString());
 		_remoteAgent.LoadState(fileName+"-RemoteAgent.dat");
 	}
 	
@@ -550,9 +583,11 @@ public class Agent {
 		long updateTime = System.currentTimeMillis();
 		
 		while (!_shutdown) {			
-			if(_readyForNextStep)
+			//if(_readyForNextStep)
 			{
 				try {
+					
+					Thread.sleep(2500);
 					
 				    if(_remoteAgent.isShutDown()) {
 					    _shutdown = true;
@@ -698,7 +733,7 @@ public class Agent {
 				    //System.out.println(ex);
 				}
 			}
-			else
+			/*else
 			{
 				try {
 					Thread.sleep(10);
@@ -706,7 +741,7 @@ public class Agent {
 				catch (Exception ex) {				
 				    ex.printStackTrace();
 				}
-			}
+			}*/
 		}
 	}
 	

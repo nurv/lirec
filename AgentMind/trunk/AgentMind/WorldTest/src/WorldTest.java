@@ -38,7 +38,6 @@ public class WorldTest {
 	private UserInterface _userInterface;
 	private String _userOptionsFile;
 	
-	
 	static public void main(String args[]) throws Exception {
 		int i;
 		ArrayList objects = new ArrayList();
@@ -273,9 +272,11 @@ public class WorldTest {
 	}
 	
 	// Meiyii 11/03/09 
-	public void ChangeUser( String user ){
+	public void ChangeUser( String previousUser, String user ){
 		for( int i = 0, limit = _agents.size(); i != limit; ++i ){
-			SendPerceptionToAll( "PROPERTY-CHANGED " + ((RemoteAgent)_agents.get(i)).Name() + " user " + user );
+			SendPerceptionToAll( "PROPERTY-CHANGED " + user + "(isPresent) True");
+			if(!previousUser.equals(null))
+				SendPerceptionToAll( "PROPERTY-CHANGED " + previousUser + "(isPresent) False");
 		}
 	}
 	
@@ -289,7 +290,6 @@ public class WorldTest {
 	}
 
 	public String GetUserOptionsFile() {
-
 		return this._userOptionsFile;
 	}
 

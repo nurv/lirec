@@ -43,6 +43,7 @@ public class UserInterface implements ActionListener {
 	
 	private Random _r;
 	private static int buffsize = 250;
+	private String _previousUser;
 	
     public UserInterface(WorldTest world_in) {
         
@@ -108,16 +109,20 @@ public class UserInterface implements ActionListener {
         locationBox.add(_locationOptions);
         
 		_userOptions = new JComboBox();
-		_userOptions.addItem("User1");
-		_userOptions.addItem("User2");
+		_userOptions.addItem("Amy");
+		_userOptions.addItem("Jenny");
+		/*_userOptions.addItem("John");
+		_userOptions.addItem("Luke");
+		_userOptions.addItem("Paulie");*/
 		_userOptions.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
-				_world.ChangeUser(_userOptions.getSelectedItem().toString());
+				_world.ChangeUser(_previousUser, _userOptions.getSelectedItem().toString());
 				WriteLine("=> Changing the user: " + _userOptions.getSelectedItem().toString());
 				String userOptionsFile = _world.GetUserOptionsFile() + _userOptions.getSelectedItem().toString() + ".txt";
 				
 				// Read user input options from a text file
 				ParseFile(userOptionsFile);
+				_previousUser = _userOptions.getSelectedItem().toString();
 			}
 		});
         
@@ -152,7 +157,8 @@ public class UserInterface implements ActionListener {
 		//_frame.getContentPane().add(stepButton);
 		_frame.setVisible(true);
 		
-		String userOptionsFile = _world.GetUserOptionsFile(); // + _userOptions.getSelectedItem().toString() + ".txt";
+		String userOptionsFile = _world.GetUserOptionsFile() + _userOptions.getSelectedItem().toString() + ".txt";
+		_previousUser = _userOptions.getSelectedItem().toString();
 		
 		// Read user input options from a text file
 		ParseFile(userOptionsFile);
