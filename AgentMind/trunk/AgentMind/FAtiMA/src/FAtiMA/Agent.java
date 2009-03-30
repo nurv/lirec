@@ -49,7 +49,6 @@ import FAtiMA.util.enumerables.EmotionType;
 import FAtiMA.util.parsers.AgentLoaderHandler;
 import FAtiMA.util.parsers.CultureLoaderHandler;
 import FAtiMA.util.parsers.ScenarioLoaderHandler;
-import FAtiMA.util.parsers.AMLoaderHandler;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.memory.shortTermMemory.WorkingMemory;
 
@@ -336,7 +335,7 @@ public class Agent {
 		CulturalDimensions.GetInstance().changeNeedsWeightsAndDecays();
 	}
 	
-	private void loadMemory(String memoryName)
+	/*private void loadMemory(String memoryName)
 	throws ParserConfigurationException, SAXException, IOException{
 
 		AgentLogger.GetInstance().log("LOADING AM: " + memoryName);
@@ -345,7 +344,7 @@ public class Agent {
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		SAXParser parser = factory.newSAXParser();
 		parser.parse(new File(MIND_PATH + memoryName + ".xml"), am);
-	}
+	}*/
 	
 
 	public void SaveAgentState(String agentName)
@@ -592,7 +591,7 @@ public class Agent {
 			{
 				try {
 					
-					//Thread.sleep(2000);
+					Thread.sleep(2000);
 					
 				    if(_remoteAgent.isShutDown()) {
 					    _shutdown = true;

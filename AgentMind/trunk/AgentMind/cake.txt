@@ -1,0 +1,2 @@
+isCake True
+eatable True
