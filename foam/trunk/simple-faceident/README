@@ -1,28 +1,40 @@
 Simple Face Identification
 --------------------------
 
-Uses OpenCV's face finder to record and detect identity. Sends bottles over 
-yarp on port /faceident containing the ID and confidence value.
+A simple approach to face identification, built on top of OpenCV and given a 
+YARP network interface.
 
-Use the number keys to train the system against different individuals. The idea 
-is that one by one, individuals show their faces, after which the system will 
-recognise who is who in the camera's view. The program will avoid recording 
-faces which are too similar to existing recorded ones. Press 'd' to switch to 
-switch off the training and just detect against existing faces. The boxes 
-around the faces display the id and the confidence value of the match.
+The program has two modes of operation. The first is calibration, where each 
+user must show their face to the camera separately - press the number keys to 
+assign each user with a different ID. You can see which face is mapped to 
+which ID at the bottom of the window.
 
-Requires: OpenCV
-Written and tested on Linux, but it should work in Windows too.
-At the moment you'll probably have to run it with:
+The second mode of operation is face detection, where each visible detected 
+face is given an ID based on it's closest match (within a given error 
+threshold) with the faces recorded during calibration. The boxes drawn around 
+the faces display the id and the confidence value of the match. When in this 
+mode the program sends the following YARP messages:
 
-simple-faceident --cascade=/path/to/haarcascade_frontalface_alt.xml
+Port         Bottle contents                Meaning
+/faceident 	"user appeared" ID confidence   A user has entered the view of the camera
+/faceident 	"user disappeared" ID           The user has left the camera view
 
-In order to find OpenCV's data, on my machine it's in:
+Key                 Meaning
+0-9 number keys     Calibrate a given id against a face in the scene
+d                   Start detect mode, which will send YARP messages
+c                   Clear all faces in the database
+
+Requires: OpenCV, YARP
+
+Written and tested on Linux, but it should work in Windows too. At the moment 
+you'll probably have to run it with:
+
+simple-faceident -cascade=/path/to/haarcascade_frontalface_alt.xml
+
+In order to find OpenCV's data, on my machine it's in: 
 /usr/local/share/opencv/haarcascades/haarcascade_frontalface_alt.xml
 
 Todo:
-* Command line parameters
-* YARP interface
 * Try normalised cross correlation instead of image differencing
 
 Questions to:
