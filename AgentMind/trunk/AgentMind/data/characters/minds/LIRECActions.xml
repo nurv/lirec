@@ -32,8 +32,8 @@
 			</Effect>
 		</Effects>
 		<EffectsOnDrives>
-			<Motivator drive="Affiliation" target="[AGENT]" value="+3"/>
-			<Motivator drive="Affiliation" target="[target]" value="+3"/>
+			<Motivator drive="Affiliation" target="[AGENT]" value="+2"/>
+			<Motivator drive="Affiliation" target="[target]" value="+2"/>
 		</EffectsOnDrives>
 	</Action>
 
@@ -130,8 +130,8 @@
 			</Effect>
 		</Effects>
 		<EffectsOnDrives>
-			<Motivator drive="Affiliation" target="[AGENT]" value="+3"/>
-			<Motivator drive="Affiliation" target="[target]" value="+3"/>
+			<Motivator drive="Affiliation" target="[AGENT]" value="+2"/>
+			<Motivator drive="Affiliation" target="[target]" value="+2"/>
 		</EffectsOnDrives>
 	</Action>
 	
@@ -162,8 +162,8 @@
 			</Effect>
 		</Effects>
 		<EffectsOnDrives>
-			<Motivator drive="Affiliation" target="[AGENT]" value="+3"/>
-			<Motivator drive="Affiliation" target="[target]" value="+3"/>
+			<Motivator drive="Affiliation" target="[AGENT]" value="+4"/>
+			<Motivator drive="Affiliation" target="[target]" value="+4"/>
 		</EffectsOnDrives>
 	</Action>
 	
@@ -178,8 +178,8 @@
 			</Effect>
 		</Effects>
 		<EffectsOnDrives>
-			<Motivator drive="Affiliation" target="[AGENT]" value="+3"/>
-			<Motivator drive="Affiliation" target="[target]" value="+3"/>
+			<Motivator drive="Integrity" target="[AGENT]" value="+3"/>
+			<Motivator drive="Affiliation" target="[target]" value="+1"/>
 		</EffectsOnDrives>
 	</Action>
 	
@@ -194,8 +194,8 @@
 			</Effect>
 		</Effects>
 		<EffectsOnDrives>
-			<Motivator drive="Affiliation" target="[AGENT]" value="+3"/>
-			<Motivator drive="Affiliation" target="[target]" value="+3"/>
+			<Motivator drive="Integrity" target="[AGENT]" value="+3"/>
+			<Motivator drive="Affiliation" target="[target]" value="+1"/>
 		</EffectsOnDrives>
 	</Action>
 	
@@ -259,7 +259,7 @@
 			</Effect>
 		</Effects>
 		<EffectsOnDrives>
-			<Motivator drive="Affiliation" target="[target]" value="+3"/>
+			<Motivator drive="Affiliation" target="[target]" value="-5"/>
 		</EffectsOnDrives>
 	</Action>
 	
@@ -287,7 +287,7 @@
 			</Effect>
 		</Effects>
 		<EffectsOnDrives>
-			<Motivator drive="Affiliation" target="[target]" value="+3"/>
+			<Motivator drive="Affiliation" target="[target]" value="+2"/>
 		</EffectsOnDrives>
 	</Action>
 	
@@ -300,7 +300,7 @@
 			</Effect>
 		</Effects>
 		<EffectsOnDrives>
-			<Motivator drive="Affiliation" target="[target]" value="+3"/>
+			<Motivator drive="Affiliation" target="[target]" value="+1"/>
 		</EffectsOnDrives>
 	</Action>
 	
