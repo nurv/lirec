@@ -29,6 +29,7 @@
 
 package FAtiMA.Display;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -59,9 +60,10 @@ public class ShortTermMemoryPanel extends AgentDisplayPanel {
     private static int _knowledgeSize = 0;
     private ArrayList _knowledgeFactList;
     private JPanel _knowledgeFactsPanel;
-    
-    private ArrayList _workingFactList;
+   
     private JPanel _workingFactsPanel;
+    private JPanel _workingFactsSubPanel1;
+    private JPanel _workingFactsSubPanel2;
     
     public ShortTermMemoryPanel() {
         
@@ -88,16 +90,29 @@ public class ShortTermMemoryPanel extends AgentDisplayPanel {
 		JScrollPane knowledgeFactScroll = new JScrollPane(_knowledgeFactsPanel);
 		knowledgeFactScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);			
 		this.add(knowledgeFactScroll);
-		
-		_workingFactList = new ArrayList();
 	        
 		_workingFactsPanel = new JPanel();
 		_workingFactsPanel.setBorder(BorderFactory.createTitledBorder("Working Memory"));
-		_workingFactsPanel.setLayout(new BoxLayout(_workingFactsPanel,BoxLayout.Y_AXIS));
+		_workingFactsPanel.setLayout(new BoxLayout(_workingFactsPanel,BoxLayout.X_AXIS));
 		_workingFactsPanel.setMaximumSize(new Dimension(850,300));
 		_workingFactsPanel.setMinimumSize(new Dimension(850,300));
 	    
+		_workingFactsSubPanel1 = new JPanel();
+		_workingFactsSubPanel1.setLayout(new BoxLayout(_workingFactsSubPanel1,BoxLayout.Y_AXIS));
+		_workingFactsSubPanel1.setMaximumSize(new Dimension(400,650));
+		_workingFactsSubPanel1.setMinimumSize(new Dimension(400,650));
+		
+		
+		_workingFactsSubPanel2 = new JPanel();
+		_workingFactsSubPanel2.setLayout(new BoxLayout(_workingFactsSubPanel2,BoxLayout.Y_AXIS));
+		_workingFactsSubPanel2.setMaximumSize(new Dimension(400,650));
+		_workingFactsSubPanel2.setMinimumSize(new Dimension(400,650));		
+		
+		_workingFactsPanel.add(_workingFactsSubPanel1);
+		_workingFactsPanel.add(_workingFactsSubPanel2);
+		
 		JScrollPane workingFactScroll = new JScrollPane(_workingFactsPanel);
+		workingFactScroll.setAutoscrolls(true);
 		workingFactScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);	
 		this.add(workingFactScroll);
 		
@@ -138,22 +153,30 @@ public class ShortTermMemoryPanel extends AgentDisplayPanel {
             slot = (KnowledgeSlot) li.next();
             if(index >= _knowledgeFactList.size()) {
                 kDisplay = new KnowledgeFactDisplay(slot.getName(),slot.getValue().toString());
+                kDisplay.GetPanel().setBackground(new Color(255,255,0));
                 _knowledgeFactList.add(kDisplay);
                 _knowledgeFactsPanel.add(kDisplay.GetPanel());
             }
         }
         
         li = WorkingMemory.GetInstance().GetFactList();
-        _workingFactList.clear(); 
-        _workingFactsPanel.removeAll();
+        ArrayList changeList = WorkingMemory.GetInstance().GetChangeList();
+        _workingFactsSubPanel1.removeAll();
+        _workingFactsSubPanel2.removeAll();
+        short half = (WorkingMemory.MAXENTRY)/2;
         
         while (li.hasNext()) {
-            index = li.nextIndex();
+        	index = li.nextIndex();
             slot = (KnowledgeSlot) li.next();
-            kDisplay = new KnowledgeFactDisplay(slot.getName(),slot.getValue().toString());
-            _workingFactList.add(kDisplay);
-            _workingFactsPanel.add(kDisplay.GetPanel());
+            kDisplay = new KnowledgeFactDisplay(slot.getName(),slot.getValue().toString());            	
+            if (changeList.contains(slot))
+            	kDisplay.GetPanel().setBackground(new Color(255,255,0));
+            if(index >= half)
+            	_workingFactsSubPanel2.add(kDisplay.GetPanel());
+            else
+            	_workingFactsSubPanel1.add(kDisplay.GetPanel());
         }
+        WorkingMemory.GetInstance().ClearChangeList();
   
         return true;
     }

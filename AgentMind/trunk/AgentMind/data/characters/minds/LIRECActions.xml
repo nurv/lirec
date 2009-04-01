@@ -183,6 +183,22 @@
 		</EffectsOnDrives>
 	</Action>
 	
+	<Action name="SpeechAct([target],dontTell)">
+		<PreConditions>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+			<RecentEvent occurred="True" subject="[target]" action="Ask" target="[AGENT]" parameters="*"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],SpeechAct,[target],dontTell)"/>
+			</Effect>
+		</Effects>
+		<EffectsOnDrives>
+			<Motivator drive="Affiliation" target="[AGENT]" value="+3"/>
+			<Motivator drive="Affiliation" target="[target]" value="+3"/>
+		</EffectsOnDrives>
+	</Action>
+	
 	<Action name="SpeechAct([target],[info],[friend])">
 		<PreConditions>
 			<Property name="[target]" operator="!=" value="[AGENT]"/>
@@ -201,7 +217,7 @@
 	
 	<!-- User's actions -->
 	<!-- User greets correctly -->
-	<Action name="GreetBack([target])" probability="0.8">
+	<Action name="GreetBack([target])" probability="0.5">
 		<PreConditions>
 			<Property name="[target]" operator="!=" value="[AGENT]" />
 			<Property name="[target](isPerson)" operator="=" value="True" />

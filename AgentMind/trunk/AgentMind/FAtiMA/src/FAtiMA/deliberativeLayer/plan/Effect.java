@@ -105,7 +105,7 @@ public class Effect implements IGroundable, Cloneable, Serializable {
 		newprob = 0.6f * prob;
 		newbias = newprob - _baseprob;
 		WorkingMemory.GetInstance().Tell(_biasName,new Float(newbias));   
-		System.out.println("Decrease probability effect");
+		//System.out.println("Decrease probability effect");
 	}
 	
 	/**

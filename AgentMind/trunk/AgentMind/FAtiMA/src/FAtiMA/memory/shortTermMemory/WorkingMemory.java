@@ -77,7 +77,7 @@ import FAtiMA.memory.KnowledgeSlot;
 public class WorkingMemory implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	public static final short MAXENTRY = 12;
+	public static final short MAXENTRY = 20;
 	
 	/**
 	 * Singleton pattern 
@@ -148,6 +148,7 @@ public class WorkingMemory implements Serializable {
 	private ArrayList _factList;
 	private boolean _newKnowledge;
 	private ArrayList _newFacts;
+	private ArrayList _changeList;
 
 	/**
 	 * Creates a new Empty WorkingMemory
@@ -157,6 +158,7 @@ public class WorkingMemory implements Serializable {
 		_factList = new ArrayList(WorkingMemory.MAXENTRY);
 		_newKnowledge = false;
 		_newFacts = new ArrayList();
+		_changeList = new ArrayList(WorkingMemory.MAXENTRY);
 	}
     
 	/**
@@ -254,6 +256,7 @@ public class WorkingMemory implements Serializable {
 			this._factList.clear();
 			this._newFacts.clear();
 			this._newKnowledge = false;
+			this._changeList.clear();
 		}
 	}
 
@@ -348,6 +351,7 @@ public class WorkingMemory implements Serializable {
 				KnowledgeSlot ks = new KnowledgeSlot(property.toString());
 				ks.setValue(value);
 				_factList.add(ks);
+				_changeList.add(ks); // new info
 				_newFacts.add(ks);
 				System.out.println("New property knowledge: " + ks.toString());
 			}
@@ -361,6 +365,7 @@ public class WorkingMemory implements Serializable {
 					if(ks.getName().equals(property.toString()))
 					{
 						ks.setValue(value);
+						_changeList.add(ks); // property value change
 						System.out.println("New property value: " + ks.toString());
 					} 
 				}
@@ -398,8 +403,7 @@ public class WorkingMemory implements Serializable {
 				currentSlot.remove(l.toString());
 				
 				KnowledgeBase.GetInstance().Tell(tempName, temp.getValue());
-				_factList.remove(0);					
-				
+				_factList.remove(0);				
 			}
 		}
 	}
@@ -428,6 +432,14 @@ public class WorkingMemory implements Serializable {
 	
 	public ListIterator GetFactList() {
 	    return _factList.listIterator();
+	}
+	
+	public ArrayList GetChangeList() {
+	    return _changeList;
+	}
+	
+	public void ClearChangeList() {
+	    _changeList.clear();
 	}
 	
 	/**

@@ -303,6 +303,8 @@ class ActionSimulator extends Thread{
 					if (utterance != null)
 					{
 						_world.GetUserInterface().WriteLine(_agentName + " says to " + receiver + ": " + utterance);
+						if (_world.GetGreta() != null)
+							_world.GetGreta().Send(utterance);
 					}
 					else
 					{

@@ -93,6 +93,7 @@
 		<PreConditions>			
 			<Property name="[target](isPerson)" operator="=" value="True" />
 			<Property name="[target]" operator="!=" value="[SELF]" />
+			<Property name="[target](isPresent)" operator="=" value="True" />
 			<RecentEvent occurred="False" subject="[target]" action="Accept" target="[SELF]" parameters="*"/>
 			<RecentEvent occurred="True" subject="[target]" action="Reject" target="[SELF]" parameters="*"/>
 		</PreConditions>	
@@ -110,6 +111,7 @@
 		<PreConditions>			
 			<Property name="[target](isPerson)" operator="=" value="True" />
 			<Property name="[target]" operator="!=" value="[SELF]" />
+			<Property name="[target](isPresent)" operator="=" value="True" />
 			<RecentEvent occurred="True" subject="[target]" action="Choose" target="[SELF]" parameters="[item]"/>
 		</PreConditions>	
 		<SucessConditions>
@@ -126,6 +128,7 @@
 		<PreConditions>			
 			<Property name="[target](isPerson)" operator="=" value="True" />
 			<Property name="[target]" operator="!=" value="[SELF]" />
+			<Property name="[target](isPresent)" operator="=" value="True" />
 			<RecentEvent occurred="True" subject="[target]" action="Accept" target="[SELF]" parameters="[item]"/>
 		</PreConditions>	
 		<SucessConditions>
@@ -143,6 +146,7 @@
 		<PreConditions>			
 			<Property name="[target](isPerson)" operator="=" value="True" />
 			<Property name="[target]" operator="!=" value="[SELF]" />
+			<Property name="[target](isPresent)" operator="=" value="True" />
 			<Property name="[target]([info],isSensitive)" operator="=" value="[friend]" />
 			<RecentEvent occurred="True" subject="[target]" action="TellSensitiveInfo" target="[SELF]" parameters="[friend],[info]"/>
 		</PreConditions>	
@@ -160,6 +164,7 @@
 		<PreConditions>			
 			<Property name="[target](isPerson)" operator="=" value="True" />
 			<Property name="[target]" operator="!=" value="[SELF]" />
+			<Property name="[target](isPresent)" operator="=" value="True" />
 			<Property name="[friend](isPerson)" operator="=" value="True" />
 			<Property name="[friend]([info],isSensitive)" operator="=" value="[target]" />
 			<RecentEvent occurred="True" subject="[target]" action="Ask" target="[SELF]" parameters="[friend],[info]"/>
@@ -174,14 +179,38 @@
 		</ExpectedEffects>			
 	</ActivePursuitGoal>
 	
+	<ActivePursuitGoal name="DontTellInfo([target],[friend],[info])">
+		<PreConditions>			
+			<Property name="[target](isPerson)" operator="=" value="True" />
+			<Property name="[target]" operator="!=" value="[SELF]" />
+			<Property name="[target](isPresent)" operator="=" value="True" />
+			<Property name="[friend]([info],isSensitive)" operator="=" value="[agentX]" />
+			<Property name="[agentX](isPresent)" operator="=" value="True" />
+			<Property name="[friend](isPerson)" operator="=" value="True" />
+			<Property name="[friend]([info],isSensitive)" operator="!=" value="[target]" />
+			<RecentEvent occurred="False" subject="[SELF]" action="SpeechAct" target="[target]" parameters="[info],[friend]"/>
+			<RecentEvent occurred="True" subject="[target]" action="Ask" target="[SELF]" parameters="[friend],[info]"/>
+		</PreConditions>	
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[target]" parameters="dontTell"/>
+		</SucessConditions>		
+		<ExpectedEffects>
+			<OnSelect drive="Affiliation" target="[SELF]" value="+3"/>
+			<OnIgnore drive="Affiliation" target="[SELF]" value="-3"/>
+			<OnSelect drive="Affiliation" target="[target]" value="+3"/>			
+		</ExpectedEffects>			
+	</ActivePursuitGoal>
+	
 	<ActivePursuitGoal name="ReplyTellInfo([target],[friend],[info])">
 		<PreConditions>			
 			<Property name="[target](isPerson)" operator="=" value="True" />
 			<Property name="[target]" operator="!=" value="[SELF]" />
-			<!--Property name="[friend]([info],isSensitive)" operator="=" value="[agentX]" />
-			<Property name="[agentX](isPresent)" operator="=" value="False" /-->
+			<Property name="[target](isPresent)" operator="=" value="True" />
+			<Property name="[friend]([info],isSensitive)" operator="=" value="[agentX]" />
+			<Property name="[agentX](isPresent)" operator="=" value="False" />
 			<Property name="[friend](isPerson)" operator="=" value="True" />
 			<Property name="[friend]([info],isSensitive)" operator="!=" value="[target]" />
+			<RecentEvent occurred="False" subject="[SELF]" action="SpeechAct" target="[target]" parameters="dontTell"/>
 			<RecentEvent occurred="True" subject="[target]" action="Ask" target="[SELF]" parameters="[friend],[info]"/>
 		</PreConditions>	
 		<SucessConditions>

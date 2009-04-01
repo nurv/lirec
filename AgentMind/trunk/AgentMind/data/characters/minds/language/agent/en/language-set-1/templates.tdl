@@ -50,8 +50,8 @@ Type(value:newJob) it(value:$O)
 Type(value:hideInfo)
 -> Utterance(value: "I am afraid I don't know anything about that.")
 
-Type(value:hideInfo)
--> Utterance(value: "Why don't you ask him yourself?")
+Type(value:dontTell)
+-> Utterance(value: "I suggest you ask him later.")
 
 Type(value:goodbye) it(value:$O)
 -> Utterance(value: ("Talk to you again soon. Enjoy your ",$O,"."))

@@ -136,10 +136,12 @@ public class AutobiographicalMemory implements Serializable {
 	public void StoreAction(ActionDetail action)
 	{
 		MemoryEpisode event;
-		String oldLocation;
+		String oldLocation;	
+		boolean found = false;
 		
 		synchronized (this) {
-			if(this._memoryEvents.size() == 0)
+			// this code delay the creation of episode until an event is transferred from STM
+			/*if(this._memoryEvents.size() == 0)
 			{
 				event = new MemoryEpisode(action.getLocation(), action.getTime());
 				this._memoryEvents.add(event);
@@ -158,8 +160,52 @@ public class AutobiographicalMemory implements Serializable {
 					this._memoryEvents.add(event);
 				}
 			}
-			event.AddActionDetail(action);
+			event.AddActionDetail(action);*/			
+			
+			// add events from STM to the relevant episode
+			for (int i = this._memoryEvents.size()-1; i >= 0 && !found; i--)
+			{
+				event = (MemoryEpisode) this._memoryEvents.get(i);
+				if (event.getLocation().equals(action.getLocation()))
+				{
+					if (event.getTime() == null)
+						event.setTime(action.getTime());
+					event.AddActionDetail(action);
+					found = true;
+				}
+			}
 		}
+	}
+	
+	/**
+	 * Creates a new episode when location changes
+	 * @param newLocation - the new location of the agent
+	 */
+	public void NewEpisode(String newLocation)
+	{	
+		MemoryEpisode event;
+		String oldLocation;
+		
+		synchronized (this) {
+			if(this._memoryEvents.size() == 0)
+			{
+				event = new MemoryEpisode(newLocation);
+				this._memoryEvents.add(event);
+			}
+			else 
+			{
+				event = (MemoryEpisode) this._memoryEvents.get(this._memoryEvents.size()-1);
+				oldLocation = event.getLocation();
+				if(oldLocation == null) {
+					event.setLocation(newLocation);
+				}
+				else if(!event.getLocation().equals(newLocation))
+				{
+					event = new MemoryEpisode(newLocation);
+					this._memoryEvents.add(event);
+				}
+			}
+		}		
 	}
 	
 	public Object GetSyncRoot()

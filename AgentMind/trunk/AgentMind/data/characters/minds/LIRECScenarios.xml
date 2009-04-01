@@ -6,8 +6,8 @@
 						userOptionsFile="LIRECOptions">		
 			<Objects>
 				<Object name="Amy"/>
-				<Object name="Jenny"/>
-				<Object name="Susan"/>
+				<!--Object name="Jenny"/>
+				<Object name="Susan"/-->
 				<Object name="apple"/>
 				<Object name="orange"/>
 				<Object name="banana"/>

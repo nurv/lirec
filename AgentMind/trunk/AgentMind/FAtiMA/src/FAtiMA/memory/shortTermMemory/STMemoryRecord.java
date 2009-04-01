@@ -89,6 +89,11 @@ public class STMemoryRecord implements Serializable {
 		return this._details.size();
 	}
 	
+	public ActionDetail GetNewestRecord()
+	{
+		return (ActionDetail) this._details.get(_details.size()-1);
+	}
+	
 	public ActionDetail GetOldestRecord()
 	{
 		return (ActionDetail) this._details.get(0);

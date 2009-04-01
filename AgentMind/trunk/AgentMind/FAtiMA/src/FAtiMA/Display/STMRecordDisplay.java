@@ -45,8 +45,9 @@ import FAtiMA.memory.shortTermMemory.STMemoryRecord;
 
 public class STMRecordDisplay {
 
-	JPanel _panel;
-    JPanel _details;
+	private JPanel _panel;
+    private JPanel _details;
+    private static int _lastID = 0;
     
     public STMRecordDisplay(STMemoryRecord records) {
 
@@ -128,13 +129,22 @@ public class STMRecordDisplay {
 		prop.setMinimumSize(new Dimension(650,300));
 		
 		JScrollPane propertiesScroll = new JScrollPane(prop);
+		propertiesScroll.setAutoscrolls(true);
 		
 		ListIterator li = records.getDetails().listIterator();
+	
 		while(li.hasNext())
 		{
-			prop.add(new RecordDetailPanel((ActionDetail)li.next()));
+			ActionDetail actionDetail = (ActionDetail) li.next();
+			RecordDetailPanel recordDetailPanel = new RecordDetailPanel(actionDetail);
+			if (actionDetail.getID() > _lastID)
+				recordDetailPanel.setBackground(new Color(255,255,0));
+				
+			prop.add(recordDetailPanel);
+			if(!li.hasNext())
+				_lastID = actionDetail.getID();
 		}
-		
+	
 		_details.add(propertiesScroll);
         
 		_panel.add(_details);

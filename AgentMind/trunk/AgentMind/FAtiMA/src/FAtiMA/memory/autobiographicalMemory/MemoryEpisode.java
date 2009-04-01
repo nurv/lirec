@@ -82,10 +82,28 @@ public class MemoryEpisode implements Serializable {
 		//this._dominantActions = new ArrayList(this._numberOfDominantActions);	
 	}
 	
+	public MemoryEpisode(String location)
+	{
+		this._location = location;
+		this._time = null;
+		this._people = new ArrayList();
+		this._objects = new ArrayList();
+		//this._detailsByKey = new HashMap();
+		this._details = new ArrayList();
+		this._numberOfDominantActions = 3;
+		//this._dominantActions = new ArrayList(this._numberOfDominantActions);	
+	}
+	
+	
 	/*public String getAbstract() 
 	{
 		return this._abstract;
 	}*/
+	
+	public void setTime(Time time)
+	{
+		this._time = time;
+	}
 	
 	public Time getTime()
 	{

@@ -191,21 +191,20 @@ public class RecentEventCondition extends PastEventCondition {
 		
 		if(!_name.isGrounded()) return false;
 		
-		//Meiyii 12/03/09 Search for recent events in STM
-		
-		ArrayList searchKeys = GetSearchKeys();
-		return _positive == (ShortTermMemory.GetInstance().ContainsRecentEvent(searchKeys)
-								|| AutobiographicalMemory.GetInstance().ContainsRecentEvent(searchKeys)); 
+		//Meiyii 12/03/09 Search for recent events in both STM and AM
+		// If recentEventCondition is tested only against STM, goal will be reset after 
+		// the event has been transferred to AM (this is useful if we want goal to decay over time)
+		// If recentEventCondition is tested only against AM, goal will be reset 
+		// continuously before the event is being transferred from STM to AM 
+		return _positive == ShortTermMemory.GetInstance().ContainsRecentEvent(GetSearchKeys())
+			|| AutobiographicalMemory.GetInstance().ContainsRecentEvent(GetSearchKeys()); 
 	}
 	
 	protected ArrayList GetPossibleBindings()
 	{
-		ArrayList searchKeys = GetSearchKeys();
-		
-		ArrayList events = AutobiographicalMemory.GetInstance().SearchForRecentEvents(searchKeys);
-		events.addAll(ShortTermMemory.GetInstance().SearchForRecentEvents(searchKeys));
-		
-		//Meiyii 12/03/09 Search for recent events in STM
+		//Meiyii 12/03/09 Search for recent events in both STM and AM
+		ArrayList events = ShortTermMemory.GetInstance().SearchForRecentEvents(GetSearchKeys());
+		events.addAll(AutobiographicalMemory.GetInstance().SearchForRecentEvents(GetSearchKeys()));	
 		return events;
 	}
 	

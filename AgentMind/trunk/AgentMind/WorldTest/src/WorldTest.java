@@ -24,12 +24,16 @@ import Language.LanguageEngine;
  *
  * TODO To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Style - Code Templates
+ * 
+ * Meiyii Lim: 31/03/2009 - Added socket connection to Greta
+ * 
  */
 public class WorldTest {
 	
 	public static final String SCENARIOS_PATH = "data/characters/minds/LIRECScenarios.xml";
 	//public static final String SCENARIOS_PATH = "data/characters/minds/Scenarios.xml";
 	private ServerSocket _ss;
+	private ServerSocket _ssToGreta;
 	private ArrayList _objects;
 	private ArrayList _agents;
 	private String _scenery;
@@ -37,6 +41,7 @@ public class WorldTest {
 	private LanguageEngine agentLanguage;
 	private UserInterface _userInterface;
 	private String _userOptionsFile;
+	private GretaAgent _ga;
 	
 	static public void main(String args[]) throws Exception {
 		int i;
@@ -101,7 +106,8 @@ public class WorldTest {
 			StripsOperatorsLoaderHandler op = LoadOperators(actionsFile, "[SELF]");
 			this._actions = op.getOperators();
 			_ss = new ServerSocket(port);
-	
+			
+			//_ssToGreta = new ServerSocket(100);	
 		}
 		catch (Exception e){
 			e.printStackTrace();
@@ -133,12 +139,18 @@ public class WorldTest {
 	}
 	
 	public void run() {
-		Socket s;
-		RemoteAgent ra;
+		Socket s1, s2;
+		RemoteAgent ra;		
+		
 		while(true) {
 			try {
-				s = _ss.accept();
-				ra = new RemoteAgent(this,s);
+				/*s1 = _ssToGreta.accept();
+				_ga = new GretaAgent(this,s1);
+				_ga.start();
+				_ga.Send("Connected!");*/
+				
+				s2 = _ss.accept();
+				ra = new RemoteAgent(this,s2);
 				ra.start();
 				_agents.add(ra);
 				
@@ -268,15 +280,35 @@ public class WorldTest {
 	public void ChangePlace( String location ){
 		for( int i = 0, limit = _agents.size(); i != limit; ++i ){
 			SendPerceptionToAll( "PROPERTY-CHANGED " + ((RemoteAgent)_agents.get(i)).Name() + " location " + location );
+			SendPerceptionToAll( "ACTION-FINISHED " + ((RemoteAgent)_agents.get(i)).Name() + " MoveTo " + location );
 		}
 	}
 	
 	// Meiyii 11/03/09 
 	public void ChangeUser( String previousUser, String user ){
 		for( int i = 0, limit = _agents.size(); i != limit; ++i ){
-			SendPerceptionToAll( "PROPERTY-CHANGED " + user + "(isPresent) True");
 			if(!previousUser.equals(null))
-				SendPerceptionToAll( "PROPERTY-CHANGED " + previousUser + "(isPresent) False");
+			{
+				if(previousUser.equalsIgnoreCase("LukePaulie"))
+				{
+					SendPerceptionToAll( "PROPERTY-CHANGED Luke(isPresent) False");
+					SendPerceptionToAll( "PROPERTY-CHANGED Paulie(isPresent) False");
+				}
+				else
+				{
+					SendPerceptionToAll( "PROPERTY-CHANGED " + previousUser + "(isPresent) False");
+				}
+			}
+			
+			if(user.equalsIgnoreCase("LukePaulie"))
+			{
+				SendPerceptionToAll( "PROPERTY-CHANGED Luke(isPresent) True");
+				SendPerceptionToAll( "PROPERTY-CHANGED Paulie(isPresent) True");
+			}
+			else
+			{
+				SendPerceptionToAll( "PROPERTY-CHANGED " + user + "(isPresent) True");
+			}
 		}
 	}
 	
@@ -289,6 +321,15 @@ public class WorldTest {
 		_userInterface.WriteLine(ra.Name() + " disconnected\n");
 	}
 
+	public synchronized void removeGreta(){
+		_userInterface.WriteLine(_ga + " disconnected\n");
+		_ga = null;
+	}
+	
+	public GretaAgent GetGreta(){
+		return _ga;
+	}
+	
 	public String GetUserOptionsFile() {
 		return this._userOptionsFile;
 	}

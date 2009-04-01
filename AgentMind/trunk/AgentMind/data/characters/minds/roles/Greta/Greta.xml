@@ -44,6 +44,6 @@
 	
 	<InterpersonalRelations>
 		<Relation target="Amy" like="3" respect="1"/>
-		<Relation target="Jenny" like="3" respect="1"/>
+		<!--Relation target="Jenny" like="3" respect="1"/-->
 	</InterpersonalRelations>
 </Character>

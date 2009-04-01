@@ -130,11 +130,13 @@ public class ShortTermMemory implements Serializable {
 		
 	private STMemoryRecord _records;
 	private boolean _newData;	
+	private String _previousLocation;
 	
 	private ShortTermMemory()
 	{
 		this._records = new STMemoryRecord();
 		this._newData = false;
+		this._previousLocation = "";
 	}
 	
 	public void StoreAction(Event e)
@@ -142,8 +144,14 @@ public class ShortTermMemory implements Serializable {
 		Name locationKey = Name.ParseName(Memory.GetInstance().getSelf() + "(location)");	
 		
 		String newLocation = (String) Memory.GetInstance().AskProperty(locationKey);
-		//System.out.println("Records count: " + _records.GetCount());
 		
+		// 31/03/2009 - Create a new episode if the location changes to allow goals reset
+		// If this if block is commented, goals decay over time and reset automatically
+		if (!newLocation.equals(_previousLocation))
+		{
+			AutobiographicalMemory.GetInstance().NewEpisode(newLocation);
+		}
+
 		synchronized (this) {
 			if(this._records.GetCount() >= STMemoryRecord.MAXRECORDS)
 			{
@@ -157,13 +165,12 @@ public class ShortTermMemory implements Serializable {
 						!detail.getAction().equals("fail")) &&
 						(detail.getEmotion().GetType()) != EmotionType.NEUTRAL))
 				{
-					AutobiographicalMemory.GetInstance().StoreAction(detail);
-					//System.out.println("Record transferred to AM: " + detail.toXML());
+					AutobiographicalMemory.GetInstance().StoreAction(detail);					
 				}
 				_records.DeleteOldestRecord();
-				//System.out.println("Record deleted: " + detail.toXML());
 			}
-			_records.AddActionDetail(e, newLocation);
+			_records.AddActionDetail(e, newLocation);	
+			_previousLocation = newLocation;
 			
 			this._newData = true;
 		}
