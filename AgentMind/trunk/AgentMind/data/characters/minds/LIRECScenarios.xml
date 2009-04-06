@@ -1,7 +1,7 @@
 <Scenarios>	
 	
 	<Scenario name="Remembering">
-		<WorldSimulator port="46874" scenery="RobotHouse" actionsFile="data/characters/minds/LIRECActions.xml" 
+		<WorldSimulator port="46874" scenery="AmyHouse" actionsFile="data/characters/minds/LIRECActions.xml" 
 						agentLanguageFile="data/characters/minds/language/agent/en/language-set-1" 
 						userOptionsFile="LIRECOptions">		
 			<Objects>
@@ -28,7 +28,7 @@
 	</Scenario>	
 	
 	<Scenario name="Forgetting">
-		<WorldSimulator port="46874" scenery="RobotHouse" actionsFile="data/characters/minds/LIRECActions.xml" 
+		<WorldSimulator port="46874" scenery="Office" actionsFile="data/characters/minds/LIRECActions.xml" 
 						agentLanguageFile="data/characters/minds/language/agent/en/language-set-1" 
 						userOptionsFile="LIRECOptions">		
 			<Objects>

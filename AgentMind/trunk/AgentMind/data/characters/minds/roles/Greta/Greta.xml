@@ -37,13 +37,13 @@
 		<Goal name="Welcome([target])" importanceOfSuccess="4" importanceOfFailure="3"/>
 		<Goal name="OfferFruit([target],[item])" importanceOfSuccess="4" importanceOfFailure="3"/>
 		<Goal name="OfferCake([target],[item])" importanceOfSuccess="4" importanceOfFailure="3"/>
-		<!--Goal name="AskPreference([target])" importanceOfSuccess="4" importanceOfFailure="3"/>
-		<Goal name="AcknowledgeChoice([target],[item])" importanceOfSuccess="4" importanceOfFailure="3"/-->
+		<Goal name="AskPreference([target])" importanceOfSuccess="4" importanceOfFailure="3"/>
+		<Goal name="AcknowledgeChoice([target],[item])" importanceOfSuccess="4" importanceOfFailure="3"/>
 		<Goal name="Goodbye([target],[item])" importanceOfSuccess="4" importanceOfFailure="3"/>
 	</Goals>
 	
 	<InterpersonalRelations>
-		<Relation target="Amy" like="3" respect="1"/>
+		<Relation target="Amy" like="2" respect="1"/>
 		<!--Relation target="Jenny" like="3" respect="1"/-->
 	</InterpersonalRelations>
 </Character>

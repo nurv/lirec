@@ -36,10 +36,28 @@ public class UserInterface implements ActionListener {
 	JFrame _frame;
 	JTextArea textArea;
 	JComboBox inputList;
+	JComboBox _caseOptions;
 	JComboBox _userOptions;
 	JComboBox _timeOptions;
 	JComboBox _locationOptions;
 	WorldTest _world;
+	
+	public static final String CASE1 = "Case1";
+	public static final String CASE2 = "Case2";
+	public static final String CASE3 = "Case3";
+	public static final String MORNING = "Morning";
+	public static final String AFTERNOON = "Afternoon";
+	public static final String LIVINGROOM = "LivingRoom";
+	public static final String STUDYROOM = "StudyRoom";
+	public static final String KITCHEN = "Kitchen";
+	public static final String RECEPTION = "Reception";
+	public static final String OFFICE = "Office";
+	public static final String COMMONROOM = "CommonRoom";
+	public static final String AMY = "Amy";
+	public static final String JOHN = "John";
+	public static final String PAULIE = "Paulie";
+	public static final String LUKE = "Luke";
+	public static final String LUKEPAULIE = "LukePaulie";
 	
 	private Random _r;
 	private static int buffsize = 250;
@@ -49,7 +67,7 @@ public class UserInterface implements ActionListener {
         
     	_world = world_in;
     	_r = new Random();
-    	
+    
         _frame = new JFrame("WorldTest User Interface");
         _frame.getContentPane().setLayout(new BoxLayout(_frame.getContentPane(),BoxLayout.Y_AXIS));
 		_frame.setSize(350,350);
@@ -78,46 +96,72 @@ public class UserInterface implements ActionListener {
 			}
 		});*/
         
-        // Meiyii 06/03/09
+        _caseOptions = new JComboBox();
+    	_caseOptions.addItem(UserInterface.CASE1);
+	    _caseOptions.addItem(UserInterface.CASE2);
+	    _caseOptions.addItem(UserInterface.CASE3);
+	    _caseOptions.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent arg0) {
+				_world.ChangeExperimentCase(_caseOptions.getSelectedItem().toString());
+				WriteLine("=> Changing the case: " + _caseOptions.getSelectedItem().toString());
+			}
+		});
+			
+	    Box caseBox = new Box(BoxLayout.X_AXIS);
+	    caseBox.add(new JLabel("Case: "));
+	    caseBox.add(_caseOptions );
+        
+	    // Meiyii 06/03/09
         _timeOptions = new JComboBox();
-        _timeOptions.addItem("Morning");
-        _timeOptions.addItem("Afternoon");
-		_timeOptions.addItem("Evening");
+        _timeOptions.addItem(UserInterface.MORNING);
+        _timeOptions.addItem(UserInterface.AFTERNOON);
 		_timeOptions.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0) {
 				_world.ChangeTime(_timeOptions.getSelectedItem().toString());
 		    	WriteLine("=> Changing the time: " + _timeOptions.getSelectedItem().toString());
 			}
 		});
-		
+        
 		Box timeBox = new Box(BoxLayout.X_AXIS);
         timeBox.add(new JLabel("Time: "));
         timeBox.add(_timeOptions );
-		
+        
         _locationOptions = new JComboBox();
-        _locationOptions.addItem("LivingRoom");
-        _locationOptions.addItem("StudyRoom");
-        _locationOptions.addItem("Kitchen");
+        _userOptions = new JComboBox();
+        
+        // Meiyii 06/04/09
+        if(_world.GetScenery().equals("AmyHouse"))       
+        {       				      
+	        _locationOptions.addItem(UserInterface.LIVINGROOM);
+	        _locationOptions.addItem(UserInterface.STUDYROOM);
+	        _locationOptions.addItem(UserInterface.KITCHEN);
+	      
+			_userOptions.addItem(UserInterface.AMY);
+        }
+        else if(_world.GetScenery().equals("Office"))
+        {
+	        _locationOptions.addItem(UserInterface.RECEPTION);
+	        _locationOptions.addItem(UserInterface.COMMONROOM);
+	        _locationOptions.addItem(UserInterface.OFFICE);
+	       
+			_userOptions.addItem(UserInterface.JOHN);
+			_userOptions.addItem(UserInterface.LUKE);
+			_userOptions.addItem(UserInterface.PAULIE);
+			_userOptions.addItem(UserInterface.LUKEPAULIE);		
+        }
+
         _locationOptions.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
 				_world.ChangePlace(_locationOptions.getSelectedItem().toString());
 				WriteLine("=> Changing the location: " + _locationOptions.getSelectedItem().toString());
 			}
-		});
-        
+		});             
+		
         Box locationBox = new Box(BoxLayout.X_AXIS);
         locationBox.add(new JLabel("Location: "));
         locationBox.add(_locationOptions);
         
-		_userOptions = new JComboBox();
-		_userOptions.addItem("Amy");
-		/*_userOptions.addItem("Jenny");
-		_userOptions.addItem("Susan");
-		_userOptions.addItem("John");
-		_userOptions.addItem("Luke");
-		_userOptions.addItem("Paulie");
-		_userOptions.addItem("LukePaulie");*/
-		_userOptions.addActionListener(new ActionListener(){
+    	_userOptions.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e) {
 				_world.ChangeUser(_previousUser, _userOptions.getSelectedItem().toString());
 				WriteLine("=> Changing the user: " + _userOptions.getSelectedItem().toString());
@@ -127,12 +171,11 @@ public class UserInterface implements ActionListener {
 				ParseFile(userOptionsFile);
 				_previousUser = _userOptions.getSelectedItem().toString();
 			}
-		});
-        
+		});        
+    	
         Box userBox = new Box(BoxLayout.X_AXIS);
         userBox.add(new JLabel("User: "));
         userBox.add(_userOptions);
-
         
         // Create the OK button to confirm input
         JButton okButton = new JButton("OK");
@@ -151,6 +194,7 @@ public class UserInterface implements ActionListener {
         buttonsPanel.add(okButton);
         buttonsPanel.add(stepButton);
         
+        _frame.getContentPane().add(caseBox);
         _frame.getContentPane().add(timeBox);
         _frame.getContentPane().add(locationBox);
         _frame.getContentPane().add(userBox);

@@ -30,7 +30,7 @@ Type(value:cake)
 -> Utterance(value: "Do you want to have a piece of cake?")
 
 Type(value:askPreference)
--> Utterance(value: "Which fruit do you prefer?")
+-> Utterance(value: "Which other fruit do you prefer?")
 
 Type(value:acknowledge)
 -> Utterance(value: "OK. I will remember that for next time.")

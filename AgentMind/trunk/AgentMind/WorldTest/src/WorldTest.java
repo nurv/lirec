@@ -311,6 +311,50 @@ public class WorldTest {
 			}
 		}
 	}
+		
+	// Meiyii 06/04/09 
+	public void ChangeExperimentCase( String expCase ){
+	
+		if(_scenery.equals("AmyHouse"))
+		{
+			if(expCase.equals(UserInterface.CASE1))
+			{
+				_userInterface._locationOptions.setSelectedItem(UserInterface.LIVINGROOM);
+				_userInterface._timeOptions.setSelectedItem(UserInterface.MORNING);
+			}
+			else if(expCase.equals(UserInterface.CASE2))
+			{
+				_userInterface._locationOptions.setSelectedItem(UserInterface.STUDYROOM);
+				_userInterface._timeOptions.setSelectedItem(UserInterface.AFTERNOON);
+			}
+			else if(expCase.equals(UserInterface.CASE3))
+			{
+				_userInterface._locationOptions.setSelectedItem(UserInterface.KITCHEN);
+				_userInterface._timeOptions.setSelectedItem(UserInterface.MORNING);
+			}
+		}
+		else if(_scenery.equals("Office"))
+		{
+			if(expCase.equals(UserInterface.CASE1))
+			{
+				_userInterface._userOptions.setSelectedItem(UserInterface.JOHN);
+				_userInterface._locationOptions.setSelectedItem(UserInterface.RECEPTION);
+				_userInterface._timeOptions.setSelectedItem(UserInterface.MORNING);
+			}
+			else if(expCase.equals(UserInterface.CASE2))
+			{
+				_userInterface._userOptions.setSelectedItem(UserInterface.LUKEPAULIE);
+				_userInterface._locationOptions.setSelectedItem(UserInterface.COMMONROOM);
+				_userInterface._timeOptions.setSelectedItem(UserInterface.AFTERNOON);
+			}
+			else if(expCase.equals(UserInterface.CASE3))
+			{
+				_userInterface._userOptions.setSelectedItem(UserInterface.PAULIE);
+				_userInterface._locationOptions.setSelectedItem(UserInterface.OFFICE);
+				_userInterface._timeOptions.setSelectedItem(UserInterface.AFTERNOON);
+			}	
+		}
+	}
 	
 	public void ReadyForNextStep(){
 		SendPerceptionToAll( "READY-FOR-NEXT-STEP" );
@@ -334,6 +378,9 @@ public class WorldTest {
 		return this._userOptionsFile;
 	}
 
+	public String GetScenery() {
+		return this._scenery;
+	}
 
 
 }

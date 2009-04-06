@@ -101,9 +101,9 @@
 			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[target]" parameters="askPreference"/>
 		</SucessConditions>		
 		<ExpectedEffects>
-			<OnSelect drive="Affiliation" target="[SELF]" value="+5"/>
-			<OnIgnore drive="Affiliation" target="[SELF]" value="-5"/>
-			<OnSelect drive="Affiliation" target="[target]" value="+5"/>			
+			<OnSelect drive="Affiliation" target="[SELF]" value="+2"/>
+			<OnIgnore drive="Affiliation" target="[SELF]" value="-1"/>
+			<OnSelect drive="Affiliation" target="[target]" value="+2"/>			
 		</ExpectedEffects>			
 	</ActivePursuitGoal>
 	
