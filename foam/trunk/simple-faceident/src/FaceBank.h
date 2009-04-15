@@ -17,7 +17,6 @@
 #include <iostream>
 #include <map>
 #include <assert.h>
-
 #include "cv.h"
 
 #ifndef FACE_BANK

@@ -1,5 +1,4 @@
 CC = g++
-CFLAGS = `pkg-config --cflags opencv` -ggdb -Wall -O3 -ffast-math -Wno-unused 
 CXXFLAGS = `pkg-config --cflags opencv` -ggdb -Wall -O3 -ffast-math -Wno-unused 
 LDFLAGS =  `pkg-config --libs opencv` -lYARP_dev -lYARP_sig -lYARP_OS -lACE
 

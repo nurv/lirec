@@ -18,6 +18,7 @@
 
 #include "cv.h"
 #include "highgui.h"
+#include <yarp/os/all.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -34,6 +35,7 @@
 #include "SceneState.h"
 
 using namespace std;
+using namespace yarp::os;
 
 #ifdef _EiC
 #define WIN32
@@ -68,6 +70,8 @@ bool learn=true;
 int facenum=0;
 int framenum=0;
 
+BufferedPort<Bottle> ctrlport;   
+
 //////////////////////////////////////////////////////////
 
 int main( int argc, char** argv )
@@ -83,6 +87,13 @@ int main( int argc, char** argv )
     int nested_cascade_opt_len = (int)strlen(nested_cascade_opt);
     int i;
     const char* input_name = 0;
+
+/////////////////////////
+// yarp bit, would like to move this somewhere else
+
+    ctrlport.open("/faceident-ctrl");     
+
+/////////////////////////
 
     for( i = 1; i < argc; i++ )
     {
@@ -149,7 +160,6 @@ int main( int argc, char** argv )
                 frame_copy = cvCreateImage( cvSize(frame->width,frame->height),
                                             IPL_DEPTH_8U, frame->nChannels );
             if( frame->origin == IPL_ORIGIN_TL )
-				//cvResize(frame, frame_copy, CV_INTER_LINEAR );
                 cvCopy( frame, frame_copy, 0 );
             else
                 cvFlip( frame, frame_copy, 0 );
@@ -213,17 +223,13 @@ void detect_and_draw( IplImage* img )
         {{255,0,255}}
     };
 
-    IplImage *gray, *small_img;
+    IplImage *small_img;
     int j;
-	CvSize imgsize = cvGetSize(img);
 
-    gray = cvCreateImage( cvSize(img->width,img->height), 8, 1 );
     small_img = cvCreateImage( cvSize( cvRound (img->width/scale),
-                         cvRound (img->height/scale)), 8, 1 );
-
-    cvCvtColor( img, gray, CV_BGR2GRAY );
-    cvResize( gray, small_img, CV_INTER_LINEAR );
-    cvEqualizeHist( small_img, small_img );
+                         cvRound (img->height/scale)), 8, 3 );
+	CvSize imgsize = cvGetSize(small_img);
+    cvResize( img, small_img, CV_INTER_LINEAR );
     cvClearMemStorage( storage );
 
 	CvFont font;
@@ -263,6 +269,8 @@ void detect_and_draw( IplImage* img )
 			learn=false;  
 		}*/
 		
+		///////////////////////////////////
+		// dispatch from input
 		
 		int key=cvWaitKey(10);
 		
@@ -281,8 +289,31 @@ void detect_and_draw( IplImage* img )
 			case '0': facenum=0; learn=true; break;
 			case 'c': facebank.Clear(); break;
 		}
+
+		///////////////////////////////////
+		// read from yarp
+
+		Bottle *b=ctrlport.read(false);
+		if (b!=NULL)
+		{
+			cerr<<"got bottle "<<b->toString().c_str()<<endl;
+			if (b->get(0).asString()=="train")
+			{
+				facenum=b->get(1).asInt();
+				learn=true;
+			}
+			else if (b->get(0).asString()=="clear")
+			{
+				facebank.Clear();
+			}
+			else if (b->get(0).asString()=="detect")
+			{
+				learn=false;
+			}
+		}
 		
-				
+		///////////////////////////////////
+
         for(int i = 0; i < (faces ? faces->total : 0); i++ )
         {
             CvRect* r = (CvRect*)cvGetSeqElem( faces, i );
@@ -291,7 +322,7 @@ void detect_and_draw( IplImage* img )
 			unsigned int ID=999;
 			float confidence=0;
 			// get the face area as a sub image
-			IplImage *face = SubImage(img, *r);
+			IplImage *face = SubImage(small_img, *r);
 			// pass it into the face bank 
 			if (learn)
 			{
@@ -311,10 +342,10 @@ void detect_and_draw( IplImage* img )
 			{
 				char s[32];
 				sprintf(s,"%d %0.2f",ID,confidence);
-				cvPutText(img, s, cvPoint(r->x,r->y+25), &font, color);
+				cvPutText(small_img, s, cvPoint(r->x,r->y+25), &font, color);
 				int x=(facebank.GetFaceWidth()+1)*ID;
 				int y=imgsize.height-facebank.GetFaceHeight();
-				cvLine(img, cvPoint(r->x+r->width/2,r->y+r->height/2),
+				cvLine(small_img, cvPoint(r->x+r->width/2,r->y+r->height/2),
 					cvPoint(x+facebank.GetFaceWidth()/2,y), color);			
 
 				if (!learn)
@@ -323,7 +354,7 @@ void detect_and_draw( IplImage* img )
 				}
 			}
 
-			cvRectangle(img, cvPoint(r->x,r->y), cvPoint(r->x+r->width,r->y+r->height), color);
+			cvRectangle(small_img, cvPoint(r->x,r->y), cvPoint(r->x+r->width,r->y+r->height), color);
         }
     }
 
@@ -338,16 +369,16 @@ void detect_and_draw( IplImage* img )
 	{
 		snprintf(info,256,"detecting faces");
 	}
-	cvPutText(img, info, cvPoint(20,30), &infofont, CV_RGB(0,0,0));
+	cvPutText(small_img, info, cvPoint(20,30), &infofont, CV_RGB(0,0,0));
 
 	snprintf(info,256,"keys:");
-	cvPutText(img, info, cvPoint(20,50), &helpfont, CV_RGB(0,0,0));
+	cvPutText(small_img, info, cvPoint(20,50), &helpfont, CV_RGB(0,0,0));
 	snprintf(info,256,"number key 0-9 : learn face");
-	cvPutText(img, info, cvPoint(20,60), &helpfont, CV_RGB(0,0,0));
+	cvPutText(small_img, info, cvPoint(20,60), &helpfont, CV_RGB(0,0,0));
 	snprintf(info,256,"'d' : face detect mode");
-	cvPutText(img, info, cvPoint(20,70), &helpfont, CV_RGB(0,0,0));
+	cvPutText(small_img, info, cvPoint(20,70), &helpfont, CV_RGB(0,0,0));
 	snprintf(info,256,"'c' : clear all faces");
-	cvPutText(img, info, cvPoint(20,80), &helpfont, CV_RGB(0,0,0));
+	cvPutText(small_img, info, cvPoint(20,80), &helpfont, CV_RGB(0,0,0));
 
 	#ifdef SHOW_FACES
 	for(map<unsigned int,Face*>::iterator ii=facebank.GetFaceMap().begin(); 
@@ -355,18 +386,17 @@ void detect_and_draw( IplImage* img )
 	{
 		int x=(facebank.GetFaceWidth()+1)*ii->first;
 		int y=imgsize.height-facebank.GetFaceHeight();
-		BlitImage(ii->second->m_Image,img,cvPoint(x,y));
+		BlitImage(ii->second->m_Image,small_img,cvPoint(x,y));
 	}
 	#endif
 	
-    cvShowImage( "result", img );
+    cvShowImage( "result", small_img );
 
 	#ifdef SAVE_FRAMES
 	char name[256];
 	sprintf(name,"out-%0.4d.jpg",framenum);
-	cvSaveImage(name,img);
+	cvSaveImage(name,small_img);
 	#endif
     
-	cvReleaseImage( &gray );
     cvReleaseImage( &small_img );
 }
