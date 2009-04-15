@@ -61,19 +61,23 @@ int SplitString(const string& input, const string& delimiter, vector<string>& re
         { 
             s = input.substr( i, positions[i] ); 
         }
-        int offset = positions[i-1] + sizeS2;
-        if( offset < isize )
-        {
-            if( i == (int)positions.size() )
-            {
-                s = input.substr(offset);
-            }
-            else if( i > 0 )
-            {
-                s = input.substr( positions[i-1] + sizeS2, 
-                      positions[i] - positions[i-1] - sizeS2 );
-            }
-        }
+		else
+		{
+        	int offset = positions[i-1] + sizeS2;
+        	if( offset < isize )
+        	{
+        	    if( i == (int)positions.size() )
+        	    {
+        	        s = input.substr(offset);
+        	    }
+        	    else if( i > 0 )
+        	    {
+        	        s = input.substr( positions[i-1] + sizeS2, 
+        	              positions[i] - positions[i-1] - sizeS2 );
+        	    }
+        	}
+		}
+		
         if( includeEmpties || ( s.size() > 0 ) )
         {
             results.push_back(s);
