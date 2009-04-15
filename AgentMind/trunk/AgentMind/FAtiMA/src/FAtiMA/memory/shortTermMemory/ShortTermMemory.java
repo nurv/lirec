@@ -89,20 +89,23 @@ public class ShortTermMemory implements Serializable {
 	 */
 	public static void SaveState(String fileName)
 	{
-		try 
+		//synchronized(_stmInstance)
 		{
-			FileOutputStream out = new FileOutputStream(fileName);
-	    	ObjectOutputStream s = new ObjectOutputStream(out);
-	    	
-	    	s.writeObject(_stmInstance);
-        	s.flush();
-        	s.close();
-        	out.close();
-		}
-		catch(Exception e)
-		{
-			AgentLogger.GetInstance().logAndPrint("Exception: " + e);
-			e.printStackTrace();
+			try 
+			{
+				FileOutputStream out = new FileOutputStream(fileName);
+		    	ObjectOutputStream s = new ObjectOutputStream(out);
+		    	
+		    	s.writeObject(_stmInstance);
+	        	s.flush();
+	        	s.close();
+	        	out.close();
+			}
+			catch(Exception e)
+			{
+				AgentLogger.GetInstance().logAndPrint("Exception: " + e);
+				e.printStackTrace();
+			}
 		}
 	}
 	
@@ -121,6 +124,7 @@ public class ShortTermMemory implements Serializable {
         	_stmInstance = (ShortTermMemory) s.readObject();
         	s.close();
         	in.close();
+        	//_stmInstance._records.SetEventID(_stmInstance.GetAllRecords().GetNewestRecord().getID()+1);
 		}
 		catch (Exception e)
 		{
@@ -129,12 +133,14 @@ public class ShortTermMemory implements Serializable {
 	}
 		
 	private STMemoryRecord _records;
+	private ArrayList _newRecords;
 	private boolean _newData;	
 	private String _previousLocation;
 	
 	private ShortTermMemory()
 	{
 		this._records = new STMemoryRecord();
+		this._newRecords = new ArrayList();
 		this._newData = false;
 		this._previousLocation = "";
 	}
@@ -150,6 +156,7 @@ public class ShortTermMemory implements Serializable {
 		if (!newLocation.equals(_previousLocation))
 		{
 			AutobiographicalMemory.GetInstance().NewEpisode(newLocation);
+			_records.ResetEventID();
 		}
 
 		synchronized (this) {
@@ -169,7 +176,8 @@ public class ShortTermMemory implements Serializable {
 				}
 				_records.DeleteOldestRecord();
 			}
-			_records.AddActionDetail(e, newLocation);	
+			_records.AddActionDetail(e, newLocation);
+			_newRecords.add(_records.GetNewestRecord());
 			_previousLocation = newLocation;
 			
 			this._newData = true;
@@ -211,6 +219,15 @@ public class ShortTermMemory implements Serializable {
 	public STMemoryRecord GetAllRecords()
 	{
 		return this._records;
+	}
+	
+	public ArrayList GetNewRecords()
+	{
+		return this._newRecords;
+	}
+	
+	public void ClearNewRecords() {
+		this._newRecords.clear();
 	}
 	
 	public float AssessGoalFamiliarity(Goal g)

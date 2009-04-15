@@ -105,20 +105,23 @@ public class WorkingMemory implements Serializable {
 	 */
 	public static void SaveState(String fileName)
 	{
-		try 
+		//synchronized(_wmInstance)
 		{
-			FileOutputStream out = new FileOutputStream(fileName);
-	    	ObjectOutputStream s = new ObjectOutputStream(out);
-	    	
-	    	s.writeObject(_wmInstance);
-        	s.flush();
-        	s.close();
-        	out.close();
-		}
-		catch(Exception e)
-		{
-			AgentLogger.GetInstance().logAndPrint("Exception: " + e);
-			ApplicationLogger.Write(e.getMessage());
+			try 		
+			{
+				FileOutputStream out = new FileOutputStream(fileName);
+		    	ObjectOutputStream s = new ObjectOutputStream(out);
+		    	
+		    	s.writeObject(_wmInstance);
+	        	s.flush();
+	        	s.close();
+	        	out.close();
+			}
+			catch(Exception e)
+			{
+				AgentLogger.GetInstance().logAndPrint("Exception: " + e);
+				ApplicationLogger.Write(e.getMessage());
+			}
 		}
 	}
 	
@@ -233,7 +236,7 @@ public class WorkingMemory implements Serializable {
     		if(eff.isGrounded())
     		{
     			Tell(eff.GetEffect().getName(),eff.GetEffect().GetValue().toString());
-    			System.out.println("InferEffects");    			
+    			//System.out.println("InferEffects");    			
     		}
     	}
     }

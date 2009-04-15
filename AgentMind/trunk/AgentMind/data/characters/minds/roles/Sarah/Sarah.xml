@@ -35,7 +35,7 @@
 	<Goals>
 		<Goal name="Greet([target])" importanceOfSuccess="4" importanceOfFailure="3"/>
 		<Goal name="Welcome([target])" importanceOfSuccess="4" importanceOfFailure="3"/>
-		<Goal name="SwearSecrecy([target],[friend][info])" importanceOfSuccess="4" importanceOfFailure="3"/>
+		<Goal name="SwearSecrecy([target],[friend],[info])" importanceOfSuccess="4" importanceOfFailure="3"/>
 		<Goal name="ReplyHideInfo([target],[friend],[info])" importanceOfSuccess="4" importanceOfFailure="3"/>
 		<Goal name="DontTellInfo([target],[friend],[info])" importanceOfSuccess="4" importanceOfFailure="3"/>
 		<Goal name="ReplyTellInfo([target],[friend],[info])" importanceOfSuccess="4" importanceOfFailure="3"/>

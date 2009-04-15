@@ -459,20 +459,20 @@ public class Agent {
 		in.close();
 
 		KnowledgeBase.LoadState(fileName+"-KnowledgeBase.dat");
-		System.out.println(KnowledgeBase.GetInstance().toString());
+		//System.out.println(KnowledgeBase.GetInstance().toString());
 		EmotionalState.LoadState(fileName+"-EmotionalState.dat");
-		System.out.println(EmotionalState.GetInstance().toXml());
+		//System.out.println(EmotionalState.GetInstance().toXml());
 		MotivationalState.LoadState(fileName+"-MotivationalState.dat");
-		System.out.println(MotivationalState.GetInstance().toXml());
+		//System.out.println(MotivationalState.GetInstance().toXml());
 		AgentSimulationTime.LoadState(fileName+"-Timer.dat");
 		AutobiographicalMemory.LoadState(fileName+"-AutobiographicalMemory.dat");
-		System.out.println(AutobiographicalMemory.GetInstance().toXML());
+		//System.out.println(AutobiographicalMemory.GetInstance().toXML());
 		ShortTermMemory.LoadState(fileName+"-ShortTermMemory.dat");
-		System.out.println(ShortTermMemory.GetInstance().toXML());
+		//System.out.println(ShortTermMemory.GetInstance().toXML());
 		WorkingMemory.LoadState(fileName+"-WorkingMemory.dat");
-		System.out.println(WorkingMemory.GetInstance().toString());
+		//System.out.println(WorkingMemory.GetInstance().toString());
 		ActionLibrary.LoadState(fileName+"-ActionLibrary.dat");	
-		System.out.println(ActionLibrary.GetInstance().toString());
+		//System.out.println(ActionLibrary.GetInstance().toString());
 		_remoteAgent.LoadState(fileName+"-RemoteAgent.dat");
 	}
 	

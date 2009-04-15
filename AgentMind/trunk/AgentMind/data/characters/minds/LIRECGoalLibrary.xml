@@ -142,7 +142,7 @@
 	</ActivePursuitGoal>
 	
 	<!-- Scenario 2 -->
-	<ActivePursuitGoal name="SwearSecrecy([target],[friend][info])">
+	<ActivePursuitGoal name="SwearSecrecy([target],[friend],[info])">
 		<PreConditions>			
 			<Property name="[target](isPerson)" operator="=" value="True" />
 			<Property name="[target]" operator="!=" value="[SELF]" />

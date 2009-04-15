@@ -73,7 +73,7 @@ public class STMemoryRecord implements Serializable {
 	public void AddActionDetail(Event e, String location)
 	{
 		ActionDetail action;
-		System.out.println("EventID: " + eventID);
+		//System.out.println("EventID: " + eventID);
 		
 		action = new ActionDetail(eventID++,e,location);
 				
@@ -87,6 +87,16 @@ public class STMemoryRecord implements Serializable {
 	public int GetCount()
 	{
 		return this._details.size();
+	}
+	
+	public void SetEventID(int eventID)
+	{
+		this.eventID = eventID;
+	}
+	
+	public void ResetEventID()
+	{
+		this.eventID = 0;
 	}
 	
 	public ActionDetail GetNewestRecord()

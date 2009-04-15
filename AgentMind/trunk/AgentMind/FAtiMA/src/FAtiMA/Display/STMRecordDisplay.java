@@ -40,14 +40,18 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+import java.util.ArrayList;
 import FAtiMA.memory.ActionDetail;
 import FAtiMA.memory.shortTermMemory.STMemoryRecord;
+import FAtiMA.memory.shortTermMemory.ShortTermMemory;
+import FAtiMA.memory.shortTermMemory.WorkingMemory;
 
 public class STMRecordDisplay {
 
 	private JPanel _panel;
     private JPanel _details;
     private static int _lastID = 0;
+    private static int _previousID = 0;
     
     public STMRecordDisplay(STMemoryRecord records) {
 
@@ -133,16 +137,21 @@ public class STMRecordDisplay {
 		
 		ListIterator li = records.getDetails().listIterator();
 	
+		ArrayList newRecords = ShortTermMemory.GetInstance().GetNewRecords();
+		
 		while(li.hasNext())
 		{
 			ActionDetail actionDetail = (ActionDetail) li.next();
 			RecordDetailPanel recordDetailPanel = new RecordDetailPanel(actionDetail);
-			if (actionDetail.getID() > _lastID)
+			
+			if (newRecords.contains(actionDetail))
 				recordDetailPanel.setBackground(new Color(255,255,0));
 				
 			prop.add(recordDetailPanel);
-			if(!li.hasNext())
-				_lastID = actionDetail.getID();
+		}
+		//synchronized(ShortTermMemory.GetInstance())
+		{
+			ShortTermMemory.GetInstance().ClearNewRecords();
 		}
 	
 		_details.add(propertiesScroll);
