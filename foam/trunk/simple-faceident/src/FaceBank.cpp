@@ -20,6 +20,11 @@
 
 #include <vector>
 
+#ifdef WIN32
+#include <string>
+#define snprintf _snprintf 
+#endif
+
 using namespace std;
 
 /////////////////////////////////////////////////////////////////////////////////

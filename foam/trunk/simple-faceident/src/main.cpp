@@ -29,7 +29,8 @@
 #include <limits.h>
 #include <time.h>
 #include <ctype.h>
-#include <unistd.h>
+
+//#include <unistd.h>  -iolanda commented this
 
 #include "FaceBank.h"
 #include "ImageUtils.h"
@@ -42,6 +43,13 @@ using namespace yarp::os;
 #define WIN32
 #endif
 
+#ifdef WIN32
+#include <string>
+#define snprintf _snprintf 
+#else
+#include <unistd.h>
+#endif
+
 static CvMemStorage* storage = 0;
 static CvHaarClassifierCascade* cascade = 0;
 static CvHaarClassifierCascade* nested_cascade = 0;
@@ -49,11 +57,11 @@ int use_nested_cascade = 0;
 
 void detect_and_draw( IplImage* image );
 
-const char* cascade_name =
-    "/usr/local/share/opencv/haarcascades/haarcascade_frontalface_alt.xml";
+const char* cascade_name = "haarcascade_frontalface_alt.xml";
+// "/usr/local/share/opencv/haarcascades/haarcascade_frontalface_alt.xml";
 /*    "haarcascade_profileface.xml";*/
-const char* nested_cascade_name =
-    "/usr/local/share/opencv/haarcascades/haarcascade_eye_tree_eyeglasses.xml";
+const char* nested_cascade_name = "haarcascade_eye_tree_eyeglasses.xml";
+//"/usr/local/share/opencv/haarcascades/haarcascade_eye_tree_eyeglasses.xml";
 //    "../../data/haarcascades/haarcascade_eye.xml";
 double scale = 1;
 
@@ -78,218 +86,218 @@ BufferedPort<Bottle> ctrlport;
 
 int main( int argc, char** argv )
 {
-    CvCapture* capture = 0;
-    IplImage *frame, *frame_copy = 0;
-    IplImage *image = 0;
-    const char* scale_opt = "--scale=";
-    int scale_opt_len = (int)strlen(scale_opt);
-    const char* cascade_opt = "--cascade=";
-    int cascade_opt_len = (int)strlen(cascade_opt);
-    const char* nested_cascade_opt = "--nested-cascade";
-    int nested_cascade_opt_len = (int)strlen(nested_cascade_opt);
-    int i;
-    const char* input_name = 0;
+	CvCapture* capture = 0;
+	IplImage *frame, *frame_copy = 0;
+	IplImage *image = 0;
+	const char* scale_opt = "--scale=";
+	int scale_opt_len = (int)strlen(scale_opt);
+	const char* cascade_opt = "--cascade=";
+	int cascade_opt_len = (int)strlen(cascade_opt);
+	const char* nested_cascade_opt = "--nested-cascade";
+	int nested_cascade_opt_len = (int)strlen(nested_cascade_opt);
+	int i;
+	const char* input_name = 0;
 
-/////////////////////////
-// yarp bit, would like to move this somewhere else
+	/////////////////////////
+	// yarp bit, would like to move this somewhere else
 
-    ctrlport.open("/faceident-ctrl");     
+	ctrlport.open("/faceident-ctrl");     
 
-/////////////////////////
+	/////////////////////////
 
-    for( i = 1; i < argc; i++ )
-    {
-        if( strncmp( argv[i], cascade_opt, cascade_opt_len) == 0 )
-            cascade_name = argv[i] + cascade_opt_len;
-        else if( strncmp( argv[i], nested_cascade_opt, nested_cascade_opt_len ) == 0 )
-        {
-            if( argv[i][nested_cascade_opt_len] == '=' )
-                nested_cascade_name = argv[i] + nested_cascade_opt_len + 1;
-            nested_cascade = (CvHaarClassifierCascade*)cvLoad( nested_cascade_name, 0, 0, 0 );
-            if( !nested_cascade )
-                fprintf( stderr, "WARNING: Could not load classifier cascade for nested objects\n" );
-        }
-        else if( strncmp( argv[i], scale_opt, scale_opt_len ) == 0 )
-        {
-            if( !sscanf( argv[i] + scale_opt_len, "%lf", &scale ) || scale < 1 )
-                scale = 1;
-        }
-        else if( argv[i][0] == '-' )
-        {
-            fprintf( stderr, "WARNING: Unknown option %s\n", argv[i] );
-        }
-        else
-            input_name = argv[i];
-    }
+	for( i = 1; i < argc; i++ )
+	{
+		if( strncmp( argv[i], cascade_opt, cascade_opt_len) == 0 )
+			cascade_name = argv[i] + cascade_opt_len;
+		else if( strncmp( argv[i], nested_cascade_opt, nested_cascade_opt_len ) == 0 )
+		{
+			if( argv[i][nested_cascade_opt_len] == '=' )
+				nested_cascade_name = argv[i] + nested_cascade_opt_len + 1;
+			nested_cascade = (CvHaarClassifierCascade*)cvLoad( nested_cascade_name, 0, 0, 0 );
+			if( !nested_cascade )
+				fprintf( stderr, "WARNING: Could not load classifier cascade for nested objects\n" );
+		}
+		else if( strncmp( argv[i], scale_opt, scale_opt_len ) == 0 )
+		{
+			if( !sscanf( argv[i] + scale_opt_len, "%lf", &scale ) || scale < 1 )
+				scale = 1;
+		}
+		else if( argv[i][0] == '-' )
+		{
+			fprintf( stderr, "WARNING: Unknown option %s\n", argv[i] );
+		}
+		else
+			input_name = argv[i];
+	}
 
-    cascade = (CvHaarClassifierCascade*)cvLoad( cascade_name, 0, 0, 0 );
+	cascade = (CvHaarClassifierCascade*)cvLoad( cascade_name, 0, 0, 0 );
 
-    if( !cascade )
-    {
-        fprintf( stderr, "ERROR: Could not load classifier cascade\n" );
-        fprintf( stderr,
-        "Usage: facedetect [--cascade=\"<cascade_path>\"]\n"
-        "   [--nested-cascade[=\"nested_cascade_path\"]]\n"
-        "   [--scale[=<image scale>\n"
-        "   [filename|camera_index]\n" );
-        return -1;
-    }
-    storage = cvCreateMemStorage(0);
-    
-    if( !input_name || (isdigit(input_name[0]) && input_name[1] == '\0') )
-        capture = cvCaptureFromCAM( !input_name ? 0 : input_name[0] - '0' );
-    else if( input_name )
-    {
-        image = cvLoadImage( input_name, 1 );
-        if( !image )
-            capture = cvCaptureFromAVI( input_name );
-    }
-    else
-        image = cvLoadImage( "lena.jpg", 1 );
+	if( !cascade )
+	{
+		fprintf( stderr, "ERROR: Could not load classifier cascade\n" );
+		fprintf( stderr,
+			"Usage: facedetect [--cascade=\"<cascade_path>\"]\n"
+			"   [--nested-cascade[=\"nested_cascade_path\"]]\n"
+			"   [--scale[=<image scale>\n"
+			"   [filename|camera_index]\n" );
+		return -1;
+	}
+	storage = cvCreateMemStorage(0);
 
-    cvNamedWindow( "result", 1 );
-	
-    if( capture )
-    {
-        for(;;)
-        {
-            if( !cvGrabFrame( capture ))
-                break;
-            frame = cvRetrieveFrame( capture );
-            if( !frame )
-                break;
-            if( !frame_copy )
-                frame_copy = cvCreateImage( cvSize(frame->width,frame->height),
-                                            IPL_DEPTH_8U, frame->nChannels );
-            if( frame->origin == IPL_ORIGIN_TL )
-                cvCopy( frame, frame_copy, 0 );
-            else
-                cvFlip( frame, frame_copy, 0 );
-            
-            detect_and_draw( frame_copy );
-        }
+	if( !input_name || (isdigit(input_name[0]) && input_name[1] == '\0') )
+		capture = cvCaptureFromCAM( !input_name ? 0 : input_name[0] - '0' );
+	else if( input_name )
+	{
+		image = cvLoadImage( input_name, 1 );
+		if( !image )
+			capture = cvCaptureFromAVI( input_name );
+	}
+	else
+		image = cvLoadImage( "lena.jpg", 1 );
+
+	cvNamedWindow( "result", 1 );
+
+	if( capture )
+	{
+		for(;;)
+		{
+			if( !cvGrabFrame( capture ))
+				break;
+			frame = cvRetrieveFrame( capture );
+			if( !frame )
+				break;
+			if( !frame_copy )
+				frame_copy = cvCreateImage( cvSize(frame->width,frame->height),
+				IPL_DEPTH_8U, frame->nChannels );
+			if( frame->origin == IPL_ORIGIN_TL )
+				cvCopy( frame, frame_copy, 0 );
+			else
+				cvFlip( frame, frame_copy, 0 );
+
+			detect_and_draw( frame_copy );
+		}
 
 _cleanup_:
-        cvReleaseImage( &frame_copy );
-        cvReleaseCapture( &capture );
-    }
-    else
-    {
-        if( image )
-        {
-            detect_and_draw( image );
-            cvReleaseImage( &image );
-        }
-        else if( input_name )
-        {
-            // assume it is a text file containing the
-            //   list of the image filenames to be processed - one per line 
-            FILE* f = fopen( input_name, "rt" );
-            if( f )
-            {
-                char buf[1000+1];
-                while( fgets( buf, 1000, f ) )
-                {
-                    int len = (int)strlen(buf), c;
-                    while( len > 0 && isspace(buf[len-1]) )
-                        len--;
-                    buf[len] = '\0';
-                    printf( "file %s\n", buf ); 
-                    image = cvLoadImage( buf, 1 );
-                    if( image )
-                    {
-                        detect_and_draw( image );                        
-                        cvReleaseImage( &image );
-                    }
-                }
-                fclose(f);
-            }
-        }
-    }
-    
-    cvDestroyWindow("result");
-    return 0;
+		cvReleaseImage( &frame_copy );
+		cvReleaseCapture( &capture );
+	}
+	else
+	{
+		if( image )
+		{
+			detect_and_draw( image );
+			cvReleaseImage( &image );
+		}
+		else if( input_name )
+		{
+			// assume it is a text file containing the
+			//   list of the image filenames to be processed - one per line 
+			FILE* f = fopen( input_name, "rt" );
+			if( f )
+			{
+				char buf[1000+1];
+				while( fgets( buf, 1000, f ) )
+				{
+					int len = (int)strlen(buf), c;
+					while( len > 0 && isspace(buf[len-1]) )
+						len--;
+					buf[len] = '\0';
+					printf( "file %s\n", buf ); 
+					image = cvLoadImage( buf, 1 );
+					if( image )
+					{
+						detect_and_draw( image );                        
+						cvReleaseImage( &image );
+					}
+				}
+				fclose(f);
+			}
+		}
+	}
+
+	cvDestroyWindow("result");
+	return 0;
 }
 
 void detect_and_draw( IplImage* img )
 {
-    static CvScalar colors[] = 
-    {
-        {{0,0,255}},
-        {{0,128,255}},
-        {{0,255,255}},
-        {{0,255,0}},
-        {{255,128,0}},
-        {{255,255,0}},
-        {{255,0,0}},
-        {{255,0,255}}
-    };
+	static CvScalar colors[] = 
+	{
+		{{0,0,255}},
+		{{0,128,255}},
+		{{0,255,255}},
+		{{0,255,0}},
+		{{255,128,0}},
+		{{255,255,0}},
+		{{255,0,0}},
+		{{255,0,255}}
+	};
 
-    IplImage *small_img;
-    int j;
+	IplImage *small_img;
+	int j;
 
-    small_img = cvCreateImage( cvSize( cvRound (img->width/scale),
-                         cvRound (img->height/scale)), 8, 3 );
+	small_img = cvCreateImage( cvSize( cvRound (img->width/scale),
+		cvRound (img->height/scale)), 8, 3 );
 	CvSize imgsize = cvGetSize(small_img);
-    cvResize( img, small_img, CV_INTER_LINEAR );
-    cvClearMemStorage( storage );
+	cvResize( img, small_img, CV_INTER_LINEAR );
+	cvClearMemStorage( storage );
 
 	CvFont font;
-    cvInitFont( &font, CV_FONT_HERSHEY_PLAIN, 2, 2, 0, 1, CV_AA );
+	cvInitFont( &font, CV_FONT_HERSHEY_PLAIN, 2, 2, 0, 1, CV_AA );
 
 	CvFont infofont;
-    cvInitFont( &infofont, CV_FONT_HERSHEY_PLAIN, 1, 1, 0, 1, CV_AA );
+	cvInitFont( &infofont, CV_FONT_HERSHEY_PLAIN, 1, 1, 0, 1, CV_AA );
 
 	CvFont helpfont;
-    cvInitFont( &helpfont, CV_FONT_HERSHEY_PLAIN, 0.5, 0.5, 0, 1, CV_AA );
-	
-    if( cascade )
-    {
-        double t = (double)cvGetTickCount();
-        CvSeq* faces = cvHaarDetectObjects( small_img, cascade, storage,
-                                            1.1, 2, 0
-                                            //|CV_HAAR_FIND_BIGGEST_OBJECT
-                                            //|CV_HAAR_DO_ROUGH_SEARCH
-                                            //|CV_HAAR_DO_CANNY_PRUNING
-                                            //|CV_HAAR_SCALE_IMAGE
-                                            ,
-                                            cvSize(30, 30) );
-        t = (double)cvGetTickCount() - t;
-        //printf( "detection time = %gms\n", t/((double)cvGetTickFrequency()*1000.) );
-		
+	cvInitFont( &helpfont, CV_FONT_HERSHEY_PLAIN, 0.5, 0.5, 0, 1, CV_AA );
+
+	if( cascade )
+	{
+		double t = (double)cvGetTickCount();
+		CvSeq* faces = cvHaarDetectObjects( small_img, cascade, storage,
+			1.1, 2, 0
+			//|CV_HAAR_FIND_BIGGEST_OBJECT
+			//|CV_HAAR_DO_ROUGH_SEARCH
+			//|CV_HAAR_DO_CANNY_PRUNING
+			//|CV_HAAR_SCALE_IMAGE
+			,
+			cvSize(30, 30) );
+		t = (double)cvGetTickCount() - t;
+		//printf( "detection time = %gms\n", t/((double)cvGetTickFrequency()*1000.) );
+
 		/*framenum++;
 		if (framenum==100) 
 		{
-			cerr<<"next face"<<endl;
-			facenum++; 
+		cerr<<"next face"<<endl;
+		facenum++; 
 		}
-		
+
 		if (framenum==220) 
 		{
-			cerr<<"stopped learning"<<endl;
-			cerr<<facebank.GetFaceMap().size()<<" faces recorded"<<endl;
-			learn=false;  
+		cerr<<"stopped learning"<<endl;
+		cerr<<facebank.GetFaceMap().size()<<" faces recorded"<<endl;
+		learn=false;  
 		}*/
-		
+
 		///////////////////////////////////
 		// dispatch from input
-		
+
 		int key=cvWaitKey(10);
-		
+
 		switch (key)
 		{
-			case 'd': learn=false; break;
-			case '1': facenum=1; learn=true; break;
-			case '2': facenum=2; learn=true; break;
-			case '3': facenum=3; learn=true; break;
-			case '4': facenum=4; learn=true; break;
-			case '5': facenum=5; learn=true; break;
-			case '6': facenum=6; learn=true; break;
-			case '7': facenum=7; learn=true; break;
-			case '8': facenum=8; learn=true; break;
-			case '9': facenum=9; learn=true; break;
-			case '0': facenum=0; learn=true; break;
-			case 'c': facebank.Clear(); break;
+		case 'd': learn=false; break;
+		case '1': facenum=1; learn=true; break;
+		case '2': facenum=2; learn=true; break;
+		case '3': facenum=3; learn=true; break;
+		case '4': facenum=4; learn=true; break;
+		case '5': facenum=5; learn=true; break;
+		case '6': facenum=6; learn=true; break;
+		case '7': facenum=7; learn=true; break;
+		case '8': facenum=8; learn=true; break;
+		case '9': facenum=9; learn=true; break;
+		case '0': facenum=0; learn=true; break;
+		case 'c': facebank.Clear(); break;
 		}
 
 		///////////////////////////////////
@@ -327,15 +335,15 @@ void detect_and_draw( IplImage* img )
 				facebank.Save(b->get(1).asString().c_str());
 			}
 		}
-		
+
 		///////////////////////////////////
 
 		if (!idle)
 		{
-        	for(int i = 0; i < (faces ? faces->total : 0); i++ )
-        	{
-            	CvRect* r = (CvRect*)cvGetSeqElem( faces, i );
-            	CvMat small_img_roi;
+			for(int i = 0; i < (faces ? faces->total : 0); i++ )
+			{
+				CvRect* r = (CvRect*)cvGetSeqElem( faces, i );
+				CvMat small_img_roi;
 
 				unsigned int ID=999;
 				float confidence=0;
@@ -373,14 +381,18 @@ void detect_and_draw( IplImage* img )
 				}
 
 				cvRectangle(small_img, cvPoint(r->x,r->y), cvPoint(r->x+r->width,r->y+r->height), color);
-        	}
+			}
 		}
 		else
 		{
 			// idling, so free up some cpu
+		#ifdef WIN32
+			Sleep(2000);
+		#else
 			usleep(200000);
+		#endif
 		}
-    }
+	}
 
 	scenestate.Update();
 
@@ -404,7 +416,7 @@ void detect_and_draw( IplImage* img )
 	snprintf(info,256,"'c' : clear all faces");
 	cvPutText(small_img, info, cvPoint(20,80), &helpfont, CV_RGB(0,0,0));
 
-	#ifdef SHOW_FACES
+#ifdef SHOW_FACES
 	for(map<unsigned int,Face*>::iterator ii=facebank.GetFaceMap().begin(); 
 		ii!=facebank.GetFaceMap().end(); ++ii)
 	{
@@ -412,15 +424,15 @@ void detect_and_draw( IplImage* img )
 		int y=imgsize.height-facebank.GetFaceHeight();
 		BlitImage(ii->second->m_Image,small_img,cvPoint(x,y));
 	}
-	#endif
-	
-    cvShowImage( "result", small_img );
+#endif
 
-	#ifdef SAVE_FRAMES
+	cvShowImage( "result", small_img );
+
+#ifdef SAVE_FRAMES
 	char name[256];
 	sprintf(name,"out-%0.4d.jpg",framenum);
 	cvSaveImage(name,small_img);
-	#endif
-    
-    cvReleaseImage( &small_img );
+#endif
+
+	cvReleaseImage( &small_img );
 }

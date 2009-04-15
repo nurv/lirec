@@ -16,6 +16,7 @@
 
 #include "ImageUtils.h"
 
+#include <iostream>
 using namespace std;
 
 /////////////////////////////////////////////////////////////
