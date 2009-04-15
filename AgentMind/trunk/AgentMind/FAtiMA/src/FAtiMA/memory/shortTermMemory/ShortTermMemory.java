@@ -89,7 +89,7 @@ public class ShortTermMemory implements Serializable {
 	 */
 	public static void SaveState(String fileName)
 	{
-		//synchronized(_stmInstance)
+		synchronized(_stmInstance)
 		{
 			try 
 			{
@@ -124,7 +124,7 @@ public class ShortTermMemory implements Serializable {
         	_stmInstance = (ShortTermMemory) s.readObject();
         	s.close();
         	in.close();
-        	//_stmInstance._records.SetEventID(_stmInstance.GetAllRecords().GetNewestRecord().getID()+1);
+        	_stmInstance._records.SetEventID(_stmInstance.GetAllRecords().GetNewestRecord().getID()+1);
 		}
 		catch (Exception e)
 		{

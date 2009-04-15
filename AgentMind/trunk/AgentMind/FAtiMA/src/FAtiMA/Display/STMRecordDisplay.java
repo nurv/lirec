@@ -58,8 +58,8 @@ public class STMRecordDisplay {
     	_panel = new JPanel();
         _panel.setBorder(BorderFactory.createEtchedBorder());
         _panel.setLayout(new BoxLayout(_panel,BoxLayout.Y_AXIS));
-        _panel.setMaximumSize(new Dimension(750,300));
-        _panel.setMinimumSize(new Dimension(750,300));
+        _panel.setMaximumSize(new Dimension(800,300));
+        _panel.setMinimumSize(new Dimension(800,300));
         
         //DETAILS
         _details = new JPanel();
@@ -68,8 +68,8 @@ public class STMRecordDisplay {
         
         JPanel aux = new JPanel();
         aux.setLayout(new BoxLayout(aux,BoxLayout.X_AXIS));
-        aux.setMinimumSize(new Dimension(750,30));
-        aux.setMaximumSize(new Dimension(750,30));
+        aux.setMinimumSize(new Dimension(800,30));
+        aux.setMaximumSize(new Dimension(800,30));
         
         JLabel lbl = new JLabel("ID");
         lbl.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
@@ -109,8 +109,8 @@ public class STMRecordDisplay {
         
         lbl = new JLabel("Evaluation");
         lbl.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
-        lbl.setMinimumSize(new Dimension(100,30));
-        lbl.setMaximumSize(new Dimension(100,30));
+        lbl.setMinimumSize(new Dimension(150,30));
+        lbl.setMaximumSize(new Dimension(150,30));
         aux.add(lbl);
         
         lbl = new JLabel("Time");
@@ -149,7 +149,7 @@ public class STMRecordDisplay {
 				
 			prop.add(recordDetailPanel);
 		}
-		//synchronized(ShortTermMemory.GetInstance())
+		synchronized(ShortTermMemory.GetInstance())
 		{
 			ShortTermMemory.GetInstance().ClearNewRecords();
 		}

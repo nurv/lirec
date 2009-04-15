@@ -35,8 +35,8 @@ public class RecordDetailPanel extends JPanel {
 		super();
 		this.setBorder(BorderFactory.createRaisedBevelBorder());
         this.setLayout(new BoxLayout(this,BoxLayout.X_AXIS));
-        this.setMinimumSize(new Dimension(750,30));
-        this.setMaximumSize(new Dimension(750,30));
+        this.setMinimumSize(new Dimension(800,30));
+        this.setMaximumSize(new Dimension(800,30));
         
         _id = new JTextField(new Integer(detail.getID()).toString());
         _id.setMinimumSize(new Dimension(30,30));
@@ -76,8 +76,8 @@ public class RecordDetailPanel extends JPanel {
         this.add(_feeling);
                 
     	_evaluation = new JTextField(detail.getEvaluation().toString());
-        _evaluation.setMinimumSize(new Dimension(100,30));
-        _evaluation.setMaximumSize(new Dimension(100,30));
+        _evaluation.setMinimumSize(new Dimension(150,30));
+        _evaluation.setMaximumSize(new Dimension(150,30));
         _evaluation.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
         this.add(_evaluation);
         

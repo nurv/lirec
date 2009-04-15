@@ -176,7 +176,7 @@ public class ShortTermMemoryPanel extends AgentDisplayPanel {
             else
             	_workingFactsSubPanel1.add(kDisplay.GetPanel());
         }
-        //synchronized(WorkingMemory.GetInstance())
+        synchronized(WorkingMemory.GetInstance())
         {
         	WorkingMemory.GetInstance().ClearChangeList();
         }

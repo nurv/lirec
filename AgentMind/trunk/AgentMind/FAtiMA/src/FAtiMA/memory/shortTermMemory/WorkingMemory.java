@@ -105,7 +105,7 @@ public class WorkingMemory implements Serializable {
 	 */
 	public static void SaveState(String fileName)
 	{
-		//synchronized(_wmInstance)
+		synchronized(_wmInstance)
 		{
 			try 		
 			{
@@ -132,7 +132,7 @@ public class WorkingMemory implements Serializable {
 	 * 					 WorkingMemory
 	 */
 	public static void LoadState(String fileName)
-	{
+	{	
 		try
 		{
 			FileInputStream in = new FileInputStream(fileName);
@@ -144,7 +144,7 @@ public class WorkingMemory implements Serializable {
 		catch (Exception e)
 		{
 			e.printStackTrace();
-		}
+		}		
 	}
 	
 	private KnowledgeSlot _wM;
