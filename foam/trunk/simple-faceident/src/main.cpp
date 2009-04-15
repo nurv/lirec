@@ -29,6 +29,7 @@
 #include <limits.h>
 #include <time.h>
 #include <ctype.h>
+#include <unistd.h>
 
 #include "FaceBank.h"
 #include "ImageUtils.h"
@@ -66,7 +67,8 @@ SceneState scenestate;
 //#define SAVE_FRAMES
 
 // globals
-bool learn=true;
+bool learn=false;
+bool idle=false;
 int facenum=0;
 int framenum=0;
 
@@ -300,6 +302,12 @@ void detect_and_draw( IplImage* img )
 			{
 				facenum=b->get(1).asInt();
 				learn=true;
+				idle=false;
+			}
+			if (b->get(0).asString()=="idle")
+			{
+				facenum=b->get(1).asInt();
+				idle=true;
 			}
 			else if (b->get(0).asString()=="clear")
 			{
@@ -308,6 +316,7 @@ void detect_and_draw( IplImage* img )
 			else if (b->get(0).asString()=="detect")
 			{
 				learn=false;
+				idle=false;
 			}
 			else if (b->get(0).asString()=="load")
 			{
@@ -321,48 +330,56 @@ void detect_and_draw( IplImage* img )
 		
 		///////////////////////////////////
 
-        for(int i = 0; i < (faces ? faces->total : 0); i++ )
-        {
-            CvRect* r = (CvRect*)cvGetSeqElem( faces, i );
-            CvMat small_img_roi;
-			
-			unsigned int ID=999;
-			float confidence=0;
-			// get the face area as a sub image
-			IplImage *face = SubImage(small_img, *r);
-			// pass it into the face bank 
-			if (learn)
-			{
-				confidence=facebank.Suggest(face,facenum);
-				ID=facenum;
-			}
-			else
-			{	
-				confidence=facebank.Identify(face,ID);
-			}
-			
-			cvReleaseImage(&face);
-			CvScalar color = colors[ID%8];
+		if (!idle)
+		{
+        	for(int i = 0; i < (faces ? faces->total : 0); i++ )
+        	{
+            	CvRect* r = (CvRect*)cvGetSeqElem( faces, i );
+            	CvMat small_img_roi;
 
-			// if it's recognised the face (should really check the confidence)
-			if (ID!=999)
-			{
-				char s[32];
-				sprintf(s,"%d %0.2f",ID,confidence);
-				cvPutText(small_img, s, cvPoint(r->x,r->y+25), &font, color);
-				int x=(facebank.GetFaceWidth()+1)*ID;
-				int y=imgsize.height-facebank.GetFaceHeight();
-				cvLine(small_img, cvPoint(r->x+r->width/2,r->y+r->height/2),
-					cvPoint(x+facebank.GetFaceWidth()/2,y), color);			
-
-				if (!learn)
+				unsigned int ID=999;
+				float confidence=0;
+				// get the face area as a sub image
+				IplImage *face = SubImage(small_img, *r);
+				// pass it into the face bank 
+				if (learn)
 				{
-					scenestate.AddPresent(ID, SceneState::User(confidence));
+					confidence=facebank.Suggest(face,facenum);
+					ID=facenum;
 				}
-			}
+				else
+				{	
+					confidence=facebank.Identify(face,ID);
+				}
 
-			cvRectangle(small_img, cvPoint(r->x,r->y), cvPoint(r->x+r->width,r->y+r->height), color);
-        }
+				cvReleaseImage(&face);
+				CvScalar color = colors[ID%8];
+
+				// if it's recognised the face (should really check the confidence)
+				if (ID!=999)
+				{
+					char s[32];
+					sprintf(s,"%d %0.2f",ID,confidence);
+					cvPutText(small_img, s, cvPoint(r->x,r->y+25), &font, color);
+					int x=(facebank.GetFaceWidth()+1)*ID;
+					int y=imgsize.height-facebank.GetFaceHeight();
+					cvLine(small_img, cvPoint(r->x+r->width/2,r->y+r->height/2),
+						cvPoint(x+facebank.GetFaceWidth()/2,y), color);			
+
+					if (!learn)
+					{
+						scenestate.AddPresent(ID, SceneState::User(confidence));
+					}
+				}
+
+				cvRectangle(small_img, cvPoint(r->x,r->y), cvPoint(r->x+r->width,r->y+r->height), color);
+        	}
+		}
+		else
+		{
+			// idling, so free up some cpu
+			usleep(200000);
+		}
     }
 
 	scenestate.Update();

@@ -23,10 +23,11 @@ You can also drive the program via yarp with the following input messages:
 
 Input port      Bottle contents                 Meaning
 /faceident-ctrl "train" ID                      Train for this user
-/faceident-ctrl "detect"                        Switch out of training mode
+/faceident-ctrl "detect"                        Switch to detection mode
 /faceident-ctrl "save" sessionname              Save the detected faces 
 /faceident-ctrl "load" sessionname              Load previously detected faces 
 /faceident-ctrl "clear"                         Clears all faces
+/faceident-ctrl "idle"                          Switch to idle mode, mostly frees up cpu
 
 Faces are saved in png format along with a text file to map them to id numbers. The sessionname 
 will be prepended onto the filenames for the text file and the image files, so you can save 
