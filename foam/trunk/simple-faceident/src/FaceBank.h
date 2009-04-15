@@ -65,6 +65,9 @@ public:
 	unsigned int GetFaceWidth() { return m_FaceWidth; }
 	unsigned int GetFaceHeight() { return m_FaceHeight; }
 
+	void Save(const std::string &filename) const;
+	void Load(const std::string &filename);
+
 private:	
 
 	unsigned int m_FaceWidth;

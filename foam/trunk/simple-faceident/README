@@ -15,9 +15,22 @@ threshold) with the faces recorded during calibration. The boxes drawn around
 the faces display the id and the confidence value of the match. When in this 
 mode the program sends the following YARP messages:
 
-Port         Bottle contents                Meaning
-/faceident 	"user appeared" ID confidence   A user has entered the view of the camera
-/faceident 	"user disappeared" ID           The user has left the camera view
+Output port     Bottle contents                 Meaning
+/faceident 	    "user appeared" ID confidence   A user has entered the view of the camera
+/faceident 	    "user disappeared" ID           The user has left the camera view
+
+You can also drive the program via yarp with the following input messages:
+
+Input port      Bottle contents                 Meaning
+/faceident-ctrl "train" ID                      Train for this user
+/faceident-ctrl "detect"                        Switch out of training mode
+/faceident-ctrl "save" sessionname              Save the detected faces 
+/faceident-ctrl "load" sessionname              Load previously detected faces 
+/faceident-ctrl "clear"                         Clears all faces
+
+Faces are saved in png format along with a text file to map them to id numbers. The sessionname 
+will be prepended onto the filenames for the text file and the image files, so you can save 
+multiple sessions.
 
 Key                 Meaning
 0-9 number keys     Calibrate a given id against a face in the scene
@@ -36,6 +49,8 @@ In order to find OpenCV's data, on my machine it's in:
 
 Todo:
 * Try normalised cross correlation instead of image differencing
+* Expose image size and error threshold via yarp
+* Use tinyxml or something better for the serialisation
 
 Questions to:
 

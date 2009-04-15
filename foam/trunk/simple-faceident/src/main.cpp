@@ -296,7 +296,6 @@ void detect_and_draw( IplImage* img )
 		Bottle *b=ctrlport.read(false);
 		if (b!=NULL)
 		{
-			cerr<<"got bottle "<<b->toString().c_str()<<endl;
 			if (b->get(0).asString()=="train")
 			{
 				facenum=b->get(1).asInt();
@@ -309,6 +308,14 @@ void detect_and_draw( IplImage* img )
 			else if (b->get(0).asString()=="detect")
 			{
 				learn=false;
+			}
+			else if (b->get(0).asString()=="load")
+			{
+				facebank.Load(b->get(1).asString().c_str());
+			}
+			else if (b->get(0).asString()=="save")
+			{
+				facebank.Save(b->get(1).asString().c_str());
 			}
 		}
 		
