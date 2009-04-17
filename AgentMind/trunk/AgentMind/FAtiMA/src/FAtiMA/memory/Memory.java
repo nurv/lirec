@@ -199,8 +199,22 @@ public class Memory {
 		if (bindingSets == null || bindingSets.size() == 0)
 			bindingSets = (MatchLiteralList(name.GetLiteralList(), 0, KnowledgeBase.GetInstance().GetKnowledgeBase()));
 		else
-			if (MatchLiteralList(name.GetLiteralList(), 0, KnowledgeBase.GetInstance().GetKnowledgeBase()) != null)
-				bindingSets.addAll(MatchLiteralList(name.GetLiteralList(), 0, KnowledgeBase.GetInstance().GetKnowledgeBase()));
+		{
+			ArrayList bindingSets2 = MatchLiteralList(name.GetLiteralList(), 0, KnowledgeBase.GetInstance().GetKnowledgeBase());
+			if (bindingSets2 != null)
+			{
+				ListIterator li = bindingSets2.listIterator();
+
+				synchronized (this) {
+					while (li.hasNext()) {
+						
+						SubstitutionSet ss = (SubstitutionSet) li.next();
+						if( !bindingSets.contains(ss) )
+							bindingSets.add(ss);
+					}
+				}
+			}
+		}
 		
 		return bindingSets;
 	}
