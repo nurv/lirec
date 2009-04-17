@@ -181,7 +181,7 @@ public abstract class Goal implements IGroundable, Cloneable, Serializable {
 		else iof = new Float(0 - _baseIOF);
 		
 		WorkingMemory.GetInstance().Tell(_dynamicIOF,iof);
-		System.out.println("Decrease importance of failure");
+		//System.out.println("Decrease importance of failure");
 	}
 	
 	/**
@@ -202,7 +202,7 @@ public abstract class Goal implements IGroundable, Cloneable, Serializable {
 		}
 		
 		WorkingMemory.GetInstance().Tell(_dynamicIOF,iof);
-		System.out.println("Increase importance of failure");
+		//System.out.println("Increase importance of failure");
 	}
 	
 	/**
@@ -225,7 +225,7 @@ public abstract class Goal implements IGroundable, Cloneable, Serializable {
 		else ios = new Float(0 - _baseIOS);
 		
 		WorkingMemory.GetInstance().Tell(_dynamicIOS,ios);
-		System.out.println("Decrease importance of success");
+		//System.out.println("Decrease importance of success");
 	}
 	
 	/**
@@ -246,7 +246,7 @@ public abstract class Goal implements IGroundable, Cloneable, Serializable {
 		}
 		
 		WorkingMemory.GetInstance().Tell(_dynamicIOS,ios);
-		System.out.println("Increase importance of success");
+		//System.out.println("Increase importance of success");
 	}
 	
 	/**
@@ -425,7 +425,7 @@ public abstract class Goal implements IGroundable, Cloneable, Serializable {
 		_baseIOF = Math.round(imp);
 		
 		Float iof = (Float) Memory.GetInstance().AskProperty(_dynamicIOF);
-		System.out.println("Set importance of failure");
+		//System.out.println("Set importance of failure");
 		if(iof != null)
 		{
 			float aux = _baseIOF + iof.floatValue();
@@ -453,7 +453,7 @@ public abstract class Goal implements IGroundable, Cloneable, Serializable {
 		_baseIOS = Math.round(imp);
 		
 		Float ios = (Float) Memory.GetInstance().AskProperty(_dynamicIOS);
-		System.out.println("Set importance of success");
+		//System.out.println("Set importance of success");
 		if(ios != null)
 		{
 			float aux = _baseIOS + ios.floatValue();

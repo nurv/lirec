@@ -45,7 +45,7 @@ public class LikeRelation extends Relation {
 		//If relation doesn't exists, create it in a neutral state
 		if (result == null) {
 			WorkingMemory.GetInstance().Tell(relationProperty, new Float(0));
-			System.out.println("get value LikeRelation");
+			//System.out.println("get value LikeRelation");
 			return 0;
 		}
 		return result.floatValue();
@@ -55,7 +55,7 @@ public class LikeRelation extends Relation {
 		Name relationProperty = Name.ParseName("Like(" + this._subj1 + ","
 				+ this._subj2 + ")");
 		WorkingMemory.GetInstance().Tell(relationProperty, new Float(like));
-		System.out.println("Set value LikeRelation");
+		//System.out.println("Set value LikeRelation");
 	}
 
 	public String getHashKey() {

@@ -77,7 +77,7 @@ import FAtiMA.memory.KnowledgeSlot;
 public class WorkingMemory implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	public static final short MAXENTRY = 20;
+	public static final short MAXENTRY = 24;
 	
 	/**
 	 * Singleton pattern 
@@ -346,7 +346,7 @@ public class WorkingMemory implements Serializable {
 				ksAux.setValue(value);
 				_newFacts.add(ksAux);
 				
-				System.out.println("New facts: " + ksAux.toString());
+				//System.out.println("New facts: " + ksAux.toString());
 			}
 			
 			if(newProperty)
@@ -356,7 +356,7 @@ public class WorkingMemory implements Serializable {
 				_factList.add(ks);
 				_changeList.add(ks); // new info
 				_newFacts.add(ks);
-				System.out.println("New property knowledge: " + ks.toString());
+				//System.out.println("New property knowledge: " + ks.toString());
 			}
 			else
 			{
@@ -368,8 +368,9 @@ public class WorkingMemory implements Serializable {
 					if(ks.getName().equals(property.toString()))
 					{
 						ks.setValue(value);
-						_changeList.add(ks); // property value change
-						System.out.println("New property value: " + ks.toString());
+						//if(!_changeList.contains(ks))
+						//	_changeList.add(ks);
+						//System.out.println("New property value: " + ks.toString());
 					} 
 				}
 				this.RearrangeWorkingMemory(property);
@@ -406,7 +407,8 @@ public class WorkingMemory implements Serializable {
 				currentSlot.remove(l.toString());
 				
 				KnowledgeBase.GetInstance().Tell(tempName, temp.getValue());
-				_factList.remove(0);				
+				_factList.remove(temp);		
+				_changeList.remove(temp);
 			}
 		}
 	}
@@ -427,6 +429,8 @@ public class WorkingMemory implements Serializable {
 				{
 					_factList.remove(ks);
 					_factList.add(ks);
+					//if(!_changeList.contains(ks))
+					//	_changeList.add(ks);
 					return;
 				}
 			}

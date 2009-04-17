@@ -52,7 +52,7 @@ public class RespectRelation extends Relation{
 		if(result == null)
 		{
 			WorkingMemory.GetInstance().Tell(respectProperty, new Float(0));
-			System.out.println("Get value RespectRelation");
+			//System.out.println("Get value RespectRelation");
 			return 0;
 		}
 		return result.floatValue();
@@ -62,7 +62,7 @@ public class RespectRelation extends Relation{
 	{
 		Name respectProperty = Name.ParseName("Respect(" + this._subj1 + "," + this._subj2 + ")");
 		WorkingMemory.GetInstance().Tell(respectProperty, new Float(like));
-		System.out.println("Set value RespectRelation");
+		//System.out.println("Set value RespectRelation");
 	}
 	
 	public String getHashKey() {

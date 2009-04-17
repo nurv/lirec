@@ -77,7 +77,7 @@ public class STMemoryRecord implements Serializable {
 		
 		action = new ActionDetail(eventID++,e,location);
 				
-		System.out.println("Action added: " + action.toXML());
+		//System.out.println("Action added: " + action.toXML());
 		
 		_details.add(action);
 			
@@ -146,7 +146,7 @@ public class STMemoryRecord implements Serializable {
 						(detail.getEmotion().GetType()) != EmotionType.NEUTRAL))
 				{
 					AutobiographicalMemory.GetInstance().StoreAction(detail);
-					System.out.println("Record transferred to AM: " + detail.toXML());
+					//System.out.println("Record transferred to AM: " + detail.toXML());
 				}
 				this.DeleteOldestRecord();
 			}

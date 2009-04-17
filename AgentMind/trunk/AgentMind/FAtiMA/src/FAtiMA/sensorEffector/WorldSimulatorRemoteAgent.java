@@ -82,7 +82,7 @@ public class WorldSimulatorRemoteAgent extends RemoteAgent {
 		
 		String value = st.nextToken();
 		WorkingMemory.GetInstance().Tell(propertyName, value);
-		System.out.println("Property changed perception World SimulatorRemoteAgent");
+		//System.out.println("Property changed perception World SimulatorRemoteAgent");
 		
 		/*String value = null;
 		Name propertyName = null;

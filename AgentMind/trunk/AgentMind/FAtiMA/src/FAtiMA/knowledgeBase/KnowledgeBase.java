@@ -312,7 +312,7 @@ public class KnowledgeBase implements Serializable {
 					!aux.getValue().equals(value))
 			{
 				aux.setValue(value);
-				System.out.println("New facts in KB: " + aux.toString());
+				//System.out.println("New facts in KB: " + aux.toString());
 			}
 			
 			if(newProperty)
@@ -320,7 +320,7 @@ public class KnowledgeBase implements Serializable {
 				KnowledgeSlot ks = new KnowledgeSlot(property.toString());
 				ks.setValue(value);
 				_factList.add(ks);
-				System.out.println("New property knowledge in KB: " + ks.toString());
+				//System.out.println("New property knowledge in KB: " + ks.toString());
 			}
 			else
 			{
@@ -332,7 +332,7 @@ public class KnowledgeBase implements Serializable {
 					if(ks.getName().equals(property.toString()))
 					{
 						ks.setValue(value);
-						System.out.println("New property value in KB: " + ks.toString());
+						//System.out.println("New property value in KB: " + ks.toString());
 					}
 				}
 			}

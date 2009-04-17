@@ -76,7 +76,7 @@ public class DialogManager implements Serializable {
 		if(!speechEvent.GetAction().equals(SpeechAct.Reinforce))
 		{
 			WorkingMemory.GetInstance().Tell(SPEECH_CONTEXT, speechEvent.toName().toString());
-			System.out.println("UpdateDialogState");
+			//System.out.println("UpdateDialogState");
 		}
 		this._canSpeak = true;
 		this._contextExpireTime = AgentSimulationTime.GetInstance().Time() + CONTEXT_DURATION;
@@ -100,7 +100,7 @@ public class DialogManager implements Serializable {
 			if(AgentSimulationTime.GetInstance().Time() > this._contextExpireTime)
 			{
 				WorkingMemory.GetInstance().Tell(SPEECH_CONTEXT, "");
-				System.out.println("SpeechContext to KB");
+				//System.out.println("SpeechContext to KB");
 				this._contextExpireTime = 0;
 				this._andCounting = false;
 			}

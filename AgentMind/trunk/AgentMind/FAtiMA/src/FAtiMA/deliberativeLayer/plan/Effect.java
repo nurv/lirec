@@ -82,7 +82,7 @@ public class Effect implements IGroundable, Cloneable, Serializable {
 		{
 			this._biasName = Name.ParseName("ProbBias(" + stepName + idCounter++ + ")");
 			KnowledgeBase.GetInstance().Tell(this._biasName, new Float(0));
-			System.out.println("Effect ");
+			//System.out.println("Effect ");
 		}
 	}
 	
@@ -233,7 +233,7 @@ public class Effect implements IGroundable, Cloneable, Serializable {
 		newprob = 0.6f * prob + 0.4f;
 		newbias = newprob - _baseprob;
 		WorkingMemory.GetInstance().Tell(_biasName,new Float(newbias));   
-		System.out.println("Increase probability effect");
+		//System.out.println("Increase probability effect");
 	}
 	
 	/**

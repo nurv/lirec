@@ -380,7 +380,7 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
 	public void setUncertainty(float uncertainty)
 	{	
 		WorkingMemory.GetInstance().Tell(this.getName(), new Float(uncertainty));
-		System.out.println("Set uncertainty");
+		//System.out.println("Set uncertainty");
 	}
 	
 	
