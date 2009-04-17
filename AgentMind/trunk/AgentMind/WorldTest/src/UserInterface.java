@@ -70,7 +70,7 @@ public class UserInterface implements ActionListener {
     
         _frame = new JFrame("WorldTest User Interface");
         _frame.getContentPane().setLayout(new BoxLayout(_frame.getContentPane(),BoxLayout.Y_AXIS));
-		_frame.setSize(350,350);
+		_frame.setSize(350,750);
 		_frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		textArea = new JTextArea(40, 200);

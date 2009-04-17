@@ -39,7 +39,6 @@
 		<Goal name="ReplyHideInfo([target],[friend],[info])" importanceOfSuccess="4" importanceOfFailure="3"/>
 		<Goal name="DontTellInfo([target],[friend],[info])" importanceOfSuccess="4" importanceOfFailure="3"/>
 		<Goal name="ReplyTellInfo([target],[friend],[info])" importanceOfSuccess="4" importanceOfFailure="3"/>
-		<Goal name="Goodbye([target],[item])" importanceOfSuccess="4" importanceOfFailure="3"/>
 	</Goals>
 	
 	<InterpersonalRelations>

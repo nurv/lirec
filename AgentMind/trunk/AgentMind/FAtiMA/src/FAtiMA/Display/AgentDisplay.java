@@ -99,10 +99,10 @@ public class AgentDisplay {
     public void update() {
         AgentDisplayPanel pnl = (AgentDisplayPanel) _displayPane.getSelectedComponent();
         
-        //for (int i=0; i <_displayPane.getComponentCount(); i++)
+        for (int i=0; i <_displayPane.getComponentCount(); i++)
         {
-        	//pnl = (AgentDisplayPanel) _displayPane.getComponentAt(i);
-        	pnl = (AgentDisplayPanel) _displayPane.getSelectedComponent();
+        	pnl = (AgentDisplayPanel) _displayPane.getComponentAt(i);
+        	//pnl = (AgentDisplayPanel) _displayPane.getSelectedComponent();
         	if(pnl.Update(_ag)) _frame.setVisible(true);
         }
     }

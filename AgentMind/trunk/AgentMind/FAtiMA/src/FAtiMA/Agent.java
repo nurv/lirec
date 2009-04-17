@@ -587,11 +587,11 @@ public class Agent {
 		long updateTime = System.currentTimeMillis();
 		
 		while (!_shutdown) {			
-			//if(_readyForNextStep)
+			if(_readyForNextStep)
 			{
 				try {
 					
-					//Thread.sleep(2500);
+					//Thread.sleep(4000);
 					
 				    if(_remoteAgent.isShutDown()) {
 					    _shutdown = true;
@@ -728,7 +728,7 @@ public class Agent {
 					//System.out.println("Cycle execution (in Millis): " + cycleExecutionTime);
 					//System.out.println("Average time per cycle (in Millis): " + _totalexecutingtime / _numberOfCycles);
 					Thread.sleep(10);
-					this._readyForNextStep = false;
+					//this._readyForNextStep = false;
 					
 				}
 				catch (Exception ex) {

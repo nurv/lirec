@@ -146,6 +146,9 @@ public abstract class RemoteAgent extends SocketListener {
 	protected HashMap _objectIdentifiers;
 	protected boolean _running;
 	protected String _userName;
+	
+	private boolean _readyForNextStep;
+	
 	//protected LanguageEngine _languageEngine;
 	//protected String _userLanguageDataBase;
 	//protected LanguageEngine _userLanguageEngine;
@@ -159,8 +162,8 @@ public abstract class RemoteAgent extends SocketListener {
 		_actions = new ArrayList();
 		_objectIdentifiers = new HashMap();
 		_canAct = true;
-		_running = true;
-		
+		_running = true;	
+		_readyForNextStep = false;
 		
 		AgentLogger.GetInstance().log("Connecting to " + host + ":" + port);
 		this.socket = new Socket(host, port);
@@ -327,7 +330,13 @@ public abstract class RemoteAgent extends SocketListener {
 			}
 			else if(msgType.equals(READY_FOR_NEXT_STEP))
 			{
-				_agent.setReadyForNextStep(true);			
+				if (_readyForNextStep)
+					_readyForNextStep = false;
+					
+				else
+					_readyForNextStep = true;
+				_agent.setReadyForNextStep(_readyForNextStep);	
+						
 			}
 			
 			while(_lookAtList.size() > 0)
