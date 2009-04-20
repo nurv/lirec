@@ -82,7 +82,7 @@ public class MemoryEpisode implements Serializable {
 		//this._dominantActions = new ArrayList(this._numberOfDominantActions);	
 	}
 	
-	public MemoryEpisode(String location)
+	/*public MemoryEpisode(String location)
 	{
 		this._location = location;
 		this._time = null;
@@ -92,7 +92,7 @@ public class MemoryEpisode implements Serializable {
 		this._details = new ArrayList();
 		this._numberOfDominantActions = 3;
 		//this._dominantActions = new ArrayList(this._numberOfDominantActions);	
-	}
+	}*/
 	
 	
 	/*public String getAbstract() 

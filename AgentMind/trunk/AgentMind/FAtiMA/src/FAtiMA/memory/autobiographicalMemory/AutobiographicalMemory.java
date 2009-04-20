@@ -54,6 +54,7 @@ import java.util.ListIterator;
 import FAtiMA.AgentSimulationTime;
 import FAtiMA.deliberativeLayer.goals.Goal;
 import FAtiMA.memory.ActionDetail;
+import FAtiMA.memory.Time;
 import FAtiMA.sensorEffector.Event;
 import FAtiMA.util.AgentLogger;
 
@@ -168,8 +169,8 @@ public class AutobiographicalMemory implements Serializable {
 				event = (MemoryEpisode) this._memoryEvents.get(i);
 				if (event.getLocation().equals(action.getLocation()))
 				{
-					if (event.getTime() == null)
-						event.setTime(action.getTime());
+					//if (event.getTime() == null)
+					//	event.setTime(action.getTime());
 					event.AddActionDetail(action);
 					found = true;
 				}
@@ -189,7 +190,7 @@ public class AutobiographicalMemory implements Serializable {
 		synchronized (this) {
 			if(this._memoryEvents.size() == 0)
 			{
-				event = new MemoryEpisode(newLocation);
+				event = new MemoryEpisode(newLocation, new Time());
 				this._memoryEvents.add(event);
 			}
 			else 
@@ -201,7 +202,7 @@ public class AutobiographicalMemory implements Serializable {
 				}
 				else if(!event.getLocation().equals(newLocation))
 				{
-					event = new MemoryEpisode(newLocation);
+					event = new MemoryEpisode(newLocation, new Time());
 					this._memoryEvents.add(event);
 				}
 			}
