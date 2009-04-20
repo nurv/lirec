@@ -77,7 +77,7 @@ import FAtiMA.memory.KnowledgeSlot;
 public class WorkingMemory implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	public static final short MAXENTRY = 24;
+	public static final short MAXENTRY = 28;
 	
 	/**
 	 * Singleton pattern 

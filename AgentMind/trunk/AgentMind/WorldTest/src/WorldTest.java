@@ -107,7 +107,7 @@ public class WorldTest {
 			this._actions = op.getOperators();
 			_ss = new ServerSocket(port);
 			
-			_ssToGreta = new ServerSocket(100);	
+			//_ssToGreta = new ServerSocket(100);	
 		}
 		catch (Exception e){
 			e.printStackTrace();
@@ -144,10 +144,10 @@ public class WorldTest {
 		
 		while(true) {
 			try {
-				s1 = _ssToGreta.accept();
+				/*s1 = _ssToGreta.accept();
 				_ga = new GretaAgent(this,s1);
 				_ga.start();
-				_ga.Send("Connected!");
+				_ga.Send("Connected!");*/
 				
 				s2 = _ss.accept();
 				ra = new RemoteAgent(this,s2);

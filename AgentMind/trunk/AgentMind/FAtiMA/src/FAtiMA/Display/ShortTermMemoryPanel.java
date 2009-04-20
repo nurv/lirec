@@ -94,19 +94,19 @@ public class ShortTermMemoryPanel extends AgentDisplayPanel {
 		_workingFactsPanel = new JPanel();
 		_workingFactsPanel.setBorder(BorderFactory.createTitledBorder("Working Memory"));
 		_workingFactsPanel.setLayout(new BoxLayout(_workingFactsPanel,BoxLayout.X_AXIS));
-		_workingFactsPanel.setMaximumSize(new Dimension(850,300));
-		_workingFactsPanel.setMinimumSize(new Dimension(850,300));
+		_workingFactsPanel.setMaximumSize(new Dimension(850,400));
+		_workingFactsPanel.setMinimumSize(new Dimension(850,400));
 	    
 		_workingFactsSubPanel1 = new JPanel();
 		_workingFactsSubPanel1.setLayout(new BoxLayout(_workingFactsSubPanel1,BoxLayout.Y_AXIS));
-		_workingFactsSubPanel1.setMaximumSize(new Dimension(400,650));
-		_workingFactsSubPanel1.setMinimumSize(new Dimension(400,650));
+		_workingFactsSubPanel1.setMaximumSize(new Dimension(400,800));
+		_workingFactsSubPanel1.setMinimumSize(new Dimension(400,800));
 		
 		
 		_workingFactsSubPanel2 = new JPanel();
 		_workingFactsSubPanel2.setLayout(new BoxLayout(_workingFactsSubPanel2,BoxLayout.Y_AXIS));
-		_workingFactsSubPanel2.setMaximumSize(new Dimension(400,650));
-		_workingFactsSubPanel2.setMinimumSize(new Dimension(400,650));		
+		_workingFactsSubPanel2.setMaximumSize(new Dimension(400,800));
+		_workingFactsSubPanel2.setMinimumSize(new Dimension(400,800));		
 		
 		_workingFactsPanel.add(_workingFactsSubPanel1);
 		_workingFactsPanel.add(_workingFactsSubPanel2);
