@@ -1,0 +1,68 @@
+$Id: Readme 10 2009-03-24 21:45:48Z mw $
+
+FacET (Facial Expression Tracker) is a library of image processing 
+procedures for detecting and parameterising face components (eg. eyes, 
+eyebrows, lips, forehead wrinkles). 
+Such face features are useful for classification of human emotions 
+based on facial expression.
+
+The current version of FacET was developed by Marek Wnuk and is
+based on the application created for Marcin Namysl's Master thesis 
+(supervised by Marek Wnuk, Wroclaw University of Technology, 
+Institute of Computer Engineering, Control and Robotics): 
+"Wykorzystanie systemu wizyjnego do rozpoznawania emocji czlowieka"
+("Vision system in human emotions recognition").
+
+    FacET is a library for detecting and parameterising face components.
+    Copyright (C) 2009  Marek Wnuk <marek.wnuk@pwr.wroc.pl>
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+Directory contents:
+
+./cascades : Haar cascades for eyes, mouth and nose,
+./doc: doxygen documentation (LaTeX, HTML),
+./inc: library includes - header files *.h,
+./input: sample input images, videos and eyeballs templates,
+./lib: directory for library file(s)
+./obj: directory for library object files
+./output: directory for results (video, images, parameters),
+./src: library sources *.cpp,
+./demo: demo application directory
+./demo/src: demo sources
+./demo/inc: demo includes
+./demo/obj: demo object files
+
+default.cfg - configuration file,
+Makefile - makefile,
+Readme - this one,
+LICENSE - GNU GPL Ver.3
+
+The library code was written and tested in linux environment.
+Some minor changes (marked GC) were provided by Ginevra Castellano 
+for maintaining compatibility with windows.
+
+The demo code (timer and main) contains several conditional branches 
+(#ifdef WIN32) for windows compatibilty, proposed by Ginevra Castellano, 
+but was not tested in this environment yet.
+
+Compilation (in linux environment) requires OpenCV 1.0:
+"make" - to make lib and demo;
+"make docs" - to produce doxygen documentation in doc/html and doc/latex.
+
+Marek Wnuk  <marek.wnuk@pwr.wroc.pl>, 
+Wroclaw, 04.03.2009.
+
+
