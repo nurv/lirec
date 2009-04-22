@@ -1,0 +1,63 @@
+Simple Face Identification
+--------------------------
+
+A simple approach to face identification, built on top of OpenCV and given a 
+YARP network interface.
+
+The program has two modes of operation. The first is calibration, where each 
+user must show their face to the camera separately - press the number keys to 
+assign each user with a different ID. You can see which face is mapped to 
+which ID at the bottom of the window.
+
+The second mode of operation is face detection, where each visible detected 
+face is given an ID based on it's closest match (within a given error 
+threshold) with the faces recorded during calibration. The boxes drawn around 
+the faces display the id and the confidence value of the match. When in this 
+mode the program sends the following YARP messages:
+
+Output port     Bottle contents                 Meaning
+/faceident 	    "user appeared" ID confidence   A user has entered the view of the camera
+/faceident 	    "user disappeared" ID           The user has left the camera view
+
+You can also drive the program via yarp with the following input messages:
+
+Input port      Bottle contents                 Meaning
+/faceident-ctrl "train" ID                      Train for this user
+/faceident-ctrl "detect"                        Switch to detection mode
+/faceident-ctrl "save" sessionname              Save the detected faces 
+/faceident-ctrl "load" sessionname              Load previously detected faces 
+/faceident-ctrl "clear"                         Clears all faces
+/faceident-ctrl "idle"                          Switch to idle mode, mostly frees up cpu
+
+Faces are saved in png format along with a text file to map them to id numbers. The sessionname 
+will be prepended onto the filenames for the text file and the image files, so you can save 
+multiple sessions.
+
+Key                 Meaning
+0-9 number keys     Calibrate a given id against a face in the scene
+d                   Start detect mode, which will send YARP messages
+c                   Clear all faces in the database
+
+Requires: OpenCV, YARP
+
+Written and tested on Linux, but it should work in Windows too. At the moment 
+you'll probably have to run it with:
+
+simple-faceident -cascade=/path/to/haarcascade_frontalface_alt.xml
+
+In order to find OpenCV's data, on my machine it's in: 
+/usr/local/share/opencv/haarcascades/haarcascade_frontalface_alt.xml
+
+Todo:
+* Try normalised cross correlation instead of image differencing
+* Expose image size and error threshold via yarp
+* Use tinyxml or something better for the serialisation
+* Lighting is a problem
+   - Ignore the problem
+   - Try the edge image trick
+   - LBP
+
+Questions to:
+
+dave@fo.am
+
