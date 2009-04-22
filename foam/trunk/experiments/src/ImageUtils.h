@@ -15,6 +15,7 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "cv.h"
+#include "highgui.h"
 
 #ifndef IMAGE_UTILS
 #define IMAGE_UTILS
@@ -26,5 +27,8 @@ void BlitImage(IplImage *srcimage, IplImage *dstimage, CvPoint pos);
 void SubMean(IplImage *image);
 float Diff(IplImage *imagea, IplImage *imageb);
 void LBPImage(IplImage *srcimage, IplImage *dstimage);
+unsigned int *HistMono8Bit(IplImage *image);
+
+void DrawHistogram8(int x, int y, float scale, CvScalar colour, unsigned int *h, IplImage *img);
 
 #endif

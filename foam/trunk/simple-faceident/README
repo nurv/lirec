@@ -52,6 +52,10 @@ Todo:
 * Try normalised cross correlation instead of image differencing
 * Expose image size and error threshold via yarp
 * Use tinyxml or something better for the serialisation
+* Lighting is a problem
+   - Ignore the problem
+   - Try the edge image trick
+   - LBP
 
 Questions to:
 
