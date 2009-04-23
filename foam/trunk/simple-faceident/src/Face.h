@@ -14,21 +14,34 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
+#include <iostream>
+#include <map>
+#include <vector>
+#include <assert.h>
 #include "cv.h"
-#include "highgui.h"
 
-#ifndef IMAGE_UTILS
-#define IMAGE_UTILS
+#ifndef FACE
+#define FACE
 
-// I need to sort this out before it grows too much...
+/////////////////////////////////////////////////////////////////////////////////
+// A face representation
 
-IplImage* SubImage(IplImage *image, CvRect roi);
-void BlitImage(const IplImage *srcimage, IplImage *dstimage, CvPoint pos);
-void SubMean(IplImage *image);
-float Diff(const IplImage *imagea, const IplImage *imageb);
-void LBPImage(const IplImage *srcimage, IplImage *dstimage);
-unsigned int *HistMono8Bit(const IplImage *image);
+class Face
+{
+public:
+	Face(IplImage *image);
+	~Face();
+	
+	void AddImage(IplImage *image);
+	float FindSimilar(const IplImage *image, int &imagenum);
 
-void DrawHistogram8(int x, int y, float scale, CvScalar colour, unsigned int *h, IplImage *img);
+	// Blends a newly detected face into this image,
+	// an attempt at making it a little more dynamic
+	// needs more testing.
+	void Learn(const IplImage *image, float blend, int imagenum);
+
+	std::vector<IplImage *> m_ImageVec;
+};
 
 #endif
+

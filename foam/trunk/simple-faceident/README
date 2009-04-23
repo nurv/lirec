@@ -28,6 +28,7 @@ Input port      Bottle contents                 Meaning
 /faceident-ctrl "load" sessionname              Load previously detected faces 
 /faceident-ctrl "clear"                         Clears all faces
 /faceident-ctrl "idle"                          Switch to idle mode, mostly frees up cpu
+/faceident-ctrl "multiimages" 1/0               Turn on or off multiple images per face, experimental
 
 Faces are saved in png format along with a text file to map them to id numbers. The sessionname 
 will be prepended onto the filenames for the text file and the image files, so you can save 
@@ -51,13 +52,40 @@ In order to find OpenCV's data, on my machine it's in:
 Todo:
 * Try normalised cross correlation instead of image differencing
 * Expose image size and error threshold via yarp
-* Use tinyxml or something better for the serialisation
 * Lighting is a problem
    - Ignore the problem
-   - Try the edge image trick
+   - Try the edge image + blur trick
    - LBP
+   - Store multiple faces per id, for different lighting conditions
 
 Questions to:
 
 dave@fo.am
+
+Notes
+-----
+
+Muliple face images
+-------------------
+
+Could works as normal but with additional:
+
+----> "new lighting" or "new session"
+
+recalibration results in additional id images for users (leaves existing ones alone)
+search checks each image for each user
+images added to saved set - possible to build up lots of images of users
+
+would this work in some initial calibration with different lighting setups, or as it went along?
+
+Edge image & blur
+-----------------
+
+Remove low frequency lighting information from the face images
+Blur the resulting edge images to make them more forgiving
+- Would this just remove shape information? needs testing
+
+
+
+
 

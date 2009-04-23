@@ -33,9 +33,23 @@ IplImage* SubImage(IplImage *image, CvRect roi)
 }
 
 /////////////////////////////////////////////////////////////
+// safe accessor, which returns 0 if out of range
+
+unsigned char SafeGet2D(const IplImage *image, int y, int x, int c)
+{
+	CvSize size = cvGetSize(image);
+	if (x<0 || x>=size.width || y<0 || y>=size.height)
+	{
+		return 0;
+	}
+	
+	return cvGet2D(image,y,x).val[c];
+}
+
+/////////////////////////////////////////////////////////////
 // paste an image over the top of another
 
-void BlitImage(IplImage *srcimage, IplImage *dstimage, CvPoint pos)
+void BlitImage(const IplImage *srcimage, IplImage *dstimage, CvPoint pos)
 {
 	CvSize size = cvGetSize(srcimage);
 	CvSize dstsize = cvGetSize(dstimage);
@@ -94,7 +108,7 @@ void SubMean(IplImage *image)
 /////////////////////////////////////////////////////////////
 // return a diff metric between two images (works in RGB)
 
-float Diff(IplImage *imagea, IplImage *imageb)
+float Diff(const IplImage *imagea, const IplImage *imageb)
 {
 	CvSize sizea = cvGetSize(imagea);
 	CvSize sizeb = cvGetSize(imageb);
@@ -122,18 +136,8 @@ float Diff(IplImage *imagea, IplImage *imageb)
 /////////////////////////////////////////////////////////////
 // return a local binary patterns image of the src image
 
-unsigned char SafeGet2D(IplImage *image, int y, int x, int c)
-{
-	CvSize size = cvGetSize(image);
-	if (x<0 || x>=size.width || y<0 || y>=size.height)
-	{
-		return 0;
-	}
-	
-	return cvGet2D(image,y,x).val[c];
-}
 
-void LBPImage(IplImage *srcimage, IplImage *dstimage)
+void LBPImage(const IplImage *srcimage, IplImage *dstimage)
 {
 	CvSize srcsize = cvGetSize(srcimage);
 	CvSize dstsize = cvGetSize(dstimage);
@@ -142,17 +146,21 @@ void LBPImage(IplImage *srcimage, IplImage *dstimage)
 	assert(srcsize.height == dstsize.height);
 	assert(srcimage->nChannels == dstimage->nChannels);
 
+    // for each pixel
     for(int y=0; y<srcsize.height; y++)
 	{
         for(int x=0; x<srcsize.width; x++)
 		{
 			CvScalar sc;
-
+			
+			// for each channel
 			for(int c=0; c<dstimage->nChannels; c++)
 			{
 				unsigned char v=0;
 				unsigned char o=cvGet2D(srcimage,y,x).val[c];
 				unsigned char b=0;
+
+				// loop through a 3x3 kernel
 				for (int kx=-1; kx<=1; kx++)
 				{
 					for (int ky=-1; ky<=1; ky++)
@@ -160,9 +168,11 @@ void LBPImage(IplImage *srcimage, IplImage *dstimage)
 						// don't compare with ourself
 						if (!(kx==0 && ky==0))
 						{
+							// threshold
 							if (o>SafeGet2D(srcimage,y+ky,x+kx,c))
 							{
-								v&=1<<b;
+								// bit magic
+								v|=(1<<b);
 							}
 							b++;
 						}
@@ -172,5 +182,44 @@ void LBPImage(IplImage *srcimage, IplImage *dstimage)
 			}
 			cvSet2D(dstimage,y,x,sc);
 		}
+	}
+}
+
+/////////////////////////////////////////////////////////////
+// calculate a histogram
+
+unsigned int *HistMono8Bit(const IplImage *image)
+{
+	assert(image->nChannels == 1);
+	assert(image->depth == 8);
+	CvSize size = cvGetSize(image);
+
+	unsigned int *h=new unsigned int[256];
+
+	for(int i=0; i<256; i++)
+	{
+		h[i]=0;
+	}
+
+    // for each pixel
+    for(int y=0; y<size.height; y++)
+	{
+        for(int x=0; x<size.width; x++)
+		{
+			h[(unsigned char)cvGet2D(image,y,x).val[0]]++;
+		}
+	}
+	
+	return h;
+}
+
+/////////////////////////////////////////////////////////////
+// draw a histogram
+
+void DrawHistogram8(int x, int y, float scale, CvScalar colour, unsigned int *h, IplImage *img)
+{
+	for(int i=0; i<256; i++)
+	{
+		cvLine(img, cvPoint(x+i,y),cvPoint(x+i,y+h[i]*-scale), colour);	
 	}
 }

@@ -1,25 +1,40 @@
+TARGET  := faceident
+
+SRCS    := src/main.cpp\
+	src/FaceBank.cpp\
+	src/Face.cpp\
+	src/ImageUtils.cpp\
+	src/SceneState.cpp\
+	src/tinyxml.cpp\
+	src/tinyxmlerror.cpp\
+	src/tinyxmlparser.cpp
+
+CCFLAGS = `pkg-config --cflags opencv` -ggdb -Wall -O3 -ffast-math -Wno-unused -DTIXML_USE_STL 
+LDFLAGS = 
+LIBS    = `pkg-config --libs opencv` -lYARP_dev -lYARP_sig -lYARP_OS -lACE
+
 CC = g++
-CXXFLAGS = `pkg-config --cflags opencv` -ggdb -Wall -O3 -ffast-math -Wno-unused 
-LDFLAGS =  `pkg-config --libs opencv` -lYARP_dev -lYARP_sig -lYARP_OS -lACE
+OBJS    := ${SRCS:.cpp=.o} 
+DEPS    := ${SRCS:.cpp=.dep} 
+XDEPS   := $(wildcard ${DEPS}) 
 
-all: simple-faceident
+.PHONY: all clean distclean 
+all:: ${TARGET} 
 
-simple-faceident: main.o FaceBank.o ImageUtils.o SceneState.o
-	$(CC) main.o FaceBank.o ImageUtils.o SceneState.o -rdynamic -o simple-faceident $(LDFLAGS)
+ifneq (${XDEPS},) 
+include ${XDEPS} 
+endif 
 
-main.o: src/main.cpp
-	$(CC) $(CXXFLAGS) -c src/main.cpp
+${TARGET}: ${OBJS} 
+	${CC} ${LDFLAGS} -o $@ $^ ${LIBS}
 
-FaceBank.o: src/FaceBank.cpp
-	$(CC) $(CXXFLAGS) -c src/FaceBank.cpp
+${OBJS}: %.o: %.cpp %.dep 
+	${CC} ${CCFLAGS} -o $@ -c $< 
 
-ImageUtils.o: src/ImageUtils.cpp
-	$(CC) $(CXXFLAGS) -c src/ImageUtils.cpp
+${DEPS}: %.dep: %.cpp Makefile 
+	${CC} ${CCFLAGS} -MM $< > $@ 
 
-SceneState.o: src/SceneState.cpp
-	$(CC) $(CXXFLAGS) -c src/SceneState.cpp
+clean:: 
+	-rm -f *~ src/*.o ${TARGET} 
 
-clean:
-	rm -rf *.o simple-faceident
-
-
+distclean:: clean

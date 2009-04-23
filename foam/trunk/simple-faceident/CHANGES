@@ -1,3 +1,13 @@
+* load/save works via xml
+* added tinyxml
+* multiple face images
+* new makefile
+
+- version for used by INESC-ID at first review
+
+* added load and save
+* added yarp control interface
+* scene logic to create appear and disappear messages
 * added a simple yarp interface
 * help text
 * show stored faces in image

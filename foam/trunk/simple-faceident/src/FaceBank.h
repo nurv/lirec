@@ -16,28 +16,13 @@
 
 #include <iostream>
 #include <map>
+#include <vector>
 #include <assert.h>
 #include "cv.h"
+#include "Face.h"
 
 #ifndef FACE_BANK
 #define FACE_BANK
-
-/////////////////////////////////////////////////////////////////////////////////
-// A face representation for the facebank
-
-class Face
-{
-public:
-	Face(IplImage *image);
-	~Face();
-
-	// Blends a newly detected face into this image,
-	// an attempt at making it a little more dynamic
-	// needs more testing.
-	void Learn(const IplImage *image, float blend);
-
-	IplImage *m_Image;
-};
 
 /////////////////////////////////////////////////////////////////////////////////
 // A database of detected faces
@@ -48,7 +33,6 @@ public:
 	// FaceWidth and FaceHeight are the size for the internal stored image of the face for 
 	// comparison, ErrorThresh is the error amount which will trigger a new face to be stored
 	FaceBank(unsigned int FaceWidth, unsigned int FaceHeight, float ErrorThresh);
-	
 	~FaceBank();
 
 	void Clear();
@@ -58,7 +42,10 @@ public:
 	float Suggest(IplImage *face, unsigned int ID);
 
 	// Gives the id, given a face, and returns the confidence
-	float Identify(IplImage *face, unsigned int &ID);
+	float Identify(IplImage *face, unsigned int &ID, int &imagenum);
+	
+	// Collect multiple images per user
+	void AllowMultiFaceImages(bool s) { m_MultiFaceImages=s; }
 	
 	std::map<unsigned int, Face*> &GetFaceMap() { return m_FaceMap; }
 	
@@ -73,6 +60,7 @@ private:
 	unsigned int m_FaceWidth;
 	unsigned int m_FaceHeight;
 	float m_ErrorThresh;
+	bool m_MultiFaceImages;
 	
 	std::map<unsigned int, Face*> m_FaceMap;
 };

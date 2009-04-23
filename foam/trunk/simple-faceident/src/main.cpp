@@ -30,8 +30,6 @@
 #include <time.h>
 #include <ctype.h>
 
-//#include <unistd.h>  -iolanda commented this
-
 #include "FaceBank.h"
 #include "ImageUtils.h"
 #include "SceneState.h"
@@ -334,6 +332,10 @@ void detect_and_draw( IplImage* img )
 			{
 				facebank.Save(b->get(1).asString().c_str());
 			}
+			else if (b->get(0).asString()=="multiimage")
+			{
+				facebank.AllowMultiFaceImages(b->get(1).asInt());
+			}
 		}
 
 		///////////////////////////////////
@@ -346,6 +348,7 @@ void detect_and_draw( IplImage* img )
 				CvMat small_img_roi;
 
 				unsigned int ID=999;
+				int imagenum=-1;
 				float confidence=0;
 				// get the face area as a sub image
 				IplImage *face = SubImage(small_img, *r);
@@ -357,7 +360,7 @@ void detect_and_draw( IplImage* img )
 				}
 				else
 				{	
-					confidence=facebank.Identify(face,ID);
+					confidence=facebank.Identify(face,ID,imagenum);
 				}
 
 				cvReleaseImage(&face);
@@ -371,6 +374,7 @@ void detect_and_draw( IplImage* img )
 					cvPutText(small_img, s, cvPoint(r->x,r->y+25), &font, color);
 					int x=(facebank.GetFaceWidth()+1)*ID;
 					int y=imgsize.height-facebank.GetFaceHeight();
+					y-=(facebank.GetFaceHeight()+2)*imagenum;
 					cvLine(small_img, cvPoint(r->x+r->width/2,r->y+r->height/2),
 						cvPoint(x+facebank.GetFaceWidth()/2,y), color);			
 
@@ -422,7 +426,12 @@ void detect_and_draw( IplImage* img )
 	{
 		int x=(facebank.GetFaceWidth()+1)*ii->first;
 		int y=imgsize.height-facebank.GetFaceHeight();
-		BlitImage(ii->second->m_Image,small_img,cvPoint(x,y));
+		for(vector<IplImage *>::iterator im=ii->second->m_ImageVec.begin();
+			im!=ii->second->m_ImageVec.end(); im++)
+		{
+			BlitImage(*im,small_img,cvPoint(x,y));
+			y-=facebank.GetFaceHeight()+2;
+		}
 	}
 #endif
 
