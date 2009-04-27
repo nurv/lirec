@@ -1,0 +1,34 @@
+//----------------------------------------------
+// Heriot-Watt University
+// MACS 
+// www.lirec.eu
+// author: Amol Deshmukh
+// Date: 17/03/2009
+//-----------------------------------------------
+
+
+I) Pre-requisites
+1) Opencv (http://sourceforge.net/projects/opencvlibrary/)
+
+II) Running the program
+1) run make in the directory, may have to adapt directory paths inside FaceDetect.cpp
+(constructor) and Makefile to use your own paths.
+
+2) run ./FaceDetect to start the program
+
+III) Functionality and features
+
+1) Reduce false detection by determining largest probable face in an image 
+cutting the ROI (probable face in the image) then again perform face detection on sub image.
+see FaceDetect.pdf for simple illustration.
+
+2) Calculate approximate angles from camera focal point to detected face (X,Y degrees)
+
+3) Calculate the approximate distance of face from camera using difference between
+Face bounding Box and image size. Currently works with 640 * 480 
+resolution with a threshold value of 297000 to detect face in range of 80cm to 100cm.
+
+4) Please note that this face detection implementation detects only one face at a time,
+in case of multiple users it will detect the largest/closest face to the camera.
+
+In case of questions please ask Amol Deshmukh a.deshmukh@hw.ac.uk
