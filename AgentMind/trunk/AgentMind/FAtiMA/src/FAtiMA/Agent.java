@@ -591,7 +591,7 @@ public class Agent {
 			{
 				try {
 					
-					//Thread.sleep(4000);
+					//Thread.sleep(2000);
 					
 				    if(_remoteAgent.isShutDown()) {
 					    _shutdown = true;

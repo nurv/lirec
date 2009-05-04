@@ -58,6 +58,7 @@ public class UserInterface implements ActionListener {
 	public static final String PAULIE = "Paulie";
 	public static final String LUKE = "Luke";
 	public static final String LUKEPAULIE = "LukePaulie";
+	public static final String USER = "User";
 	
 	private Random _r;
 	private static int buffsize = 250;
@@ -148,6 +149,10 @@ public class UserInterface implements ActionListener {
 			_userOptions.addItem(UserInterface.LUKE);
 			_userOptions.addItem(UserInterface.PAULIE);
 			_userOptions.addItem(UserInterface.LUKEPAULIE);		
+        }
+        else
+        {
+        	_userOptions.addItem(UserInterface.USER);
         }
 
         _locationOptions.addActionListener(new ActionListener(){
