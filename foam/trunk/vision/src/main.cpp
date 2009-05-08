@@ -178,7 +178,8 @@ void detect_and_draw( IplImage* img )
     cvEqualizeHist( small_img, small_img );
     cvClearMemStorage( storage );
 	
-	Image im("bayer.pgm");
+	// test the debayering
+	Image im("data/bayer.pgm");
 	im.Crop(300,300,320,240);
 	im.RGB2GRAY();
 	//im.PrintInfo();
