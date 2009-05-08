@@ -17,7 +17,7 @@
 #define WIN32
 #endif
 
-#include "ImageUtils.h"
+#include "Image.h"
 
 static CvMemStorage* storage = 0;
 

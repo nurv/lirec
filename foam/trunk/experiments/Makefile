@@ -1,20 +1,36 @@
+TARGET  := test
+
+SRCS    := src/main.cpp\
+	src/Image.cpp\
+	src/Rendering.cpp
+
+CCFLAGS = `pkg-config --cflags opencv` -ggdb -Wall -O3 -ffast-math -Wno-unused -DTIXML_USE_STL 
+LDFLAGS = 
+LIBS    = `pkg-config --libs opencv` -lYARP_dev -lYARP_sig -lYARP_OS -lACE
+
 CC = g++
-CXXFLAGS = `pkg-config --cflags opencv` -ggdb -Wall -O3 -ffast-math -Wno-unused 
-LDFLAGS =  `pkg-config --libs opencv` 
+OBJS    := ${SRCS:.cpp=.o} 
+DEPS    := ${SRCS:.cpp=.dep} 
+XDEPS   := $(wildcard ${DEPS}) 
 
-all: simple-faceident
+.PHONY: all clean distclean 
+all:: ${TARGET} 
 
-simple-faceident: main.o ImageUtils.o
-	$(CC) main.o ImageUtils.o -rdynamic -o exp $(LDFLAGS)
+ifneq (${XDEPS},) 
+include ${XDEPS} 
+endif 
 
-main.o: src/main.cpp
-	$(CC) $(CXXFLAGS) -c src/main.cpp
+${TARGET}: ${OBJS} 
+	${CC} ${LDFLAGS} -o $@ $^ ${LIBS}
 
+${OBJS}: %.o: %.cpp %.dep 
+	${CC} ${CCFLAGS} -o $@ -c $< 
 
-ImageUtils.o: src/ImageUtils.cpp
-	$(CC) $(CXXFLAGS) -c src/ImageUtils.cpp
+${DEPS}: %.dep: %.cpp Makefile 
+	${CC} ${CCFLAGS} -MM $< > $@ 
 
-clean:
-	rm -rf *.o exp
+clean:: 
+	-rm -f *~ src/*.o ${TARGET} 
 
+distclean:: clean
 
