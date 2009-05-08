@@ -15,20 +15,48 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "cv.h"
-#include "highgui.h"
+#include <string>
 
-#ifndef IMAGE_UTILS
-#define IMAGE_UTILS
+#ifndef IMAGE
+#define IMAGE
 
-// I need to sort this out before it grows too much...
+class Image
+{
+public:
+	Image(int w, int h, int d, int c);
+	Image(const std::string &filename);
+	Image(const Image *other);
+	~Image();
 
-IplImage* SubImage(IplImage *image, CvRect roi);
-void BlitImage(IplImage *srcimage, IplImage *dstimage, CvPoint pos);
-void SubMean(IplImage *image);
-float Diff(IplImage *imagea, IplImage *imageb);
-void LBPImage(IplImage *srcimage, IplImage *dstimage);
-unsigned int *HistMono8Bit(IplImage *image);
+	void PrintInfo();
+	
+	void Crop(int x, int y, int w, int h);
+	void Scale(int w, int h);
 
-void DrawHistogram8(int x, int y, float scale, CvScalar colour, unsigned int *h, IplImage *img);
+	// Paste an image into this one
+	void Blit(const Image &image, CvPoint pos);
+	
+	// Return a sum of squared differences, for giving a similarity metric 
+	float SSD(Image &other);
+	
+	// Subtract the mean - this is useful for accounting for global lighting changes
+	void SubMean();
+	
+	// Convert the image into a local binary patterns image
+	void LBP();
+	
+	// Convert to different colour spaces
+	void GRAY2RGB();
+	void RGB2GRAY();
+	void BayerGB2RGB();
+	
+	// Calculate a histogram for a given channel
+	unsigned int *Hist(int channel);
+	
+	IplImage *m_Image;
+	
+private:
+	unsigned char SafeGet2D(int y, int x, int c);
+};
 
 #endif

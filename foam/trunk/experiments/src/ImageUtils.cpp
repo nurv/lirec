@@ -17,147 +17,197 @@
 #include "ImageUtils.h"
 
 #include <iostream>
+#include "highgui.h"
+
 using namespace std;
 
-/////////////////////////////////////////////////////////////
-// deep copy a sub image
-
-IplImage* SubImage(IplImage *image, CvRect roi)
+Image::Image(int w, int h, int d, int c)
 {
-	IplImage *result;
-	cvSetImageROI(image,roi);
-	result = cvCreateImage( cvSize(roi.width, roi.height), image->depth, image->nChannels );
-	cvCopy(image,result);
-	cvResetImageROI(image);
-	return result;
+	cvCreateImage(cvSize(w, h), d, c);
 }
 
-/////////////////////////////////////////////////////////////
-// safe accessor, which returns 0 if out of range
-
-unsigned char SafeGet2D(IplImage *image, int y, int x, int c)
+Image::Image(const string &filename)
 {
-	CvSize size = cvGetSize(image);
-	if (x<0 || x>=size.width || y<0 || y>=size.height)
+	m_Image=cvLoadImage(filename.c_str());
+}
+
+Image::Image(const Image *other)
+{
+	m_Image=cvCloneImage(other->m_Image);
+}
+
+Image::~Image()
+{
+	cvReleaseImage(&m_Image);
+}
+
+// safe accessor, which returns 0 if out of range
+unsigned char Image::SafeGet2D(int y, int x, int c)
+{
+	if (x<0 || x>=m_Image->width || y<0 || y>=m_Image->height)
 	{
 		return 0;
 	}
 	
-	return cvGet2D(image,y,x).val[c];
+	return cvGet2D(m_Image,y,x).val[c];
 }
 
-/////////////////////////////////////////////////////////////
-// paste an image over the top of another
-
-void BlitImage(IplImage *srcimage, IplImage *dstimage, CvPoint pos)
+void Image::PrintInfo()
 {
-	CvSize size = cvGetSize(srcimage);
-	CvSize dstsize = cvGetSize(dstimage);
-	
-	for(int y=0; y<size.height; y++)
+	cerr<<m_Image->width<<"x"<<m_Image->height<<"x"<<m_Image->nChannels
+		<<" @ "<<m_Image->depth<<" bpp"<<endl;
+}
+
+void Image::Crop(int x, int y, int w, int h)
+{
+	CvRect roi;
+	roi.x=x;
+	roi.y=y;
+	roi.width=w;
+	roi.height=h;
+	IplImage *newimage;
+	cvSetImageROI(m_Image,roi);
+	newimage = cvCreateImage( cvSize(roi.width, roi.height), m_Image->depth, m_Image->nChannels );
+	cvCopy(m_Image,newimage);
+	cvReleaseImage(&m_Image);
+	m_Image=newimage;
+}
+
+void Image::GRAY2RGB()
+{
+	IplImage *newimage = cvCreateImage(cvGetSize(m_Image), 8, 3);
+    cvCvtColor(m_Image, newimage, CV_GRAY2RGB);
+	cvReleaseImage(&m_Image);
+	m_Image=newimage;
+}
+
+void Image::RGB2GRAY()
+{
+	IplImage *newimage = cvCreateImage(cvGetSize(m_Image), 8, 1);
+    cvCvtColor(m_Image, newimage, CV_RGB2GRAY);
+	cvReleaseImage(&m_Image);
+	m_Image=newimage;
+}
+
+void Image::BayerGB2RGB()
+{
+	IplImage *newimage = cvCreateImage(cvGetSize(m_Image), 8, 3);
+    cvCvtColor(m_Image, newimage, CV_BayerGB2RGB);
+	cvReleaseImage(&m_Image);
+	m_Image=newimage;
+}
+
+void Image::Scale(int w, int h)
+{
+	IplImage *newimage = cvCreateImage(cvSize(w,h), m_Image->depth, m_Image->nChannels);
+	cvResize( m_Image, newimage, CV_INTER_LINEAR );
+	cvReleaseImage(&m_Image);
+	m_Image=newimage;
+}
+
+void Image::Blit(const Image &image, CvPoint pos)
+{	
+	for(int y=0; y<image.m_Image->height; y++)
 	{
-        for(int x=0; x<size.width; x++)
+        for(int x=0; x<image.m_Image->width; x++)
 		{
-			if (x+pos.x>0 && x+pos.x<dstsize.width &&
-				y+pos.y>0 && y+pos.y<dstsize.height)
+			if (x+pos.x>0 && x+pos.x<m_Image->width &&
+				y+pos.y>0 && y+pos.y<m_Image->height)
 			{
-            	cvSet2D(dstimage,y+pos.y,x+pos.x,cvGet2D(srcimage,y,x));
+            	cvSet2D(m_Image,y+pos.y,x+pos.x,cvGet2D(image.m_Image,y,x));
 			}
 		}
 	}
 }
 
-/////////////////////////////////////////////////////////////
-// subtract the mean (RGB)
-
-void SubMean(IplImage *image)
-{
-	CvSize size = cvGetSize(image);
-
-	float r=0;
-	float g=0;
-	float b=0;
-
-	float s=size.width*size.height;
-
-    for(int y=0; y<size.height; y++)
+void Image::SubMean()
+{	
+	// get the mean of each channel
+	CvScalar v;
+	for (int c=0; c<m_Image->nChannels; c++)
 	{
-        for(int x=0; x<size.width; x++)
+		v.val[c]=0;
+	}
+
+	float s=m_Image->width*m_Image->height;
+
+    for(int y=0; y<m_Image->height; y++)
+	{
+        for(int x=0; x<m_Image->width; x++)
 		{
-            r+=cvGet2D(image,y,x).val[0]/256.0f;
-            g+=cvGet2D(image,y,x).val[1]/256.0f;
-            b+=cvGet2D(image,y,x).val[2]/256.0f;
+ 			for (int c=0; c<m_Image->nChannels; c++)
+			{
+				v.val[c]+=cvGet2D(m_Image,y,x).val[c]/256.0f;
+			}
 		}
 	}
 	
-	r/=s;
-	g/=s;
-	b/=s;
-		
-	for(int y=0; y<size.height; y++)
+	for (int c=0; c<m_Image->nChannels; c++)
 	{
-        for(int x=0; x<size.width; x++)
+		v.val[c]/=s;
+	}
+	
+	// now subtract it from each pixel
+	for(int y=0; y<m_Image->height; y++)
+	{
+        for(int x=0; x<m_Image->width; x++)
 		{
-            cvSet2D(image,y,x,cvScalar(127+(cvGet2D(image,y,x).val[0] - r*256.0f),
-									   127+(cvGet2D(image,y,x).val[1] - g*256.0f),
-									   127+(cvGet2D(image,y,x).val[2] - b*256.0f)));
+			for (int c=0; c<m_Image->nChannels; c++)
+			{
+				// force the average to be 127
+				v.val[c]=127+(cvGet2D(m_Image,y,x).val[c] - v.val[c]*256.0f);
+			}
+		
+            cvSet2D(m_Image,y,x,v);
 		}
 	}
 }
 
-/////////////////////////////////////////////////////////////
-// return a diff metric between two images (works in RGB)
-
-float Diff(IplImage *imagea, IplImage *imageb)
+float Image::SSD(Image &other)
 {
-	CvSize sizea = cvGetSize(imagea);
-	CvSize sizeb = cvGetSize(imageb);
-	
-	assert(sizea.width == sizeb.width);
-	assert(sizea.height == sizeb.height);
+	assert(other.m_Image->width == m_Image->width);
+	assert(other.m_Image->height == m_Image->height);
 	
 	float ret=0;
-
-    for(int y=0; y<sizea.height; y++)
+	float dif=0;
+	
+    for(int y=0; y<m_Image->height; y++)
 	{
-        for(int x=0; x<sizea.width; x++)
+        for(int x=0; x<m_Image->width; x++)
 		{
-            ret+=fabs((cvGet2D(imagea,y,x).val[0]/256.0f)-(cvGet2D(imageb,y,x).val[0]/256.0f));
-            ret+=fabs((cvGet2D(imagea,y,x).val[1]/256.0f)-(cvGet2D(imageb,y,x).val[1]/256.0f));
-            ret+=fabs((cvGet2D(imagea,y,x).val[2]/256.0f)-(cvGet2D(imageb,y,x).val[2]/256.0f));
+			for (int c=0; c<m_Image->nChannels; c++)
+			{
+				dif = (cvGet2D(m_Image,y,x).val[c]/256.0f) - 
+				      (cvGet2D(other.m_Image,y,x).val[c]/256.0f);
+            	ret+=dif*dif;
+            }
 		}
 	}
-	ret/=sizea.width*sizea.height*3;
+	
+	// not sure strictly whether the difference should be
+	// invariant to the number of pixels, but it helps
+	ret/=m_Image->width*m_Image->height*m_Image->nChannels;
+	
 	return ret;
 }
 
-
-
-/////////////////////////////////////////////////////////////
-// return a local binary patterns image of the src image
-
-
-void LBPImage(IplImage *srcimage, IplImage *dstimage)
+void Image::LBP()
 {
-	CvSize srcsize = cvGetSize(srcimage);
-	CvSize dstsize = cvGetSize(dstimage);
-	
-	assert(srcsize.width == dstsize.width);
-	assert(srcsize.height == dstsize.height);
-	assert(srcimage->nChannels == dstimage->nChannels);
-
+	IplImage *newimage;
+	newimage = cvCreateImage(cvGetSize(m_Image), m_Image->depth, m_Image->nChannels);
+		
     // for each pixel
-    for(int y=0; y<srcsize.height; y++)
+    for(int y=0; y<m_Image->height; y++)
 	{
-        for(int x=0; x<srcsize.width; x++)
+        for(int x=0; x<m_Image->width; x++)
 		{
 			CvScalar sc;
 			
 			// for each channel
-			for(int c=0; c<dstimage->nChannels; c++)
+			for(int c=0; c<m_Image->nChannels; c++)
 			{
 				unsigned char v=0;
-				unsigned char o=cvGet2D(srcimage,y,x).val[c];
+				unsigned char o=cvGet2D(m_Image,y,x).val[c];
 				unsigned char b=0;
 
 				// loop through a 3x3 kernel
@@ -169,7 +219,7 @@ void LBPImage(IplImage *srcimage, IplImage *dstimage)
 						if (!(kx==0 && ky==0))
 						{
 							// threshold
-							if (o>SafeGet2D(srcimage,y+ky,x+kx,c))
+							if (o>SafeGet2D(y+ky,x+kx,c))
 							{
 								// bit magic
 								v|=(1<<b);
@@ -180,20 +230,19 @@ void LBPImage(IplImage *srcimage, IplImage *dstimage)
 				}
 				sc.val[c]=v;
 			}
-			cvSet2D(dstimage,y,x,sc);
+			cvSet2D(newimage,y,x,sc);
 		}
 	}
+	
+	cvReleaseImage(&m_Image);
+	m_Image=newimage;
 }
 
-/////////////////////////////////////////////////////////////
-// calculate a histogram
-
-unsigned int *HistMono8Bit(IplImage *image)
+unsigned int *Image::Hist(int channel)
 {
-	assert(image->nChannels == 1);
-	assert(image->depth == 8);
-	CvSize size = cvGetSize(image);
-
+	assert(channel<m_Image->nChannels);
+	assert(m_Image->depth == 8);
+	
 	unsigned int *h=new unsigned int[256];
 
 	for(int i=0; i<256; i++)
@@ -202,24 +251,15 @@ unsigned int *HistMono8Bit(IplImage *image)
 	}
 
     // for each pixel
-    for(int y=0; y<size.height; y++)
+    for(int y=0; y<m_Image->height; y++)
 	{
-        for(int x=0; x<size.width; x++)
+        for(int x=0; x<m_Image->width; x++)
 		{
-			h[(unsigned char)cvGet2D(image,y,x).val[0]]++;
+			
+			h[(unsigned char)cvGet2D(m_Image,y,x).val[channel]]++;
 		}
 	}
 	
 	return h;
 }
 
-/////////////////////////////////////////////////////////////
-// draw a histogram
-
-void DrawHistogram8(int x, int y, float scale, CvScalar colour, unsigned int *h, IplImage *img)
-{
-	for(int i=0; i<256; i++)
-	{
-		cvLine(img, cvPoint(x+i,y),cvPoint(x+i,y+h[i]*-scale), colour);	
-	}
-}

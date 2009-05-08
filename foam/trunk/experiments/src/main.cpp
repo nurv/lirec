@@ -149,7 +149,7 @@ static CvScalar colors[] =
         {{255,0,0}},
         {{255,0,255}}
     };
-	
+/*
 void lpbhist(int x, int y, IplImage* img, IplImage* mainimg)
 {
 	IplImage* gray = cvCreateImage( cvSize(img->width,img->height), 8, 1 );
@@ -163,7 +163,7 @@ void lpbhist(int x, int y, IplImage* img, IplImage* mainimg)
 	cvReleaseImage( &lbp );
 	cvReleaseImage( &gray );
 }
-
+*/
 void detect_and_draw( IplImage* img )
 {
     IplImage *gray, *small_img;
@@ -177,7 +177,15 @@ void detect_and_draw( IplImage* img )
     cvResize( gray, small_img, CV_INTER_LINEAR );
     cvEqualizeHist( small_img, small_img );
     cvClearMemStorage( storage );
- 
+	
+	Image im("bayer.pgm");
+	im.Crop(300,300,320,240);
+	im.RGB2GRAY();
+	//im.PrintInfo();
+	im.BayerGB2RGB();
+    cvShowImage( "result", im.m_Image );
+	
+/* 
  	IplImage *li = cvLoadImage("test3-0.png");
 	lpbhist(0, 0, li, gray);
 	cvReleaseImage( &li );
@@ -189,8 +197,7 @@ void detect_and_draw( IplImage* img )
  	li = cvLoadImage("test3-3.png");
 	lpbhist(200, 0, li, gray);
 	cvReleaseImage( &li );
-
-    cvShowImage( "result", gray );
+*/
     cvReleaseImage( &gray );
     cvReleaseImage( &small_img );
 }
