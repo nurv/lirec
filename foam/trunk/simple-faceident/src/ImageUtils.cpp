@@ -68,6 +68,35 @@ void BlitImage(const IplImage *srcimage, IplImage *dstimage, CvPoint pos)
 }
 
 /////////////////////////////////////////////////////////////
+// paste an image over the top of another, with transparency
+
+void BlitImageAlpha(const IplImage *srcimage, IplImage *dstimage, CvPoint pos, float alpha)
+{
+	CvSize size = cvGetSize(srcimage);
+	CvSize dstsize = cvGetSize(dstimage);
+	
+	for(int y=0; y<size.height; y++)
+	{
+        for(int x=0; x<size.width; x++)
+		{
+			if (x+pos.x>0 && x+pos.x<dstsize.width &&
+				y+pos.y>0 && y+pos.y<dstsize.height)
+			{
+				CvScalar sv = cvGet2D(srcimage,y,x);
+      			CvScalar dv = cvGet2D(dstimage,y+pos.y,x+pos.x);
+				
+				CvScalar out;
+				out.val[0]=sv.val[0]*alpha+dv.val[0]*(1-alpha);				
+				out.val[1]=sv.val[1]*alpha+dv.val[1]*(1-alpha);				
+				out.val[2]=sv.val[2]*alpha+dv.val[2]*(1-alpha);				
+
+      			cvSet2D(dstimage,y+pos.y,x+pos.x,out);
+			}
+		}
+	}
+}
+
+/////////////////////////////////////////////////////////////
 // subtract the mean (RGB)
 
 void SubMean(IplImage *image)

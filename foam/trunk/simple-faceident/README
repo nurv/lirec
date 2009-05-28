@@ -12,8 +12,8 @@ which ID at the bottom of the window.
 The second mode of operation is face detection, where each visible detected 
 face is given an ID based on it's closest match (within a given error 
 threshold) with the faces recorded during calibration. The boxes drawn around 
-the faces display the id and the confidence value of the match. When in this 
-mode the program sends the following YARP messages:
+the faces display the closest matched image, the id and confidence value of the 
+match. When in this mode the program sends the following YARP messages:
 
 Output port     Bottle contents                 Meaning
 /faceident 	    "user appeared" ID confidence   A user has entered the view of the camera
@@ -29,9 +29,12 @@ Input port      Bottle contents                 Meaning
 /faceident-ctrl "clear"                         Clears all faces
 /faceident-ctrl "idle"                          Switch to idle mode, mostly frees up cpu
 /faceident-ctrl "multiimages" 1/0               Turn on or off multiple images per face, experimental
+/faceident-ctrl "errorthresh" value             Set the error threshold (default 0.2)
+/faceident-ctrl "newimagethresh" value          Set the threshold greater than which new images are 
+                                                stored in training (default 0.1)
 
-Faces are saved in png format along with a text file to map them to id numbers. The sessionname 
-will be prepended onto the filenames for the text file and the image files, so you can save 
+Faces are saved in png format along with a xml file to map them to id numbers. The sessionname 
+will be prepended onto the filenames for the xml file and the image files, so you can save 
 multiple sessions.
 
 Key                 Meaning
@@ -51,41 +54,9 @@ In order to find OpenCV's data, on my machine it's in:
 
 Todo:
 * Try normalised cross correlation instead of image differencing
-* Expose image size and error threshold via yarp
-* Lighting is a problem
-   - Ignore the problem
-   - Try the edge image + blur trick
-   - LBP
-   - Store multiple faces per id, for different lighting conditions
+* Expose image size via yarp
 
 Questions to:
 
 dave@fo.am
-
-Notes
------
-
-Muliple face images
--------------------
-
-Could works as normal but with additional:
-
-----> "new lighting" or "new session"
-
-recalibration results in additional id images for users (leaves existing ones alone)
-search checks each image for each user
-images added to saved set - possible to build up lots of images of users
-
-would this work in some initial calibration with different lighting setups, or as it went along?
-
-Edge image & blur
------------------
-
-Remove low frequency lighting information from the face images
-Blur the resulting edge images to make them more forgiving
-- Would this just remove shape information? needs testing
-
-
-
-
 

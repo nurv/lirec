@@ -30,11 +30,11 @@ using namespace std;
 
 /////////////////////////////////////////////////////////////////////////////////
 	
-FaceBank::FaceBank(unsigned int FaceWidth, unsigned int FaceHeight, float ErrorThresh) : 
+FaceBank::FaceBank(unsigned int FaceWidth, unsigned int FaceHeight, float ErrorThresh, float NewImageThresh) : 
 m_FaceWidth(FaceWidth),
 m_FaceHeight(FaceHeight),
 m_ErrorThresh(ErrorThresh),
-m_MultiFaceImages(false)
+m_NewImageThresh(NewImageThresh)
 {
 }
 
@@ -66,13 +66,13 @@ float FaceBank::Suggest(IplImage *face, unsigned int ID)
 	if (i==m_FaceMap.end())
 	{		
 		// Check it doesn't look like any we have already recorded
-		unsigned int checkid=0;
+		/*unsigned int checkid=0;
 		int imagenum=-1;
 		if (Identify(faceresized,checkid,imagenum)>0)
 		{
 			cerr<<"We've already seen this face: "<<checkid<<":"<<imagenum<<endl;	
 			return 0;
-		}
+		}*/
 
 		cerr<<"new face "<<ID<<endl;
 		m_FaceMap[ID]=new Face(faceresized);
@@ -85,27 +85,23 @@ float FaceBank::Suggest(IplImage *face, unsigned int ID)
 
 	if (error<m_ErrorThresh) 
 	{
-		//cerr<<"adding to face:"<<ID<<" image:"<<facenum<<endl;
-		// Blend this face into the one we have already
-		i->second->Learn(faceresized,0.2,facenum);
-		cvReleaseImage(&faceresized);
-		ID=i->first;
-		return 1-error;
-	}
-	
-	if (m_MultiFaceImages)
-	{	
-		// Does it look like any we have already recorded for any face?
-		unsigned int checkid=0;
-		int imagenum=-1;
-		if (Identify(faceresized,checkid,imagenum)>0)
+		if (error>m_NewImageThresh)
 		{
-			cerr<<"We've already seen this face: "<<checkid<<":"<<imagenum<<endl;	
-			return 0;
-		}	
-		
-		cerr<<"too different - adding new image to face "<<error<<" "<<ID<<endl;
-		i->second->AddImage(faceresized);
+			cerr<<"adding new image to face "<<error<<" "<<ID<<endl;
+			i->second->AddImage(faceresized);		
+		}
+		else
+		{
+			//cerr<<"adding to face:"<<ID<<" image:"<<facenum<<endl;
+			// Blend this face into the one we have already
+			
+			// removed this, as its potentially throwing away information
+			// multiple face images are better
+			//i->second->Learn(faceresized,0,facenum);
+			cvReleaseImage(&faceresized);
+		}
+		ID=i->first;	
+		return 1-error;
 	}
 	
 	return 0;
@@ -143,18 +139,16 @@ float FaceBank::Identify(IplImage *face, unsigned int &ID, int &imagenum)
 		}
 	}
 	
+	cvReleaseImage(&faceresized);
+	
 	// if the error is less than the threshold, return the id
 	if (error<m_ErrorThresh)
 	{
-		// blend this face into the one we have already
-		bestface->Learn(faceresized,0,imagenum);
-		cvReleaseImage(&faceresized);
 		ID=best;
 		return 1-error;
 	}
 	
 	cerr<<"unrecognised face"<<endl;
-	
 	return 0;
 }
 

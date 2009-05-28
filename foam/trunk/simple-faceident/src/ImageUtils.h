@@ -24,6 +24,7 @@
 
 IplImage* SubImage(IplImage *image, CvRect roi);
 void BlitImage(const IplImage *srcimage, IplImage *dstimage, CvPoint pos);
+void BlitImageAlpha(const IplImage *srcimage, IplImage *dstimage, CvPoint pos, float alpha);
 void SubMean(IplImage *image);
 float Diff(const IplImage *imagea, const IplImage *imageb);
 void LBPImage(const IplImage *srcimage, IplImage *dstimage);

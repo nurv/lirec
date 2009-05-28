@@ -26,16 +26,47 @@
 
 /////////////////////////////////////////////////////////////////////////////////
 // A database of detected faces
+//
+// The facebank is mainly driven by calling Suggest() (which maps face images with 
+// id numbers) or Identify() which looks in it's current set of faces (and in the 
+// images contained in those faces) for the closest match. 
+//
+// Thresholding explanations
+//
+// Suggest mode:
+//
+//    Error ->
+//    0          RelearnThresh       ErrorThresh                         1
+//    I----------------I------------------I------------------------------>
+//        Do nothing      Add New Image       Suggestion rejected
+//
+// In suggest mode, suggestions are also rejected if they are too similar
+// to faces already in the bank - this is an attempt to make calibration 
+// possible while other people are in shot.
+//
+// Identify mode:
+//
+//    Error ->
+//    0                              ErrorThresh                         1
+//    I-----------------------------------I------------------------------>
+//                  Match                           No match
+//
+//
 
 class FaceBank
 {
 public:
 	// FaceWidth and FaceHeight are the size for the internal stored image of the face for 
-	// comparison, ErrorThresh is the error amount which will trigger a new face to be stored
-	FaceBank(unsigned int FaceWidth, unsigned int FaceHeight, float ErrorThresh);
+	// comparison, ErrorThresh is the threshold at which a face will be considered as recognised,
+	// NewImageThresh is a threshold greater than which a suggested face will be stored as 
+	// a new image.
+	FaceBank(unsigned int FaceWidth, unsigned int FaceHeight, float ErrorThresh, float NewImageThresh);
 	~FaceBank();
 
 	void Clear();
+	
+	void SetErrorThresh(float s) { m_ErrorThresh=s; }
+	void SetNewImageThresh(float s) { m_NewImageThresh=s; }
 	
 	// Learn this face, the face may be a false positive, so we'll discard the 
 	// suggestion if we've seen it before, and the error is greater than ErrorThresh
@@ -43,10 +74,7 @@ public:
 
 	// Gives the id, given a face, and returns the confidence
 	float Identify(IplImage *face, unsigned int &ID, int &imagenum);
-	
-	// Collect multiple images per user
-	void AllowMultiFaceImages(bool s) { m_MultiFaceImages=s; }
-	
+		
 	std::map<unsigned int, Face*> &GetFaceMap() { return m_FaceMap; }
 	
 	unsigned int GetFaceWidth() { return m_FaceWidth; }
@@ -60,7 +88,7 @@ private:
 	unsigned int m_FaceWidth;
 	unsigned int m_FaceHeight;
 	float m_ErrorThresh;
-	bool m_MultiFaceImages;
+	float m_NewImageThresh;
 	
 	std::map<unsigned int, Face*> m_FaceMap;
 };

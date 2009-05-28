@@ -65,7 +65,7 @@ double scale = 1;
 
 //////////////////////////////////////////////////////////
 // These are the tweakable bits - see comments in FaceBank.h
-FaceBank facebank(30, 40, 0.15); 
+FaceBank facebank(30, 40, 0.2, 0.1); //0.2
 SceneState scenestate;
 
 // show all faces currently detected 
@@ -103,6 +103,8 @@ int main( int argc, char** argv )
 
 	/////////////////////////
 
+	//facebank.Load("a");
+
 	for( i = 1; i < argc; i++ )
 	{
 		if( strncmp( argv[i], cascade_opt, cascade_opt_len) == 0 )
@@ -120,6 +122,11 @@ int main( int argc, char** argv )
 			if( !sscanf( argv[i] + scale_opt_len, "%lf", &scale ) || scale < 1 )
 				scale = 1;
 		}
+		else if( strncmp( argv[i], "--load=", 7 ) == 0 )
+		{
+			cerr<<"loading "<<argv[i]+7<<endl;
+			facebank.Load(argv[i]+7);
+		}
 		else if( argv[i][0] == '-' )
 		{
 			fprintf( stderr, "WARNING: Unknown option %s\n", argv[i] );
@@ -134,7 +141,7 @@ int main( int argc, char** argv )
 	{
 		fprintf( stderr, "ERROR: Could not load classifier cascade\n" );
 		fprintf( stderr,
-			"Usage: facedetect [--cascade=\"<cascade_path>\"]\n"
+			"Usage: faceident [--cascade=\"<cascade_path>\"]\n"
 			"   [--nested-cascade[=\"nested_cascade_path\"]]\n"
 			"   [--scale[=<image scale>\n"
 			"   [filename|camera_index]\n" );
@@ -241,7 +248,7 @@ void detect_and_draw( IplImage* img )
 	cvClearMemStorage( storage );
 
 	CvFont font;
-	cvInitFont( &font, CV_FONT_HERSHEY_PLAIN, 2, 2, 0, 1, CV_AA );
+	cvInitFont( &font, CV_FONT_HERSHEY_PLAIN, 0.75, 0.75, 0, 1, CV_AA );
 
 	CvFont infofont;
 	cvInitFont( &infofont, CV_FONT_HERSHEY_PLAIN, 1, 1, 0, 1, CV_AA );
@@ -332,14 +339,17 @@ void detect_and_draw( IplImage* img )
 			{
 				facebank.Save(b->get(1).asString().c_str());
 			}
-			else if (b->get(0).asString()=="multiimage")
+			else if (b->get(0).asString()=="errorthresh")
 			{
-				facebank.AllowMultiFaceImages(b->get(1).asInt());
+				facebank.SetErrorThresh(b->get(1).asDouble());
+			}
+			else if (b->get(0).asString()=="newimagethresh")
+			{
+				facebank.SetNewImageThresh(b->get(1).asDouble());
 			}
 		}
 
 		///////////////////////////////////
-
 		if (!idle)
 		{
 			for(int i = 0; i < (faces ? faces->total : 0); i++ )
@@ -371,12 +381,21 @@ void detect_and_draw( IplImage* img )
 				{
 					char s[32];
 					sprintf(s,"%d %0.2f",ID,confidence);
-					cvPutText(small_img, s, cvPoint(r->x,r->y+25), &font, color);
-					int x=(facebank.GetFaceWidth()+1)*ID;
+					cvPutText(small_img, s, cvPoint(r->x,r->y+r->height-5), &font, color);
+					int x=(facebank.GetFaceWidth()+8)*ID;
 					int y=imgsize.height-facebank.GetFaceHeight();
-					y-=(facebank.GetFaceHeight()+2)*imagenum;
+					//y-=(facebank.GetFaceHeight()+2)*imagenum;
+					y-=5*imagenum;
+					
 					cvLine(small_img, cvPoint(r->x+r->width/2,r->y+r->height/2),
-						cvPoint(x+facebank.GetFaceWidth()/2,y), color);			
+						cvPoint(x+facebank.GetFaceWidth()/2,y+facebank.GetFaceHeight()/2), color);
+
+					cvRectangle(small_img,cvPoint(x-1,y-1),cvPoint(x+facebank.GetFaceWidth(),y+facebank.GetFaceHeight()), color);
+
+					if (imagenum>=0)
+					{
+						BlitImageAlpha(facebank.GetFaceMap()[ID]->m_ImageVec[imagenum],small_img,cvPoint(r->x,r->y),0.75);
+					}
 
 					if (!learn)
 					{
@@ -424,22 +443,26 @@ void detect_and_draw( IplImage* img )
 	for(map<unsigned int,Face*>::iterator ii=facebank.GetFaceMap().begin(); 
 		ii!=facebank.GetFaceMap().end(); ++ii)
 	{
-		int x=(facebank.GetFaceWidth()+1)*ii->first;
+		int x=(facebank.GetFaceWidth()+8)*ii->first;
 		int y=imgsize.height-facebank.GetFaceHeight();
 		for(vector<IplImage *>::iterator im=ii->second->m_ImageVec.begin();
 			im!=ii->second->m_ImageVec.end(); im++)
 		{
+			//BlitImage(*im,small_img,cvPoint(x,y));
 			BlitImage(*im,small_img,cvPoint(x,y));
-			y-=facebank.GetFaceHeight()+2;
+			//y-=facebank.GetFaceHeight()+2;
+			y-=5;
 		}
 	}
 #endif
 
-	cvShowImage( "result", small_img );
 
+	cvShowImage( "result", small_img );
+	framenum++;
 #ifdef SAVE_FRAMES
 	char name[256];
 	sprintf(name,"out-%0.4d.jpg",framenum);
+	cerr<<"saving "<<name<<endl;
 	cvSaveImage(name,small_img);
 #endif
 
