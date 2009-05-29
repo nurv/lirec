@@ -12,12 +12,18 @@
 #include <limits.h>
 #include <time.h>
 #include <ctype.h>
+#include <vector>
 
 #ifdef _EiC
 #define WIN32
 #endif
 
 #include "Image.h"
+#include "Matrix.h"
+#include "Vector.h"
+#include "LDAClassifier.h"
+
+using namespace std;
 
 static CvMemStorage* storage = 0;
 
@@ -166,40 +172,70 @@ void lpbhist(int x, int y, IplImage* img, IplImage* mainimg)
 */
 void detect_and_draw( IplImage* img )
 {
-    IplImage *gray, *small_img;
-    int i, j;
+	Image camera(img);
+	CvFont font;
+	cvInitFont( &font, CV_FONT_HERSHEY_PLAIN, 0.5, 0.5, 0, 1, CV_AA );
 
-    gray = cvCreateImage( cvSize(img->width,img->height), 8, 1 );
-    small_img = cvCreateImage( cvSize( cvRound (img->width/scale),
-                         cvRound (img->height/scale)), 8, 1 );
+	//////////////////////////////////
+	// Matrix tests
+	Matrix<float>::RunTests();
 
-    cvCvtColor( img, gray, CV_BGR2GRAY );
-    cvResize( gray, small_img, CV_INTER_LINEAR );
-    cvEqualizeHist( small_img, small_img );
-    cvClearMemStorage( storage );
-	
+	//////////////////////////////////
 	// test the debayering
-	Image im("data/bayer.pgm");
+	/*Image im("data/bayer.pgm");
 	im.Crop(300,300,320,240);
 	im.RGB2GRAY();
-	//im.PrintInfo();
-	im.BayerGB2RGB();
-    cvShowImage( "result", im.m_Image );
+	im.BayerGB2RGB();*/
 	
-/* 
- 	IplImage *li = cvLoadImage("test3-0.png");
-	lpbhist(0, 0, li, gray);
-	cvReleaseImage( &li );
+	//////////////////////////////////
+	// image differencing
+	
+	vector<Image> imagevec;
+ 	//imagevec.push_back(Image("data/audrey.png"));
+ 	imagevec.push_back(Image("data/dave-1.png"));
+ 	imagevec.push_back(Image("data/dave-2.png"));
+ 	imagevec.push_back(Image("data/amber-1.png"));
+ 	imagevec.push_back(Image("data/amber-2.png"));
+ 	//imagevec.push_back(Image("data/false.png"));
+
+	for(unsigned int x=0; x<imagevec.size(); x++)
+	{
+		//cvSobel(imagevec[x].m_Image, imagevec[x].m_Image, 2, 2);
+		//cvSmooth(imagevec[x].m_Image, imagevec[x].m_Image, CV_GAUSSIAN, 7);
+		//imagevec[x].SubMean();
+	}
+
+	camera.Clear();
+
+	for(unsigned int x=0; x<imagevec.size(); x++)
+	{
+		camera.Blit(imagevec[x],100+50*x,50);
+	}
+
+	for(unsigned int x=0; x<imagevec.size(); x++)
+	{
+		camera.Blit(imagevec[x],50, 100+50*x);
+	}
+	
+	for(unsigned int x=0; x<imagevec.size(); x++)
+	{
+		for(unsigned int y=0; y<imagevec.size(); y++)
+		{
+			Image diff=imagevec[x]-imagevec[y];
+			camera.Blit(diff,100+50*x,100+50*y);
+			char s[32];
+			sprintf(s,"%0.5f",1-imagevec[x].SSD(imagevec[y]));
+			cvPutText(camera.m_Image, s, cvPoint(100+50*x,150+50*y), &font, colors[0]);		
+		}
+	}
+	
+	//camera.Blit(dave1,100,100);
+	//camera.Blit(dave2,140,100);
+	//camera.Blit(other,180,100);
+	
+	
+
+     cvShowImage("result", camera.m_Image);
  
- 	li = cvLoadImage("test3-1.png");
-	lpbhist(100, 0, li, gray);
-	cvReleaseImage( &li );
- 
- 	li = cvLoadImage("test3-3.png");
-	lpbhist(200, 0, li, gray);
-	cvReleaseImage( &li );
-*/
-    cvReleaseImage( &gray );
-    cvReleaseImage( &small_img );
 }
 

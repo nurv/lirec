@@ -25,8 +25,14 @@ class Image
 public:
 	Image(int w, int h, int d, int c);
 	Image(const std::string &filename);
-	Image(const Image *other);
+	Image(const Image &other);
+	Image(const IplImage *other); // copies the given image
 	~Image();
+
+	void Clear();
+
+	Image operator-(const Image &other);
+	Image operator+(const Image &other);
 
 	void PrintInfo();
 	
@@ -34,7 +40,7 @@ public:
 	void Scale(int w, int h);
 
 	// Paste an image into this one
-	void Blit(const Image &image, CvPoint pos);
+	void Blit(const Image &image, int x, int y);
 	
 	// Return a sum of squared differences, for giving a similarity metric 
 	float SSD(Image &other);

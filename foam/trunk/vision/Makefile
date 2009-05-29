@@ -32,5 +32,8 @@ ${DEPS}: %.dep: %.cpp Makefile
 clean:: 
 	-rm -f *~ src/*.o ${TARGET} 
 
+cleandeps:: clean
+	-rm -f src/*.dep
+
 distclean:: clean
 

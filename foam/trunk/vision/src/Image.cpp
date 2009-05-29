@@ -29,16 +29,90 @@ Image::Image(int w, int h, int d, int c)
 Image::Image(const string &filename)
 {
 	m_Image=cvLoadImage(filename.c_str());
+	assert(m_Image);
 }
 
-Image::Image(const Image *other)
+Image::Image(const Image &other)
 {
-	m_Image=cvCloneImage(other->m_Image);
+	m_Image=cvCloneImage(other.m_Image);
+}
+
+Image::Image(const IplImage *other)
+{
+	m_Image=cvCloneImage(other);
 }
 
 Image::~Image()
 {
 	cvReleaseImage(&m_Image);
+}
+
+void Image::Clear()
+{
+    for(int y=0; y<m_Image->height; y++)
+	{
+        for(int x=0; x<m_Image->width; x++)
+		{
+			CvScalar v;
+			
+ 			for (int c=0; c<m_Image->nChannels; c++)
+			{
+				v.val[c]=0;
+			}
+						
+			cvSet2D(m_Image,y,x,v);
+		}
+	}
+}
+
+Image Image::operator-(const Image &other)
+{
+	assert(other.m_Image->width == m_Image->width);
+	assert(other.m_Image->height == m_Image->height);
+	assert(other.m_Image->nChannels == m_Image->nChannels);
+
+	Image ret(*this);
+
+    for(int y=0; y<m_Image->height; y++)
+	{
+        for(int x=0; x<m_Image->width; x++)
+		{
+			CvScalar v;
+			v.val[0]=0;v.val[1]=0;v.val[2]=0;v.val[3]=0;
+ 			for (int c=0; c<m_Image->nChannels; c++)
+			{
+				v.val[c]=abs((int)(cvGet2D(m_Image,y,x).val[c] - 
+				                   cvGet2D(other.m_Image,y,x).val[c]));		
+			}
+			cvSet2D(ret.m_Image,y,x,v);
+		}
+	}
+	return ret;
+}
+
+Image Image::operator+(const Image &other)
+{
+	assert(other.m_Image->width == m_Image->width);
+	assert(other.m_Image->height == m_Image->height);
+	assert(other.m_Image->nChannels == m_Image->nChannels);
+
+	Image ret(*this);
+
+    for(int y=0; y<m_Image->height; y++)
+	{
+        for(int x=0; x<m_Image->width; x++)
+		{
+			CvScalar v;
+ 			for (int c=0; c<m_Image->nChannels; c++)
+			{
+				v.val[c]=cvGet2D(m_Image,y,x).val[c] + 
+				         cvGet2D(other.m_Image,y,x).val[c];		
+			}
+			cvSet2D(&ret,y,x,v);
+		}
+	}
+	
+	return ret;
 }
 
 // safe accessor, which returns 0 if out of range
@@ -105,16 +179,16 @@ void Image::Scale(int w, int h)
 	m_Image=newimage;
 }
 
-void Image::Blit(const Image &image, CvPoint pos)
+void Image::Blit(const Image &image, int px, int py)
 {	
 	for(int y=0; y<image.m_Image->height; y++)
 	{
         for(int x=0; x<image.m_Image->width; x++)
 		{
-			if (x+pos.x>0 && x+pos.x<m_Image->width &&
-				y+pos.y>0 && y+pos.y<m_Image->height)
+			if (x+px>0 && x+px<m_Image->width &&
+				y+py>0 && y+py<m_Image->height)
 			{
-            	cvSet2D(m_Image,y+pos.y,x+pos.x,cvGet2D(image.m_Image,y,x));
+            	cvSet2D(m_Image,y+py,x+px,cvGet2D(image.m_Image,y,x));
 			}
 		}
 	}
