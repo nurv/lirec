@@ -1,1 +1,7 @@
 General purpose machine vision code
+
+Trying to get enough together to get PCA and LDA working for face
+classification. I'm trying to keep as independant of opencv as possible, 
+although it's currently used inside the image class.
+
+dave@fo.am
