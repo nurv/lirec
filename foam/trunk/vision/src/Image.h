@@ -15,6 +15,7 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "cv.h"
+#include "Vector.h"
 #include <string>
 
 #ifndef IMAGE
@@ -27,6 +28,7 @@ public:
 	Image(const std::string &filename);
 	Image(const Image &other);
 	Image(const IplImage *other); // copies the given image
+	Image(int w, int h, int c, const Vector<float> &v);
 	~Image();
 
 	void Clear();
@@ -37,7 +39,7 @@ public:
 	void PrintInfo();
 	
 	void Crop(int x, int y, int w, int h);
-	void Scale(int w, int h);
+	Image Scale(int w, int h);
 
 	// Paste an image into this one
 	void Blit(const Image &image, int x, int y);
@@ -52,12 +54,15 @@ public:
 	void LBP();
 	
 	// Convert to different colour spaces
-	void GRAY2RGB();
-	void RGB2GRAY();
-	void BayerGB2RGB();
+	Image GRAY2RGB();
+	Image RGB2GRAY();
+	Image BayerGB2RGB();
 	
 	// Calculate a histogram for a given channel
 	unsigned int *Hist(int channel);
+	
+	Vector<float> ToFloatVector();
+	unsigned int NumElements() { return m_Image->width*m_Image->height*m_Image->nChannels; }
 	
 	IplImage *m_Image;
 	

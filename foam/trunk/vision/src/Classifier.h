@@ -19,35 +19,32 @@
 #include <set>
 #include "Vector.h"
 #include "Matrix.h"
-#include "Classifier.h"
 
-#ifndef FOAM_LDA_CLASSIFIER
-#define FOAM_LDA_CLASSIFIER
+#ifndef FOAM_CLASSIFIER
+#define FOAM_CLASSIFIER
 
-// A linear discriminant analysis classifier for arbitrary data sets
+// A base class classifier
 
-class LDAClassifier : public Classifier
+class Classifier
 {
 public:
-	LDAClassifier(unsigned int FeatureSize);
-	~LDAClassifier();
-
-	virtual int Classify(const Vector<float> &f);
-
-private:
-
-	void CalcGroupMeans();
-	void CalcMeanCorrected();
-	void CalcCovariance();
-	void CalcPooledCovariance();
-	void CalcPriorProbablity();
+	Classifier(unsigned int FeatureSize);
+	~Classifier();
 	
-	std::map<int,Vector<float> > m_GroupMean;
-	std::map<int,Matrix<float> > m_MeanCorrected;
-	std::map<int,Matrix<float> > m_Covariance;
-	//Matrix<T> m_PooledCovariance;
-	//Vector<T> m_PriorProbability;
+	void AddFeature(int group, const Vector<float> &f);
+	virtual int Classify(const Vector<float> &f) = 0;
+	
+protected:
+	void CalcMean();
+	
+	typedef std::vector<Vector<float> > FeatureVec;
+	typedef std::map<int,FeatureVec> FeatureMap;
+	
+	FeatureMap m_Features;
+	unsigned int m_FeatureSize;
 
+	Vector<float> m_Mean;
+	
 };
 
 #endif

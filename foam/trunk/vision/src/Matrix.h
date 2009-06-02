@@ -16,18 +16,21 @@
 
 #include <assert.h>
 #include <iostream>
+#include "Vector.h"
 
 #ifndef FOAM_MATRIX
 #define FOAM_MATRIX
 
-template<class T>
+template<class T> 
 class Matrix
 {
 public:
+	Matrix();
 	Matrix(unsigned int r, unsigned int c);
 	~Matrix();
 	Matrix(const Matrix &other);
-	
+	Matrix(unsigned int r, unsigned int c, float *data);
+
 	// Row proxy classes to allow matrix[r][c] notation
 	class Row
 	{
@@ -86,9 +89,13 @@ public:
 	unsigned int GetCols() const { return m_Cols; }
 	T *GetRawData() { return m_Data; }
 	const T *GetRawDataConst() const { return m_Data; }
+	Vector<T> GetRowVector(unsigned int r) const; 
+	Vector<T> GetColVector(unsigned int c) const; 
 	 
 	void Print() const;
 	void SetAll(T s);
+	void Zero() { SetAll(0); }
+	bool IsInf();
 	Matrix Transposed();
 
 	Matrix &operator=(const Matrix &other);
@@ -116,6 +123,22 @@ m_Rows(r),
 m_Cols(c)
 {
 	m_Data=new T[r*c];
+}
+
+template<class T>
+Matrix<T>::Matrix() :
+m_Rows(0),
+m_Cols(0),
+m_Data(NULL)
+{
+}
+
+template<class T>
+Matrix<T>::Matrix(unsigned int r, unsigned int c, float *data) :
+m_Rows(r),
+m_Cols(c),
+m_Data(data)
+{
 }
 
 template<class T>
@@ -172,6 +195,20 @@ void Matrix<T>::SetAll(T s)
 			(*this)[i][j]=s;
 		}
 	}
+}
+
+template<class T>
+bool Matrix<T>::IsInf()
+{
+	for (unsigned int i=0; i<m_Rows; i++)
+	{
+		for (unsigned int j=0; j<m_Cols; j++)
+		{
+			if (isinf((*this)[i][j])) return true;
+			if (isnan((*this)[i][j])) return true;
+		}
+	}
+	return false;
 }
 
 template<class T>
@@ -265,6 +302,29 @@ Matrix<T> &Matrix<T>::operator*=(const Matrix &other)
 	return *this;
 }
 
+template<class T>
+Vector<T> Matrix<T>::GetRowVector(unsigned int r) const
+{
+	assert(r<m_Rows);
+	Vector<T> ret(m_Cols);
+	for (unsigned int j=0; j<m_Cols; j++)
+	{
+		ret[j]=(*this)[r][j];
+	}
+	return ret;
+}
+
+template<class T>
+Vector<T> Matrix<T>::GetColVector(unsigned int c) const
+{
+	assert(c<m_Cols);
+	Vector<T> ret(m_Rows);
+	for (unsigned int i=0; i<m_Rows; i++)
+	{
+		ret[i]=(*this)[i][c];
+	}
+	return ret;
+}
 
 template<class T>
 void Matrix<T>::RunTests()

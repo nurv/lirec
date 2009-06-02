@@ -14,40 +14,13 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-#include <vector>
-#include <map>
-#include <set>
-#include "Vector.h"
 #include "Matrix.h"
-#include "Classifier.h"
+#include "Vector.h"
 
-#ifndef FOAM_LDA_CLASSIFIER
-#define FOAM_LDA_CLASSIFIER
+#ifndef FOAM_SVD
 
-// A linear discriminant analysis classifier for arbitrary data sets
+int dsvd(Matrix<float> &a, int m, int n, float *w, Matrix<float> &v);
 
-class LDAClassifier : public Classifier
-{
-public:
-	LDAClassifier(unsigned int FeatureSize);
-	~LDAClassifier();
-
-	virtual int Classify(const Vector<float> &f);
-
-private:
-
-	void CalcGroupMeans();
-	void CalcMeanCorrected();
-	void CalcCovariance();
-	void CalcPooledCovariance();
-	void CalcPriorProbablity();
-	
-	std::map<int,Vector<float> > m_GroupMean;
-	std::map<int,Matrix<float> > m_MeanCorrected;
-	std::map<int,Matrix<float> > m_Covariance;
-	//Matrix<T> m_PooledCovariance;
-	//Vector<T> m_PriorProbability;
-
-};
+Vector<float> SVD(Matrix<float> &m);
 
 #endif

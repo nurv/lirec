@@ -14,40 +14,38 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-#include <vector>
-#include <map>
-#include <set>
-#include "Vector.h"
-#include "Matrix.h"
 #include "Classifier.h"
 
-#ifndef FOAM_LDA_CLASSIFIER
-#define FOAM_LDA_CLASSIFIER
+using namespace std;
 
-// A linear discriminant analysis classifier for arbitrary data sets
-
-class LDAClassifier : public Classifier
+Classifier::Classifier(unsigned int FeatureSize) :
+m_FeatureSize(FeatureSize),
+m_Mean(FeatureSize)
 {
-public:
-	LDAClassifier(unsigned int FeatureSize);
-	~LDAClassifier();
+}
 
-	virtual int Classify(const Vector<float> &f);
+Classifier::~Classifier()
+{
+}
 
-private:
+void Classifier::AddFeature(int group, const Vector<float> &v) 
+{ 
+	assert(v.Size()==m_FeatureSize);
+	m_Features[group].push_back(v); 
+}
 
-	void CalcGroupMeans();
-	void CalcMeanCorrected();
-	void CalcCovariance();
-	void CalcPooledCovariance();
-	void CalcPriorProbablity();
+void Classifier::CalcMean()
+{
+	m_Mean.Zero();
 	
-	std::map<int,Vector<float> > m_GroupMean;
-	std::map<int,Matrix<float> > m_MeanCorrected;
-	std::map<int,Matrix<float> > m_Covariance;
-	//Matrix<T> m_PooledCovariance;
-	//Vector<T> m_PriorProbability;
-
-};
-
-#endif
+	for (FeatureMap::iterator i=m_Features.begin();
+		i!=m_Features.end(); ++i)
+	{
+		for (FeatureVec::iterator vi = i->second.begin(); vi!=i->second.end(); ++vi)
+		{
+			m_Mean+=*vi;
+		}
+	}
+	
+	m_Mean/=m_FeatureSize;
+}

@@ -21,33 +21,38 @@
 #include "Matrix.h"
 #include "Classifier.h"
 
-#ifndef FOAM_LDA_CLASSIFIER
-#define FOAM_LDA_CLASSIFIER
+#ifndef FOAM_PCA
+#define FOAM_PCA
 
-// A linear discriminant analysis classifier for arbitrary data sets
+// Principle component analysis
 
-class LDAClassifier : public Classifier
+class PCA 
 {
 public:
-	LDAClassifier(unsigned int FeatureSize);
-	~LDAClassifier();
+	PCA(unsigned int FeatureSize);
+	~PCA();
 
-	virtual int Classify(const Vector<float> &f);
+	void AddFeature(Vector<float> v) { m_Features.push_back(v); }
+	void Calculate();
 
-private:
+	static void RunTests();
 
-	void CalcGroupMeans();
-	void CalcMeanCorrected();
-	void CalcCovariance();
-	void CalcPooledCovariance();
-	void CalcPriorProbablity();
+	const Vector<float> &GetEigenValues() { return m_EigenValues; }
+	const Matrix<float> &GetEigenTransform() { return m_EigenTransform; }
+
+private:	
+
+	void CalcMean();
+
+	typedef std::vector<Vector<float> > FeatureVec;
+
+	FeatureVec m_Features;
+	unsigned int m_FeatureSize;
+	Vector<float> m_Mean;
 	
-	std::map<int,Vector<float> > m_GroupMean;
-	std::map<int,Matrix<float> > m_MeanCorrected;
-	std::map<int,Matrix<float> > m_Covariance;
-	//Matrix<T> m_PooledCovariance;
-	//Vector<T> m_PriorProbability;
-
+	Vector<float> m_EigenValues;
+	Matrix<float> m_EigenTransform;
+	
 };
 
 #endif

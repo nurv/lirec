@@ -23,7 +23,7 @@ using namespace std;
 
 Image::Image(int w, int h, int d, int c)
 {
-	cvCreateImage(cvSize(w, h), d, c);
+	m_Image=cvCreateImage(cvSize(w, h), d, c);
 }
 
 Image::Image(const string &filename)
@@ -40,6 +40,24 @@ Image::Image(const Image &other)
 Image::Image(const IplImage *other)
 {
 	m_Image=cvCloneImage(other);
+}
+
+Image::Image(int w, int h, int c, const Vector<float> &v)
+{
+	m_Image=cvCreateImage(cvSize(w, h), 8, c);
+	unsigned int pos=0;
+	for(int y=0; y<m_Image->height; y++)
+	{
+        for(int x=0; x<m_Image->width; x++)
+		{
+			CvScalar s;
+			for (int c=0; c<m_Image->nChannels; c++)
+			{
+				s.val[c]=v[pos++]*256.0f;
+			}
+			cvSet2D(m_Image,y,x,s);
+		}
+	}
 }
 
 Image::~Image()
@@ -147,36 +165,32 @@ void Image::Crop(int x, int y, int w, int h)
 	m_Image=newimage;
 }
 
-void Image::GRAY2RGB()
+Image Image::GRAY2RGB()
 {
 	IplImage *newimage = cvCreateImage(cvGetSize(m_Image), 8, 3);
     cvCvtColor(m_Image, newimage, CV_GRAY2RGB);
-	cvReleaseImage(&m_Image);
-	m_Image=newimage;
+	return Image(newimage);
 }
 
-void Image::RGB2GRAY()
+Image Image::RGB2GRAY()
 {
 	IplImage *newimage = cvCreateImage(cvGetSize(m_Image), 8, 1);
     cvCvtColor(m_Image, newimage, CV_RGB2GRAY);
-	cvReleaseImage(&m_Image);
-	m_Image=newimage;
+	return Image(newimage);
 }
 
-void Image::BayerGB2RGB()
+Image Image::BayerGB2RGB()
 {
 	IplImage *newimage = cvCreateImage(cvGetSize(m_Image), 8, 3);
     cvCvtColor(m_Image, newimage, CV_BayerGB2RGB);
-	cvReleaseImage(&m_Image);
-	m_Image=newimage;
+	return Image(newimage);
 }
 
-void Image::Scale(int w, int h)
+Image Image::Scale(int w, int h)
 {
 	IplImage *newimage = cvCreateImage(cvSize(w,h), m_Image->depth, m_Image->nChannels);
 	cvResize( m_Image, newimage, CV_INTER_LINEAR );
-	cvReleaseImage(&m_Image);
-	m_Image=newimage;
+	return Image(newimage);
 }
 
 void Image::Blit(const Image &image, int px, int py)
@@ -329,7 +343,6 @@ unsigned int *Image::Hist(int channel)
 	{
         for(int x=0; x<m_Image->width; x++)
 		{
-			
 			h[(unsigned char)cvGet2D(m_Image,y,x).val[channel]]++;
 		}
 	}
@@ -337,3 +350,20 @@ unsigned int *Image::Hist(int channel)
 	return h;
 }
 
+Vector<float> Image::ToFloatVector()
+{
+	Vector<float> v(m_Image->width*m_Image->height*m_Image->nChannels);
+    // for each pixel
+	unsigned int pos=0;
+    for(int y=0; y<m_Image->height; y++)
+	{
+        for(int x=0; x<m_Image->width; x++)
+		{
+			for (int c=0; c<m_Image->nChannels; c++)
+			{
+				v[pos++]=cvGet2D(m_Image,y,x).val[c]/256.0f;
+			}
+		}
+	}
+	return v;
+}

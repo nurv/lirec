@@ -21,7 +21,7 @@
 #include "Image.h"
 #include "Matrix.h"
 #include "Vector.h"
-#include "LDAClassifier.h"
+#include "PCA.h"
 
 using namespace std;
 
@@ -31,8 +31,29 @@ void detect_and_draw( IplImage* image );
 
 double scale = 1;
 
+PCA pca(Image("data/a-id0001-image0000.png").RGB2GRAY().NumElements());
+int tw=Image("data/a-id0001-image0000.png").RGB2GRAY().m_Image->width;
+int th=Image("data/a-id0001-image0000.png").RGB2GRAY().m_Image->height;
+int tc=Image("data/a-id0001-image0000.png").RGB2GRAY().m_Image->nChannels;
+
+void TestPCA()
+{
+	pca.AddFeature(Image("data/a-id0001-image0000.png").RGB2GRAY().ToFloatVector());
+	pca.AddFeature(Image("data/a-id0001-image0001.png").RGB2GRAY().ToFloatVector());
+	pca.AddFeature(Image("data/a-id0002-image0000.png").RGB2GRAY().ToFloatVector());
+	pca.AddFeature(Image("data/a-id0002-image0001.png").RGB2GRAY().ToFloatVector());
+	cerr<<"pre calc"<<endl;
+	pca.Calculate();
+	cerr<<"post calc"<<endl;
+}
+
+
 int main( int argc, char** argv )
 {
+
+	PCA::RunTests();
+	TestPCA();
+
     CvCapture* capture = 0;
     IplImage *frame, *frame_copy = 0;
     IplImage *image = 0;
@@ -189,7 +210,7 @@ void detect_and_draw( IplImage* img )
 	
 	//////////////////////////////////
 	// image differencing
-	
+	/*
 	vector<Image> imagevec;
  	//imagevec.push_back(Image("data/audrey.png"));
  	imagevec.push_back(Image("data/dave-1.png"));
@@ -232,10 +253,17 @@ void detect_and_draw( IplImage* img )
 	//camera.Blit(dave1,100,100);
 	//camera.Blit(dave2,140,100);
 	//camera.Blit(other,180,100);
+	*/
 	
+	///////////////////////////////////
+	// PCA display
 	
+	for (int i=0; i<10; i++)
+	{
+		camera.Blit(Image(tw,th,tc,pca.GetEigenTransform().GetRowVector(i)),i*50,100);
+	}
 
-     cvShowImage("result", camera.m_Image);
+    cvShowImage("result", camera.m_Image);
  
 }
 

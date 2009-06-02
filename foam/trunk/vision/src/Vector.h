@@ -15,6 +15,7 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include <assert.h>
+#include <math.h>
 #include <iostream>
 
 #ifndef FOAM_VECTOR
@@ -24,11 +25,18 @@ template<class T>
 class Vector
 {
 public:
+	Vector();
 	Vector(unsigned int s);
 	~Vector();
 	Vector(const Vector &other);
 	
 	T &operator[](unsigned int i) 
+	{
+		assert(i<m_Size);
+		return m_Data[i];
+	}
+
+	const T &operator[](unsigned int i) const
 	{
 		assert(i<m_Size);
 		return m_Data[i];
@@ -40,6 +48,8 @@ public:
 	 
 	void Print() const;
 	void SetAll(T s);
+	void Zero() { SetAll(0); }
+	bool IsInf();
 
 	Vector &operator=(const Vector &other);
 	Vector operator+(const Vector &other) const;
@@ -58,6 +68,13 @@ private:
 	unsigned int m_Size;
 	T *m_Data;
 };
+
+template<class T>
+Vector<T>::Vector() :
+m_Size(0)
+{
+	m_Data=NULL;
+}
 
 template<class T>
 Vector<T>::Vector(unsigned int s) :
@@ -112,6 +129,17 @@ void Vector<T>::SetAll(T s)
 	{
 		(*this)[i]=s;
 	}
+}
+
+template<class T>
+bool Vector<T>::IsInf()
+{
+	for (unsigned int i=0; i<m_Size; i++)
+	{
+		if (isinf((*this)[i])) return true;
+		if (isnan((*this)[i])) return true;
+	}
+	return false;
 }
 
 template<class T>
