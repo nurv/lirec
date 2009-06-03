@@ -14,15 +14,26 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-#include "PCASubspaceClassifier.h"
+#include <vector>
+#include <map>
+#include <set>
+#include "Vector.h"
+#include "Matrix.h"
+#include "Classifier.h"
 
-PCASubspaceClassifier::PCASubspaceClassifier(unsigned int FeatureSize) :
-Classifier(FeatureSize)
+#ifndef FOAM_PCA_CLASSIFIER
+#define FOAM_PCA_CLASSIFIER
+
+class PCAClassifier : public Classifier
 {
-}
+public:
+	PCAClassifier(unsigned int FeatureSize);
+	~PCAClassifier();
+		
+private:
+	
+	
+	
+};
 
-PCASubspaceClassifier::~PCASubspaceClassifier()
-{
-}
-
-
+#endif

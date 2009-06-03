@@ -4,7 +4,7 @@ SRCS    := src/main.cpp\
 	src/Image.cpp\
 	src/Rendering.cpp\
 	src/Classifier.cpp\
-	src/PCASubspaceClassifier.cpp\
+	src/PCAClassifier.cpp\
 	src/LDAClassifier.cpp\
 	src/PCA.cpp\
 	src/SVD.cpp

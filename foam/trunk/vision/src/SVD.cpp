@@ -56,10 +56,27 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <algorithm>
+#include <list>
 #include "SVD.h"
+
+using namespace std;
 
 #define SIGN(a, b) ((b) >= 0.0 ? fabs(a) : -fabs(a))
 #define MAX(x,y) ((x)>(y)?(x):(y))
+
+///////////////////////////////////////////////////////
+
+Vector<float> SVD(Matrix<float> &m)
+{
+	Vector<float> w(m.GetRows());
+	Matrix<float> v(m.GetRows(),m.GetCols());
+	dsvd(m, m.GetRows(), m.GetCols(), w.GetRawData(), v);
+	m.SortCols(w);
+	return w;
+}
+
+///////////////////////////////////////////////////////
 
 static double PYTHAG(double a, double b)
 {
@@ -69,14 +86,6 @@ static double PYTHAG(double a, double b)
     else if (bt > 0.0) { ct = at / bt; result = bt * sqrt(1.0 + ct * ct); }
     else result = 0.0;
     return(result);
-}
-
-Vector<float> SVD(Matrix<float> &m)
-{
-	Vector<float> w(m.GetRows());
-	Matrix<float> v(m.GetRows(),m.GetCols());
-	dsvd(m, m.GetRows(), m.GetCols(), w.GetRawData(), v);
-	return w;
 }
 
 int dsvd(Matrix<float> &a, int m, int n, float *w, Matrix<float> &v)

@@ -91,6 +91,8 @@ public:
 	const T *GetRawDataConst() const { return m_Data; }
 	Vector<T> GetRowVector(unsigned int r) const; 
 	Vector<T> GetColVector(unsigned int c) const; 
+	void SetRowVector(unsigned int r, const Vector<T> &row);
+	void SetColVector(unsigned int c, const Vector<T> &col);
 	 
 	void Print() const;
 	void SetAll(T s);
@@ -106,6 +108,9 @@ public:
 	Matrix &operator-=(const Matrix &other);
 	Matrix &operator*=(const Matrix &other);
 	
+	void SortRows(Vector<T> &v);
+	void SortCols(Vector<T> &v);
+
 	static void RunTests();
 	
 private:
@@ -302,6 +307,8 @@ Matrix<T> &Matrix<T>::operator*=(const Matrix &other)
 	return *this;
 }
 
+
+//todo: use memcpy for these 4 functions
 template<class T>
 Vector<T> Matrix<T>::GetRowVector(unsigned int r) const
 {
@@ -325,6 +332,85 @@ Vector<T> Matrix<T>::GetColVector(unsigned int c) const
 	}
 	return ret;
 }
+
+template<class T>
+void Matrix<T>::SetRowVector(unsigned int r, const Vector<T> &row)
+{
+	assert(r<m_Rows);
+	assert(row.Size()==m_Cols);
+	for (unsigned int j=0; j<m_Cols; j++)
+	{
+		(*this)[r][j]=row[j];
+	}
+}
+
+template<class T>
+void Matrix<T>::SetColVector(unsigned int c, const Vector<T> &col)
+{
+	assert(c<m_Cols);
+	assert(col.Size()==m_Rows);
+	for (unsigned int i=0; i<m_Rows; i++)
+	{
+		(*this)[i][c]=col[i];
+	}
+}
+
+// sort rows by v
+template<class T>
+void Matrix<T>::SortRows(Vector<T> &v)
+{
+	assert(v.Size()==m_Rows);
+	
+	bool sorted=false;
+	while(!sorted)
+	{
+		sorted=true;
+		
+		for (unsigned int i=0; i<v.Size()-1; i++)
+		{
+			if (v[i]<v[i+1])
+			{
+				sorted=false;
+				float vtmp = v[i];
+				v[i]=v[i+1];
+				v[i+1]=vtmp;
+				
+				Vector<float> rtmp = GetRowVector(i);
+				SetRowVector(i,GetRowVector(i+1));
+				SetRowVector(i+1,rtmp);
+			}
+		}
+	}
+}
+
+// sort cols by v
+template<class T>
+void Matrix<T>::SortCols(Vector<T> &v)
+{
+	assert(v.Size()==m_Cols);
+	
+	bool sorted=false;
+	while(!sorted)
+	{
+		sorted=true;
+		
+		for (unsigned int i=0; i<v.Size()-1; i++)
+		{
+			if (v[i]<v[i+1])
+			{
+				sorted=false;
+				float vtmp = v[i];
+				v[i]=v[i+1];
+				v[i+1]=vtmp;
+				
+				Vector<float> rtmp = GetColVector(i);
+				SetColVector(i,GetColVector(i+1));
+				SetColVector(i+1,rtmp);
+			}
+		}
+	}
+}
+
 
 template<class T>
 void Matrix<T>::RunTests()

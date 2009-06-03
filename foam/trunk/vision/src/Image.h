@@ -28,7 +28,7 @@ public:
 	Image(const std::string &filename);
 	Image(const Image &other);
 	Image(const IplImage *other); // copies the given image
-	Image(int w, int h, int c, const Vector<float> &v);
+	Image(int w, int h, int c, const Vector<float> &v, float gain=1.0f);
 	~Image();
 
 	void Clear();

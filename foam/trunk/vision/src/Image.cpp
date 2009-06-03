@@ -42,7 +42,7 @@ Image::Image(const IplImage *other)
 	m_Image=cvCloneImage(other);
 }
 
-Image::Image(int w, int h, int c, const Vector<float> &v)
+Image::Image(int w, int h, int c, const Vector<float> &v, float gain)
 {
 	m_Image=cvCreateImage(cvSize(w, h), 8, c);
 	unsigned int pos=0;
@@ -53,7 +53,7 @@ Image::Image(int w, int h, int c, const Vector<float> &v)
 			CvScalar s;
 			for (int c=0; c<m_Image->nChannels; c++)
 			{
-				s.val[c]=v[pos++]*256.0f;
+				s.val[c]=(0.5+v[pos++]*gain)*127.0f;
 			}
 			cvSet2D(m_Image,y,x,s);
 		}
@@ -202,7 +202,18 @@ void Image::Blit(const Image &image, int px, int py)
 			if (x+px>0 && x+px<m_Image->width &&
 				y+py>0 && y+py<m_Image->height)
 			{
-            	cvSet2D(m_Image,y+py,x+px,cvGet2D(image.m_Image,y,x));
+            	if (image.m_Image->nChannels==1) 
+				{
+					CvScalar v;
+					v.val[0]=cvGet2D(image.m_Image,y,x).val[0];
+					v.val[1]=cvGet2D(image.m_Image,y,x).val[0];
+					v.val[2]=cvGet2D(image.m_Image,y,x).val[0];
+            		cvSet2D(m_Image,y+py,x+px,v);
+				}
+				else 
+				{
+					cvSet2D(m_Image,y+py,x+px,cvGet2D(image.m_Image,y,x));
+				}
 			}
 		}
 	}

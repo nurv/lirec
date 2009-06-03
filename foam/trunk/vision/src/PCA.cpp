@@ -38,7 +38,6 @@ void PCA::Calculate()
 	Mean.Zero();
 	for (FeatureVec::iterator vi = m_Features.begin(); vi!=m_Features.end(); ++vi)
 	{
-		cerr<<vi->IsInf()<<endl;
 		Mean+=*vi;
 	}
 	
@@ -52,7 +51,7 @@ void PCA::Calculate()
 	}
 	
 	// allocate the transform matrix (this is where it'll run out of memory)
-	cerr<<"Allocating "<<m_FeatureSize*m_FeatureSize*sizeof(float)/1024/1024<<" megs for covariance matrix"<<endl;
+	cerr<<"Allocating "<<m_FeatureSize*m_FeatureSize*sizeof(float)/1024/1024.0<<" megs for covariance matrix"<<endl;
 	m_EigenTransform = Matrix<float>(m_FeatureSize,m_FeatureSize);
 	m_EigenTransform.Zero();
 	

@@ -22,6 +22,7 @@
 #include "Matrix.h"
 #include "Vector.h"
 #include "PCA.h"
+#include <glob.h>
 
 using namespace std;
 
@@ -31,20 +32,24 @@ void detect_and_draw( IplImage* image );
 
 double scale = 1;
 
-PCA pca(Image("data/a-id0001-image0000.png").RGB2GRAY().NumElements());
-int tw=Image("data/a-id0001-image0000.png").RGB2GRAY().m_Image->width;
-int th=Image("data/a-id0001-image0000.png").RGB2GRAY().m_Image->height;
-int tc=Image("data/a-id0001-image0000.png").RGB2GRAY().m_Image->nChannels;
+Image ti("data/spot-1.png");
+PCA pca(ti.RGB2GRAY().Scale(30,40).NumElements());
 
 void TestPCA()
 {
-	pca.AddFeature(Image("data/a-id0001-image0000.png").RGB2GRAY().ToFloatVector());
-	pca.AddFeature(Image("data/a-id0001-image0001.png").RGB2GRAY().ToFloatVector());
-	pca.AddFeature(Image("data/a-id0002-image0000.png").RGB2GRAY().ToFloatVector());
-	pca.AddFeature(Image("data/a-id0002-image0001.png").RGB2GRAY().ToFloatVector());
-	cerr<<"pre calc"<<endl;
+	ti=ti.RGB2GRAY().Scale(30,40);
+	glob_t g;
+	glob("data/pca/*.png",GLOB_PERIOD,NULL,&g);
+	for (unsigned int n=0; n<g.gl_pathc; n++)
+	{
+		string path=g.gl_pathv[n];
+		cerr<<path<<endl;
+		Image im(path);
+		//im.SubMean();
+		pca.AddFeature(im.RGB2GRAY().Scale(30,40).ToFloatVector());
+	}
+	globfree (&g);
 	pca.Calculate();
-	cerr<<"post calc"<<endl;
 }
 
 
@@ -258,10 +263,19 @@ void detect_and_draw( IplImage* img )
 	///////////////////////////////////
 	// PCA display
 	
-	for (int i=0; i<10; i++)
+	camera.Clear();
+
+	for (unsigned int i=0; i<pca.GetFeatures().size(); i++)
 	{
-		camera.Blit(Image(tw,th,tc,pca.GetEigenTransform().GetRowVector(i)),i*50,100);
+		camera.Blit(Image(30,40,1,pca.GetFeatures()[i]),(i%20)*32,(i/20)*42);
 	}
+	
+	for (unsigned int i=0; i<pca.GetEigenTransform().GetCols(); i++)
+	{
+		camera.Blit(Image(30,40,1,pca.GetEigenTransform().GetColVector(i),5),(i%20)*32,200+(i/20)*42);
+	}
+	
+	pca.GetEigenValues().Print();
 
     cvShowImage("result", camera.m_Image);
  

@@ -31,6 +31,8 @@ class PCA
 public:
 	PCA(unsigned int FeatureSize);
 	~PCA();
+	
+	typedef std::vector<Vector<float> > FeatureVec;
 
 	void AddFeature(Vector<float> v) { m_Features.push_back(v); }
 	void Calculate();
@@ -39,12 +41,12 @@ public:
 
 	const Vector<float> &GetEigenValues() { return m_EigenValues; }
 	const Matrix<float> &GetEigenTransform() { return m_EigenTransform; }
-
+	const FeatureVec &GetFeatures() { return m_Features; }
+	
 private:	
 
 	void CalcMean();
 
-	typedef std::vector<Vector<float> > FeatureVec;
 
 	FeatureVec m_Features;
 	unsigned int m_FeatureSize;
