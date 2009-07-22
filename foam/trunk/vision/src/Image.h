@@ -35,6 +35,7 @@ public:
 
 	Image operator-(const Image &other);
 	Image operator+(const Image &other);
+	Image &operator=(const Image &other);
 
 	void PrintInfo();
 	

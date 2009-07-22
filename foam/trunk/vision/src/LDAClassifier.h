@@ -38,13 +38,14 @@ private:
 
 	void CalcGroupMeans();
 	void CalcMeanCorrected();
-	void CalcCovariance();
+	void CalcGroupCovariance();
 	void CalcPooledCovariance();
 	void CalcPriorProbablity();
 	
 	std::map<int,Vector<float> > m_GroupMean;
-	std::map<int,Matrix<float> > m_MeanCorrected;
-	std::map<int,Matrix<float> > m_Covariance;
+	std::map<int,Matrix<float> > m_MeanCorrectedGroups;
+	std::map<int,Matrix<float> > m_GroupCovariance;
+
 	//Matrix<T> m_PooledCovariance;
 	//Vector<T> m_PriorProbability;
 

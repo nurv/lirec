@@ -133,6 +133,12 @@ Image Image::operator+(const Image &other)
 	return ret;
 }
 
+Image &Image::operator=(const Image &other)
+{
+	m_Image=cvCloneImage(other.m_Image);
+	return *this;
+}
+
 // safe accessor, which returns 0 if out of range
 unsigned char Image::SafeGet2D(int y, int x, int c)
 {

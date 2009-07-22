@@ -39,8 +39,10 @@ protected:
 	
 	typedef std::vector<Vector<float> > FeatureVec;
 	typedef std::map<int,FeatureVec> FeatureMap;
+	typedef std::map<int,FeatureVec> GroupMap;
 	
 	FeatureMap m_Features;
+	GroupMap m_Groups;
 	unsigned int m_FeatureSize;
 
 	Vector<float> m_Mean;

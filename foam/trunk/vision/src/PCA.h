@@ -36,12 +36,23 @@ public:
 
 	void AddFeature(Vector<float> v) { m_Features.push_back(v); }
 	void Calculate();
+	
+	// remove eigenvectors from the transform
+	void Compress(unsigned int s, unsigned int e);
+	
+	Vector<float> Project(Vector<float> v);
+	Vector<float> Synth(Vector<float> v);
 
 	static void RunTests();
 
 	const Vector<float> &GetEigenValues() { return m_EigenValues; }
 	const Matrix<float> &GetEigenTransform() { return m_EigenTransform; }
 	const FeatureVec &GetFeatures() { return m_Features; }
+	const Vector<float> &GetMean() { return m_Mean; }
+	
+	
+	void Load(FILE *f);
+	void Save(FILE *f);
 	
 private:	
 

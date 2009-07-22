@@ -7,7 +7,10 @@ SRCS    := src/main.cpp\
 	src/PCAClassifier.cpp\
 	src/LDAClassifier.cpp\
 	src/PCA.cpp\
-	src/SVD.cpp
+	src/SVD.cpp\
+	src/tinyxml.cpp\
+	src/tinyxmlerror.cpp\
+	src/tinyxmlparser.cpp
 
 CCFLAGS = `pkg-config --cflags opencv` -ggdb -Wall -O3 -ffast-math -Wno-unused -DTIXML_USE_STL 
 LDFLAGS = 

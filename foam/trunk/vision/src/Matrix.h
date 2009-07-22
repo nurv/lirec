@@ -98,18 +98,26 @@ public:
 	void SetAll(T s);
 	void Zero() { SetAll(0); }
 	bool IsInf();
-	Matrix Transposed();
+	Matrix Transposed() const;
 
 	Matrix &operator=(const Matrix &other);
 	Matrix operator+(const Matrix &other) const;
 	Matrix operator-(const Matrix &other) const;
 	Matrix operator*(const Matrix &other) const;
+	Vector<T> operator*(const Vector<T> &other) const;
+	Vector<T> VecMulTransposed(const Vector<T> &other) const;
 	Matrix &operator+=(const Matrix &other);
 	Matrix &operator-=(const Matrix &other);
 	Matrix &operator*=(const Matrix &other);
-	
+
 	void SortRows(Vector<T> &v);
 	void SortCols(Vector<T> &v);
+	
+	Matrix CropRows(unsigned int s, unsigned int e);
+	Matrix CropCols(unsigned int s, unsigned int e);
+
+	void Save(FILE *f);
+	void Load(FILE *f);
 
 	static void RunTests();
 	
@@ -217,7 +225,7 @@ bool Matrix<T>::IsInf()
 }
 
 template<class T>
-Matrix<T> Matrix<T>::Transposed()
+Matrix<T> Matrix<T>::Transposed() const
 {
 	Matrix<T> copy(*this);
 	for (unsigned int i=0; i<m_Rows; i++)
@@ -280,6 +288,48 @@ Matrix<T> Matrix<T>::operator*(const Matrix &other) const
 			for (unsigned int k=0; k<m_Cols; k++)
 			{
 				ret[i][j]+=(*this)[i][k]*other[k][j];
+			}
+		}
+	}
+	return ret;
+}
+
+template<class T>
+Vector<T> Matrix<T>::operator*(const Vector<T> &other) const
+{
+	assert(m_Cols==other.Size());
+	
+	Vector<T> ret(m_Rows);
+	
+	for (unsigned int i=0; i<m_Rows; i++)
+	{
+		for (unsigned int j=0; j<other.Size(); j++)
+		{
+			ret[i]=0;
+			for (unsigned int k=0; k<m_Cols; k++)
+			{
+				ret[i]+=(*this)[i][k]*other[k];
+			}
+		}
+	}
+	return ret;
+}
+
+template<class T>
+Vector<T> Matrix<T>::VecMulTransposed(const Vector<T> &other) const
+{
+	assert(m_Rows==other.Size());
+	
+	Vector<T> ret(m_Cols);
+	
+	for (unsigned int i=0; i<m_Cols; i++)
+	{
+		for (unsigned int j=0; j<other.Size(); j++)
+		{
+			ret[i]=0;
+			for (unsigned int k=0; k<m_Rows; k++)
+			{
+				ret[i]+=(*this)[k][i]*other[k];
 			}
 		}
 	}
@@ -410,11 +460,69 @@ void Matrix<T>::SortCols(Vector<T> &v)
 		}
 	}
 }
+	
+template<class T>
+Matrix<T> Matrix<T>::CropRows(unsigned int s, unsigned int e)
+{
+	assert(s<e);
+	assert(s<m_Rows);
+	assert(e<=m_Rows);
+	
+	Matrix r(e-s,m_Cols);
+	unsigned int c=0;
+	for(unsigned int i=s; i<e; i++)
+	{
+		r.SetRowVector(c,GetRowVector(i));
+		c++;
+	}
+	
+	return r;
+}
 
+template<class T>
+Matrix<T> Matrix<T>::CropCols(unsigned int s, unsigned int e)
+{
+	assert(s<e);
+	assert(s<m_Cols);
+	assert(e<=m_Cols);
+	
+	Matrix r(m_Rows,e-s);
+	unsigned int c=0;
+	for(unsigned int i=s; i<e; i++)
+	{
+		r.SetColVector(c,GetColVector(i));
+		c++;
+	}
+	
+	return r;
+}
+
+template<class T>
+void Matrix<T>::Save(FILE* f)
+{
+	int version = 1;	
+	fwrite(&version,1,sizeof(version),f);
+	fwrite(&m_Rows,1,sizeof(m_Rows),f);
+	fwrite(&m_Cols,1,sizeof(m_Cols),f);
+	fwrite(m_Data,1,sizeof(T)*m_Rows*m_Cols,f);
+}
+
+template<class T>
+void Matrix<T>::Load(FILE* f)
+{
+	int version;	
+	fread(&version,sizeof(version),1,f);
+	fread(&m_Rows,sizeof(m_Rows),1,f);
+	fread(&m_Cols,sizeof(m_Cols),1,f);
+	m_Data=new T[m_Rows*m_Cols];
+	fread(m_Data,sizeof(T)*m_Rows*m_Cols,1,f);
+}
 
 template<class T>
 void Matrix<T>::RunTests()
 {
+	Vector<T>::RunTests();
+
 	Matrix<T> m(10,10);
 	m.SetAll(0);
 	assert(m[0][0]==0);
@@ -431,6 +539,20 @@ void Matrix<T>::RunTests()
 	b[2][0]=2;
 	Matrix<T> c=a*b;
 	assert(c[0][0]==11 && c[1][0]==29);
+	
+	// test matrix * vector
+	Vector<T> d(3);
+	d[0]=3;
+	d[1]=1;
+	d[2]=2;
+	Vector<T> e=a*d;
+	assert(e[0]==11 && e[1]==29);
+	
+	Matrix<T> f=a.CropCols(1,3);
+	assert(f.GetRows()==2 && f.GetCols()==2 && f[0][0]==2);
+	Matrix<T> g=a.CropRows(0,1);
+	assert(g.GetRows()==1 && g.GetCols()==3 && g[0][0]==1);
+
 }
 
 #endif

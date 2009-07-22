@@ -32,8 +32,8 @@ int LDAClassifier::Classify(const Vector<float> &v)
 
 void LDAClassifier::CalcGroupMeans()
 {	
-	for (FeatureMap::iterator i=m_Features.begin();
-		i!=m_Features.end(); ++i)
+	for (GroupMap::iterator i=m_Groups.begin();
+		i!=m_Groups.end(); ++i)
 	{
 		m_GroupMean[i->first]=Vector<float>(m_FeatureSize);
 		m_GroupMean[i->first].Zero();		
@@ -46,11 +46,28 @@ void LDAClassifier::CalcGroupMeans()
 }
 
 void LDAClassifier::CalcMeanCorrected()
-{
+{	
+/*	CalcMean();
+	
+	// copy the training data :/
+	m_MeanCorrectedGroups = m_Groups;
+	
+	for (GroupMap::iterator i=m_MeanCorrectedGroups.begin();
+		i!=m_MeanCorrectedGroups.end(); ++i)
+	{
+		Matrix<float> Group(i->second.size(), m_FeatureSize);
+		unsigned int count=0;
+		for (FeatureVec::iterator vi = i->second.begin(); vi!=i->second.end(); ++vi)
+		{
+			Group.SetRowVector(count++,*vi);
+		}
+		m_MeanCorrectedGroups[i->first]=Group;
+	}*/
 }
 
-void LDAClassifier::CalcCovariance()
+void LDAClassifier::CalcGroupCovariance()
 {
+	
 }
 
 void LDAClassifier::CalcPooledCovariance()

@@ -22,6 +22,12 @@
 #define FOAM_VECTOR
 
 template<class T>
+bool feq(T a, T b, T t=0.001)
+{
+	return fabs(a-b)<t;
+}
+
+template<class T>
 class Vector
 {
 public:
@@ -50,16 +56,24 @@ public:
 	void SetAll(T s);
 	void Zero() { SetAll(0); }
 	bool IsInf();
+	T Mean();
 
 	Vector &operator=(const Vector &other);
 	Vector operator+(const Vector &other) const;
 	Vector operator-(const Vector &other) const;
+	Vector operator+(T v) const;
+	Vector operator-(T v) const;
 	Vector operator*(T v) const;
 	Vector operator/(T v) const;
 	Vector &operator+=(const Vector &other);
 	Vector &operator-=(const Vector &other);
+	Vector &operator+=(T v);
+	Vector &operator-=(T v);
 	Vector &operator*=(T v);
 	Vector &operator/=(T v);
+	
+	void Save(FILE *f);
+	void Load(FILE *f);
 	
 	static void RunTests();
 	
@@ -169,6 +183,28 @@ Vector<T> Vector<T>::operator-(const Vector &other) const
 }
 
 template<class T>
+Vector<T> Vector<T>::operator+(T v) const
+{	
+	Vector<T> ret(m_Size);
+	for (unsigned int i=0; i<m_Size; i++)
+	{
+		ret[i]=(*this)[i]+v;
+	}
+	return ret;
+}
+
+template<class T>
+Vector<T> Vector<T>::operator-(T v) const
+{
+	Vector<T> ret(m_Size);
+	for (unsigned int i=0; i<m_Size; i++)
+	{
+		ret[i]=(*this)[i]-v;
+	}
+	return ret;
+}
+
+template<class T>
 Vector<T> Vector<T>::operator*(T v) const
 {	
 	Vector<T> ret(m_Size);
@@ -193,6 +229,7 @@ Vector<T> Vector<T>::operator/(T v) const
 template<class T>
 Vector<T> &Vector<T>::operator+=(const Vector &other)
 {
+	assert(m_Size==other.m_Size);
 	for (unsigned int i=0; i<m_Size; i++)
 	{
 		(*this)[i]+=other[i];
@@ -203,9 +240,30 @@ Vector<T> &Vector<T>::operator+=(const Vector &other)
 template<class T>
 Vector<T> &Vector<T>::operator-=(const Vector &other)
 {
+	assert(m_Size==other.m_Size);
 	for (unsigned int i=0; i<m_Size; i++)
 	{
 		(*this)[i]-=other[i];
+	}
+	return *this;
+}
+
+template<class T>
+Vector<T> &Vector<T>::operator+=(T v)
+{
+	for (unsigned int i=0; i<m_Size; i++)
+	{
+		(*this)[i]+=v;
+	}
+	return *this;
+}
+
+template<class T>
+Vector<T> &Vector<T>::operator-=(T v)
+{
+	for (unsigned int i=0; i<m_Size; i++)
+	{
+		(*this)[i]-=v;
 	}
 	return *this;
 }
@@ -230,6 +288,35 @@ Vector<T> &Vector<T>::operator/=(T v)
 	return *this;
 }
 
+template<class T>
+T Vector<T>::Mean()
+{
+	T acc=0;
+	for (unsigned int i=0; i<m_Size; i++)
+	{
+		acc+=(*this)[i];
+	}
+	return acc/(float)m_Size;
+}
+
+template<class T>
+void Vector<T>::Save(FILE* f)
+{
+	int version = 1;	
+	fwrite(&version,sizeof(version),1,f);
+	fwrite(&m_Size,sizeof(m_Size),1,f);
+	fwrite(m_Data,sizeof(T)*m_Size,1,f);
+}
+
+template<class T>
+void Vector<T>::Load(FILE* f)
+{
+	int version;	
+	fread(&version,sizeof(version),1,f);
+	fread(&m_Size,sizeof(m_Size),1,f);
+	m_Data=new T[m_Size];
+	fread(m_Data,sizeof(T)*m_Size,1,f);	
+}
 
 template<class T>
 void Vector<T>::RunTests()

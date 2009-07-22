@@ -34,20 +34,19 @@ PCA::~PCA()
 void PCA::Calculate()
 {
 	// calculate the mean
-	Vector<float> Mean(m_FeatureSize);
-	Mean.Zero();
+	m_Mean.Zero();
 	for (FeatureVec::iterator vi = m_Features.begin(); vi!=m_Features.end(); ++vi)
 	{
-		Mean+=*vi;
+		m_Mean+=*vi;
 	}
 	
-	Mean/=m_Features.size();
+	m_Mean/=m_Features.size();
 		
 	// subtract the mean
 	FeatureVec SubMean;
 	for (FeatureVec::iterator vi = m_Features.begin(); vi!=m_Features.end(); ++vi)
 	{
-		SubMean.push_back(*vi-Mean);
+		SubMean.push_back(*vi-m_Mean);
 	}
 	
 	// allocate the transform matrix (this is where it'll run out of memory)
@@ -69,10 +68,65 @@ void PCA::Calculate()
 		}
 	}
 	m_EigenValues = SVD(m_EigenTransform);
+	m_EigenTransform=m_EigenTransform.Transposed();
+}
+
+void PCA::Compress(unsigned int s, unsigned int e)
+{
+	m_EigenTransform=m_EigenTransform.CropRows(s,e);
+}
+
+Vector<float> PCA::Project(Vector<float> v)
+{
+	return m_EigenTransform*v;
+}
+	
+Vector<float> PCA::Synth(Vector<float> v)
+{
+	return m_Mean+m_EigenTransform.VecMulTransposed(v);
+}
+
+void PCA::Save(FILE *f)
+{
+	int version = 2;
+	fwrite(&version,sizeof(version),1,f);
+	m_EigenTransform.Save(f);
+	m_EigenValues.Save(f);
+	m_Mean.Save(f);
+	fwrite(&m_FeatureSize,sizeof(m_FeatureSize),1,f);
+	for (unsigned int i=0; i<m_Features.size(); i++)
+	{
+		m_Features[i].Save(f);
+	}
+	
+}
+
+void PCA::Load(FILE *f)
+{
+	int version;	
+	fread(&version,sizeof(version),1,f);
+	m_EigenTransform.Load(f);
+	m_EigenValues.Load(f);
+	
+	if (version == 1)
+	{
+		m_EigenTransform=m_EigenTransform.Transposed();
+	}
+	
+	if (version>1) 
+	{
+		m_Mean.Load(f);	
+		fread(&m_FeatureSize,sizeof(m_FeatureSize),1,f);
+		for (unsigned int i=0; i<m_Features.size(); i++)
+		{
+			m_Features[i].Load(f);
+		}
+	}
 }
 
 void PCA::RunTests()
 {
+	Matrix<float>::RunTests();
 	PCA pca(2);
 	
 	Vector<float> in(2);
@@ -98,6 +152,11 @@ void PCA::RunTests()
 	pca.AddFeature(in);
 	
 	pca.Calculate();
+		
+	in[0]=.69; in[1]=.49;
+	Vector<float> out = pca.Project(in);
+	assert(feq(out[0],-0.82797f) && feq(out[1],-0.175115f));
+	
 }
 
 

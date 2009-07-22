@@ -32,24 +32,52 @@ void detect_and_draw( IplImage* image );
 
 double scale = 1;
 
-Image ti("data/spot-1.png");
-PCA pca(ti.RGB2GRAY().Scale(30,40).NumElements());
+//int w=50;
+//int h=80;
+int w=20;
+int h=30;
 
-void TestPCA()
+PCA pca(w*h);
+Vector<float> params(50);
+Image src("data/dave.png");
+
+void Recalc()
 {
-	ti=ti.RGB2GRAY().Scale(30,40);
 	glob_t g;
-	glob("data/pca/*.png",GLOB_PERIOD,NULL,&g);
+	
+	glob("data/spacek-large/*.png",GLOB_PERIOD,NULL,&g);
 	for (unsigned int n=0; n<g.gl_pathc; n++)
 	{
 		string path=g.gl_pathv[n];
 		cerr<<path<<endl;
 		Image im(path);
 		//im.SubMean();
-		pca.AddFeature(im.RGB2GRAY().Scale(30,40).ToFloatVector());
+		Vector<float> v(im.Scale(w,h).RGB2GRAY().ToFloatVector());
+		v-=v.Mean();
+		pca.AddFeature(v);
 	}
 	globfree (&g);
-	pca.Calculate();
+	
+	pca.Calculate(); 
+}
+
+void TestPCA()
+{
+	//Recalc();
+	//FILE *f=fopen("spacek-20x30.pca", "wb");
+	//pca.Save(f);
+	
+	FILE *f=fopen("spacek-20x30.pca", "rb");
+	pca.Load(f);
+	
+	fclose(f);
+	
+	pca.Compress(0,50);
+	src = src.Scale(w,h).RGB2GRAY();
+	Vector<float> d(src.ToFloatVector());	
+	params=pca.Project(d);	
+	params[0]=1;
+
 }
 
 
@@ -204,7 +232,7 @@ void detect_and_draw( IplImage* img )
 
 	//////////////////////////////////
 	// Matrix tests
-	Matrix<float>::RunTests();
+	//Matrix<float>::RunTests();
 
 	//////////////////////////////////
 	// test the debayering
@@ -262,20 +290,20 @@ void detect_and_draw( IplImage* img )
 	
 	///////////////////////////////////
 	// PCA display
-	
 	camera.Clear();
 
-	for (unsigned int i=0; i<pca.GetFeatures().size(); i++)
+	//for (unsigned int i=0; i<pca.GetFeatures().size(); i++)
+	//{
+	//	camera.Blit(Image(30,40,1,pca.GetFeatures()[i]),(i%20)*32,(i/20)*42);
+	//}
+	
+	for (unsigned int i=0; i<pca.GetEigenTransform().GetRows(); i++)
 	{
-		camera.Blit(Image(30,40,1,pca.GetFeatures()[i]),(i%20)*32,(i/20)*42);
+		camera.Blit(Image(w,h,1,pca.GetEigenTransform().GetRowVector(i)*2+pca.GetMean()),(i%20)*(w+2),0+(i/20)*(h+2));
 	}
 	
-	for (unsigned int i=0; i<pca.GetEigenTransform().GetCols(); i++)
-	{
-		camera.Blit(Image(30,40,1,pca.GetEigenTransform().GetColVector(i),5),(i%20)*32,200+(i/20)*42);
-	}
-	
-	pca.GetEigenValues().Print();
+	camera.Blit(Image(w,h,1,pca.Synth(params)),200,200);
+	camera.Blit(src,100,200);
 
     cvShowImage("result", camera.m_Image);
  
