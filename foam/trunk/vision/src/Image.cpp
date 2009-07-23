@@ -172,6 +172,21 @@ void Image::Crop(int x, int y, int w, int h)
 	m_Image=newimage;
 }
 
+Image Image::SubImage(int x, int y, int w, int h)
+{
+	CvRect roi;
+	roi.x=x;
+	roi.y=y;
+	roi.width=w;
+	roi.height=h;
+	IplImage *newimage;
+	cvSetImageROI(m_Image,roi);
+	newimage = cvCreateImage( cvSize(roi.width, roi.height), m_Image->depth, m_Image->nChannels );
+	cvCopy(m_Image,newimage);
+	cvReleaseImage(&m_Image);
+	return newimage;
+}
+
 Image Image::GRAY2RGB()
 {
 	IplImage *newimage = cvCreateImage(cvGetSize(m_Image), 8, 3);

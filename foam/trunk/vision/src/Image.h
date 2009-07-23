@@ -24,6 +24,7 @@
 class Image
 {
 public:
+	Image() : m_Image(NULL) {}
 	Image(int w, int h, int d, int c);
 	Image(const std::string &filename);
 	Image(const Image &other);
@@ -41,6 +42,7 @@ public:
 	
 	void Crop(int x, int y, int w, int h);
 	Image Scale(int w, int h);
+	Image SubImage(int x, int y, int w, int h);
 
 	// Paste an image into this one
 	void Blit(const Image &image, int x, int y);

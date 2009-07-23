@@ -40,15 +40,16 @@ public:
 	// remove eigenvectors from the transform
 	void Compress(unsigned int s, unsigned int e);
 	
-	Vector<float> Project(Vector<float> v);
-	Vector<float> Synth(Vector<float> v);
+	Vector<float> Project(Vector<float> v) const;
+	Vector<float> Synth(Vector<float> v) const;
 
 	static void RunTests();
 
-	const Vector<float> &GetEigenValues() { return m_EigenValues; }
-	const Matrix<float> &GetEigenTransform() { return m_EigenTransform; }
-	const FeatureVec &GetFeatures() { return m_Features; }
-	const Vector<float> &GetMean() { return m_Mean; }
+	const Vector<float> &GetEigenValues() const { return m_EigenValues; }
+	const Matrix<float> &GetEigenTransform() const { return m_EigenTransform; }
+	const FeatureVec &GetFeatures() const { return m_Features; }
+	const Vector<float> &GetMean() const { return m_Mean; }
+	unsigned int GetFeatureSize() const { return m_FeatureSize; }
 	
 	
 	void Load(FILE *f);

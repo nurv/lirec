@@ -14,32 +14,31 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-#include <vector>
-#include <map>
-#include <set>
-#include "Vector.h"
-#include "Matrix.h"
-#include "Classifier.h"
-#include "PCA.h"
+#include "App.h"
 
-#ifndef FOAM_PCA_CLASSIFIER
-#define FOAM_PCA_CLASSIFIER
+using namespace std;
 
-class PCAClassifier : public Classifier
-{
-public:
-	PCAClassifier(const PCA &pca);
-	~PCAClassifier();
-	
-	// take image vectors in internally uses pca space parameters
-	virtual void AddFeature(int group, const Vector<float> &f);
-	virtual int Classify(const Vector<float> &f, float &error);
-
-private:
-	void Refresh();
-
-	PCA m_PCA;
-	
-};
-
+#ifdef _EiC
+#define WIN32
 #endif
+
+#ifdef WIN32
+#include <string>
+#define snprintf _snprintf 
+#else
+#include <unistd.h>
+#endif
+
+
+//////////////////////////////////////////////////////////
+
+int main( int argc, char** argv )
+{
+	string fn;
+	if (argc>1) fn=argv[1];
+	App app(fn);
+	while (1) 
+	{
+		app.Update();
+	}
+}

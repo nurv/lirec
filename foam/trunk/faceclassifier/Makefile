@@ -1,18 +1,14 @@
-TARGET  := faceident
+TARGET  := faceclassifier
 
 SRCS    := src/main.cpp\
+	src/App.cpp\
 	src/FaceBank.cpp\
-	src/Face.cpp\
-	src/ImageUtils.cpp\
 	src/SceneState.cpp\
-	src/tinyxml.cpp\
-	src/tinyxmlerror.cpp\
-	src/tinyxmlparser.cpp
 
 # for the minute, go out and up to link to the vision lib
-CCFLAGS = `pkg-config --cflags opencv` -ggdb -Wall -O3 -ffast-math -Wno-unused -DTIXML_USE_STL 
-LDFLAGS = 
-LIBS    = `pkg-config --libs opencv` -lYARP_dev -lYARP_sig -lYARP_OS -lACE 
+CCFLAGS = -I../vision/src `pkg-config --cflags opencv` -ggdb -Wall -O3 -ffast-math -Wno-unused -DTIXML_USE_STL 
+LDFLAGS = -L../vision/
+LIBS    = `pkg-config --libs opencv` -lYARP_dev -lYARP_sig -lYARP_OS -lACE -lvision 
 
 CC = g++
 OBJS    := ${SRCS:.cpp=.o} 

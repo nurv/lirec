@@ -39,13 +39,13 @@ int h=80;
 
 PCA pca(w*h);
 Vector<float> params(100);
-Image src("data/dave.png");
+Image src("../data/images/faces/dave/dave.png");
 
 void Recalc()
 {
 	glob_t g;
 	
-	glob("data/spacek-large/*.png",GLOB_PERIOD,NULL,&g);
+	glob("../data/images/faces/spacek-large/*.png",GLOB_PERIOD,NULL,&g);
 	for (unsigned int n=0; n<g.gl_pathc; n++)
 	{
 		string path=g.gl_pathv[n];
@@ -67,7 +67,7 @@ void TestPCA()
 	//FILE *f=fopen("spacek-50x80.pca", "wb");
 	//pca.Save(f);
 	
-	FILE *f=fopen("spacek-50x80.pca", "rb");
+	FILE *f=fopen("../data/eigenspaces/spacek-50x80.pca", "rb");
 	pca.Load(f);
 	fclose(f);
 	
@@ -235,7 +235,7 @@ void detect_and_draw( IplImage* img )
 
 	//////////////////////////////////
 	// test the debayering
-	/*Image im("data/bayer.pgm");
+	/*Image im("../data/images/bayer.pgm");
 	im.Crop(300,300,320,240);
 	im.RGB2GRAY();
 	im.BayerGB2RGB();*/
@@ -244,12 +244,12 @@ void detect_and_draw( IplImage* img )
 	// image differencing
 	/*
 	vector<Image> imagevec;
- 	//imagevec.push_back(Image("data/audrey.png"));
- 	imagevec.push_back(Image("data/dave-1.png"));
- 	imagevec.push_back(Image("data/dave-2.png"));
- 	imagevec.push_back(Image("data/amber-1.png"));
- 	imagevec.push_back(Image("data/amber-2.png"));
- 	//imagevec.push_back(Image("data/false.png"));
+ 	//imagevec.push_back(Image("../data/audrey.png"));
+ 	imagevec.push_back(Image("../data/dave-1.png"));
+ 	imagevec.push_back(Image("../data/dave-2.png"));
+ 	imagevec.push_back(Image("../data/amber-1.png"));
+ 	imagevec.push_back(Image("../data/amber-2.png"));
+ 	//imagevec.push_back(Image("../data/false.png"));
 
 	for(unsigned int x=0; x<imagevec.size(); x++)
 	{

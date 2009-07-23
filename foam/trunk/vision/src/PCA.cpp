@@ -76,12 +76,12 @@ void PCA::Compress(unsigned int s, unsigned int e)
 	m_EigenTransform=m_EigenTransform.CropRows(s,e);
 }
 
-Vector<float> PCA::Project(Vector<float> v)
+Vector<float> PCA::Project(Vector<float> v) const
 {
 	return m_EigenTransform*v;
 }
 	
-Vector<float> PCA::Synth(Vector<float> v)
+Vector<float> PCA::Synth(Vector<float> v) const
 {
 	return m_Mean+m_EigenTransform.VecMulTransposed(v);
 }

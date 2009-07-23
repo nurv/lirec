@@ -14,42 +14,40 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-#include <vector>
-#include <map>
-#include <set>
-#include "Vector.h"
-#include "Matrix.h"
+#include "cv.h"
+#include "highgui.h"
+#include <yarp/os/all.h>
+#include <string>
 
-#ifndef FOAM_CLASSIFIER
-#define FOAM_CLASSIFIER
+#include "FaceBank.h"
+#include "SceneState.h"
 
-// A base class classifier
+using namespace yarp::os;
+using namespace std;
 
-class Classifier
+class App
 {
 public:
-	Classifier(unsigned int FeatureSize);
-	~Classifier();
+	App(const string &filename);
+	~App();
 	
-	virtual void AddFeature(int group, const Vector<float> &f) = 0;
-	virtual int Classify(const Vector<float> &f, float &error) = 0;
+	void Update();
 	
-protected:
+private:
 	
-	void CalcMean();
-	void CalcGroupMeans();
-	void AddFeatureToGroup(int group, const Vector<float> &f);
-
-	typedef std::vector<Vector<float> > FeatureVec;
-	typedef std::map<int,FeatureVec> FeatureMap;
-	typedef std::map<int,FeatureVec> GroupMap;
+	CvCapture* m_Capture;
+	CvHaarClassifierCascade* m_Cascade;
+	CvMemStorage* m_Storage;
 	
-	FeatureMap m_Features;
-	GroupMap m_Groups;
-	unsigned int m_FeatureSize;
-
-	Vector<float> m_Mean;
-	std::map<int,Vector<float> > m_GroupMeans;
+	Classifier *m_Classifier;
+	FaceBank *m_FaceBank;
+	SceneState m_SceneState;
+	BufferedPort<Bottle> m_CtrlPort; 
+	
+	int m_FaceNum;
+	bool m_Learn; 
+	CvFont m_Font; 
+	
+	IplImage *frame;
+	IplImage *frame_copy;
 };
-
-#endif
