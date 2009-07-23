@@ -65,11 +65,11 @@ double scale = 1;
 
 //////////////////////////////////////////////////////////
 // These are the tweakable bits - see comments in FaceBank.h
-FaceBank facebank(30, 40, 0.2, 0.1); //0.2
+FaceBank facebank(80, 120, 0.2, 0.1); //0.2
 SceneState scenestate;
 
 // show all faces currently detected 
-#define SHOW_FACES
+//#define SHOW_FACES
 //#define SAVE_FRAMES
 
 // globals
@@ -219,7 +219,7 @@ _cleanup_:
 			}
 		}
 	}
-
+	facebank.Save("faces");
 	cvDestroyWindow("result");
 	return 0;
 }

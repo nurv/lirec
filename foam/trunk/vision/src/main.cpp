@@ -32,13 +32,13 @@ void detect_and_draw( IplImage* image );
 
 double scale = 1;
 
-//int w=50;
-//int h=80;
-int w=20;
-int h=30;
+int w=50;
+int h=80;
+//int w=20;
+//int h=30;
 
 PCA pca(w*h);
-Vector<float> params(50);
+Vector<float> params(100);
 Image src("data/dave.png");
 
 void Recalc()
@@ -64,15 +64,14 @@ void Recalc()
 void TestPCA()
 {
 	//Recalc();
-	//FILE *f=fopen("spacek-20x30.pca", "wb");
+	//FILE *f=fopen("spacek-50x80.pca", "wb");
 	//pca.Save(f);
 	
-	FILE *f=fopen("spacek-20x30.pca", "rb");
+	FILE *f=fopen("spacek-50x80.pca", "rb");
 	pca.Load(f);
-	
 	fclose(f);
 	
-	pca.Compress(0,50);
+	pca.Compress(0,100);
 	src = src.Scale(w,h).RGB2GRAY();
 	Vector<float> d(src.ToFloatVector());	
 	params=pca.Project(d);	
@@ -297,13 +296,19 @@ void detect_and_draw( IplImage* img )
 	//	camera.Blit(Image(30,40,1,pca.GetFeatures()[i]),(i%20)*32,(i/20)*42);
 	//}
 	
-	for (unsigned int i=0; i<pca.GetEigenTransform().GetRows(); i++)
+	static float t=0;
+	
+	for (unsigned int i=0; i<30; i++)
 	{
-		camera.Blit(Image(w,h,1,pca.GetEigenTransform().GetRowVector(i)*2+pca.GetMean()),(i%20)*(w+2),0+(i/20)*(h+2));
+		camera.Blit(Image(w,h,1,(pca.GetEigenTransform().GetRowVector(i)*50)/((i+1) * 1)+pca.GetMean()
+			),(i%10)*(w+2),0+(i/10)*(h+2));
 	}
 	
-	camera.Blit(Image(w,h,1,pca.Synth(params)),200,200);
-	camera.Blit(src,100,200);
+	t+=0.1;
+	
+	camera.Blit(Image(w,h,1,pca.GetMean()),0,300);
+	camera.Blit(src,60,300);
+	camera.Blit(Image(w,h,1,pca.Synth(params)),120,300);
 
     cvShowImage("result", camera.m_Image);
  

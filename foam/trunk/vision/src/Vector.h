@@ -57,6 +57,8 @@ public:
 	void Zero() { SetAll(0); }
 	bool IsInf();
 	T Mean();
+	T DistanceFrom(const Vector &other) const;
+	T Magnitude() const;
 
 	Vector &operator=(const Vector &other);
 	Vector operator+(const Vector &other) const;
@@ -154,6 +156,32 @@ bool Vector<T>::IsInf()
 		if (isnan((*this)[i])) return true;
 	}
 	return false;
+}
+
+template<class T>
+T Vector<T>::DistanceFrom(const Vector &other) const
+{
+	assert(m_Size==other.m_Size);
+	
+	float acc=0;
+	for (unsigned int i=0; i<m_Size; i++)
+	{
+		acc+=(other[i]-(*this)[i]) * (other[i]-(*this)[i]);
+	}
+	
+	return sqrt(acc);
+}
+
+template<class T>
+T Vector<T>::Magnitude() const
+{
+	float acc=0;
+	for (unsigned int i=0; i<m_Size; i++)
+	{
+		acc+=(*this)[i] * (*this)[i];
+	}
+	
+	return sqrt(acc);
 }
 
 template<class T>
@@ -328,6 +356,12 @@ void Vector<T>::RunTests()
 	assert(m[5]==0.5);
 	Vector<T> om(m);
 	assert(om[5]==0.5);
+	
+	assert(feq(m.Magnitude(),0.5f));
+	Vector<T> a(10);
+	a.Zero();
+	a[5]=-10;
+	assert(feq(a.DistanceFrom(m),10.5f));
 }
 
 #endif

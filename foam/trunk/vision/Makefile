@@ -1,7 +1,6 @@
-TARGET  := test
+TARGET  := libvision.a
 
-SRCS    := src/main.cpp\
-	src/Image.cpp\
+SRCS    := src/Image.cpp\
 	src/Rendering.cpp\
 	src/Classifier.cpp\
 	src/PCAClassifier.cpp\
@@ -13,8 +12,6 @@ SRCS    := src/main.cpp\
 	src/tinyxmlparser.cpp
 
 CCFLAGS = `pkg-config --cflags opencv` -ggdb -Wall -O3 -ffast-math -Wno-unused -DTIXML_USE_STL 
-LDFLAGS = 
-LIBS    = `pkg-config --libs opencv` -lYARP_dev -lYARP_sig -lYARP_OS -lACE
 
 CC = g++
 OBJS    := ${SRCS:.cpp=.o} 
@@ -29,7 +26,7 @@ include ${XDEPS}
 endif 
 
 ${TARGET}: ${OBJS} 
-	${CC} ${LDFLAGS} -o $@ $^ ${LIBS}
+	ar rc ${TARGET} ${OBJS}
 
 ${OBJS}: %.o: %.cpp %.dep 
 	${CC} ${CCFLAGS} -o $@ -c $< 
