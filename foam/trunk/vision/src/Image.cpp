@@ -29,6 +29,7 @@ Image::Image(int w, int h, int d, int c)
 Image::Image(const string &filename)
 {
 	m_Image=cvLoadImage(filename.c_str());
+	if (m_Image==NULL) cerr<<"Could not open image: "<<filename<<endl;
 	assert(m_Image);
 }
 
