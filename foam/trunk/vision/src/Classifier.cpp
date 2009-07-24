@@ -34,6 +34,7 @@ void Classifier::AddFeatureToGroup(int group, const Vector<float> &v)
 	m_Features[group].push_back(v); 
 	// possibly overkill to do this each time we add a new feature...
 	CalcGroupMeans();
+	//m_GroupMeans[group]=v;
 }
 
 void Classifier::CalcMean()
@@ -57,12 +58,13 @@ void Classifier::CalcGroupMeans()
 	for (FeatureMap::iterator i=m_Features.begin();
 		i!=m_Features.end(); ++i)
 	{
-		Vector<float> mean;
+		Vector<float> mean(m_FeatureSize);
+		mean.Zero();
 		for (FeatureVec::iterator vi = i->second.begin(); vi!=i->second.end(); ++vi)
 		{
 			mean+=*vi;
 		}
-		mean/=i->second.size();
+		mean/=i->second.size();		
 		m_GroupMeans[i->first]=mean;
 	}
 }

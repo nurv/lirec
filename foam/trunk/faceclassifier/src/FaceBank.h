@@ -54,6 +54,8 @@ public:
 
 	void Save(const std::string &filename) const;
 	void Load(const std::string &filename);
+	
+	Classifier *GetClassifier() { return m_Classifier; }
 
 private:	
 

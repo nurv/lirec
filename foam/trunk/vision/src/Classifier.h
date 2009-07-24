@@ -34,6 +34,9 @@ public:
 	virtual void AddFeature(int group, const Vector<float> &f) = 0;
 	virtual int Classify(const Vector<float> &f, float &error) = 0;
 	
+	bool GroupExists(int g) { return m_GroupMeans.find(g)!=m_GroupMeans.end(); }
+	Vector<float> GetGroupMean(int g) { return m_GroupMeans[g]; }
+	
 protected:
 	
 	void CalcMean();

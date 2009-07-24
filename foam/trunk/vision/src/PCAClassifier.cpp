@@ -20,7 +20,7 @@
 using namespace std;
 
 PCAClassifier::PCAClassifier(const PCA &pca) :
-Classifier(pca.GetFeatureSize()),
+Classifier(pca.GetParamsSize()),
 m_PCA(pca)
 {
 }
@@ -31,7 +31,8 @@ PCAClassifier::~PCAClassifier()
 
 void PCAClassifier::AddFeature(int group, const Vector<float> &f)
 {
-	AddFeatureToGroup(group, m_PCA.Project(f));
+	Vector<float> p=m_PCA.Project(f);
+	AddFeatureToGroup(group, p);
 }
 
 int PCAClassifier::Classify(const Vector<float> &f, float &error)

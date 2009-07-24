@@ -18,11 +18,24 @@
 #include "App.h"
 #include "PCAClassifier.h"
 
+//#define SAVE_FRAMES
+
 using namespace std;
 
+int w=20;
+int h=30;
+
 App::App(const string &filename) :
+m_Capture(NULL),
+m_Cascade(NULL),
+m_Storage(NULL),
+m_Classifier(NULL),
+m_FaceBank(NULL),
+m_FaceNum(1),
+m_Learn(true),
 frame(NULL),
-frame_copy(NULL)
+frame_copy(NULL),
+m_FrameNum(0)
 {
 	m_CtrlPort.open("/faceident-ctrl"); 
 	m_Cascade = (CvHaarClassifierCascade*)cvLoad("haarcascade_frontalface_alt.xml", 0, 0, 0);
@@ -40,14 +53,12 @@ frame_copy(NULL)
 	
 	assert(m_Capture);
 	
-	int w=50;
-	int h=80;
-	
 	PCA pca(w*h);
-	FILE *f=fopen("../data/eigenspaces/spacek-50x80.pca", "rb");
+	//FILE *f=fopen("../data/eigenspaces/spacek-50x80.pca", "rb");
+	FILE *f=fopen("../data/eigenspaces/spacek-20x30.pca", "rb");
 	pca.Load(f);
 	fclose(f);
-	pca.Compress(0,100);
+	pca.Compress(3,30);
 	
 	m_Classifier = new PCAClassifier(pca);
 	m_FaceBank = new FaceBank(w,h,0.2,0.1,m_Classifier);
@@ -135,6 +146,10 @@ void App::Update()
 		float confidence=0;
 		// get the face area as a sub image
 		Image face = camera.SubImage(r->x, r->y, r->width, r->height);
+		
+		//face.SubMean();
+		//camera.Blit(face.Scale(w,h).RGB2GRAY(),100,100);
+		
 		// pass it into the face bank 
 		if (m_Learn)
 		{
@@ -162,8 +177,37 @@ void App::Update()
 		cvRectangle(camera.m_Image, cvPoint(r->x,r->y), cvPoint(r->x+r->width,r->y+r->height), colors[0]);
 	}
 
+	char info[256];
+	if (m_Learn)
+	{
+		snprintf(info,256,"Learning user :%d",m_FaceNum);
+		
+		PCAClassifier *c = static_cast<PCAClassifier*>(m_FaceBank->GetClassifier());
+		if (c->GroupExists(m_FaceNum))
+		{
+			Vector<float> p = c->GetGroupMean(m_FaceNum);
+			cerr<<p.Magnitude()<<endl;
+			Vector<float> r = c->GetPCA().Synth(p);
+			camera.Blit(Image(w,h,1,r),0,100);
+		}
+	}
+	else
+	{
+		snprintf(info,256,"Detecting users");
+	}
+	
+	cvPutText(camera.m_Image, info, cvPoint(10,10), &m_Font, colors[0]);
+
 	m_SceneState.Update();
-    
+	
+    m_FrameNum++;
+#ifdef SAVE_FRAMES
+	char name[256];
+	sprintf(name,"out-%0.4d.jpg",m_FrameNum);
+	cerr<<"saving "<<name<<endl;
+	cvSaveImage(name,camera.m_Image);
+#endif
+
 	cvShowImage("face classifier", camera.m_Image);
 
 }

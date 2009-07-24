@@ -50,6 +50,7 @@ public:
 	const FeatureVec &GetFeatures() const { return m_Features; }
 	const Vector<float> &GetMean() const { return m_Mean; }
 	unsigned int GetFeatureSize() const { return m_FeatureSize; }
+	unsigned int GetParamsSize() const { return m_EigenTransform.GetRows(); }
 	
 	
 	void Load(FILE *f);

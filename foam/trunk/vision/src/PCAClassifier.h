@@ -35,6 +35,8 @@ public:
 	virtual void AddFeature(int group, const Vector<float> &f);
 	virtual int Classify(const Vector<float> &f, float &error);
 
+	PCA &GetPCA() { return m_PCA; }
+
 private:
 	void Refresh();
 

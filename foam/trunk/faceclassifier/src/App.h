@@ -50,4 +50,6 @@ private:
 	
 	IplImage *frame;
 	IplImage *frame_copy;
+	
+	int m_FrameNum;
 };
