@@ -85,6 +85,11 @@ Vector<float> PCA::Synth(Vector<float> v) const
 {
 	return m_Mean+m_EigenTransform.VecMulTransposed(v);
 }
+	
+void PCA::Mult(const PCA &other)
+{
+	m_EigenTransform *= other.GetEigenTransform().Inverted();
+}
 
 void PCA::Save(FILE *f)
 {

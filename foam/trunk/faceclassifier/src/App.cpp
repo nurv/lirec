@@ -17,10 +17,14 @@
 #include <assert.h>
 #include "App.h"
 #include "PCAClassifier.h"
+#include "FileTools.h"
 
 //#define SAVE_FRAMES
 
 using namespace std;
+
+//int w=50;
+//int h=80;
 
 int w=20;
 int h=30;
@@ -58,13 +62,15 @@ m_FrameNum(0)
 	FILE *f=fopen("../data/eigenspaces/spacek-20x30.pca", "rb");
 	pca.Load(f);
 	fclose(f);
-	pca.Compress(3,30);
+	pca.Compress(20,300);
 	
 	m_Classifier = new PCAClassifier(pca);
-	m_FaceBank = new FaceBank(w,h,0.2,0.1,m_Classifier);
+	m_FaceBank = new FaceBank(w,h,0.4,0.1,m_Classifier);
 	cvInitFont( &m_Font, CV_FONT_HERSHEY_PLAIN, 0.5, 0.5, 0, 1, CV_AA );
     
 	cvNamedWindow( "face classifier", 1 );
+	
+	Benchmark();
 }
 
 App::~App()
@@ -74,6 +80,7 @@ App::~App()
 static CvScalar colors[] =
     {
         {{255,255,255}},
+        {{0,0,0}},
         {{0,128,255}},
         {{0,255,255}},
         {{0,255,0}},
@@ -83,8 +90,8 @@ static CvScalar colors[] =
         {{255,0,255}}
     };
 
-void App::Update()
-{	
+void App::Run()
+{
 	frame = cvQueryFrame( m_Capture );
     if( !frame ) 
 	{
@@ -92,7 +99,7 @@ void App::Update()
 		return;
 	}
 	
-    if( !frame_copy )
+	if( !frame_copy )
         frame_copy = cvCreateImage( cvSize(frame->width,frame->height),
                                     IPL_DEPTH_8U, frame->nChannels );
     if( frame->origin == IPL_ORIGIN_TL )
@@ -100,14 +107,29 @@ void App::Update()
     else
         cvFlip( frame, frame_copy, 0 );
 	
-	/////////////////////////
-	
 	Image camera(frame_copy);
+	Update(camera);
 	
+	m_FrameNum++;
+#ifdef SAVE_FRAMES
+	char name[256];
+	sprintf(name,"out-%0.4d.jpg",m_FrameNum);
+	cerr<<"saving "<<name<<endl;
+	cvSaveImage(name,camera.m_Image);
+#endif
+
+	cvShowImage("face classifier", camera.m_Image);
+}
+
+void App::Update(Image &camera)
+{	
 	cvClearMemStorage(m_Storage);
 
+	int flags=0;
+	if (m_Learn) flags|=CV_HAAR_FIND_BIGGEST_OBJECT;
+
 	CvSeq* faces = cvHaarDetectObjects( camera.m_Image, m_Cascade, m_Storage,
-			1.1, 2, 0
+			1.1, 2, flags
 			//|CV_HAAR_FIND_BIGGEST_OBJECT
 			//|CV_HAAR_DO_ROUGH_SEARCH
 			//|CV_HAAR_DO_CANNY_PRUNING
@@ -165,7 +187,16 @@ void App::Update()
 		if (ID!=999)
 		{
 			char s[32];
-			sprintf(s,"%d %0.2f",ID,confidence);
+			map<int,string>::iterator d = m_DebugNames.find(ID);
+			if (d!=m_DebugNames.end())
+			{
+				sprintf(s,"%s %0.2f",d->second.c_str(),confidence);
+			}
+			else
+			{
+				sprintf(s,"%d %0.2f",ID,confidence);
+			}
+			
 			cvPutText(camera.m_Image, s, cvPoint(r->x,r->y+r->height-5), &m_Font, colors[0]);
 
 			if (!m_Learn)
@@ -199,16 +230,51 @@ void App::Update()
 	cvPutText(camera.m_Image, info, cvPoint(10,10), &m_Font, colors[0]);
 
 	m_SceneState.Update();
-	
-    m_FrameNum++;
-#ifdef SAVE_FRAMES
-	char name[256];
-	sprintf(name,"out-%0.4d.jpg",m_FrameNum);
-	cerr<<"saving "<<name<<endl;
-	cvSaveImage(name,camera.m_Image);
-#endif
-
-	cvShowImage("face classifier", camera.m_Image);
 
 }
 
+void App::Benchmark()
+{
+	cerr<<"Running benchmark test"<<endl;
+	vector<string> people=Glob("../data/benchmark/trek/training/*");
+	int ID=0;
+	m_Learn=true;
+	
+	for(vector<string>::iterator pi=people.begin(); pi!=people.end(); ++pi)
+	{
+		m_DebugNames[ID]=pi->substr(pi->find_last_of("/")+1,pi->length());
+		vector<string> images=Glob(*pi+"/*.jpg");
+		for(vector<string>::iterator ii=images.begin(); ii!=images.end(); ++ii)
+		{
+			cerr<<ID<<" "<<*ii<<endl;
+			m_FaceNum=ID;
+			Image image(*ii);
+			Update(image);
+			string fn=*ii+"-out.png";
+			cvSaveImage(fn.c_str(),image.m_Image);
+		}
+		ID++;
+	}
+	
+	m_Learn=false;
+	
+	vector<string> images=Glob("../data/benchmark/trek/control/*.jpg");
+	for(vector<string>::iterator ti=images.begin(); ti!=images.end(); ++ti)
+	{	
+		cerr<<*ti<<endl;
+		Image test(*ti);	
+		Update(test);
+		string fn=*ti+"-out.png";
+		cvSaveImage(fn.c_str(),test.m_Image);
+	}
+
+	images=Glob("../data/benchmark/trek/test/*.jpg");
+	for(vector<string>::iterator ti=images.begin(); ti!=images.end(); ++ti)
+	{	
+		cerr<<*ti<<endl;
+		Image test(*ti);	
+		Update(test);
+		string fn=*ti+"-out.png";
+		cvSaveImage(fn.c_str(),test.m_Image);
+	}
+}

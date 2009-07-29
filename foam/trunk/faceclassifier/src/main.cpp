@@ -39,6 +39,6 @@ int main( int argc, char** argv )
 	App app(fn);
 	while (1) 
 	{
-		app.Update();
+		app.Run();
 	}
 }

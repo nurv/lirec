@@ -267,19 +267,21 @@ void Image::SubMean()
 	{
 		v.val[c]/=s;
 	}
+		
+	CvScalar o;
 	
 	// now subtract it from each pixel
 	for(int y=0; y<m_Image->height; y++)
 	{
         for(int x=0; x<m_Image->width; x++)
-		{
+		{			
 			for (int c=0; c<m_Image->nChannels; c++)
 			{
 				// force the average to be 127
-				v.val[c]=127+(cvGet2D(m_Image,y,x).val[c] - v.val[c]*256.0f);
+				o.val[c]=127+(cvGet2D(m_Image,y,x).val[c] - v.val[c]*256.0f);
 			}
-		
-            cvSet2D(m_Image,y,x,v);
+				
+            cvSet2D(m_Image,y,x,o);
 		}
 	}
 }

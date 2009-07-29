@@ -31,9 +31,11 @@ public:
 	App(const string &filename);
 	~App();
 	
-	void Update();
+	void Run();
+	void Update(Image &camera);
 	
 private:
+	void Benchmark();
 	
 	CvCapture* m_Capture;
 	CvHaarClassifierCascade* m_Cascade;
@@ -50,6 +52,8 @@ private:
 	
 	IplImage *frame;
 	IplImage *frame_copy;
+	
+	map<int,string> m_DebugNames;
 	
 	int m_FrameNum;
 };

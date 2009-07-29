@@ -1,3 +1,19 @@
+// Copyright (C) 2009 foam
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+
 #define CV_NO_BACKWARD_COMPATIBILITY
 
 #include "cv.h"
@@ -32,10 +48,10 @@ void detect_and_draw( IplImage* image );
 
 double scale = 1;
 
-int w=50;
-int h=80;
-//int w=20;
-//int h=30;
+//int w=50;
+//int h=80;
+int w=20;
+int h=30;
 
 PCA pca(w*h);
 Vector<float> params(100);
@@ -45,7 +61,7 @@ void Recalc()
 {
 	glob_t g;
 	
-	glob("../data/images/faces/spacek-large/*.png",GLOB_PERIOD,NULL,&g);
+	glob("../data/images/faces/dave/*.png",GLOB_PERIOD,NULL,&g);
 	for (unsigned int n=0; n<g.gl_pathc; n++)
 	{
 		string path=g.gl_pathv[n];
@@ -61,15 +77,25 @@ void Recalc()
 	pca.Calculate(); 
 }
 
+PCA LoadPCA(string filename)
+{
+	PCA pca(1);
+	FILE *f=fopen(filename.c_str(), "rb");
+	pca.Load(f);
+	fclose(f);
+	return pca;
+}
+
 void TestPCA()
 {
 	//Recalc();
-	//FILE *f=fopen("spacek-50x80.pca", "wb");
+	//FILE *f=fopen("davelight-20x30.pca", "wb");
 	//pca.Save(f);
+	pca = LoadPCA("../data/eigenspaces/spacek-20x30.pca");
 	
-	FILE *f=fopen("../data/eigenspaces/spacek-50x80.pca", "rb");
-	pca.Load(f);
-	fclose(f);
+	PCA davelight = LoadPCA("davelight-20x30.pca");
+	//pca.Mult(davelight);
+	pca = davelight;
 	
 	pca.Compress(0,100);
 	src = src.Scale(w,h).RGB2GRAY();
@@ -78,6 +104,7 @@ void TestPCA()
 	params[0]=1;
 
 }
+
 
 
 int main( int argc, char** argv )
@@ -297,11 +324,11 @@ void detect_and_draw( IplImage* img )
 	//}
 	
 	static float t=0;
-	
-	for (unsigned int i=0; i<30; i++)
+	cerr<<sin(t)<<endl;
+	for (unsigned int i=0; i<100; i++)
 	{
-		camera.Blit(Image(w,h,1,(pca.GetEigenTransform().GetRowVector(i)*50)/((i+1) * 1)+pca.GetMean()
-			),(i%10)*(w+2),0+(i/10)*(h+2));
+		camera.Blit(Image(w,h,1,(pca.GetEigenTransform().GetRowVector(i)*50*sin(t))/((i+1) * 1)+pca.GetMean()
+			),(i%30)*(w+2),0+(i/30)*(h+2));
 	}
 	
 	t+=0.1;

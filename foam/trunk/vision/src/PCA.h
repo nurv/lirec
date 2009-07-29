@@ -39,6 +39,8 @@ public:
 	
 	// remove eigenvectors from the transform
 	void Compress(unsigned int s, unsigned int e);
+
+	void Mult(const PCA &other);
 	
 	Vector<float> Project(Vector<float> v) const;
 	Vector<float> Synth(Vector<float> v) const;

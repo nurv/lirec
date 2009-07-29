@@ -50,7 +50,7 @@ void FaceBank::Clear()
 float FaceBank::Suggest(Image face, unsigned int ID)
 {
 	// Subtract the mean as an attempt to deal with global lighting changes
-	//face.SubMean();
+	face.SubMean();
 	
 	m_Classifier->AddFeature(ID,face.Scale(m_FaceWidth,m_FaceHeight).RGB2GRAY().ToFloatVector());
 	//m_FaceMap[ID]=face;
@@ -61,15 +61,18 @@ float FaceBank::Suggest(Image face, unsigned int ID)
 float FaceBank::Identify(Image face, unsigned int &ID, int &imagenum)
 {
 	// Subtract the mean as an attempt to deal with global lighting changes
-	//face.SubMean();
+	face.SubMean();
 	
 	float error;
 	ID = m_Classifier->Classify(face.Scale(m_FaceWidth,m_FaceHeight).RGB2GRAY().ToFloatVector(),error);
-
+	
+	if (error!=0) error=1/error;
+	else return 1;
+	
 	// if the error is less than the threshold, return the id
-	//if (error<m_ErrorThresh)
+	//if (error>m_ErrorThresh)
 	{
-		return 1-error;
+		return error;
 	}
 	
 	cerr<<"unrecognised face"<<endl;

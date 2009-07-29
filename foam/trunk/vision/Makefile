@@ -5,8 +5,10 @@ SRCS    := src/Image.cpp\
 	src/Classifier.cpp\
 	src/PCAClassifier.cpp\
 	src/LDAClassifier.cpp\
+	src/Matrix.cpp\
 	src/PCA.cpp\
 	src/SVD.cpp\
+	src/FileTools.cpp\
 	src/tinyxml.cpp\
 	src/tinyxmlerror.cpp\
 	src/tinyxmlparser.cpp

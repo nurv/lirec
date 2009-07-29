@@ -99,6 +99,7 @@ public:
 	void Zero() { SetAll(0); }
 	bool IsInf();
 	Matrix Transposed() const;
+	Matrix Inverted() const;
 
 	Matrix &operator=(const Matrix &other);
 	Matrix operator+(const Matrix &other) const;
@@ -109,6 +110,7 @@ public:
 	Matrix &operator+=(const Matrix &other);
 	Matrix &operator-=(const Matrix &other);
 	Matrix &operator*=(const Matrix &other);
+	bool operator==(const Matrix &other) const;
 
 	void SortRows(Vector<T> &v);
 	void SortCols(Vector<T> &v);
@@ -238,6 +240,16 @@ Matrix<T> Matrix<T>::Transposed() const
 	return copy;
 }
 
+void matrix_inverse(const float *Min, float *Mout, int actualsize);
+
+template<class T>
+Matrix<T> Matrix<T>::Inverted() const
+{
+	assert(m_Rows==m_Cols); // only works for square matrices
+	Matrix<T> ret(m_Rows,m_Cols);
+	matrix_inverse(GetRawDataConst(),ret.GetRawData(),m_Rows);
+	return ret;
+}
 
 template<class T>
 Matrix<T> Matrix<T>::operator+(const Matrix &other) const
@@ -357,6 +369,25 @@ Matrix<T> &Matrix<T>::operator*=(const Matrix &other)
 	return *this;
 }
 
+template<class T>
+bool Matrix<T>::operator==(const Matrix &other) const
+{
+	if (m_Rows != other.m_Rows || 
+		m_Cols != other.m_Cols)
+	{
+		return false;
+	}
+	
+	for (unsigned int i=0; i<m_Cols; i++)
+	{
+		for (unsigned int j=0; j<m_Rows; j++)
+		{
+			if (!feq((*this)[i][j],other[i][j])) return false;
+		}
+	}
+
+	return true;
+}
 
 //todo: use memcpy for these 4 functions
 template<class T>
@@ -552,7 +583,60 @@ void Matrix<T>::RunTests()
 	assert(f.GetRows()==2 && f.GetCols()==2 && f[0][0]==2);
 	Matrix<T> g=a.CropRows(0,1);
 	assert(g.GetRows()==1 && g.GetCols()==3 && g[0][0]==1);
+	
+	// test matrix invert
+	Matrix<T> h(3,3);
+	h.Zero();
+	h[0][0]=1;
+	h[1][1]=1;
+	h[2][2]=1;
+	Matrix<T> i=h.Inverted();
+	i==h;
+	
+	// some transforms from fluxus
+	Matrix<T> j(4,4);	
+	j[0][0]=1.0;			
+	j[0][1]=0.0 ;				
+	j[0][2]=0.0; 				
+	j[0][3]=0.0; 				
+	
+	j[1][0]=0.0 			;	
+	j[1][1]=0.7071067690849304 ; 
+	j[1][2]=0.7071067690849304 ; 
+	j[1][3]=0.0 				;
+	
+	j[2][0]=0.0 				;
+	j[2][1]=-0.7071067690849304 ;
+	j[2][2]=0.7071067690849304  ;
+	j[2][3]=0.0 				;
+	
+	j[3][0]=1.0 				;
+	j[3][1]=2.0 				;
+	j[3][2]=3.0 				;
+	j[3][3]=1.0 				;
 
+	Matrix<T> k(4,4);
+	k[0][0]=1.0 				 ;
+	k[0][1]=0.0 				 ;
+	k[0][2]=0.0 				 ;
+	k[0][3]=0.0 				 ;
+
+	k[1][0]=0.0 				 ;
+	k[1][1]=0.7071068286895752   ;
+	k[1][2]=-0.7071068286895752  ;
+	k[1][3]=0.0 				 ;
+
+	k[2][0]=0.0 				 ;
+	k[2][1]=0.7071068286895752   ;
+	k[2][2]=0.7071068286895752   ;
+	k[2][3]=0.0 				 ;
+
+	k[3][0]=-0.9999999403953552  ;
+	k[3][1]=-3.535533905029297   ;
+	k[3][2]=-0.7071067690849304  ;
+	k[3][3]=0.9999999403953552	 ;
+	
+	assert(j.Inverted()==k);
 }
 
 #endif
