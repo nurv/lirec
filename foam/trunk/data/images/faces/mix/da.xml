@@ -1,0 +1,21 @@
+<facebank version="1">
+    <face id="2">
+        <image filename="da-id0002-image0000.png" />
+        <image filename="da-id0002-image0001.png" />
+        <image filename="da-id0002-image0002.png" />
+        <image filename="da-id0002-image0003.png" />
+        <image filename="da-id0002-image0004.png" />
+        <image filename="da-id0002-image0005.png" />
+        <image filename="da-id0002-image0006.png" />
+        <image filename="da-id0002-image0007.png" />
+        <image filename="da-id0002-image0008.png" />
+        <image filename="da-id0002-image0009.png" />
+    </face>
+    <face id="6">
+        <image filename="da-id0006-image0000.png" />
+        <image filename="da-id0006-image0001.png" />
+        <image filename="da-id0006-image0002.png" />
+        <image filename="da-id0006-image0003.png" />
+        <image filename="da-id0006-image0004.png" />
+    </face>
+</facebank>

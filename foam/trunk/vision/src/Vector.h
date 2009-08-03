@@ -59,6 +59,7 @@ public:
 	T Mean();
 	T DistanceFrom(const Vector &other) const;
 	T Magnitude() const;
+	Vector Normalised() const;
 
 	Vector &operator=(const Vector &other);
 	Vector operator+(const Vector &other) const;
@@ -74,7 +75,7 @@ public:
 	Vector &operator*=(T v);
 	Vector &operator/=(T v);
 	
-	void Save(FILE *f);
+	void Save(FILE *f) const;
 	void Load(FILE *f);
 	
 	static void RunTests();
@@ -182,6 +183,14 @@ T Vector<T>::Magnitude() const
 	}
 	
 	return sqrt(acc);
+}
+
+template<class T>
+Vector<T> Vector<T>::Normalised() const
+{
+	Vector<T> ret(*this);
+	ret/=ret.Magnitude();
+	return ret;
 }
 
 template<class T>
@@ -328,7 +337,7 @@ T Vector<T>::Mean()
 }
 
 template<class T>
-void Vector<T>::Save(FILE* f)
+void Vector<T>::Save(FILE* f) const
 {
 	int version = 1;	
 	fwrite(&version,sizeof(version),1,f);

@@ -38,7 +38,7 @@
 #include "Matrix.h"
 #include "Vector.h"
 #include "PCA.h"
-#include <glob.h>
+#include "FileTools.h"
 
 using namespace std;
 
@@ -57,24 +57,48 @@ PCA pca(w*h);
 Vector<float> params(100);
 Image src("../data/images/faces/dave/dave.png");
 
-void Recalc()
+void Generate(PCA &pca, const string &imagepath)
 {
-	glob_t g;
-	
-	glob("../data/images/faces/dave/*.png",GLOB_PERIOD,NULL,&g);
-	for (unsigned int n=0; n<g.gl_pathc; n++)
+	vector<string> images=Glob(imagepath);
+	for (vector<string>::iterator i=images.begin(); i!=images.end(); i++)
 	{
-		string path=g.gl_pathv[n];
-		cerr<<path<<endl;
-		Image im(path);
-		//im.SubMean();
+		cerr<<*i<<endl;
+		Image im(*i);
 		Vector<float> v(im.Scale(w,h).RGB2GRAY().ToFloatVector());
 		v-=v.Mean();
 		pca.AddFeature(v);
-	}
-	globfree (&g);
-	
+	}	
 	pca.Calculate(); 
+}
+
+PCA MakeSubspace(const PCA &space, const string &imagepath)
+{
+	PCA subspace(space.GetFeatureSize());
+	
+	// find the transform based on the parameters
+	vector<string> images=Glob(imagepath);
+	for (vector<string>::iterator i=images.begin(); i!=images.end(); i++)
+	{
+		cerr<<*i<<endl;
+		Image im(*i);
+		Vector<float> v(im.Scale(w,h).RGB2GRAY().ToFloatVector());
+		v-=v.Mean();
+		subspace.AddFeature(space.Project(v));
+	}
+	
+	subspace.Calculate();
+
+	// project back each row
+	// think there must be a much much better way to do this...
+	for (int i=0; i<subspace.EigenTransform().GetRows(); i++)
+	{
+		cerr<<"row: "<<i<<endl;
+		Vector<float> row = subspace.EigenTransform().GetRowVector(i);
+		subspace.EigenTransform().SetRowVector(i,
+			pca.Synth(row));
+	}
+
+	return subspace; 
 }
 
 PCA LoadPCA(string filename)
@@ -86,18 +110,29 @@ PCA LoadPCA(string filename)
 	return pca;
 }
 
+void SavePCA(const PCA &pca, string filename)
+{
+	FILE *f=fopen(filename.c_str(), "wb");
+	pca.Save(f);
+	fclose(f);
+}
+
 void TestPCA()
 {
 	//Recalc();
 	//FILE *f=fopen("davelight-20x30.pca", "wb");
 	//pca.Save(f);
 	pca = LoadPCA("../data/eigenspaces/spacek-20x30.pca");
+	PCA subspace = LoadPCA("dave-resynthed-sub.pca");
+
+	//pca.Compress(0,10);
+	//pca.Compress(0,30);
+		
+	//pca.EigenTransform() *= subspace.EigenTransform().Transposed();
 	
-	PCA davelight = LoadPCA("davelight-20x30.pca");
-	//pca.Mult(davelight);
-	pca = davelight;
-	
-	pca.Compress(0,100);
+	PCA davesubspace = MakeSubspace(pca,"../data/images/faces/dave/*.png");
+	SavePCA(davesubspace,"davelight-spacek-20x30.pca");
+		
 	src = src.Scale(w,h).RGB2GRAY();
 	Vector<float> d(src.ToFloatVector());	
 	params=pca.Project(d);	
@@ -324,10 +359,12 @@ void detect_and_draw( IplImage* img )
 	//}
 	
 	static float t=0;
-	cerr<<sin(t)<<endl;
-	for (unsigned int i=0; i<100; i++)
+
+	for (unsigned int i=0; i<10; i++)
 	{
-		camera.Blit(Image(w,h,1,(pca.GetEigenTransform().GetRowVector(i)*50*sin(t))/((i+1) * 1)+pca.GetMean()
+		//camera.Blit(Image(w,h,1,(pca.GetEigenTransform().GetRowVector(i)*50*sin(t))/((i+1) * 1) //+pca.GetMean()
+		//	),(i%30)*(w+2),0+(i/30)*(h+2));
+		camera.Blit(Image(w,h,1,pca.GetEigenTransform().GetRowVector(i)*3 //+pca.GetMean()
 			),(i%30)*(w+2),0+(i/30)*(h+2));
 	}
 	

@@ -93,7 +93,9 @@ public:
 	Vector<T> GetColVector(unsigned int c) const; 
 	void SetRowVector(unsigned int r, const Vector<T> &row);
 	void SetColVector(unsigned int c, const Vector<T> &col);
-	 
+	void NormaliseRows();
+	void NormaliseCols();
+
 	void Print() const;
 	void SetAll(T s);
 	void Zero() { SetAll(0); }
@@ -118,7 +120,7 @@ public:
 	Matrix CropRows(unsigned int s, unsigned int e);
 	Matrix CropCols(unsigned int s, unsigned int e);
 
-	void Save(FILE *f);
+	void Save(FILE *f) const;
 	void Load(FILE *f);
 
 	static void RunTests();
@@ -229,12 +231,12 @@ bool Matrix<T>::IsInf()
 template<class T>
 Matrix<T> Matrix<T>::Transposed() const
 {
-	Matrix<T> copy(*this);
+	Matrix<T> copy(m_Cols,m_Rows);
 	for (unsigned int i=0; i<m_Rows; i++)
 	{
 		for (unsigned int j=0; j<m_Cols; j++)
 		{
-			copy[i][j]=(*this)[j][i];
+			copy[j][i]=(*this)[i][j];
 		}
 	}
 	return copy;
@@ -254,8 +256,8 @@ Matrix<T> Matrix<T>::Inverted() const
 template<class T>
 Matrix<T> Matrix<T>::operator+(const Matrix &other) const
 {
-	assert(m_Rows=other.m_Rows);
-	assert(m_Cols=other.m_Cols);
+	assert(m_Rows==other.m_Rows);
+	assert(m_Cols==other.m_Cols);
 	
 	Matrix<T> ret(m_Rows,m_Cols);
 	for (unsigned int i=0; i<m_Rows; i++)
@@ -271,8 +273,8 @@ Matrix<T> Matrix<T>::operator+(const Matrix &other) const
 template<class T>
 Matrix<T> Matrix<T>::operator-(const Matrix &other) const
 {
-	assert(m_Rows=other.m_Rows);
-	assert(m_Cols=other.m_Cols);
+	assert(m_Rows==other.m_Rows);
+	assert(m_Cols==other.m_Cols);
 	
 	Matrix<T> ret(m_Rows,m_Cols);
 	for (unsigned int i=0; i<m_Rows; i++)
@@ -529,7 +531,25 @@ Matrix<T> Matrix<T>::CropCols(unsigned int s, unsigned int e)
 }
 
 template<class T>
-void Matrix<T>::Save(FILE* f)
+void Matrix<T>::NormaliseRows()
+{
+	for(unsigned int i=0; i<m_Rows; i++)
+	{
+		SetRowVector(i,GetRowVector(i).Normalised());
+	}
+}
+
+template<class T>
+void Matrix<T>::NormaliseCols()
+{
+	for(unsigned int i=0; i<m_Cols; i++)
+	{
+		SetColVector(i,GetColVector(i).Normalised());
+	}
+}
+
+template<class T>
+void Matrix<T>::Save(FILE* f) const
 {
 	int version = 1;	
 	fwrite(&version,1,sizeof(version),f);
@@ -637,6 +657,49 @@ void Matrix<T>::RunTests()
 	k[3][3]=0.9999999403953552	 ;
 	
 	assert(j.Inverted()==k);
+		
+	Matrix<float> l(2,2);
+	l[0][0]=3;
+	l[0][1]=3;
+	l[1][0]=0;
+	l[1][1]=0;
+	
+	Matrix<float> n(2,2);
+	n[0][0]=2;
+	n[0][1]=2;
+	n[1][0]=0;
+	n[1][1]=0;
+	
+	n*=l;
+	
+	Matrix<float> o(4,4);
+	o.Zero();
+	o[0][0]=1;
+	o[1][1]=1;
+	o[2][2]=1;
+	o[3][3]=1;
+	
+	j*=k;
+	assert(j==o);
+
+	{
+		Matrix<float> a(2,3);
+		Matrix<float> b(3,2);
+		
+		a[0][0]=1; a[0][1]=2; a[0][2]=3;
+		a[1][0]=4; a[1][1]=5; a[1][2]=6;
+
+		b[0][0]=2; b[0][1]=3;
+		b[1][0]=-1; b[1][1]=1;
+		b[2][0]=1; b[2][1]=2;
+		
+		Matrix<float> result(2,2);
+		result[0][0]=3; result[0][1]=11;
+		result[1][0]=9; result[1][1]=29;
+		
+		assert(a*b==result);
+	}
+	
 }
 
 #endif

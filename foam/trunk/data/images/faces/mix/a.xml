@@ -1,0 +1,11 @@
+<facebank version="1">
+    <face id="1">
+        <image filename="a-id0001-image0000.png" />
+   </face>
+    <face id="2">
+        <image filename="a-id0002-image0000.png" />
+    </face>
+    <face id="3">
+        <image filename="a-id0003-image0000.png" />
+    </face>
+</facebank>

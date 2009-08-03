@@ -50,7 +50,11 @@ void PCA::Calculate()
 	}
 	
 	// allocate the transform matrix (this is where it'll run out of memory)
-	cerr<<"Allocating "<<m_FeatureSize*m_FeatureSize*sizeof(float)/1024/1024.0<<" megs for covariance matrix"<<endl;
+	float size= m_FeatureSize*m_FeatureSize*sizeof(float)/1024/1024.0;
+	if (size>1)
+	{
+		cerr<<"Allocating "<<size<<" megs for covariance matrix"<<endl;
+	}
 	m_EigenTransform = Matrix<float>(m_FeatureSize,m_FeatureSize);
 	m_EigenTransform.Zero();
 	
@@ -91,7 +95,7 @@ void PCA::Mult(const PCA &other)
 	m_EigenTransform *= other.GetEigenTransform().Inverted();
 }
 
-void PCA::Save(FILE *f)
+void PCA::Save(FILE *f) const
 {
 	int version = 2;
 	fwrite(&version,sizeof(version),1,f);
@@ -157,10 +161,24 @@ void PCA::RunTests()
 	pca.AddFeature(in);
 	
 	pca.Calculate();
-		
+	
+	
 	in[0]=.69; in[1]=.49;
 	Vector<float> out = pca.Project(in);
 	assert(feq(out[0],-0.82797f) && feq(out[1],-0.175115f));
+
+	PCA pcasub(2);
+	
+	in[0]=-0.677; in[1]=-0.735;
+	pcasub.AddFeature(in);
+	in[0]=0; in[1]=0;
+	pcasub.AddFeature(in);
+	in[0]=0.677; in[1]=0.735;
+	pcasub.AddFeature(in);
+	
+	pcasub.Calculate();
+	pca.Mult(pca);	
+	
 	
 }
 
