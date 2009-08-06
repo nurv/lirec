@@ -28,7 +28,10 @@ vector<string> Glob(const string &path)
 	for (unsigned int n=0; n<g.gl_pathc; n++)
 	{
 		string path=g.gl_pathv[n];
-		ret.push_back(path);
+		if (path[path.find_last_of("/")+1]!='.')
+		{
+			ret.push_back(path);
+		}
 	}
 	globfree (&g);
 	return ret;

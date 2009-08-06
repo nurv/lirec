@@ -35,7 +35,7 @@ public:
 	void Update(Image &camera);
 	
 private:
-	void Benchmark();
+	void Benchmark(const string &test);
 	
 	CvCapture* m_Capture;
 	CvHaarClassifierCascade* m_Cascade;
@@ -49,6 +49,7 @@ private:
 	int m_FaceNum;
 	bool m_Learn; 
 	CvFont m_Font; 
+	CvFont m_LargeFont; 
 	
 	IplImage *frame;
 	IplImage *frame_copy;

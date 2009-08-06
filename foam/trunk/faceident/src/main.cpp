@@ -33,6 +33,8 @@
 #include "FaceBank.h"
 #include "ImageUtils.h"
 #include "SceneState.h"
+#include "Image.h"
+#include "FileTools.h"
 
 using namespace std;
 using namespace yarp::os;
@@ -78,7 +80,11 @@ bool idle=false;
 int facenum=0;
 int framenum=0;
 
+map<int,string> m_DebugNames;
+
 BufferedPort<Bottle> ctrlport;   
+
+void Benchmark(const string &test);
 
 //////////////////////////////////////////////////////////
 
@@ -164,6 +170,10 @@ int main( int argc, char** argv )
 
 	if( capture )
 	{
+	    Benchmark("yale");
+
+	
+	
 		for(;;)
 		{
 			if( !cvGrabFrame( capture ))
@@ -224,10 +234,8 @@ _cleanup_:
 	return 0;
 }
 
-void detect_and_draw( IplImage* img )
+static CvScalar colors[] = 
 {
-	static CvScalar colors[] = 
-	{
 		{{0,0,255}},
 		{{0,128,255}},
 		{{0,255,255}},
@@ -236,16 +244,14 @@ void detect_and_draw( IplImage* img )
 		{{255,255,0}},
 		{{255,0,0}},
 		{{255,0,255}}
-	};
+};
 
-	IplImage *small_img;
-	int j;
 
-	small_img = cvCreateImage( cvSize( cvRound (img->width/scale),
-		cvRound (img->height/scale)), 8, 3 );
-	CvSize imgsize = cvGetSize(small_img);
-	cvResize( img, small_img, CV_INTER_LINEAR );
-	cvClearMemStorage( storage );
+
+void Update( Image &img )
+{
+
+	CvSize imgsize = cvGetSize(img.m_Image);
 
 	CvFont font;
 	cvInitFont( &font, CV_FONT_HERSHEY_PLAIN, 0.75, 0.75, 0, 1, CV_AA );
@@ -256,10 +262,13 @@ void detect_and_draw( IplImage* img )
 	CvFont helpfont;
 	cvInitFont( &helpfont, CV_FONT_HERSHEY_PLAIN, 0.5, 0.5, 0, 1, CV_AA );
 
+	CvFont largefont;
+	cvInitFont( &largefont, CV_FONT_HERSHEY_PLAIN, 25, 25, 0, 10, CV_AA );
+
 	if( cascade )
 	{
 		double t = (double)cvGetTickCount();
-		CvSeq* faces = cvHaarDetectObjects( small_img, cascade, storage,
+		CvSeq* faces = cvHaarDetectObjects( img.m_Image, cascade, storage,
 			1.1, 2, 0
 			//|CV_HAAR_FIND_BIGGEST_OBJECT
 			//|CV_HAAR_DO_ROUGH_SEARCH
@@ -361,7 +370,7 @@ void detect_and_draw( IplImage* img )
 				int imagenum=-1;
 				float confidence=0;
 				// get the face area as a sub image
-				IplImage *face = SubImage(small_img, *r);
+				IplImage *face = SubImage(img.m_Image, *r);
 				// pass it into the face bank 
 				if (learn)
 				{
@@ -380,21 +389,21 @@ void detect_and_draw( IplImage* img )
 				if (ID!=999)
 				{
 					char s[32];
-					sprintf(s,"%d %0.2f",ID,confidence);
-					cvPutText(small_img, s, cvPoint(r->x,r->y+r->height-5), &font, color);
+					sprintf(s,"%d",ID);
+					cvPutText(img.m_Image, s, cvPoint(r->x,r->y+r->height-5), &largefont, color);
 					int x=(facebank.GetFaceWidth()+8)*ID;
 					int y=imgsize.height-facebank.GetFaceHeight();
 					//y-=(facebank.GetFaceHeight()+2)*imagenum;
 					y-=5*imagenum;
 					
-					cvLine(small_img, cvPoint(r->x+r->width/2,r->y+r->height/2),
+					cvLine(img.m_Image, cvPoint(r->x+r->width/2,r->y+r->height/2),
 						cvPoint(x+facebank.GetFaceWidth()/2,y+facebank.GetFaceHeight()/2), color);
 
-					cvRectangle(small_img,cvPoint(x-1,y-1),cvPoint(x+facebank.GetFaceWidth(),y+facebank.GetFaceHeight()), color);
+					cvRectangle(img.m_Image,cvPoint(x-1,y-1),cvPoint(x+facebank.GetFaceWidth(),y+facebank.GetFaceHeight()), color);
 
 					if (imagenum>=0)
 					{
-						BlitImageAlpha(facebank.GetFaceMap()[ID]->m_ImageVec[imagenum],small_img,cvPoint(r->x,r->y),0.75);
+						BlitImageAlpha(facebank.GetFaceMap()[ID]->m_ImageVec[imagenum],img.m_Image,cvPoint(r->x,r->y),0.75);
 					}
 
 					if (!learn)
@@ -403,7 +412,7 @@ void detect_and_draw( IplImage* img )
 					}
 				}
 
-				cvRectangle(small_img, cvPoint(r->x,r->y), cvPoint(r->x+r->width,r->y+r->height), color);
+				cvRectangle(img.m_Image, cvPoint(r->x,r->y), cvPoint(r->x+r->width,r->y+r->height), color);
 			}
 		}
 		else
@@ -428,16 +437,16 @@ void detect_and_draw( IplImage* img )
 	{
 		snprintf(info,256,"detecting faces");
 	}
-	cvPutText(small_img, info, cvPoint(20,30), &infofont, CV_RGB(0,0,0));
+	cvPutText(img.m_Image, info, cvPoint(20,30), &infofont, CV_RGB(0,0,0));
 
 	snprintf(info,256,"keys:");
-	cvPutText(small_img, info, cvPoint(20,50), &helpfont, CV_RGB(0,0,0));
+	cvPutText(img.m_Image, info, cvPoint(20,50), &helpfont, CV_RGB(0,0,0));
 	snprintf(info,256,"number key 0-9 : learn face");
-	cvPutText(small_img, info, cvPoint(20,60), &helpfont, CV_RGB(0,0,0));
+	cvPutText(img.m_Image, info, cvPoint(20,60), &helpfont, CV_RGB(0,0,0));
 	snprintf(info,256,"'d' : face detect mode");
-	cvPutText(small_img, info, cvPoint(20,70), &helpfont, CV_RGB(0,0,0));
+	cvPutText(img.m_Image, info, cvPoint(20,70), &helpfont, CV_RGB(0,0,0));
 	snprintf(info,256,"'c' : clear all faces");
-	cvPutText(small_img, info, cvPoint(20,80), &helpfont, CV_RGB(0,0,0));
+	cvPutText(img.m_Image, info, cvPoint(20,80), &helpfont, CV_RGB(0,0,0));
 
 #ifdef SHOW_FACES
 	for(map<unsigned int,Face*>::iterator ii=facebank.GetFaceMap().begin(); 
@@ -449,22 +458,101 @@ void detect_and_draw( IplImage* img )
 			im!=ii->second->m_ImageVec.end(); im++)
 		{
 			//BlitImage(*im,small_img,cvPoint(x,y));
-			BlitImage(*im,small_img,cvPoint(x,y));
+			BlitImage(*im,img.m_Image,cvPoint(x,y));
 			//y-=facebank.GetFaceHeight()+2;
 			y-=5;
 		}
 	}
 #endif
+}
 
+void detect_and_draw( IplImage* img )
+{
+	IplImage *small_img;
+	int j;
 
-	cvShowImage( "result", small_img );
+	small_img = cvCreateImage( cvSize( cvRound (img->width/scale),
+		cvRound (img->height/scale)), 8, 3 );
+	CvSize imgsize = cvGetSize(small_img);
+	cvResize( img, small_img, CV_INTER_LINEAR );
+	cvClearMemStorage( storage );
+	
+	Image img2(small_img);
+	Update(img2);
+
+	cvShowImage( "result", img2.m_Image );
 	framenum++;
 #ifdef SAVE_FRAMES
 	char name[256];
 	sprintf(name,"out-%0.4d.jpg",framenum);
 	cerr<<"saving "<<name<<endl;
-	cvSaveImage(name,small_img);
+	cvSaveImage(name,img2.m_Image);
 #endif
 
 	cvReleaseImage( &small_img );
+}
+
+
+void Benchmark(const string &test)
+{
+	cerr<<"Running benchmark test"<<endl;
+	string path(string("../data/benchmark/")+test);
+	vector<string> people=Glob(path+string("/training/*"));
+	int ID=0;
+	learn=true;
+	
+	for(vector<string>::iterator pi=people.begin(); pi!=people.end(); ++pi)
+	{
+		m_DebugNames[ID]=pi->substr(pi->find_last_of("/")+1,pi->length());
+		vector<string> images=Glob(*pi+"/*.jpg");
+		cerr<<*pi<<endl;
+		for(vector<string>::iterator ii=images.begin(); ii!=images.end(); ++ii)
+		{
+			cerr<<ID<<" "<<*ii<<endl;
+			facenum=ID;
+			Image image(*ii);
+			Update(image);
+			string fn=*ii+"-out.png";
+			cvSaveImage(fn.c_str(),image.m_Image);
+		}
+		ID++;
+	}
+	
+	learn=false;
+	
+	/*vector<string> images=Glob(path+string("/control/*.jpg"));
+	for(vector<string>::iterator ti=images.begin(); ti!=images.end(); ++ti)
+	{	
+		cerr<<*ti<<endl;
+		Image test(*ti);	
+		Update(test);
+		string fn=*ti+"-out.png";
+		cvSaveImage(fn.c_str(),test.m_Image);
+	}*/
+
+	int imgw=1024;
+	int imgh=768;
+	Image out(imgw,imgh,8,3);
+	int across=13;
+	int down=13;
+	int w=imgw/across;
+	int h=imgh/down;
+
+	int i=0;
+	vector<string> images=Glob(path+string("/test/*.jpg"));
+	for(vector<string>::iterator ti=images.begin(); ti!=images.end(); ++ti)
+	{	
+		cerr<<*ti<<endl;
+		Image test(*ti);	
+		Update(test);
+		int x=i%across;
+		int y=i/across;
+		out.Blit(test.Scale(w,h),x*w,y*h);
+		cerr<<x*w<<" "<<y*h<<endl;
+		i++;
+	}
+	
+	char fn[256];
+	snprintf(fn,256,"%s/out.jpg",path.c_str());
+	cvSaveImage(fn,out.m_Image);
 }

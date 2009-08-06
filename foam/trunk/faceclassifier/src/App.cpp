@@ -23,11 +23,11 @@
 
 using namespace std;
 
-//int w=50;
-//int h=80;
+int w=50;
+int h=80;
 
-int w=20;
-int h=30;
+//int w=20;
+//int h=30;
 
 App::App(const string &filename) :
 m_Capture(NULL),
@@ -58,19 +58,20 @@ m_FrameNum(0)
 	assert(m_Capture);
 	
 	PCA pca(w*h);
-	//FILE *f=fopen("../data/eigenspaces/spacek-50x80.pca", "rb");
-	FILE *f=fopen("../data/eigenspaces/spacek-20x30.pca", "rb");
+	FILE *f=fopen("../no-redist/eigenspaces/spacek-50x80.pca", "rb");
+	//FILE *f=fopen("../data/eigenspaces/spacek-20x30.pca", "rb");
 	pca.Load(f);
 	fclose(f);
-	pca.Compress(20,300);
+	pca.Compress(10,500);
 	
 	m_Classifier = new PCAClassifier(pca);
 	m_FaceBank = new FaceBank(w,h,0.4,0.1,m_Classifier);
 	cvInitFont( &m_Font, CV_FONT_HERSHEY_PLAIN, 0.5, 0.5, 0, 1, CV_AA );
+	cvInitFont( &m_LargeFont, CV_FONT_HERSHEY_PLAIN, 25, 25, 0, 10, CV_AA );
     
 	cvNamedWindow( "face classifier", 1 );
 	
-	Benchmark();
+	Benchmark("yale");
 }
 
 App::~App()
@@ -79,15 +80,14 @@ App::~App()
 
 static CvScalar colors[] =
     {
-        {{255,255,255}},
-        {{0,0,0}},
+        {{0,0,255}},
         {{0,128,255}},
         {{0,255,255}},
         {{0,255,0}},
         {{255,128,0}},
         {{255,255,0}},
         {{255,0,0}},
-        {{255,0,255}}
+        {{255,0,255}},
     };
 
 void App::Run()
@@ -190,14 +190,14 @@ void App::Update(Image &camera)
 			map<int,string>::iterator d = m_DebugNames.find(ID);
 			if (d!=m_DebugNames.end())
 			{
-				sprintf(s,"%s %0.2f",d->second.c_str(),confidence);
+				sprintf(s,"%s",d->second.c_str());
 			}
 			else
 			{
-				sprintf(s,"%d %0.2f",ID,confidence);
+				sprintf(s,"%d",ID);
 			}
 			
-			cvPutText(camera.m_Image, s, cvPoint(r->x,r->y+r->height-5), &m_Font, colors[0]);
+			cvPutText(camera.m_Image, s, cvPoint(r->x,r->y+r->height-5), &m_LargeFont, colors[ID]);
 
 			if (!m_Learn)
 			{
@@ -217,7 +217,6 @@ void App::Update(Image &camera)
 		if (c->GroupExists(m_FaceNum))
 		{
 			Vector<float> p = c->GetGroupMean(m_FaceNum);
-			cerr<<p.Magnitude()<<endl;
 			Vector<float> r = c->GetPCA().Synth(p);
 			camera.Blit(Image(w,h,1,r),0,100);
 		}
@@ -233,10 +232,11 @@ void App::Update(Image &camera)
 
 }
 
-void App::Benchmark()
+void App::Benchmark(const string &test)
 {
 	cerr<<"Running benchmark test"<<endl;
-	vector<string> people=Glob("../data/benchmark/trek/training/*");
+	string path(string("../data/benchmark/")+test);
+	vector<string> people=Glob(path+string("/training/*"));
 	int ID=0;
 	m_Learn=true;
 	
@@ -250,15 +250,15 @@ void App::Benchmark()
 			m_FaceNum=ID;
 			Image image(*ii);
 			Update(image);
-			string fn=*ii+"-out.png";
-			cvSaveImage(fn.c_str(),image.m_Image);
+			//string fn=*ii+"-out.png";
+			//cvSaveImage(fn.c_str(),image.m_Image);
 		}
 		ID++;
 	}
 	
 	m_Learn=false;
 	
-	vector<string> images=Glob("../data/benchmark/trek/control/*.jpg");
+	/*vector<string> images=Glob(path+string("/control/*.jpg"));
 	for(vector<string>::iterator ti=images.begin(); ti!=images.end(); ++ti)
 	{	
 		cerr<<*ti<<endl;
@@ -266,15 +266,31 @@ void App::Benchmark()
 		Update(test);
 		string fn=*ti+"-out.png";
 		cvSaveImage(fn.c_str(),test.m_Image);
-	}
+	}*/
 
-	images=Glob("../data/benchmark/trek/test/*.jpg");
+	int imgw=1024;
+	int imgh=768;
+	Image out(imgw,imgh,8,3);
+	int across=13;
+	int down=13;
+	int w=imgw/across;
+	int h=imgh/down;
+
+	int i=0;
+	vector<string> images=Glob(path+string("/test/*.jpg"));
 	for(vector<string>::iterator ti=images.begin(); ti!=images.end(); ++ti)
 	{	
 		cerr<<*ti<<endl;
 		Image test(*ti);	
 		Update(test);
-		string fn=*ti+"-out.png";
-		cvSaveImage(fn.c_str(),test.m_Image);
+		int x=i%across;
+		int y=i/across;
+		out.Blit(test.Scale(w,h),x*w,y*h);
+		cerr<<x*w<<" "<<y*h<<endl;
+		i++;
 	}
+	
+	char fn[256];
+	snprintf(fn,256,"%s/out.jpg",path.c_str());
+	cvSaveImage(fn,out.m_Image);
 }

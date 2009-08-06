@@ -48,10 +48,10 @@ void detect_and_draw( IplImage* image );
 
 double scale = 1;
 
-//int w=50;
-//int h=80;
-int w=20;
-int h=30;
+int w=50;
+int h=80;
+//int w=20;
+//int h=30;
 
 PCA pca(w*h);
 Vector<float> params(100);
@@ -122,17 +122,16 @@ void TestPCA()
 	//Recalc();
 	//FILE *f=fopen("davelight-20x30.pca", "wb");
 	//pca.Save(f);
-	pca = LoadPCA("../data/eigenspaces/spacek-20x30.pca");
-	PCA subspace = LoadPCA("dave-resynthed-sub.pca");
-
-	//pca.Compress(0,10);
-	//pca.Compress(0,30);
+	pca = LoadPCA("../no-redist/eigenspaces/spacek-50x80.pca");
+	//PCA subspace = LoadPCA("../data/eigenspaces/davelight-spacek-20x30.pca");
 		
 	//pca.EigenTransform() *= subspace.EigenTransform().Transposed();
 	
-	PCA davesubspace = MakeSubspace(pca,"../data/images/faces/dave/*.png");
-	SavePCA(davesubspace,"davelight-spacek-20x30.pca");
+	//PCA davesubspace = MakeSubspace(pca,"../data/images/faces/dave/*.png");
+	//SavePCA(davesubspace,"davelight-spacek-20x30.pca");
 		
+	pca.Compress(0,100);
+	
 	src = src.Scale(w,h).RGB2GRAY();
 	Vector<float> d(src.ToFloatVector());	
 	params=pca.Project(d);	
@@ -360,19 +359,25 @@ void detect_and_draw( IplImage* img )
 	
 	static float t=0;
 
-	for (unsigned int i=0; i<10; i++)
+	for (unsigned int i=0; i<100; i++)
 	{
-		//camera.Blit(Image(w,h,1,(pca.GetEigenTransform().GetRowVector(i)*50*sin(t))/((i+1) * 1) //+pca.GetMean()
-		//	),(i%30)*(w+2),0+(i/30)*(h+2));
-		camera.Blit(Image(w,h,1,pca.GetEigenTransform().GetRowVector(i)*3 //+pca.GetMean()
-			),(i%30)*(w+2),0+(i/30)*(h+2));
+		camera.Blit(Image(w,h,1,(pca.GetEigenTransform().GetRowVector(i)*100*sin(t))/((i+1) * 0.5)+pca.GetMean()
+			),(i%12)*(w+2),0+(i/12)*(h+2));
+		//camera.Blit(Image(w,h,1,pca.GetEigenTransform().GetRowVector(i)*5+pca.GetMean()
+		//	),(i%10)*(w+2),0+(i/10)*(h+2));
 	}
 	
-	t+=0.1;
+	t+=0.05;
 	
-	camera.Blit(Image(w,h,1,pca.GetMean()),0,300);
-	camera.Blit(src,60,300);
-	camera.Blit(Image(w,h,1,pca.Synth(params)),120,300);
+	static int frame=0;
+	char fn[256];
+	snprintf(fn,256,"out-%06d.jpg",frame);
+	cvSaveImage(fn,camera.m_Image);
+	frame++;
+	
+	//camera.Blit(Image(w,h,1,pca.GetMean()),0,300);
+	//camera.Blit(src,60,300);
+	//camera.Blit(Image(w,h,1,pca.Synth(params)),120,300);
 
     cvShowImage("result", camera.m_Image);
  
