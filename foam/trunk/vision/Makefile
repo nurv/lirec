@@ -14,6 +14,8 @@ SRCS    := src/Image.cpp\
 	src/tinyxmlparser.cpp
 
 CCFLAGS = `pkg-config --cflags opencv` -ggdb -Wall -O3 -ffast-math -Wno-unused -DTIXML_USE_STL 
+LIBS    = `pkg-config --libs opencv` 
+PYTHON_INCLUDE = -I/usr/include/python2.5
 
 CC = g++
 OBJS    := ${SRCS:.cpp=.o} 
@@ -44,3 +46,10 @@ cleandeps:: clean
 
 distclean:: clean
 
+python:: ${TARGET}
+	swig -c++ -python src/vision.i 
+	g++ ${CCFLAGS} -c src/vision_wrap.cxx ${PYTHON_INCLUDE}
+	g++ -shared ${OBJS} vision_wrap.o ${LIBS} -o _vision.so
+	cp _vision.so ../python
+	cp src/vision.py ../python
+	

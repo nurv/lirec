@@ -17,4 +17,8 @@
 #include<string>
 #include<vector>
 
+// for the python interface
+FILE *OpenFile(char * filename, char *mode);
+void CloseFile(FILE *);
+
 std::vector<std::string> Glob(const std::string &path);

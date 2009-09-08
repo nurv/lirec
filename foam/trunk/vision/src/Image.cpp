@@ -33,6 +33,13 @@ Image::Image(const string &filename)
 	assert(m_Image);
 }
 
+Image::Image(char *filename)
+{
+	m_Image=cvLoadImage(filename);
+	if (m_Image==NULL) cerr<<"Could not open image: "<<filename<<endl;
+	assert(m_Image);
+}
+
 Image::Image(const Image &other)
 {
 	m_Image=cvCloneImage(other.m_Image);

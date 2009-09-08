@@ -19,6 +19,16 @@
 
 using namespace std;
 
+FILE *OpenFile(char * filename, char *mode)
+{
+	return fopen(filename,mode);
+}
+
+void CloseFile(FILE *f)
+{
+	fclose(f);
+}
+
 vector<string> Glob(const string &path)
 {
 	// todo windoze version

@@ -27,6 +27,7 @@ public:
 	Image() : m_Image(NULL) {}
 	Image(int w, int h, int d, int c);
 	Image(const std::string &filename);
+	Image(char *filename);
 	Image(const Image &other);
 	Image(const IplImage *other); // copies the given image
 	Image(int w, int h, int c, const Vector<float> &v, float gain=1.0f);

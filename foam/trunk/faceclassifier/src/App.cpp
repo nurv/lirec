@@ -23,11 +23,11 @@
 
 using namespace std;
 
-int w=50;
-int h=80;
+//int w=50;
+//int h=80;
 
-//int w=20;
-//int h=30;
+int w=20;
+int h=30;
 
 App::App(const string &filename) :
 m_Capture(NULL),
@@ -58,8 +58,8 @@ m_FrameNum(0)
 	assert(m_Capture);
 	
 	PCA pca(w*h);
-	FILE *f=fopen("../no-redist/eigenspaces/spacek-50x80.pca", "rb");
-	//FILE *f=fopen("../data/eigenspaces/spacek-20x30.pca", "rb");
+	//FILE *f=fopen("../no-redist/eigenspaces/spacek-50x80.pca", "rb");
+	FILE *f=fopen("../data/eigenspaces/spacek-20x30.pca", "rb");
 	pca.Load(f);
 	fclose(f);
 	pca.Compress(10,500);
