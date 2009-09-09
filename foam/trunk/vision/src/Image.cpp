@@ -33,13 +33,6 @@ Image::Image(const string &filename)
 	assert(m_Image);
 }
 
-Image::Image(char *filename)
-{
-	m_Image=cvLoadImage(filename);
-	if (m_Image==NULL) cerr<<"Could not open image: "<<filename<<endl;
-	assert(m_Image);
-}
-
 Image::Image(const Image &other)
 {
 	m_Image=cvCloneImage(other.m_Image);
@@ -177,6 +170,11 @@ void Image::Crop(int x, int y, int w, int h)
 	cvCopy(m_Image,newimage);
 	cvReleaseImage(&m_Image);
 	m_Image=newimage;
+}
+
+Image Image::SubImage(Rect r)
+{
+	return SubImage(r.x, r.y, r.w, r.h);
 }
 
 Image Image::SubImage(int x, int y, int w, int h)
@@ -409,3 +407,9 @@ Vector<float> Image::ToFloatVector()
 	}
 	return v;
 }
+
+void Image::Save(const string &filename)
+{
+	cvSaveImage(filename.c_str(),m_Image);
+}
+

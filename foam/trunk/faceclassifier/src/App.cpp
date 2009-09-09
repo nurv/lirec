@@ -31,8 +31,6 @@ int h=30;
 
 App::App(const string &filename) :
 m_Capture(NULL),
-m_Cascade(NULL),
-m_Storage(NULL),
 m_Classifier(NULL),
 m_FaceBank(NULL),
 m_FaceNum(1),
@@ -42,9 +40,6 @@ frame_copy(NULL),
 m_FrameNum(0)
 {
 	m_CtrlPort.open("/faceident-ctrl"); 
-	m_Cascade = (CvHaarClassifierCascade*)cvLoad("haarcascade_frontalface_alt.xml", 0, 0, 0);
-	assert(m_Cascade);
-	m_Storage = cvCreateMemStorage(0);
 	
 	if (filename=="")
 	{
@@ -123,20 +118,6 @@ void App::Run()
 
 void App::Update(Image &camera)
 {	
-	cvClearMemStorage(m_Storage);
-
-	int flags=0;
-	if (m_Learn) flags|=CV_HAAR_FIND_BIGGEST_OBJECT;
-
-	CvSeq* faces = cvHaarDetectObjects( camera.m_Image, m_Cascade, m_Storage,
-			1.1, 2, flags
-			//|CV_HAAR_FIND_BIGGEST_OBJECT
-			//|CV_HAAR_DO_ROUGH_SEARCH
-			//|CV_HAAR_DO_CANNY_PRUNING
-			//|CV_HAAR_SCALE_IMAGE
-			,
-			cvSize(30, 30) );
-		
 	///////////////////////////////////
 	// dispatch from input
 
@@ -158,16 +139,14 @@ void App::Update(Image &camera)
 		case 'c': m_FaceBank->Clear(); break;
 	}
 			
-	for(int i = 0; i < (faces ? faces->total : 0); i++ )
+	vector<Rect> rects = m_FaceFinder.Find(camera,m_Learn);
+	for(vector<Rect>::iterator i = rects.begin(); i!=rects.end(); i++ )
 	{
-		CvRect* r = (CvRect*)cvGetSeqElem( faces, i );
-		CvMat small_img_roi;
-
 		unsigned int ID=999;
 		int imagenum=-1;
 		float confidence=0;
 		// get the face area as a sub image
-		Image face = camera.SubImage(r->x, r->y, r->width, r->height);
+		Image face = camera.SubImage(*i);
 		
 		//face.SubMean();
 		//camera.Blit(face.Scale(w,h).RGB2GRAY(),100,100);
@@ -197,7 +176,7 @@ void App::Update(Image &camera)
 				sprintf(s,"%d",ID);
 			}
 			
-			cvPutText(camera.m_Image, s, cvPoint(r->x,r->y+r->height-5), &m_LargeFont, colors[ID]);
+			cvPutText(camera.m_Image, s, cvPoint(i->x,i->y+i->h-5), &m_LargeFont, colors[ID]);
 
 			if (!m_Learn)
 			{
@@ -205,7 +184,7 @@ void App::Update(Image &camera)
 			}
 		}
 
-		cvRectangle(camera.m_Image, cvPoint(r->x,r->y), cvPoint(r->x+r->width,r->y+r->height), colors[0]);
+		cvRectangle(camera.m_Image, cvPoint(i->x,i->y), cvPoint(i->x+i->w,i->y+i->h), colors[0]);
 	}
 
 	char info[256];

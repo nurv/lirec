@@ -1,21 +1,10 @@
 #!/usr/bin/env python
 
-import glob
+import glob,string
 from vision import *
+from faces import *
 
-imagepath = "../no-redist/spacek-large/*.png"
-images = glob.glob(imagepath)
-w = 20
-h = 30
-pca = PCA(w*h)
+#get_faces("../no-redist/yalefaces/orig/*.png", "../no-redist/yalefaces/processed/")
+# calculate("../no-redist/spacek-large/*.png",20,30,"test.pca")
 
-for image in images:
-	im = Image(image)
-	v = im.Scale(w,h).RGB2GRAY().ToFloatVector()
-	pca.AddFeature(v)
-
-pca.Calculate()
-
-f = OpenFile("test.pca", "wb")
-pca.Save(f)
-CloseFile(f)
+build_pca("../no-redist/yalefaces/processed/*.png",20,30,"yalefaces-expression-20x30.pca")

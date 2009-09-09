@@ -14,47 +14,4 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-#include "cv.h"
-#include "highgui.h"
-#include <yarp/os/all.h>
-#include <string>
-
-#include "FaceFinder.h"
-#include "FaceBank.h"
-#include "SceneState.h"
-
-using namespace yarp::os;
-using namespace std;
-
-class App
-{
-public:
-	App(const string &filename);
-	~App();
-	
-	void Run();
-	void Update(Image &camera);
-	
-private:
-	void Benchmark(const string &test);
-	
-	CvCapture* m_Capture;
-	
-	FaceFinder m_FaceFinder;
-	Classifier *m_Classifier;
-	FaceBank *m_FaceBank;
-	SceneState m_SceneState;
-	BufferedPort<Bottle> m_CtrlPort; 
-	
-	int m_FaceNum;
-	bool m_Learn; 
-	CvFont m_Font; 
-	CvFont m_LargeFont; 
-	
-	IplImage *frame;
-	IplImage *frame_copy;
-	
-	map<int,string> m_DebugNames;
-	
-	int m_FrameNum;
-};
+#include "Geometry.h"

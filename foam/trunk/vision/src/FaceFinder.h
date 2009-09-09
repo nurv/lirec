@@ -14,47 +14,28 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
+#include <vector>
 #include "cv.h"
-#include "highgui.h"
-#include <yarp/os/all.h>
-#include <string>
+#include "Geometry.h"
+#include "Image.h"
 
-#include "FaceFinder.h"
-#include "FaceBank.h"
-#include "SceneState.h"
+#ifndef FOAM_FACEFINDER
+#define FOAM_FACEFINDER
 
-using namespace yarp::os;
-using namespace std;
-
-class App
+// a wrapper for the opencv facefinder
+// todo - make generic so we can swap in different algorithms
+class FaceFinder
 {
 public:
-	App(const string &filename);
-	~App();
+	FaceFinder();
+	~FaceFinder();
 	
-	void Run();
-	void Update(Image &camera);
+	std::vector<Rect> Find(const Image &im, bool largest);
 	
 private:
-	void Benchmark(const string &test);
-	
-	CvCapture* m_Capture;
-	
-	FaceFinder m_FaceFinder;
-	Classifier *m_Classifier;
-	FaceBank *m_FaceBank;
-	SceneState m_SceneState;
-	BufferedPort<Bottle> m_CtrlPort; 
-	
-	int m_FaceNum;
-	bool m_Learn; 
-	CvFont m_Font; 
-	CvFont m_LargeFont; 
-	
-	IplImage *frame;
-	IplImage *frame_copy;
-	
-	map<int,string> m_DebugNames;
-	
-	int m_FrameNum;
+	CvHaarClassifierCascade* m_Cascade;
+	CvMemStorage* m_Storage;
+
 };
+
+#endif

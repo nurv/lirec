@@ -9,6 +9,8 @@ SRCS    := src/Image.cpp\
 	src/PCA.cpp\
 	src/SVD.cpp\
 	src/FileTools.cpp\
+	src/FaceFinder.cpp\
+	src/Geometry.cpp\
 	src/tinyxml.cpp\
 	src/tinyxmlerror.cpp\
 	src/tinyxmlparser.cpp

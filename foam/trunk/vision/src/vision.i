@@ -9,9 +9,13 @@
 #include "PCAClassifier.h"
 #include "SVD.h"
 #include "FileTools.h"
+#include "Geometry.h"
+#include "FaceFinder.h"
 %}
 
-
+%include "stl.i"
+%include "typemaps.i"
+%include "std_vector.i"
 %include "PCA.h"
 %include "Classifier.h"
 %include "LDAClassifier.h"
@@ -21,9 +25,16 @@
 %include "PCAClassifier.h"
 %include "SVD.h"
 %include "FileTools.h"
+%include "Geometry.h"
+%include "FaceFinder.h"
 
 %template(FloatVector) Vector<float>;
 %template(FloatMatrix) Matrix<float>;
+
+namespace std
+{
+  %template(RectVector) vector<Rect>;
+}
 
 %extend Vector<float> {
 	float __getitem__(long int i)
@@ -46,6 +57,5 @@
 		(*self)[r][c]=s;
 	}
 }
-
 
 

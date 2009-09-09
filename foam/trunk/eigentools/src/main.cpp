@@ -48,10 +48,10 @@ void detect_and_draw( IplImage* image );
 
 double scale = 1;
 
-int w=50;
-int h=80;
-//int w=20;
-//int h=30;
+//int w=50;
+//int h=80;
+int w=20;
+int h=30;
 
 PCA pca(w*h);
 Vector<float> params(100);
@@ -122,7 +122,8 @@ void TestPCA()
 	//Recalc();
 	//FILE *f=fopen("davelight-20x30.pca", "wb");
 	//pca.Save(f);
-	pca = LoadPCA("../no-redist/eigenspaces/spacek-50x80.pca");
+	//pca = LoadPCA("../no-redist/eigenspaces/spacek-50x80.pca");
+	pca = LoadPCA("../no-redist/eigenspaces/yalefaces-expression-20x30.pca");
 	//PCA subspace = LoadPCA("../data/eigenspaces/davelight-spacek-20x30.pca");
 		
 	//pca.EigenTransform() *= subspace.EigenTransform().Transposed();

@@ -16,6 +16,7 @@
 
 #include "cv.h"
 #include "Vector.h"
+#include "Geometry.h"
 #include <string>
 
 #ifndef IMAGE
@@ -27,7 +28,6 @@ public:
 	Image() : m_Image(NULL) {}
 	Image(int w, int h, int d, int c);
 	Image(const std::string &filename);
-	Image(char *filename);
 	Image(const Image &other);
 	Image(const IplImage *other); // copies the given image
 	Image(int w, int h, int c, const Vector<float> &v, float gain=1.0f);
@@ -44,6 +44,7 @@ public:
 	void Crop(int x, int y, int w, int h);
 	Image Scale(int w, int h);
 	Image SubImage(int x, int y, int w, int h);
+	Image SubImage(Rect r);
 
 	// Paste an image into this one
 	void Blit(const Image &image, int x, int y);
@@ -67,6 +68,8 @@ public:
 	
 	Vector<float> ToFloatVector();
 	unsigned int NumElements() { return m_Image->width*m_Image->height*m_Image->nChannels; }
+	
+	void Save(const std::string &filename);
 	
 	IplImage *m_Image;
 	
