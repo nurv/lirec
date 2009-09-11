@@ -4,15 +4,25 @@ import glob,string
 from vision import *
 from faces import *
 	
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-#build_expression_pca("../no-redist/yalefaces/processed/*.png",20,30,"expr.pca")
+# just try projecting onto vectors that seem 'happy'
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+def print_weight(filename,param,pca,w,h):
+	i = Image(filename)
+	v = i.Scale(w,h).RGB2GRAY().ToFloatVector()
+	p = pca.Project(v)
+	print(p[param])
 
-pca = PCA(1)	
-f = OpenFile("expr.pca", "rb")
-pca.Load(f)
-CloseFile(f)
+pca = load_pca("yalefaces-30x50.pca")
+w = 30
+h = 50
+filename = "../data/images/faces/dave/expression/normal.png"
 
-emotion_from_expression("../data/images/faces/dave/expression/normal.png",20,30,pca)
+print("normal=")
+print_weight("../data/images/faces/dave/expression/normal.png",13,pca,w,h)
+print("happy=")
+print_weight("../data/images/faces/dave/expression/happy.png",13,pca,w,h)
+print("angry=")
+print_weight("../data/images/faces/dave/expression/angry.png",13,pca,w,h)
+print("grimace=")
+print_weight("../data/images/faces/dave/expression/grimace.png",13,pca,w,h)

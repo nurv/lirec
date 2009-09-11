@@ -2,6 +2,8 @@
 # bunch of scripts for doing things with faces
 
 import glob,string
+import numpy as np
+import scipy.misc.pilutil as smp
 from vision import *
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -86,3 +88,27 @@ def emotion_from_expression(filename,w,h,pca):
 	p = pca.Project(add_parameter(v,0))
 	s = pca.Synth(p)
 	return s[w*h]>0;
+	
+def load_pca(filename):
+	pca = PCA(1)	
+	f = OpenFile(filename, "rb")
+	pca.Load(f)
+	CloseFile(f)
+	return pca
+	
+def plot_eigenface(image,x,y,w,h,pca,row,gain):
+	eigenface = pca.GetEigenTransform().GetRowVector(row)*gain+pca.GetMean()
+	c=0
+	for iy in range(0,h):
+		for ix in range(0,w):
+			v = int(max(min(256*eigenface[c],256),0))
+			image[iy+y,ix+x] = [v,v,v] 
+			c=c+1
+
+def make_eigenfaces_image(w,h,pca,start,end,gain):
+	num_imagesx = end-start;	
+	image = np.zeros( (h,w*num_imagesx,3), dtype=np.uint8 )
+	for i in range(start, end):
+		c=i-start
+		plot_eigenface(image,w*c,0,w,h,pca,i,gain)
+	return image
