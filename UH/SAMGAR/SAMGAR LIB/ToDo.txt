@@ -1,0 +1,4 @@
+
+1. Resize stuff at beginning, the poxy ports and modules, makesure they cant go off screen
+2. put limits onto when the modules move
+3. try to make it look a little nicer (button placement)
