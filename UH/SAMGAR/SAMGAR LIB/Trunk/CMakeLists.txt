@@ -16,8 +16,6 @@ HeaderFiles/ConnectFunct.h HeaderFiles/cxtypes)  ## this should create a libary
 ADD_EXECUTABLE(Tester TesterFiles/Test.cpp)
 ADD_EXECUTABLE(Tester2 TesterFiles/Test2.cpp)
 
-target_link_libraries	(Tester SamgarLIB ${OpenCV_LIBS})
-target_link_libraries	(Tester2 SamgarLIB ${OpenCV_LIBS})
-target_link_libraries	(SamgarKey SamgarLIB)
-
+target_link_libraries	(Tester SamgarLIB )
+target_link_libraries	(Tester2 SamgarLIB )
 
