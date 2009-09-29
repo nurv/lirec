@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding = "Windows-1252"?>
+<VisualStudioProject
+	ProjectType="Visual C++"
+	Version="9.00"
+	Name="SamgarKey"
+	ProjectGUID="{E3A8FD4D-E920-4E99-B9DC-9A51DF1ABF06}"
+	SccProjectName=""
+	SccLocalPath=""
+	Keyword="Win32Proj">
+	<Platforms>
+		<Platform
+			Name="Win32"/>
+	</Platforms>
+	<Configurations>
+		<Configuration
+			Name="Debug|Win32"
+			OutputDirectory="Debug"
+			IntermediateDirectory="SamgarKey.dir\Debug"
+			ConfigurationType="1"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="FALSE"
+			CharacterSet="2">
+			<Tool
+				Name="VCCLCompilerTool"
+				AdditionalOptions=" /Zm1000"
+				AdditionalIncludeDirectories="C:\Users\Kyron\Documents\Compilerstuff\ACE_wrappers;C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\src\libYARP_OS\include;C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\src\libYARP_sig\include;C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\src\libYARP_dev\include;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\HeaderFiles&quot;;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\SourceFiles&quot;;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\TesterFiles&quot;;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\Release&quot;;C:\Users\Kyron\Documents\Compilerstuff\juce\juce\bin;C:\Users\Kyron\Documents\Compilerstuff\juce\juce;"
+				BasicRuntimeChecks="3"
+				CompileAs="2"
+				DebugInformationFormat="3"
+				ExceptionHandling="1"
+				InlineFunctionExpansion="0"
+				Optimization="0"
+				RuntimeLibrary="3"
+				RuntimeTypeInfo="TRUE"
+				WarningLevel="3"
+				PreprocessorDefinitions="WIN32,_WINDOWS,_DEBUG,_REENTRANT,WIN32,_WINDOWS,YARP_LITTLE_ENDIAN,YARP_INT32=int,YARP_INT16=short,YARP_FLOAT64=double,CMAKE_INTDIR=\&quot;Debug\&quot;"
+				AssemblerListingLocation="Debug"
+				ObjectFile="$(IntDir)\"
+				ProgramDataBaseFileName="C:/Users/Kyron/Documents/SamgarDevelopment-Main/SNVSAMGAR/SAMGAR Gui/Trunk/Debug/SamgarKey.pdb"
+/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				AdditionalIncludeDirectories="C:\Users\Kyron\Documents\Compilerstuff\ACE_wrappers;C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\src\libYARP_OS\include;C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\src\libYARP_sig\include;C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\src\libYARP_dev\include;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\HeaderFiles&quot;;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\SourceFiles&quot;;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\TesterFiles&quot;;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\Release&quot;;C:\Users\Kyron\Documents\Compilerstuff\juce\juce\bin;C:\Users\Kyron\Documents\Compilerstuff\juce\juce;"
+				PreprocessorDefinitions="WIN32,_WINDOWS,_DEBUG,_REENTRANT,WIN32,_WINDOWS,YARP_LITTLE_ENDIAN,YARP_INT32=int,YARP_INT16=short,YARP_FLOAT64=double,CMAKE_INTDIR=\&quot;Debug\&quot;"/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="WIN32,_WINDOWS,_DEBUG,_REENTRANT,WIN32,_WINDOWS,YARP_LITTLE_ENDIAN,YARP_INT32=int,YARP_INT16=short,YARP_FLOAT64=double,CMAKE_INTDIR=\&quot;Debug\&quot;"
+				MkTypLibCompatible="FALSE"
+				TargetEnvironment="1"
+				GenerateStublessProxies="TRUE"
+				TypeLibraryName="$(InputName).tlb"
+				OutputDirectory="$(IntDir)"
+				HeaderFileName="$(InputName).h"
+				DLLDataFileName=""
+				InterfaceIdentifierFileName="$(InputName)_i.c"
+				ProxyFileName="$(InputName)_p.c"/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCPostBuildEventTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalOptions=" /STACK:10000000 /machine:I386 /debug"
+				AdditionalDependencies="$(NOINHERIT) kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib  C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\lib\$(OutDir)\YARP_devd.lib C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\lib\$(OutDir)\YARP_sigd.lib C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\lib\$(OutDir)\YARP_OSd.lib winmm.lib C:\Users\Kyron\Documents\Compilerstuff\ACE_wrappers\lib\ACEd.lib yarpmodd.lib C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\lib\$(OutDir)\YARP_devd.lib C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\lib\$(OutDir)\YARP_sigd.lib C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\lib\$(OutDir)\YARP_OSd.lib winmm.lib C:\Users\Kyron\Documents\Compilerstuff\ACE_wrappers\lib\ACEd.lib C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\lib\$(OutDir)\YARP_devd.lib C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\lib\$(OutDir)\YARP_sigd.lib C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\lib\$(OutDir)\YARP_OSd.lib winmm.lib C:\Users\Kyron\Documents\Compilerstuff\ACE_wrappers\lib\ACEd.lib &quot;C:\Program Files (x86)\OpenCV\lib\cv.lib&quot; &quot;C:\Program Files (x86)\OpenCV\lib\cvaux.lib&quot; &quot;C:\Program Files (x86)\OpenCV\lib\cxcore.lib&quot; "
+				OutputFile="C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\Debug\SamgarKey.exe"
+				Version="0.0"
+				GenerateManifest="TRUE"
+				LinkIncremental="2"
+				AdditionalLibraryDirectories="C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\lib\$(OutDir)\$(OutDir),C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\lib\$(OutDir),C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\lib\$(OutDir)\Debug\$(OutDir),C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\lib\$(OutDir)\Debug,C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\lib\$(OutDir)\Release\$(OutDir),C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\lib\$(OutDir)\Release,Release\$(OutDir),Release,C:\Users\Kyron\Documents\Compilerstuff\jucejuce\bin\$(OutDir),C:\Users\Kyron\Documents\Compilerstuff\jucejuce\bin,C:\Users\Kyron\Documents\Compilerstuff\ACE_wrappers\lib\$(OutDir),C:\Users\Kyron\Documents\Compilerstuff\ACE_wrappers\lib,&quot;C:\Program Files (x86)\OpenCV\lib\$(OutDir)&quot;,&quot;C:\Program Files (x86)\OpenCV\lib&quot;"
+				ProgramDataBaseFile="C:/Users/Kyron/Documents/SamgarDevelopment-Main/SNVSAMGAR/SAMGAR Gui/Trunk/Debug/SamgarKey.pdb"
+				GenerateDebugInformation="TRUE"
+				SubSystem="1"
+				ImportLibrary="C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\Debug\SamgarKey.lib"/>
+		</Configuration>
+		<Configuration
+			Name="Release|Win32"
+			OutputDirectory="Release"
+			IntermediateDirectory="SamgarKey.dir\Release"
+			ConfigurationType="1"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="FALSE"
+			CharacterSet="2">
+			<Tool
+				Name="VCCLCompilerTool"
+				AdditionalOptions=" /Zm1000"
+				AdditionalIncludeDirectories="C:\Users\Kyron\Documents\Compilerstuff\ACE_wrappers;C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\src\libYARP_OS\include;C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\src\libYARP_sig\include;C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\src\libYARP_dev\include;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\HeaderFiles&quot;;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\SourceFiles&quot;;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\TesterFiles&quot;;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\Release&quot;;C:\Users\Kyron\Documents\Compilerstuff\juce\juce\bin;C:\Users\Kyron\Documents\Compilerstuff\juce\juce;"
+				CompileAs="2"
+				ExceptionHandling="1"
+				InlineFunctionExpansion="2"
+				Optimization="2"
+				RuntimeLibrary="2"
+				RuntimeTypeInfo="TRUE"
+				WarningLevel="3"
+				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,_REENTRANT,WIN32,_WINDOWS,YARP_LITTLE_ENDIAN,YARP_INT32=int,YARP_INT16=short,YARP_FLOAT64=double,CMAKE_INTDIR=\&quot;Release\&quot;"
+				AssemblerListingLocation="Release"
+				ObjectFile="$(IntDir)\"
+				ProgramDataBaseFileName="C:/Users/Kyron/Documents/SamgarDevelopment-Main/SNVSAMGAR/SAMGAR Gui/Trunk/Release/SamgarKey.pdb"
+/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				AdditionalIncludeDirectories="C:\Users\Kyron\Documents\Compilerstuff\ACE_wrappers;C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\src\libYARP_OS\include;C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\src\libYARP_sig\include;C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\src\libYARP_dev\include;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\HeaderFiles&quot;;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\SourceFiles&quot;;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\TesterFiles&quot;;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\Release&quot;;C:\Users\Kyron\Documents\Compilerstuff\juce\juce\bin;C:\Users\Kyron\Documents\Compilerstuff\juce\juce;"
+				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,_REENTRANT,WIN32,_WINDOWS,YARP_LITTLE_ENDIAN,YARP_INT32=int,YARP_INT16=short,YARP_FLOAT64=double,CMAKE_INTDIR=\&quot;Release\&quot;"/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,_REENTRANT,WIN32,_WINDOWS,YARP_LITTLE_ENDIAN,YARP_INT32=int,YARP_INT16=short,YARP_FLOAT64=double,CMAKE_INTDIR=\&quot;Release\&quot;"
+				MkTypLibCompatible="FALSE"
+				TargetEnvironment="1"
+				GenerateStublessProxies="TRUE"
+				TypeLibraryName="$(InputName).tlb"
+				OutputDirectory="$(IntDir)"
+				HeaderFileName="$(InputName).h"
+				DLLDataFileName=""
+				InterfaceIdentifierFileName="$(InputName)_i.c"
+				ProxyFileName="$(InputName)_p.c"/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCPostBuildEventTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalOptions=" /STACK:10000000 /machine:I386"
+				AdditionalDependencies="$(NOINHERIT) kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib  C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\lib\$(OutDir)\YARP_dev.lib C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\lib\$(OutDir)\YARP_sig.lib C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\lib\$(OutDir)\YARP_OS.lib C:\Users\Kyron\Documents\Compilerstuff\ACE_wrappers\lib\ACE.lib winmm.lib yarpmod.lib C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\lib\$(OutDir)\YARP_dev.lib C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\lib\$(OutDir)\YARP_sig.lib C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\lib\$(OutDir)\YARP_OS.lib C:\Users\Kyron\Documents\Compilerstuff\ACE_wrappers\lib\ACE.lib winmm.lib C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\lib\$(OutDir)\YARP_dev.lib C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\lib\$(OutDir)\YARP_sig.lib C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\lib\$(OutDir)\YARP_OS.lib C:\Users\Kyron\Documents\Compilerstuff\ACE_wrappers\lib\ACE.lib winmm.lib &quot;C:\Program Files (x86)\OpenCV\lib\cv.lib&quot; &quot;C:\Program Files (x86)\OpenCV\lib\cvaux.lib&quot; &quot;C:\Program Files (x86)\OpenCV\lib\cxcore.lib&quot; "
+				OutputFile="C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\Release\SamgarKey.exe"
+				Version="0.0"
+				GenerateManifest="TRUE"
+				LinkIncremental="1"
+				AdditionalLibraryDirectories="C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\lib\$(OutDir)\$(OutDir),C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\lib\$(OutDir),C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\lib\$(OutDir)\Debug\$(OutDir),C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\lib\$(OutDir)\Debug,C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\lib\$(OutDir)\Release\$(OutDir),C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\lib\$(OutDir)\Release,Release\$(OutDir),Release,C:\Users\Kyron\Documents\Compilerstuff\jucejuce\bin\$(OutDir),C:\Users\Kyron\Documents\Compilerstuff\jucejuce\bin,C:\Users\Kyron\Documents\Compilerstuff\ACE_wrappers\lib\$(OutDir),C:\Users\Kyron\Documents\Compilerstuff\ACE_wrappers\lib,&quot;C:\Program Files (x86)\OpenCV\lib\$(OutDir)&quot;,&quot;C:\Program Files (x86)\OpenCV\lib&quot;"
+				ProgramDataBaseFile="C:/Users/Kyron/Documents/SamgarDevelopment-Main/SNVSAMGAR/SAMGAR Gui/Trunk/Release/SamgarKey.pdb"
+				SubSystem="1"
+				ImportLibrary="C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\Release\SamgarKey.lib"/>
+		</Configuration>
+		<Configuration
+			Name="MinSizeRel|Win32"
+			OutputDirectory="MinSizeRel"
+			IntermediateDirectory="SamgarKey.dir\MinSizeRel"
+			ConfigurationType="1"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="FALSE"
+			CharacterSet="2">
+			<Tool
+				Name="VCCLCompilerTool"
+				AdditionalOptions=" /Zm1000"
+				AdditionalIncludeDirectories="C:\Users\Kyron\Documents\Compilerstuff\ACE_wrappers;C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\src\libYARP_OS\include;C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\src\libYARP_sig\include;C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\src\libYARP_dev\include;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\HeaderFiles&quot;;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\SourceFiles&quot;;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\TesterFiles&quot;;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\Release&quot;;C:\Users\Kyron\Documents\Compilerstuff\juce\juce\bin;C:\Users\Kyron\Documents\Compilerstuff\juce\juce;"
+				CompileAs="2"
+				ExceptionHandling="1"
+				InlineFunctionExpansion="1"
+				Optimization="1"
+				RuntimeLibrary="2"
+				RuntimeTypeInfo="TRUE"
+				WarningLevel="3"
+				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,_REENTRANT,WIN32,_WINDOWS,YARP_LITTLE_ENDIAN,YARP_INT32=int,YARP_INT16=short,YARP_FLOAT64=double,CMAKE_INTDIR=\&quot;MinSizeRel\&quot;"
+				AssemblerListingLocation="MinSizeRel"
+				ObjectFile="$(IntDir)\"
+				ProgramDataBaseFileName="C:/Users/Kyron/Documents/SamgarDevelopment-Main/SNVSAMGAR/SAMGAR Gui/Trunk/MinSizeRel/SamgarKey.pdb"
+/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				AdditionalIncludeDirectories="C:\Users\Kyron\Documents\Compilerstuff\ACE_wrappers;C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\src\libYARP_OS\include;C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\src\libYARP_sig\include;C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\src\libYARP_dev\include;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\HeaderFiles&quot;;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\SourceFiles&quot;;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\TesterFiles&quot;;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\Release&quot;;C:\Users\Kyron\Documents\Compilerstuff\juce\juce\bin;C:\Users\Kyron\Documents\Compilerstuff\juce\juce;"
+				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,_REENTRANT,WIN32,_WINDOWS,YARP_LITTLE_ENDIAN,YARP_INT32=int,YARP_INT16=short,YARP_FLOAT64=double,CMAKE_INTDIR=\&quot;MinSizeRel\&quot;"/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,_REENTRANT,WIN32,_WINDOWS,YARP_LITTLE_ENDIAN,YARP_INT32=int,YARP_INT16=short,YARP_FLOAT64=double,CMAKE_INTDIR=\&quot;MinSizeRel\&quot;"
+				MkTypLibCompatible="FALSE"
+				TargetEnvironment="1"
+				GenerateStublessProxies="TRUE"
+				TypeLibraryName="$(InputName).tlb"
+				OutputDirectory="$(IntDir)"
+				HeaderFileName="$(InputName).h"
+				DLLDataFileName=""
+				InterfaceIdentifierFileName="$(InputName)_i.c"
+				ProxyFileName="$(InputName)_p.c"/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCPostBuildEventTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalOptions=" /STACK:10000000 /machine:I386"
+				AdditionalDependencies="$(NOINHERIT) kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib  C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\lib\$(OutDir)\YARP_dev.lib C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\lib\$(OutDir)\YARP_sig.lib C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\lib\$(OutDir)\YARP_OS.lib C:\Users\Kyron\Documents\Compilerstuff\ACE_wrappers\lib\ACE.lib winmm.lib yarpmod.lib C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\lib\$(OutDir)\YARP_dev.lib C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\lib\$(OutDir)\YARP_sig.lib C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\lib\$(OutDir)\YARP_OS.lib C:\Users\Kyron\Documents\Compilerstuff\ACE_wrappers\lib\ACE.lib winmm.lib C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\lib\$(OutDir)\YARP_dev.lib C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\lib\$(OutDir)\YARP_sig.lib C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\lib\$(OutDir)\YARP_OS.lib C:\Users\Kyron\Documents\Compilerstuff\ACE_wrappers\lib\ACE.lib winmm.lib &quot;C:\Program Files (x86)\OpenCV\lib\cv.lib&quot; &quot;C:\Program Files (x86)\OpenCV\lib\cvaux.lib&quot; &quot;C:\Program Files (x86)\OpenCV\lib\cxcore.lib&quot; "
+				OutputFile="C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\MinSizeRel\SamgarKey.exe"
+				Version="0.0"
+				GenerateManifest="TRUE"
+				LinkIncremental="1"
+				AdditionalLibraryDirectories="C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\lib\$(OutDir)\$(OutDir),C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\lib\$(OutDir),C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\lib\$(OutDir)\Debug\$(OutDir),C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\lib\$(OutDir)\Debug,C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\lib\$(OutDir)\Release\$(OutDir),C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\lib\$(OutDir)\Release,Release\$(OutDir),Release,C:\Users\Kyron\Documents\Compilerstuff\jucejuce\bin\$(OutDir),C:\Users\Kyron\Documents\Compilerstuff\jucejuce\bin,C:\Users\Kyron\Documents\Compilerstuff\ACE_wrappers\lib\$(OutDir),C:\Users\Kyron\Documents\Compilerstuff\ACE_wrappers\lib,&quot;C:\Program Files (x86)\OpenCV\lib\$(OutDir)&quot;,&quot;C:\Program Files (x86)\OpenCV\lib&quot;"
+				ProgramDataBaseFile="C:/Users/Kyron/Documents/SamgarDevelopment-Main/SNVSAMGAR/SAMGAR Gui/Trunk/MinSizeRel/SamgarKey.pdb"
+				SubSystem="1"
+				ImportLibrary="C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\MinSizeRel\SamgarKey.lib"/>
+		</Configuration>
+		<Configuration
+			Name="RelWithDebInfo|Win32"
+			OutputDirectory="RelWithDebInfo"
+			IntermediateDirectory="SamgarKey.dir\RelWithDebInfo"
+			ConfigurationType="1"
+			UseOfMFC="0"
+			ATLMinimizesCRunTimeLibraryUsage="FALSE"
+			CharacterSet="2">
+			<Tool
+				Name="VCCLCompilerTool"
+				AdditionalOptions=" /Zm1000"
+				AdditionalIncludeDirectories="C:\Users\Kyron\Documents\Compilerstuff\ACE_wrappers;C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\src\libYARP_OS\include;C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\src\libYARP_sig\include;C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\src\libYARP_dev\include;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\HeaderFiles&quot;;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\SourceFiles&quot;;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\TesterFiles&quot;;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\Release&quot;;C:\Users\Kyron\Documents\Compilerstuff\juce\juce\bin;C:\Users\Kyron\Documents\Compilerstuff\juce\juce;"
+				CompileAs="2"
+				DebugInformationFormat="3"
+				ExceptionHandling="1"
+				InlineFunctionExpansion="1"
+				Optimization="2"
+				RuntimeLibrary="2"
+				RuntimeTypeInfo="TRUE"
+				WarningLevel="3"
+				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,_REENTRANT,WIN32,_WINDOWS,YARP_LITTLE_ENDIAN,YARP_INT32=int,YARP_INT16=short,YARP_FLOAT64=double,CMAKE_INTDIR=\&quot;RelWithDebInfo\&quot;"
+				AssemblerListingLocation="RelWithDebInfo"
+				ObjectFile="$(IntDir)\"
+				ProgramDataBaseFileName="C:/Users/Kyron/Documents/SamgarDevelopment-Main/SNVSAMGAR/SAMGAR Gui/Trunk/RelWithDebInfo/SamgarKey.pdb"
+/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				AdditionalIncludeDirectories="C:\Users\Kyron\Documents\Compilerstuff\ACE_wrappers;C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\src\libYARP_OS\include;C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\src\libYARP_sig\include;C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\src\libYARP_dev\include;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\HeaderFiles&quot;;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\SourceFiles&quot;;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\TesterFiles&quot;;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\Release&quot;;C:\Users\Kyron\Documents\Compilerstuff\juce\juce\bin;C:\Users\Kyron\Documents\Compilerstuff\juce\juce;"
+				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,_REENTRANT,WIN32,_WINDOWS,YARP_LITTLE_ENDIAN,YARP_INT32=int,YARP_INT16=short,YARP_FLOAT64=double,CMAKE_INTDIR=\&quot;RelWithDebInfo\&quot;"/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="WIN32,_WINDOWS,NDEBUG,_REENTRANT,WIN32,_WINDOWS,YARP_LITTLE_ENDIAN,YARP_INT32=int,YARP_INT16=short,YARP_FLOAT64=double,CMAKE_INTDIR=\&quot;RelWithDebInfo\&quot;"
+				MkTypLibCompatible="FALSE"
+				TargetEnvironment="1"
+				GenerateStublessProxies="TRUE"
+				TypeLibraryName="$(InputName).tlb"
+				OutputDirectory="$(IntDir)"
+				HeaderFileName="$(InputName).h"
+				DLLDataFileName=""
+				InterfaceIdentifierFileName="$(InputName)_i.c"
+				ProxyFileName="$(InputName)_p.c"/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCPostBuildEventTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalOptions=" /STACK:10000000 /machine:I386 /debug"
+				AdditionalDependencies="$(NOINHERIT) kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib  C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\lib\$(OutDir)\YARP_dev.lib C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\lib\$(OutDir)\YARP_sig.lib C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\lib\$(OutDir)\YARP_OS.lib C:\Users\Kyron\Documents\Compilerstuff\ACE_wrappers\lib\ACE.lib winmm.lib yarpmod.lib C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\lib\$(OutDir)\YARP_dev.lib C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\lib\$(OutDir)\YARP_sig.lib C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\lib\$(OutDir)\YARP_OS.lib C:\Users\Kyron\Documents\Compilerstuff\ACE_wrappers\lib\ACE.lib winmm.lib C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\lib\$(OutDir)\YARP_dev.lib C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\lib\$(OutDir)\YARP_sig.lib C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\lib\$(OutDir)\YARP_OS.lib C:\Users\Kyron\Documents\Compilerstuff\ACE_wrappers\lib\ACE.lib winmm.lib &quot;C:\Program Files (x86)\OpenCV\lib\cv.lib&quot; &quot;C:\Program Files (x86)\OpenCV\lib\cvaux.lib&quot; &quot;C:\Program Files (x86)\OpenCV\lib\cxcore.lib&quot; "
+				OutputFile="C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\RelWithDebInfo\SamgarKey.exe"
+				Version="0.0"
+				GenerateManifest="TRUE"
+				LinkIncremental="2"
+				AdditionalLibraryDirectories="C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\lib\$(OutDir)\$(OutDir),C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\lib\$(OutDir),C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\lib\$(OutDir)\Debug\$(OutDir),C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\lib\$(OutDir)\Debug,C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\lib\$(OutDir)\Release\$(OutDir),C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\lib\$(OutDir)\Release,Release\$(OutDir),Release,C:\Users\Kyron\Documents\Compilerstuff\jucejuce\bin\$(OutDir),C:\Users\Kyron\Documents\Compilerstuff\jucejuce\bin,C:\Users\Kyron\Documents\Compilerstuff\ACE_wrappers\lib\$(OutDir),C:\Users\Kyron\Documents\Compilerstuff\ACE_wrappers\lib,&quot;C:\Program Files (x86)\OpenCV\lib\$(OutDir)&quot;,&quot;C:\Program Files (x86)\OpenCV\lib&quot;"
+				ProgramDataBaseFile="C:/Users/Kyron/Documents/SamgarDevelopment-Main/SNVSAMGAR/SAMGAR Gui/Trunk/RelWithDebInfo/SamgarKey.pdb"
+				GenerateDebugInformation="TRUE"
+				SubSystem="1"
+				ImportLibrary="C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\RelWithDebInfo\SamgarKey.lib"/>
+		</Configuration>
+	</Configurations>
+	<Files>
+			<File
+				RelativePath="C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\CMakeLists.txt">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+					Name="VCCustomBuildTool"
+					Description="Building Custom Rule C:/Users/Kyron/Documents/SamgarDevelopment-Main/SNVSAMGAR/SAMGAR Gui/Trunk/CMakeLists.txt"
+					CommandLine="&quot;C:\Program Files (x86)\CMake 2.6\bin\cmake.exe&quot; &quot;-HC:/Users/Kyron/Documents/SamgarDevelopment-Main/SNVSAMGAR/SAMGAR Gui/Trunk&quot; &quot;-BC:/Users/Kyron/Documents/SamgarDevelopment-Main/SNVSAMGAR/SAMGAR Gui/Trunk&quot; --check-stamp-file CMakeFiles/generate.stamp"
+					AdditionalDependencies="&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\CMakeLists.txt&quot;;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\CMakeFiles\CMakeSystem.cmake&quot;;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\CMakeFiles\CMakeCCompiler.cmake&quot;;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\CMakeFiles\CMakeCXXCompiler.cmake&quot;;&quot;C:\Program Files (x86)\CMake 2.6\share\cmake-2.6\Modules\CMakeSystemSpecificInformation.cmake&quot;;&quot;C:\Program Files (x86)\CMake 2.6\share\cmake-2.6\Modules\CMakeGenericSystem.cmake&quot;;&quot;C:\Program Files (x86)\CMake 2.6\share\cmake-2.6\Modules\Platform\gcc.cmake&quot;;&quot;C:\Program Files (x86)\CMake 2.6\share\cmake-2.6\Modules\Platform\Windows.cmake&quot;;&quot;C:\Program Files (x86)\CMake 2.6\share\cmake-2.6\Modules\Platform\WindowsPaths.cmake&quot;;&quot;C:\Program Files (x86)\CMake 2.6\share\cmake-2.6\Modules\CMakeCInformation.cmake&quot;;&quot;C:\Program Files (x86)\CMake 2.6\share\cmake-2.6\Modules\Platform\Windows-cl.cmake&quot;;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\CMakeFiles\CMakeCPlatform.cmake&quot;;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\CMakeFiles\CMakeCXXPlatform.cmake&quot;;&quot;C:\Program Files (x86)\CMake 2.6\share\cmake-2.6\Modules\Platform\cl.cmake&quot;;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\CMakeFiles\CMakeRCCompiler.cmake&quot;;&quot;C:\Program Files (x86)\CMake 2.6\share\cmake-2.6\Modules\CMakeRCInformation.cmake&quot;;&quot;C:\Program Files (x86)\CMake 2.6\share\cmake-2.6\Modules\CMakeCommonLanguageInclude.cmake&quot;;&quot;C:\Program Files (x86)\CMake 2.6\share\cmake-2.6\Modules\CMakeCXXInformation.cmake&quot;;&quot;C:\Program Files (x86)\CMake 2.6\share\cmake-2.6\Modules\Platform\Windows-cl.cmake&quot;;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\CMakeFiles\CMakeCPlatform.cmake&quot;;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\CMakeFiles\CMakeCXXPlatform.cmake&quot;;&quot;C:\Program Files (x86)\CMake 2.6\share\cmake-2.6\Modules\Platform\cl.cmake&quot;;&quot;C:\Program Files (x86)\CMake 2.6\share\cmake-2.6\Modules\CMakeCommonLanguageInclude.cmake&quot;;C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\YARPConfig.cmake;C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\conf\YarpDevice.cmake;C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\yarpmodConfig.cmake;C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\yarpmodDependencies.cmake;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\CMakeLists.txt&quot;;"
+					Outputs="CMakeFiles\generate.stamp"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+					Name="VCCustomBuildTool"
+					Description="Building Custom Rule C:/Users/Kyron/Documents/SamgarDevelopment-Main/SNVSAMGAR/SAMGAR Gui/Trunk/CMakeLists.txt"
+					CommandLine="&quot;C:\Program Files (x86)\CMake 2.6\bin\cmake.exe&quot; &quot;-HC:/Users/Kyron/Documents/SamgarDevelopment-Main/SNVSAMGAR/SAMGAR Gui/Trunk&quot; &quot;-BC:/Users/Kyron/Documents/SamgarDevelopment-Main/SNVSAMGAR/SAMGAR Gui/Trunk&quot; --check-stamp-file CMakeFiles/generate.stamp"
+					AdditionalDependencies="&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\CMakeLists.txt&quot;;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\CMakeFiles\CMakeSystem.cmake&quot;;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\CMakeFiles\CMakeCCompiler.cmake&quot;;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\CMakeFiles\CMakeCXXCompiler.cmake&quot;;&quot;C:\Program Files (x86)\CMake 2.6\share\cmake-2.6\Modules\CMakeSystemSpecificInformation.cmake&quot;;&quot;C:\Program Files (x86)\CMake 2.6\share\cmake-2.6\Modules\CMakeGenericSystem.cmake&quot;;&quot;C:\Program Files (x86)\CMake 2.6\share\cmake-2.6\Modules\Platform\gcc.cmake&quot;;&quot;C:\Program Files (x86)\CMake 2.6\share\cmake-2.6\Modules\Platform\Windows.cmake&quot;;&quot;C:\Program Files (x86)\CMake 2.6\share\cmake-2.6\Modules\Platform\WindowsPaths.cmake&quot;;&quot;C:\Program Files (x86)\CMake 2.6\share\cmake-2.6\Modules\CMakeCInformation.cmake&quot;;&quot;C:\Program Files (x86)\CMake 2.6\share\cmake-2.6\Modules\Platform\Windows-cl.cmake&quot;;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\CMakeFiles\CMakeCPlatform.cmake&quot;;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\CMakeFiles\CMakeCXXPlatform.cmake&quot;;&quot;C:\Program Files (x86)\CMake 2.6\share\cmake-2.6\Modules\Platform\cl.cmake&quot;;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\CMakeFiles\CMakeRCCompiler.cmake&quot;;&quot;C:\Program Files (x86)\CMake 2.6\share\cmake-2.6\Modules\CMakeRCInformation.cmake&quot;;&quot;C:\Program Files (x86)\CMake 2.6\share\cmake-2.6\Modules\CMakeCommonLanguageInclude.cmake&quot;;&quot;C:\Program Files (x86)\CMake 2.6\share\cmake-2.6\Modules\CMakeCXXInformation.cmake&quot;;&quot;C:\Program Files (x86)\CMake 2.6\share\cmake-2.6\Modules\Platform\Windows-cl.cmake&quot;;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\CMakeFiles\CMakeCPlatform.cmake&quot;;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\CMakeFiles\CMakeCXXPlatform.cmake&quot;;&quot;C:\Program Files (x86)\CMake 2.6\share\cmake-2.6\Modules\Platform\cl.cmake&quot;;&quot;C:\Program Files (x86)\CMake 2.6\share\cmake-2.6\Modules\CMakeCommonLanguageInclude.cmake&quot;;C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\YARPConfig.cmake;C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\conf\YarpDevice.cmake;C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\yarpmodConfig.cmake;C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\yarpmodDependencies.cmake;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\CMakeLists.txt&quot;;"
+					Outputs="CMakeFiles\generate.stamp"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="MinSizeRel|Win32">
+					<Tool
+					Name="VCCustomBuildTool"
+					Description="Building Custom Rule C:/Users/Kyron/Documents/SamgarDevelopment-Main/SNVSAMGAR/SAMGAR Gui/Trunk/CMakeLists.txt"
+					CommandLine="&quot;C:\Program Files (x86)\CMake 2.6\bin\cmake.exe&quot; &quot;-HC:/Users/Kyron/Documents/SamgarDevelopment-Main/SNVSAMGAR/SAMGAR Gui/Trunk&quot; &quot;-BC:/Users/Kyron/Documents/SamgarDevelopment-Main/SNVSAMGAR/SAMGAR Gui/Trunk&quot; --check-stamp-file CMakeFiles/generate.stamp"
+					AdditionalDependencies="&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\CMakeLists.txt&quot;;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\CMakeFiles\CMakeSystem.cmake&quot;;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\CMakeFiles\CMakeCCompiler.cmake&quot;;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\CMakeFiles\CMakeCXXCompiler.cmake&quot;;&quot;C:\Program Files (x86)\CMake 2.6\share\cmake-2.6\Modules\CMakeSystemSpecificInformation.cmake&quot;;&quot;C:\Program Files (x86)\CMake 2.6\share\cmake-2.6\Modules\CMakeGenericSystem.cmake&quot;;&quot;C:\Program Files (x86)\CMake 2.6\share\cmake-2.6\Modules\Platform\gcc.cmake&quot;;&quot;C:\Program Files (x86)\CMake 2.6\share\cmake-2.6\Modules\Platform\Windows.cmake&quot;;&quot;C:\Program Files (x86)\CMake 2.6\share\cmake-2.6\Modules\Platform\WindowsPaths.cmake&quot;;&quot;C:\Program Files (x86)\CMake 2.6\share\cmake-2.6\Modules\CMakeCInformation.cmake&quot;;&quot;C:\Program Files (x86)\CMake 2.6\share\cmake-2.6\Modules\Platform\Windows-cl.cmake&quot;;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\CMakeFiles\CMakeCPlatform.cmake&quot;;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\CMakeFiles\CMakeCXXPlatform.cmake&quot;;&quot;C:\Program Files (x86)\CMake 2.6\share\cmake-2.6\Modules\Platform\cl.cmake&quot;;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\CMakeFiles\CMakeRCCompiler.cmake&quot;;&quot;C:\Program Files (x86)\CMake 2.6\share\cmake-2.6\Modules\CMakeRCInformation.cmake&quot;;&quot;C:\Program Files (x86)\CMake 2.6\share\cmake-2.6\Modules\CMakeCommonLanguageInclude.cmake&quot;;&quot;C:\Program Files (x86)\CMake 2.6\share\cmake-2.6\Modules\CMakeCXXInformation.cmake&quot;;&quot;C:\Program Files (x86)\CMake 2.6\share\cmake-2.6\Modules\Platform\Windows-cl.cmake&quot;;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\CMakeFiles\CMakeCPlatform.cmake&quot;;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\CMakeFiles\CMakeCXXPlatform.cmake&quot;;&quot;C:\Program Files (x86)\CMake 2.6\share\cmake-2.6\Modules\Platform\cl.cmake&quot;;&quot;C:\Program Files (x86)\CMake 2.6\share\cmake-2.6\Modules\CMakeCommonLanguageInclude.cmake&quot;;C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\YARPConfig.cmake;C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\conf\YarpDevice.cmake;C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\yarpmodConfig.cmake;C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\yarpmodDependencies.cmake;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\CMakeLists.txt&quot;;"
+					Outputs="CMakeFiles\generate.stamp"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="RelWithDebInfo|Win32">
+					<Tool
+					Name="VCCustomBuildTool"
+					Description="Building Custom Rule C:/Users/Kyron/Documents/SamgarDevelopment-Main/SNVSAMGAR/SAMGAR Gui/Trunk/CMakeLists.txt"
+					CommandLine="&quot;C:\Program Files (x86)\CMake 2.6\bin\cmake.exe&quot; &quot;-HC:/Users/Kyron/Documents/SamgarDevelopment-Main/SNVSAMGAR/SAMGAR Gui/Trunk&quot; &quot;-BC:/Users/Kyron/Documents/SamgarDevelopment-Main/SNVSAMGAR/SAMGAR Gui/Trunk&quot; --check-stamp-file CMakeFiles/generate.stamp"
+					AdditionalDependencies="&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\CMakeLists.txt&quot;;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\CMakeFiles\CMakeSystem.cmake&quot;;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\CMakeFiles\CMakeCCompiler.cmake&quot;;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\CMakeFiles\CMakeCXXCompiler.cmake&quot;;&quot;C:\Program Files (x86)\CMake 2.6\share\cmake-2.6\Modules\CMakeSystemSpecificInformation.cmake&quot;;&quot;C:\Program Files (x86)\CMake 2.6\share\cmake-2.6\Modules\CMakeGenericSystem.cmake&quot;;&quot;C:\Program Files (x86)\CMake 2.6\share\cmake-2.6\Modules\Platform\gcc.cmake&quot;;&quot;C:\Program Files (x86)\CMake 2.6\share\cmake-2.6\Modules\Platform\Windows.cmake&quot;;&quot;C:\Program Files (x86)\CMake 2.6\share\cmake-2.6\Modules\Platform\WindowsPaths.cmake&quot;;&quot;C:\Program Files (x86)\CMake 2.6\share\cmake-2.6\Modules\CMakeCInformation.cmake&quot;;&quot;C:\Program Files (x86)\CMake 2.6\share\cmake-2.6\Modules\Platform\Windows-cl.cmake&quot;;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\CMakeFiles\CMakeCPlatform.cmake&quot;;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\CMakeFiles\CMakeCXXPlatform.cmake&quot;;&quot;C:\Program Files (x86)\CMake 2.6\share\cmake-2.6\Modules\Platform\cl.cmake&quot;;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\CMakeFiles\CMakeRCCompiler.cmake&quot;;&quot;C:\Program Files (x86)\CMake 2.6\share\cmake-2.6\Modules\CMakeRCInformation.cmake&quot;;&quot;C:\Program Files (x86)\CMake 2.6\share\cmake-2.6\Modules\CMakeCommonLanguageInclude.cmake&quot;;&quot;C:\Program Files (x86)\CMake 2.6\share\cmake-2.6\Modules\CMakeCXXInformation.cmake&quot;;&quot;C:\Program Files (x86)\CMake 2.6\share\cmake-2.6\Modules\Platform\Windows-cl.cmake&quot;;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\CMakeFiles\CMakeCPlatform.cmake&quot;;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\CMakeFiles\CMakeCXXPlatform.cmake&quot;;&quot;C:\Program Files (x86)\CMake 2.6\share\cmake-2.6\Modules\Platform\cl.cmake&quot;;&quot;C:\Program Files (x86)\CMake 2.6\share\cmake-2.6\Modules\CMakeCommonLanguageInclude.cmake&quot;;C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\YARPConfig.cmake;C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\conf\YarpDevice.cmake;C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\yarpmodConfig.cmake;C:\Users\Kyron\Documents\Compilerstuff\YarpBeta\yarpmodDependencies.cmake;&quot;C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\CMakeLists.txt&quot;;"
+					Outputs="CMakeFiles\generate.stamp"/>
+				</FileConfiguration>
+			</File>
+		<Filter
+			Name="Source Files"
+			Filter="">
+			<File
+				RelativePath="C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\SourceFiles\Key.cpp">
+			</File>
+			<File
+				RelativePath="C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\SourceFiles\MainComponent.cpp">
+			</File>
+			<File
+				RelativePath="C:\Users\Kyron\Documents\Compilerstuff\juce\juce_amalgamated.cpp">
+			</File>
+		</Filter>
+		<Filter
+			Name="Header Files"
+			Filter="">
+			<File
+				RelativePath="C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\SourceFiles\MainComponent.h">
+			</File>
+			<File
+				RelativePath="C:\Users\Kyron\Documents\SamgarDevelopment-Main\SNVSAMGAR\SAMGAR Gui\Trunk\SourceFiles\ModuleGui.h">
+			</File>
+			<File
+				RelativePath="C:\Users\Kyron\Documents\Compilerstuff\juce\juce_amalgamated.h">
+			</File>
+		</Filter>
+	</Files>
+	<Globals>
+	</Globals>
+</VisualStudioProject>
