@@ -1,0 +1,1 @@
+java -cp "FAtiMA.jar" FAtiMA.Agent localhost 46874 true SpiritOfTheBuilding M TestAgent Spirit isTestMind:True

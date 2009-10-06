@@ -1,0 +1,19 @@
+<DomainActions>
+
+	<Action name="TestAction([target])">
+		<PreConditions>
+		</PreConditions>
+		<Effects>
+		</Effects>
+	</Action>
+
+	<Action name="TestAction2">
+		<PreConditions>
+		</PreConditions>
+		<Effects>
+		</Effects>
+	</Action>
+
+
+
+</DomainActions>

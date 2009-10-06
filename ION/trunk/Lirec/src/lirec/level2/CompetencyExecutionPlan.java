@@ -1,0 +1,165 @@
+package lirec.level2;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+/** a plan of competencies that can be executed by the competency execution system,
+ * this class is used to represent both instantiated and not instantiated execution plans.
+ * Inside the competency manager rules uninstantiated execution plans are stored, while
+ * once the competency manager selects a plan, it creates an instantiated copy ($ variables
+ * in the competency parameters of the plan steps are replaced by actual values) */
+public class CompetencyExecutionPlan {
+
+	/** the different steps this plan is made of, indexed by plan step id */
+	private HashMap<String,CompetencyExecutionPlanStep> planSteps; 	
+	
+	/** during execution of the plan this stores the steps of the plan that
+	 *  have already been completed, this is only used for instantiated plans */
+	private ArrayList<CompetencyExecutionPlanStep> stepsAlreadyCompleted;
+
+	/** during execution of the plan this stores the steps of the plan that
+	 *  are currently being executed, this is only used for instantiated plans */
+	private ArrayList<CompetencyExecutionPlanStep> stepsCurrentlyExecuting;
+
+	/** stores whether this plan is instantiated (true) or uninstantiated (false) */
+	private boolean instantiated;
+	
+	/** for instantiated plans this stores whether they are currently executed or not*/
+	private boolean currentlyExecuting;
+	
+	/** creates a new competencyExecutionPlan with no steps */
+	public CompetencyExecutionPlan()
+	{
+		planSteps = new HashMap<String,CompetencyExecutionPlanStep>();
+		instantiated = false;
+		currentlyExecuting = false;
+	}
+	
+	/** creates a new competencyExecutionPlan from a DOM node */
+	public CompetencyExecutionPlan(Node domNode) throws Exception
+	{
+		this();
+		NodeList children = domNode.getChildNodes();
+		for (int i=0; i<children.getLength(); i++)
+		{
+			if (children.item(i).getNodeName().equals("Competency"))
+			{
+				CompetencyExecutionPlanStep step = new CompetencyExecutionPlanStep(children.item(i));
+				if (!planSteps.containsKey(step.getID()))
+					planSteps.put(step.getID(), step);
+				else
+					throw new Exception("Competency Execution plan is corrupt: ID " 
+					+ step.getID()+ " was used more than once.");
+			}	
+		}
+		
+		// check for integrity of planSteps preconditions, i.e. no step specifies a 
+		// precondition that is not the id of another step
+		for (CompetencyExecutionPlanStep step : planSteps.values())
+			for (String preCondition : step.getPreconditions())
+				if (!planSteps.containsKey(preCondition)) 
+					throw new Exception("Competency Execution plan is corrupt: precondition "
+						+ preCondition + " could not be resolved");
+		
+	}
+	
+	
+	/** returns an instantiated copy of this competency execution plan
+	 * 
+	 * @param mappings the mappings for variables to use for instantiation
+	 * @return a new competency execution plan which is an instantiated copy of the 
+	 * calling object
+	 */
+	public CompetencyExecutionPlan getInstantiatedCopy(HashMap<String,String> mappings)
+	{
+		CompetencyExecutionPlan returnPlan = new CompetencyExecutionPlan();
+		
+		// iterate over all current plan steps and add an instantiated copy to the new plan
+		for (String planStepID : planSteps.keySet())
+			returnPlan.planSteps.put(planStepID,planSteps.get(planStepID).getInstantiatedCopy(mappings));		
+		
+		// set the returned plan to be instantiated
+		returnPlan.instantiated = true;
+		
+		// and initialise the working variables that instantiated plans need
+		returnPlan.stepsAlreadyCompleted = new ArrayList<CompetencyExecutionPlanStep>();
+		returnPlan.stepsCurrentlyExecuting = new ArrayList<CompetencyExecutionPlanStep>();
+		
+		return returnPlan;
+	}
+
+	/** returns the no of steps in the plan */
+	public int getNoOfSteps()
+	{
+		return planSteps.size();
+	}
+	
+	/** returns all plan steps as a collection, do not modify this collection 
+	 * 	and do only use this method on instantiated competencyExecution Plans */
+	public Collection<CompetencyExecutionPlanStep> getPlanSteps()
+	{
+		return planSteps.values();
+	}
+	
+	/** returns the plan step with the given id or null if such a step does not exist */
+	public CompetencyExecutionPlanStep getPlanStep(String id)
+	{
+		return planSteps.get(id);	
+	}
+	
+	/** returns the steps of the plan that have already been completed,
+	 *  this list may be modified outside of the class */
+	public synchronized ArrayList<CompetencyExecutionPlanStep> getStepsAlreadyCompleted()
+	{
+		return stepsAlreadyCompleted;
+	}
+
+	/** returns the steps of the plan that are currently being executed,
+	 *  this list may be modified outside of the class */
+	public synchronized ArrayList<CompetencyExecutionPlanStep> getStepsCurrentlyExecuted()
+	{
+		return stepsCurrentlyExecuting;
+	}
+	
+	/** returns whether this plan is instantiated */
+	public synchronized boolean isInstantiated()
+	{
+		return instantiated;
+	}
+	
+	/** returns whether this plan is currently executing (only relevant for instantiated plans) */
+	public synchronized boolean isCurrentlyExecuting()
+	{
+		return currentlyExecuting;
+	}
+	
+	/** the competency execution system should call this when it starts executing a plan
+	 * (only relevant for instantiated plans) */
+	public synchronized void startExecution()
+	{
+		// empty execution working variables
+		stepsAlreadyCompleted.clear();
+		stepsCurrentlyExecuting.clear();
+		
+		// this also includes the competencies already tried lists for all plan steps
+		for (CompetencyExecutionPlanStep step : planSteps.values())
+			step.getCompetenciesAlreadyTried().clear();
+		
+		currentlyExecuting = true; 
+		
+	}
+
+	/** the competency execution system should call this when it has finished executing a plan 
+	 * (both in case of plan failure and success), (only relevant for instantiated plans) */	
+	public synchronized void stopExecution()
+	{
+		currentlyExecuting = false; 		
+	}
+	
+	
+
+}
