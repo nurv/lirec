@@ -363,7 +363,7 @@ public class Agent {
 
 		try
 		{
-			FileOutputStream out = new FileOutputStream(fileName);
+			FileOutputStream out = new FileOutputStream(fileName,false);
 			ObjectOutputStream s = new ObjectOutputStream(out);
 
 			s.writeObject(_deliberativeLayer);
@@ -398,6 +398,7 @@ public class Agent {
 			out.write(AutobiographicalMemory.GetInstance().toXML().getBytes());
 			out.flush();
 			out.close();
+			
 		}
 		catch(Exception e)
 		{
@@ -440,6 +441,7 @@ public class Agent {
 	public void LoadAgentState(String fileName) 
 		throws IOException, ClassNotFoundException{
 		
+		//FileInputStream in = new FileInputStream("C:\\Meiyii\\LIREC\\AgentMind\\data\\log\\Greta");
 		FileInputStream in = new FileInputStream(fileName);
 		ObjectInputStream s = new ObjectInputStream(in);
 		this._deliberativeLayer = (DeliberativeProcess) s.readObject();
