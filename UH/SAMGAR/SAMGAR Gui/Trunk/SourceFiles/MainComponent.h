@@ -7,6 +7,7 @@
 
 #include <yarp/sig/all.h>
 #include <yarp/os/all.h>
+//#include <ace/OS.h>
 
 
 //#include <windows.h> 
@@ -100,8 +101,12 @@ public:
 	void DelConnection(String parent1,String child1,String parent2, String child2,String Lossyornot,String Network);
 	void ConnectionAutoUpdate(void);
 	void CheckConnectionRight(void);
+	void GetModuleCommands(void);
 
 private:
+	int MySizeX,MySizeY;
+	int MyCurrentSizeX,MyCurrentSizeY;
+	float PropSizeChangeX,PropSizeChangeY;
 
 	juce::Time MyTime;
 	File myFileforLog;
@@ -144,6 +149,7 @@ private:
 	Path internalPath2;
 	Path internalPath3;
 	Path internalPath4;
+	Path internalPath5;
 	Path TempPath;
 	Path mynewpath;
 	DrawablePath TempPath2;

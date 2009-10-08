@@ -86,7 +86,12 @@ public:
 
     ~HelloWorldWindow()   { /* (the content component will be deleted automatically, so no need to do it here) */    }
 
-    void closeButtonPressed()   {JUCEApplication::quit();} // little cross top right
+    void closeButtonPressed()   
+	{
+	Network::fini();
+		JUCEApplication::quit();
+	
+	} // little cross top right
 };
 
 class JUCEHelloWorldApplication : public JUCEApplication

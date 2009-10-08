@@ -27,7 +27,11 @@ BufferedPort<Bottle> ThePortForModules;
 
 
 /*! main window constructor !*/
-MainComponent::MainComponent (): helloWorldLabel (0), quitButton (0)
+MainComponent::MainComponent (): 
+helloWorldLabel (0), quitButton (0),  MytextEditor(0), MytextEditor2(0),	ModParent1(0),	    ModChild1(0),  ModChild2(0),
+ModParent2(0),		 LossBox(0),	  Connect(0),	   NetworkBox(0),		ConnectionStuff(0), ClearLog(0),   RefreshConnect(0),
+StopButton(0),		 MigrateButton(0),StartButton(0),  OpenLogButton(0),	SaveLog(0),			SaveMod(0),    LoadCon(0),
+LoadMod(0),			 SaveCon(0),	  DebugButton1(0), DebugButton2(0),     DebugButton3(0),    DebugButton4(0)
 {
 
 	Network yarp;
@@ -37,11 +41,111 @@ MainComponent::MainComponent (): helloWorldLabel (0), quitButton (0)
 	WhatShownDebug[2]=1;
 	WhatShownDebug[3]=1;
 
-	startTimer (5000);
+
+	DebugButton1 = new TextButton (String::empty);
+	addAndMakeVisible (DebugButton1);
+	DebugButton1->setBounds(740,20,100,30);
+	DebugButton1->setButtonText (T("debug priority 1 on"));
+    DebugButton1->addButtonListener (this);
+	DebugButton1->setConnectedEdges(Button::ConnectedOnBottom);	
+
+	DebugButton2 = new TextButton (String::empty);
+	addAndMakeVisible (DebugButton2);
+	DebugButton2->setBounds(740,50,100,30);
+	DebugButton2->setButtonText (T("debug priority 2 on"));
+    DebugButton2->addButtonListener (this);
+	DebugButton2->setConnectedEdges(Button::ConnectedOnTop | Button::ConnectedOnBottom);	
+
+	DebugButton3 = new TextButton (String::empty);
+	addAndMakeVisible (DebugButton3);
+	DebugButton3->setBounds(740,80,100,30);
+	DebugButton3->setButtonText (T("debug priority 3 on"));
+    DebugButton3->addButtonListener (this);
+	DebugButton3->setConnectedEdges(Button::ConnectedOnTop | Button::ConnectedOnBottom);	
+
+	DebugButton4 = new TextButton (String::empty);
+	addAndMakeVisible (DebugButton4);
+	DebugButton4->setBounds(740,110,100,30);
+	DebugButton4->setButtonText (T("debug priority 4 on"));
+    DebugButton4->addButtonListener (this);
+	DebugButton4->setConnectedEdges(Button::ConnectedOnTop);	
+    setSize (1200, 600);
+
+	SaveLog = new TextButton (String::empty);
+	addAndMakeVisible (SaveLog);
+	SaveLog->setBounds(740,150,100,30);
+	SaveLog->setButtonText (T("Save log"));
+    SaveLog->addButtonListener (this);
+
+	ClearLog = new TextButton (String::empty);
+	addAndMakeVisible (ClearLog);
+	ClearLog->setBounds(740,190,100,30);
+	ClearLog->setButtonText (T("Clear Log"));
+    ClearLog->addButtonListener (this);
+
+	RefreshConnect = new TextButton (String::empty);
+	addAndMakeVisible (RefreshConnect);
+	RefreshConnect->setBounds(740,390,100,30); // 230
+	RefreshConnect->setButtonText (T("RefreshConnect"));
+    RefreshConnect->addButtonListener (this);
+
+	StartButton = new TextButton (String::empty);
+	addAndMakeVisible (StartButton);
+	StartButton->setBounds(740,270,100,30);
+	StartButton->setButtonText (T("Start Modules"));
+    StartButton->addButtonListener (this);
+
+	StopButton = new TextButton (String::empty);
+	addAndMakeVisible (StopButton);
+	StopButton->setBounds(740,310,100,30);
+	StopButton->setButtonText (T("Stop Modules"));
+    StopButton->addButtonListener (this);
+
+	MigrateButton = new TextButton (String::empty);
+	addAndMakeVisible (MigrateButton);
+	MigrateButton->setBounds(740,350,100,30);
+	MigrateButton->setButtonText (T("Migrate - Test"));
+    MigrateButton->addButtonListener (this);
+
+	OpenLogButton = new TextButton (String::empty);
+	addAndMakeVisible (OpenLogButton);
+	OpenLogButton->setBounds(740,230,100,30); // 390
+	OpenLogButton->setButtonText (T("Open log"));
+    OpenLogButton->addButtonListener (this);
+
+	SaveMod = new TextButton (String::empty);
+	addAndMakeVisible (SaveMod);
+	SaveMod->setBounds(740,430,100,30);
+	SaveMod->setButtonText (T("Save Modules"));
+    SaveMod->addButtonListener (this);
+
+	LoadMod = new TextButton (String::empty);
+	addAndMakeVisible (LoadMod);
+	LoadMod->setBounds(740,470,100,30);
+	LoadMod->setButtonText (T("Load Modules"));
+    LoadMod->addButtonListener (this);
+
+	SaveCon = new TextButton (String::empty);
+	addAndMakeVisible (SaveCon);
+	SaveCon->setBounds(740,510,100,30);
+	SaveCon->setButtonText (T("Save Connections"));
+    SaveCon->addButtonListener (this);
+
+	LoadCon = new TextButton (String::empty);
+	addAndMakeVisible (LoadCon);
+	LoadCon->setBounds(740,550,100,30);
+	LoadCon->setButtonText (T("Load Connections"));
+    LoadCon->addButtonListener (this);
+
+
+
+	/********************************************************************/
+
+//	startTimer (5000);
 	helloWorldLabel = new Label (String::empty,T("SAMGAR Network Profile"));
     addAndMakeVisible (helloWorldLabel);
     helloWorldLabel->setFont (Font (10.0000f, Font::bold));
-	helloWorldLabel->setBounds(890,100,10,20);
+	helloWorldLabel->setBounds(910,100,10,20);
     helloWorldLabel->setJustificationType (Justification::centred);
     helloWorldLabel->setEditable (false, false, false);
     helloWorldLabel->setColour (Label::textColourId, Colours::black);
@@ -49,14 +153,14 @@ MainComponent::MainComponent (): helloWorldLabel (0), quitButton (0)
     helloWorldLabel->setColour (TextEditor::backgroundColourId, Colour (0x0));
 
 	addAndMakeVisible(MytextEditor = new TextEditor());
-    MytextEditor->setBounds (890, 25, 300, 300);
+    MytextEditor->setBounds (890, 20, 290, 300);
     MytextEditor->setText (T("Debug Log Init \n"));
 	MytextEditor->setMultiLine(true,true);
 	MytextEditor->setReadOnly(true);
 	MytextEditor->setCaretVisible(false);
 
 	addAndMakeVisible(MytextEditor2 = new TextEditor());
-    MytextEditor2->setBounds (890, 300+25+30, 300, 100);
+    MytextEditor2->setBounds (890, 300+25+15, 290, 100);
     MytextEditor2->setText (T("Feedback Log Init \n"));
 	MytextEditor2->setMultiLine(true,true);
 	MytextEditor2->setReadOnly(true);
@@ -64,151 +168,50 @@ MainComponent::MainComponent (): helloWorldLabel (0), quitButton (0)
 
 
 	addAndMakeVisible(ModParent1 = new ComboBox("N/A"));
-    ModParent1->setBounds (900-5,480, 175-30, 25);
+    ModParent1->setBounds (890,480, 140, 22);
 	ModParent1->setText(T("Parent 1"));
 
 	addAndMakeVisible(ModParent2 = new ComboBox("N/A"));
-    ModParent2->setBounds (900+140,480, 175-30, 25);
+    ModParent2->setBounds (1040,480, 140, 22);
 	ModParent2->setText(T("Parent 2"));
 
 	addAndMakeVisible(ModChild1 = new ComboBox("N/A"));
-    ModChild1->setBounds (900-5,480+5+25, 175-30, 25);
+    ModChild1->setBounds (890,505, 140, 22);
 	ModChild1->setText(T("Child 1"));
 
 	addAndMakeVisible(ModChild2 = new ComboBox("N/A"));
-    ModChild2->setBounds (900+140,480+5+25, 175-30, 25);
+    ModChild2->setBounds (1040,505, 140, 22);
 	ModChild2->setText(T("Child 2"));
 
 	addAndMakeVisible(LossBox = new ComboBox("N/A"));
-    LossBox->setBounds (900-5,480+5+25+30, 175-30, 25);
+    LossBox->setBounds (890,530, 140, 22);
 	LossBox->setText(T("Lossy/Unlossy"));
 	LossBox->addItem("Lossy",1);
 	LossBox->addItem("Unlossy",2);
 
-
-
-
 	addAndMakeVisible(Connect = new ComboBox("N/A"));
-    Connect->setBounds (900-5,480+5+25+30+30, 175-30, 25);
+    Connect->setBounds (890,555, 140, 22);
 	Connect->setText(T("Connect/Disconnect"));
 	Connect->addItem("Connect",1);
 	Connect->addItem("Disconnect",2);
 
 	addAndMakeVisible(NetworkBox = new ComboBox("N/A"));
-    NetworkBox->setBounds (900+140,480+5+25+30, 175-30, 25);
+    NetworkBox->setBounds (1040,530, 140, 22);
 	NetworkBox->setText(T("Network Type"));
 
 	NetworkBox->addItem("Process",1);
 	NetworkBox->addItem("Platform",2);
 	NetworkBox->addItem("Local Network",3);
 
-	
-
 	ConnectionStuff = new TextButton (String::empty);
 	addAndMakeVisible (ConnectionStuff);
-	ConnectionStuff->setBounds (900+140,480+5+25+30+30, 175-30, 25);
+	ConnectionStuff->setBounds (1040,555, 140, 22);
 	ConnectionStuff->setButtonText (T("Proceed"));
     ConnectionStuff->addButtonListener (this);
 
     addAndMakeVisible (quitButton = new TextButton (String::empty));
 	quitButton->setButtonText (T("Quit"));
     quitButton->addButtonListener (this);
-
-	ClearLog = new TextButton (String::empty);
-	addAndMakeVisible (ClearLog);
-	ClearLog->setBounds(740,27+120+30+10,100,30);
-	ClearLog->setButtonText (T("Clear Log"));
-    ClearLog->addButtonListener (this);
-
-	RefreshConnect = new TextButton (String::empty);
-	addAndMakeVisible (RefreshConnect);
-	RefreshConnect->setBounds(740,27+120+30+30+10+10,100,30);
-	RefreshConnect->setButtonText (T("RefreshConnect"));
-    RefreshConnect->addButtonListener (this);
-
-	StopButton = new TextButton (String::empty);
-	addAndMakeVisible (StopButton);
-	StopButton->setBounds(740,27+120+30+30+10+10+10+30,100,30);
-	StopButton->setButtonText (T("Stop Modules"));
-    StopButton->addButtonListener (this);
-
-	MigrateButton = new TextButton (String::empty);
-	addAndMakeVisible (MigrateButton);
-	MigrateButton->setBounds(740,27+120+30+30+10+10+10+40+40+40,100,30);
-	MigrateButton->setButtonText (T("Migrate - Test"));
-    MigrateButton->addButtonListener (this);
-
-	StartButton = new TextButton (String::empty);
-	addAndMakeVisible (StartButton);
-	StartButton->setBounds(740,27+120+30+30+10+10+10+40+40,100,30);
-	StartButton->setButtonText (T("Start Modules"));
-    StartButton->addButtonListener (this);
-
-	OpenLogButton = new TextButton (String::empty);
-	addAndMakeVisible (OpenLogButton);
-	OpenLogButton->setBounds(740,27+120+30+30+10+10+10+40+40+80,100,30);
-	OpenLogButton->setButtonText (T("Open log"));
-    OpenLogButton->addButtonListener (this);
-
-
-	SaveLog = new TextButton (String::empty);
-	addAndMakeVisible (SaveLog);
-	SaveLog->setBounds(740,27+120+5,100,30);
-	SaveLog->setButtonText (T("Save log"));
-    SaveLog->addButtonListener (this);
-
-	SaveMod = new TextButton (String::empty);
-	addAndMakeVisible (SaveMod);
-	SaveMod->setBounds(740,27+120+30+30+10+10+10+40+40+80+40,100,30);
-	SaveMod->setButtonText (T("Save Modules"));
-    SaveMod->addButtonListener (this);
-
-	LoadMod = new TextButton (String::empty);
-	addAndMakeVisible (LoadMod);
-	LoadMod->setBounds(740,27+120+30+30+10+10+10+40+40+80+40+40,100,30);
-	LoadMod->setButtonText (T("Load Modules"));
-    LoadMod->addButtonListener (this);
-
-	SaveCon = new TextButton (String::empty);
-	addAndMakeVisible (SaveCon);
-	SaveCon->setBounds(740,27+120+30+30+10+10+10+40+40+80+40+40+40,100,30);
-	SaveCon->setButtonText (T("Save Connections"));
-    SaveCon->addButtonListener (this);
-
-	LoadCon = new TextButton (String::empty);
-	addAndMakeVisible (LoadCon);
-	LoadCon->setBounds(740,27+120+30+30+10+10+10+40+40+80+40+40+40+40,100,30);
-	LoadCon->setButtonText (T("Load Connections"));
-    LoadCon->addButtonListener (this);
-
-	DebugButton1 = new TextButton (String::empty);
-	addAndMakeVisible (DebugButton1);
-	DebugButton1->setBounds(740,27,100,30);
-	DebugButton1->setButtonText (T("debug priority 1 on"));
-    DebugButton1->addButtonListener (this);
-	DebugButton1->setConnectedEdges(Button::ConnectedOnBottom);	
-
-	DebugButton2 = new TextButton (String::empty);
-	addAndMakeVisible (DebugButton2);
-	DebugButton2->setBounds(740,27+30,100,30);
-	DebugButton2->setButtonText (T("debug priority 2 on"));
-    DebugButton2->addButtonListener (this);
-	DebugButton2->setConnectedEdges(Button::ConnectedOnTop | Button::ConnectedOnBottom);	
-
-	DebugButton3 = new TextButton (String::empty);
-	addAndMakeVisible (DebugButton3);
-	DebugButton3->setBounds(740,27+30+30,100,30);
-	DebugButton3->setButtonText (T("debug priority 3 on"));
-    DebugButton3->addButtonListener (this);
-	DebugButton3->setConnectedEdges(Button::ConnectedOnTop | Button::ConnectedOnBottom);	
-
-	DebugButton4 = new TextButton (String::empty);
-	addAndMakeVisible (DebugButton4);
-	DebugButton4->setBounds(740,27+30+30+30,100,30);
-	DebugButton4->setButtonText (T("debug priority 4 on"));
-    DebugButton4->addButtonListener (this);
-	DebugButton4->setConnectedEdges(Button::ConnectedOnTop);	
-    setSize (1200, 600);
 
 	DebugButton1->setClickingTogglesState(true);
 	DebugButton1->setColour(0x1000100,Colours::green);
@@ -232,25 +235,68 @@ MainComponent::MainComponent (): helloWorldLabel (0), quitButton (0)
 	ThePortForModules.open("/PortForModules");
 	ThePortForModules.setStrict(true);
 
+MySizeX=getWidth();
+MySizeY=getHeight();
+PropSizeChangeX=0;
+PropSizeChangeY=0;
+
+
 }
 
 /*! main window de-structor !*/
 MainComponent::~MainComponent()
 {
 	// save the mod log;
-	MyTime.getCurrentTime();
-	String datePlus = MyTime.toString(true,true,true,true);
-	datePlus = datePlus + ".SamModLog";
-	myFileforModReport = datePlus;
-	myFileforModReport.create ();
-	myFileforModReport.appendText (MytextEditor2->getText ()); // get from the mod log editor
+//	stopTimer();
+//	MyTime.getCurrentTime();
+//	String datePlus = MyTime.toString(true,true,true,true);
+//	datePlus = datePlus + ".SamModLog";
+//	myFileforModReport = datePlus;
+//	myFileforModReport.create ();
+//	myFileforModReport.appendText (MytextEditor2->getText ()); // get from the mod log editor
 
 
-	Network::fini();
+//	Network::fini();
+
+//	AllConnections.clear();
+
 	MigrationPort.close();
-	AllConnections.clear();
+	ThePortForModules.close();
+
+
+
     deleteAndZero (helloWorldLabel);
     deleteAndZero (quitButton);
+	deleteAndZero (MytextEditor);
+    deleteAndZero (MytextEditor2);
+	deleteAndZero (ModParent1);
+    deleteAndZero (ModChild1);
+	deleteAndZero (ModChild2);
+    deleteAndZero (ModParent2);
+	deleteAndZero (LossBox);
+    deleteAndZero (Connect);
+	deleteAndZero (NetworkBox);
+    deleteAndZero (ConnectionStuff);
+	deleteAndZero (ClearLog);
+	deleteAndZero (RefreshConnect);
+    deleteAndZero (StopButton);
+    deleteAndZero (MigrateButton);
+	deleteAndZero (StartButton);
+    deleteAndZero (OpenLogButton);
+	deleteAndZero (SaveLog);
+    deleteAndZero (SaveMod);
+	deleteAndZero (LoadCon);
+    deleteAndZero (LoadMod);
+	deleteAndZero (SaveCon);
+    deleteAndZero (DebugButton1);
+	deleteAndZero (DebugButton2);
+    deleteAndZero (DebugButton3);
+	deleteAndZero (DebugButton4);
+
+	//myFileforLog;
+	//File myFileforModReport;
+	//File myFileforMod;
+	//File myFileforCon;
 }
 
 /*! changes the current namespace , allows to com with local and global server !*/
@@ -271,7 +317,11 @@ void MainComponent::RegisterMigrationPort (void)
 	IgnoreTimer=false;
 
 	if(opened==true){AddToLog("Addid myself to global server :\n",1);}
-	else			{AddToLog("could not Add myself to global server :\n",1);}
+	else			{
+					AddToLog("could not Add myself to global server :\n",1);
+					AddToLog("This program will take a long while to shut down :\n",1);
+					MigrationPort.close();
+					}
 	AddToLog(NameofMigrate.c_str(),1);
 	AddToLog("\n",1);
 }
@@ -346,7 +396,7 @@ FILE *inpipe;
 char inbuf[200];
 String hello;
 int lineno = 0;
-int start,fin;
+//int start,fin;
 
 ChangeServer(global);
 RegisterMigrationPort(); // registers istelf, doesn't matter cos it cleans the server anyways
@@ -495,28 +545,31 @@ bounces a few of them back as well to enable one module to communicate with all 
 
 void MainComponent::timerCallback()
 {
-	Bottle b;
-	list<string>::iterator it;
-
-
 	if(IgnoreTimer==false)
 	{
 		ChangeServer(local);
 		Network yarp;
-
-		CheckConnectionRight(); // looks like the problem is in here
-		ConnectionAutoUpdate();
 		
+			CheckConnectionRight(); // looks like the problem is in here
+		
+			ConnectionAutoUpdate(); 
+		
+			GetModuleCommands(); 
+		
+	}
+}
 
 
-//		int mycounterthingy = ThePortForModules.getPendingReads();
+void MainComponent::GetModuleCommands(void)
+{
+	static list<string>::iterator it;
+	Bottle *b;
 		while(ThePortForModules.getPendingReads()>0)
 		{
-
-			Bottle *b = ThePortForModules.read(true);
+		    b = ThePortForModules.read(true);
 			if(b!=NULL && b->isNull()==false) // if theres data on the port
 			{
-				Bottle& cc = ThePortForModules.prepare();
+				 Bottle& cc = ThePortForModules.prepare();
 				/// if its a report on how well its done then add to a log else
 				if(b->get(0).asInt()==20)
 				{
@@ -574,17 +627,18 @@ void MainComponent::timerCallback()
 			}
 		}
 
+
 		if(MigrationPort.Ivebeenused==1)
 		{
 			AddToLog("Someone has tryed to acess my migration port \n",1);
 			MigrationPort.Ivebeenused=0;
 		}
 
-	}
+
+
+
+
 }
-
-
-
 
 
 
@@ -910,6 +964,13 @@ void MainComponent::paint (Graphics& g)
 	g.setColour (Colour (0xff5f74f1)); // line color
     g.strokePath (internalPath2, PathStrokeType (5.2000f));
 
+	g.setColour (Colour (0xffbdc5f7)); // color inside path
+	g.fillPath (internalPath5);
+	g.setColour (Colour (0xff5f74f1)); // line color
+    g.strokePath (internalPath5, PathStrokeType (5.2000f));
+
+
+//Path internalPath5;
 
 	list<connections>::iterator it2;
 	connections temmp;
@@ -931,13 +992,27 @@ this bit is called when the window resizes, should be altered to allow better sc
 
 void MainComponent::resized()
 {
+	//MySizeX=getWidth();
+//MySizeY=getHeight();
+//MyCurrentSizeX;
+//MyCurrentSizeY
+//PropSizeChangeX,PropSizeChangeY
+	//this->centreWithSize
+
+	PropSizeChangeX=1;//MySizeX/getWidth();
+	PropSizeChangeY=1;//MySizeY/getHeight();
+
+//	PropSizeChangeX=getWidth()/MySizeX;
+//	PropSizeChangeY=getHeight()/MySizeY;
+
+
 	// little connection box on right
     internalPath4.clear();
-    internalPath4.startNewSubPath (890.0f, 470.0f);
-    internalPath4.lineTo (890.0f + 300, 470.0f);
-	internalPath4.lineTo (890.0f + 300, 590.0f );
-	internalPath4.lineTo (890.0f , 590.0f);
-	internalPath4.lineTo (890.0f , 470.0f);
+    internalPath4.startNewSubPath (880.0f  *PropSizeChangeX,  470.0f *PropSizeChangeY);
+    internalPath4.lineTo		  (1190.0f *PropSizeChangeX , 470.0f *PropSizeChangeY);
+	internalPath4.lineTo		  (1190.0f *PropSizeChangeX , 590.0f *PropSizeChangeY );
+	internalPath4.lineTo		  (880.0f  *PropSizeChangeX , 590.0f *PropSizeChangeY);
+	internalPath4.lineTo		  (880.0f  *PropSizeChangeX , 470.0f *PropSizeChangeY);
 	internalPath4.closeSubPath();
 
 	// main box on left	
@@ -949,14 +1024,24 @@ void MainComponent::resized()
     internalPath1.lineTo (10.0f, 10.0f);
     internalPath1.closeSubPath();
 
-
+	// this shuold be box for buttons
 	internalPath2.clear();
     internalPath2.startNewSubPath (720.0f, 10.0f);// top left
-    internalPath2.lineTo (910.0f-50, 10.0f);// top right
-    internalPath2.lineTo (910.0f-50, 590.0f); // bottem right
+    internalPath2.lineTo (860.0f, 10.0f);// top right
+    internalPath2.lineTo (860.0f, 590.0f); // bottem right
 	internalPath2.lineTo (720.0f, 590.0f); //
     internalPath2.lineTo (720.0f, 10.0f);
     internalPath2.closeSubPath();
+
+
+	// to surround the text boxes
+	internalPath5.clear();
+    internalPath5.startNewSubPath (880.0f,    10.0f);// top left
+    internalPath5.lineTo		  (880.0f+310, 10.0f);// top right
+    internalPath5.lineTo		  (880.0f+310, 450.0f); // bottem right
+	internalPath5.lineTo		  (880.0f,	  450.0f); //
+    internalPath5.lineTo		  (880.0f,    10.0f);
+    internalPath5.closeSubPath();
 
 }
 
