@@ -1,4 +1,4 @@
-/** 
+/* 
  * SocketListener class, taken from FAtiMA source code, original credits below:
  * 
  * SocketListener.java - Implements a socket listener

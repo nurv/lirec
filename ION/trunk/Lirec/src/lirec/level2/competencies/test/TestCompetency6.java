@@ -32,38 +32,48 @@ import java.util.HashMap;
 import lirec.architecture.Architecture;
 import lirec.level2.Competency;
 
-/** one of several test competencies to test the execution system */ 
-public class TestCompetency4 extends Competency {
+/** this is an example of a competency that is not started as part of an order
+ *  issued from the mind, but that continuously runs in the background, in this
+ *  case printing out a message every 5 seconds. This type of competency might be used
+ *  for sensors that are continuously active instead of being explicitly invoked */ 
+public class TestCompetency6 extends Competency {
 
 	/** constructor of the test competency */
-	public TestCompetency4(Architecture architecture)
-	{
-		// call parent class constructor, always do this first
+	public TestCompetency6(Architecture architecture) {
 		super(architecture);
-		
+
 		competencyName = "TestCompetency4";
-		competencyType = "TestType4";
-
-		// with other initialisations wait for the initialize method
+		
+		competencyType = "TestType6";
 	}
 
-	/** perform initialisations in this method */
-	@Override
-	public void initialize() {
-		available = true;
-	}
-
-	/** competency code */
+	
 	@Override
 	protected boolean competencyCode(HashMap<String, String> parameters) 
 	{
-		System.out.println("Test Competency 4 running, with parameters below: ");
-		for (String parameter : parameters.keySet())
-			System.out.println("  "+ parameter + " = " + parameters.get(parameter));
+		System.out.println("Test Competency 6 running ");
 		
-		// test competency 4 always fails
-		return false;
-	}	
+		// note: since this competency is started together with the architecture, 
+		// the parameters hash map will always be empty. If something needs to be passed
+		// to this competency this can be done in the constructor
 		
-	
+		// since this competency runs continuously we put the code in an endless loop
+		// that also means we don't need to return anything
+		while (true)
+		{
+			// sleep a while
+			try {
+				Thread.sleep(5000);
+			} catch (InterruptedException e) {}
+			
+			// post a message
+			System.out.println("Test Competency 6 is doing something ");
+		}
+	}
+
+	@Override
+	public void initialize() {
+		available = true;	
+	}
+
 }

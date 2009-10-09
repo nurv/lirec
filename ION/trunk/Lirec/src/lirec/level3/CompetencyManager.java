@@ -1,3 +1,30 @@
+/*	
+        Lirec Architecture
+	Copyright(C) 2009 Heriot Watt University
+
+	This library is free software; you can redistribute it and/or
+	modify it under the terms of the GNU Lesser General Public
+	License as published by the Free Software Foundation; either
+	version 2.1 of the License, or (at your option) any later version.
+
+	This library is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+	Lesser General Public License for more details.
+
+	You should have received a copy of the GNU Lesser General Public
+	License along with this library; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+
+	Authors:  Michael Kriegel 
+
+	Revision History:
+  ---
+  09/10/2009      Michael Kriegel <mk95@hw.ac.uk>
+  First version.
+  ---  
+*/
+
 package lirec.level3;
 
 import ion.Meta.EventHandler;
@@ -41,13 +68,13 @@ public class CompetencyManager extends LirecComponent
 	private HashMap<MindAction, ArrayList<CompetencyManagerRule>> rulesAlreadyTried;
 
 	
-	public CompetencyManager(Architecture architecture)
+	public CompetencyManager(Architecture architecture, String competencyManagerRulesFileName) throws Exception
 	{
 		super(architecture);
 		rules = new ArrayList<CompetencyManagerRule>();
 		plansCurrentlyExecuted = new HashMap<CompetencyExecutionPlan, MindAction>();
 		rulesAlreadyTried = new HashMap<MindAction, ArrayList<CompetencyManagerRule>>();
-		loadRules();
+		loadRules(competencyManagerRulesFileName);
 	}
 	
 	/** method that is called by the event handler whenever the mind initiates a new action */
@@ -134,35 +161,27 @@ public class CompetencyManager extends LirecComponent
 	}
 	
 	/** parse the xml file that contains the competency manager rules */
-	private synchronized void loadRules()
+	private synchronized void loadRules(String competencyManagerRulesFileName) throws Exception
 	{
-		File compManagerRulesFile = new File("CompManagerRules.xml");
-		try
-		{
-			// check if file exists
-			if (! compManagerRulesFile.exists()) throw new Exception("cannot locate rules file");
-			
-			// parse the file to a dom document
-			DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
-			Document doc = docBuilder.parse (compManagerRulesFile);
+		File compManagerRulesFile = new File(competencyManagerRulesFileName);
 
-			// normalize text representation
-			doc.getDocumentElement().normalize();
+		// check if file exists
+		if (! compManagerRulesFile.exists()) throw new Exception("cannot locate competency manager rules file " + competencyManagerRulesFileName );
 			
-			// read <Rule> tags
-			NodeList ruleTags = doc.getElementsByTagName("Rule");		
-			for (int i=0; i<ruleTags.getLength(); i++)
-			{
-				rules.add(new CompetencyManagerRule(ruleTags.item(i)));
-			}						
-		}
-		catch (Exception e)
+		// parse the file to a dom document
+		DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
+		Document doc = docBuilder.parse (compManagerRulesFile);
+
+		// normalize text representation
+		doc.getDocumentElement().normalize();
+			
+		// read <Rule> tags
+		NodeList ruleTags = doc.getElementsByTagName("Rule");		
+		for (int i=0; i<ruleTags.getLength(); i++)
 		{
-			System.err.println("error parsing competency manager rules file, details below");
-			System.err.println(e.getMessage());
-			System.err.println(e.getStackTrace());
-		}
+			rules.add(new CompetencyManagerRule(ruleTags.item(i)));
+		}						
 	}
 	
 	/** handles successful competency execution plans */
