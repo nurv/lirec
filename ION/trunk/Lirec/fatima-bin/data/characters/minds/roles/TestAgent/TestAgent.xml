@@ -1,5 +1,4 @@
-<Character role="TestAgent">
-	
+<Character role="Greta">
 	<EmotionalThresholds>
 		<EmotionalThreshold emotion="Love" threshold="3" decay="5"/>
 		<EmotionalThreshold emotion="Hate" threshold="3" decay="5"/>
@@ -25,17 +24,19 @@
 		<EmotionalThreshold emotion="Anger" threshold="3" decay="5"/>
 	</EmotionalThresholds>
 	
+	<MotivationalParameters>
+			<MotivationalParameter motivator="Affiliation" decayFactor="12.5" weight="0.4" intensity="7"/>
+			<MotivationalParameter motivator="Integrity" decayFactor="0.5" weight="0.7" intensity="3"/>
+			<MotivationalParameter motivator="Energy" decayFactor="2" weight="0.2" intensity="6"/>
+			<MotivationalParameter motivator="Certainty" decayFactor="1.5" weight="0.25" intensity="5"/>
+			<MotivationalParameter motivator="Competence" decayFactor="1.5" weight="0.775" intensity="6"/>
+	</MotivationalParameters>
+	
 	<Goals>
-		<Goal name="Goal1()" importanceOfSuccess="8" importanceOfFailure="6"/>
-		<Goal name="Goal2([anotherAgent])" importanceOfSuccess="8" importanceOfFailure="6"/>
+		<Goal name="Goal1([target])" importanceOfSuccess="8" importanceOfFailure="6"/>
+		<Goal name="Goal2([target])" importanceOfSuccess="8" importanceOfFailure="6"/>
 	</Goals>
 	
 	<InterpersonalRelations>
 	</InterpersonalRelations>
-	
-	<EventReactions>
-	</EventReactions>
-	
-	<ActionTendencies>
-	</ActionTendencies>
 </Character>

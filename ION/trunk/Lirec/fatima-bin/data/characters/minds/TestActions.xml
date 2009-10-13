@@ -5,6 +5,8 @@
 		</PreConditions>
 		<Effects>
 		</Effects>
+		<EffectsOnDrives>
+		</EffectsOnDrives>
 	</Action>
 
 	<Action name="TestAction2">
@@ -12,6 +14,8 @@
 		</PreConditions>
 		<Effects>
 		</Effects>
+		<EffectsOnDrives>
+		</EffectsOnDrives>
 	</Action>
 
 
