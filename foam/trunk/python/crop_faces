@@ -6,5 +6,6 @@ import sys
 
 if sys.argv[1] == "-h":
 	print("crop_faces inpath/*.png outpath")
+	exit(0)
 	
 get_faces(sys.argv[1], sys.argv[2])

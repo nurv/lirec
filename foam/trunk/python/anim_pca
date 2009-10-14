@@ -7,7 +7,8 @@ import sys
 
 if sys.argv[1] == "-h":
 	print("anim_pca pcafile width height starteigenface endeigenface gain frames")
-	
+	exit(0)
+
 pca = load_pca(sys.argv[1])
 w=int(sys.argv[2])
 h=int(sys.argv[3])
