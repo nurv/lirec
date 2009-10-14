@@ -10,9 +10,9 @@ SRCS    := src/main.cpp\
 	src/tinyxmlparser.cpp
 
 # for the minute, go out and up to link to the vision lib
-CCFLAGS = -I../vision/src `pkg-config --cflags opencv` -ggdb -Wall -O3 -ffast-math -Wno-unused -DTIXML_USE_STL 
-LDFLAGS = -L../vision/
-LIBS    = `pkg-config --libs opencv` -lYARP_dev -lYARP_sig -lYARP_OS -lACE -lvision 
+CCFLAGS = -I../../../libs/suds/src `pkg-config --cflags opencv` -ggdb -Wall -O3 -ffast-math -Wno-unused -DTIXML_USE_STL 
+LDFLAGS = -L../../../libs/suds/
+LIBS    = `pkg-config --libs opencv` -lYARP_dev -lYARP_sig -lYARP_OS -lACE -lsuds 
 
 CC = g++
 OBJS    := ${SRCS:.cpp=.o} 

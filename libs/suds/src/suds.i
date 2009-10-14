@@ -1,4 +1,4 @@
-%module vision
+%module suds
 %{
 #include "PCA.h"
 #include "Classifier.h"
