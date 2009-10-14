@@ -1,4 +1,4 @@
-TARGET  := libvision.a
+TARGET  := libsuds.a
 
 SRCS    := src/Image.cpp\
 	src/Rendering.cpp\
@@ -49,9 +49,9 @@ cleandeps:: clean
 distclean:: clean
 
 python:: ${TARGET}
-	swig -c++ -python src/vision.i 
-	g++ ${CCFLAGS} -c src/vision_wrap.cxx ${PYTHON_INCLUDE}
-	g++ -shared ${OBJS} vision_wrap.o ${LIBS} -o _vision.so
-	cp _vision.so ../python
-	cp src/vision.py ../python
+	swig -c++ -python src/suds.i 
+	g++ ${CCFLAGS} -c src/suds_wrap.cxx ${PYTHON_INCLUDE}
+	g++ -shared ${OBJS} suds_wrap.o ${LIBS} -o _suds.so
+	mv _suds.so python
+	mv src/suds.py python
 	

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from vision import *
+from suds import *
 
 v2 = Image(10,10,8,3)
 
