@@ -32,7 +32,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
 
-import lirec.architecture.Architecture;
+import lirec.architecture.IArchitecture;
 import lirec.level3.AgentMindConnector;
 import lirec.level3.MindAction;
 
@@ -49,7 +49,7 @@ public class FAtiMAConnector extends AgentMindConnector {
 	private boolean sleeping;
 	
 	/** create a new FAtiMA connector */
-	public FAtiMAConnector(Architecture architecture) 
+	public FAtiMAConnector(IArchitecture architecture) 
 	{
 		super(architecture);
 		fatimaConnected = false;

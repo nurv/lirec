@@ -30,7 +30,7 @@ package lirec.level3;
 import ion.Meta.EventHandler;
 import ion.Meta.IEvent;
 import ion.Meta.Simulation;
-import lirec.architecture.Architecture;
+import lirec.architecture.IArchitecture;
 import lirec.architecture.LirecComponent;
 import lirec.storage.EventPropertyChanged;
 import lirec.storage.EventPropertyRemoved;
@@ -49,7 +49,7 @@ public abstract class AgentMindConnector extends LirecComponent
 {
 	
 /** create a new Agent Mind Connector */	
-public AgentMindConnector(Architecture architecture)
+public AgentMindConnector(IArchitecture architecture)
 {
 	super(architecture);
 }

@@ -43,7 +43,7 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import lirec.architecture.Architecture;
+import lirec.architecture.IArchitecture;
 import lirec.architecture.LirecComponent;
 
 /** the competency library is the component that registers all components */
@@ -58,7 +58,7 @@ public class CompetencyLibrary extends LirecComponent {
 	private ArrayList<Competency> backgroundCompetencies;
 
 	/** Create a new competency library */
-	public CompetencyLibrary(Architecture architecture, String competencyLibraryFile) throws Exception 
+	public CompetencyLibrary(IArchitecture architecture, String competencyLibraryFile) throws Exception 
 	{
 		super(architecture);
 		
@@ -138,27 +138,32 @@ public class CompetencyLibrary extends LirecComponent {
 				if (atrConstrPars!=null)
 					constructorParametersStr= atrConstrPars.getNodeValue();
 				
-				// the first parameter to the constructor is always a reference to the architecture for all lirec components
+				// create array to store values of contrucotr parameters
 				ArrayList<Object> constructorParameters = new ArrayList<Object>();
+				// create array that specifies the classes of the parameters of the constructor
+				ArrayList<Class<?>> constructorClasses = new ArrayList<Class<?>>();
+				
+				// the first parameter to the constructor is always a reference to the architecture for all lirec components				
 				constructorParameters.add(architecture);
+				// it's class is IArchitecture
+				constructorClasses.add(IArchitecture.class);
 				
 				// di-sect constructor parameters (in the string all parameters are seperated by a comma)
 				StringTokenizer st = new StringTokenizer(constructorParametersStr,",");
 				while (st.hasMoreTokens())
 				{
 					String token = st.nextToken().trim();
-					if (!token.equals("")) constructorParameters.add(token);
+					if (!token.equals(""))
+					{
+						constructorParameters.add(token);
+						constructorClasses.add(String.class);
+					}
 				}
 				
 				// dynamically construct custom competency
 				
 				// obtain class 
 				Class<?> cls = Class.forName(className);
-				
-				// create array that specifies the classes of the parameters of the constructor
-				ArrayList<Class<?>> constructorClasses = new ArrayList<Class<?>>();
-				for (Object o: constructorParameters)
-					constructorClasses.add(o.getClass());
 				
 				// obtain the constructor 
 				Constructor<?> constructor = cls.getConstructor(constructorClasses.toArray(new Class[constructorClasses.size()]));

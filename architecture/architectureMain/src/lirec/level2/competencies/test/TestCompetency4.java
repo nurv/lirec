@@ -29,14 +29,14 @@ package lirec.level2.competencies.test;
 
 import java.util.HashMap;
 
-import lirec.architecture.Architecture;
+import lirec.architecture.IArchitecture;
 import lirec.level2.Competency;
 
 /** one of several test competencies to test the execution system */ 
 public class TestCompetency4 extends Competency {
 
 	/** constructor of the test competency */
-	public TestCompetency4(Architecture architecture)
+	public TestCompetency4(IArchitecture architecture)
 	{
 		// call parent class constructor, always do this first
 		super(architecture);

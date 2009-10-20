@@ -41,7 +41,7 @@ import java.util.HashMap;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import lirec.architecture.Architecture;
+import lirec.architecture.IArchitecture;
 import lirec.architecture.LirecComponent;
 import lirec.level2.CompetencyExecutionPlan;
 import lirec.level2.EventCompetencyExecutionPlanFailed;
@@ -68,7 +68,7 @@ public class CompetencyManager extends LirecComponent
 	private HashMap<MindAction, ArrayList<CompetencyManagerRule>> rulesAlreadyTried;
 
 	
-	public CompetencyManager(Architecture architecture, String competencyManagerRulesFileName) throws Exception
+	public CompetencyManager(IArchitecture architecture, String competencyManagerRulesFileName) throws Exception
 	{
 		super(architecture);
 		rules = new ArrayList<CompetencyManagerRule>();

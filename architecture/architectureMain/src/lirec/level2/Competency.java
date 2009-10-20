@@ -34,7 +34,7 @@ import ion.Meta.TypeSet;
 
 import java.util.HashMap;
 
-import lirec.architecture.Architecture;
+import lirec.architecture.IArchitecture;
 import lirec.architecture.LirecComponent;
 
 /** competencies are represented by objects of subclasses of this class */
@@ -58,7 +58,7 @@ public abstract class Competency extends LirecComponent implements Runnable
 	protected boolean available;
 	
 	/** create a competency object */
-	public Competency(Architecture architecture)
+	public Competency(IArchitecture architecture)
 	{
 		super(architecture);
 		available = false;

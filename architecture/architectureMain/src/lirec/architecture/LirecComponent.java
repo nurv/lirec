@@ -33,16 +33,16 @@ import ion.Meta.Element;
 public abstract class LirecComponent extends Element {
 	
 /** reference to the architecture, through which references to other components can be obtained */
-protected Architecture architecture;
+protected IArchitecture architecture;
 
 /** create a new Lirec Component */
-protected LirecComponent(Architecture architecture)
+protected LirecComponent(IArchitecture architecture)
 {
 	this.architecture = architecture;
 }
 
 /** returns a reference to the Lire architecture object */
-public Architecture getArchitecture() {
+public IArchitecture getArchitecture() {
 	return architecture;
 }
 

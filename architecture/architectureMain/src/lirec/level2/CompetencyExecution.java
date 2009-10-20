@@ -38,7 +38,7 @@ import ion.Meta.TypeSet;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import lirec.architecture.Architecture;
+import lirec.architecture.IArchitecture;
 import lirec.architecture.LirecComponent;
 
 /** this component is responsible for executing plans of competencies it has received from the competency
@@ -49,7 +49,7 @@ public class CompetencyExecution extends LirecComponent {
 	private ArrayList<CompetencyExecutionPlan> currentPlans;
 	
 	/** create a new Competency Execution Component */
-	public CompetencyExecution(Architecture architecture)
+	public CompetencyExecution(IArchitecture architecture)
 	{
 		super(architecture);
 		currentPlans = new ArrayList<CompetencyExecutionPlan>();

@@ -30,7 +30,7 @@ package lirec.storage;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import lirec.architecture.Architecture;
+import lirec.architecture.IArchitecture;
 
 /** a specific subclass of lirec storage container with convenience methods added 
  * for handling "agent" and "object" sub containers. */
@@ -40,9 +40,9 @@ public class WorldModel extends LirecStorageContainer {
 	public static String OBJECT_TYPE_NAME = "object";
 	
 	
-	public WorldModel(String name, Architecture architecture) {
+	public WorldModel(IArchitecture architecture, String name) {
 		// this container is of the type "WorldModel"
-		super(name, "WorldModel", null, architecture);
+		super(architecture,name, "WorldModel", null);
 	}
 
 	

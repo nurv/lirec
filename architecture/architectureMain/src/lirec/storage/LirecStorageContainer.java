@@ -37,7 +37,7 @@ import ion.Meta.TypeSet;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import lirec.architecture.Architecture;
+import lirec.architecture.IArchitecture;
 import lirec.architecture.LirecComponent;
 
 /** a storage container is used for storing data that is shared between the components.
@@ -87,7 +87,7 @@ public class LirecStorageContainer extends LirecComponent {
 	 * @param parentContainer the container that owns this container or null for a top container in a hierarchy
 	 * @param architecture reference to the lirec architecture object
 	 */
-	protected LirecStorageContainer(String name, String type, LirecStorageContainer parentContainer, Architecture architecture) 
+	protected LirecStorageContainer(IArchitecture architecture, String name, String type, LirecStorageContainer parentContainer) 
 	{
 		super(architecture);
 		this.containerName = name;
@@ -103,9 +103,9 @@ public class LirecStorageContainer extends LirecComponent {
 	 * @param type the type/class of this container 
 	 * @param architecture reference to the lirec architecture object
 	 */
-	public LirecStorageContainer(String name, String type, Architecture architecture) 
+	public LirecStorageContainer(IArchitecture architecture, String name, String type) 
 	{
-		this(name,type,null,architecture);
+		this(architecture,name,type,null);
 	}
 	
 	/** registers an Event Handler with all entities this storage component possesses or will possess eventually.
@@ -288,7 +288,7 @@ public class LirecStorageContainer extends LirecComponent {
 		if (!subContainers.containsKey(name))
 		{
 			// ok we don't have such a sub container yet, create it then
-			LirecStorageContainer container = new LirecStorageContainer(name,type,this,architecture);
+			LirecStorageContainer container = new LirecStorageContainer(architecture,name,type,this);
 			
 			// add it to our list of sub containers
 			subContainers.put(name, container);

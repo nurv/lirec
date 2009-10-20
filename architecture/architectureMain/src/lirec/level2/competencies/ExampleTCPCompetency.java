@@ -29,7 +29,7 @@ package lirec.level2.competencies;
 
 import java.util.HashMap;
 
-import lirec.architecture.Architecture;
+import lirec.architecture.IArchitecture;
 import lirec.level2.RemoteTCPCompetency;
 
 /** example of the implementation of a TCP remote competency, with comments 
@@ -38,7 +38,7 @@ public class ExampleTCPCompetency extends RemoteTCPCompetency {
 
 	/** constructor, every competency, should if possible have a constructor 
 	 *  that receives the Architecture as an argument */
-	public ExampleTCPCompetency(Architecture architecture) 
+	public ExampleTCPCompetency(IArchitecture architecture) 
 	{
 		// call parent class constructor, always do this first
 		// in this case our connection settings are: connecting as a client (hence

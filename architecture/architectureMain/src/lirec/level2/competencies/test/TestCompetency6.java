@@ -29,7 +29,7 @@ package lirec.level2.competencies.test;
 
 import java.util.HashMap;
 
-import lirec.architecture.Architecture;
+import lirec.architecture.IArchitecture;
 import lirec.level2.Competency;
 
 /** this is an example of a competency that is not started as part of an order
@@ -39,7 +39,7 @@ import lirec.level2.Competency;
 public class TestCompetency6 extends Competency {
 
 	/** constructor of the test competency */
-	public TestCompetency6(Architecture architecture) {
+	public TestCompetency6(IArchitecture architecture) {
 		super(architecture);
 
 		competencyName = "TestCompetency4";

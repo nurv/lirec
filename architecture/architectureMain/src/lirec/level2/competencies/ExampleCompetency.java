@@ -29,7 +29,7 @@ package lirec.level2.competencies;
 
 import java.util.HashMap;
 
-import lirec.architecture.Architecture;
+import lirec.architecture.IArchitecture;
 import lirec.level2.Competency;
 
 /** example of the implementation of a competency, with comments explaining how
@@ -38,7 +38,7 @@ public class ExampleCompetency extends Competency {
 
 	/** constructor, every competency, should if possible have a constructor 
 	 *  that receives the Architecture as an argument */
-	public ExampleCompetency(Architecture architecture)
+	public ExampleCompetency(IArchitecture architecture)
 	{
 		// call parent class constructor, always do this first
 		super(architecture);

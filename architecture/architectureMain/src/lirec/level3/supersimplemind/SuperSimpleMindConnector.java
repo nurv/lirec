@@ -27,7 +27,7 @@
 
 package lirec.level3.supersimplemind;
 
-import lirec.architecture.Architecture;
+import lirec.architecture.IArchitecture;
 import lirec.level3.AgentMindConnector;
 import lirec.level3.MindAction;
 
@@ -39,7 +39,7 @@ public class SuperSimpleMindConnector extends AgentMindConnector {
 	private SuperSimpleMind mind;
 	
 	/** creates a new connector for a SuperSimpleMind */ 
-	public SuperSimpleMindConnector(Architecture architecture)
+	public SuperSimpleMindConnector(IArchitecture architecture)
 	{	
 		super(architecture);
 		// create the mind, initially sleeping

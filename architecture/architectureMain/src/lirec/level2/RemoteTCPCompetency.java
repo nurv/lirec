@@ -35,7 +35,7 @@ import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import lirec.architecture.Architecture;
+import lirec.architecture.IArchitecture;
 
 /** A class encapsulating tcp communication we another process on the network. */
 public abstract class RemoteTCPCompetency extends RemoteCompetency {
@@ -69,7 +69,7 @@ public abstract class RemoteTCPCompetency extends RemoteCompetency {
 	 * @param serverAddress if serverMode is false this tells us the server address we have to connect
 	 * to, if serverMode is true this parameter is not used (can be null) 
 	 */
-	protected RemoteTCPCompetency(Architecture architecture, int port, boolean serverMode, String serverAddress) {
+	protected RemoteTCPCompetency(IArchitecture architecture, int port, boolean serverMode, String serverAddress) {
 		super(architecture);
 		this.port = port;
 		this.serverAddress = serverAddress;
@@ -91,6 +91,7 @@ public abstract class RemoteTCPCompetency extends RemoteCompetency {
 		try
 		{
 			writer.write(message + "\n");
+			writer.flush();
 		} 
 		catch (IOException e)
 		{

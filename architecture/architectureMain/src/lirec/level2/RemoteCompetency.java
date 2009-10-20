@@ -29,7 +29,7 @@ package lirec.level2;
 
 import java.util.HashMap;
 
-import lirec.architecture.Architecture;
+import lirec.architecture.IArchitecture;
 
 /** an abstract class describing a competency, whose main execution is performed remotely,
  *  in a different executable (possibly on a different machine) and that we communicate
@@ -46,7 +46,7 @@ public abstract class RemoteCompetency extends Competency {
 	private boolean competencySuccess;
 	
 	/** call this constructor from subclasses */
-	protected RemoteCompetency(Architecture architecture) 
+	protected RemoteCompetency(IArchitecture architecture) 
 	{
 		super(architecture);
 	}	

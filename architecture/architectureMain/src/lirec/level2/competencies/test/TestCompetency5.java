@@ -29,7 +29,7 @@ package lirec.level2.competencies.test;
 
 import java.util.HashMap;
 
-import lirec.architecture.Architecture;
+import lirec.architecture.IArchitecture;
 import lirec.level2.Competency;
 
 public class TestCompetency5 extends Competency 
@@ -43,7 +43,7 @@ public class TestCompetency5 extends Competency
 	
 	/** constructor of the test competency, this one has an additional parameter, purely
 	 *  for the purpose whether the constructor is found and the parameter passed correctly */
-	public TestCompetency5(Architecture architecture, String someParameter1, String someParameter2)
+	public TestCompetency5(IArchitecture architecture, String someParameter1, String someParameter2)
 	{
 		// call parent class constructor, always do this first
 		super(architecture);
