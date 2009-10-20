@@ -1,0 +1,114 @@
+
+LOAD: data/characters/minds/TestActions.xml
+
+LOAD: data/characters/minds/TestGoals.xml
+
+LOADING Personality: data/characters/minds/roles/TestAgent/TestAgent.xml
+
+Motivator found: 0
+
+Motivator found: 1
+
+Motivator found: 2
+
+Motivator found: 3
+
+Motivator found: 4
+
+LOADING Culture: NoCultureTest
+
+Connecting to localhost:46874
+
+SpiritOfTheBuilding: Processing message: PROPERTY-CHANGED SpiritOfTheBuilding(sex) F
+
+SpiritOfTheBuilding: Processing message: PROPERTY-CHANGED SpiritOfTheBuilding(location) TestLocation
+
+SpiritOfTheBuilding: Processing message: PROPERTY-CHANGED SpiritOfTheBuilding(name) SpiritOfTheBuilding
+
+SpiritOfTheBuilding: Processing message: PROPERTY-CHANGED SpiritOfTheBuilding(isTestMind) True
+
+Goal: Goal1(SpiritOfTheBuilding) CulturalUtilitity: 7.0 Competence: 0.8 Urgency: 1.0 Total: 7.6
+
+SpiritOfTheBuilding: Processing message: PROPERTY-CHANGED SpiritOfTheBuilding(role) TestAgent
+
+SpiritOfTheBuilding: Processing message: ENTITY-ADDED SpiritOfTheBuilding
+
+Sending Look-AT: SpiritOfTheBuilding
+
+SpiritOfTheBuilding: Processing message: LOOK-AT SpiritOfTheBuilding sex:F location:TestLocation name:SpiritOfTheBuilding isTestMind:True role:TestAgent
+
+Look-At:SpiritOfTheBuilding(sex)
+
+Look-At:SpiritOfTheBuilding(location)
+
+Look-At:SpiritOfTheBuilding(name)
+
+Look-At:SpiritOfTheBuilding(isTestMind)
+
+Look-At:SpiritOfTheBuilding(role)
+
+Goal: Goal1(SpiritOfTheBuilding) CulturalUtilitity: 7.395517 Competence: 0.7944274 Urgency: 1.0 Total: 7.875201
+
+Adding 1st level intention: Goal1(SpiritOfTheBuilding)
+
+OpenPrecondition: EVENT(SpiritOfTheBuilding,TestAction,test)
+
+Adding a new Strong Intention: Goal1(SpiritOfTheBuilding)
+
+Sending action for execution: TestAction test
+
+Cannot act now!
+
+SpiritOfTheBuilding: Processing message: PROPERTY-CHANGED TestUser(test) True
+
+SpiritOfTheBuilding: Processing message: ENTITY-ADDED TestUser
+
+Sending Look-AT: TestUser
+
+SpiritOfTheBuilding: Processing message: ACTION-FINISHED SpiritOfTheBuilding TestAction test
+
+can act now!
+
+Perceiving event: EVENT(SpiritOfTheBuilding,TestAction,test)
+
+Goal SUCCESS - Goal1(SpiritOfTheBuilding)
+
+SpiritOfTheBuilding: Processing message: LOOK-AT TestUser test:True
+
+Look-At:TestUser(test)
+
+Goal: Goal2(TestUser) CulturalUtilitity: 4.365103 Competence: 0.8420651 Urgency: 1.0 Total: 5.6757007
+
+Goal: Goal2(TestUser) CulturalUtilitity: 4.7233977 Competence: 0.8357111 Urgency: 1.0 Total: 5.9473963
+
+Goal: Goal2(TestUser) CulturalUtilitity: 5.0887747 Competence: 0.82947516 Urgency: 1.0 Total: 6.221012
+
+Goal: Goal2(TestUser) CulturalUtilitity: 5.5356874 Competence: 0.82214475 Urgency: 1.0 Total: 6.5511365
+
+Goal: Goal2(TestUser) CulturalUtilitity: 5.9144497 Competence: 0.8161608 Urgency: 1.0 Total: 6.827142
+
+Goal: Goal2(TestUser) CulturalUtilitity: 6.2983603 Competence: 0.810288 Urgency: 1.0 Total: 7.103486
+
+Goal: Goal2(TestUser) CulturalUtilitity: 6.686879 Competence: 0.8045243 Urgency: 1.0 Total: 7.379757
+
+Goal: Goal2(TestUser) CulturalUtilitity: 7.0794854 Competence: 0.7988677 Urgency: 1.0 Total: 7.6555724
+
+Goal: Goal2(TestUser) CulturalUtilitity: 7.5553207 Competence: 0.79221827 Urgency: 1.0 Total: 7.985463
+
+Adding 1st level intention: Goal2(TestUser)
+
+OpenPrecondition: EVENT(SpiritOfTheBuilding,TestAction2)
+
+Adding a new Strong Intention: Goal2(TestUser)
+
+Sending action for execution: TestAction2
+
+Cannot act now!
+
+SpiritOfTheBuilding: Processing message: ACTION-FINISHED SpiritOfTheBuilding TestAction2
+
+can act now!
+
+Perceiving event: EVENT(SpiritOfTheBuilding,TestAction2)
+
+Goal SUCCESS - Goal2(TestUser)
