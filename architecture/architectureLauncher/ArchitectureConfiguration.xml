@@ -1,4 +1,5 @@
 <?xml version="1.0" ?>
+<!DOCTYPE ArchitectureConfiguration SYSTEM "ArchitectureConfiguration.dtd">
 
 <!-- please edit the following file to change the configuration of the architecture,
 	 you can specify the xml file to read the competency manager rules from, the xml

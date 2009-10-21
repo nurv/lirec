@@ -1,0 +1,16 @@
+<!-- Main element of architecture configuration file-->
+<!ELEMENT ArchitectureConfiguration (ArchitectureComponent*)>
+<!-- The xml file in which the competency manager rules are defined -->
+<!ATTLIST ArchitectureConfiguration CompetencyManagerRulesFile CDATA #REQUIRED>
+<!-- The xml file in which the competency library is set up-->
+<!ATTLIST ArchitectureConfiguration CompetencyLibraryConfigurationFile CDATA #REQUIRED>
+
+<!ELEMENT ArchitectureComponent EMPTY>
+<!--The full name of the java class (subclass of lirec.architecture.LirecComponent), in
+ which the component is implemented-->
+<!ATTLIST ArchitectureComponent ClassName CDATA #REQUIRED>
+<!--An (optional) comma seperated list of values to construct the component with. The component needs
+ a public constructor to match those values. The type of the values is assumed to be String. The first 
+ parameter of each component constructor is a reference to the architecture object and must not be 
+ listed here. -->
+<!ATTLIST ArchitectureComponent ConstructorParameters CDATA #IMPLIED>

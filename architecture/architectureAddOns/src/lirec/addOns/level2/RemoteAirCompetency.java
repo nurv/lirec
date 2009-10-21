@@ -25,12 +25,13 @@
   ---  
 */
 
-package lirec.level2;
+package lirec.addOns.level2;
 
 import com.cmlabs.air.JavaAIRPlug;
 import com.cmlabs.air.Message;
 
 import lirec.architecture.IArchitecture;
+import lirec.level2.RemoteCompetency;
 
 /** This class implements the base class for remote competencies that connect to their 
  *  remote counterpart via the PsyClone framework (see http://www.mindmakers.org/projects/Psyclone) */

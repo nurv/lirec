@@ -65,7 +65,7 @@ public class TestCompetency3 extends Competency
 		// read random number that TestCompetency2 has created from blackboard
 		// in the variable with the name that parameter "RandomInName" defines
 		
-		// check if we have a parameter called RandomOutName
+		// check if we have a parameter called RandomInName
 		if (!parameters.containsKey("RandomInName")) return false;
 		
 		// check if number is posted on the blackboard

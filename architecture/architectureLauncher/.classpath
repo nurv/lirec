@@ -4,5 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/architectureMain"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/ION.Meta"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/architectureAddOns"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
