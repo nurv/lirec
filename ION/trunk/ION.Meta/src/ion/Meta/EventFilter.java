@@ -38,5 +38,5 @@ public abstract class EventFilter implements IHashed<Class<?>> {
         return this.type;
     }
     
-    public abstract boolean blocks(IEvent request);
+    public abstract boolean blocks(IEvent event);
 }

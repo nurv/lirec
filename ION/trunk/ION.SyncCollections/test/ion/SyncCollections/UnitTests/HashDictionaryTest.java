@@ -22,6 +22,9 @@
   ---
   09/04/2009      Pedro Cuba <pedro.cuba@tagus.ist.utl.pt>
   First version.
+  ---
+  22/05/2009      Pedro Cuba <pedro.cuba@tagus.ist.utl.pt>
+  Added test for removal of all elements while out of the simulation.
   ---  
 */
 package ion.SyncCollections.UnitTests;
@@ -68,6 +71,27 @@ public class HashDictionaryTest {
 
     @AfterClass
     public static void tearDownClass() throws Exception {
+    }
+    
+    @Test
+    public void RemoveAllTestOut(){
+        HashDictionary<String, Dummy> dictionary = new HashDictionary<String, Dummy>();
+        final String key1 = "dummy1";
+        final String key2 = "dummy2";
+        Dummy value1 = new Dummy();
+        Dummy value2 = new Dummy();
+
+        dictionary.add(key1, value1);
+        dictionary.add(key2, value2);
+        assertTrue(dictionary.contains(key1));
+        assertTrue(dictionary.contains(key2));
+
+        assertNull(dictionary.getSimulation());
+        dictionary.removeAll();
+
+        assertFalse(dictionary.contains(key1));
+        assertFalse(dictionary.contains(key2));
+        assertEquals(0, dictionary.count());
     }
 
     //<editor-fold defaultstate="collapsed" desc="Simple Tests">

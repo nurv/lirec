@@ -22,11 +22,20 @@
   ---
   09/04/2009      Pedro Cuba <pedro.cuba@tagus.ist.utl.pt>
   First version.
-  ---  
+  ---
+  22/05/2009      Pedro Cuba <pedro.cuba@tagus.ist.utl.pt>
+  Changed Step Request scheduling method to pass through the process Events phase.
+  Stepped Event -> New Step Request | Started Event -> New Step Request | Resumed Event -> New Step Request
+  ---
 */
 package ion.Core;
 
+import ion.Core.Events.IResumed;
+import ion.Core.Events.IStarted;
+import ion.Core.Events.IStepped;
 import ion.Meta.Element;
+import ion.Meta.EventHandler;
+import ion.Meta.IEvent;
 import ion.Meta.IReadOnlyQueue;
 import ion.Meta.IReadOnlyQueueSet;
 import ion.Meta.Request;
@@ -63,15 +72,15 @@ public class Action<TStartArguments> extends Element {
     protected State state; 
 
     public Action() {
-        this.state = State.Idle;
-        try {
-            //Exception is assured to never be thrown when creating a SetValueHandler
-            this.getRequestHandlers().add(new ActionRequestHandler());
-        } catch (Exception ex) {
-        }
-    }
+		this.state = State.Idle;
+
+		this.getRequestHandlers().add(new ActionRequestHandler());
+		this.getEventHandlers().add(new SteppedHandler());
+        this.getEventHandlers().add(new StartedHandler());
+        this.getEventHandlers().add(new ResumedHandler());
+	}
     
-    //<editor-fold defaultstate="collapsed" desc="Requests">
+    // <editor-fold defaultstate="collapsed" desc="Requests">
     protected final class StartRequest extends Request {}
     protected final class ResumeRequest extends  Request {}
     protected final class StopSuccessRequest extends  Request {}
@@ -93,7 +102,7 @@ public class Action<TStartArguments> extends Element {
     
     protected final class ActionRequestHandler extends RequestHandler{
 
-        public ActionRequestHandler() throws Exception {
+        public ActionRequestHandler(){
             super(new TypeSet(StartRequest.class, StartArgumentsRequest.class,
                     StopSuccessRequest.class, StopFailRequest.class,
                     PauseRequest.class, ResumeRequest.class, StepRequest.class));
@@ -181,7 +190,6 @@ public class Action<TStartArguments> extends Element {
     void executeStart() {
         this.raise(new Started<Action>(this, this.state));
         this.state = State.Running;
-        this.schedule(new StepRequest());
     }
     
     private void executeStopSuccess() {
@@ -202,11 +210,9 @@ public class Action<TStartArguments> extends Element {
     private void executeResume() {
         this.raise(new Resumed<Action>(this, this.state));
         this.state = State.Running;
-        this.schedule(new StepRequest());
     }
 
     private void executeStep() {
-        this.schedule(new StepRequest());
         this.raise(new Stepped<Action>(this));
     }
     
@@ -219,11 +225,65 @@ public class Action<TStartArguments> extends Element {
     
     //</editor-fold>
     
-    //<editor-fold defaultstate="collapsed" desc="Action Members">
+    protected void onStep(IStepped evt) {
+		if (evt.getAction() == this) {
+			this.schedule(new StepRequest());
+		}
+	}
+
+	protected void onStart(IStarted evt) {
+		if (evt.getAction() == this) {
+			this.schedule(new StepRequest());
+		}
+	}
+
+	protected void onResume(IResumed evt) {
+		if (evt.getAction() == this) {
+			this.schedule(new StepRequest());
+		}
+	}
+	
+	private class SteppedHandler extends EventHandler {
+		
+		public SteppedHandler() {
+			super(IStepped.class);
+		}
+		
+		@Override
+		public void invoke(IEvent evt) {
+			onStep((IStepped)evt);
+		}
+	}
+	
+	private class StartedHandler extends EventHandler {
+		
+		public StartedHandler() {
+			super(IStarted.class);
+		}
+		
+		@Override
+		public void invoke(IEvent evt) {
+			onStart((IStarted)evt);
+		}
+	}
+	
+	private class ResumedHandler extends EventHandler {
+		
+		public ResumedHandler() {
+			super(IResumed.class);
+		}
+		
+		@Override
+		public void invoke(IEvent evt) {
+			onResume((IResumed)evt);
+		}
+	}
+    
+    // <editor-fold defaultstate="collapsed" desc="Action Members">
     
     /**
-     * Starts the Action.
-     */
+	 * Starts the Action.
+	 */
     public void start() {
         this.schedule(new StartRequest());
     }

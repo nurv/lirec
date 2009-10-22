@@ -22,7 +22,10 @@
   ---
   09/04/2009      Pedro Cuba <pedro.cuba@tagus.ist.utl.pt>
   First version.
-  ---  
+  ---
+  22/05/2009      Pedro Cuba <pedro.cuba@tagus.ist.utl.pt>
+  Supply for different policies (First, Last, Random) for conflicting SetValue Requests. 
+  ---
 */
 package ion.Core;
 
@@ -41,6 +44,8 @@ import ion.Meta.TypeSet;
  * @param <TValue> the specific type of the attribute
  */
 public class Property<TValue> extends Element {
+	
+	public enum SetValuePolicy {First, Last, Random}
     
     /**
      * Direcly changes the value of the Property without regarding the synchronization cycle.
@@ -52,9 +57,7 @@ public class Property<TValue> extends Element {
      * Creates a Property with the default value null.
      */
     public Property() {
-        //Exception is assured to never be thrown when creating a SetValueHandler
-        this.getRequestHandlers().add(new PropertyRequestHandler());
-        this.value = null;
+        this(null, SetValuePolicy.First);
     }
     
     /**
@@ -63,8 +66,36 @@ public class Property<TValue> extends Element {
      * @param value
      */
     public Property(TValue value){
-        this();
+        this(value, SetValuePolicy.First);
+    }
+    
+    /**
+     * Creates a Property with a particular policy to handle conflicting SetValues requests
+     */
+    public Property(SetValuePolicy policy){
+    	this(null, policy);
+    }
+    
+    /**
+     * Creates a Property with a particular initial value and a policy to handle conflicting SetValues requests
+     */
+    public Property(TValue value, SetValuePolicy policy)
+    {
         this.value = value;
+        switch (policy)
+        {
+            case First:
+                this.getRequestHandlers().add(new ChooseFirstHandler());
+                return;
+            case Last:
+                this.getRequestHandlers().add(new ChooseLastHandler());
+                return;
+            case Random:
+                this.getRequestHandlers().add(new ChooseRandomHandler());
+                return;
+            default:
+                throw new IllegalArgumentException("Unknown SetValuePolicy.");
+        }
     }
     
     //<editor-fold defaultstate="collapsed" desc="Requests">
@@ -86,28 +117,77 @@ public class Property<TValue> extends Element {
      * @param requests the set of request queues to be processed
      */
     protected void changeValueChooseFirst(IReadOnlyQueueSet<Request> requests) {
-        
-        for (SetValue request : requests.get(SetValue.class)) {
-            //Use reflection to instantiate the appropriate event type
-            //object[] arguments = { this, this.value };
-            Event evt = new ValueChanged<TValue, TValue, Property>(this.value, request.newValue, this);
-
-            this.value = request.newValue;
-            this.raise(evt);
-
-            return;
-        }
+    	this.executeSetValue(requests.get(SetValue.class).getFirst());
+        return;
     }
     
-    protected final class PropertyRequestHandler extends RequestHandler{
+    /**
+     * Change value policy that chooses the last request set value.
+     * 
+     * @param requests the set of request queues to be processed
+     */
+    protected void changeValueChooseLast(IReadOnlyQueueSet<Request> requests) {
+    	this.executeSetValue(requests.get(SetValue.class).getLast());
+        return;
+    }
+    
+    /**
+     * Change value policy that chooses a random request set value.
+     * 
+     * @param requests the set of request queues to be processed
+     */
+    protected void changeValueChooseRandom(IReadOnlyQueueSet<Request> requests) {
+    	this.executeSetValue(requests.get(SetValue.class).choose());
+        return;
+    }
+    
+    protected void executeSetValue(SetValue request) {
+		if (this.value == null && request.newValue == null) {
+			return;
+		}
 
-        public PropertyRequestHandler(){
+		if (request.newValue == null || this.value == null
+				|| !this.value.equals(request.newValue)) {
+			Event evt = new ValueChanged<TValue, TValue, Property>(this.value,
+					request.newValue, this);
+			this.value = request.newValue;
+			this.raise(evt);
+		}
+	}
+    
+    protected final class ChooseFirstHandler extends RequestHandler{
+
+        public ChooseFirstHandler(){
             super(new TypeSet(SetValue.class));
         }
 
         @Override
         public void invoke(IReadOnlyQueueSet<Request> requests) {
             changeValueChooseFirst(requests);
+        }
+    }
+    
+    protected final class ChooseLastHandler extends RequestHandler{
+
+        public ChooseLastHandler(){
+            super(new TypeSet(SetValue.class));
+        }
+
+        @Override
+        public void invoke(IReadOnlyQueueSet<Request> requests) {
+            changeValueChooseLast(requests);
+        }
+    }
+    
+    protected final class ChooseRandomHandler extends RequestHandler{
+
+        public ChooseRandomHandler(){
+            super(new TypeSet(SetValue.class));
+        }
+
+        @Override
+        public void invoke(IReadOnlyQueueSet<Request> requests) {
+            changeValueChooseRandom(requests);
         }
     }
     

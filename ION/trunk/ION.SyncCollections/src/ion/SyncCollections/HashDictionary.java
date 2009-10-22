@@ -22,6 +22,9 @@
   ---
   09/04/2009      Pedro Cuba <pedro.cuba@tagus.ist.utl.pt>
   First version.
+  ---
+  22/05/2009      Pedro Cuba <pedro.cuba@tagus.ist.utl.pt>
+  Corrected CollectionModified Exception error on RemoveAll() method when the dictionary was outside a simulation. 
   ---  
 */
 package ion.SyncCollections;
@@ -295,7 +298,8 @@ public class HashDictionary<TKey, TValue> extends Element implements IDictionary
     }
     
     public void removeAll() {
-        for (TKey key : this.getDictionary().keySet()) {
+    	TKey[] keys = (TKey[]) this.getDictionary().keySet().toArray();
+        for (TKey key : keys) {
             this.schedule(new RemoveRequest(key));
         }
     }

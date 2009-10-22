@@ -22,7 +22,10 @@
   ---
   09/04/2009      Pedro Cuba <pedro.cuba@tagus.ist.utl.pt>
   First version.
-  ---  
+  ---
+  22/05/2009      Pedro Cuba <pedro.cuba@tagus.ist.utl.pt>
+  Added new test to verify if the ChangedValue Event is not raised when the value of a property is set to the value that the property has. 
+  ---
 */
 package ion.Core.Tests;
 
@@ -109,7 +112,6 @@ public class PropertyTest {
         Dummy dummy = new Dummy();
         simulation.getElements().add(property);
 
-
         simulation.update();
         property.setValue(dummy);
         assertNull(property.getValue());
@@ -125,51 +127,74 @@ public class PropertyTest {
     //<editor-fold defaultstate="collapsed" desc="Multiple Requests Policy Test">
     
     @Test
-    public void multipleValueSetTest() {
-        Simulation simulation = Simulation.instance;
+	public void multipleValueSetTest() {
+		Simulation simulation = Simulation.instance;
 
-        final int initialValue = 1;
+		final int initialValue = 1;
 
-        Property<Integer> property = new Property<Integer>(initialValue);
-        simulation.getElements().add(property);
-        simulation.update();
+		Property<Integer> property = new Property<Integer>(initialValue);
+		simulation.getElements().add(property);
+		simulation.update();
 
-        final int expectedValue = initialValue + 1;
+		final int expectedValue = initialValue + 1;
 
-        property.setValue(expectedValue);
-        property.setValue(expectedValue + 1);
-        assertEquals(property.getValue(), initialValue);
+		property.setValue(expectedValue);
+		property.setValue(expectedValue + 1);
+		assertEquals(property.getValue(), initialValue);
 
-        simulation.update();
-        assertEquals(property.getValue(), expectedValue);
-    }
+		simulation.update();
+		assertEquals(property.getValue(), expectedValue);
+	}
     
-    //</editor-fold>
+    // </editor-fold>
     
-    //<editor-fold defaultstate="collapsed" desc="Launched Events Testing">
+    // <editor-fold defaultstate="collapsed" desc="Launched Events Testing">
     
     @Test
-    public void testPropertyChangedValueEventLaunched(){
-        
-        Simulation simulation = Simulation.instance;
-            Property<Integer> property = new Property<Integer>();
-            property.getEventHandlers().add(new IValueChangedHandler());
+	public void testPropertyChangedValueEventLaunched() {
 
-            simulation.getElements().add(property);
-            simulation.update();
-            
-            this.changedValueEventLaunched = false;
+		Simulation simulation = Simulation.instance;
+		Property<Integer> property = new Property<Integer>();
+		property.getEventHandlers().add(new ValueChangedHandler());
 
-            property.setValue(5);
-            assertFalse(this.changedValueEventLaunched);
+		simulation.getElements().add(property);
+		simulation.update();
 
-            simulation.update();
-            assertTrue(this.changedValueEventLaunched);
-    }
+		this.changedValueEventLaunched = false;
 
-    //</editor-fold>
+		property.setValue(5);
+		assertFalse(this.changedValueEventLaunched);
+
+		simulation.update();
+		assertTrue(this.changedValueEventLaunched);
+	}
     
-    //<editor-fold defaultstate="collapsed" desc="Constructor Tests">
+    /**
+	 * Tests if the ValueChanged is not raised when there is a Set with the
+	 * value that the property already has.
+	 */
+    @Test
+	public void testPropertyChangedValueOldValueEqualsNewValueEventNotLaunched() {
+		Simulation simulation = Simulation.instance;
+		int value = 5;
+		Property<Integer> property = new Property<Integer>(value);
+		property.getEventHandlers().add(new ValueChangedHandler());
+
+		simulation.getElements().add(property);
+		simulation.update();
+
+		this.changedValueEventLaunched = false;
+
+		property.setValue(property.getValue());
+		assertFalse(this.changedValueEventLaunched);
+
+		simulation.update();
+		assertFalse(this.changedValueEventLaunched);
+	}
+
+    // </editor-fold>
+    
+    // <editor-fold defaultstate="collapsed" desc="Constructor Tests">
     
     @Test
     public void propertyConstructorTest1() {
@@ -190,9 +215,9 @@ public class PropertyTest {
     private class Dummy{
     }
     
-    private class IValueChangedHandler extends EventHandler{
+    private class ValueChangedHandler extends EventHandler{
 
-        public IValueChangedHandler() {
+        public ValueChangedHandler() {
             super(IValueChanged.class);
         }
         
