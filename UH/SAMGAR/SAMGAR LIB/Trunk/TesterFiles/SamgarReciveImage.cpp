@@ -15,39 +15,29 @@ A simple program that shows how to send images with SAMGAR
 #include "cv.h"
 #include "highgui.h"
 #include <SamgarMainClass.h>
-using namespace std;
+
 
 int main() {
 Network yarp;
-	// Creates a module with a name , catagory , sub catagory , typeofmodule 
-	SamgarModule MyFirstTest("CameraSend","behaviour","happy",run); // Cant have spaces or underscores
+    SamgarModule MyFirstTest2("CameraRecive","behaviour","happy",run); // Cant have spaces or underscores
+	MyFirstTest2.SetupImagePort("VideoIn");
 
-	// then we setup the image port
-	MyFirstTest.SetupImagePort("VideoOut");
-
- // OCV get a device
-  CvCapture* capture = cvCaptureFromCAM( CV_CAP_ANY );
-  // OCV make sure its there
-  if( !capture ) {fprintf( stderr, "ERROR: capture is NULL \n" );getchar();return -1;}
-
-  
-  cvNamedWindow( "original", CV_WINDOW_AUTOSIZE );
+  cvNamedWindow( "copy", CV_WINDOW_AUTOSIZE );
 
   while( 1 ) 
   {
-    IplImage* frame = cvQueryFrame( capture );
-    if( !frame ){fprintf( stderr, "ERROR: frame is null...\n" );getchar();break;}
-	
-   cvShowImage( "original", frame );
-	// send the frame
-	MyFirstTest.SendPictureOCVNative(frame);
-	MyFirstTest.SucceedFail(true,888);
+	IplImage *frame2 = MyFirstTest2.RecivePictureOCVNative();
+
+	if(frame2!=false) // if there is no image available (one hasn't been sent) then the image will be false
+	{
+    cvShowImage( "copy", frame2 ); // if its not false then display it.
+	}
+
     if( (cvWaitKey(10) & 255) == 27 ) break;
   }
 
 
-  cvReleaseCapture( &capture );
-  cvDestroyWindow( "original" );
+  cvDestroyWindow( "copy" );
   return 0;
 }
 
