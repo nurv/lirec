@@ -26,6 +26,19 @@ while(Network::getNameServerName()=="/global"){;}
 open(Tempname.c_str());
 currentmode=running;
 useCallback();
+
+while(getInputCount()<1){;}
+yarp::os::Time::delay(3);
+// upon innit give its data to the gui
+Bottle& MyBottle =prepare();
+MyBottle.addInt(10); // code for gui
+MyBottle.addString(MyName.c_str());
+MyBottle.addString(MyCatagory.c_str());
+MyBottle.addString(MySubCatagory.c_str());
+write();
+
+//setstrict
+//this
 }
 /*!
 A method which enables the module list to be updated when new data is available or called for on the network
@@ -84,19 +97,27 @@ Bottle& MyBottle =prepare();
 MyBottle.clear();
 
 
+//printf("got some data with int %i \n",myswitch);
+
 /// have here a statment that catchs 10's is the user has specified it
-if(b.get(0).asInt()==10 && DoIWantModules==true)
+if(b.get(0).asInt()==105)
 {
-	//ListOfKnownModules.front()
+
+if(DoIWantModules==true)
+{
 	ModuleStruct TempStruct;
+	ListOfKnownModules.clear();
+	int FF;
+	FF=1;
+	while(FF<=b.size())
+	{
+		TempStruct.name        =b.get(FF).asString().c_str();FF++;
+		TempStruct.catagory    =b.get(FF).asString().c_str();FF++;
+		TempStruct.subcatagory =b.get(FF).asString().c_str();FF++;
+		ListOfKnownModules.push_front(TempStruct);
+	}
 
-	TempStruct.name        =b.get(1).asString().c_str();
-	TempStruct.catagory    =b.get(2).asString().c_str();
-	TempStruct.subcatagory =b.get(3).asString().c_str();
-
-	ListOfKnownModules.push_front(TempStruct);
-	ListOfKnownModules.sort(ListSortingFunction);   // sort the list
-	ListOfKnownModules.unique(ListDeleatingFunction); // deleate multiple copys
+}
 }
 if(b.get(0).asInt()==50 && DoIWantModules==true)
 {
@@ -120,6 +141,7 @@ case 1 :
 //	printf("mode changed to running \n");
 	break;  // get all modules to go again
 case 2 :
+//	  printf("Sent some catagory data from a module \n");
       MyBottle.addInt(10); // code for gui
 	  MyBottle.addString(MyName.c_str());
 	  MyBottle.addString(MyCatagory.c_str());
@@ -167,7 +189,7 @@ bool ListSortingFunction(ModuleStruct x,ModuleStruct y)
 /*! Setups a special port for images only !*/
 void SamgarModule::SetupImagePort(string outputname)
 {
-string Tempname = "/Port_" + MyName + "_" + outputname + "_Yarp";
+string Tempname = "/Port_" + MyName + "_" + outputname;
 Time::delay(1);
 YarpImagePort.open(Tempname.c_str());
 }
