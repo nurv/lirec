@@ -59,13 +59,12 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
+import FAtiMA.AgentModel;
 import FAtiMA.IntegrityValidator;
 import FAtiMA.conditions.Condition;
 import FAtiMA.exceptions.UnknownSpeechActException;
 import FAtiMA.exceptions.UnspecifiedVariableException;
-//import FAtiMA.knowledgeBase.KnowledgeBase;
-import FAtiMA.memory.shortTermMemory.WorkingMemory;
-import FAtiMA.memory.Memory;
+import FAtiMA.knowledgeBase.KnowledgeBase;
 import FAtiMA.motivationalSystem.MotivationalState;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
@@ -114,7 +113,7 @@ public class Step implements IPlanningOperator, Cloneable, Serializable {
 		_preconditions = new ArrayList(3);
 		
 		_selfExecutable = (!_agent.isGrounded()) || 
-				_agent.toString().equals(Memory.GetInstance().getSelf());
+				_agent.toString().equals("SELF");
 		
 		_baseprob = probability;
 	}
@@ -137,7 +136,7 @@ public class Step implements IPlanningOperator, Cloneable, Serializable {
 		_baseprob = probability;
 		
 		_selfExecutable = !_agent.isGrounded() || 
-		_agent.toString().equals(Memory.GetInstance().getSelf());
+		_agent.toString().equals("SELF");
 	}
 
 	private Step() {
@@ -188,13 +187,13 @@ public class Step implements IPlanningOperator, Cloneable, Serializable {
 	 * Decreases a Step's probability of execution by a fixed 
 	 * ammount. 
 	 */
-	public void DecreaseProbability() {
+	public void DecreaseProbability(AgentModel am) {
 		Float bias;
 		float prob;
 		float newprob;
 		float newbias;
 		
-		bias = (Float) Memory.GetInstance().AskProperty(GetBiasName());
+		bias = (Float) am.getMemory().AskProperty(GetBiasName());
 		if(bias != null)
 		{
 			prob = bias.floatValue() + _baseprob;
@@ -207,19 +206,19 @@ public class Step implements IPlanningOperator, Cloneable, Serializable {
 		newprob = 0.6f * prob;
 		newbias = newprob - _baseprob;
 		
-		WorkingMemory.GetInstance().Tell(GetBiasName(),new Float(newbias));  
+		am.getMemory().getWM().Tell(am.getMemory(),GetBiasName(),new Float(newbias));   
 	}
 	
 	/**
 	 * Increases a Step's probability of execution by a fixed ammount.
 	 */
-	public void IncreaseProbability() {
+	public void IncreaseProbability(AgentModel am) {
 		Float bias;
 		float prob;
 		float newprob;
 		float newbias;
 		
-		bias = (Float) Memory.GetInstance().AskProperty(GetBiasName());
+		bias = (Float) am.getMemory().AskProperty(GetBiasName());
 		if(bias != null)
 		{
 			prob = bias.floatValue() + _baseprob;
@@ -231,18 +230,18 @@ public class Step implements IPlanningOperator, Cloneable, Serializable {
 		
 		newprob = 0.6f * prob + 0.4f;
 		newbias = newprob - _baseprob;
-		WorkingMemory.GetInstance().Tell(GetBiasName(),new Float(newbias));   
+		am.getMemory().getWM().Tell(am.getMemory(),GetBiasName(),new Float(newbias));   
 	}
 	
 	/**
 	 * Gets the Step's probability of execution
 	 * @return the steps's probability
 	 */
-	public float getProbability() {
+	public float getProbability(AgentModel am) {
 		
 		if(!_selfExecutable)
 		{
-			Float aux = (Float) Memory.GetInstance().AskProperty(GetBiasName());
+			Float aux = (Float) am.getMemory().AskProperty(GetBiasName());
 			if(aux != null)
 			{
 				return _baseprob + aux.floatValue();
@@ -269,7 +268,7 @@ public class Step implements IPlanningOperator, Cloneable, Serializable {
 	 * Updates the probabilities of the step's effects by checking
 	 * if the effects did happen or not after the execution of the step
 	 */
-	public void updateEffectsProbability()
+	public void updateEffectsProbability(AgentModel am)
 	{
 		Effect e;
 		ListIterator li =  _effects.listIterator();
@@ -279,13 +278,13 @@ public class Step implements IPlanningOperator, Cloneable, Serializable {
 			//we only update the probability if the condition is grounded 
 			if(e.GetEffect().isGrounded())
 			{
-				if (e.GetEffect().CheckCondition()) {
-					e.IncreaseProbability();
+				if (e.GetEffect().CheckCondition(am)) {
+					e.IncreaseProbability(am);
 				}
 				else {
 					//System.out.println("In updateEffectsProbability" + e.toString());
 					//MotivationalState.GetInstance().UpdateCertainty((-e.GetProbability())*0.2f);
-					e.DecreaseProbability();
+					e.DecreaseProbability(am);
 				}
 			}
 		}
@@ -366,12 +365,12 @@ public class Step implements IPlanningOperator, Cloneable, Serializable {
 	 * @return true if all preconditions are true according to the world state stored
 	 * 		   in the KnowledgeBase, false otherwise
 	 */
-	public boolean checkPreconditions() {
+	public boolean checkPreconditions(AgentModel am) {
 		ListIterator li;
 		li = _preconditions.listIterator();
 		
 		while(li.hasNext()) {
-			if (!((Condition) li.next()).CheckCondition()) return false;
+			if (!((Condition) li.next()).CheckCondition(am)) return false;
 		}
 		return true;
 	}
@@ -764,7 +763,7 @@ public class Step implements IPlanningOperator, Cloneable, Serializable {
     	//true
     	this._selfExecutable = this._selfExecutable &&
     		(!_agent.isGrounded() || 
-   	 		 _agent.toString().equals(Memory.GetInstance().getSelf()));
+   	 		 _agent.toString().equals("SELF"));
     }
 
 	/**

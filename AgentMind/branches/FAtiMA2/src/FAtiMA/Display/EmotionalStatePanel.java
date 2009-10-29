@@ -101,7 +101,7 @@ public class EmotionalStatePanel extends AgentDisplayPanel {
     public boolean Update(Agent ag) {
         Float aux;
         ActiveEmotion em;
-        EmotionalState es = EmotionalState.GetInstance();
+        EmotionalState es = ag.getEmotionalState();
         
         //aux = new Float(es.GetArousal());
         //_arousalBar.setString(aux.toString());

@@ -103,7 +103,7 @@ public class GoalsPanel extends AgentDisplayPanel {
         	Goal g;
         	while(it.hasNext()) {
         		g = (Goal) it.next();
-        		gDisplay = new GoalDisplay(g);
+        		gDisplay = new GoalDisplay(ag, g);
         		
         		_goals.add(gDisplay.getGoalPanel());
         		_goalDisplays.add(gDisplay);
@@ -121,7 +121,7 @@ public class GoalsPanel extends AgentDisplayPanel {
                  
                  i = (Intention) it.next();     
                  iDisplay = (IntentionDisplay) _intentionDisplays.get(i.getGoal().getName().toString());
-                 iDisplay.Update(i);
+                 iDisplay.Update(ag, i);
              }    
         }
         else {
@@ -134,7 +134,7 @@ public class GoalsPanel extends AgentDisplayPanel {
             Intention i;
             while(it.hasNext()) {
                 i = (Intention) it.next();
-                iDisplay = new IntentionDisplay(i);
+                iDisplay = new IntentionDisplay(ag, i);
                 
                 _intentions.add(iDisplay.getIntentionPanel());
                 _intentionDisplays.put(i.getGoal().getName(),iDisplay);

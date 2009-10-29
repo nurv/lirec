@@ -42,6 +42,7 @@ import java.util.StringTokenizer;
 
 import FAtiMA.memory.Memory;
 
+
 /**
  * Abstract Well Formed Name
  * A well formed name is used to specify goal/action names, objects, properties,
@@ -56,7 +57,11 @@ import FAtiMA.memory.Memory;
 
 public abstract class Name implements IGroundable, Cloneable, Serializable {
 
-    protected boolean _constant;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	protected boolean _constant;
 	protected boolean _grounded;
 	
     /**
@@ -156,7 +161,7 @@ public abstract class Name implements IGroundable, Cloneable, Serializable {
 	 * Generates a list with all symbols contained in the Name
 	 * @return the list with the symbols
 	 */
-	public abstract ArrayList GetLiteralList();
+	public abstract ArrayList<Symbol> GetLiteralList();
 
 	
 	/**
@@ -173,7 +178,7 @@ public abstract class Name implements IGroundable, Cloneable, Serializable {
 	 * @return if the name is a symbol, it returns its name, otherwise
 	 * 		   it returns the value associated to the name in the KB
 	 */
-	public abstract Object evaluate(Memory memory);
+	public abstract Object evaluate(Memory m);
 
 	/**
 	 * @deprecated please do not use. This is deprecated.

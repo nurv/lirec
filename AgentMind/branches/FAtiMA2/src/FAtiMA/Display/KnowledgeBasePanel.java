@@ -70,7 +70,7 @@ public class KnowledgeBasePanel extends AgentDisplayPanel {
     }
    
     public boolean Update(Agent ag) {
-        KnowledgeBase kb = KnowledgeBase.GetInstance();
+        KnowledgeBase kb = ag.getMemory().getKB();
         
         ListIterator li = kb.GetFactList();
         

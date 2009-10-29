@@ -65,10 +65,10 @@ public abstract class Unifier {
      * @return True if the names are unifyable, in this case the bindings list will
      * 		   contain the found Substitutions, otherwise it will be empty
      */
-	public static boolean Unify(Name n1, Name n2, ArrayList bindings) {
+	public static boolean Unify(Name n1, Name n2, ArrayList<Substitution> bindings) {
 		Name aux1;
 		Name aux2;
-		ArrayList bindAux;
+		ArrayList<Substitution> bindAux;
 
 		if (n1 == null || n2 == null)
 			return false;
@@ -105,9 +105,9 @@ public abstract class Unifier {
      * @param n2 - The second Name
      * @return A list of substitutions if the names are unifyable, otherwise returns null
      */
-	public static ArrayList Unify(Name n1, Name n2)
+	public static ArrayList<Substitution> Unify(Name n1, Name n2)
     {
-	    ArrayList subs = new ArrayList();
+	    ArrayList<Substitution> subs = new ArrayList<Substitution>();
 
         if (Unify(n1, n2, subs))
         {
@@ -116,7 +116,7 @@ public abstract class Unifier {
         else return null;
     }
 
-	private static boolean FindSubst(Symbol l1, Symbol l2, ArrayList bindings) {
+	private static boolean FindSubst(Symbol l1, Symbol l2, ArrayList<Substitution> bindings) {
 		Symbol aux1 = (Symbol) l1.clone();
 		Symbol aux2 = (Symbol) l2.clone();
 		
@@ -143,21 +143,21 @@ public abstract class Unifier {
 		return true;
 	}
 
-	private static ArrayList FindSubst(Name n1, Name n2) {
-		ListIterator li1;
-		ListIterator li2;
+	private static ArrayList<Substitution> FindSubst(Name n1, Name n2) {
+		ListIterator<Symbol> li1;
+		ListIterator<Symbol> li2;
 
 		Symbol l1;
 		Symbol l2;
-		ArrayList bindings = new ArrayList();
+		ArrayList<Substitution> bindings = new ArrayList<Substitution>();
 
 		li1 = n1.GetLiteralList().listIterator();
 		li2 = n2.GetLiteralList().listIterator();
 
 		while (li1.hasNext()) {
-			l1 = (Symbol) li1.next();
+			l1 = li1.next();
 			if (li2.hasNext()) {
-				l2 = (Symbol) li2.next();
+				l2 = li2.next();
 				if (!FindSubst(l1, l2, bindings))
 					return null;
 			}

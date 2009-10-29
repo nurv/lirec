@@ -51,13 +51,13 @@ public class SubstitutionSet implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private ArrayList _substitutionSet;
+	private ArrayList<Substitution> _substitutionSet;
 	
 	/**
 	 * Creates a new Set of Substitutions
 	 */
 	public SubstitutionSet() {
-		_substitutionSet = new ArrayList();
+		_substitutionSet = new ArrayList<Substitution>();
 	}
 	
 	/**
@@ -66,7 +66,7 @@ public class SubstitutionSet implements Serializable {
 	 * @param substitutions - a list with initial substitutions to add to
 	 * the SubstitutionSet
 	 */
-	public SubstitutionSet(ArrayList substitutions) {
+	public SubstitutionSet(ArrayList<Substitution> substitutions) {
 		_substitutionSet = substitutions;
 	}
 	
@@ -82,7 +82,7 @@ public class SubstitutionSet implements Serializable {
 	 * Adds a list of Substitutions to the SubstitutionSet
 	 * @param substs - the list of Substitutions to Add
 	 */
-	public void AddSubstitutions(ArrayList substs) {
+	public void AddSubstitutions(ArrayList<Substitution> substs) {
 		_substitutionSet.addAll(substs);
 	}
 	
@@ -91,7 +91,7 @@ public class SubstitutionSet implements Serializable {
 	 * SubstitutionSet
 	 * @return - the list with all substitutions
 	 */
-	public ArrayList GetSubstitutions() {
+	public ArrayList<Substitution> GetSubstitutions() {
 		return _substitutionSet;
 	}
 	
@@ -107,8 +107,8 @@ public class SubstitutionSet implements Serializable {
 	    SubstitutionSet ss = (SubstitutionSet)o;
 	    if (this._substitutionSet.size() != ss._substitutionSet.size()) return false;
 	    
-	    ListIterator li1 = this._substitutionSet.listIterator();
-        ListIterator li2 = ss._substitutionSet.listIterator();
+	    ListIterator<Substitution> li1 = this._substitutionSet.listIterator();
+        ListIterator<Substitution> li2 = ss._substitutionSet.listIterator();
         
         while(li1.hasNext() && li2.hasNext()) 
         {

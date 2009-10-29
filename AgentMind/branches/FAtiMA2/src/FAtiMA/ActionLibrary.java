@@ -136,16 +136,16 @@ public class ActionLibrary implements Serializable {
 		_actions = new ArrayList();
 	}
 	
-	public void LoadActionsFile(String xmlFile, String self) throws ActionsParsingException
+	public void LoadActionsFile(String xmlFile, AgentModel am) throws ActionsParsingException
 	{
-		StripsOperatorsLoaderHandler op = LoadOperators(xmlFile, self);
+		StripsOperatorsLoaderHandler op = LoadOperators(xmlFile, am);
 		_actions = op.getOperators();
 	}
 	
-	private StripsOperatorsLoaderHandler LoadOperators(String xmlFile, String self) throws ActionsParsingException {
+	private StripsOperatorsLoaderHandler LoadOperators(String xmlFile, AgentModel am) throws ActionsParsingException {
 		AgentLogger.GetInstance().logAndPrint("LOAD: " + xmlFile);
 		
-		StripsOperatorsLoaderHandler op = new StripsOperatorsLoaderHandler(self);
+		StripsOperatorsLoaderHandler op = new StripsOperatorsLoaderHandler(am);
 		
 		try {
 			SAXParserFactory factory = SAXParserFactory.newInstance();

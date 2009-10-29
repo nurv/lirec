@@ -92,12 +92,12 @@ public abstract class AgentProcess implements Serializable {
 	/**
 	 * runs one round of the Appraisal process. 
 	 */
-	public abstract void Appraisal();
+	public abstract void Appraisal(AgentModel am);
 	
 	/**
 	 * runs one round of the Coping process
 	 */
-	public abstract void Coping();
+	public abstract void Coping(AgentModel am);
 	
 	/**
 	 * Gets the action selected in the coping cycle, if any.

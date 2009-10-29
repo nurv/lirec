@@ -174,7 +174,7 @@ public class EmotionalReactionTreeNode implements IIntegrityTester, Serializable
 	 * Checks the integrity of all emotional Reaction rules stored bellow the node,
 	 * testing if one of them refers a SpeechAct not defined. In that case, it throws
 	 * an exception
-	 */
+	 */ 
 	public void CheckIntegrity(IntegrityValidator val) throws UnknownSpeechActException {
 	    Iterator it = _childs.values().iterator();
 	    

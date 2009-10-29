@@ -63,9 +63,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
-//import FAtiMA.knowledgeBase.KnowledgeBase;
-import FAtiMA.memory.Memory;
-import FAtiMA.memory.autobiographicalMemory.AutobiographicalMemory;
+import FAtiMA.AgentModel;
+import FAtiMA.knowledgeBase.KnowledgeBase;
 import FAtiMA.wellFormedNames.IGroundable;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.SubstitutionSet;
@@ -101,7 +100,7 @@ public abstract class Condition implements IGroundable, Cloneable, Serializable 
 	 * returns null if no such SubstitutionSet exists
 	 * @see SubstitutionSet
 	 */
-	public static ArrayList CheckActivation(ArrayList preconditions) {
+	public static ArrayList CheckActivation(AgentModel am, ArrayList preconditions) {
 		ListIterator subsi;
 		Condition cond;
 		Condition newCond;
@@ -141,7 +140,7 @@ public abstract class Condition implements IGroundable, Cloneable, Serializable 
 					
 					//we test the new condition against memory and receive a list of new SubstitutionsSets
 					//that individually can satisfy the new condition
-					aux = newCond.GetValidBindings();
+					aux = newCond.GetValidBindings(am);
 					if (aux != null) {
 						//if the list is not null, it means that the condition can be verified 
 						//in this case we need to apply more substitutions to make the last condition
@@ -167,7 +166,7 @@ public abstract class Condition implements IGroundable, Cloneable, Serializable 
 			else {
 				//in this case there are no previous substitutions that resulted from the
 				//previous condition tests
-				aux = cond.GetValidBindings();
+				aux = cond.GetValidBindings(am);
 				if (aux != null && aux.size() > 0) {
 					newValidSubstitutionsSet.addAll(aux);
 				}
@@ -205,7 +204,7 @@ public abstract class Condition implements IGroundable, Cloneable, Serializable 
 	 * @see KnowledgeBase
 	 * @see AutobiographicalMemory
 	 */
-	public abstract boolean CheckCondition();
+	public abstract boolean CheckCondition(AgentModel am);
 
 	/**
 	 * Get's the condition's name - the object to be tested
@@ -223,7 +222,7 @@ public abstract class Condition implements IGroundable, Cloneable, Serializable 
      * @see KnowledgeBase
 	 * @see AutobiographicalMemory
 	 */
-	public ArrayList GetValidBindings() {
+	public ArrayList GetValidBindings(AgentModel am) {
 		ArrayList validSubstitutionSets = new ArrayList();
 		ArrayList bindingSets;
 		ArrayList bindings;
@@ -232,14 +231,14 @@ public abstract class Condition implements IGroundable, Cloneable, Serializable 
 		Condition cond;
 
 		if (_name.isGrounded()) {
-			bindings = this.GetValueBindings();
+			bindings = this.GetValueBindings(am);
 			if (bindings == null)
 				return null;
 			validSubstitutionSets.add(new SubstitutionSet(bindings));
 			return validSubstitutionSets;
 		}
 
-		bindingSets = Memory.GetInstance().GetPossibleBindings(_name);
+		bindingSets = am.getMemory().GetPossibleBindings(_name);
 		if (bindingSets == null)
 			return null;
 
@@ -248,7 +247,7 @@ public abstract class Condition implements IGroundable, Cloneable, Serializable 
 			subSet = (SubstitutionSet) li.next();
 			cond = (Condition) this.clone();
 			cond.MakeGround(subSet.GetSubstitutions());
-			aux = cond.GetValueBindings();
+			aux = cond.GetValueBindings(am);
 			if (aux != null) {				
 				subSet.AddSubstitutions(aux);
 				validSubstitutionSets.add(subSet);
@@ -297,5 +296,5 @@ public abstract class Condition implements IGroundable, Cloneable, Serializable 
      * If John owns the ball, the method returns [x]/John
      * @return returns all set of Substitutions that make the condition valid.
 	 */
-	protected abstract ArrayList GetValueBindings();
+	protected abstract ArrayList GetValueBindings(AgentModel am);
 }

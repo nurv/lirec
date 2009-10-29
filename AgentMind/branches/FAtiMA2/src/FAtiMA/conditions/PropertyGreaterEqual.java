@@ -30,8 +30,8 @@
 
 package FAtiMA.conditions;
 
+import FAtiMA.AgentModel;
 import FAtiMA.knowledgeBase.KnowledgeBase;
-import FAtiMA.memory.Memory;
 import FAtiMA.util.AgentLogger;
 import FAtiMA.wellFormedNames.Name;
 
@@ -66,19 +66,17 @@ public class PropertyGreaterEqual extends PropertyCondition {
      * Checks if the Property Condition is verified in the agent's memory (KB + AM)
      * @return true if the condition is verified, false otherwise
      */
-	public boolean CheckCondition() {
+	public boolean CheckCondition(AgentModel am) {
 		Object propertyValue;
 		Object value;
 		Float aux;
 		Float aux2;
 
-		if (!super.CheckCondition())
+		if (!super.CheckCondition(am))
 			return false;
 		
-		//KnowledgeBase kb = KnowledgeBase.GetInstance();
-		Memory memory = Memory.GetInstance();
-		propertyValue = this._name.evaluate(memory);
-		value = this._value.evaluate(memory);
+		propertyValue = this._name.evaluate(am.getMemory());
+		value = this._value.evaluate(am.getMemory());
 
 		if (propertyValue == null || value == null)
 			return false;

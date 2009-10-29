@@ -41,6 +41,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import FAtiMA.Agent;
+import FAtiMA.AgentModel;
 import FAtiMA.memory.KnowledgeSlot;
 import FAtiMA.memory.shortTermMemory.WorkingMemory;
 import FAtiMA.memory.shortTermMemory.STMemoryRecord;
@@ -130,22 +131,22 @@ public class ShortTermMemoryPanel extends AgentDisplayPanel {
     	
         _memoryRecords.removeAll();
         	
-        synchronized(ShortTermMemory.GetInstance().GetSyncRoot()){
-        	STMemoryRecord records = ShortTermMemory.GetInstance().GetAllRecords();
-        	_stmRecordDisplay = new STMRecordDisplay(records);
+        synchronized(ag.getMemory().getSTM().GetSyncRoot()){
+        	STMemoryRecord records = ag.getMemory().getSTM().GetAllRecords();
+        	_stmRecordDisplay = new STMRecordDisplay(ag, records);
             _memoryRecords.add(_stmRecordDisplay.getSTMRecordPanel());   	
         }     
         
-        ListIterator li = KnowledgeBase.GetInstance().GetFactList();
+        ListIterator li = ag.getMemory().getKB().GetFactList();
         
         KnowledgeSlot slot;
         KnowledgeFactDisplay kDisplay;
         int index;         
         
-        if (KnowledgeBase.GetInstance().Count() >= _knowledgeSize)
+        if (ag.getMemory().getKB().Count() >= _knowledgeSize)
         {
         	 _knowledgeFactsPanel.removeAll();
-        	 _knowledgeSize = KnowledgeBase.GetInstance().Count();
+        	 _knowledgeSize = ag.getMemory().getKB().Count();
         }
         
         while (li.hasNext()) {
@@ -159,8 +160,8 @@ public class ShortTermMemoryPanel extends AgentDisplayPanel {
             }
         }
         
-        li = WorkingMemory.GetInstance().GetFactList();
-        ArrayList changeList = WorkingMemory.GetInstance().GetChangeList();
+        li = ag.getMemory().getWM().GetFactList();
+        ArrayList changeList = ag.getMemory().getWM().GetChangeList();
         _workingFactsSubPanel1.removeAll();
         _workingFactsSubPanel2.removeAll();
         short half = (WorkingMemory.MAXENTRY)/2;
@@ -176,9 +177,9 @@ public class ShortTermMemoryPanel extends AgentDisplayPanel {
             else
             	_workingFactsSubPanel1.add(kDisplay.GetPanel());
         }
-        synchronized(WorkingMemory.GetInstance())
+        synchronized(ag.getMemory().getWM())
         {
-        	WorkingMemory.GetInstance().ClearChangeList();
+        	ag.getMemory().getWM().ClearChangeList();
         }
   
         return true;

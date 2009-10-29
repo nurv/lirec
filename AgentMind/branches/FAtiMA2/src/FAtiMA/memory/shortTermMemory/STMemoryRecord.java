@@ -37,6 +37,7 @@ import java.util.ListIterator;
 import FAtiMA.deliberativeLayer.goals.Goal;
 import FAtiMA.emotionalState.ActiveEmotion;
 import FAtiMA.memory.ActionDetail;
+import FAtiMA.memory.Memory;
 import FAtiMA.memory.SearchKey;
 import FAtiMA.memory.autobiographicalMemory.AutobiographicalMemory;
 import FAtiMA.sensorEffector.Event;
@@ -70,12 +71,12 @@ public class STMemoryRecord implements Serializable {
 		return this._details;
 	}
 	
-	public void AddActionDetail(Event e, String location)
+	public void AddActionDetail(Memory m, Event e, String location)
 	{
 		ActionDetail action;
 		//System.out.println("EventID: " + eventID);
 		
-		action = new ActionDetail(eventID++,e,location);
+		action = new ActionDetail(m, eventID++, e, location);
 				
 		//System.out.println("Action added: " + action.toXML());
 		
@@ -114,7 +115,7 @@ public class STMemoryRecord implements Serializable {
 		this._details.remove(0);
 	}
 	
-	public void AssociateEmotionToDetail(ActiveEmotion em, Event cause, String location)
+	public void AssociateEmotionToDetail(Memory m, ActiveEmotion em, Event cause, String location)
 	{
 		ActionDetail action;
 		if(cause != null)
@@ -125,7 +126,7 @@ public class STMemoryRecord implements Serializable {
 				action = (ActionDetail) _details.get(i);
 				if(action.ReferencesEvent(cause))
 				{
-					action.UpdateEmotionValues(em);
+					action.UpdateEmotionValues(m, em);
 					return;
 				}
 			}
@@ -145,14 +146,14 @@ public class STMemoryRecord implements Serializable {
 						!detail.getAction().equals("fail")) &&
 						(detail.getEmotion().GetType()) != EmotionType.NEUTRAL))
 				{
-					AutobiographicalMemory.GetInstance().StoreAction(detail);
+					m.getAM().StoreAction(detail);
 					//System.out.println("Record transferred to AM: " + detail.toXML());
 				}
 				this.DeleteOldestRecord();
 			}
-			action = new ActionDetail(eventID++,cause,location);
+			action = new ActionDetail(m, eventID++,cause,location);
 			_details.add(action);
-			action.UpdateEmotionValues(em);
+			action.UpdateEmotionValues(m, em);
 		}
 	}	
 	

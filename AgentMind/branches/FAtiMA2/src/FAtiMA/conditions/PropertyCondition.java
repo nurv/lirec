@@ -57,8 +57,8 @@ import java.util.ArrayList;
 
 import org.xml.sax.Attributes;
 
+import FAtiMA.AgentModel;
 import FAtiMA.knowledgeBase.KnowledgeBase;
-import FAtiMA.memory.Memory;
 import FAtiMA.util.AgentLogger;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
@@ -158,7 +158,7 @@ public abstract class PropertyCondition extends Condition {
 	 * Checks if the Property Condition is verified in the agent's memory (KB + AM)
 	 * @return true if the condition is verified, false otherwise
 	 */
-	public boolean CheckCondition() {
+	public boolean CheckCondition(AgentModel am) {
 		if (!_name.isGrounded() && !_value.isGrounded())
 			return false;
 		return true;
@@ -278,13 +278,13 @@ public abstract class PropertyCondition extends Condition {
 		AgentLogger.GetInstance().logAndPrint("    Property= " + _name + " value= " + _value);
 	}
 	
-	protected ArrayList GetBindings(Name groundValue, Name value) {
+	protected ArrayList GetBindings(AgentModel am, Name groundValue, Name value) {
 		Object val;
 		ArrayList bindings;
 		if (!groundValue.isGrounded())
 			return null;
 		if (!value.isGrounded()) {
-			val = groundValue.evaluate(Memory.GetInstance());
+			val = groundValue.evaluate(am.getMemory());
 			if (val != null) {
 				bindings = new ArrayList();
 				if(Unifier.Unify(value, Name.ParseName((String) val), bindings))
@@ -293,7 +293,7 @@ public abstract class PropertyCondition extends Condition {
 			}
 			else return null;
 		}
-		else if (this.CheckCondition()) {
+		else if (this.CheckCondition(am)) {
 			return new ArrayList();
 		}
 		else return null;
@@ -308,7 +308,7 @@ public abstract class PropertyCondition extends Condition {
      * If John owns the ball, the method returns [x]/John
      * @return returns all set of Substitutions that make the condition valid.
      */
-	protected ArrayList GetValueBindings() {
-		return GetBindings(_name, _value);
+	protected ArrayList GetValueBindings(AgentModel am) {
+		return GetBindings(am, _name, _value);
 	}
 }

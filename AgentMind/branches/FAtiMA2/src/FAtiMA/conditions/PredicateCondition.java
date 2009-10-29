@@ -56,7 +56,8 @@ import java.util.ArrayList;
 
 import org.xml.sax.Attributes;
 
-import FAtiMA.memory.Memory;
+import FAtiMA.AgentModel;
+import FAtiMA.knowledgeBase.KnowledgeBase;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
 import FAtiMA.wellFormedNames.Symbol;
@@ -117,10 +118,10 @@ public class PredicateCondition extends Condition {
 	 * @return true if the Predicate is verified, false otherwise
 	 * @see KnowledgeBase
 	 */
-	public boolean CheckCondition() {
+	public boolean CheckCondition(AgentModel am) {
 		boolean result;
 		if(!_name.isGrounded()) return false;
-		result = Memory.GetInstance().AskPredicate(_name); 
+		result = am.getMemory().AskPredicate(_name); 
 		return _positive == result;
 	}
 	
@@ -261,8 +262,8 @@ public class PredicateCondition extends Condition {
      * If John owns the ball, the method returns [x]/John
      * @return returns all set of Substitutions that make the condition valid.
 	 */
-	protected ArrayList GetValueBindings() {
-		if(CheckCondition()) {
+	protected ArrayList GetValueBindings(AgentModel am) {
+		if(CheckCondition(am)) {
 			return new ArrayList();
 		}
 		else return null;

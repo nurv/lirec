@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.xml.sax.Attributes;
 
+import FAtiMA.AgentModel;
 import FAtiMA.util.AgentLogger;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
@@ -54,7 +55,7 @@ public class MotivatorCondition extends Condition {
 	 * Checks if the Motivator Condition is verified in the agent's memory (KB + AM + Motivational System)
 	 * @return true if the condition is verified, false otherwise
 	 */
-	public boolean CheckCondition() {
+	public boolean CheckCondition(AgentModel am) {
 		//TODO: implment this based on the motivational system
 		return true;
 		
@@ -212,7 +213,7 @@ public class MotivatorCondition extends Condition {
      * If John owns the ball, the method returns [x]/John
      * @return returns all set of Substitutions that make the condition valid.
      */
-	protected ArrayList GetValueBindings() {
+	protected ArrayList GetValueBindings(AgentModel am) {
 		return null;
 		//TODO: implement using motivational component
 	}

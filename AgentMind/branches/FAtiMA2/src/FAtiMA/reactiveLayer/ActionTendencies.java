@@ -39,12 +39,19 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.ListIterator;
 
+import FAtiMA.AgentModel;
 import FAtiMA.AgentSimulationTime;
 import FAtiMA.IntegrityValidator;
 import FAtiMA.ValuedAction;
+import FAtiMA.conditions.Condition;
+import FAtiMA.emotionalState.ActiveEmotion;
+import FAtiMA.emotionalState.BaseEmotion;
 import FAtiMA.emotionalState.EmotionalState;
 import FAtiMA.exceptions.UnknownSpeechActException;
+import FAtiMA.sensorEffector.Event;
 import FAtiMA.util.AgentLogger;
+import FAtiMA.wellFormedNames.Name;
+import FAtiMA.wellFormedNames.Unifier;
 
 
 /**
@@ -122,18 +129,19 @@ public class ActionTendencies implements Serializable {
 	 * @param emState - the agent's emotional state that influences the actions performed
 	 * @return the most relevant Action (according to the emotional state)
 	 */
-	public ValuedAction SelectAction(EmotionalState emState) {
+	public ValuedAction SelectAction(AgentModel am) {
 		Iterator it;
 		Action a;
 		ValuedAction va;
 		ValuedAction bestAction = null;
+		EmotionalState emState = am.getEmotionalState();
 		
 		it = _actions.iterator();
 		while(it.hasNext()) {
 			a = (Action) it.next();
-			va = a.TriggerAction(emState.GetEmotionsIterator());
+			va = a.TriggerAction(am, emState.GetEmotionsIterator());
 			if (va != null && !isIgnored(va)) {
-				if(bestAction == null || va.GetValue() > bestAction.GetValue()) 
+				if(bestAction == null || va.GetValue(emState) > bestAction.GetValue(emState)) 
 				{
 				    bestAction = va;
 				}
@@ -141,6 +149,31 @@ public class ActionTendencies implements Serializable {
 		}
 		
 		return bestAction;
+	}
+	
+	public BaseEmotion RecognizeEmotion(AgentModel am, Event e, Name action)
+	{
+		Iterator it;
+		Action a;
+		Action a2;
+		ArrayList bindings = new ArrayList();
+		
+		it = _actions.iterator();
+		while(it.hasNext())
+		{
+			a = (Action) it.next();
+			if(Unifier.Unify(action, a.getName(), bindings))
+			{
+				a2 = (Action) a.clone();
+				a2.MakeGround(bindings);
+				if(Condition.CheckActivation(am, a2.GetPreconditions())!=null)
+				{
+					return a2.GetElicitingEmotion();
+				}
+			}
+		}
+		
+		return null;
 	}
 	
 	public void ReinforceActionTendency(String action)

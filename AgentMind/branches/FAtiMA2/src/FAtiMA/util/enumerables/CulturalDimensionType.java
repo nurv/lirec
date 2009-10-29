@@ -14,7 +14,7 @@ public class CulturalDimensionType {
 	}
 	
 	public static short ParseType(String dimensionType) throws InvalidDimensionTypeException {
-		short i;
+
 		
 		if(dimensionType == null) throw new InvalidDimensionTypeException();
 		

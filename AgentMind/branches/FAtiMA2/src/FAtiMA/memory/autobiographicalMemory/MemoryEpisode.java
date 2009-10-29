@@ -48,6 +48,7 @@ import FAtiMA.memory.ActionDetailComparator;
 import FAtiMA.memory.SearchKey;
 import FAtiMA.memory.Time;
 import FAtiMA.sensorEffector.Event;
+import FAtiMA.util.Constants;
 import FAtiMA.util.enumerables.EmotionValence;
 import FAtiMA.memory.Memory;
 
@@ -278,7 +279,7 @@ public class MemoryEpisode implements Serializable {
 		return newList;
 	}
 	
-	public String GenerateSummary()
+	public String GenerateSummary(Memory m)
 	{
 		Random random = new Random();
 		ActionDetail action;
@@ -345,13 +346,13 @@ public class MemoryEpisode implements Serializable {
 					firstEvent = false;
 				}
 				
-				AMSummary += SummaryGenerator.GenerateActionSummary(action);
+				AMSummary += SummaryGenerator.GenerateActionSummary(m, action);
 				
 				if(strongestEmotion != null &&
 						action.getEmotion().GetType() == strongestEmotion.GetType() &&
 						action.getEmotion().GetPotential() == strongestEmotion.GetPotential())
 				{
-					AMSummary += SummaryGenerator.GenerateEmotionSummary(strongestEmotion);
+					AMSummary += SummaryGenerator.GenerateEmotionSummary(m, strongestEmotion);
 				}
 				
 				/*if(secondStrongestEmotion != null &&
@@ -519,7 +520,7 @@ public class MemoryEpisode implements Serializable {
 				
 				familiarity += 0.2;
 				
-				if(action.getSubject().equals(Memory.GetInstance().getSelf()))
+				if(action.getSubject().equals(Constants.SELF))
 				{
 					//if the event was performed by me, I'm more familiar with it
 					familiarity += 0.4; 

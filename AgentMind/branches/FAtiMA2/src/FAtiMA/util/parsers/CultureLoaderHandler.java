@@ -32,16 +32,20 @@ package FAtiMA.util.parsers;
 import java.util.ArrayList;
 
 import org.xml.sax.Attributes;
-import org.xml.sax.helpers.AttributesImpl;
 
+import FAtiMA.AgentModel;
+import FAtiMA.conditions.Context;
 import FAtiMA.conditions.EmotionCondition;
 import FAtiMA.conditions.MoodCondition;
 import FAtiMA.conditions.NewEventCondition;
 import FAtiMA.conditions.PastEventCondition;
+import FAtiMA.conditions.PlaceCondition;
 import FAtiMA.conditions.PredicateCondition;
 import FAtiMA.conditions.PropertyCondition;
 import FAtiMA.conditions.RecentEventCondition;
 import FAtiMA.conditions.RitualCondition;
+import FAtiMA.conditions.SocialCondition;
+import FAtiMA.conditions.TimeCondition;
 import FAtiMA.culture.CulturalDimensions;
 import FAtiMA.culture.Ritual;
 import FAtiMA.culture.SymbolTranslator;
@@ -51,7 +55,6 @@ import FAtiMA.exceptions.DuplicateSymbolTranslatorEntry;
 import FAtiMA.exceptions.InvalidDimensionTypeException;
 import FAtiMA.exceptions.InvalidEmotionTypeException;
 import FAtiMA.exceptions.UnknownGoalException;
-import FAtiMA.memory.Memory;
 import FAtiMA.reactiveLayer.Reaction;
 import FAtiMA.reactiveLayer.ReactiveProcess;
 import FAtiMA.sensorEffector.Event;
@@ -69,27 +72,30 @@ public class CultureLoaderHandler extends ReflectXMLHandler {
 	private Ritual _ritual = null;
 	private String _conditionType;
 	private Substitution _self;
+	private AgentModel _am;
+	
 	ReactiveProcess _reactiveLayer;
 	DeliberativeProcess _deliberativeLayer;
+	
 
-	//private Context _contextBeingParsed;
-	private boolean _isInsideContext = false;
+	private Context _contextBeingParsed;
 
-	public CultureLoaderHandler(String self, ReactiveProcess reactiveLayer, DeliberativeProcess deliberativeLayer) {
+	public CultureLoaderHandler(AgentModel am, ReactiveProcess reactiveLayer, DeliberativeProcess deliberativeLayer) {
 		_rituals = new ArrayList();
 		_culturalGoals = new ArrayList();
-		_self = new Substitution(new Symbol("[SELF]"), new Symbol(self));
+		_self = new Substitution(new Symbol("[SELF]"), new Symbol("SELF"));
 		_reactiveLayer = reactiveLayer;
 		_deliberativeLayer = deliberativeLayer;
+		_am = am;
 		
 	}
 
 
-	public ArrayList GetRituals()
+	public ArrayList GetRituals(AgentModel am)
 	{
 		for(int i=0;i < _rituals.size();i++)
 		{
-			((Ritual)_rituals.get(i)).BuildPlan();
+			((Ritual)_rituals.get(i)).BuildPlan(am);
 		}
 
 		return _rituals;
@@ -126,7 +132,7 @@ public class CultureLoaderHandler extends ReflectXMLHandler {
 		String target = "*";
 		String action = attributes.getValue("name");
 		String parameters = attributes.getValue("parameters");
-		Event event = Event.ParseEvent(Memory.GetInstance().getSelf(), subject, action, target, parameters);
+		Event event = Event.ParseEvent(subject, action, target, parameters);
 
 		//Create the reaction
 		Integer desirability = new Integer(0);
@@ -147,7 +153,6 @@ public class CultureLoaderHandler extends ReflectXMLHandler {
 		_ritual = new Ritual(description);
 		_rituals.add(_ritual);
 		_conditionType = "PreConditions";
-		_isInsideContext = false;
 	}
 
 	public void Symbol(Attributes attributes)  {
@@ -163,20 +168,18 @@ public class CultureLoaderHandler extends ReflectXMLHandler {
 	
 	public void Goal(Attributes attributes) throws UnknownGoalException 
     {
-      String goalName = attributes.getValue("name");
-      _deliberativeLayer.AddGoal(goalName); 
+      String goalName = attributes.getValue("name");	
+      _deliberativeLayer.AddGoal(_am, goalName); 
     }
 
 	public void PreConditions(Attributes attributes)
 	{
 		_conditionType = "PreConditions";
-		_isInsideContext = false;
 	}
 
 	public void SucessConditions(Attributes attributes)
 	{
 		_conditionType ="SuccessConditions";
-		_isInsideContext = false;
 	}
 
 	
@@ -364,200 +367,31 @@ public class CultureLoaderHandler extends ReflectXMLHandler {
 	// To read context
 	public void Context( Attributes attributes ){
 		//if( attributes != null ) TODO check if they exist? should be null...
-		/*_contextBeingParsed = new Context();
+		_contextBeingParsed = new Context();
 		if(_ritual != null)
 		{
 			_ritual.AddCondition(_conditionType, _contextBeingParsed);
-		}*/
-		_conditionType = "PreConditions";
-		_isInsideContext = true;
+		}
 	}
 
 	public void Time( Attributes attributes ) throws ContextParsingException{
-		if( !_isInsideContext )
-			throw new ContextParsingException("Time Conditions need to be inside of a Context.");
-
-		int numberOfArguments = attributes.getLength(); 
-		String value = attributes.getValue("value");
-		
-		if( value == null )
-			throw ContextParsingException.CreateTimeConditionException("There is no 'value' argument.");
-		
-		if( value.equalsIgnoreCase("any") )
-			return;	// don't add the condition, since it can be any time
-		
-		PropertyCondition cond;
-		
-		switch(numberOfArguments){
-		case 1:		// <Time value="xpto"/>
-			ArrayList roles = _ritual.GetRoles();
-			for( int i = 0; i != roles.size(); ++i ){
-				AttributesImpl convertedAttributes = new AttributesImpl();
-
-				convertedAttributes.addAttribute("", "", "name", "String", ((Symbol)roles.get(i)).getName()+"(time)");
-				convertedAttributes.addAttribute("", "", "operator", "String", "=");
-				
-				if(value.charAt(0) == '[')
-					value += "(time)";
-					
-				convertedAttributes.addAttribute("", "", "value", "String", value);
-				
-				cond = PropertyCondition.ParseProperty(convertedAttributes);
-				cond.MakeGround(this._self);
-
-				if(_ritual != null)
-				{	
-					_ritual.AddCondition(_conditionType, cond);
-				}
-			}
-			break;
-		case 3:		// <Time target="[x]" operator="=" value="xpto/[y]"/>
-			AttributesImpl convertedAttributes = new AttributesImpl();
-				
-			String target = attributes.getValue("target");
-			if( target == null )
-				throw ContextParsingException.CreateTimeConditionException("There needs to be a 'target' argument or you should only use the more abstract Time Condition.");
-			
-			String operator = attributes.getValue("operator");
-			if( operator == null )
-				throw ContextParsingException.CreateTimeConditionException("There needs to be a 'operator' argument or you should only use the more abstract Time Condition.");
-			
-			convertedAttributes.addAttribute("", "", "name", "String", target+"(time)");
-			convertedAttributes.addAttribute("", "", "operator", "String", operator);
-			if(value.charAt(0) == '[')
-				value += "(time)";
-				
-			convertedAttributes.addAttribute("", "", "value", "String", value);
-			cond = PropertyCondition.ParseProperty(convertedAttributes);
-			cond.MakeGround(this._self);
-
-			if(_ritual != null)
-			{	
-				_ritual.AddCondition(_conditionType, cond);
-			}
-			break;
-		default:
-			throw ContextParsingException.CreateTimeConditionException("Can only have 1 (e.g. <Time value=\"morning\" />) or 3 arguments (e.g. <Time target=\"[character]\" operator=\"=\" value=\"morning\".");
-			// break; throws exception above...
-		}
-		
-		/*if( _contextBeingParsed == null )
+		if( _contextBeingParsed == null )
 			throw new ContextParsingException("Trying to parse a TimeCondition outside of a Context");
 
-		_contextBeingParsed.SetTimeCondition( TimeCondition.Parse(attributes) );*/
+		_contextBeingParsed.SetTimeCondition( TimeCondition.Parse(attributes) );
 	}
 
 	public void Place(Attributes attributes ) throws ContextParsingException{
-		if( !_isInsideContext )
-			throw new ContextParsingException("Place Conditions need to be inside of a Context.");
-		
-		int numberOfArguments = attributes.getLength(); 
-		String value = attributes.getValue("value");
-		
-		if( value == null )
-			throw ContextParsingException.CreatePlaceConditionException("There is no 'value' argument.");
-		
-		if( value.equalsIgnoreCase("any") )
-			return;	// don't add the condition, since it can be any time
-		
-		PropertyCondition cond;
-		
-		switch(numberOfArguments){
-		case 1:		// <Place value="xpto"/>
-			ArrayList roles = _ritual.GetRoles();
-			for( int i = 0; i != roles.size(); ++i ){
-				AttributesImpl convertedAttributes = new AttributesImpl();
-
-				convertedAttributes.addAttribute("", "", "name", "String", ((Symbol)roles.get(i)).getName()+"(place)");
-				convertedAttributes.addAttribute("", "", "operator", "String", "=");
-				
-				if(value.charAt(0) == '[')
-					value += "(place)";
-					
-				convertedAttributes.addAttribute("", "", "value", "String", value);
-				
-				cond = PropertyCondition.ParseProperty(convertedAttributes);
-				cond.MakeGround(this._self);
-
-				if(_ritual != null)
-				{	
-					_ritual.AddCondition(_conditionType, cond);
-				}
-			}
-			break;
-		case 3:		// <Place target="[x]" operator="=" value="xpto/[y]"/>
-			AttributesImpl convertedAttributes = new AttributesImpl();
-				
-			String target = attributes.getValue("target");
-			if( target == null )
-				throw ContextParsingException.CreatePlaceConditionException("There needs to be a 'target' argument or you should only use the more abstract Place Condition.");
-			
-			String operator = attributes.getValue("operator");
-			if( operator == null )
-				throw ContextParsingException.CreatePlaceConditionException("There needs to be a 'operator' argument or you should only use the more abstract Place Condition.");
-			
-			convertedAttributes.addAttribute("", "", "name", "String", target+"(place)");
-			convertedAttributes.addAttribute("", "", "operator", "String", operator);
-			if(value.charAt(0) == '[')
-				value += "(place)";
-				
-			convertedAttributes.addAttribute("", "", "value", "String", value);
-			cond = PropertyCondition.ParseProperty(convertedAttributes);
-			cond.MakeGround(this._self);
-
-			if(_ritual != null)
-			{	
-				_ritual.AddCondition(_conditionType, cond);
-			}
-			break;
-		default:
-			throw ContextParsingException.CreatePlaceConditionException("Can only have 1 (e.g. <Place value=\"beach\" />) or 3 arguments (e.g. <Place target=\"[character]\" operator=\"=\" value=\"beach\".");
-			// break; throws exception above...
-		}
-		
-		/*if( _contextBeingParsed == null )
+		if( _contextBeingParsed == null )
 			throw new ContextParsingException("Trying to parse a PlaceCondition outside of a Context");
 
-		_contextBeingParsed.SetPlaceCondition( PlaceCondition.Parse(attributes) );*/
+		_contextBeingParsed.SetPlaceCondition( PlaceCondition.Parse(attributes) );
 	}
 
 	public void Social(Attributes attributes ) throws ContextParsingException{
-		if( !_isInsideContext )
-			throw new ContextParsingException("Social Conditions need to be inside of a Context.");
-		//<Social name="power" target="[x]" operator="=" value="[y]"/>
-		
-		String name = attributes.getValue("name");
-		String target = attributes.getValue("target");
-		String operator = attributes.getValue("operator");
-		String value = attributes.getValue("value");
-		
-		if( name == null )
-			throw ContextParsingException.CreateSocialConditionException("There is no 'name' argument.");
-		else if( target == null )
-			throw ContextParsingException.CreateSocialConditionException("There is no 'target' argument.");
-		else if( operator == null )
-			throw ContextParsingException.CreateSocialConditionException("There is no 'operator' argument.");
-		else if( value == null )
-			throw ContextParsingException.CreateSocialConditionException("There is no 'value' argument.");
-		
-		AttributesImpl convertedAttributes = new AttributesImpl();
-		convertedAttributes.addAttribute("", "", "name", "String", target+"("+name+")");
-		convertedAttributes.addAttribute("", "", "operator", "String", operator);
-		if( value.charAt(0) == '[')
-			value += "("+name+")";
-		convertedAttributes.addAttribute("", "", "value", "String", value);
-		
-		PropertyCondition cond = PropertyCondition.ParseProperty(convertedAttributes);
-		cond.MakeGround(this._self);
-
-		if(_ritual != null)
-		{	
-			_ritual.AddCondition(_conditionType, cond);
-		}
-		
-		/*if( _contextBeingParsed == null )
+		if( _contextBeingParsed == null )
 			throw new ContextParsingException("Trying to parse a SocialCondition outside of a Context");
 
-		_contextBeingParsed.AddSocialCondition( SocialCondition.Parse(attributes) );*/
+		_contextBeingParsed.AddSocialCondition( SocialCondition.Parse(attributes) );
 	}
 }

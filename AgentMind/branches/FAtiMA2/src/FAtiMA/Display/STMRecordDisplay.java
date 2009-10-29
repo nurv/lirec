@@ -41,6 +41,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 import java.util.ArrayList;
+
+import FAtiMA.AgentModel;
 import FAtiMA.memory.ActionDetail;
 import FAtiMA.memory.shortTermMemory.STMemoryRecord;
 import FAtiMA.memory.shortTermMemory.ShortTermMemory;
@@ -53,7 +55,7 @@ public class STMRecordDisplay {
     private static int _lastID = 0;
     private static int _previousID = 0;
     
-    public STMRecordDisplay(STMemoryRecord records) {
+    public STMRecordDisplay(AgentModel am, STMemoryRecord records) {
 
     	_panel = new JPanel();
         _panel.setBorder(BorderFactory.createEtchedBorder());
@@ -137,7 +139,7 @@ public class STMRecordDisplay {
 		
 		ListIterator li = records.getDetails().listIterator();
 	
-		ArrayList newRecords = ShortTermMemory.GetInstance().GetNewRecords();
+		ArrayList newRecords = am.getMemory().getSTM().GetNewRecords();
 		
 		while(li.hasNext())
 		{
@@ -149,9 +151,9 @@ public class STMRecordDisplay {
 				
 			prop.add(recordDetailPanel);
 		}
-		synchronized(ShortTermMemory.GetInstance())
+		synchronized(am.getMemory().getSTM())
 		{
-			ShortTermMemory.GetInstance().ClearNewRecords();
+			am.getMemory().getSTM().ClearNewRecords();
 		}
 	
 		_details.add(propertiesScroll);

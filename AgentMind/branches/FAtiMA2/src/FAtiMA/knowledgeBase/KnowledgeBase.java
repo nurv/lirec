@@ -70,13 +70,9 @@
 
 package FAtiMA.knowledgeBase;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
+
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.ListIterator;
 
 import FAtiMA.conditions.Condition;
@@ -108,71 +104,6 @@ public class KnowledgeBase implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
-	/**
-	 * Singleton pattern 
-	 */
-	private static KnowledgeBase _kbInstance = null;
-	
-	/**
-	 * Gets the Agent's KnowledgeBase
-	 * @return the KnowledgeBase
-	 */
-	public static KnowledgeBase GetInstance()
-	{
-		if(_kbInstance == null)
-		{
-			_kbInstance = new KnowledgeBase();
-		}
-		return _kbInstance;
-	}
-	
-	/**
-	 * Saves the state of the current KnowledgeBase to a file,
-	 * so that it can be later restored from file
-	 * @param fileName - the name of the file where we must write
-	 * 		             the KnowledgeBase
-	 */
-	public static void SaveState(String fileName)
-	{
-		try 
-		{
-			FileOutputStream out = new FileOutputStream(fileName);
-	    	ObjectOutputStream s = new ObjectOutputStream(out);
-	    	
-	    	s.writeObject(_kbInstance);
-        	s.flush();
-        	s.close();
-        	out.close();
-		}
-		catch(Exception e)
-		{
-			AgentLogger.GetInstance().logAndPrint("Exception: " + e);
-			ApplicationLogger.Write(e.getMessage());
-		}
-	}
-	
-	/**
-	 * Loads a specific state of the KnowledgeBase from a previously
-	 * saved file
-	 * @param fileName - the name of the file that contains the stored
-	 * 					 KnowledgeBase
-	 */
-	public static void LoadState(String fileName)
-	{
-		try
-		{
-			FileInputStream in = new FileInputStream(fileName);
-        	ObjectInputStream s = new ObjectInputStream(in);
-        	_kbInstance = (KnowledgeBase) s.readObject();
-        	s.close();
-        	in.close();
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-	}
-	
 	private KnowledgeSlot _kB;
 	private ArrayList _factList;
 	private ArrayList _inferenceOperators;
@@ -180,7 +111,7 @@ public class KnowledgeBase implements Serializable {
 	/**
 	 * Creates a new Empty KnowledgeBase
 	 */
-	private KnowledgeBase() {
+	public KnowledgeBase() {
 		_kB = new KnowledgeSlot("KB");
 		_factList = new ArrayList();
 		_inferenceOperators = new ArrayList();

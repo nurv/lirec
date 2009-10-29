@@ -37,6 +37,7 @@ import java.util.Hashtable;
 import java.util.ListIterator;
 
 import FAtiMA.ActionLibrary;
+import FAtiMA.AgentModel;
 import FAtiMA.conditions.Condition;
 import FAtiMA.conditions.NewEventCondition;
 import FAtiMA.conditions.RecentEventCondition;
@@ -61,6 +62,7 @@ public class Ritual extends ActivePursuitGoal {
 	 * 
 	 */
 	
+	private static final float EXPECTED_AFFILIATION_ONIGNORE_VALUE = -10f;
 	private static final long serialVersionUID = 1L;
 	
 	private ArrayList _roles;
@@ -151,7 +153,7 @@ public class Ritual extends ActivePursuitGoal {
 		return this._roles;
 	}
 	
-	public void BuildPlan()
+	public void BuildPlan(AgentModel am)
 	{
 		Step s;
 		OrderingConstraint o;
@@ -201,14 +203,14 @@ public class Ritual extends ActivePursuitGoal {
 			
 			e = this.GetSuccessEvent();
 			ritualCondition = new RitualCondition(this._name.GetFirstLiteral(),_roles);
-			this.addEffect(new Effect(e.GetTarget(),1.0f,ritualCondition));
+			this.addEffect(new Effect(am, e.GetTarget(),1.0f,ritualCondition));
 		} 
 	}
 	
-	public ArrayList getPlans()
+	public ArrayList getPlans(AgentModel am)
 	{
 		ArrayList plans = new ArrayList();
-		this._plan.UpdatePlan();
+		this._plan.UpdatePlan(am);
 		plans.add(this._plan);
 		return plans;
 	}
@@ -537,9 +539,9 @@ public class Ritual extends ActivePursuitGoal {
 	
 	//IPlanningOperator methods
 	
-	public float getProbability()
+	public float getProbability(AgentModel am)
 	{
-		Float f = this.GetProbability();
+		Float f = this.GetProbability(am);
 		if(f != null)
 		{
 			return f.floatValue();

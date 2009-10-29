@@ -36,6 +36,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import FAtiMA.AgentModel;
 import FAtiMA.deliberativeLayer.goals.ActivePursuitGoal;
 import FAtiMA.deliberativeLayer.goals.Goal;
 import FAtiMA.deliberativeLayer.goals.InterestGoal;
@@ -55,7 +56,7 @@ public class GoalDisplay {
     JLabel _impOfFailure;
     
 
-    public GoalDisplay(Goal g) {
+    public GoalDisplay(AgentModel am, Goal g) {
     	_panel = new JPanel();
         _panel.setBorder(BorderFactory.createTitledBorder(g.getName().toString()));
         _panel.setLayout(new BoxLayout(_panel,BoxLayout.Y_AXIS));
@@ -113,10 +114,10 @@ public class GoalDisplay {
         
         Float aux;
         
-        aux = new Float(g.GetImportanceOfSuccess());
+        aux = new Float(g.GetImportanceOfSuccess(am));
         _impOfSuccess.setText(aux.toString());
         
-        aux = new Float(g.GetImportanceOfFailure());
+        aux = new Float(g.GetImportanceOfFailure(am));
         _impOfFailure.setText(aux.toString());
         
         if(/*g.getClass().equals(ActivePursuitGoal.class)*/g instanceof ActivePursuitGoal) {

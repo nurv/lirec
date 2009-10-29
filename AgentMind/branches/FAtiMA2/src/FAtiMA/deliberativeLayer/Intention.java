@@ -38,17 +38,19 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
-//import FAtiMA.autobiographicalMemory.AutobiographicalMemory;
+import FAtiMA.AgentModel;
 import FAtiMA.culture.Ritual;
 import FAtiMA.deliberativeLayer.goals.ActivePursuitGoal;
 import FAtiMA.deliberativeLayer.goals.Goal;
 import FAtiMA.deliberativeLayer.plan.Plan;
 import FAtiMA.emotionalState.ActiveEmotion;
+import FAtiMA.emotionalState.Appraisal;
+import FAtiMA.emotionalState.BaseEmotion;
 import FAtiMA.emotionalState.EmotionalState;
-import FAtiMA.memory.shortTermMemory.ShortTermMemory;
 import FAtiMA.motivationalSystem.MotivationalState;
 import FAtiMA.sensorEffector.Event;
 import FAtiMA.util.AgentLogger;
+import FAtiMA.wellFormedNames.Name;
 
 
 /**
@@ -176,12 +178,12 @@ public class Intention implements Serializable {
 	
 	/**
 	 * Gets the Fear emotion associated with the intention.
-	 * This fear is caused by the prospect of failling to achieve the goal  
+	 * This fear is caused by the prospect of failing to achieve the goal  
 	 * @return - the Fear emotion
 	 */
-	public ActiveEmotion GetFear() {
+	public ActiveEmotion GetFear(EmotionalState es) {
 		if(_fearEmotionID == null) return null;
-		return EmotionalState.GetInstance().GetEmotion(_fearEmotionID);
+		return es.GetEmotion(_fearEmotionID);
 	}
 
 
@@ -198,16 +200,16 @@ public class Intention implements Serializable {
 	 * This hope is caused by the prospect of succeeding in achieving the goal  
 	 * @return - the Hope emotion
 	 */
-	public ActiveEmotion GetHope() {
+	public ActiveEmotion GetHope(EmotionalState es) {
 		if(_hopeEmotionID == null) return null;
-		return EmotionalState.GetInstance().GetEmotion(_hopeEmotionID);
+		return es.GetEmotion(_hopeEmotionID);
 	}
 
 	/**
 	 * Gets the best plan developed so far to achieve the intention
 	 * @return the best plan
 	 */
-	public Plan GetBestPlan() {
+	public Plan GetBestPlan(AgentModel am) {
 		ListIterator li;
 		Plan p;
 		Plan bestPlan = null;
@@ -216,9 +218,9 @@ public class Intention implements Serializable {
 		li = _planConstruction.listIterator();
 		while (li.hasNext()) {
 			p = (Plan) li.next();
-			if (p.h() < minH) {
+			if (p.h(am) < minH) {
 				bestPlan = p;
-				minH = p.h();
+				minH = p.h(am);
 			}
 		}
 		return bestPlan;
@@ -228,22 +230,22 @@ public class Intention implements Serializable {
 	 * Gets the likelihood of the agent achieving the intention
 	 * @return a float value representing the probability [0;1]
 	 */
-	public float GetProbability() {
+	public float GetProbability(AgentModel am) {
 		ListIterator li;
 		float p;
 		float bestProb = 0;
 		li = _planConstruction.listIterator();
 		while (li.hasNext()) {
-			p = ((Plan) li.next()).getProbability();
+			p = ((Plan) li.next()).getProbability(am);
 			if (p > bestProb) bestProb = p; 
 		}
 		return bestProb;
 	}
 	
-	public float GetExpectedUtility()
+	public float GetExpectedUtility(AgentModel am)
 	{
-		_goal.SetProbability(new Float(GetProbability()));
-		return _goal.GetExpectedUtility();
+		_goal.SetProbability(new Float(GetProbability(am)));
+		return _goal.GetExpectedUtility(am);
 	}
 	
 
@@ -295,12 +297,12 @@ public class Intention implements Serializable {
 		return _strongCommitment;
 	}
 	
-	public void SetStrongCommitment()
+	public void SetStrongCommitment(AgentModel am)
 	{
 		if(!_strongCommitment)
 		{
 			_strongCommitment = true;
-			ProcessIntentionActivation();
+			ProcessIntentionActivation(am);
 		}
 	}
 	
@@ -316,17 +318,17 @@ public class Intention implements Serializable {
 	 * Updates all the plans for the intention according to the new 
 	 * state of the world. Supports continuous planning.
 	 */
-	public void CheckLinks() {
+	public void CheckLinks(AgentModel am) {
 	    ListIterator li;
 	    li = _planConstruction.listIterator();
 	    
 	    while(li.hasNext()) {
-	        ((Plan) li.next()).UpdatePlan();
+	        ((Plan) li.next()).UpdatePlan(am);
 	    }
 	    
 	    if(this._subIntention != null)
 	    {
-	    	this._subIntention.CheckLinks();
+	    	this._subIntention.CheckLinks(am);
 	    }
 	}
 	
@@ -352,19 +354,23 @@ public class Intention implements Serializable {
 	 * Registers and appraises the activation of a given intention
 	 * @param intention - the intention that was activated
 	 */
-	private void ProcessIntentionActivation() 
+	private void ProcessIntentionActivation(AgentModel am) 
 	{
 	    Event e = _goal.GetActivationEvent();
 	    
+	    Name locationKey = Name.ParseName(am.getName() + "(location)");
+		String location = (String) am.getMemory().AskProperty(locationKey);
+	    
 	    AgentLogger.GetInstance().logAndPrint("Adding a new Strong Intention: " + _goal.getName().toString());
 	  
-	    // AutobiographicalMemory.GetInstance().StoreAction(e);
-	    // Meiyii 11/03/09
-	    ShortTermMemory.GetInstance().StoreAction(e);
+	    am.getMemory().getSTM().StoreAction(am.getMemory(), e, location);
 	    
-	    float probability = GetProbability();
-		ActiveEmotion hope = EmotionalState.GetInstance().AppraiseGoalSucessProbability(_goal, probability);
-		ActiveEmotion fear = EmotionalState.GetInstance().AppraiseGoalFailureProbability(_goal, 1 - probability);
+	    float probability = GetProbability(am);
+	    BaseEmotion aux = Appraisal.AppraiseGoalSuccessProbability(am, _goal, probability);
+	    ActiveEmotion hope = am.getEmotionalState().UpdateProspectEmotion(aux, am);
+	    
+	    aux = Appraisal.AppraiseGoalFailureProbability(am, _goal, 1- probability);
+		ActiveEmotion fear = am.getEmotionalState().UpdateProspectEmotion(aux, am);
 		
 		SetHope(hope);
 		SetFear(fear);	
@@ -373,34 +379,44 @@ public class Intention implements Serializable {
 	/**
 	 * Registers and appraises the failure of this intention
 	 */
-	public void ProcessIntentionFailure() 
+	public void ProcessIntentionFailure(AgentModel am) 
 	{	
+		 Name locationKey = Name.ParseName(am.getName() + "(location)");
+		 String location = (String) am.getMemory().AskProperty(locationKey);
+			
 		//mental disengagement consists in lowering the goal's importance
-		_goal.DecreaseImportanceOfFailure(0.5f);
+		_goal.DecreaseImportanceOfFailure(am, 0.5f);
 		
 		//_numberOfGoalsTried++;
-		MotivationalState.GetInstance().UpdateCompetence(false);
+		am.getMotivationalState().UpdateCompetence(false);
 		
 		
 	    Event e = _goal.GetFailureEvent();
 	    
-	    float observedError = _goal.getProbability();
-	    float previousExpectedError = _goal.getUncertainty();
+	    //observed error = |estimation of success - realsuccess|
+	    //given that the goal failed, the real success is none and the formula resumes to
+	    //observed error = estimation of success - 0 (=) estimation of success
+	    float observedError = _goal.getProbability(am);
+	    float previousExpectedError = _goal.getUncertainty(am);
 	    
 	    float newExpectedError = ActivePursuitGoal.alfa * observedError + (1 - ActivePursuitGoal.alfa) * previousExpectedError;
 	    float deltaError = newExpectedError - previousExpectedError;
-	    MotivationalState.GetInstance().UpdateCertainty(-deltaError);
-	    _goal.setUncertainty(newExpectedError);
+	    am.getMotivationalState().UpdateCertainty(-deltaError);
+	    _goal.setUncertainty(am, newExpectedError);
 	    
-	    //AutobiographicalMemory.GetInstance().StoreAction(e);
-	    // Meiyii 11/03/09
-	    ShortTermMemory.GetInstance().StoreAction(e);
-	    EmotionalState.GetInstance().AppraiseGoalFailure(GetHope(),GetFear(), _goal);
+	    am.getMemory().getSTM().StoreAction(am.getMemory(), e, location);
+	    
+	    ActiveEmotion hope = GetHope(am.getEmotionalState());
+	    ActiveEmotion fear = GetFear(am.getEmotionalState());
+	    BaseEmotion em = Appraisal.AppraiseGoalFailure(am, hope,fear, _goal);
+	    am.getEmotionalState().RemoveEmotion(hope);
+	    am.getEmotionalState().RemoveEmotion(fear);
+	    am.getEmotionalState().AddEmotion(em, am);
 	    
 	    if(!isRootIntention())
 	    {
 	    	AgentLogger.GetInstance().logAndPrint("Removing Parent Intention!: " + this.getParentIntention());
-	    	getParentIntention().ProcessIntentionFailure();
+	    	getParentIntention().ProcessIntentionFailure(am);
 	    	//getParentIntention().CheckLinks();
 	    }
 	    
@@ -410,30 +426,46 @@ public class Intention implements Serializable {
 	/**
 	 * Registers and appraises the success of the intention
 	 */
-	public void ProcessIntentionSuccess() 
+	public void ProcessIntentionSuccess(AgentModel am) 
 	{
-	
+		Name locationKey = Name.ParseName(am.getName() + "(location)");
+		String location = (String) am.getMemory().AskProperty(locationKey);
+		
+		EmotionalState es = am.getEmotionalState();
 		//_numberOfGoalsAchieved++;
 		//_numberOfGoalsTried++;
-		MotivationalState.GetInstance().UpdateCompetence(true);
+		am.getMotivationalState().UpdateCompetence(true);
 	    Event e = _goal.GetSuccessEvent();
 	    
-	    float observedError = 1 - _goal.getProbability();
-	    float previousExpectedError = _goal.getUncertainty();
+	    //observed error = |realsuccess - estimation of success|
+	    //given that the goal succeeded, the real success is 1 and the formula resumes to
+	    //observed error = 1 - estimation of success 
+	    float observedError = 1 - _goal.getProbability(am);
+	    float previousExpectedError = _goal.getUncertainty(am);
 	    
 	    float newExpectedError = ActivePursuitGoal.alfa * observedError + (1 - ActivePursuitGoal.alfa) * previousExpectedError;
 	    float deltaError = newExpectedError - previousExpectedError;
-	    MotivationalState.GetInstance().UpdateCertainty(-deltaError);
-	    _goal.setUncertainty(newExpectedError);
-	    	    
-	    //AutobiographicalMemory.GetInstance().StoreAction(e);
-	    // Meiyii 11/03/09
-	    ShortTermMemory.GetInstance().StoreAction(e);
-	    EmotionalState.GetInstance().AppraiseGoalSuccess(GetHope(), GetFear(), _goal);
+	    am.getMotivationalState().UpdateCertainty(-deltaError);
+	    _goal.setUncertainty(am,newExpectedError);
+	    
+	    
+	    am.getMemory().getSTM().StoreAction(am.getMemory(), e, location);
+	    
+	    ActiveEmotion hope = GetHope(es);
+	    ActiveEmotion fear = GetFear(es);
+	    BaseEmotion em = Appraisal.AppraiseGoalSuccess(am, hope,fear, _goal);
+	    es.RemoveEmotion(hope);
+	    es.RemoveEmotion(fear);
+	    if(em != null)
+	    {
+	    	es.AddEmotion(em, am);
+	    }
+	    
+	    
 	    
 	    if(!isRootIntention())
 	    {
-	    	getParentIntention().CheckLinks();
+	    	getParentIntention().CheckLinks(am);
 	    }
 	        		
 	    		

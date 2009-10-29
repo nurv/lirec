@@ -123,6 +123,7 @@ import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.Set;
 
+import FAtiMA.AgentModel;
 import FAtiMA.AgentProcess;
 import FAtiMA.ValuedAction;
 import FAtiMA.conditions.Condition;
@@ -136,9 +137,9 @@ import FAtiMA.deliberativeLayer.plan.Plan;
 import FAtiMA.deliberativeLayer.plan.ProtectedCondition;
 import FAtiMA.deliberativeLayer.plan.Step;
 import FAtiMA.emotionalState.ActiveEmotion;
+import FAtiMA.emotionalState.EmotionalState;
 import FAtiMA.exceptions.InvalidMotivatorTypeException;
 import FAtiMA.exceptions.UnknownGoalException;
-import FAtiMA.memory.Memory;
 import FAtiMA.motivationalSystem.MotivationalState;
 import FAtiMA.sensorEffector.Event;
 import FAtiMA.sensorEffector.Parameter;
@@ -258,14 +259,14 @@ public class DeliberativeProcess extends AgentProcess {
 	 * Updates all the plans that the deliberative layer is currently working with, i.e.,
 	 * it updates all plans of all current active intentions
 	 */
-	public void CheckLinks() {
+	public void CheckLinks(AgentModel am) {
 		Iterator it;
 		
 		synchronized(this)
 		{
 			it = _intentions.values().iterator();
 			while (it.hasNext()) {
-				((Intention) it.next()).CheckLinks();
+				((Intention) it.next()).CheckLinks(am);
 			}
 		}
 	}
@@ -295,7 +296,7 @@ public class DeliberativeProcess extends AgentProcess {
 	 * 						   the String "CIS" changes the importance of success
 	 * 						   the String "CIF" changes the importance of failure
 	 */
-	public void ChangeGoalImportance(String goalName, float importance, String importanceType) {
+	public void ChangeGoalImportance(AgentModel am, String goalName, float importance, String importanceType) {
 		ListIterator li;
 		
 		synchronized (this) {
@@ -306,10 +307,10 @@ public class DeliberativeProcess extends AgentProcess {
 				g = (Goal) li.next();
 				if(goalName.equals(g.getName().toString())) {
 					if(importanceType.equals("CIS")) {
-						g.SetImportanceOfSuccess(importance);
+						g.SetImportanceOfSuccess(am, importance);
 					}
 					else {
-						g.SetImportanceOfFailure(importance);
+						g.SetImportanceOfFailure(am, importance);
 					}
 					break;
 				}
@@ -359,11 +360,11 @@ public class DeliberativeProcess extends AgentProcess {
 	 * 						          in the GoalLibrary file. You can only add
 	 * 								  goals defined in the GoalLibrary.
 	 */
-	public void AddGoal(String goalName, float importanceOfSuccess, float importanceOfFailure)  throws UnknownGoalException {
+	public void AddGoal(AgentModel am, String goalName, float importanceOfSuccess, float importanceOfFailure)  throws UnknownGoalException {
 	    Goal g = _goalLibrary.GetGoal(Name.ParseName(goalName));
 	    if (g != null) {
-	      g.SetImportanceOfSuccess(importanceOfSuccess);
-	      g.SetImportanceOfFailure(importanceOfFailure);
+	      g.SetImportanceOfSuccess(am, importanceOfSuccess);
+	      g.SetImportanceOfFailure(am, importanceOfFailure);
 	      AddGoal(g);
 	    }
 	    else
@@ -381,11 +382,11 @@ public class DeliberativeProcess extends AgentProcess {
 	 * 						          in the GoalLibrary file. You can only add
 	 * 								  goals defined in the GoalLibrary.
 	 */
-	public void AddGoal(String goalName)  throws UnknownGoalException {
+	public void AddGoal(AgentModel am, String goalName)  throws UnknownGoalException {
 	    Goal g = _goalLibrary.GetGoal(Name.ParseName(goalName));
 	    if (g != null) {
-	      g.SetImportanceOfSuccess(1);
-	      g.SetImportanceOfFailure(1);
+	      g.SetImportanceOfSuccess(am, 1);
+	      g.SetImportanceOfFailure(am, 1);
 	      AddGoal(g);
 	    }
 	    else
@@ -402,7 +403,7 @@ public class DeliberativeProcess extends AgentProcess {
 	 * 
 	 * @param goal - the goal that we want to add
 	 */
-	public void AddIntention(ActivePursuitGoal goal) {
+	public void AddIntention(AgentModel am, ActivePursuitGoal goal) {
 		ArrayList plans;
 		Plan newPlan;
 		Intention intention;
@@ -413,7 +414,7 @@ public class DeliberativeProcess extends AgentProcess {
 			AgentLogger.GetInstance().logAndPrint("Adding 1st level intention: " + goal.getName());
 			intention = new Intention(goal);
 			
-			plans = goal.getPlans();
+			plans = goal.getPlans(am);
 			if(plans == null)
 			{
 				newPlan = new Plan(_protectionConstraints, goal.GetSuccessConditions());
@@ -428,7 +429,7 @@ public class DeliberativeProcess extends AgentProcess {
 		}
 	}
 	
-	public void AddSubIntention(Intention mainIntention, ActivePursuitGoal goal)
+	public void AddSubIntention(AgentModel am, Intention mainIntention, ActivePursuitGoal goal)
 	{
 		ArrayList plans;
 		Plan newPlan;
@@ -436,7 +437,7 @@ public class DeliberativeProcess extends AgentProcess {
 		
 		
 		subIntention = new Intention(goal);
-		plans = goal.getPlans();
+		plans = goal.getPlans(am);
 		if(plans == null)
 		{
 			newPlan = new Plan(_protectionConstraints, goal.GetSuccessConditions());
@@ -495,7 +496,7 @@ public class DeliberativeProcess extends AgentProcess {
 		return _intentions.values().iterator();
 	}
 	
-	public void EnforceCopingStrategy(String coping)
+	public void EnforceCopingStrategy(AgentModel am, String coping)
 	{
 		Goal g;
 		coping = coping.toLowerCase();
@@ -508,8 +509,8 @@ public class DeliberativeProcess extends AgentProcess {
 				AgentLogger.GetInstance().logAndPrint("");
 				AgentLogger.GetInstance().logAndPrint("Enforcing coping strategy: " + g.getName());
 				AgentLogger.GetInstance().logAndPrint("");
-				g.IncreaseImportanceOfFailure(2);
-				g.IncreaseImportanceOfSuccess(2);
+				g.IncreaseImportanceOfFailure(am, 2);
+				g.IncreaseImportanceOfSuccess(am, 2);
 			}
 		}
 	}
@@ -600,7 +601,7 @@ public class DeliberativeProcess extends AgentProcess {
 	 * initial Hope/Fear emotions for each activated goal.
 	 * @throws InvalidMotivatorTypeException 
 	 */
-	public void Appraisal() {
+	public void Appraisal(AgentModel am) {
 		ListIterator li;
 		Event event;
 		
@@ -609,15 +610,15 @@ public class DeliberativeProcess extends AgentProcess {
 			AgentLogger.GetInstance().logAndPrint("Action monitor expired: " + _actionMonitor.toString());
 			//If the action expired we must check the plan links (continuous planning)
 			//just to make sure
-			CheckLinks();
+			CheckLinks(am);
 			/*if(_actionMonitor.GetStep().getName().toString().startsWith("WaitFor"))
 			{
 				_actionMonitor.GetStep().updateEffectsProbability();
 			}*/
 			
 			//System.out.println("Calling UpdateCertainty (action monitor expired)");
-			MotivationalState.GetInstance().UpdateCertainty(-_actionMonitor.GetStep().getProbability());
-			_actionMonitor.GetStep().DecreaseProbability();
+			am.getMotivationalState().UpdateCertainty(-_actionMonitor.GetStep().getProbability(am));
+			_actionMonitor.GetStep().DecreaseProbability(am);
 			
 			UpdateProbabilities();
 		    _actionMonitor = null;
@@ -629,12 +630,18 @@ public class DeliberativeProcess extends AgentProcess {
 				
 		        while (li.hasNext()) {
 					event = (Event) li.next();
-					MotivationalState.GetInstance().UpdateMotivators(event, _planner.GetOperators());
+					
+					am.getMotivationalState().UpdateMotivators(am, event, _planner.GetOperators());
+					
+					if(_actionMonitor != null)
+					{
+						int t = 1;
+						t = t+1;
+					}
 						
 					if(_actionMonitor != null && _actionMonitor.MatchEvent(event)) {
-					    if(_actionMonitor.GetStep().getAgent().isGrounded() && 
-					    		!_actionMonitor.GetStep().getAgent().toString().equals(
-					    				Memory.GetInstance().getSelf()))
+					    if(_actionMonitor.GetStep().getAgent().isGrounded() &&  
+					    		!_actionMonitor.GetStep().getAgent().toString().equals("SELF"))
 					    {
 					    	//the agent was waiting for an action of other agent to be complete
 					    	//since the step of another agent may contain unbound variables,
@@ -642,43 +649,42 @@ public class DeliberativeProcess extends AgentProcess {
 					    	if(Unifier.Unify(event.toStepName(), 
 					    			_actionMonitor.GetStep().getName()) != null)
 					    	{
-					    		_actionMonitor.GetStep().IncreaseProbability();
+					    		_actionMonitor.GetStep().IncreaseProbability(am);
 					    		//System.out.println("Calling updateEffectsProbability (other's action: step completed)");
-					    		_actionMonitor.GetStep().updateEffectsProbability();
+					    		_actionMonitor.GetStep().updateEffectsProbability(am);
 					    	}
 					    	else
 					    	{
 					    		//System.out.println("Calling UpdateCertainty (other's action: step completed)");
-					    		MotivationalState.GetInstance().UpdateCertainty(-_actionMonitor.GetStep().getProbability());
-					    		_actionMonitor.GetStep().DecreaseProbability();
+					    		am.getMotivationalState().UpdateCertainty(-_actionMonitor.GetStep().getProbability(am));
+					    		_actionMonitor.GetStep().DecreaseProbability(am);
 					    	}
 					    }
 					    else 
 					    {
 					    	//System.out.println("Calling updateEffectsProbability (self: step completed)");
-					    	_actionMonitor.GetStep().updateEffectsProbability();
+					    	_actionMonitor.GetStep().updateEffectsProbability(am);
 					    }
 					    		
 						UpdateProbabilities();
 						_actionMonitor = null;
-						break;
 					}
 				}
 		        //If there were any external events we must update the plans
 				//according to the continuous planning techniques
 				//TODO GARANTIR QUE SEMPRE QUE UM PLANO É ACTUALIZADO a EMOÇÃO É ACTUALIZADA
-				CheckLinks();
+				CheckLinks(am);
 			}
 		}
 		
-		Options();
+		Options(am);
 		
 		
 		_eventPool.clear();
 		
 	}
 	
-	public void Options()
+	public void Options(AgentModel am)
 	{
 		Goal g;
 		ActivePursuitGoal aGoal;
@@ -705,7 +711,7 @@ public class DeliberativeProcess extends AgentProcess {
 			event = (Event) eventIterator.next();
 		
 			//this section detects if a ritual has started with another agent's action
-			if(!event.GetSubject().equals(Memory.GetInstance().getSelf()))
+			if(!event.GetSubject().equals("SELF"))
 			{
 				for(ListIterator rIterator = this._rituals.listIterator(); rIterator.hasNext();)
 				{
@@ -721,7 +727,7 @@ public class DeliberativeProcess extends AgentProcess {
 						r2.MakeGround(sSet.GetSubstitutions());
 						
 						//we must check the ritual preconditions
-						substitutions2 = Condition.CheckActivation(r2.GetPreconditions());
+						substitutions2 = Condition.CheckActivation(am,r2.GetPreconditions());
 						if(substitutions2 != null)
 						{
 							for(ListIterator s2Iterator = substitutions2.listIterator(); s2Iterator.hasNext();)
@@ -733,8 +739,8 @@ public class DeliberativeProcess extends AgentProcess {
 								
 								//the last thing we need to check is if the agent is included in the ritual's
 								//roles and if the ritual has not succeeded, because if not there is no sense in including the ritual as a goal
-								if(r3.GetRoles().contains(new Symbol(Memory.GetInstance().getSelf()))
-										&& !r3.CheckSucess())
+								if(r3.GetRoles().contains(new Symbol(_self))
+										&& !r3.CheckSucess(am))
 								{
 									ritualName = r3.getNameWithCharactersOrdered();
 									r3.setUrgency(2);
@@ -761,7 +767,7 @@ public class DeliberativeProcess extends AgentProcess {
 					aGoal = (ActivePursuitGoal) g;
 					
 					
-					substitutionSets = Condition.CheckActivation(aGoal.GetPreconditions()); 
+					substitutionSets = Condition.CheckActivation(am, aGoal.GetPreconditions()); 
 					if(substitutionSets != null) {
 						li2 = substitutionSets.listIterator();
 						while(li2.hasNext()) {
@@ -774,7 +780,7 @@ public class DeliberativeProcess extends AgentProcess {
 							//In addition to testing the preconditions, we only add a goal
 							// as a desire if it's successconditions are not satisfied
 							
-							if(!desire.CheckSucess())
+							if(!desire.CheckSucess(am))
 							{
 
 								//the last thing we need to check is if the agent is included in the Goal
@@ -791,7 +797,7 @@ public class DeliberativeProcess extends AgentProcess {
 		}
 	}
 	
-	public ActivePursuitGoal Filter(ArrayList options) {
+	public ActivePursuitGoal Filter(AgentModel am, ArrayList options) {
 		ActivePursuitGoal g; 
 		Intention currentIntention = null;
 		ActivePursuitGoal maxGoal = null;
@@ -810,7 +816,7 @@ public class DeliberativeProcess extends AgentProcess {
 			g = (ActivePursuitGoal) li.next();
 			if(!ContainsIntention(g))
 			{		
-				EU = g.GetExpectedUtility();
+				EU = g.GetExpectedUtility(am);
 				
 				if(EU > maxUtility)
 				{
@@ -825,7 +831,7 @@ public class DeliberativeProcess extends AgentProcess {
 			if(maxUtility >= MINIMUMUTILITY)
 			{
 				if(_currentIntention == null ||
-						maxUtility > _currentIntention.getGoal().GetExpectedUtility()*SELECTIONTHRESHOLD)
+						maxUtility > _currentIntention.getGoal().GetExpectedUtility(am)*SELECTIONTHRESHOLD)
 				{
 					return maxGoal;
 				}
@@ -841,7 +847,7 @@ public class DeliberativeProcess extends AgentProcess {
 	 * Corresponds to Focusing on a given goal
 	 * @return - the most relevant intention (the one with highest expected utility)
 	 */
-	public Intention Filter2ndLevel() {
+	public Intention Filter2ndLevel(AgentModel am) {
 		Iterator it;
 		Intention intention;
 		float highestUtility; 
@@ -852,7 +858,7 @@ public class DeliberativeProcess extends AgentProcess {
 		{
 			maxIntention = _currentIntention;
 			//TODO selection threshold here!
-			highestUtility = _currentIntention.getGoal().GetExpectedUtility();
+			highestUtility = _currentIntention.getGoal().GetExpectedUtility(am);
 		}
 		else
 		{
@@ -871,7 +877,7 @@ public class DeliberativeProcess extends AgentProcess {
 				
 				if(intention != _currentIntention) 
 				{
-					EU = intention.GetExpectedUtility();
+					EU = intention.GetExpectedUtility(am);
 					
 					if(EU > highestUtility)
 					{
@@ -880,6 +886,11 @@ public class DeliberativeProcess extends AgentProcess {
 					}
 				}
 			}
+		}
+		
+		if(this._currentIntention != maxIntention)
+		{
+			AgentLogger.GetInstance().logAndPrint("Switching 2nd level intention from " + this._currentIntention + " to " + maxIntention);
 		}
 		
 		this._currentIntention = maxIntention;
@@ -892,7 +903,7 @@ public class DeliberativeProcess extends AgentProcess {
 	 * for one reasoning cycle (planning) and if possible selects an action for 
 	 * execution.
 	 */
-	public void Coping() {
+	public void Coping(AgentModel am) {
 		Intention i = null;
 		ActiveEmotion fear;
 		ActiveEmotion hope;
@@ -906,11 +917,11 @@ public class DeliberativeProcess extends AgentProcess {
 		this._options.addAll(_ritualOptions.values());
 		
 		//deliberation;
-		ActivePursuitGoal g = Filter(this._options);
+		ActivePursuitGoal g = Filter(am, this._options);
 		
 		if(g != null)
 		{
-			AddIntention(g);
+			AddIntention(am, g);
 			if(_ritualOptions.containsKey(g.getNameWithCharactersOrdered()))
 			{
 				_ritualOptions.remove(g.getNameWithCharactersOrdered());
@@ -918,7 +929,7 @@ public class DeliberativeProcess extends AgentProcess {
 		}
 		
 		//means-end reasoning
-		_currentIntention = Filter2ndLevel();
+		_currentIntention = Filter2ndLevel(am);
 		if(_currentIntention != null) {
 			i = _currentIntention.GetSubIntention();
 			
@@ -927,33 +938,33 @@ public class DeliberativeProcess extends AgentProcess {
 			{
 				
 				RemoveIntention(i);
-				i.ProcessIntentionFailure();
+				i.ProcessIntentionFailure(am);
 			}
-			else if(i.IsStrongCommitment() && i.getGoal().CheckSucess())
+			else if(i.IsStrongCommitment() && i.getGoal().CheckSucess(am))
 			{	
 				RemoveIntention(i);
-				i.ProcessIntentionSuccess();
+				i.ProcessIntentionSuccess(am);
 			}
 			else
 			{
-				_selectedPlan = _planner.ThinkAbout(i);
+				_selectedPlan = _planner.ThinkAbout(am, i);
 			}
 		}
 		
 		if(_actionMonitor == null && _selectedPlan != null) {
-			copingAction = _selectedPlan.UnexecutedAction();
+			copingAction = _selectedPlan.UnexecutedAction(am);
 			
 			if(copingAction != null) {
-				i.SetStrongCommitment();
+				i.SetStrongCommitment(am);
 				
 				if(copingAction instanceof ActivePursuitGoal)
 				{
-					AddSubIntention(_currentIntention, (ActivePursuitGoal) copingAction);	
+					AddSubIntention(am, _currentIntention, (ActivePursuitGoal) copingAction);	
 				}
 				else if(!copingAction.getName().GetFirstLiteral().toString().startsWith("Inference"))
 				{
-					fear = i.GetFear();
-					hope = i.GetHope();
+					fear = i.GetFear(am.getEmotionalState());
+					hope = i.GetHope(am.getEmotionalState());
 					if(hope != null)
 					{
 						if(fear != null)
@@ -1035,7 +1046,7 @@ public class DeliberativeProcess extends AgentProcess {
 	    	//substitution to the plan and testing if the resulting plan is valid
 	    	
 	    	Substitution sub = new Substitution(_selectedAction.getAgent(),
-	    			new Symbol(_self));
+	    			new Symbol("SELF"));
 	    	
 	    	Plan clonedPlan = (Plan) _selectedPlan.clone();
 	    	clonedPlan.AddBindingConstraint(sub);
@@ -1061,11 +1072,11 @@ public class DeliberativeProcess extends AgentProcess {
 	    		_selectedAction.SetSelfExecutable(false);
 	    	}
 	    }
-	    else if(!_selectedAction.getAgent().toString().equals(_self))
+	    else if(!_selectedAction.getAgent().toString().equals("SELF"))
 	    {
 	    	//we have to wait for another agent to act
 	    	AgentLogger.GetInstance().logAndPrint("Waiting for agent " + _selectedAction.getAgent().toString() + " to do:" + _selectedAction.getName().toString());
-	    	AgentLogger.GetInstance().log("Probability: " + _selectedAction.getProbability());
+	    	
 	    	e = new Event(_selectedAction.getAgent().toString(),null,null);
 	    	_actionMonitor = new ExpirableActionMonitor(waitingTime,_selectedAction,e);
 	    	_selectedAction = null;
@@ -1095,7 +1106,7 @@ public class DeliberativeProcess extends AgentProcess {
 	        target = li.next().toString();
 	    }
 	    
-	    e = new Event(_self,action,target);
+	    e = new Event("SELF",action,target);
         _actionMonitor = new ActionMonitor(_selectedAction,e);
         
         while(li.hasNext()) {

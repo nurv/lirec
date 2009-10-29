@@ -7,7 +7,6 @@ package FAtiMA.motivationalSystem;
 
 import FAtiMA.AgentSimulationTime;
 import FAtiMA.emotionalState.EmotionalPameters;
-import FAtiMA.util.enumerables.EmotionType;
 import FAtiMA.util.enumerables.MotivatorType;
 import java.io.Serializable;
 
@@ -17,7 +16,7 @@ import java.io.Serializable;
  *  @author Meiyii Lim
  */
 
-public class Motivator implements Serializable {
+public class Motivator {
 
 	private static final long serialVersionUID = 1L;
 	/**
@@ -175,19 +174,10 @@ public class Motivator implements Serializable {
 	 * @return a XML String that contains all information about the Motivator
 	 */
 	public String toXml() {
-		
-		String motivator = "<Motivator>";
-		motivator += "<Type>" + MotivatorType.GetName(_type) + "</Type>";
-		motivator += "<DecayFactor>" + this._decayFactor + "</DecayFactor>";
-		motivator += "<Weight>" + this._weight + "</Weight>";
-		motivator += "<Intensity>" + this._intensity + "</Intensity>";		
-		motivator += "</Motivator>\n";
-		
-		return motivator;
-		/*"<Motivator type=\"" + MotivatorType.GetName(_type) + 
+		return "<Motivator type=\"" + MotivatorType.GetName(_type) + 
 				"\" decayFactor=\"" + _decayFactor + 
 				"\" weight=\"" + _weight + 
-				"\" intensity=\"" + _intensity + "\" />";*/
+				"\" intensity=\"" + _intensity + "\" />";
 	}
 
 	public float GetDecayFactor() {

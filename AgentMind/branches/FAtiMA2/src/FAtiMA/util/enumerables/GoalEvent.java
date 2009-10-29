@@ -5,7 +5,6 @@
 
 package FAtiMA.util.enumerables;
 
-import FAtiMA.exceptions.InvalidMotivatorTypeException;
 
 /**
  * @author João Dias

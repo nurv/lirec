@@ -35,7 +35,6 @@ package FAtiMA;
 import java.io.Serializable;
 
 import FAtiMA.knowledgeBase.KnowledgeBase;
-import FAtiMA.memory.shortTermMemory.WorkingMemory;
 import FAtiMA.sensorEffector.Event;
 import FAtiMA.sensorEffector.SpeechAct;
 import FAtiMA.wellFormedNames.Name;
@@ -71,12 +70,11 @@ public class DialogManager implements Serializable {
 		this._canSpeak = false;
 	}
 	
-	public void UpdateDialogState(Event speechEvent)
+	public void UpdateDialogState(Event speechEvent, KnowledgeBase kb)
 	{
 		if(!speechEvent.GetAction().equals(SpeechAct.Reinforce))
 		{
-			WorkingMemory.GetInstance().Tell(SPEECH_CONTEXT, speechEvent.toName().toString());
-			//System.out.println("UpdateDialogState");
+			kb.Tell(SPEECH_CONTEXT, speechEvent.toName().toString());
 		}
 		this._canSpeak = true;
 		this._contextExpireTime = AgentSimulationTime.GetInstance().Time() + CONTEXT_DURATION;
@@ -93,14 +91,13 @@ public class DialogManager implements Serializable {
 		this._canSpeak = true;
 	}
 	
-	public void DecayCauseIDontHaveABetterName()
+	public void DecayCauseIDontHaveABetterName(KnowledgeBase kb)
 	{
 		if(_andCounting)
 		{
 			if(AgentSimulationTime.GetInstance().Time() > this._contextExpireTime)
 			{
-				WorkingMemory.GetInstance().Tell(SPEECH_CONTEXT, "");
-				//System.out.println("SpeechContext to KB");
+				kb.Tell(SPEECH_CONTEXT, "");
 				this._contextExpireTime = 0;
 				this._andCounting = false;
 			}

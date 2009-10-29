@@ -51,6 +51,7 @@ import javax.xml.parsers.SAXParserFactory;
 
 import org.xml.sax.Attributes;
 
+import FAtiMA.AgentModel;
 import FAtiMA.conditions.EmotionCondition;
 import FAtiMA.conditions.PastEventCondition;
 import FAtiMA.conditions.RecentEventCondition;
@@ -80,11 +81,13 @@ public class StripsOperatorsLoaderHandler extends ReflectXMLHandler {
 	private boolean _precondition;
 	private float _probability;
 	private Substitution _self;
+	private AgentModel _am;
 	
-	public StripsOperatorsLoaderHandler(String self) {
+	public StripsOperatorsLoaderHandler(AgentModel am) {
 		_operators = new ArrayList();
 		_precondition = true;
-		_self = new Substitution(new Symbol("[SELF]"), new Symbol(self));
+		_am = am;
+		_self = new Substitution(new Symbol("[SELF]"), new Symbol("SELF"));
 	}
 	
 	
@@ -113,7 +116,7 @@ public class StripsOperatorsLoaderHandler extends ReflectXMLHandler {
 		if(action.toString().startsWith("Inference"))
 		{
 			//inference operator, we must add it to the KnowledgeBase
-			KnowledgeBase.GetInstance().AddInferenceOperator(_currentOperator);
+			_am.getMemory().getKB().AddInferenceOperator(_currentOperator);
 		}
 		else
 		{
@@ -126,7 +129,7 @@ public class StripsOperatorsLoaderHandler extends ReflectXMLHandler {
 			}
 			event = event + ")";
 			RecentEventCondition eventCondition = new RecentEventCondition(true,Name.ParseName(event));
-			_currentOperator.AddEffect(new Effect(firstName,1.0f,eventCondition));
+			_currentOperator.AddEffect(new Effect(_am, firstName,1.0f,eventCondition));
 		}
 	}
 	
@@ -167,7 +170,7 @@ public class StripsOperatorsLoaderHandler extends ReflectXMLHandler {
 			_currentOperator.AddPrecondition(p);
 		else {
 			String operatorName = _currentOperator.getName().GetFirstLiteral().toString();
-			_currentOperator.AddEffect(new Effect(operatorName,_probability, p));
+			_currentOperator.AddEffect(new Effect(_am, operatorName,_probability, p));
 		}
 	}
 	
@@ -181,7 +184,7 @@ public class StripsOperatorsLoaderHandler extends ReflectXMLHandler {
 	  	_currentOperator.AddPrecondition(p);
 	  else {
 	  	String operatorName = _currentOperator.getName().GetFirstLiteral().toString();
-	  	_currentOperator.AddEffect(new Effect(operatorName,_probability, p));	
+	  	_currentOperator.AddEffect(new Effect(_am, operatorName,_probability, p));	
 	  }
 	}
 	
@@ -195,7 +198,7 @@ public class StripsOperatorsLoaderHandler extends ReflectXMLHandler {
 		  	_currentOperator.AddPrecondition(event);
 		else {
 		  String operatorName = _currentOperator.getName().GetFirstLiteral().toString();
-		  _currentOperator.AddEffect(new Effect(operatorName,_probability, event));	
+		  _currentOperator.AddEffect(new Effect(_am, operatorName,_probability, event));	
 		}
 	}
 	
@@ -210,7 +213,7 @@ public class StripsOperatorsLoaderHandler extends ReflectXMLHandler {
 			  	_currentOperator.AddPrecondition(ec);
 			else {
 			  	String operatorName = _currentOperator.getName().GetFirstLiteral().toString();
-			  	_currentOperator.AddEffect(new Effect(operatorName,_probability, ec));	
+			  	_currentOperator.AddEffect(new Effect(_am, operatorName,_probability, ec));	
 			}
 		}
 		catch(InvalidEmotionTypeException e)
@@ -246,7 +249,7 @@ public class StripsOperatorsLoaderHandler extends ReflectXMLHandler {
     		  	_currentOperator.AddPrecondition(mc);
     		else {
     		  	String operatorName = _currentOperator.getName().GetFirstLiteral().toString();
-    		  	_currentOperator.AddEffect(new Effect(operatorName,_probability, mc));	
+    		  	_currentOperator.AddEffect(new Effect(_am, operatorName,_probability, mc));	
     		}
     	}
     	catch(Exception e)

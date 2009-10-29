@@ -43,9 +43,8 @@ public class KnowledgeFactDisplay {
     public KnowledgeFactDisplay(String name, String value) {
         _panel = new JPanel();
         _panel.setBorder(BorderFactory.createTitledBorder(name));
-        _panel.setMinimumSize(new Dimension(300,60));
         _panel.setMaximumSize(new Dimension(300,60));
-     
+
         _label = new JLabel(value);
         _panel.add(_label);
     }

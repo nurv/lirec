@@ -34,11 +34,11 @@ import java.util.Iterator;
 
 import org.xml.sax.Attributes;
 
+import FAtiMA.AgentModel;
 import FAtiMA.emotionalState.ActiveEmotion;
 import FAtiMA.emotionalState.EmotionalState;
 import FAtiMA.exceptions.InvalidEmotionTypeException;
 import FAtiMA.knowledgeBase.KnowledgeBase;
-import FAtiMA.memory.Memory;
 import FAtiMA.util.enumerables.EmotionType;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
@@ -123,11 +123,11 @@ public class EmotionCondition extends PredicateCondition {
 	
 	private void UpdateName()
 	{
-		String aux = Memory.GetInstance().getSelf() + "(" + 
-		EmotionType.GetName(this._emotionType);
+		String aux = EmotionType.GetName(this._emotionType) + "("; 
+		
 		if(this._direction != null)
 		{
-			aux += "," + this._direction;
+			aux += this._direction;
 		}
 		aux+=")";
 		this._name = Name.ParseName(aux);
@@ -147,11 +147,11 @@ public class EmotionCondition extends PredicateCondition {
 	 * @return true if the Predicate is verified, false otherwise
 	 * @see KnowledgeBase
 	 */
-	public boolean CheckCondition() {
+	public boolean CheckCondition(AgentModel am) {
 		boolean result;
 		if(!_name.isGrounded()) return false;
 		
-		result = SearchEmotion().size() > 0; 
+		result = SearchEmotion(am.getEmotionalState()).size() > 0; 
 		return _positive == result;
 	}
 	
@@ -161,12 +161,12 @@ public class EmotionCondition extends PredicateCondition {
      * @return A list with all SubstitutionsSets that make the condition valid
 	 * @see EmotionalState
 	 */
-	public ArrayList GetValidBindings() {
+	public ArrayList GetValidBindings(AgentModel am) {
 		ArrayList bindingSets = new ArrayList();
 		ArrayList subSets;
 		
 		if (_name.isGrounded()) {
-			if(CheckCondition())
+			if(CheckCondition(am))
 			{
 				bindingSets.add(new SubstitutionSet());
 				return bindingSets;
@@ -177,18 +177,18 @@ public class EmotionCondition extends PredicateCondition {
 		//we cannot determine bindings for negative emotion conditions,
 		//assume false
 		if(!this._positive) return null;
-		subSets = SearchEmotion();
+		subSets = SearchEmotion(am.getEmotionalState());
 		if(subSets.size() == 0) return null;
 		return subSets;
 	}
 	
-	private ArrayList SearchEmotion()
+	private ArrayList SearchEmotion(EmotionalState es)
 	{
 		ActiveEmotion aem;
 		ArrayList bindings;
 		ArrayList substitutionSets = new ArrayList();
 		
-		for(Iterator it = EmotionalState.GetInstance().GetEmotionsIterator();it.hasNext();)
+		for(Iterator it = es.GetEmotionsIterator();it.hasNext();)
 		{
 			aem = (ActiveEmotion) it.next();
 			if(aem.GetType() == this._emotionType)

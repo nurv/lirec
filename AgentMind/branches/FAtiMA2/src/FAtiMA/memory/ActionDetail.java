@@ -43,6 +43,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
+import FAtiMA.Agent;
+import FAtiMA.AgentModel;
 import FAtiMA.emotionalState.ActiveEmotion;
 import FAtiMA.emotionalState.BaseEmotion;
 import FAtiMA.knowledgeBase.KnowledgeBase;
@@ -51,6 +53,7 @@ import FAtiMA.sensorEffector.Event;
 import FAtiMA.sensorEffector.Parameter;
 import FAtiMA.socialRelations.LikeRelation;
 import FAtiMA.socialRelations.RespectRelation;
+import FAtiMA.util.Constants;
 import FAtiMA.util.enumerables.EmotionType;
 
 
@@ -82,7 +85,7 @@ public class ActionDetail implements Serializable {
 	
 	private ArrayList _evaluation;
 		
-	public ActionDetail(int ID, Event e, String location)
+	public ActionDetail(Memory m, int ID, Event e, String location)
 	{
 		this._id = ID;
 		
@@ -95,12 +98,12 @@ public class ActionDetail implements Serializable {
 		
 		if(this._subject != null)
 		{
-			_subjectDetails = Memory.GetInstance().GetObjectDetails(this._subject);
+			_subjectDetails = m.GetObjectDetails(this._subject);
 		}
 		
 		if(this._target != null)
 		{
-			_targetDetails = Memory.GetInstance().GetObjectDetails(this._target);
+			_targetDetails = m.GetObjectDetails(this._target);
 		}
 		
 		if(e.GetParameters() != null)
@@ -204,7 +207,7 @@ public class ActionDetail implements Serializable {
 	}
 	
 //	TODO em revisao 15.03.2007
-	public boolean UpdateEmotionValues(ActiveEmotion em)
+	public boolean UpdateEmotionValues(Memory m, ActiveEmotion em)
 	{
 		boolean updated = false;
 		if(em.GetIntensity() > this._emotion.GetPotential())
@@ -217,57 +220,57 @@ public class ActionDetail implements Serializable {
 		{
 			case EmotionType.ADMIRATION:
 			{
-				String aux = LikeRelation.getRelation(Memory.GetInstance().getSelf(),em.GetDirection().toString()).increment(em.GetIntensity());
-				RespectRelation.getRelation(Memory.GetInstance().getSelf(),em.GetDirection().toString()).increment(em.GetIntensity());
+				String aux = LikeRelation.getRelation(Constants.SELF,em.GetDirection().toString()).increment(m,em.GetIntensity());
+				RespectRelation.getRelation(Constants.SELF,em.GetDirection().toString()).increment(m, em.GetIntensity());
 				this._evaluation.add(aux);
 				break;
 			}
 			case EmotionType.REPROACH:
 			{
-				String aux = LikeRelation.getRelation(Memory.GetInstance().getSelf(),em.GetDirection().toString()).decrement(em.GetIntensity());
-				RespectRelation.getRelation(Memory.GetInstance().getSelf(),em.GetDirection().toString()).decrement(em.GetIntensity());
+				String aux = LikeRelation.getRelation(Constants.SELF,em.GetDirection().toString()).decrement(m, em.GetIntensity());
+				RespectRelation.getRelation(Constants.SELF,em.GetDirection().toString()).decrement(m, em.GetIntensity());
 				this._evaluation.add(aux);
 				break;
 			}
 			case EmotionType.HAPPYFOR:
 			{
-				String aux = LikeRelation.getRelation(Memory.GetInstance().getSelf(),em.GetDirection().toString()).increment(em.GetIntensity());
+				String aux = LikeRelation.getRelation(Constants.SELF,em.GetDirection().toString()).increment(m, em.GetIntensity());
 				this._evaluation.add(aux);
 				break;
 			}
 			case EmotionType.GLOATING:
 			{
-				String aux = LikeRelation.getRelation(Memory.GetInstance().getSelf(),em.GetDirection().toString()).decrement(em.GetIntensity());
+				String aux = LikeRelation.getRelation(Constants.SELF,em.GetDirection().toString()).decrement(m, em.GetIntensity());
 				this._evaluation.add(aux);
 				break;
 			}
 			case EmotionType.PITTY:
 			{
-				String aux = LikeRelation.getRelation(Memory.GetInstance().getSelf(),em.GetDirection().toString()).increment(em.GetIntensity());
+				String aux = LikeRelation.getRelation(Constants.SELF,em.GetDirection().toString()).increment(m, em.GetIntensity());
 				this._evaluation.add(aux);
 				break;
 			}
 			case EmotionType.RESENTMENT:
 			{
-				String aux = LikeRelation.getRelation(Memory.GetInstance().getSelf(),em.GetDirection().toString()).decrement(em.GetIntensity());
+				String aux = LikeRelation.getRelation(Constants.SELF,em.GetDirection().toString()).decrement(m, em.GetIntensity());
 				this._evaluation.add(aux);
 				break;
 			}
 			
 			case EmotionType.JOY:
 			{
-				if(_target != null && _target.equals(Memory.GetInstance().getSelf()))
+				if(_target != null && _target.equals(Constants.SELF))
 				{
-					String aux = LikeRelation.getRelation(Memory.GetInstance().getSelf(),_subject).increment(em.GetIntensity());
+					String aux = LikeRelation.getRelation(Constants.SELF,_subject).increment(m, em.GetIntensity());
 					this._evaluation.add(aux);
 				}
 				break;
 			}
 			case EmotionType.DISTRESS:
 			{
-				if(_target != null && _target.equals(Memory.GetInstance().getSelf()))
+				if(_target != null && _target.equals(Constants.SELF))
 				{
-					String aux = LikeRelation.getRelation(Memory.GetInstance().getSelf(),_subject).decrement(em.GetIntensity());
+					String aux = LikeRelation.getRelation(Constants.SELF,_subject).decrement(m, em.GetIntensity());
 					this._evaluation.add(aux);
 				}
 				break;

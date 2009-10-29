@@ -58,12 +58,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
+import FAtiMA.AgentModel;
 import FAtiMA.IntegrityValidator;
 import FAtiMA.conditions.Condition;
 import FAtiMA.exceptions.UnreachableGoalException;
 import FAtiMA.knowledgeBase.KnowledgeBase;
-import FAtiMA.memory.shortTermMemory.WorkingMemory;
-import FAtiMA.memory.Memory;
 import FAtiMA.sensorEffector.Event;
 import FAtiMA.sensorEffector.Parameter;
 import FAtiMA.wellFormedNames.IGroundable;
@@ -166,10 +165,10 @@ public abstract class Goal implements IGroundable, Cloneable, Serializable {
 	 * Decreases the ImportanceOfFailure of a goal by a given ammount
 	 * Used for emotion-focused coping strategies like disengagement
 	 */
-	public void DecreaseImportanceOfFailure(float decr) {
+	public void DecreaseImportanceOfFailure(AgentModel am, float decr) {
 		if(decr <= 0) return;
 		
-		Float iof = (Float) Memory.GetInstance().AskProperty(_dynamicIOF);
+		Float iof = (Float) am.getMemory().AskProperty(_dynamicIOF);
 		if(iof == null)
 		{
 			iof = new Float(0);
@@ -180,18 +179,17 @@ public abstract class Goal implements IGroundable, Cloneable, Serializable {
 		}
 		else iof = new Float(0 - _baseIOF);
 		
-		WorkingMemory.GetInstance().Tell(_dynamicIOF,iof);
-		//System.out.println("Decrease importance of failure");
+		am.getMemory().getWM().Tell(am.getMemory(),_dynamicIOF,iof);
 	}
 	
 	/**
 	 * Increases the ImportanceOfFailure of a goal by a given ammount
 	 * Used for emotion-focused coping strategies
 	 */
-	public void IncreaseImportanceOfFailure(float incr) {
+	public void IncreaseImportanceOfFailure(AgentModel am, float incr) {
 		if(incr <= 0) return;
 		
-		Float iof = (Float) Memory.GetInstance().AskProperty(_dynamicIOF);
+		Float iof = (Float) am.getMemory().AskProperty(_dynamicIOF);
 		if(iof == null)
 		{
 			iof = new Float(incr);
@@ -201,18 +199,17 @@ public abstract class Goal implements IGroundable, Cloneable, Serializable {
 			iof = new Float(iof.floatValue() + incr);
 		}
 		
-		WorkingMemory.GetInstance().Tell(_dynamicIOF,iof);
-		//System.out.println("Increase importance of failure");
+		am.getMemory().getWM().Tell(am.getMemory(),_dynamicIOF,iof);
 	}
 	
 	/**
 	 * Decreases the ImportanceOfSuccess of a goal by a given amount
 	 * Used for emotion-focused coping strategies like disengagement
 	 */
-	public void DecreaseImportanceOfSuccess(float decr) {
+	public void DecreaseImportanceOfSuccess(AgentModel am, float decr) {
 		if(decr <= 0) return;
 		
-		Float ios = (Float) Memory.GetInstance().AskProperty(_dynamicIOS);
+		Float ios = (Float) am.getMemory().AskProperty(_dynamicIOS);
 		if(ios == null)
 		{
 			ios = new Float(0);
@@ -224,18 +221,17 @@ public abstract class Goal implements IGroundable, Cloneable, Serializable {
 		}
 		else ios = new Float(0 - _baseIOS);
 		
-		WorkingMemory.GetInstance().Tell(_dynamicIOS,ios);
-		//System.out.println("Decrease importance of success");
+		am.getMemory().getWM().Tell(am.getMemory(),_dynamicIOS,ios);
 	}
 	
 	/**
 	 * Increases the ImportanceOfSuccess of a goal by a fixed ammount
 	 * Used for emotion-focused coping strategies
 	 */
-	public void IncreaseImportanceOfSuccess(float incr) {
+	public void IncreaseImportanceOfSuccess(AgentModel am, float incr) {
 		if(incr <= 0) return;
 		
-		Float ios = (Float) Memory.GetInstance().AskProperty(_dynamicIOS);
+		Float ios = (Float) am.getMemory().AskProperty(_dynamicIOS);
 		if(ios == null)
 		{
 			ios = new Float(incr);
@@ -245,16 +241,15 @@ public abstract class Goal implements IGroundable, Cloneable, Serializable {
 			ios = new Float(ios.floatValue() + incr);
 		}
 		
-		WorkingMemory.GetInstance().Tell(_dynamicIOS,ios);
-		//System.out.println("Increase importance of success");
+		am.getMemory().getWM().Tell(am.getMemory(),_dynamicIOS,ios);
 	}
 	
 	/**
 	 * Gets the goal's importance of failure
 	 * @return the importance of failure ranged [0;10]
 	 */
-	public float GetImportanceOfFailure() {
-		Float aux = (Float) Memory.GetInstance().AskProperty(this._dynamicIOF);
+	public float GetImportanceOfFailure(AgentModel am) {
+		Float aux = (Float) am.getMemory().AskProperty(this._dynamicIOF);
 		if(aux != null) return aux.floatValue() + _baseIOF;
 		else return _baseIOF;
 	}
@@ -263,8 +258,8 @@ public abstract class Goal implements IGroundable, Cloneable, Serializable {
 	 * Gets the goal's importance of success
 	 * @return the importance of success ranged [0;10]
 	 */
-	public float GetImportanceOfSuccess() {
-		Float aux = (Float) Memory.GetInstance().AskProperty(this._dynamicIOS);
+	public float GetImportanceOfSuccess(AgentModel am) {
+		Float aux = (Float) am.getMemory().AskProperty(this._dynamicIOS);
 		if(aux != null) return aux.floatValue() + _baseIOS;
 		else return _baseIOS;
 	}
@@ -310,9 +305,9 @@ public abstract class Goal implements IGroundable, Cloneable, Serializable {
 		
 	}
 	
-	/*private Event generateEventDescription(String action)
+	private Event generateEventDescription(String action)
 	{
-		Event e = new Event(AutobiographicalMemory.GetInstance().getSelf(),action,this._name.GetFirstLiteral().toString());
+		Event e = new Event("SELF",action,this._name.GetFirstLiteral().toString());
 		ListIterator li = this._name.GetLiteralList().listIterator();
 	    li.next();
 	    while(li.hasNext())
@@ -320,18 +315,6 @@ public abstract class Goal implements IGroundable, Cloneable, Serializable {
 	    	e.AddParameter(new Parameter("param",li.next().toString()));
 	    }
 	    
-	    return e;
-	}*/
-	
-	private Event generateEventDescription(String action)
-	{
-		Event e = new Event(Memory.GetInstance().getSelf(),action,this._name.GetFirstLiteral().toString());
-		ListIterator li = this._name.GetLiteralList().listIterator();
-	    li.next();
-	    while(li.hasNext())
-	    {
-	    	e.AddParameter(new Parameter("param",li.next().toString()));
-	    }
 	    return e;
 	}
 	
@@ -412,7 +395,7 @@ public abstract class Goal implements IGroundable, Cloneable, Serializable {
 	 * Sets the goal's importance of failure
 	 * @param imp - the new importance of failure (ranged [0;10])
 	 */
-	public void SetImportanceOfFailure(float imp) {
+	public void SetImportanceOfFailure(AgentModel am, float imp) {
 		
 		if(imp < 0) {
 			imp = 0;
@@ -424,14 +407,13 @@ public abstract class Goal implements IGroundable, Cloneable, Serializable {
 		
 		_baseIOF = Math.round(imp);
 		
-		Float iof = (Float) Memory.GetInstance().AskProperty(_dynamicIOF);
-		//System.out.println("Set importance of failure");
+		Float iof = (Float) am.getMemory().AskProperty(_dynamicIOF);
 		if(iof != null)
 		{
 			float aux = _baseIOF + iof.floatValue();
 			if(aux < 0) {
 				iof = new Float(0 - _baseIOF);
-				KnowledgeBase.GetInstance().Tell(this._dynamicIOF,iof);
+				am.getMemory().getWM().Tell(am.getMemory(),this._dynamicIOF,iof);
 			}
 		}
 	}
@@ -440,7 +422,7 @@ public abstract class Goal implements IGroundable, Cloneable, Serializable {
 	 * Sets the goal's importance of success
 	 * @param imp - the new importance of success (ranged [0;10])
 	 */
-	public void SetImportanceOfSuccess(float imp) {
+	public void SetImportanceOfSuccess(AgentModel am, float imp) {
 		
 		if(imp < 0) {
 			imp = 0;
@@ -452,14 +434,13 @@ public abstract class Goal implements IGroundable, Cloneable, Serializable {
 		
 		_baseIOS = Math.round(imp);
 		
-		Float ios = (Float) Memory.GetInstance().AskProperty(_dynamicIOS);
-		//System.out.println("Set importance of success");
+		Float ios = (Float) am.getMemory().AskProperty(_dynamicIOS);
 		if(ios != null)
 		{
 			float aux = _baseIOS + ios.floatValue();
 			if(aux < 0) {
 				ios = new Float(0 - _baseIOS);
-				KnowledgeBase.GetInstance().Tell(this._dynamicIOS,ios);
+				am.getMemory().getWM().Tell(am.getMemory(),this._dynamicIOS,ios);
 			}
 		}
 	}

@@ -55,7 +55,6 @@ import java.util.ArrayList;
 import java.util.ListIterator;
 import java.util.StringTokenizer;
 
-import org.xml.sax.Attributes;
 
 import FAtiMA.AgentSimulationTime;
 import FAtiMA.wellFormedNames.Name;
@@ -74,6 +73,7 @@ public class Event implements Cloneable, Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private static final String SELF = "SELF";
 	
 	protected String _action;
 	protected ArrayList _parameters;
@@ -123,22 +123,71 @@ public class Event implements Cloneable, Serializable {
 		return true;
 	}
 	
+	public Event ApplyPerspective(String agentName)
+	{
+		Parameter p1;
+		Parameter p2;
+		
+		Event e = new Event(this._subject);
+		
+		if(this._subject.equals(agentName))
+		{
+			e._subject = SELF;
+		}
+		else
+		{
+			e._subject = this._subject;
+		}
+		
+		e._action = this._action;
+		
+		if(this._target.equals(agentName))
+		{
+			e._target = SELF;
+		}
+		else
+		{
+			e._target = this._target;
+		}
+		
+		e._time = this._time;
+		
+		if(this._parameters != null)
+		{
+			e._parameters = new ArrayList();
+			ListIterator li = this._parameters.listIterator();
+			while(li.hasNext())
+			{
+				p1 = (Parameter)li.next();
+				if(p1.GetValue().equals(agentName))
+				{
+					p2 = new Parameter("param",SELF);
+				}
+				else
+				{
+					p2 = (Parameter) p1.clone();
+				}
+				e._parameters.add(p2);
+			}
+		}
+		
+		return e;
+	}
+	
 	/**
 	 * Parses an event from a XML attributes list
 	 * @param selfName - the name of the agent (thus its called selfName)
 	 * @param attributes - the XML attributes list
 	 * @return the parsed Event
 	 */
-	public static Event ParseEvent(String selfName,String subject, String action, String target, String parameters){
+	public static Event ParseEvent(String subject, String action, String target, String parameters){
 		String aux;
 		Event e;
 		
 
 		if(subject != null) {
-			if(subject.equals("[SELF]")) {
-				subject = selfName;
-			} 
-			else if(subject.equals("OTHER") || subject.equals("ANY") || subject.equals("*")) {
+			
+			if(subject.equals("OTHER") || subject.equals("ANY") || subject.equals("*")) {
 				subject = null;
 			}
 		}
@@ -152,10 +201,7 @@ public class Event implements Cloneable, Serializable {
 		}
 		
 		if(target != null) {
-			if(target.equals("[SELF]")) 
-			{
-				target = selfName;
-			} else if(target.equals("OTHER") || target.equals("ANY") || target.equals("*")) {
+			if(target.equals("OTHER") || target.equals("ANY") || target.equals("*")) {
 				target = null;
 			}
 		}
@@ -166,11 +212,7 @@ public class Event implements Cloneable, Serializable {
 			StringTokenizer st = new StringTokenizer(parameters, ",");
 			while(st.hasMoreTokens()) {
 				aux = st.nextToken();
-				if(aux.equals("[SELF]"))
-				{
-					aux = selfName;
-				}
-				else if(aux.equals("OTHER") || aux.equals("ANY") || aux.equals("*"))
+				if(aux.equals("OTHER") || aux.equals("ANY") || aux.equals("*"))
 				{
 					e.AddParameter(new Parameter("param","*"));
 				}

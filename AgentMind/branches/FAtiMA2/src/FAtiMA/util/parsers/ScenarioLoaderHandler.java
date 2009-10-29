@@ -102,12 +102,7 @@ public class ScenarioLoaderHandler extends ReflectXMLHandler{
 				_agentArgs.add(attributes.getValue("displayName"));
 				_agentArgs.add(attributes.getValue("actionsFile"));
 				_agentArgs.add(attributes.getValue("goalsFile"));
-				_agentArgs.add(attributes.getValue("cultureName"));
-				
-				/*_agentArgs.add(attributes.getValue("platform"));
-				_agentArgs.add(attributes.getValue("host"));
-				_agentArgs.add(attributes.getValue("port"));
-				_agentArgs.add(attributes.getValue("name"));*/
+				_agentArgs.add(attributes.getValue("cultureName"));				
 			}else{
 				this._isPretendedCharacter = false;
 			}    		

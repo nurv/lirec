@@ -30,7 +30,6 @@
  * 						   or search for an event in Autobiographical Memory
  * João Dias: 24/03/2008 - Restructure, changed the way EventConditions Hierarchy. Now, PastEventConditions
  * 						   is the super class, and RecentEventConditions is the child class
- * Meiyii Lim: 12/03/2009 - Search for recent events in Short Term Memory instead of Autobiographical Memory
  */
 
 package FAtiMA.conditions;
@@ -38,10 +37,7 @@ package FAtiMA.conditions;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
-import FAtiMA.memory.ActionDetail;
-import FAtiMA.memory.SearchKey;
-import FAtiMA.memory.autobiographicalMemory.AutobiographicalMemory;
-import FAtiMA.memory.shortTermMemory.ShortTermMemory;
+import FAtiMA.AgentModel;
 import FAtiMA.sensorEffector.Event;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
@@ -187,25 +183,17 @@ public class RecentEventCondition extends PastEventCondition {
 	 * @return true if the EventPredicate is verified, false otherwise
 	 * @see AutobiographicalMemory
 	 */
-	public boolean CheckCondition() {
+	public boolean CheckCondition(AgentModel am) {
 		
 		if(!_name.isGrounded()) return false;
 		
-		//Meiyii 12/03/09 Search for recent events in both STM and AM
-		// If recentEventCondition is tested only against STM, goal will be reset after 
-		// the event has been transferred to AM (this is useful if we want goal to decay over time)
-		// If recentEventCondition is tested only against AM, goal will be reset 
-		// continuously before the event is being transferred from STM to AM 
-		return _positive == ShortTermMemory.GetInstance().ContainsRecentEvent(GetSearchKeys())
-			|| AutobiographicalMemory.GetInstance().ContainsRecentEvent(GetSearchKeys()); 
+		return _positive == am.getMemory().getSTM().ContainsRecentEvent(GetSearchKeys()); 
 	}
 	
-	protected ArrayList GetPossibleBindings()
+	protected ArrayList GetPossibleBindings(AgentModel am)
 	{
-		//Meiyii 12/03/09 Search for recent events in both STM and AM
-		ArrayList events = ShortTermMemory.GetInstance().SearchForRecentEvents(GetSearchKeys());
-		events.addAll(AutobiographicalMemory.GetInstance().SearchForRecentEvents(GetSearchKeys()));	
-		return events;
+		return am.getMemory().getSTM().
+				SearchForRecentEvents(GetSearchKeys());
 	}
 	
 	

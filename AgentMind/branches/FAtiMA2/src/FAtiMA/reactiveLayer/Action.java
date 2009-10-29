@@ -49,6 +49,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.ListIterator;
 
+import FAtiMA.AgentModel;
 import FAtiMA.IIntegrityTester;
 import FAtiMA.IntegrityValidator;
 import FAtiMA.ValuedAction;
@@ -57,7 +58,9 @@ import FAtiMA.emotionalState.ActiveEmotion;
 import FAtiMA.emotionalState.BaseEmotion;
 import FAtiMA.exceptions.UnknownSpeechActException;
 import FAtiMA.sensorEffector.Event;
+import FAtiMA.wellFormedNames.IGroundable;
 import FAtiMA.wellFormedNames.Name;
+import FAtiMA.wellFormedNames.Substitution;
 import FAtiMA.wellFormedNames.SubstitutionSet;
 
 
@@ -65,7 +68,7 @@ import FAtiMA.wellFormedNames.SubstitutionSet;
  * Represents a Reactive Action Tendency
  * @author João Dias
  */
-public class Action implements IIntegrityTester, Serializable {
+public class Action implements IIntegrityTester, Serializable, IGroundable, Cloneable {
     
 	/**
 	 * 
@@ -101,6 +104,11 @@ public class Action implements IIntegrityTester, Serializable {
 	public BaseEmotion GetElicitingEmotion()
 	{
 		return _elicitingEmotion;
+	}
+	
+	public ArrayList GetPreconditions()
+	{
+		return this._preConditions;
 	}
 
 	/**
@@ -174,7 +182,7 @@ public class Action implements IIntegrityTester, Serializable {
 	}
 	
 	
-	public ValuedAction TriggerAction(Iterator emotionsIterator) {
+	public ValuedAction TriggerAction(AgentModel am, Iterator emotionsIterator) {
 		ActiveEmotion em;
 		float maxValue = 0;
 		Name action;
@@ -186,7 +194,7 @@ public class Action implements IIntegrityTester, Serializable {
 		//first we need to test the action tendency preconditions
 		if(_preConditions.size() > 0)
 		{
-			substitutionSets = Condition.CheckActivation(_preConditions);
+			substitutionSets = Condition.CheckActivation(am, _preConditions);
 		}
 		else
 		{
@@ -232,5 +240,88 @@ public class Action implements IIntegrityTester, Serializable {
 	{
 		return "AT " + _name + "- PreConditions " + _preConditions + " Emotion: " + _elicitingEmotion;
 		
+	}
+
+	@Override
+	public Object GenerateName(int id) {
+		Action at = (Action) this.clone();
+		at.ReplaceUnboundVariables(id);
+		return at;
+	}
+
+	@Override
+	public Object Ground(ArrayList bindingConstraints) {
+		Action at = (Action) this.clone();
+		at.MakeGround(bindingConstraints);
+		return at;
+	}
+
+	@Override
+	public Object Ground(Substitution subst) {
+		Action at = (Action) this.clone();
+		at.MakeGround(subst);
+		return at;
+	}
+
+	@Override
+	public void MakeGround(ArrayList bindings) {
+		this._name.MakeGround(bindings);
+		ListIterator li = this._preConditions.listIterator();
+		
+		while(li.hasNext())
+		{
+			((Condition)li.next()).MakeGround(bindings);
+		}
+		
+	}
+
+	@Override
+	public void MakeGround(Substitution subst) {
+		this._name.MakeGround(subst);
+		ListIterator li = this._preConditions.listIterator();
+		
+		while(li.hasNext())
+		{
+			((Condition)li.next()).MakeGround(subst);
+		}
+	}
+
+	@Override
+	public void ReplaceUnboundVariables(int variableID) {
+		this._name.ReplaceUnboundVariables(variableID);
+		ListIterator li = this._preConditions.listIterator();
+		
+		while(li.hasNext())
+		{
+			((Condition)li.next()).ReplaceUnboundVariables(variableID);
+		}	
+	}
+
+	@Override
+	public boolean isGrounded() {
+		if(!this._name.isGrounded()) return false;
+		ListIterator li = this._preConditions.listIterator();
+		
+		while(li.hasNext())
+		{
+			if(!((Condition)li.next()).isGrounded()) return false;
+		}
+		
+		return true;
+	}
+	
+	public Object clone()
+	{
+		Action act = new Action((Name)this._name.clone());
+		act._elicitingEmotion = this._elicitingEmotion;
+		act._preConditions = new ArrayList(this._preConditions.size());
+		
+		ListIterator li = this._preConditions.listIterator();
+		while (li.hasNext())
+		{
+			act._preConditions.add(((Condition)li.next()).clone());
+		}
+		
+		return act;
 	}
 }

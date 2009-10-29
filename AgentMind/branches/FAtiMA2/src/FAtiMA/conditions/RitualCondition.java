@@ -35,10 +35,8 @@ import java.util.StringTokenizer;
 
 import org.xml.sax.Attributes;
 
+import FAtiMA.AgentModel;
 import FAtiMA.memory.SearchKey;
-import FAtiMA.memory.Memory;
-import FAtiMA.memory.autobiographicalMemory.AutobiographicalMemory;
-import FAtiMA.memory.shortTermMemory.ShortTermMemory;
 import FAtiMA.sensorEffector.Event;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
@@ -192,13 +190,13 @@ public class RitualCondition extends PredicateCondition {
 	 * @return true if the RitualCondition is verified, false otherwise
 	 * @see AutobiographicalMemory
 	 */
-	public boolean CheckCondition() {
+	public boolean CheckCondition(AgentModel am) {
 		
 		if(!_name.isGrounded()) return false;
 		
 		ArrayList keys = new ArrayList();
 		
-		keys.add(new SearchKey(SearchKey.SUBJECT,Memory.GetInstance().getSelf()));
+		keys.add(new SearchKey(SearchKey.SUBJECT,am.getName()));
 		
 		keys.add(new SearchKey(SearchKey.ACTION,"succeed"));
 		
@@ -214,12 +212,12 @@ public class RitualCondition extends PredicateCondition {
 			keys.add(new SearchKey(SearchKey.MAXELAPSEDTIME, new Long(1000)));
 		}
 		
-		return (ShortTermMemory.GetInstance().ContainsRecentEvent(keys) 
-			|| AutobiographicalMemory.GetInstance().ContainsRecentEvent(keys));
+		
+		return am.getMemory().getSTM().ContainsRecentEvent(keys);
 		
 	}
 	
-	protected ArrayList GetPossibleBindings()
+	protected ArrayList GetPossibleBindings(AgentModel am)
 	{
 		return null;
 	}

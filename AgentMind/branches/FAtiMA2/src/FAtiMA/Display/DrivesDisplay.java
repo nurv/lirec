@@ -8,8 +8,8 @@ import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 
-import FAtiMA.memory.Memory;
-import FAtiMA.memory.shortTermMemory.ShortTermMemory;
+import FAtiMA.Agent;
+import FAtiMA.AgentModel;
 import FAtiMA.motivationalSystem.MotivationalState;
 import FAtiMA.util.enumerables.MotivatorType;
 
@@ -26,12 +26,12 @@ public class DrivesDisplay {
 
 	//TODO: The way that the constructor distinguishes from the agent's needs panel
 	//of the other agents needs panel is getting agentName == null; 
-	public DrivesDisplay(String agentName) {
+	public DrivesDisplay(String agentName, String selfName) {
 
 		super();
 
 		_agentName = agentName;
-		boolean isSelf = (agentName.equalsIgnoreCase(Memory.GetInstance().getSelf()));
+		boolean isSelf = (agentName.equalsIgnoreCase(selfName));
 
 		_panel = new JPanel();
 		
@@ -80,12 +80,12 @@ public class DrivesDisplay {
 
 	
 	 
-    public boolean Update() {
+    public boolean Update(AgentModel ag) {
         Float aux;
         
         
         
-        MotivationalState ms = MotivationalState.GetInstance();
+        MotivationalState ms = ag.getMotivationalState();
         
         aux = new Float(ms.GetIntensity(_agentName,MotivatorType.ENERGY));
         _energyBar.setString(aux.toString());

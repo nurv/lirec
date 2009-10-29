@@ -70,7 +70,7 @@ public interface IGroundable {
 	 * @return a new Name with the substitutions applied
 	 * @see Substitution
 	 */
-	public Object Ground(ArrayList bindingConstraints);
+	public Object Ground(ArrayList<Substitution> bindingConstraints);
 
 	/**
 	 * Applies a set of substitutions to the object, grounding it.
@@ -80,7 +80,7 @@ public interface IGroundable {
 	 * @param bindings - A list of substitutions of the type "[Variable]/value"
 	 * @see Substitution
 	 */
-    public void MakeGround(ArrayList bindings);
+    public void MakeGround(ArrayList<Substitution> bindings);
     
    
     /**

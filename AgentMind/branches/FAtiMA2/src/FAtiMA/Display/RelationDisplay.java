@@ -36,6 +36,8 @@ import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 
+import FAtiMA.knowledgeBase.KnowledgeBase;
+import FAtiMA.memory.Memory;
 import FAtiMA.socialRelations.LikeRelation;
 import FAtiMA.socialRelations.Relation;
 import FAtiMA.socialRelations.RespectRelation;
@@ -51,7 +53,7 @@ public class RelationDisplay {
     JPanel _panel;
     JProgressBar _bar;
     
-    public RelationDisplay(Relation rd) {
+    public RelationDisplay(Memory m, Relation rd) {
         _panel = new JPanel();
         _panel.setMaximumSize(new Dimension(300,60));
 
@@ -66,7 +68,7 @@ public class RelationDisplay {
         	_bar.setForeground(new Color(0,100,0));
         }
         
-        this.setValue(rd.getValue());
+        this.setValue(rd.getValue(m));
         _panel.add(_bar);
     }
     

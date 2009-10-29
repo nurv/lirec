@@ -11,6 +11,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import FAtiMA.Agent;
+import FAtiMA.AgentModel;
 import FAtiMA.motivationalSystem.MotivationalState;
 
 public class NeedsPanel extends AgentDisplayPanel {
@@ -21,7 +22,7 @@ public class NeedsPanel extends AgentDisplayPanel {
 	private JPanel _needs;
 	private int _previousKnownAgents;
 
-	public NeedsPanel(String agentName) {
+	public NeedsPanel(String agentName, String selfName) {
 		
 		super();
 		_previousKnownAgents = 0;
@@ -41,7 +42,7 @@ public class NeedsPanel extends AgentDisplayPanel {
 		
 		this.add(goalsScrool);
 		
-		DrivesDisplay aux = new DrivesDisplay(agentName);
+		DrivesDisplay aux = new DrivesDisplay(agentName, selfName);
 		_needs.add(aux.getDrivesPanel());
 		_drivesDisplays.put(agentName,aux);
 		
@@ -51,7 +52,7 @@ public class NeedsPanel extends AgentDisplayPanel {
 	
 	public boolean Update(Agent ag) {
 
-		CheckForOtherAgents();
+		CheckForOtherAgents(ag);
 	
 		Collection displays  = _drivesDisplays.values();
 		
@@ -60,19 +61,19 @@ public class NeedsPanel extends AgentDisplayPanel {
 		while(it.hasNext()){
 			DrivesDisplay dd = (DrivesDisplay)it.next();
 			
-			dd.Update();
+			dd.Update(ag);
 		}
 		return false;
 	}
 	 
 	
-	private void CheckForOtherAgents(){
-		int numOfKnownAgents = MotivationalState.GetInstance().getOtherAgentsMotivators().size();
+	private void CheckForOtherAgents(AgentModel am){
+		int numOfKnownAgents = am.getMotivationalState().getOtherAgentsMotivators().size();
 		
 		if(numOfKnownAgents > _previousKnownAgents){
 			_previousKnownAgents = numOfKnownAgents;
 			
-			Collection otherAgentsNames  = MotivationalState.GetInstance().getOtherAgentsMotivators().keySet();
+			Collection otherAgentsNames  = am.getMotivationalState().getOtherAgentsMotivators().keySet();
 		
 			Iterator it = otherAgentsNames.iterator();
 			
@@ -80,7 +81,7 @@ public class NeedsPanel extends AgentDisplayPanel {
 				String agentName = (String)it.next();
 				
 				if(_drivesDisplays.get(agentName) == null){
-					DrivesDisplay aux = new DrivesDisplay(agentName);
+					DrivesDisplay aux = new DrivesDisplay(agentName, am.getName());
 					_needs.add(aux.getDrivesPanel());
 					_drivesDisplays.put(agentName,aux);
 				}

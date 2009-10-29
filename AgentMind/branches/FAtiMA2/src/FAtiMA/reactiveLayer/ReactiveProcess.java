@@ -63,10 +63,10 @@ package FAtiMA.reactiveLayer;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
+import FAtiMA.AgentModel;
 import FAtiMA.AgentProcess;
 import FAtiMA.ValuedAction;
-import FAtiMA.memory.Memory;
-import FAtiMA.memory.shortTermMemory.ShortTermMemory;
+import FAtiMA.emotionalState.AppraisalVector;
 import FAtiMA.emotionalState.BaseEmotion;
 import FAtiMA.emotionalState.EmotionalState;
 import FAtiMA.sensorEffector.Event;
@@ -110,7 +110,7 @@ public class ReactiveProcess extends AgentProcess {
 	}
 	
 	/**
-	 * Adds a emotional Reacion to the agent's emotional reactions
+	 * Adds an emotional Reaction to the agent's emotional reactions
 	 * @param emotionalReaction - the Reaction to add
 	 */
 	public void AddEmotionalReaction(Reaction emotionalReaction) {
@@ -157,22 +157,30 @@ public class ReactiveProcess extends AgentProcess {
 	 * Reactive appraisal. Appraises received events according to the emotional
 	 * reaction rules
 	 */
-	public void Appraisal() {
+	public void Appraisal(AgentModel am) {
 		ListIterator li;
 		Event event;
 		ArrayList emotions;
+		Reaction evaluation;
+		
 		
 		synchronized (_eventPool) {
 			li = _eventPool.listIterator();
 			while (li.hasNext()) {
 				event = (Event) li.next();
 
-				emotions = AppraiseEvent(event);
-					
-				ListIterator li2 = emotions.listIterator();
-				while(li2.hasNext())
+				evaluation = Evaluate(am, event);
+				
+				if(evaluation != null)
 				{
-					EmotionalState.GetInstance().AddEmotion((BaseEmotion) li2.next());
+					
+					emotions = FAtiMA.emotionalState.Appraisal.GenerateEmotions(am, event, translateEmotionalReaction(evaluation), evaluation.getOther());
+						
+					ListIterator li2 = emotions.listIterator();
+					while(li2.hasNext())
+					{
+						am.getEmotionalState().AddEmotion((BaseEmotion) li2.next(), am);
+					}			
 				}
 			}
 			_eventPool.clear();
@@ -183,12 +191,36 @@ public class ReactiveProcess extends AgentProcess {
 	 * Reactive Coping. Consists in selecting the most relevant action (reaction)
 	 * according to the emotional state.
 	 */
-	public void Coping() {
+	public void Coping(AgentModel am) {
 		ValuedAction action;
-		action = _actionTendencies.SelectAction(EmotionalState.GetInstance());
-		if(_selectedAction == null || (action != null && action.GetValue() > _selectedAction.GetValue())) {
+		action = _actionTendencies.SelectAction(am);
+		if(_selectedAction == null || (action != null && action.GetValue(am.getEmotionalState()) > _selectedAction.GetValue(am.getEmotionalState()))) {
 			_selectedAction = action;
 		}
+	}
+	
+	public AppraisalVector translateEmotionalReaction(Reaction r)
+	{
+		AppraisalVector vector = new AppraisalVector();
+		
+		if(r._desirability != null)
+		{
+			vector.setAppraisalVariable(AppraisalVector.DESIRABILITY, r._desirability.intValue());
+		}
+		if(r._desirabilityForOther != null)
+		{
+			vector.setAppraisalVariable(AppraisalVector.DESIRABILITY_FOR_OTHER, r._desirabilityForOther.intValue());
+		}
+		if(r._praiseworthiness != null)
+		{
+			vector.setAppraisalVariable(AppraisalVector.PRAISEWORTHINESS, r._praiseworthiness.intValue());
+		}
+		if(r._like != null)
+		{
+			vector.setAppraisalVariable(AppraisalVector.LIKE, r._like.intValue());
+		}
+		
+		return vector;
 	}
 	
 	/**
@@ -237,56 +269,29 @@ public class ReactiveProcess extends AgentProcess {
 	public void ShutDown() {
 	}
 	
-	public ArrayList AppraiseEvent(Event event)
+	public Reaction Evaluate(AgentModel am, Event event)
 	{
 		ArrayList emotions = new ArrayList();
 		Reaction emotionalReaction;
-	
+		
 		if(event.GetAction().equals("look-at"))
 		{
-			int relationShip = Math.round(LikeRelation.getRelation(Memory.GetInstance().getSelf(), event.GetTarget()).getValue());
-			emotions.add(EmotionalState.GetInstance().OCCAppraiseAttribution(event, relationShip));
-			
+			int relationShip = Math.round(LikeRelation.getRelation("SELF", event.GetTarget()).getValue(am.getMemory()));
+			emotionalReaction = new Reaction(event);
+			emotionalReaction.setLike(new Integer(relationShip));
 		}
-		
-		emotionalReaction = _emotionalReactions.MatchEvent(event);
-		if(emotionalReaction != null)
+		else
 		{
-			emotionalReaction = (Reaction) emotionalReaction.clone();
-			emotionalReaction.MakeGround(event.GenerateBindings());
-			emotions.addAll(AppraiseEvent(event, emotionalReaction));
-		}
-		
-		return emotions;
-	}
-	
-	public ArrayList AppraiseEvent(Event event, Reaction emReaction)
-	{
-		ArrayList emotions = new ArrayList();
-		Integer desirability;
-		Integer desirabilityForOther;
-		Integer praiseworthiness;
-		Symbol other;
-		
-		desirability = emReaction.getDesirability();
-		desirabilityForOther = emReaction.getDesirabilityForOther();
-		praiseworthiness = emReaction.getPraiseworthiness();
-		other = emReaction.getOther();
-		
-		//WellBeingEmotions: Joy, Distress
-		if (desirability != null) {
-			emotions.add(EmotionalState.GetInstance().OCCAppraiseWellBeing(event, desirability.intValue()));
-				
-			//FortuneOfOtherEmotions: HappyFor, Gloating, Resentment, Pitty
-			if(desirabilityForOther != null) {
-				emotions.addAll(EmotionalState.GetInstance().OCCAppraiseFortuneForAll(event, desirability.intValue(), desirabilityForOther.intValue(), other));
+			emotionalReaction = _emotionalReactions.MatchEvent(event);
+			if(emotionalReaction != null)
+			{
+				emotionalReaction = (Reaction) emotionalReaction.clone();
+				emotionalReaction.MakeGround(event.GenerateBindings());
 			}
 		}
 		
-		if (praiseworthiness != null) {
-			emotions.add(EmotionalState.GetInstance().OCCAppraisePraiseworthiness(event, praiseworthiness.intValue()));
-		}
-		
-		return emotions;
+		return emotionalReaction;
 	}
+	
+	
 }

@@ -110,8 +110,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.ListIterator;
 
+import FAtiMA.AgentModel;
 import FAtiMA.conditions.Condition;
-import FAtiMA.memory.Memory;
 import FAtiMA.util.AgentLogger;
 import FAtiMA.wellFormedNames.Inequality;
 import FAtiMA.wellFormedNames.Substitution;
@@ -240,7 +240,7 @@ public class Plan implements Cloneable, Serializable
         _probabilityChanged = false;
 
         _start = new Step(
-        		new Symbol(Memory.GetInstance().getSelf()),
+        		new Symbol("SELF"),
         		new Symbol("Start"),
         		1,
         		null,
@@ -248,7 +248,7 @@ public class Plan implements Cloneable, Serializable
         		null);
         _start.setID(new Integer(_stepCounter++));
         _finish = new Step(
-        		new Symbol(Memory.GetInstance().getSelf()),
+        		new Symbol("SELF"),
         		new Symbol("Finish"),
         		1,
         		finishConditions,
@@ -574,7 +574,7 @@ public class Plan implements Cloneable, Serializable
      * detecting if the plan is not consistent with the world state anymore, and to fix
      * such continuous planning flaws. This method should be called whenever the world changes. 
      */
-    public void UpdatePlan()
+    public void UpdatePlan(AgentModel am)
     {
         CausalLink link;
         ArrayList linksToRemove = new ArrayList();
@@ -615,7 +615,7 @@ public class Plan implements Cloneable, Serializable
                 //think whether I should change this
                 if(cond.isGrounded())
                 {
-                	if(cond.CheckCondition())
+                	if(cond.CheckCondition(am))
                 	{
                 		linksToAdd.add(new CausalLink(this._start.getID(),
             			    new Integer(-1),
@@ -629,7 +629,7 @@ public class Plan implements Cloneable, Serializable
                 {
                 	//this piece of code is causing big problems!
                 	//System.out.println("Segue o caminho BBB");
-                	if(cond.GetValidBindings() != null) 
+                	if(cond.GetValidBindings(am) != null) 
                 	{
                 	    
                 		//this means that there is at least one possible substitution that can
@@ -704,7 +704,7 @@ public class Plan implements Cloneable, Serializable
                 //for removal the unsupportedlink and create an 
                 //OpenPrecondition that must again be satisfied by 
                 //the plan
-                if(!cond.CheckCondition())
+                if(!cond.CheckCondition(am))
                 {
                 	_openPreconditions.add(new OpenPrecondition(link
                             .getDestination(), link.getCondition()));
@@ -876,11 +876,11 @@ public class Plan implements Cloneable, Serializable
      * gets the plan's probability of success
      * @return the plan's probability
      */
-    public float getProbability()
+    public float getProbability(AgentModel am)
     {
         if (_probabilityChanged)
         {
-            UpdatePlanProbability();
+            UpdatePlanProbability(am);
             _probabilityChanged = false;
         }
         return _probability;
@@ -961,11 +961,11 @@ public class Plan implements Cloneable, Serializable
      * continue planning.
      * @return the value H
      */
-    public float h()
+    public float h(AgentModel am)
     {
         return (1 + _steps.size() + _openPreconditions.size() + _protectionThreats
                 .size() * 2)
-                / this.getProbability();
+                / this.getProbability(am);
     }
 
     /**
@@ -973,10 +973,10 @@ public class Plan implements Cloneable, Serializable
      * emotion-focused coping strategy.
      * @param flaw - the CausalConflictFlaw to ignore
      */
-    public void IgnoreConflict(CausalConflictFlaw flaw)
+    public void IgnoreConflict(AgentModel am, CausalConflictFlaw flaw)
     {
         _ignoredConflicts.add(flaw);
-        this.UpdatePlanProbability();
+        this.UpdatePlanProbability(am);
         _probabilityChanged = false;
     }
 
@@ -1223,7 +1223,7 @@ public class Plan implements Cloneable, Serializable
      * Gets the next action that we must execute in the plan in order to achieve it
      * @return the next action to execute
      */
-    public IPlanningOperator UnexecutedAction()
+    public IPlanningOperator UnexecutedAction(AgentModel am)
     {
         ListIterator li;
         IPlanningOperator op;
@@ -1237,9 +1237,9 @@ public class Plan implements Cloneable, Serializable
             {
             	//possible next action detected
             	//additional restrictions, if the next action correspond to an action performed
-            	//by self, it must necessarely be grounded
+            	//by self, it must necessarily be grounded
             	if(!op.getAgent().isGrounded() ||
-            			op.getAgent().toString().equals(Memory.GetInstance().getSelf()))
+            			op.getAgent().toString().equals("SELF"))
             	{
             		if(!op.getName().isGrounded())
             		{
@@ -1249,15 +1249,14 @@ public class Plan implements Cloneable, Serializable
             	}
             			 	
             	//the next action must have the preconditions verified
-            	if(!op.checkPreconditions())
+            	if(!op.checkPreconditions(am))
             	{
             		AgentLogger.GetInstance().logAndPrint("The next action does not have the preconditions verified: " + op.getName());
             		return null;
             	}
             	 
                 //we give priority to actions that are executed by the agent itself
-            	//AgentLogger.GetInstance().logAndPrint("Possible action for execution: " + op+ " - Agent: " + op.getAgent());
-            	if(op.getAgent().toString().equals(Memory.GetInstance().getSelf()))
+            	if(op.getAgent().toString().equals("SELF"))
             	{
             		return op;
             	}
@@ -1273,7 +1272,7 @@ public class Plan implements Cloneable, Serializable
     /**
      * Gets a list with the first actions in a plan - DO NOT USE this method
      * if you want to execute the actions. Use it only to know which ones should be executed
-     * first. This is a simpler method that does not garantee that you can indeed execute
+     * first. This is a simpler method that does not guarantee that you can indeed execute
      * the action. If you want to execute an action, use the GetNextAction method instead 
      * @return a list with steps that are the first to be executed in a plan
      */
@@ -1500,7 +1499,7 @@ public class Plan implements Cloneable, Serializable
         return true;
     }
 
-    private void UpdatePlanProbability()
+    private void UpdatePlanProbability(AgentModel am)
     {
         ListIterator li;
         CausalLink l;
@@ -1515,7 +1514,7 @@ public class Plan implements Cloneable, Serializable
         	if(!op.getID().equals(_start.getID()) && 
         			!op.getID().equals(_finish.getID()))
         	{
-        		prob = prob * op.getProbability();
+        		prob = prob * op.getProbability(am);
         	}
         }
 
@@ -1527,7 +1526,7 @@ public class Plan implements Cloneable, Serializable
             if (!l.getSource().equals(_start.getID()))
             {
             	e = getOperator(l.getSource()).getEffect(l.getEffect());
-            	prob = prob * e.GetProbability();
+            	prob = prob * e.GetProbability(am);
             }   
         }
 
@@ -1536,7 +1535,7 @@ public class Plan implements Cloneable, Serializable
         while (li.hasNext())
         {
             conflict = (CausalConflictFlaw) li.next();
-            prob = prob * (1 - conflict.GetEffect().GetProbability());
+            prob = prob * (1 - conflict.GetEffect().GetProbability(am));
         }
 
         _probability = prob;

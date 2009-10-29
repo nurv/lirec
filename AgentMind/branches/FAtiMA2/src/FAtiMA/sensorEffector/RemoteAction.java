@@ -50,11 +50,12 @@ import javax.xml.parsers.SAXParserFactory;
 
 import org.xml.sax.InputSource;
 
+import FAtiMA.AgentModel;
 import FAtiMA.ValuedAction;
 import FAtiMA.culture.CulturalDimensions;
 import FAtiMA.culture.SymbolTranslator;
 import FAtiMA.emotionalState.ActiveEmotion;
-import FAtiMA.memory.Memory;
+import FAtiMA.emotionalState.EmotionalState;
 import FAtiMA.util.parsers.RemoteActionHandler;
 
 
@@ -105,7 +106,7 @@ public class RemoteAction implements Serializable {
 		_parameters = new ArrayList();
 	}
 	
-	public RemoteAction(ValuedAction va)
+	public RemoteAction(AgentModel am, ValuedAction va)
 	{
 		
 
@@ -114,7 +115,7 @@ public class RemoteAction implements Serializable {
 		
 		actionName = li.next().toString();
 		_actionType = actionName;
-		_subject = Memory.GetInstance().getSelf();
+		_subject = am.getName();
 		_parameters = new ArrayList();
 		_target = null;
 		
@@ -132,7 +133,7 @@ public class RemoteAction implements Serializable {
 			
 			
 		}
-		_emotion = va.getEmotion();
+		_emotion = va.getEmotion(am.getEmotionalState());
 
 	}
 	

@@ -62,34 +62,12 @@ public class Memory {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	/**
-	 * Singleton pattern 
-	 */
-	private static Memory _memoryInstance;
+	private AutobiographicalMemory _am;
+	private ShortTermMemory _stm;
+	private WorkingMemory _wm;
+	private KnowledgeBase _kb;
 	
-	public static Memory GetInstance()
-	{
-		if(_memoryInstance == null)
-		{
-			_memoryInstance = new Memory();
-		}
-		
-		return _memoryInstance;
-	} 
-	
-	private String _self;
-
-	public void setSelf(String selfName)
-	{
-		this._self = selfName;
-	}
-	
-	public String getSelf()
-	{
-		return this._self; 
-	}	
-	
-	public ArrayList GenerateSearchKeys(Event e)
+	public static ArrayList GenerateSearchKeys(Event e)
 	{	
 		ArrayList keys = new ArrayList();
 		ArrayList params = new ArrayList();
@@ -117,22 +95,30 @@ public class Memory {
 		return keys;
 	}	
 	
+	public Memory()
+	{
+		_am = new AutobiographicalMemory();
+		_stm = new ShortTermMemory();
+		_wm = new WorkingMemory();
+		_kb = new KnowledgeBase();
+	}
+	
 	public Float AssessGoalProbability(Goal g)
 	{
 		int numberOfSuccess;
 		int numberOfTries;
 		ArrayList searchKeys = GenerateSearchKeys(g.GetActivationEvent());
 		
-		numberOfTries = AutobiographicalMemory.GetInstance().CountEvent(searchKeys) 
-						+ ShortTermMemory.GetInstance().CountEvent(searchKeys);
+		numberOfTries = _am.CountEvent(searchKeys) 
+						+ _stm.CountEvent(searchKeys);
 		if(numberOfTries == 0)
 		{
 			return null;
 		}
 		
 		searchKeys = GenerateSearchKeys(g.GetSuccessEvent());
-		numberOfSuccess = AutobiographicalMemory.GetInstance().CountEvent(searchKeys) 
-							+ ShortTermMemory.GetInstance().CountEvent(searchKeys);			
+		numberOfSuccess = _am.CountEvent(searchKeys) 
+							+ _stm.CountEvent(searchKeys);			
 		return new Float(numberOfSuccess/numberOfTries);
 	}
 	
@@ -141,8 +127,8 @@ public class Memory {
 		float similarEvents = 0;
 		float familiarity = 0;
 		
-		similarEvents = AutobiographicalMemory.GetInstance().AssessGoalFamiliarity(g)
-						+ ShortTermMemory.GetInstance().AssessGoalFamiliarity(g);
+		similarEvents = _am.AssessGoalFamiliarity(g)
+						+ _stm.AssessGoalFamiliarity(g);
 		
 		// familiarity function f(x) = 1 - 1/(x/2 +1)
 		// where x represents the number of similar events founds
@@ -194,13 +180,13 @@ public class Memory {
 	public ArrayList GetPossibleBindings(Name name) {
 		ArrayList bindingSets = null;
 		
-		bindingSets = MatchLiteralList(name.GetLiteralList(), 0, WorkingMemory.GetInstance().GetWorkingMemory());
+		bindingSets = MatchLiteralList(name.GetLiteralList(), 0, _wm.GetWorkingMemory());
 		
 		if (bindingSets == null || bindingSets.size() == 0)
-			bindingSets = (MatchLiteralList(name.GetLiteralList(), 0, KnowledgeBase.GetInstance().GetKnowledgeBase()));
+			bindingSets = (MatchLiteralList(name.GetLiteralList(), 0, _kb.GetKnowledgeBase()));
 		else
 		{
-			ArrayList bindingSets2 = MatchLiteralList(name.GetLiteralList(), 0, KnowledgeBase.GetInstance().GetKnowledgeBase());
+			ArrayList bindingSets2 = MatchLiteralList(name.GetLiteralList(), 0, _kb.GetKnowledgeBase());
 			if (bindingSets2 != null)
 			{
 				ListIterator li = bindingSets2.listIterator();
@@ -228,18 +214,18 @@ public class Memory {
     
 	public boolean AskPredicate(Name predicate) 
 	{
-        KnowledgeSlot ks = (KnowledgeSlot) Ask(predicate, WorkingMemory.GetInstance().GetWorkingMemory());
+        KnowledgeSlot ks = (KnowledgeSlot) Ask(predicate, _wm.GetWorkingMemory());
         if (ks != null && ks.getValue() != null && ks.getValue().toString().equals("True"))
         {
-        	WorkingMemory.GetInstance().RearrangeWorkingMemory(predicate);
+        	_wm.RearrangeWorkingMemory(predicate);
             return true;
         }
         else
         {
-        	ks= (KnowledgeSlot) Ask(predicate, KnowledgeBase.GetInstance().GetKnowledgeBase());
+        	ks= (KnowledgeSlot) Ask(predicate, _kb.GetKnowledgeBase());
         	if (ks != null && ks.getValue() != null && ks.getValue().toString().equals("True"))
             {
-        		WorkingMemory.GetInstance().Tell(predicate, ks.getValue());
+        		_wm.Tell(this,predicate, ks.getValue());
                 return true;
             }
         }
@@ -253,18 +239,18 @@ public class Memory {
      *         property does not exist, it returns null
 	 */
 	public Object AskProperty(Name property) {
-		KnowledgeSlot prop = (KnowledgeSlot) Ask(property, WorkingMemory.GetInstance().GetWorkingMemory());
+		KnowledgeSlot prop = (KnowledgeSlot) Ask(property, _wm.GetWorkingMemory());
 		if (prop == null)
 		{
-			prop = (KnowledgeSlot) Ask(property, KnowledgeBase.GetInstance().GetKnowledgeBase());
+			prop = (KnowledgeSlot) Ask(property, _kb.GetKnowledgeBase());
 			if (prop == null)
 				return null;
 			else
-				WorkingMemory.GetInstance().Tell(property, prop.getValue());
+				_wm.Tell(this, property, prop.getValue());
 		}
 		else
 		{
-			WorkingMemory.GetInstance().RearrangeWorkingMemory(property);
+			_wm.RearrangeWorkingMemory(property);
 		}
 		return prop.getValue();
 	}
@@ -345,15 +331,36 @@ public class Memory {
 	 */
 	public void Retract(Name predicate) 
 	{
-		KnowledgeBase.GetInstance().Retract(predicate);
-		WorkingMemory.GetInstance().Retract(predicate);
+		_kb.Retract(predicate);
+		_wm.Retract(predicate);
 	}
 	
 	public KnowledgeSlot GetObjectDetails(String objectName)
 	{
-		KnowledgeSlot object = (WorkingMemory.GetInstance().GetWorkingMemory()).get(objectName);
+		KnowledgeSlot object = (_wm.GetWorkingMemory()).get(objectName);
 		if(object == null)
-			object = (KnowledgeBase.GetInstance().GetKnowledgeBase()).get(objectName);
+			object = (_kb.GetKnowledgeBase()).get(objectName);
 		return object;
 	}
+	
+	public KnowledgeBase getKB()
+	{
+		return _kb;
+	}
+	
+	public AutobiographicalMemory getAM()
+	{
+		return _am;
+	}
+	
+	public ShortTermMemory getSTM()
+	{
+		return _stm;
+	}
+	
+	public WorkingMemory getWM()
+	{
+		return _wm;
+	}
+	
 }

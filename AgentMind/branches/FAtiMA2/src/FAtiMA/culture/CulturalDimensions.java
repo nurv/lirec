@@ -4,8 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Random;
 
-import FAtiMA.memory.KnowledgeSlot;
-import FAtiMA.memory.Memory;
+import FAtiMA.AgentModel;
 import FAtiMA.deliberativeLayer.goals.ActivePursuitGoal;
 import FAtiMA.knowledgeBase.KnowledgeBase;
 import FAtiMA.motivationalSystem.MotivationalState;
@@ -81,10 +80,10 @@ public class CulturalDimensions {
 	}
 	
 	// Currently only affects affiliation
-	public void changeNeedsWeightsAndDecays() {
+	public void changeNeedsWeightsAndDecays(AgentModel am) {
 
 		float collectivismCoefficient = _dimensionalValues[CulturalDimensionType.COLLECTIVISM] * 0.01f;
-		Motivator affiliationMotivator = MotivationalState.GetInstance().GetSelfMotivator(MotivatorType.AFFILIATION);		
+		Motivator affiliationMotivator = am.getMotivationalState().GetSelfMotivator(MotivatorType.AFFILIATION);		
 		float personalityAffiliationWeight = affiliationMotivator.GetWeight();
 		float personalityAffiliationDecayFactor = affiliationMotivator.GetDecayFactor();
 		float affiliationAvgWeight = 0.5f;
@@ -100,7 +99,7 @@ public class CulturalDimensions {
 
 	}
 
-	public float determineCulturalUtility(ActivePursuitGoal goal, float selfContrib, float otherContrib){
+	public float determineCulturalUtility(AgentModel am, ActivePursuitGoal goal, float selfContrib, float otherContrib){
 
 		
 		float powerDistanceCoefficient = _dimensionalValues[CulturalDimensionType.POWERDISTANCE] * 0.01f;
@@ -110,8 +109,8 @@ public class CulturalDimensions {
 		String goalName = goal.getName().GetFirstLiteral().toString();	
 		String target = goal.getName().GetLiteralList().get(1).toString();
 		
-		float likeValue = this.obtainLikeRelationshipFromKB(target);
-		float differenceInPower = this.obtainDifferenceInPowerFromKB(target);
+		float likeValue = this.obtainLikeRelationshipFromKB(am, target);
+		float differenceInPower = this.obtainDifferenceInPowerFromKB(am, target);
 			
 		float result = selfContrib + //(otherContrib * Math.pow(POWER_DISTANCE_K, differenceInPower) + 
 												 (otherContrib * collectivismCoefficient)+ 
@@ -120,10 +119,9 @@ public class CulturalDimensions {
 		return result;
 	}
 
-	private float obtainLikeRelationshipFromKB(String targetAgent){
-		String agentName = Memory.GetInstance().getSelf();
-		Name likeProperty = Name.ParseName("Like("+ agentName + "," + targetAgent +")");
-		Float likeValue = (Float) Memory.GetInstance().AskProperty(likeProperty);
+	private float obtainLikeRelationshipFromKB(AgentModel am, String targetAgent){
+		Name likeProperty = Name.ParseName("Like("+ am.getName() + "," + targetAgent +")");
+		Float likeValue = (Float) am.getMemory().AskProperty(likeProperty);
 
 		if(likeValue == null){	
 			return 0f;
@@ -132,14 +130,14 @@ public class CulturalDimensions {
 		}	
 	}
 
-	private int obtainDifferenceInPowerFromKB(String targetAgent){
+	private int obtainDifferenceInPowerFromKB(AgentModel am, String targetAgent){
 
-		String agentName = Memory.GetInstance().getSelf();
+		String agentName = am.getName();
 
 		Name selfPowerPropertyName = Name.ParseName(agentName+"(power)");
-		String selfPowerProperty = (String)Memory.GetInstance().AskProperty(selfPowerPropertyName);
+		String selfPowerProperty = (String)am.getMemory().AskProperty(selfPowerPropertyName);
 		Name targetPowerPropertyName = Name.ParseName(targetAgent+"(power)");
-		String targetPowerProperty = (String)Memory.GetInstance().AskProperty(targetPowerPropertyName);
+		String targetPowerProperty = (String)am.getMemory().AskProperty(targetPowerPropertyName);
 
 		if(selfPowerProperty == null || targetPowerProperty == null){
 			//AgentLogger.GetInstance().logAndPrint("WARNING! Agent power properties not present in KB");

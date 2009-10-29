@@ -107,13 +107,13 @@ public class Inequality extends Substitution implements IGroundable, Serializabl
 	 * @param bindings - A list of substitutions of the type "[Variable]/value"
 	 * @see Substitution
 	 */
-	public Object Ground(ArrayList substs) {
+	public Object Ground(ArrayList<Substitution> substs) {
 		Inequality aux = (Inequality) this.clone();
 		aux.MakeGround(substs);
 		return aux;
 	}
 	
-	public void MakeGround(ArrayList substs)
+	public void MakeGround(ArrayList<Substitution> substs)
 	{
 		this._variable.MakeGround(substs);
 		this._value.MakeGround(substs);

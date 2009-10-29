@@ -94,19 +94,19 @@ public class ValuedAction implements Serializable {
 	 * Gets the Emotion that supports this action
 	 * @return the Emotion associated with the action
 	 */
-	public ActiveEmotion getEmotion() {
+	public ActiveEmotion getEmotion(EmotionalState es) {
 		if(_emotionKey == null) return null;
-		return EmotionalState.GetInstance().GetEmotion(_emotionKey);
+		return es.GetEmotion(_emotionKey);
 	}
 
 	/**
 	 * Gets an emotional value associated with the action
 	 * @return a float representing how emotionally important is the action
 	 */
-	public float GetValue() {
+	public float GetValue(EmotionalState es) {
 		if(_value == -1)
 		{
-			ActiveEmotion aux = getEmotion();
+			ActiveEmotion aux = getEmotion(es);
 			if(aux != null) return aux.GetIntensity();
 			else return 0;
 		}
@@ -126,6 +126,6 @@ public class ValuedAction implements Serializable {
 	 * @return the converted String
 	 */
 	public String toString() {
-		return "Action: " + _action + " Value: " + GetValue();
+		return "Action: " + _action + " Emotion: " + _emotionKey;
 	}
 }

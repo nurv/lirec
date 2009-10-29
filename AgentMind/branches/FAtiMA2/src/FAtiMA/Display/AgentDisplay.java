@@ -27,7 +27,6 @@
  * 
  * History: 
  * João Dias: 18/10/2005 - File created
- * Meiyii Lim: 12/03/2009 - Added the STM panel
  */
 
 package FAtiMA.Display;
@@ -42,7 +41,7 @@ import FAtiMA.Agent;
 
 
 /**
- * @author  bruno, Meiyii
+ * @author  bruno
  */
 public class AgentDisplay {
     JFrame _frame;
@@ -55,7 +54,7 @@ public class AgentDisplay {
         _ag = ag;
         _frame = new JFrame(ag.displayName());
         _frame.getContentPane().setLayout(new BoxLayout(_frame.getContentPane(),BoxLayout.Y_AXIS));
-		_frame.setSize(900,1000);
+		_frame.setSize(650,650);
 		_frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		_displayPane = new JTabbedPane();
@@ -69,8 +68,9 @@ public class AgentDisplay {
 		/*panel = new DrivesPanel();
 		_displayPane.addTab("Drives", null, panel, "displays the character's drives.");*/
 		
-		panel = new NeedsPanel(ag.name());
-		_displayPane.addTab("Needs",null,panel,"displays the characters needs");		
+		panel = new NeedsPanel(ag.getName(), ag.getName());
+		_displayPane.addTab("Needs",null,panel,"displays the characters needs");
+		
 		
 		panel = new SocialRelationsPanel();
 		_displayPane.addTab("Social Relations",null,panel,"displays the character's realtions state");
@@ -84,8 +84,6 @@ public class AgentDisplay {
 		panel = new EpisodicMemoryPanel();
 		_displayPane.addTab("Episodic Memory", null, panel, "displays all the records in the character's episodic memory");
 	
-		panel = new ShortTermMemoryPanel();
-		_displayPane.addTab("Short Term Memory", null, panel, "displays all the records in the character's short term memory");
 		
 		JButton teste = new JButton("Save");
 		teste.addActionListener(new TestAction(ag));
@@ -98,13 +96,7 @@ public class AgentDisplay {
     
     public void update() {
         AgentDisplayPanel pnl = (AgentDisplayPanel) _displayPane.getSelectedComponent();
-        
-        for (int i=0; i <_displayPane.getComponentCount(); i++)
-        {
-        	pnl = (AgentDisplayPanel) _displayPane.getComponentAt(i);
-        	//pnl = (AgentDisplayPanel) _displayPane.getSelectedComponent();
-        	if(pnl.Update(_ag)) _frame.setVisible(true);
-        }
+        if(pnl.Update(_ag)) _frame.setVisible(true);
     }
     
     public void dispose() {

@@ -54,6 +54,7 @@ import java.util.ListIterator;
 import FAtiMA.AgentSimulationTime;
 import FAtiMA.deliberativeLayer.goals.Goal;
 import FAtiMA.memory.ActionDetail;
+import FAtiMA.memory.Memory;
 import FAtiMA.memory.Time;
 import FAtiMA.sensorEffector.Event;
 import FAtiMA.util.AgentLogger;
@@ -65,71 +66,9 @@ public class AutobiographicalMemory implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	/**
-	 * Singleton pattern 
-	 */
-	private static AutobiographicalMemory _amInstance;
-	
-	public static AutobiographicalMemory GetInstance()
-	{
-		if(_amInstance == null)
-		{
-			_amInstance = new AutobiographicalMemory();
-		}
-		
-		return _amInstance;
-	} 
-	
-	/**
-	 * Saves the state of the AutobiographicalMemory to a file,
-	 * so that it can be later restored from file
-	 * @param fileName - the name of the file where we must write
-	 * 		             the AutobiographicalMemory
-	 */
-	public static void SaveState(String fileName)
-	{
-		try 
-		{
-			FileOutputStream out = new FileOutputStream(fileName);
-	    	ObjectOutputStream s = new ObjectOutputStream(out);
-	    	
-	    	s.writeObject(_amInstance);
-        	s.flush();
-        	s.close();
-        	out.close();
-		}
-		catch(Exception e)
-		{
-			AgentLogger.GetInstance().logAndPrint("Exception: " + e);
-			e.printStackTrace();
-		}
-	}
-	
-	/**
-	 * Loads a specific state of the AutobiographicalMemory from a 
-	 * previously saved file
-	 * @param fileName - the name of the file that contains the stored
-	 * 					 AutobiographicalMemory
-	 */
-	public static void LoadState(String fileName)
-	{
-		try
-		{
-			FileInputStream in = new FileInputStream(fileName);
-        	ObjectInputStream s = new ObjectInputStream(in);
-        	_amInstance = (AutobiographicalMemory) s.readObject();
-        	s.close();
-        	in.close();
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-	}
-	
 	private ArrayList _memoryEvents;
 	
-	private AutobiographicalMemory()
+	public AutobiographicalMemory()
 	{
 		this._memoryEvents = new ArrayList();
 	}
@@ -376,7 +315,7 @@ public class AutobiographicalMemory implements Serializable {
 		}
 	}
 	
-	public String SummarizeLastEvent()
+	public String SummarizeLastEvent(Memory m)
 	{	
 		
 		String AMSummary = "";
@@ -397,7 +336,7 @@ public class AutobiographicalMemory implements Serializable {
 			//we should also report if the episode is ambiguous, i.e if it is not very far from a neutral average
 			//if(elapsedTime >= 36000000 || stdDev >= 2.5)
 			//{
-				AMSummary += episode.GenerateSummary();
+				AMSummary += episode.GenerateSummary(m);
 			//}
 		}
 		

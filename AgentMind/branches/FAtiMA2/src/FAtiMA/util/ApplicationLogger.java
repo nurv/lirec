@@ -3,18 +3,16 @@ package FAtiMA.util;
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
 
-import FAtiMA.memory.Memory;
-
 public abstract class ApplicationLogger {
 	
 
     private static final String LOG_FILE = "-errorlog.txt";
     
-    public static void Write(String msg)
+    public static void Write(String agent, String msg)
     {
     	try 
     	{
-    		String logFile = Memory.GetInstance().getSelf() + LOG_FILE; 
+    		String logFile = agent + LOG_FILE; 
     		FileOutputStream out = new FileOutputStream(logFile,true);
         	ObjectOutputStream s = new ObjectOutputStream(out);
         	

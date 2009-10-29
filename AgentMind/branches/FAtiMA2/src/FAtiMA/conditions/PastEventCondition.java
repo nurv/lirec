@@ -38,10 +38,9 @@ import java.util.StringTokenizer;
 
 import org.xml.sax.Attributes;
 
+import FAtiMA.AgentModel;
 import FAtiMA.memory.ActionDetail;
 import FAtiMA.memory.SearchKey;
-import FAtiMA.memory.autobiographicalMemory.AutobiographicalMemory;
-import FAtiMA.memory.shortTermMemory.ShortTermMemory;
 import FAtiMA.sensorEffector.Event;
 import FAtiMA.sensorEffector.Parameter;
 import FAtiMA.wellFormedNames.Name;
@@ -226,9 +225,9 @@ public class PastEventCondition extends PredicateCondition {
 		return event;
 	}
 	
-	protected ArrayList GetPossibleBindings()
+	protected ArrayList GetPossibleBindings(AgentModel am)
 	{
-		return AutobiographicalMemory.GetInstance().SearchForPastEvents(GetSearchKeys());		
+		return am.getMemory().getAM().SearchForPastEvents(GetSearchKeys());
 	}
 	
 	/**
@@ -236,7 +235,8 @@ public class PastEventCondition extends PredicateCondition {
      * will make it valid (true) according to the agent's AutobiographicalMemory 
      * @return A list with all SubstitutionsSets that make the condition valid
 	 * @see AutobiographicalMemory
-	 */public ArrayList GetValidBindings() {
+	 */
+	public ArrayList GetValidBindings(AgentModel am) {
 		ActionDetail detail;
 		Substitution sub;
 		SubstitutionSet subSet;
@@ -245,7 +245,7 @@ public class PastEventCondition extends PredicateCondition {
 		ArrayList details;
 		
 		if (_name.isGrounded()) {
-			if(CheckCondition())
+			if(CheckCondition(am))
 			{
 				bindingSets.add(new SubstitutionSet());
 				return bindingSets;
@@ -253,7 +253,7 @@ public class PastEventCondition extends PredicateCondition {
 			else return null;
 		}
 		
-		details = GetPossibleBindings();
+		details = GetPossibleBindings(am);
 		
 		//we cannot determine bindings for negative event conditions,
 		//assume false
@@ -310,11 +310,11 @@ public class PastEventCondition extends PredicateCondition {
 	 * @return true if the PastPredicate is verified, false otherwise
 	 * @see AutobiographicalMemory
 	 */
-	public boolean CheckCondition() {
+	public boolean CheckCondition(AgentModel am) {
 		
 		if(!_name.isGrounded()) return false;
 		
-		return _positive == AutobiographicalMemory.GetInstance().ContainsPastEvent(GetSearchKeys()); 
+		return _positive == am.getMemory().getAM().ContainsPastEvent(GetSearchKeys()); 
 	}
 	
 	protected ArrayList GetSearchKeys()

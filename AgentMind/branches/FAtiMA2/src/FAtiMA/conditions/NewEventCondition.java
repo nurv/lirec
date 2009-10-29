@@ -3,9 +3,8 @@ package FAtiMA.conditions;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
+import FAtiMA.AgentModel;
 import FAtiMA.memory.SearchKey;
-import FAtiMA.memory.autobiographicalMemory.AutobiographicalMemory;
-import FAtiMA.memory.shortTermMemory.ShortTermMemory;
 import FAtiMA.sensorEffector.Event;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Symbol;
@@ -45,7 +44,7 @@ public class NewEventCondition extends RecentEventCondition {
 		{
 			newEvent._parameters.add(((Symbol)li.next()).clone());
 		}
-	
+		
 		return newEvent;
 	}
 	
@@ -67,7 +66,7 @@ public class NewEventCondition extends RecentEventCondition {
 	}
 	
 
-	public boolean CheckCondition() {
+	public boolean CheckCondition(AgentModel am) {
 		boolean conditionVerified;
 		
 
@@ -79,9 +78,7 @@ public class NewEventCondition extends RecentEventCondition {
 			return true;
 		}
 	
-		ArrayList searchKeys = GetSearchKeys();
-		conditionVerified = (_positive == (ShortTermMemory.GetInstance().ContainsRecentEvent(searchKeys)
-								|| AutobiographicalMemory.GetInstance().ContainsRecentEvent(searchKeys)));
+		conditionVerified = (_positive == am.getMemory().getSTM().ContainsRecentEvent(GetSearchKeys()));
 		
 		if(conditionVerified){
 			_conditionAlreadyVerified = true;

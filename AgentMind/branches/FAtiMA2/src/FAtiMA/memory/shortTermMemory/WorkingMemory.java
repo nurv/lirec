@@ -47,6 +47,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.ListIterator;
 
+import FAtiMA.AgentModel;
 import FAtiMA.conditions.Condition;
 import FAtiMA.deliberativeLayer.plan.Effect;
 import FAtiMA.deliberativeLayer.plan.Step;
@@ -59,6 +60,7 @@ import FAtiMA.wellFormedNames.Symbol;
 import FAtiMA.knowledgeBase.*;
 import FAtiMA.memory.ActionDetail;
 import FAtiMA.memory.KnowledgeSlot;
+import FAtiMA.memory.Memory;
 
 
 /**
@@ -79,74 +81,7 @@ public class WorkingMemory implements Serializable {
 	private static final long serialVersionUID = 1L;
 	public static final short MAXENTRY = 28;
 	
-	/**
-	 * Singleton pattern 
-	 */
-	private static WorkingMemory _wmInstance = null;
-	
-	/**
-	 * Gets the Agent's WorkingMemory
-	 * @return the WorkingMemory
-	 */
-	public static WorkingMemory GetInstance()
-	{
-		if(_wmInstance == null)
-		{
-			_wmInstance = new WorkingMemory();
-		}
-		return _wmInstance;
-	}
-	
-	/**
-	 * Saves the state of the current WorkingMemory to a file,
-	 * so that it can be later restored from file
-	 * @param fileName - the name of the file where we must write
-	 * 		             the WorkingMemory
-	 */
-	public static void SaveState(String fileName)
-	{
-		synchronized(_wmInstance)
-		{
-			try 		
-			{
-				FileOutputStream out = new FileOutputStream(fileName);
-		    	ObjectOutputStream s = new ObjectOutputStream(out);
-		    	
-		    	s.writeObject(_wmInstance);
-	        	s.flush();
-	        	s.close();
-	        	out.close();
-			}
-			catch(Exception e)
-			{
-				AgentLogger.GetInstance().logAndPrint("Exception: " + e);
-				ApplicationLogger.Write(e.getMessage());
-			}
-		}
-	}
-	
-	/**
-	 * Loads a specific state of the WorkingMemory from a previously
-	 * saved file
-	 * @param fileName - the name of the file that contains the stored
-	 * 					 WorkingMemory
-	 */
-	public static void LoadState(String fileName)
-	{	
-		try
-		{
-			FileInputStream in = new FileInputStream(fileName);
-        	ObjectInputStream s = new ObjectInputStream(in);
-        	_wmInstance = (WorkingMemory) s.readObject();
-        	s.close();
-        	in.close();
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}		
-	}
-	
+
 	private KnowledgeSlot _wM;
 	private ArrayList _factList;
 	private boolean _newKnowledge;
@@ -156,7 +91,7 @@ public class WorkingMemory implements Serializable {
 	/**
 	 * Creates a new Empty WorkingMemory
 	 */
-	private WorkingMemory() {
+	public WorkingMemory() {
 		_wM = new KnowledgeSlot("WM");
 		_factList = new ArrayList(WorkingMemory.MAXENTRY);
 		_newKnowledge = false;
@@ -198,7 +133,7 @@ public class WorkingMemory implements Serializable {
      * @return true if the Inference resulted in new Knowledge being added, false if no
      * new knowledge was inferred
      */
-    public boolean PerformInference()
+    public boolean PerformInference(AgentModel am)
     {
     	Step infOp;
     	Step groundInfOp;
@@ -208,10 +143,10 @@ public class WorkingMemory implements Serializable {
     	_newKnowledge = false;
     	_newFacts.clear();
     	
-		for(ListIterator li = KnowledgeBase.GetInstance().GetInferenceOperators().listIterator();li.hasNext();)
+		for(ListIterator li = am.getMemory().getKB().GetInferenceOperators().listIterator();li.hasNext();)
 		{
 			infOp = (Step) li.next();
-			substitutionSets = Condition.CheckActivation(infOp.getPreconditions());
+			substitutionSets = Condition.CheckActivation(am, infOp.getPreconditions());
 			if(substitutionSets != null)
 			{
 				for(ListIterator li2 = substitutionSets.listIterator();li2.hasNext();)
@@ -219,7 +154,7 @@ public class WorkingMemory implements Serializable {
 					sSet = (SubstitutionSet) li2.next();
 					groundInfOp = (Step) infOp.clone();
 					groundInfOp.MakeGround(sSet.GetSubstitutions());
-					InferEffects(groundInfOp);
+					InferEffects(am.getMemory(), groundInfOp);
 				}
 			}
 		}
@@ -227,7 +162,7 @@ public class WorkingMemory implements Serializable {
     	return _newKnowledge;
     }
     
-    private void InferEffects(Step infOp)
+    private void InferEffects(Memory m, Step infOp)
     {
     	Effect eff;
     	for(ListIterator li = infOp.getEffects().listIterator();li.hasNext();)
@@ -235,7 +170,7 @@ public class WorkingMemory implements Serializable {
     		eff = (Effect) li.next();
     		if(eff.isGrounded())
     		{
-    			Tell(eff.GetEffect().getName(),eff.GetEffect().GetValue().toString());
+    			Tell(m, eff.GetEffect().getName(),eff.GetEffect().GetValue().toString());
     			//System.out.println("InferEffects");    			
     		}
     	}
@@ -245,8 +180,8 @@ public class WorkingMemory implements Serializable {
 	 * Inserts a Predicate in the WorkingMemory
 	 * @param predicate - the predicate to be inserted
 	 */
-	public void Assert(Name predicate) {
-		this.Tell(predicate,new Symbol("True"));
+	public void Assert(Memory m, Name predicate) {
+		this.Tell(m, predicate,new Symbol("True"));
 	}
 
 	/**
@@ -315,7 +250,7 @@ public class WorkingMemory implements Serializable {
 	 * @param property - the property to be added/changed
 	 * @param value - the value to be stored in the property
 	 */
-	public void Tell(Name property, Object value) {
+	public void Tell(Memory m, Name property, Object value) {
 
 		boolean newProperty = false;
 		KnowledgeSlot aux = _wM;
@@ -406,7 +341,7 @@ public class WorkingMemory implements Serializable {
 	            }*/
 				currentSlot.remove(l.toString());
 				
-				KnowledgeBase.GetInstance().Tell(tempName, temp.getValue());
+				m.getKB().Tell(tempName, temp.getValue());
 				_factList.remove(temp);		
 				_changeList.remove(temp);
 			}

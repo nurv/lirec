@@ -51,6 +51,7 @@ package FAtiMA.util.parsers;
 
 import org.xml.sax.Attributes;
 
+import FAtiMA.AgentModel;
 import FAtiMA.conditions.EmotionCondition;
 import FAtiMA.conditions.RecentEventCondition;
 import FAtiMA.conditions.MoodCondition;
@@ -74,7 +75,6 @@ import FAtiMA.util.enumerables.EmotionType;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
 import FAtiMA.wellFormedNames.Symbol;
-import FAtiMA.memory.Memory;
 import FAtiMA.motivationalSystem.MotivationalState;
 import FAtiMA.motivationalSystem.Motivator;
 import FAtiMA.util.enumerables.MotivatorType;
@@ -82,22 +82,25 @@ import FAtiMA.exceptions.InvalidMotivatorTypeException;
 
 public class AgentLoaderHandler extends ReflectXMLHandler {
 	
-    private String _characterName;
-    private Substitution _self;
     private ReactiveProcess _reactiveLayer;
     private DeliberativeProcess _deliberativeLayer;
+    private EmotionalState _emotionalState;
     
 	private Action _action;
     private String _goalName;
     private BaseEmotion _elicitingEmotion;
     private Reaction _eventReaction;
+    private Substitution _self;
+    private AgentModel _am;
     
-    public AgentLoaderHandler(String characterName, ReactiveProcess reactiveLayer, DeliberativeProcess deliberativeLayer)
+    public AgentLoaderHandler(AgentModel am, ReactiveProcess reactiveLayer, DeliberativeProcess deliberativeLayer, EmotionalState es)
     {
-    	this._characterName = characterName;
     	this._reactiveLayer = reactiveLayer;
     	this._deliberativeLayer = deliberativeLayer;
-    	this._self = new Substitution(new Symbol("[SELF]"),new Symbol(characterName));
+    	this._emotionalState = es;
+    	//this is just because of compatibility issues.
+    	this._self = new Substitution(new Symbol("[SELF]"), new Symbol("SELF"));
+    	this._am = am;
     }
     
     public void ActionTendency(Attributes attributes) {
@@ -106,13 +109,12 @@ public class AgentLoaderHandler extends ReflectXMLHandler {
     
     public void CauseEvent(Attributes attributes) {
     	
-    	
     	String subject = attributes.getValue("subject");
 		String action = attributes.getValue("action");
 		String target = attributes.getValue("target");
 		String parameters = attributes.getValue("parameters");
 		
-    	Event event = Event.ParseEvent(_characterName,subject, action, target, parameters);
+    	Event event = Event.ParseEvent(subject, action, target, parameters);
     	_elicitingEmotion.SetCause(event);
     }
 
@@ -158,7 +160,7 @@ public class AgentLoaderHandler extends ReflectXMLHandler {
     	
     	emotionName = attributes.getValue("emotion");
     	type = EmotionType.ParseType(emotionName);
-        EmotionalState.GetInstance().AddEmotionDisposition(new EmotionDisposition(type,
+        _emotionalState.AddEmotionDisposition(new EmotionDisposition(type,
                                                               new Integer(attributes.getValue("threshold")).intValue(),
                                                               new Integer(attributes.getValue("decay")).intValue()));
     }
@@ -172,7 +174,7 @@ public class AgentLoaderHandler extends ReflectXMLHandler {
     	
     	motivatorName = attributes.getValue("motivator");
     	type = MotivatorType.ParseType(motivatorName);
-        MotivationalState.GetInstance().AddSelfMotivator(_characterName, new Motivator(type,
+        _am.getMotivationalState().AddSelfMotivator(_am.getName(), new Motivator(type,
         												new Float(attributes.getValue("decayFactor")).floatValue(),
         												new Float(attributes.getValue("weight")).floatValue(),
         												new Float(attributes.getValue("intensity")).floatValue()));
@@ -186,7 +188,9 @@ public class AgentLoaderHandler extends ReflectXMLHandler {
 		String target = attributes.getValue("target");
 		String parameters = attributes.getValue("parameters");
 			
-    	Event event = Event.ParseEvent(_characterName, subject, action, target, parameters);
+    	Event event = Event.ParseEvent(subject, action, target, parameters);
+    	//this is a trick just to save time
+    	event = event.ApplyPerspective("[SELF]");
      
     	_eventReaction.setEvent(event);
     	_reactiveLayer.getEmotionalReactions().AddEmotionalReaction(_eventReaction);
@@ -211,7 +215,7 @@ public class AgentLoaderHandler extends ReflectXMLHandler {
     	  impOfFailure = Float.parseFloat(attributes.getValue("importanceOfFailure"));
       }
 			
-      _deliberativeLayer.AddGoal(_goalName,impOfSucess,impOfFailure); 
+      _deliberativeLayer.AddGoal(_am, _goalName,impOfSucess,impOfFailure); 
     }
     
     public void Predicate(Attributes attributes) 
@@ -285,7 +289,7 @@ public class AgentLoaderHandler extends ReflectXMLHandler {
     	float respect;
     	String target = attributes.getValue("target");
     	float like = Float.parseFloat(attributes.getValue("like"));
-    	LikeRelation.getRelation(Memory.GetInstance().getSelf(), target).setValue(like);
+    	LikeRelation.getRelation("SELF", target).setValue(_am.getMemory(),like);
     	
     	String auxRespect = attributes.getValue("respect");
     	if(auxRespect == null)
@@ -296,6 +300,6 @@ public class AgentLoaderHandler extends ReflectXMLHandler {
     	{
     		respect = Float.parseFloat(auxRespect);
     	}
-    	RespectRelation.getRelation(Memory.GetInstance().getSelf(), target).setValue(respect);
+    	RespectRelation.getRelation("SELF", target).setValue(_am.getMemory(),respect);
     }
 }

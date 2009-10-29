@@ -76,6 +76,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
+import FAtiMA.AgentModel;
 import FAtiMA.IntegrityValidator;
 import FAtiMA.conditions.Condition;
 import FAtiMA.conditions.NewEventCondition;
@@ -86,8 +87,6 @@ import FAtiMA.deliberativeLayer.plan.IPlanningOperator;
 import FAtiMA.exceptions.InvalidMotivatorTypeException;
 import FAtiMA.exceptions.UnreachableGoalException;
 import FAtiMA.knowledgeBase.KnowledgeBase;
-import FAtiMA.memory.shortTermMemory.WorkingMemory;
-import FAtiMA.memory.Memory;
 import FAtiMA.motivationalSystem.MotivationalState;
 import FAtiMA.util.AgentLogger;
 import FAtiMA.util.enumerables.MotivatorType;
@@ -146,7 +145,7 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
 		_numberOfTries = 0;
 		
 		//IPlanningOperator
-		_agent = new Symbol(Memory.GetInstance().getSelf());
+		_agent = new Symbol("SELF");
 		_effects = new ArrayList();
 		
 	}
@@ -178,14 +177,14 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
 	 * if at least one of them is verified the goal fails
 	 * @return true if the goal failed, false otherwise
 	 */
-	public boolean CheckFailure() {
+	public boolean CheckFailure(AgentModel am) {
 	    ListIterator li;
 		Condition cond;
 		li = _failureConditions.listIterator();
 		
 		while (li.hasNext()) {
 			cond = (Condition) li.next();
-			if (cond.GetValidBindings() != null)
+			if (cond.GetValidBindings(am) != null)
 				return true;
 		}
 		return false;
@@ -212,14 +211,14 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
 	 * if all of them are verified the goal succeeds
 	 * @return true if the goal succeeded, false otherwise
 	 */
-	public boolean CheckSucess() {
+	public boolean CheckSucess(AgentModel am) {
 	    ListIterator li;
 		Condition cond;
 		li = _successConditions.listIterator();
 		
 		while (li.hasNext()) {
 			cond = (Condition) li.next();
-			if(cond.GetValidBindings() == null)
+			if(cond.GetValidBindings(am) == null)
 			{
 				return false;
 			}
@@ -236,7 +235,7 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
 			cond = (Condition) li.next();
 			if(cond.isGrounded())
 			{
-				if(cond.getName().toString().contains(Memory.GetInstance().getSelf()))
+				if(cond.getName().toString().contains("SELF"))
 				{
 					return true;
 				}
@@ -344,22 +343,22 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
 		return _urgency.floatValue();	
 	}
 	
-	private float GetGoalFamiliarity()
+	private float GetGoalFamiliarity(AgentModel am)
 	{
 		if (_familiarity == null)
 		{
-			_familiarity = new Float(Memory.GetInstance().AssessGoalFamiliarity(this));
+			_familiarity = new Float(am.getMemory().AssessGoalFamiliarity(this));
 		}
 		
 		return _familiarity.floatValue();
 	}
 	
-	public Float GetProbability()
+	public Float GetProbability(AgentModel am)
 	{
 		if(!_probabilityDetermined)
 		{
 			_probabilityDetermined = true;
-			_probability = Memory.GetInstance().AssessGoalProbability(this);
+			_probability = am.getMemory().AssessGoalProbability(this);
 		}
 		
 		return _probability;
@@ -370,21 +369,20 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
 		_probability = p; 
 	}
 	
-	public float getUncertainty()
+	public float getUncertainty(AgentModel am)
 	{
-		Float aux = (Float) Memory.GetInstance().AskProperty(this.getName());
+		Float aux = (Float) am.getMemory().AskProperty(this.getName());
 		if(aux != null) return aux.floatValue();
 		else return 0.0f;
 	}
 	
-	public void setUncertainty(float uncertainty)
+	public void setUncertainty(AgentModel am, float uncertainty)
 	{	
-		WorkingMemory.GetInstance().Tell(this.getName(), new Float(uncertainty));
-		//System.out.println("Set uncertainty");
+		am.getMemory().getWM().Tell(am.getMemory(),this.getName(), new Float(uncertainty));
 	}
 	
 	
-	public float getContributionToTargetNeeds()
+	public float getContributionToTargetNeeds(AgentModel am)
 	{
 		float result = 0;		
 		
@@ -394,15 +392,15 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
 		
 		while(it.hasNext()){
 			String target = ((Symbol)it.next()).toString();
-			result += this.getContributionToNeeds(target);			
+			result += this.getContributionToNeeds(am, target);			
 		}
 		return result;
 	}
 
 	
-	public float getContributionToPersonalNeeds()
+	public float getContributionToPersonalNeeds(AgentModel am)
 	{
-		return this.getContributionToNeeds("[SELF]");
+		return this.getContributionToNeeds(am, "SELF");
 	}
 	
 	private double determineQuadraticNeedVariation(float currentIntensity, float expectedContribution){
@@ -426,7 +424,7 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
 	}
 	
 	
-	private float getContributionToNeeds(String target){
+	private float getContributionToNeeds(AgentModel am, String target){
 		float result = 0;
 		String[] effectTypes = {"OnSelect","OnIgnore"};
 		String[] nonCognitiveDrives = {"Affiliation","Integrity","Energy"};
@@ -446,28 +444,28 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
 			}
 				
 			// If target is SELF
-			if(target.equalsIgnoreCase("[SELF]")){
+			if(target.equalsIgnoreCase("SELF")){
 				auxMultiplier = 1;
 				//Calculate the effect on Non-Cognitive Needs
 				for (int c = 0; c < effectTypes.length; c++ ){
 					
 					for(int i = 0; i < nonCognitiveDrives.length; i++){
 						expectedContribution = this.GetExpectedEffectOnDrive(effectTypes[c], nonCognitiveDrives[i], "[SELF]").floatValue();
-						currentIntensity =  MotivationalState.GetInstance().GetIntensity(_agent.getName(),MotivatorType.ParseType(nonCognitiveDrives[i]));
+						currentIntensity =  am.getMotivationalState().GetIntensity(_agent.getName(),MotivatorType.ParseType(nonCognitiveDrives[i]));
 						result +=  auxMultiplier * this.determineQuadraticNeedVariation(currentIntensity, expectedContribution); 
 					}
 					auxMultiplier = -1;
 
 				}
 				
-				float currentCompetenceIntensity = MotivationalState.GetInstance().GetIntensity(_agent.getName(),MotivatorType.COMPETENCE);
-				float expectedCompetenceContribution = MotivationalState.GetInstance().PredictCompetenceChange(true);
+				float currentCompetenceIntensity = am.getMotivationalState().GetIntensity(_agent.getName(),MotivatorType.COMPETENCE);
+				float expectedCompetenceContribution = am.getMotivationalState().PredictCompetenceChange(true);
 				result += this.determineQuadraticNeedVariation(currentCompetenceIntensity, expectedCompetenceContribution);
 				
-				float currentUncertaintyIntensity = MotivationalState.GetInstance().GetIntensity(_agent.getName(), MotivatorType.CERTAINTY);
+				float currentUncertaintyIntensity = am.getMotivationalState().GetIntensity(_agent.getName(), MotivatorType.CERTAINTY);
 				//expected error assuming that the goal is successfull
-				float expectedError = 1 - getProbability();
-				float currentError = getUncertainty();
+				float expectedError = 1 - getProbability(am);
+				float currentError = getUncertainty(am);
 				float expectedUncertaintyContribution = 10*(currentError - expectedError); 
 				result += this.determineQuadraticNeedVariation(currentUncertaintyIntensity,expectedUncertaintyContribution);	
 								
@@ -482,7 +480,7 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
 				for (int c = 0; c < effectTypes.length; c++ ){
 					for(int i = 0; i < nonCognitiveDrives.length; i++){
 						expectedContribution = this.GetExpectedEffectOnDrive(effectTypes[c], nonCognitiveDrives[i], "[target]").floatValue();
-						currentIntensity =  MotivationalState.GetInstance().GetIntensity(target,MotivatorType.ParseType(nonCognitiveDrives[i]));
+						currentIntensity =  am.getMotivationalState().GetIntensity(target,MotivatorType.ParseType(nonCognitiveDrives[i]));
 						result += auxMultiplier * this.determineQuadraticNeedVariation(currentIntensity, expectedContribution); 		
 					}
 					auxMultiplier = -1;
@@ -528,9 +526,9 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
 		return result;		
 	}*/
 	
-	private float getCompetence(){
-		float generalCompetence = MotivationalState.GetInstance().GetIntensity(_agent.getName(),MotivatorType.COMPETENCE)/10;
-		Float probability = GetProbability();
+	private float getCompetence(AgentModel am){
+		float generalCompetence = am.getMotivationalState().GetIntensity(_agent.getName(),MotivatorType.COMPETENCE)/10;
+		Float probability = GetProbability(am);
 		
 		if(probability != null){
 			return (generalCompetence + probability.floatValue())/2;
@@ -542,17 +540,17 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
 	}
 	
 	
-	public float GetExpectedUtility()
+	public float GetExpectedUtility(AgentModel am)
 	{		
-		float contributionToSelf = getContributionToPersonalNeeds();
-		float contributionOthers = getContributionToTargetNeeds();
+		float contributionToSelf = getContributionToPersonalNeeds(am);
+		float contributionOthers = getContributionToTargetNeeds(am);
 		
-		float culturalGoalUtility = CulturalDimensions.GetInstance().determineCulturalUtility(this,contributionToSelf,contributionOthers);		
+		float culturalGoalUtility = CulturalDimensions.GetInstance().determineCulturalUtility(am, this,contributionToSelf,contributionOthers);		
 		
-		float EU = culturalGoalUtility * getCompetence() + (1 + this.GetGoalUrgency());
+		float EU = culturalGoalUtility * getCompetence(am) + (1 + this.GetGoalUrgency());
 		
 		
-		AgentLogger.GetInstance().intermittentLog("Goal: " + this.getName() + " CulturalUtilitity: " + culturalGoalUtility + " Competence: " + this.getCompetence() +
+		AgentLogger.GetInstance().intermittentLog("Goal: " + this.getName() + " CulturalUtilitity: " + culturalGoalUtility + " Competence: " + this.getCompetence(am) +
 				" Urgency: "+ this.GetGoalUrgency() + " Total: " + EU);
 		return EU;
 		
@@ -866,7 +864,7 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
 		
 	}
 	
-	public ArrayList getPlans()
+	public ArrayList getPlans(AgentModel am)
 	{
 		return null;
 	}
@@ -886,19 +884,19 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
 		_effects.add(e);
 	}
 
-	public boolean checkPreconditions() {
+	public boolean checkPreconditions(AgentModel am) {
 		ListIterator li;
 		li = this._preConditions.listIterator();
 		
 		while(li.hasNext()) {
-			if (!((Condition) li.next()).CheckCondition()) return false;
+			if (!((Condition) li.next()).CheckCondition(am)) return false;
 		}
 		return true;
 	}
 	
-	public float getProbability()
+	public float getProbability(AgentModel am)
 	{
-		Float f = this.GetProbability();
+		Float f = this.GetProbability(am);
 		if(f != null)
 		{
 			return f.floatValue();
@@ -943,7 +941,7 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
 		this._urgency = new Float(urgency);
 	}
 
-	public void updateEffectsProbability() {
+	public void updateEffectsProbability(AgentModel am) {
 		//this method is not applied to Goals!
 	}
 

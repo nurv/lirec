@@ -40,7 +40,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import FAtiMA.Agent;
-import FAtiMA.memory.autobiographicalMemory.AutobiographicalMemory;
 import FAtiMA.memory.autobiographicalMemory.MemoryEpisode;
 
 
@@ -77,14 +76,14 @@ public class EpisodicMemoryPanel extends AgentDisplayPanel {
     	
     	boolean update = false;
         
-        if(countMemoryDetails() != AutobiographicalMemory.GetInstance().countMemoryDetails()) {
+        if(countMemoryDetails() != ag.getMemory().getAM().countMemoryDetails()) {
         	update = true;
         	_memoryEpisodes.removeAll();
         	_memoryEpisodeDisplays.clear();
         	
         	
-        	synchronized(AutobiographicalMemory.GetInstance().GetSyncRoot()){
-        		Iterator it = AutobiographicalMemory.GetInstance().GetAllEpisodes().iterator();
+        	synchronized(ag.getMemory().getAM().GetSyncRoot()){
+        		Iterator it = ag.getMemory().getAM().GetAllEpisodes().iterator();
             	MemoryEpisodeDisplay mDisplay;
             	MemoryEpisode episode;
             	while(it.hasNext()) {

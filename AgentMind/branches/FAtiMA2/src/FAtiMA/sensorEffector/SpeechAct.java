@@ -67,8 +67,9 @@ import javax.xml.parsers.SAXParserFactory;
 
 import org.xml.sax.InputSource;
 
+import FAtiMA.AgentModel;
 import FAtiMA.ValuedAction;
-import FAtiMA.memory.Memory;
+import FAtiMA.emotionalState.EmotionalState;
 import FAtiMA.util.parsers.SpeechActHandler;
 import FAtiMA.wellFormedNames.Name;
 
@@ -163,9 +164,9 @@ public class SpeechAct extends RemoteAction {
 	 * Creates a new SpeechAct from a ValuedAction
 	 * 
 	 */
-	public SpeechAct(ValuedAction speechAction)
+	public SpeechAct(ValuedAction speechAction, AgentModel am)
 	{
-		_subject = Memory.GetInstance().getSelf();
+		_subject = am.getName();
 		
 		Name action = speechAction.GetAction();
 		ListIterator li = action.GetLiteralList().listIterator();
@@ -199,7 +200,7 @@ public class SpeechAct extends RemoteAction {
 			_parameters.add(li.next().toString());
 		}
 		
-		_emotion = speechAction.getEmotion();
+		_emotion = speechAction.getEmotion(am.getEmotionalState());
 	}
 	
 	/**

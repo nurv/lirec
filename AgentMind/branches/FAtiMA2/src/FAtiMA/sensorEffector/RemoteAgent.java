@@ -87,14 +87,12 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import FAtiMA.Agent;
+import FAtiMA.AgentModel;
 import FAtiMA.AgentSimulationTime;
 import FAtiMA.ValuedAction;
 import FAtiMA.emotionalState.ActiveEmotion;
 import FAtiMA.emotionalState.EmotionalState;
 import FAtiMA.knowledgeBase.KnowledgeBase;
-import FAtiMA.memory.Memory;
-import FAtiMA.memory.autobiographicalMemory.AutobiographicalMemory;
-import FAtiMA.memory.shortTermMemory.WorkingMemory;
 import FAtiMA.motivationalSystem.MotivationalState;
 import FAtiMA.socialRelations.LikeRelation;
 import FAtiMA.socialRelations.RespectRelation;
@@ -132,7 +130,6 @@ public abstract class RemoteAgent extends SocketListener {
 	protected static final String ADVANCE_TIME = "ADVANCE-TIME";
 	protected static final String STOP_TIME = "STOP-TIME";
 	protected static final String RESUME_TIME = "RESUME-TIME";
-	protected static final String READY_FOR_NEXT_STEP = "READY-FOR-NEXT-STEP";
 	
 	protected ArrayList _actions;
 	
@@ -146,9 +143,6 @@ public abstract class RemoteAgent extends SocketListener {
 	protected HashMap _objectIdentifiers;
 	protected boolean _running;
 	protected String _userName;
-	
-	private boolean _readyForNextStep;
-	
 	//protected LanguageEngine _languageEngine;
 	//protected String _userLanguageDataBase;
 	//protected LanguageEngine _userLanguageEngine;
@@ -162,8 +156,8 @@ public abstract class RemoteAgent extends SocketListener {
 		_actions = new ArrayList();
 		_objectIdentifiers = new HashMap();
 		_canAct = true;
-		_running = true;	
-		_readyForNextStep = false;
+		_running = true;
+		
 		
 		AgentLogger.GetInstance().log("Connecting to " + host + ":" + port);
 		this.socket = new Socket(host, port);
@@ -209,11 +203,11 @@ public abstract class RemoteAgent extends SocketListener {
 	/**
 	 * Sends for execution the next available action
 	 */
-	public final void ExecuteNextAction() {
+	public final void ExecuteNextAction(AgentModel am) {
 		ValuedAction action;
 		if(_actions.size() > 0) {
 			action = (ValuedAction) _actions.remove(0);
-			this.StartAction(action);
+			this.StartAction(am, action);
 			
 		}
 	}
@@ -247,7 +241,7 @@ public abstract class RemoteAgent extends SocketListener {
 		try
 		{
 		
-			AgentLogger.GetInstance().log(_agent.name() +": Processing message: " + msg);
+			AgentLogger.GetInstance().log(_agent.getName() +": Processing message: " + msg);
 					
 			st = new StringTokenizer(msg," ");
 			msgType = st.nextToken();
@@ -328,16 +322,6 @@ public abstract class RemoteAgent extends SocketListener {
 			{
 				ResumeTimePerception(perception);
 			}
-			else if(msgType.equals(READY_FOR_NEXT_STEP))
-			{
-				if (_readyForNextStep)
-					_readyForNextStep = false;
-					
-				else
-					_readyForNextStep = true;
-				_agent.setReadyForNextStep(_readyForNextStep);	
-						
-			}
 			
 			while(_lookAtList.size() > 0)
 			{
@@ -371,17 +355,17 @@ public abstract class RemoteAgent extends SocketListener {
 	
 	protected abstract boolean SendAction(RemoteAction ra);
 	
-	public abstract void ReportInternalPropertyChange(Name property, Object value);
+	public abstract void ReportInternalPropertyChange(String agentName, Name property, Object value);
 	
 	
-	public void ReportInternalState()
+	public void ReportInternalState(EmotionalState es)
 	{
-		String msg = EmotionalState.GetInstance().toXml();
+		String msg = es.toXml();
 		Send(msg);
 		
 		LikeRelation like;
 		RespectRelation respect;
-		ArrayList relations = LikeRelation.getAllRelations(this._agent.name());
+		ArrayList relations = LikeRelation.getAllRelations(this._agent.getMemory(), this._agent.getName());
 		msg="<Relations>";
 		for(ListIterator li = relations.listIterator();li.hasNext();)
 		{
@@ -389,17 +373,17 @@ public abstract class RemoteAgent extends SocketListener {
 			msg += "<Like>";
 			msg += "<Subject>" + like.getSubject() + "</Subject>";
 			msg += "<Target>" + like.getTarget() + "</Target>";
-			msg += "<Value>" + like.getValue() + "</Value>";
+			msg += "<Value>" + like.getValue(this._agent.getMemory()) + "</Value>";
 			msg += "</Like>";
 		}
-		relations = RespectRelation.getAllRelations(this._agent.name());
+		relations = RespectRelation.getAllRelations(this._agent.getMemory(), this._agent.getName());
 		for(ListIterator li = relations.listIterator();li.hasNext();)
 		{
 			respect = (RespectRelation) li.next();
 			msg += "<Respect>";
 			msg += "<Subject>" + respect.getSubject() + "</Subject>";
 			msg += "<Target>" + respect.getTarget() + "</Target>";
-			msg += "<Value>" + respect.getValue() + "</Value>";
+			msg += "<Value>" + respect.getValue(this._agent.getMemory()) + "</Value>";
 			msg += "</Respect>";
 		}
 		
@@ -422,7 +406,7 @@ public abstract class RemoteAgent extends SocketListener {
 		
 	}
 
-	protected final void StartAction(ValuedAction vAction) {
+	protected final void StartAction(AgentModel am, ValuedAction vAction) {
 		String actionName;
 		RemoteAction rAction;
 		
@@ -431,7 +415,7 @@ public abstract class RemoteAgent extends SocketListener {
 		//if the action corresponds to a speech act...
 		if(SpeechAct.isSpeechAct(actionName)) {
 			
-			SpeechAct speechAct = new SpeechAct(vAction); 
+			SpeechAct speechAct = new SpeechAct(vAction, am); 
 			
 			/*if(speechAct.getReceiver().equals("user"))
 			{
@@ -444,21 +428,20 @@ public abstract class RemoteAgent extends SocketListener {
 			speechAct.AddContextVariable("role", _agent.role().toLowerCase());
 			
 			/* for the next context variables we need to retrieve them from the KB */
-			Memory memory = Memory.GetInstance();
 			
-			Object yourole = memory.AskProperty(Name.ParseName(speechAct.getReceiver() + "(role)"));
+			Object yourole = am.getMemory().AskProperty(Name.ParseName(speechAct.getReceiver() + "(role)"));
 			if(yourole != null)
 			{
 				speechAct.AddContextVariable("yourole", yourole.toString().toLowerCase());
 			}
 			
-			Object you = memory.AskProperty(Name.ParseName(speechAct.getReceiver() + "(displayName)"));
+			Object you = am.getMemory().AskProperty(Name.ParseName(speechAct.getReceiver() + "(displayName)"));
 			if(you != null)
 			{
 				speechAct.AddContextVariable("you", you.toString());
 			}
 			
-			Object episode = memory.AskProperty(Name.ParseName("Episode(name)"));
+			Object episode = am.getMemory().AskProperty(Name.ParseName("Episode(name)"));
 			if(episode != null)
 			{
 				speechAct.AddContextVariable("episode", episode.toString());
@@ -473,7 +456,7 @@ public abstract class RemoteAgent extends SocketListener {
 			Name auxName;
 			String displayName;
 			String role;
-			ArrayList binds = memory.GetPossibleBindings(n1);
+			ArrayList binds = am.getMemory().GetPossibleBindings(n1);
 			
 			if(binds != null)
 			{
@@ -482,11 +465,11 @@ public abstract class RemoteAgent extends SocketListener {
 					ss = (SubstitutionSet) li.next();
 					auxName = (Name) n1.clone();
 					auxName.MakeGround(ss.GetSubstitutions());
-					role = (String) memory.AskProperty(auxName);
+					role = (String) am.getMemory().AskProperty(auxName);
 					
 					auxName = (Name) n2.clone();
 					auxName.MakeGround(ss.GetSubstitutions());
-					displayName = (String) memory.AskProperty(auxName);
+					displayName = (String) am.getMemory().AskProperty(auxName);
 					
 					if(displayName != null && role != null)
 					{
@@ -497,9 +480,8 @@ public abstract class RemoteAgent extends SocketListener {
 			
 			if(speechAct.getMeaning().equals("episodesummary"))
 			{
-				_agent.SaveAM(Memory.GetInstance().getSelf());
 				String summaryInfo = "<ABMemory><Receiver>" + you + "</Receiver>";
-				summaryInfo += AutobiographicalMemory.GetInstance().SummarizeLastEvent();
+				summaryInfo += am.getMemory().getAM().SummarizeLastEvent(am.getMemory());
 				summaryInfo += "</ABMemory>";
 				AgentLogger.GetInstance().log(summaryInfo);
 				speechAct.setAMSummary(summaryInfo);
@@ -543,7 +525,7 @@ public abstract class RemoteAgent extends SocketListener {
 			
 		}
 		else {
-			rAction = new RemoteAction(vAction);
+			rAction = new RemoteAction(am, vAction);
 		}
 		
 		_canAct = false;
@@ -660,7 +642,7 @@ public abstract class RemoteAgent extends SocketListener {
 		StringTokenizer st = new StringTokenizer(perc," ");
 		String goalName = st.nextToken();
 		float importance = new Float(st.nextToken()).floatValue();
-		_agent.getDeliberativeLayer().ChangeGoalImportance(goalName,importance,type);
+		_agent.getDeliberativeLayer().ChangeGoalImportance(_agent, goalName,importance,type);
 	}
 	
 	protected void CmdPerception(String perc)
@@ -685,7 +667,7 @@ public abstract class RemoteAgent extends SocketListener {
 		}
 		else if(action.equals("Save"))
 		{
-			_agent.SaveAgentState(_agent.name());
+			_agent.SaveAgentState(_agent.getName());
 		}
 		else if(action.startsWith("DA_QUERY"))
 		{
@@ -738,7 +720,7 @@ public abstract class RemoteAgent extends SocketListener {
 			importance = new Float(st2.nextToken()).floatValue();
 			importance2 = new Float(st2.nextToken()).floatValue();
 			try {
-				_agent.getDeliberativeLayer().AddGoal(goalName,importance,importance2);
+				_agent.getDeliberativeLayer().AddGoal(_agent, goalName,importance,importance2);
 			}
 			catch(Exception e) {
 				e.printStackTrace();
@@ -767,7 +749,7 @@ public abstract class RemoteAgent extends SocketListener {
 	}
 	
 	protected void LookAtPerception(String perc)
-	{
+	{ 
 		Name propertyName;
 		StringTokenizer st = new StringTokenizer(perc," ");
 		//perception about the properties of a given object/character
@@ -781,18 +763,15 @@ public abstract class RemoteAgent extends SocketListener {
 			//property[0] corresponds to the property name, [1] to the property value
 			//constructs something like Luke(Strength)
 			
-			
-			propertyName = Name.ParseName(subject + "(" + properties[0] + ")");
-			AgentLogger.GetInstance().log("Look-At:" + propertyName.toString());
-			
-			WorkingMemory.GetInstance().Tell(propertyName, properties[1]);
+			_agent.PerceivePropertyChanged(subject, properties[0], properties[1]);
+			AgentLogger.GetInstance().log("Look-At:" + subject + " " + properties[0] + " " + properties[1]);
 			
 			//If the agent looks at another agent it initializes it's needs
-			if(!subject.equalsIgnoreCase(_agent.displayName()) && 
+			if(!subject.equalsIgnoreCase(_agent.getName()) && 
 		       properties[0].equalsIgnoreCase("isPerson") ||
 		       (properties[0].equalsIgnoreCase("type") && properties[1].equalsIgnoreCase("character"))){
 				
-				MotivationalState.GetInstance().InitializeOtherAgentMotivators(subject);
+				_agent.getMotivationalState().InitializeOtherAgentMotivators(subject);
 				
 			}
 		}

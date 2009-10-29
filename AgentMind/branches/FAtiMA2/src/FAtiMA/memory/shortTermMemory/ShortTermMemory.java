@@ -48,6 +48,7 @@ import FAtiMA.memory.Memory;
 import FAtiMA.memory.autobiographicalMemory.AutobiographicalMemory;
 import FAtiMA.sensorEffector.Event;
 import FAtiMA.util.AgentLogger;
+import FAtiMA.util.Constants;
 import FAtiMA.util.enumerables.EmotionType;
 import FAtiMA.wellFormedNames.Name;
 
@@ -65,79 +66,15 @@ public class ShortTermMemory implements Serializable {
 	 * for serialization purposes
 	 */
 	private static final long serialVersionUID = 1L;
-	
-	/**
-	 * Singleton pattern 
-	 */
-	private static ShortTermMemory _stmInstance;
-	
-	public static ShortTermMemory GetInstance()
-	{
-		if(_stmInstance == null)
-		{
-			_stmInstance = new ShortTermMemory();
-		}
 		
-		return _stmInstance;
-	} 
 	
-	/**
-	 * Saves the state of the ShortTermMemory to a file,
-	 * so that it can be later restored from file
-	 * @param fileName - the name of the file where we must write
-	 * 		             the ShortTermMemory
-	 */
-	public static void SaveState(String fileName)
-	{
-		synchronized(_stmInstance)
-		{
-			try 
-			{
-				FileOutputStream out = new FileOutputStream(fileName);
-		    	ObjectOutputStream s = new ObjectOutputStream(out);
-		    	
-		    	s.writeObject(_stmInstance);
-	        	s.flush();
-	        	s.close();
-	        	out.close();
-			}
-			catch(Exception e)
-			{
-				AgentLogger.GetInstance().logAndPrint("Exception: " + e);
-				e.printStackTrace();
-			}
-		}
-	}
-	
-	/**
-	 * Loads a specific state of the ShortTermMemory from a 
-	 * previously saved file
-	 * @param fileName - the name of the file that contains the stored
-	 * 					 ShortTermMemory
-	 */
-	public static void LoadState(String fileName)
-	{
-		try
-		{
-			FileInputStream in = new FileInputStream(fileName);
-        	ObjectInputStream s = new ObjectInputStream(in);
-        	_stmInstance = (ShortTermMemory) s.readObject();
-        	s.close();
-        	in.close();
-        	_stmInstance._records.SetEventID(_stmInstance.GetAllRecords().GetNewestRecord().getID()+1);
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-	}
 		
 	private STMemoryRecord _records;
 	private ArrayList _newRecords;
 	private boolean _newData;	
 	private String _previousLocation;
 	
-	private ShortTermMemory()
+	public ShortTermMemory()
 	{
 		this._records = new STMemoryRecord();
 		this._newRecords = new ArrayList();
@@ -145,17 +82,14 @@ public class ShortTermMemory implements Serializable {
 		this._previousLocation = "";
 	}
 	
-	public void StoreAction(Event e)
+	public void StoreAction(Memory m, Event e, String location)
 	{		
-		Name locationKey = Name.ParseName(Memory.GetInstance().getSelf() + "(location)");	
-		
-		String newLocation = (String) Memory.GetInstance().AskProperty(locationKey);
 		
 		// 31/03/2009 - Create a new episode if the location changes to allow goals reset
 		// If this if block is commented, goals decay over time and reset automatically
-		if (!newLocation.equals(_previousLocation))
+		if (!location.equals(_previousLocation))
 		{
-			AutobiographicalMemory.GetInstance().NewEpisode(newLocation);
+			m.getAM().NewEpisode(location);
 			_records.ResetEventID();
 		}
 
@@ -172,29 +106,29 @@ public class ShortTermMemory implements Serializable {
 						!detail.getAction().equals("fail")) &&
 						(detail.getEmotion().GetType()) != EmotionType.NEUTRAL))
 				{
-					AutobiographicalMemory.GetInstance().StoreAction(detail);					
+					m.getAM().StoreAction(detail);					
 				}
 				_records.DeleteOldestRecord();
 			}
-			_records.AddActionDetail(e, newLocation);
+			_records.AddActionDetail(m, e, location);
 			_newRecords.add(_records.GetNewestRecord());
-			_previousLocation = newLocation;
+			_previousLocation = location;
 			
 			this._newData = true;
 		}
 	}
 	
-	public void AssociateEmotionToAction(ActiveEmotion em, Event cause)
+	public void AssociateEmotionToAction(Memory m, ActiveEmotion em, Event cause)
 	{
-		Name locationKey = Name.ParseName(Memory.GetInstance().getSelf() + "(location)");	
+		Name locationKey = Name.ParseName(Constants.SELF + "(location)");	
 		
-		String newLocation = (String) Memory.GetInstance().AskProperty(locationKey);
+		String newLocation = (String) m.AskProperty(locationKey);
 		
 		if(this._records.GetCount() > 0)
 		{
 			synchronized (this)
 			{
-				_records.AssociateEmotionToDetail(em,cause,newLocation);
+				_records.AssociateEmotionToDetail(m, em,cause,newLocation);
 			}
 		}
 	}

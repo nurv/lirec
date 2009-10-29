@@ -1,5 +1,7 @@
 package FAtiMA.socialRelations;
 
+import FAtiMA.memory.Memory;
+
 public abstract class Relation {
 
 	protected String _subj1;
@@ -16,13 +18,13 @@ public abstract class Relation {
 		this._subj2 = sub2;
 	}
 
-	public abstract String increment(float intensity);
+	public abstract String increment(Memory m, float intensity);
 
-	public abstract String decrement(float intensity);
+	public abstract String decrement(Memory m, float intensity);
 	
-	public abstract float getValue();
+	public abstract float getValue(Memory m);
 	
-	public abstract void setValue(float relationValue);
+	public abstract void setValue(Memory m, float relationValue);
 	
 	public abstract String getHashKey();
 	
