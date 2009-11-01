@@ -67,8 +67,7 @@ import FAtiMA.wellFormedNames.Symbol;
 
 public class CultureLoaderHandler extends ReflectXMLHandler {
 
-	private ArrayList _rituals;
-	private ArrayList _culturalGoals;
+	private ArrayList<Ritual> _rituals;
 	private Ritual _ritual = null;
 	private String _conditionType;
 	private Substitution _self;
@@ -81,9 +80,8 @@ public class CultureLoaderHandler extends ReflectXMLHandler {
 	private Context _contextBeingParsed;
 
 	public CultureLoaderHandler(AgentModel am, ReactiveProcess reactiveLayer, DeliberativeProcess deliberativeLayer) {
-		_rituals = new ArrayList();
-		_culturalGoals = new ArrayList();
-		_self = new Substitution(new Symbol("[SELF]"), new Symbol("SELF"));
+		_rituals = new ArrayList<Ritual>();
+		_self = new Substitution(new Symbol("[SELF]"), new Symbol(FAtiMA.util.Constants.SELF));
 		_reactiveLayer = reactiveLayer;
 		_deliberativeLayer = deliberativeLayer;
 		_am = am;
@@ -91,7 +89,7 @@ public class CultureLoaderHandler extends ReflectXMLHandler {
 	}
 
 
-	public ArrayList GetRituals(AgentModel am)
+	public ArrayList<Ritual> GetRituals(AgentModel am)
 	{
 		for(int i=0;i < _rituals.size();i++)
 		{

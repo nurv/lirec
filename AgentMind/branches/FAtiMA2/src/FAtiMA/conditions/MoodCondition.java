@@ -196,20 +196,20 @@ public class MoodCondition extends Condition {
      * @return A list with all SubstitutionsSets that make the condition valid
 	 * @see EmotionalState
 	 */
-	public ArrayList GetValidBindings(AgentModel am) {
+	public ArrayList<SubstitutionSet> GetValidBindings(AgentModel am) {
 		if(CheckCondition(am))
 		{
-			ArrayList bindings = new ArrayList();
+			ArrayList<SubstitutionSet> bindings = new ArrayList<SubstitutionSet>();
 			bindings.add(new SubstitutionSet());
 			return bindings;
 		}
 		else return null;
 	}
 	
-	public ArrayList GetValueBindings(AgentModel am)
+	public ArrayList<Substitution> GetValueBindings(AgentModel am)
 	{
 		if(CheckCondition(am)) {
-			return new ArrayList();
+			return new ArrayList<Substitution>();
 		}
 		else return null;
 	}
@@ -253,7 +253,7 @@ public class MoodCondition extends Condition {
 	 * @return a new Predicate with the substitutions applied
 	 * @see Substitution
 	 */
-	public Object Ground(ArrayList bindings) {
+	public Object Ground(ArrayList<Substitution> bindings) {
 		MoodCondition aux = (MoodCondition) this.clone();
 		aux.MakeGround(bindings);
 		return aux;
@@ -267,7 +267,7 @@ public class MoodCondition extends Condition {
 	 * @param bindings - A list of substitutions of the type "[Variable]/value"
 	 * @see Substitution
 	 */
-    public void MakeGround(ArrayList bindings)
+    public void MakeGround(ArrayList<Substitution> bindings)
     {
     }
 	

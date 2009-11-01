@@ -169,7 +169,7 @@ public class PredicateCondition extends Condition {
 	 * @return a new Predicate with the substitutions applied
 	 * @see Substitution
 	 */
-	public Object Ground(ArrayList bindings) {
+	public Object Ground(ArrayList<Substitution> bindings) {
 		PredicateCondition aux = (PredicateCondition) this.clone();
 		aux.MakeGround(bindings);
 		return aux;
@@ -183,7 +183,7 @@ public class PredicateCondition extends Condition {
 	 * @param bindings - A list of substitutions of the type "[Variable]/value"
 	 * @see Substitution
 	 */
-    public void MakeGround(ArrayList bindings)
+    public void MakeGround(ArrayList<Substitution> bindings)
     {
     	this._name.MakeGround(bindings);
     }
@@ -262,9 +262,9 @@ public class PredicateCondition extends Condition {
      * If John owns the ball, the method returns [x]/John
      * @return returns all set of Substitutions that make the condition valid.
 	 */
-	protected ArrayList GetValueBindings(AgentModel am) {
+	protected ArrayList<Substitution> GetValueBindings(AgentModel am) {
 		if(CheckCondition(am)) {
-			return new ArrayList();
+			return new ArrayList<Substitution>();
 		}
 		else return null;
 	}

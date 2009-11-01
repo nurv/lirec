@@ -78,7 +78,7 @@ public class EmotionalReactionTreeNode implements IIntegrityTester, Serializable
 	public static String param3Node = "p3";
 	private static String nullValue = "null";
 	
-	private HashMap _childs;
+	private HashMap<String,Object> _childs;
 
 	private String _type;
 	
@@ -91,7 +91,7 @@ public class EmotionalReactionTreeNode implements IIntegrityTester, Serializable
 	 * EmotionalReactionTreeNode(String type) instead 
 	 */
 	public EmotionalReactionTreeNode(String type, String value) {
-		_childs = new HashMap();
+		_childs = new HashMap<String,Object>();
 		_type = type;
 	}
 	
@@ -101,7 +101,7 @@ public class EmotionalReactionTreeNode implements IIntegrityTester, Serializable
 	 */
 	public EmotionalReactionTreeNode(String type)
 	{
-	    _childs = new HashMap();
+	    _childs = new HashMap<String,Object>();
 	    _type = type;
 	}
 	
@@ -111,7 +111,7 @@ public class EmotionalReactionTreeNode implements IIntegrityTester, Serializable
 	 */
 	public void AddEmotionalReaction(Reaction er) {
 		EmotionalReactionTreeNode child;
-		ArrayList arguments;
+		ArrayList<Parameter> arguments;
 		String key=null;
 		String nextNodeType=null;
 		
@@ -120,7 +120,7 @@ public class EmotionalReactionTreeNode implements IIntegrityTester, Serializable
 			arguments = er.getEvent().GetParameters();
 			if(arguments != null & arguments.size() > 2)
 			{
-				key = (String)((Parameter) arguments.get(2)).GetValue();
+				key = (String)arguments.get(2).GetValue();
 			}
 			if(key == null || key.equals("*")) key = nullValue;
 			_childs.put(key,er);
@@ -176,7 +176,7 @@ public class EmotionalReactionTreeNode implements IIntegrityTester, Serializable
 	 * an exception
 	 */ 
 	public void CheckIntegrity(IntegrityValidator val) throws UnknownSpeechActException {
-	    Iterator it = _childs.values().iterator();
+	    Iterator<Object> it = _childs.values().iterator();
 	    
 	    while(it.hasNext()) {
 	        ((IIntegrityTester) it.next()).CheckIntegrity(val);
@@ -190,7 +190,7 @@ public class EmotionalReactionTreeNode implements IIntegrityTester, Serializable
 	 */
 	public Reaction MatchEvent(Event e) {
 		String key=null;
-		ArrayList parameters;
+		ArrayList<Parameter> parameters;
 		Object obj;
 		Reaction r;
 		

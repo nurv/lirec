@@ -69,9 +69,9 @@ import org.xml.sax.InputSource;
 
 import FAtiMA.AgentModel;
 import FAtiMA.ValuedAction;
-import FAtiMA.emotionalState.EmotionalState;
 import FAtiMA.util.parsers.SpeechActHandler;
 import FAtiMA.wellFormedNames.Name;
+import FAtiMA.wellFormedNames.Symbol;
 
 
 /**
@@ -95,7 +95,7 @@ public class SpeechAct extends RemoteAction {
 	private String _meaning;
 	private String _utterance;
 	private String _AMsummary;
-	private ArrayList _contextVariables;
+	private ArrayList<Parameter> _contextVariables;
 	
 	/**
 	 * Parses a SpeechAct from a XML formatted String
@@ -140,7 +140,7 @@ public class SpeechAct extends RemoteAction {
 	 * Creates a new empty SpeechAct
 	 */
 	public SpeechAct() {
-		_contextVariables = new ArrayList();
+		_contextVariables = new ArrayList<Parameter>();
 		this._AMsummary = null;
 	}
 	
@@ -157,7 +157,7 @@ public class SpeechAct extends RemoteAction {
 	    _meaning = meaning;
 	    _actionType = actType;
 	    this._AMsummary = null;
-	    _contextVariables = new ArrayList();
+	    _contextVariables = new ArrayList<Parameter>();
 	}
 	
 	/**
@@ -169,7 +169,7 @@ public class SpeechAct extends RemoteAction {
 		_subject = am.getName();
 		
 		Name action = speechAction.GetAction();
-		ListIterator li = action.GetLiteralList().listIterator();
+		ListIterator<Symbol> li = action.GetLiteralList().listIterator();
 		_actionType = li.next().toString();
 		
 		if(!SpeechAct.isSpeechAct(_actionType))
@@ -182,7 +182,7 @@ public class SpeechAct extends RemoteAction {
 		
 		this._AMsummary = null;
 		
-		_contextVariables = new ArrayList();
+		_contextVariables = new ArrayList<Parameter>();
 		
 		//third literal of a speech acts corresponds to a third person or object,
 		if(li.hasNext())
@@ -213,7 +213,7 @@ public class SpeechAct extends RemoteAction {
 	    _contextVariables.add(new Parameter(name,value));
 	}
 	
-	public ArrayList getContextVariables()
+	public ArrayList<Parameter> getContextVariables()
 	{
 		return _contextVariables;
 	}
@@ -301,7 +301,7 @@ public class SpeechAct extends RemoteAction {
 	    event = new Event(_subject,_actionType,_target);
 		event.AddParameter(new Parameter("type", _meaning));
 		
-		for(ListIterator li = _parameters.listIterator(); li.hasNext();)
+		for(ListIterator<String> li = _parameters.listIterator(); li.hasNext();)
 		{
 			event.AddParameter(new Parameter("param",li.next()));
 		}
@@ -320,7 +320,7 @@ public class SpeechAct extends RemoteAction {
 	    	+ "</Sender><Receiver>" + _target
 	    	+ "</Receiver><Type>" + _meaning + "</Type>";
 	    
-	    ListIterator li = _contextVariables.listIterator();
+	    ListIterator<Parameter> li = _contextVariables.listIterator();
 	    while(li.hasNext()) {
 	        p = (Parameter) li.next();
 	        aux = aux + "<Context id=\"" + p.GetName() + "\">" + p.GetValue() + "</Context>";
@@ -328,10 +328,10 @@ public class SpeechAct extends RemoteAction {
 	   
 	    aux = aux + "<Parameters>";
     	
-    	li = _parameters.listIterator();
-    	while(li.hasNext())
+    	ListIterator<String> li2 = _parameters.listIterator();
+    	while(li2.hasNext())
     	{
-    		aux = aux + "<Param>" + li.next() + "</Param>";
+    		aux = aux + "<Param>" + li2.next() + "</Param>";
     	}
     	
     	aux = aux + "</Parameters>";
@@ -384,9 +384,9 @@ public class SpeechAct extends RemoteAction {
 	    	+ "</Sender><Receiver>" + _target
 	    	+ "</Receiver><Type>" + speechType + "</Type>";
 	    
-	    ListIterator li = _contextVariables.listIterator();
+	    ListIterator<Parameter> li = _contextVariables.listIterator();
 	    while(li.hasNext()) {
-	        p = (Parameter) li.next();
+	        p = li.next();
 	        aux = aux + "<Context id=\"" + p.GetName() + "\">" + p.GetValue() + "</Context>";
 	    }
 	    

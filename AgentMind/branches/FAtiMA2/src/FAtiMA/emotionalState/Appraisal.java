@@ -29,23 +29,21 @@
 package FAtiMA.emotionalState;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 
 import FAtiMA.AgentModel;
 import FAtiMA.deliberativeLayer.goals.Goal;
 import FAtiMA.sensorEffector.Event;
 import FAtiMA.socialRelations.LikeRelation;
 import FAtiMA.util.enumerables.EmotionType;
-import FAtiMA.util.enumerables.EmotionValence;
+
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Symbol;
 
 public abstract class Appraisal {
 	
-	public static ArrayList GenerateEmotions(AgentModel am, Event event, AppraisalVector vector, Symbol other)
+	public static ArrayList<BaseEmotion> GenerateEmotions(AgentModel am, Event event, AppraisalVector vector, Symbol other)
 	{
-		ArrayList emotions = new ArrayList();
+		ArrayList<BaseEmotion> emotions = new ArrayList<BaseEmotion>();
 		float desirability;
 		float desirabilityForOther;
 		float praiseworthiness;
@@ -196,13 +194,13 @@ public abstract class Appraisal {
 		return em;
 	}
 	
-	private static ArrayList OCCAppraiseFortuneForAll(AgentModel am, Event event, float desirability, float desirabilityForOther, Symbol other)
+	private static ArrayList<BaseEmotion> OCCAppraiseFortuneForAll(AgentModel am, Event event, float desirability, float desirabilityForOther, Symbol other)
 	{
 		float targetBias = 0;
 		float subjectBias = 0;
 		float bias;
 		float newDesirability = 0;
-		ArrayList emotions = new ArrayList();
+		ArrayList<BaseEmotion> emotions = new ArrayList<BaseEmotion>();
 		
 		String appraisingAgent = am.getName();
 		String target = event.GetTarget();

@@ -34,6 +34,7 @@ import java.util.ArrayList;
 
 import FAtiMA.emotionalState.BaseEmotion;
 import FAtiMA.memory.ActionDetail;
+import FAtiMA.sensorEffector.Parameter;
 import FAtiMA.sensorEffector.SpeechAct;
 import FAtiMA.util.Constants;
 import FAtiMA.util.enumerables.EmotionType;
@@ -66,7 +67,7 @@ public abstract class SummaryGenerator {
 		
 		if(SpeechAct.isSpeechAct(action.getAction()))
 		{
-			ArrayList params = action.getParameters();
+			ArrayList<Parameter> params = action.getParameters();
 			actionSummary += params.get(0);
 			
 			if(action.getAction().equals(SpeechAct.Reply))

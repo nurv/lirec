@@ -47,7 +47,6 @@ import FAtiMA.emotionalState.ActiveEmotion;
 import FAtiMA.emotionalState.Appraisal;
 import FAtiMA.emotionalState.BaseEmotion;
 import FAtiMA.emotionalState.EmotionalState;
-import FAtiMA.motivationalSystem.MotivationalState;
 import FAtiMA.sensorEffector.Event;
 import FAtiMA.util.AgentLogger;
 import FAtiMA.wellFormedNames.Name;
@@ -70,7 +69,7 @@ public class Intention implements Serializable {
 
 	private String _hopeEmotionID;
 	private ActivePursuitGoal _goal;
-	private ArrayList _planConstruction;
+	private ArrayList<Plan> _planConstruction;
 	private Intention _subIntention = null;
 	private Intention _parentIntention = null;
 	private boolean _strongCommitment;
@@ -85,7 +84,7 @@ public class Intention implements Serializable {
 	 */
 	public Intention(ActivePursuitGoal g) {
 		_goal = g;
-		_planConstruction = new ArrayList();
+		_planConstruction = new ArrayList<Plan>();
 		_fearEmotionID = null;
 		_hopeEmotionID = null;
 		_strongCommitment = false;
@@ -106,9 +105,9 @@ public class Intention implements Serializable {
 		}
 	}
 	
-	public void AddPlans(ArrayList plans)
+	public void AddPlans(ArrayList<Plan> plans)
 	{
-		ListIterator li;
+		ListIterator<Plan> li;
 		Plan p;
 		li = plans.listIterator();
 		while(li.hasNext())
@@ -210,7 +209,7 @@ public class Intention implements Serializable {
 	 * @return the best plan
 	 */
 	public Plan GetBestPlan(AgentModel am) {
-		ListIterator li;
+		ListIterator<Plan> li;
 		Plan p;
 		Plan bestPlan = null;
 		float minH = 9999999;
@@ -231,7 +230,7 @@ public class Intention implements Serializable {
 	 * @return a float value representing the probability [0;1]
 	 */
 	public float GetProbability(AgentModel am) {
-		ListIterator li;
+		ListIterator<Plan> li;
 		float p;
 		float bestProb = 0;
 		li = _planConstruction.listIterator();
@@ -319,7 +318,7 @@ public class Intention implements Serializable {
 	 * state of the world. Supports continuous planning.
 	 */
 	public void CheckLinks(AgentModel am) {
-	    ListIterator li;
+	    ListIterator<Plan> li;
 	    li = _planConstruction.listIterator();
 	    
 	    while(li.hasNext()) {
@@ -337,7 +336,7 @@ public class Intention implements Serializable {
 	 * This function should be called whenever the plans change
 	 */
 	public void UpdateProbabilities() {
-	    ListIterator li;
+	    ListIterator<Plan> li;
 	    li = _planConstruction.listIterator();
 	    
 	    while(li.hasNext()) {

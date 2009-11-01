@@ -49,7 +49,7 @@ public class EpisodicMemoryPanel extends AgentDisplayPanel {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private ArrayList _memoryEpisodeDisplays;
+	private ArrayList<MemoryEpisodeDisplay> _memoryEpisodeDisplays;
     private JPanel _memoryEpisodes;
     
     public EpisodicMemoryPanel() {
@@ -57,7 +57,7 @@ public class EpisodicMemoryPanel extends AgentDisplayPanel {
         super();
         this.setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
         
-      	_memoryEpisodeDisplays = new ArrayList();
+      	_memoryEpisodeDisplays = new ArrayList<MemoryEpisodeDisplay>();
 		
 		_memoryEpisodes = new JPanel();
 		_memoryEpisodes.setBorder(BorderFactory.createTitledBorder("Memory Events"));
@@ -83,11 +83,11 @@ public class EpisodicMemoryPanel extends AgentDisplayPanel {
         	
         	
         	synchronized(ag.getMemory().getAM().GetSyncRoot()){
-        		Iterator it = ag.getMemory().getAM().GetAllEpisodes().iterator();
+        		Iterator<MemoryEpisode> it = ag.getMemory().getAM().GetAllEpisodes().iterator();
             	MemoryEpisodeDisplay mDisplay;
             	MemoryEpisode episode;
             	while(it.hasNext()) {
-            		episode = (MemoryEpisode) it.next();
+            		episode =  it.next();
             		mDisplay = new MemoryEpisodeDisplay(episode);
             		_memoryEpisodes.add(mDisplay.getMemoryEpisodePanel());
             		_memoryEpisodeDisplays.add(mDisplay);
@@ -101,7 +101,7 @@ public class EpisodicMemoryPanel extends AgentDisplayPanel {
     private int countMemoryDetails()
 	{
     	int aux=0;
-    	ListIterator li = this._memoryEpisodeDisplays.listIterator();
+    	ListIterator<MemoryEpisodeDisplay> li = this._memoryEpisodeDisplays.listIterator();
     	while(li.hasNext())
     	{
     		aux += ((MemoryEpisodeDisplay) li.next()).countMemoryDetails();

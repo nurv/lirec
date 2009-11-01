@@ -10,29 +10,29 @@ import java.util.StringTokenizer;
 
 import FAtiMA.Agent;
 import FAtiMA.culture.SymbolTranslator;
-import FAtiMA.knowledgeBase.KnowledgeBase;
 import FAtiMA.util.AgentLogger;
+import FAtiMA.util.Constants;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Symbol;
 
 public class WorldSimulatorRemoteAgent extends RemoteAgent {
 
 	
-	public WorldSimulatorRemoteAgent(String host, int port, Agent agent, Map properties) throws IOException
+	public WorldSimulatorRemoteAgent(String host, int port, Agent agent, Map<String,String> properties) throws IOException
 	{
 		super(host,port,agent,properties);
 	}
 	
 	
-	public String getInitializationMessage(Map arguments) {
+	public String getInitializationMessage(Map<String,String> arguments) {
 		
 		String msg;
 		
 		/* sends the properties of the agent to the virtual world **/
 		
 		msg = _agent.getName() + " " + _agent.role() + " " + _agent.displayName();
-		Set s = arguments.keySet();
-		Iterator it = s.iterator();
+		Set<String> s = arguments.keySet();
+		Iterator<String> it = s.iterator();
 		Object property;
 		
 		while (it.hasNext())  {
@@ -43,8 +43,8 @@ public class WorldSimulatorRemoteAgent extends RemoteAgent {
 		
 		return msg; 
 	}
-
-
+	
+	@SuppressWarnings("deprecation")
 	protected boolean SendAction(RemoteAction ra) {
 		
 		String msg = ra.toPlainStringMessage();	
@@ -56,9 +56,9 @@ public class WorldSimulatorRemoteAgent extends RemoteAgent {
 	public void ReportInternalPropertyChange(String agentName, Name property, Object value) {
 		
 		String prop = "";
-		ListIterator li = property.GetLiteralList().listIterator();
+		ListIterator<Symbol> li = property.GetLiteralList().listIterator();
 		String entity = li.next().toString();
-		if(entity.equals("SELF"))
+		if(entity.equals(Constants.SELF))
 		{
 			entity = agentName;
 		}
@@ -91,7 +91,7 @@ public class WorldSimulatorRemoteAgent extends RemoteAgent {
 		propertyName = Name.ParseName(st.nextToken());	
 		value = st.nextToken();
 		
-		ArrayList aux = propertyName.GetLiteralList();
+		ArrayList<Symbol> aux = propertyName.GetLiteralList();
 		String subject = ((Symbol) aux.get(0)).getName();
 		String property = ((Symbol) aux.get(1)).getName();
 		
@@ -177,11 +177,11 @@ public class WorldSimulatorRemoteAgent extends RemoteAgent {
 				if(speechAct.getMeaning().equals("suggestcopingstrategy") || 
 						speechAct.getMeaning().equals("yes"))
 				{
-					ArrayList context = speechAct.getContextVariables();
+					ArrayList<Parameter> context = speechAct.getContextVariables();
 					Parameter p;
-					for(ListIterator li = context.listIterator();li.hasNext();)
+					for(ListIterator<Parameter> li = context.listIterator();li.hasNext();)
 					{
-						p = (Parameter) li.next();
+						p = li.next();
 						if(p.GetName().equals("copingstrategy"))
 						{
 							speechAct.AddParameter(p.GetValue().toString());

@@ -1,13 +1,11 @@
 package FAtiMA.conditions;
 
 
-import java.util.ArrayList;
 
 import org.xml.sax.Attributes;
 
 import FAtiMA.AgentModel;
 import FAtiMA.exceptions.ContextParsingException;
-import FAtiMA.knowledgeBase.KnowledgeBase;
 import FAtiMA.wellFormedNames.Name;
 
 /**

@@ -47,8 +47,8 @@ public class OrderRelation implements Cloneable, Serializable
 	private static final long serialVersionUID = 1L;
 	
 	private Integer _stepID;
-    private ArrayList _after;
-    private ArrayList _before;
+    private ArrayList<Integer> _after;
+    private ArrayList<Integer> _before;
 
     /**
      * Creates a new empty OrderRelation between a step and other steps in the plan 
@@ -57,8 +57,8 @@ public class OrderRelation implements Cloneable, Serializable
     public OrderRelation(Integer stepID)
     {
         this._stepID = stepID;
-        this._after = new ArrayList();
-        this._before = new ArrayList();
+        this._after = new ArrayList<Integer>();
+        this._before = new ArrayList<Integer>();
     }
 
     private OrderRelation()
@@ -77,7 +77,7 @@ public class OrderRelation implements Cloneable, Serializable
      * Gets the id's of all steps that occur after the main step
      * @return the id's stored in a arraylist
      */
-    public ArrayList getAfter()
+    public ArrayList<Integer> getAfter()
     {
         return this._after;
     }
@@ -86,7 +86,7 @@ public class OrderRelation implements Cloneable, Serializable
      * Gets the id's of all steps that occur before the main step
      * @return the id's stored in a arraylist
      */
-    public ArrayList getBefore()
+    public ArrayList<Integer> getBefore()
     {
         return this._before;
     }
@@ -132,8 +132,8 @@ public class OrderRelation implements Cloneable, Serializable
     {
         OrderRelation order = new OrderRelation();
         order._stepID = this._stepID;
-        order._after = (ArrayList) this._after.clone();
-        order._before = (ArrayList) this._before.clone();
+        order._after = (ArrayList<Integer>) this._after.clone();
+        order._before = (ArrayList<Integer>) this._before.clone();
 
         return order;
     }

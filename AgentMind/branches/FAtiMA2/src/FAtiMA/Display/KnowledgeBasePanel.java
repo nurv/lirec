@@ -50,7 +50,7 @@ public class KnowledgeBasePanel extends AgentDisplayPanel {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private ArrayList _knowledgeFactList;
+	private ArrayList<KnowledgeFactDisplay> _knowledgeFactList;
     
     private JPanel _knowledgeFactsPanel;
     
@@ -58,7 +58,7 @@ public class KnowledgeBasePanel extends AgentDisplayPanel {
         super();
         this.setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
         
-        _knowledgeFactList = new ArrayList();
+        _knowledgeFactList = new ArrayList<KnowledgeFactDisplay>();
         
         _knowledgeFactsPanel = new JPanel();
 		_knowledgeFactsPanel.setLayout(new BoxLayout(_knowledgeFactsPanel,BoxLayout.Y_AXIS));
@@ -72,7 +72,7 @@ public class KnowledgeBasePanel extends AgentDisplayPanel {
     public boolean Update(Agent ag) {
         KnowledgeBase kb = ag.getMemory().getKB();
         
-        ListIterator li = kb.GetFactList();
+        ListIterator<KnowledgeSlot> li = kb.GetFactList();
         
         KnowledgeSlot slot;
         KnowledgeFactDisplay kDisplay;

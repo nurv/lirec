@@ -40,7 +40,7 @@ import java.util.Comparator;
  */
 
 
-public class ActionDetailComparator implements Comparator{ 
+public class ActionDetailComparator implements Comparator<ActionDetail>{ 
 	
 	public static byte CompareByEmotionIntensity = 0;
 	public static byte CompareByOrder = 1;
@@ -54,16 +54,16 @@ public class ActionDetailComparator implements Comparator{
 	}
 	
 	
-	public int compare(Object a1, Object a2)
+	public int compare(ActionDetail a1, ActionDetail a2)
 	{
 		float aux;
 		if(_fieldToCompare == CompareByEmotionIntensity)
 		{
-			aux = ((ActionDetail) a2).getEmotion().GetPotential() - ((ActionDetail)a1).getEmotion().GetPotential();
+			aux = a2.getEmotion().GetPotential() - a1.getEmotion().GetPotential();
 		}
 		else
 		{
-			aux = ((ActionDetail)a2).getID() - ((ActionDetail)a1).getID();
+			aux = a2.getID() - a1.getID();
 		}
 		 
 		if(aux > 0) return -1;

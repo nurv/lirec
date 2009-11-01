@@ -21,13 +21,13 @@ public class SocialRelationsPanel extends AgentDisplayPanel {
 
 	JPanel _relationsPanel;
 
-	protected Hashtable _realationsDisplay;
+	protected Hashtable<String, RelationDisplay> _realationsDisplay;
 
 	public SocialRelationsPanel() {
 		super();
 		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
-		_realationsDisplay = new Hashtable();
+		_realationsDisplay = new Hashtable<String, RelationDisplay>();
 
 		_relationsPanel = new JPanel();
 		_relationsPanel.setLayout(new BoxLayout(_relationsPanel,
@@ -41,8 +41,10 @@ public class SocialRelationsPanel extends AgentDisplayPanel {
 	}
 
 	public boolean Update(Agent ag) {
-		ArrayList relations = LikeRelation.getAllRelations(ag.getMemory(),Constants.SELF);
-		relations.addAll(RespectRelation.getAllRelations(ag.getMemory(), Constants.SELF));
+		ArrayList<Relation> relations = new ArrayList<Relation>();
+		relations.addAll(LikeRelation.getAllRelations(ag.getMemory(),Constants.SELF));
+		relations.addAll(RespectRelation.getAllRelations(ag.getMemory(), Constants.SELF)); 
+		
 		boolean updated = false;
 
 		// in this case, there's a new relation added (it is not usual for
@@ -52,7 +54,7 @@ public class SocialRelationsPanel extends AgentDisplayPanel {
 			_relationsPanel.removeAll(); // removes all displayed emotions
 											// from the panel
 			_realationsDisplay.clear();
-			Iterator it = relations.iterator();
+			Iterator<Relation> it = relations.iterator();
 			while (it.hasNext()) {
 				Relation r = (Relation) it.next();
 				RelationDisplay display = new RelationDisplay(ag.getMemory(), r);
@@ -62,7 +64,7 @@ public class SocialRelationsPanel extends AgentDisplayPanel {
 			updated = true;
 		}
 
-		Iterator it = relations.iterator();
+		Iterator<Relation> it = relations.iterator();
 		while (it.hasNext()) {
 			Relation r = (Relation) it.next();
 			RelationDisplay display = (RelationDisplay) _realationsDisplay

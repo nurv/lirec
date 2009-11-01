@@ -239,10 +239,10 @@ public class MemoryEpisodeDisplay {
 		
 		JScrollPane propertiesScroll = new JScrollPane(prop);
 		
-		ListIterator li = episode.getDetails().listIterator();
+		ListIterator<ActionDetail> li = episode.getDetails().listIterator();
 		while(li.hasNext())
 		{
-			prop.add(new MemoryDetailPanel((ActionDetail)li.next()));
+			prop.add(new MemoryDetailPanel(li.next()));
 			_numberOfDetails ++;
 		}
 		

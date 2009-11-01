@@ -62,12 +62,12 @@ import FAtiMA.AgentModel;
 import FAtiMA.IntegrityValidator;
 import FAtiMA.conditions.Condition;
 import FAtiMA.exceptions.UnreachableGoalException;
-import FAtiMA.knowledgeBase.KnowledgeBase;
 import FAtiMA.sensorEffector.Event;
 import FAtiMA.sensorEffector.Parameter;
 import FAtiMA.wellFormedNames.IGroundable;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
+import FAtiMA.wellFormedNames.Symbol;
 
 
 /**
@@ -77,6 +77,12 @@ import FAtiMA.wellFormedNames.Substitution;
  * @author João Dias
  */
 public abstract class Goal implements IGroundable, Cloneable, Serializable {
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
 	
 	public static final String GOALSUCCESS = "GS";
 	public static final String GOALFAILURE = "GF";
@@ -131,7 +137,7 @@ public abstract class Goal implements IGroundable, Cloneable, Serializable {
 	public String GenerateGoalStatus(String status) {
 	    String aux;
 	    aux = status + "(";
-		ListIterator li = _name.GetLiteralList().listIterator();
+		ListIterator<Symbol> li = _name.GetLiteralList().listIterator();
 		
 		aux = aux + li.next();
 		while(li.hasNext()) {
@@ -308,7 +314,7 @@ public abstract class Goal implements IGroundable, Cloneable, Serializable {
 	private Event generateEventDescription(String action)
 	{
 		Event e = new Event("SELF",action,this._name.GetFirstLiteral().toString());
-		ListIterator li = this._name.GetLiteralList().listIterator();
+		ListIterator<Symbol> li = this._name.GetLiteralList().listIterator();
 	    li.next();
 	    while(li.hasNext())
 	    {
@@ -347,7 +353,7 @@ public abstract class Goal implements IGroundable, Cloneable, Serializable {
 	 * @return a new Goal with the substitutions applied
 	 * @see Substitution
 	 */
-	public abstract Object Ground(ArrayList bindingConstraints);
+	public abstract Object Ground(ArrayList<Substitution> bindingConstraints);
 
 	/**
 	 * Applies a set of substitutions to the object, grounding it.
@@ -357,7 +363,7 @@ public abstract class Goal implements IGroundable, Cloneable, Serializable {
 	 * @param bindings - A list of substitutions of the type "[Variable]/value"
 	 * @see Substitution
 	 */
-    public abstract void MakeGround(ArrayList bindings);
+    public abstract void MakeGround(ArrayList<Substitution> bindings);
     
    
     /**
@@ -462,13 +468,13 @@ public abstract class Goal implements IGroundable, Cloneable, Serializable {
 	 * @return a list with grounded conditions 
 	 * @see Substitution
 	 */
-	protected ArrayList GroundConditionList(ArrayList originalList, ArrayList bindings) {
-		ArrayList newList;
+	protected ArrayList<Condition> GroundConditionList(ArrayList<Condition> originalList, ArrayList<Substitution> bindings) {
+		ArrayList<Condition> newList;
 		Condition cond;
 		Condition newCondition;
-		ListIterator li;
+		ListIterator<Condition> li;
 
-		newList = new ArrayList(originalList.size());
+		newList = new ArrayList<Condition>(originalList.size());
 		li = originalList.listIterator();
 
 		while (li.hasNext()) {

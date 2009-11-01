@@ -59,9 +59,10 @@ import java.util.StringTokenizer;
 
 import FAtiMA.Agent;
 import FAtiMA.culture.SymbolTranslator;
-import FAtiMA.knowledgeBase.KnowledgeBase;
 import FAtiMA.util.AgentLogger;
+import FAtiMA.util.Constants;
 import FAtiMA.wellFormedNames.Name;
+import FAtiMA.wellFormedNames.Symbol;
 
 /**
  * Connection to the ION Framework's virtual world as a RemoteAgent. Implements 
@@ -88,7 +89,7 @@ public class IONRemoteAgent extends RemoteAgent {
 		super(host,port,agent, null);
 	}
 	
-	public String getInitializationMessage(Map arguments)
+	public String getInitializationMessage(Map<String,String> arguments)
 	{
 		return this._agent.getName();
 	}
@@ -106,9 +107,9 @@ public class IONRemoteAgent extends RemoteAgent {
 	public void ReportInternalPropertyChange(String agentName, Name property, Object value)
 	{
 		String prop = "";
-		ListIterator li = property.GetLiteralList().listIterator();
+		ListIterator<Symbol> li = property.GetLiteralList().listIterator();
 		String entity = li.next().toString();
-		if(entity.equals("SELF"))
+		if(entity.equals(Constants.SELF))
 		{
 			entity = agentName;
 		}
@@ -217,9 +218,9 @@ public class IONRemoteAgent extends RemoteAgent {
 		    if(speechAct.getMeaning().equals("suggestcopingstrategy") || 
 		    		speechAct.getMeaning().equals("yes"))
 		    {
-		    	ArrayList context = speechAct.getContextVariables();
+		    	ArrayList<Parameter> context = speechAct.getContextVariables();
 		    	Parameter p;
-		    	for(ListIterator li = context.listIterator();li.hasNext();)
+		    	for(ListIterator<Parameter> li = context.listIterator();li.hasNext();)
 		    	{
 		    		p = (Parameter) li.next();
 		    		if(p.GetName().equals("copingstrategy"))

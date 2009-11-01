@@ -55,10 +55,7 @@
 
 package FAtiMA.emotionalState;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -68,15 +65,11 @@ import java.util.Set;
 
 import FAtiMA.AgentModel;
 import FAtiMA.AgentSimulationTime;
-import FAtiMA.deliberativeLayer.goals.Goal;
-import FAtiMA.reactiveLayer.Reaction;
 import FAtiMA.sensorEffector.Event;
-import FAtiMA.socialRelations.LikeRelation;
-import FAtiMA.util.AgentLogger;
 import FAtiMA.util.enumerables.EmotionType;
 import FAtiMA.util.enumerables.EmotionValence;
 import FAtiMA.wellFormedNames.Name;
-import FAtiMA.wellFormedNames.Symbol;
+
 
 
 /**
@@ -94,7 +87,7 @@ public class EmotionalState implements Serializable {
 	
 	
 	protected EmotionDisposition[] _emotionDispositions;
-	protected Hashtable _emotionPool;
+	protected Hashtable<String, ActiveEmotion> _emotionPool;
 	
 	protected long _lastTime;
 	protected Mood _mood;
@@ -104,7 +97,7 @@ public class EmotionalState implements Serializable {
 	 */
 	public EmotionalState() {
 		_emotionDispositions = new EmotionDisposition[22];
-		_emotionPool = new Hashtable();
+		_emotionPool = new Hashtable<String, ActiveEmotion>();
 		_mood = new Mood();
 		_lastTime = AgentSimulationTime.GetInstance().Time();
 	}
@@ -235,7 +228,7 @@ public class EmotionalState implements Serializable {
 	 */
 	public void Decay() {
 		ActiveEmotion em;
-		Iterator it;
+		Iterator<ActiveEmotion> it;
 
 		long currentTime = AgentSimulationTime.GetInstance().Time();;
 		if (currentTime >= _lastTime + 1000) {
@@ -245,7 +238,7 @@ public class EmotionalState implements Serializable {
 
 			it = _emotionPool.values().iterator();
 			while (it.hasNext()) {
-				em = (ActiveEmotion) it.next();
+				em = it.next();
 				if (em.DecayEmotion() <= 0.1f)
 					it.remove();
 			}
@@ -286,7 +279,7 @@ public class EmotionalState implements Serializable {
 	 * Gets a set that contains all the keys for the emotions
 	 * @return the KeySet for all emotions
 	 */
-	public Set GetEmotionKeysSet() {
+	public Set<String> GetEmotionKeysSet() {
 	    return _emotionPool.keySet();
 	}
 
@@ -295,7 +288,7 @@ public class EmotionalState implements Serializable {
 	 * in the agent's emotional state
 	 * @return an emotion's iterator
 	 */
-	public Iterator GetEmotionsIterator() {
+	public Iterator<ActiveEmotion> GetEmotionsIterator() {
 		return _emotionPool.values().iterator();
 	}
 	
@@ -320,7 +313,7 @@ public class EmotionalState implements Serializable {
 		ActiveEmotion currentEmotion;
 		ActiveEmotion maxEmotion=null;
 		
-		Iterator it = _emotionPool.values().iterator();
+		Iterator<ActiveEmotion> it = _emotionPool.values().iterator();
 		
 		while(it.hasNext()) {
 			currentEmotion = (ActiveEmotion) it.next();
@@ -347,7 +340,7 @@ public class EmotionalState implements Serializable {
 		ActiveEmotion currentEmotion;
 		ActiveEmotion maxEmotion=null;
 		
-		Iterator it = _emotionPool.values().iterator();
+		Iterator<ActiveEmotion> it = _emotionPool.values().iterator();
 		
 		while(it.hasNext()) {
 			currentEmotion = (ActiveEmotion) it.next();
@@ -374,7 +367,7 @@ public class EmotionalState implements Serializable {
 	 */
 	public String toXml() {
 		String result;
-		Iterator it;
+		Iterator<ActiveEmotion> it;
 
 		result = "<EmotionalState>";
 		result += _mood.toXml();
@@ -424,9 +417,10 @@ public class EmotionalState implements Serializable {
 		short res2=-1;
 		short type;
 		float potential;
-		Collection c;
-		Iterator i;
-		ArrayList compoundEmotions = new ArrayList();
+		Collection<ActiveEmotion> c;
+		Iterator<ActiveEmotion> i1;
+		Iterator<BaseEmotion> i2;
+		ArrayList<BaseEmotion> compoundEmotions = new ArrayList<BaseEmotion>();
 		
 		type = potEm.GetType();
 		if(type == EmotionType.JOY) {
@@ -460,10 +454,10 @@ public class EmotionalState implements Serializable {
 		else return;
 		
 		c = _emotionPool.values();
-		i = c.iterator();
+		i1 = c.iterator();
 		
-		while (i.hasNext()) {
-			emotion = (ActiveEmotion) i.next();
+		while (i1.hasNext()) {
+			emotion = i1.next();
 			if(emotion.GetType() == n1 && emotion.GetCause().equals(potEm.GetCause())) {
 				potential = (float) Math.log(Math.pow(potEm.GetPotential(), 2) + Math.pow(emotion.GetPotential(), 2));
 				compoundEmotions.add(new BaseEmotion(res1, potential, potEm.GetCause(), potEm.GetDirection()));
@@ -474,10 +468,10 @@ public class EmotionalState implements Serializable {
 			}
 		}
 		
-		i = compoundEmotions.iterator();
+		i2 = compoundEmotions.iterator();
 		
-		while(i.hasNext()) {
-			AddEmotion((BaseEmotion) i.next(), am);
+		while(i2.hasNext()) {
+			AddEmotion(i2.next(), am);
 		}
 	}
 }

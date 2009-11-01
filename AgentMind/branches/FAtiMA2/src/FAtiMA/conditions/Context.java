@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import FAtiMA.AgentModel;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
+import FAtiMA.wellFormedNames.SubstitutionSet;
 
 /**
  * Context of a Ritual.
@@ -19,12 +20,12 @@ public class Context extends Condition{
 	private static final long serialVersionUID = 1L;
 	private TimeCondition _timeCondition;
 	private PlaceCondition _placeCondition;
-	private ArrayList _socialConditions;
+	private ArrayList<SocialCondition> _socialConditions;
 	
 	public Context(){
 		_timeCondition = NullTimeCondition.GetInstance();
 		_placeCondition = NullPlaceCondition.GetInstance();
-		_socialConditions = new ArrayList();
+		_socialConditions = new ArrayList<SocialCondition>();
 	}
 	
 	public void SetTimeCondition( TimeCondition timeCondition ){
@@ -43,7 +44,7 @@ public class Context extends Condition{
 		return _placeCondition;
 	}
 	
-	public void SetSocialConditions( ArrayList socialConditions ){
+	public void SetSocialConditions( ArrayList<SocialCondition> socialConditions ){
 		_socialConditions = socialConditions;
 	}
 	
@@ -66,7 +67,7 @@ public class Context extends Condition{
 		aux._timeCondition = (TimeCondition)_timeCondition.clone();
 		aux._placeCondition = (PlaceCondition)_placeCondition.clone();
 		for( int i = 0, limit = _socialConditions.size(); i != limit; ++i )
-			aux._socialConditions.add( ((SocialCondition)_socialConditions.get(i)).clone() );
+			aux._socialConditions.add((SocialCondition)_socialConditions.get(i).clone() );
 		return aux;
 	}
 
@@ -80,7 +81,7 @@ public class Context extends Condition{
 		return aux;
 	}
 
-	public Object Ground(ArrayList bindingConstraints)
+	public Object Ground(ArrayList<Substitution> bindingConstraints)
 	{
 		Context aux = (Context) this.clone();
 		aux.MakeGround(bindingConstraints);
@@ -94,7 +95,7 @@ public class Context extends Condition{
 		return aux;
 	}
 	
-	public void MakeGround(ArrayList bindings)
+	public void MakeGround(ArrayList<Substitution> bindings)
     {
 		_timeCondition.MakeGround(bindings);
 		_placeCondition.MakeGround(bindings);
@@ -136,9 +137,9 @@ public class Context extends Condition{
 		return grounded;
 	}
 	
-	public ArrayList GetValidBindings(AgentModel am)
+	public ArrayList<SubstitutionSet> GetValidBindings(AgentModel am)
 	{
-		ArrayList conditions = new ArrayList();
+		ArrayList<Condition> conditions = new ArrayList<Condition>();
 		conditions.add(_timeCondition);
 		conditions.add(_placeCondition);
 		conditions.addAll(_socialConditions);
@@ -151,7 +152,7 @@ public class Context extends Condition{
 		return null;
 	}
 
-	protected ArrayList GetValueBindings(AgentModel am) {
+	protected ArrayList<Substitution> GetValueBindings(AgentModel am) {
 		return null;
 	}
 

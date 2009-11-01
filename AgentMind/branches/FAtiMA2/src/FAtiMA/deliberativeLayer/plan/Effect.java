@@ -43,7 +43,6 @@ import java.util.ArrayList;
 
 import FAtiMA.AgentModel;
 import FAtiMA.conditions.Condition;
-import FAtiMA.knowledgeBase.KnowledgeBase;
 import FAtiMA.wellFormedNames.IGroundable;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
@@ -160,7 +159,7 @@ public class Effect implements IGroundable, Cloneable, Serializable {
 	 * @see Substitution
 	 * @return a new Effect with its variables grounded
 	 */
-	public Object Ground(ArrayList substs) {
+	public Object Ground(ArrayList<Substitution> substs) {
 		Effect aux = (Effect) this.clone();
 		aux.MakeGround(substs);
 		return aux;
@@ -174,7 +173,7 @@ public class Effect implements IGroundable, Cloneable, Serializable {
 	 * @param bindings - A list of substitutions of the type "[Variable]/value"
 	 * @see Substitution
 	 */
-    public void MakeGround(ArrayList bindings)
+    public void MakeGround(ArrayList<Substitution> bindings)
     {
     	this._effect.MakeGround(bindings);
     }

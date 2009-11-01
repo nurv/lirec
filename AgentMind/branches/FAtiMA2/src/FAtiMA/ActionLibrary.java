@@ -46,6 +46,7 @@ import FAtiMA.exceptions.ActionsParsingException;
 import FAtiMA.util.AgentLogger;
 import FAtiMA.util.parsers.StripsOperatorsLoaderHandler;
 import FAtiMA.wellFormedNames.Name;
+import FAtiMA.wellFormedNames.Substitution;
 import FAtiMA.wellFormedNames.Unifier;
 
 /**
@@ -125,7 +126,7 @@ public class ActionLibrary implements Serializable {
 		}
 	}
 
-	private ArrayList _actions;
+	private ArrayList<Step> _actions;
 	
 	/**
 	 * Creates a new timer for the Agent's simulation
@@ -133,7 +134,7 @@ public class ActionLibrary implements Serializable {
 	 */
 	private ActionLibrary()
 	{
-		_actions = new ArrayList();
+		_actions = new ArrayList<Step>();
 	}
 	
 	public void LoadActionsFile(String xmlFile, AgentModel am) throws ActionsParsingException
@@ -158,7 +159,7 @@ public class ActionLibrary implements Serializable {
 		}	
 	}
 	
-	public ArrayList GetActions()
+	public ArrayList<Step> GetActions()
 	{
 		return _actions;
 	}
@@ -166,9 +167,9 @@ public class ActionLibrary implements Serializable {
 	public Step GetAction(int id, Name actionName)
 	{
 		Step s;
-		ArrayList subst;
+		ArrayList<Substitution> subst;
 		
-		for(ListIterator li = _actions.listIterator(); li.hasNext();)
+		for(ListIterator<Step> li = _actions.listIterator(); li.hasNext();)
 		{
 			s = (Step) li.next();
 			s = (Step)s.clone();

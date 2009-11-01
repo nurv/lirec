@@ -39,7 +39,6 @@ import FAtiMA.emotionalState.ActiveEmotion;
 import FAtiMA.memory.ActionDetail;
 import FAtiMA.memory.Memory;
 import FAtiMA.memory.SearchKey;
-import FAtiMA.memory.autobiographicalMemory.AutobiographicalMemory;
 import FAtiMA.sensorEffector.Event;
 import FAtiMA.util.enumerables.EmotionType;
 
@@ -59,14 +58,14 @@ public class STMemoryRecord implements Serializable {
 	private static int eventID = 0;
 	
 	public static final short MAXRECORDS = 10;
-	private ArrayList _details;
+	private ArrayList<ActionDetail> _details;
 	
 	public STMemoryRecord()
 	{
-		this._details = new ArrayList(MAXRECORDS);
+		this._details = new ArrayList<ActionDetail>(MAXRECORDS);
 	}
 	
-	public ArrayList getDetails()
+	public ArrayList<ActionDetail> getDetails()
 	{
 		return this._details;
 	}
@@ -120,10 +119,9 @@ public class STMemoryRecord implements Serializable {
 		ActionDetail action;
 		if(cause != null)
 		{
-			String key = cause.toString();
 			
 			for(int i = _details.size() -1; i >= 0; i--){
-				action = (ActionDetail) _details.get(i);
+				action = _details.get(i);
 				if(action.ReferencesEvent(cause))
 				{
 					action.UpdateEmotionValues(m, em);
@@ -134,7 +132,7 @@ public class STMemoryRecord implements Serializable {
 			// if we get here it means that the event doesn't exist in the records
 			// and we need to add it but first check if the number of records has 
 			// already reached its maximum
-			if(this.GetCount() == this.MAXRECORDS)
+			if(this.GetCount() == STMemoryRecord.MAXRECORDS)
 			{
 				ActionDetail detail = this.GetOldestRecord();
 				
@@ -157,14 +155,14 @@ public class STMemoryRecord implements Serializable {
 		}
 	}	
 	
-	public boolean VerifiesKeys(ArrayList searchKeys)
+	public boolean VerifiesKeys(ArrayList<SearchKey> searchKeys)
 	{
 		ActionDetail action;
-		ListIterator li = _details.listIterator();
+		ListIterator<ActionDetail> li = _details.listIterator();
 		
 		while(li.hasNext())
 		{
-			action = (ActionDetail) li.next();
+			action = li.next();
 			if(action.verifiesKeys(searchKeys))
 			{
 				return true;
@@ -176,7 +174,7 @@ public class STMemoryRecord implements Serializable {
 	
 	public boolean VerifiesKey(SearchKey k)
 	{
-		ListIterator li;
+		ListIterator<ActionDetail> li;
 		ActionDetail action;
 		
 		li = this._details.listIterator();
@@ -188,16 +186,16 @@ public class STMemoryRecord implements Serializable {
 		return false;
 	}	
 	
-	public ArrayList GetDetailsByKey(SearchKey key)
+	public ArrayList<ActionDetail> GetDetailsByKey(SearchKey key)
 	{
-		ListIterator li;
+		ListIterator<ActionDetail> li;
 		ActionDetail action;
-		ArrayList details = new ArrayList();
+		ArrayList<ActionDetail> details = new ArrayList<ActionDetail>();
 		
 		li = this._details.listIterator();
 		while(li.hasNext())
 		{
-			action = (ActionDetail) li.next();
+			action =  li.next();
 			if(action.verifiesKey(key)) 
 			{
 				details.add(action);
@@ -207,16 +205,16 @@ public class STMemoryRecord implements Serializable {
 		return details;
 	}
 	
-	public ArrayList GetDetailsByKeys(ArrayList keys)
+	public ArrayList<ActionDetail> GetDetailsByKeys(ArrayList<SearchKey> keys)
 	{
-		ListIterator li;
+		ListIterator<ActionDetail> li;
 		ActionDetail action;
-		ArrayList details = new ArrayList();
+		ArrayList<ActionDetail> details = new ArrayList<ActionDetail>();
 		
 		li = this._details.listIterator();
 		while(li.hasNext())
 		{
-			action = (ActionDetail) li.next();
+			action = li.next();
 			if(action.verifiesKeys(keys) && !details.contains(action)) 
 			{
 				details.add(action);
@@ -230,7 +228,7 @@ public class STMemoryRecord implements Serializable {
 	{
 		float familiarity = 0;
 		ActionDetail action;
-		ListIterator li = _details.listIterator();
+		ListIterator<ActionDetail> li = _details.listIterator();
 		Event e = g.GetActivationEvent();
 		
 		while(li.hasNext())
@@ -257,16 +255,16 @@ public class STMemoryRecord implements Serializable {
 		return familiarity;
 	}
 	
-	public int CountEvent(ArrayList searchKeys)
+	public int CountEvent(ArrayList<SearchKey> searchKeys)
 	{
-		ListIterator li;
+		ListIterator<ActionDetail> li;
 		ActionDetail action;
 		int count = 0;
 		
 		li = this._details.listIterator();
 		while(li.hasNext())
 		{
-			action = (ActionDetail) li.next();
+			action = li.next();
 			if(action.verifiesKeys(searchKeys)) 
 			{
 				count++;
@@ -280,9 +278,9 @@ public class STMemoryRecord implements Serializable {
 	{
 		ActionDetail detail;
 		String record = "<Record>";
-		for(ListIterator li = _details.listIterator();li.hasNext();)
+		for(ListIterator<ActionDetail> li = _details.listIterator();li.hasNext();)
 		{
-			detail = (ActionDetail) li.next();
+			detail = li.next();
 			record += detail.toXML();
 		}
 		record += "</Record>\n";

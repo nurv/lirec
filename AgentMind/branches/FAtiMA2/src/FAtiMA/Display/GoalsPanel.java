@@ -41,9 +41,9 @@ import javax.swing.JScrollPane;
 
 import FAtiMA.Agent;
 import FAtiMA.deliberativeLayer.DeliberativeProcess;
-import FAtiMA.deliberativeLayer.EmotionalPlanner;
 import FAtiMA.deliberativeLayer.Intention;
 import FAtiMA.deliberativeLayer.goals.Goal;
+import FAtiMA.wellFormedNames.Name;
 
 
 public class GoalsPanel extends AgentDisplayPanel {
@@ -53,8 +53,8 @@ public class GoalsPanel extends AgentDisplayPanel {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private HashMap _intentionDisplays;
-    private ArrayList _goalDisplays;
+	private HashMap<Name,IntentionDisplay> _intentionDisplays;
+    private ArrayList<GoalDisplay> _goalDisplays;
     private JPanel _goals;
     private JPanel _intentions;
     
@@ -63,8 +63,8 @@ public class GoalsPanel extends AgentDisplayPanel {
         super();
         this.setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
         
-        _intentionDisplays = new HashMap();
-        _goalDisplays = new ArrayList();
+        _intentionDisplays = new HashMap<Name, IntentionDisplay>();
+        _goalDisplays = new ArrayList<GoalDisplay>();
 		
 		_goals = new JPanel();
 		_goals.setBorder(BorderFactory.createTitledBorder("Goals"));
@@ -98,11 +98,11 @@ public class GoalsPanel extends AgentDisplayPanel {
         	_goals.removeAll();
         	_goalDisplays.clear();
         	
-        	Iterator it = deliberative.GetGoals().iterator();
+        	Iterator<Goal> it = deliberative.GetGoals().iterator();
         	GoalDisplay gDisplay;
         	Goal g;
         	while(it.hasNext()) {
-        		g = (Goal) it.next();
+        		g = it.next();
         		gDisplay = new GoalDisplay(ag, g);
         		
         		_goals.add(gDisplay.getGoalPanel());
@@ -114,12 +114,12 @@ public class GoalsPanel extends AgentDisplayPanel {
             //in this case, we just have to update the values for the intensity of emotions
             //since the emotions displayed in the previous update are the same emotions
             //in the current update
-             Iterator it = deliberative.GetIntentionsIterator();
+             Iterator<Intention> it = deliberative.GetIntentionsIterator();
              IntentionDisplay iDisplay;
              Intention i;
              while(it.hasNext()) {
                  
-                 i = (Intention) it.next();     
+                 i = it.next();     
                  iDisplay = (IntentionDisplay) _intentionDisplays.get(i.getGoal().getName().toString());
                  iDisplay.Update(ag, i);
              }    
@@ -129,11 +129,11 @@ public class GoalsPanel extends AgentDisplayPanel {
             _intentions.removeAll(); //removes all displayed intentions from the panel
             _intentionDisplays.clear();
             
-            Iterator it = deliberative.GetIntentionsIterator();
+            Iterator<Intention> it = deliberative.GetIntentionsIterator();
             IntentionDisplay iDisplay;
             Intention i;
             while(it.hasNext()) {
-                i = (Intention) it.next();
+                i = it.next();
                 iDisplay = new IntentionDisplay(ag, i);
                 
                 _intentions.add(iDisplay.getIntentionPanel());

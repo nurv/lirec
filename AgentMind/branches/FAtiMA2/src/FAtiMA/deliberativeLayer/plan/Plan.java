@@ -107,12 +107,12 @@ package FAtiMA.deliberativeLayer.plan;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.ListIterator;
 
 import FAtiMA.AgentModel;
 import FAtiMA.conditions.Condition;
 import FAtiMA.util.AgentLogger;
+import FAtiMA.util.Constants;
 import FAtiMA.wellFormedNames.Inequality;
 import FAtiMA.wellFormedNames.Substitution;
 import FAtiMA.wellFormedNames.Symbol;
@@ -136,25 +136,25 @@ public class Plan implements Cloneable, Serializable
 
     private Step _start;
 
-    private ArrayList _steps;
+    private ArrayList<IPlanningOperator> _steps;
 
-    private HashMap _bindingConstraints;
+    private HashMap<String, Substitution> _bindingConstraints;
 
-    private ArrayList _causalConflicts;
+    private ArrayList<CausalConflictFlaw> _causalConflicts;
 
-    private ArrayList _ignoredConflicts;
+    private ArrayList<CausalConflictFlaw> _ignoredConflicts;
 
-    private ArrayList _inequalityConstraints;
+    private ArrayList<Inequality> _inequalityConstraints;
 
-    private ArrayList _links;
+    private ArrayList<CausalLink> _links;
 
-    private ArrayList _openPreconditions;
+    private ArrayList<OpenPrecondition> _openPreconditions;
 
-    private ArrayList _orderingConstraints;
+    private ArrayList<OrderRelation> _orderingConstraints;
 
-    private ArrayList _protectedConditions;
+    private ArrayList<ProtectedCondition> _protectedConditions;
 
-    private ArrayList _protectionThreats;
+    private ArrayList<GoalThreat> _protectionThreats;
 
     private float _probability;
 
@@ -221,26 +221,26 @@ public class Plan implements Cloneable, Serializable
         _protectedConditions.addAll(protectedConditions);
     }*/
     
-    public Plan(ArrayList protectedConditions,
-            ArrayList finishConditions)
+    public Plan(ArrayList<ProtectedCondition> protectedConditions,
+            ArrayList<Condition> finishConditions)
     {
         _valid = true;
         _stepCounter = 0;
-        _links = new ArrayList();
-        _openPreconditions = new ArrayList();
-        _causalConflicts = new ArrayList();
-        _bindingConstraints = new HashMap();
-        _orderingConstraints = new ArrayList();
-        _inequalityConstraints = new ArrayList();
-        _steps = new ArrayList();
-        _protectedConditions = new ArrayList();
-        _protectionThreats = new ArrayList();
-        _ignoredConflicts = new ArrayList();
+        _links = new ArrayList<CausalLink>();
+        _openPreconditions = new ArrayList<OpenPrecondition>();
+        _causalConflicts = new ArrayList<CausalConflictFlaw>();
+        _bindingConstraints = new HashMap<String,Substitution>();
+        _orderingConstraints = new ArrayList<OrderRelation>();
+        _inequalityConstraints = new ArrayList<Inequality>();
+        _steps = new ArrayList<IPlanningOperator>();
+        _protectedConditions = new ArrayList<ProtectedCondition>();
+        _protectionThreats = new ArrayList<GoalThreat>();
+        _ignoredConflicts = new ArrayList<CausalConflictFlaw>();
         _probability = 1.0f;
         _probabilityChanged = false;
 
         _start = new Step(
-        		new Symbol("SELF"),
+        		new Symbol(Constants.SELF),
         		new Symbol("Start"),
         		1,
         		null,
@@ -248,7 +248,7 @@ public class Plan implements Cloneable, Serializable
         		null);
         _start.setID(new Integer(_stepCounter++));
         _finish = new Step(
-        		new Symbol("SELF"),
+        		new Symbol(Constants.SELF),
         		new Symbol("Finish"),
         		1,
         		finishConditions,
@@ -276,23 +276,22 @@ public class Plan implements Cloneable, Serializable
      */
     public void AddBindingConstraint(Substitution bind)
     {
-        Iterator it;
         Substitution subst;
         Substitution newSubst;
         Symbol substValue;
         Symbol bindValue;
         Inequality ineq;
-        ArrayList substs;
-        substs = new ArrayList();
+        ArrayList<Substitution> substs;
+        substs = new ArrayList<Substitution>();
 
         if (bind instanceof Inequality)
         {
             //we'r adding a inequality constraint like {[x]!=john}
-            it = _bindingConstraints.values().iterator();
-            while (it.hasNext())
-            {
-                substs.add(it.next());
-            }
+        	for(Substitution s : _bindingConstraints.values())
+        	{
+        		substs.add(s);
+        	}
+            
             ineq = (Inequality) ((Inequality) bind).clone();
             ineq.MakeGround(substs);
             //the plan is not valid if after applying the plan's substitution
@@ -357,15 +356,12 @@ public class Plan implements Cloneable, Serializable
      * 
      * @see Substitution
      */
-    public void AddBindingConstraints(ArrayList substs)
+    public void AddBindingConstraints(ArrayList<Substitution> substs)
     {
-        ListIterator li;
-
-        li = substs.listIterator();
-        while (li.hasNext())
-        {
-            AddBindingConstraint((Substitution) li.next());
-        }
+    	for(Substitution s : substs)
+    	{
+    		AddBindingConstraint(s);
+    	}
     }
 
     /**
@@ -400,7 +396,7 @@ public class Plan implements Cloneable, Serializable
      */
     public void AddOperator(IPlanningOperator op)
     {
-        ListIterator li;
+        ListIterator<Condition> li;
      
         op.setID(new Integer(_stepCounter++));
         _steps.add(op);
@@ -426,8 +422,8 @@ public class Plan implements Cloneable, Serializable
      */
     private void CheckProtectedConstraints(IPlanningOperator op)
     {
-        ListIterator li;
-        ListIterator li2;
+        ListIterator<ProtectedCondition> li;
+        ListIterator<Effect> li2;
         ProtectedCondition pCond;
         Condition cond;
         Effect eff;
@@ -456,9 +452,9 @@ public class Plan implements Cloneable, Serializable
      */
     public void CheckProtectedConstraints()
     {
-    	for(ListIterator li = this._steps.listIterator();li.hasNext();)
+    	for(IPlanningOperator ip : this._steps)
     	{
-    		CheckProtectedConstraints((IPlanningOperator)li.next()); 
+    		CheckProtectedConstraints(ip); 
     	}
     }
 
@@ -471,8 +467,8 @@ public class Plan implements Cloneable, Serializable
     {
         Condition cond;
         CausalLink link;
-        ListIterator li;
-        ListIterator li2;
+        ListIterator<CausalLink> li;
+        ListIterator<Effect> li2;
         Effect eff;
 
         //the next code checks if the operator introduced a causal conflict
@@ -511,13 +507,10 @@ public class Plan implements Cloneable, Serializable
      */
     public void CheckCausalConflicts()
     {
-        ListIterator li = this._steps.listIterator();
-        IPlanningOperator op;
-        while (li.hasNext())
-        {
-            op = (IPlanningOperator) li.next();
-            CheckCausalConflicts(op);
-        }
+    	for(IPlanningOperator ip : this._steps)
+    	{
+    		CheckCausalConflicts(ip);
+    	}
     }
 
     /**
@@ -552,7 +545,7 @@ public class Plan implements Cloneable, Serializable
     public int Compare(Integer op1, Integer op2)
     {
     	OrderRelation order;
-        ListIterator li = this._orderingConstraints.listIterator();
+        ListIterator<OrderRelation> li = this._orderingConstraints.listIterator();
 
         while (li.hasNext())
         {
@@ -577,8 +570,8 @@ public class Plan implements Cloneable, Serializable
     public void UpdatePlan(AgentModel am)
     {
         CausalLink link;
-        ArrayList linksToRemove = new ArrayList();
-        ArrayList linksToAdd = new ArrayList();
+        ArrayList<CausalLink> linksToRemove = new ArrayList<CausalLink>();
+        ArrayList<CausalLink> linksToAdd = new ArrayList<CausalLink>();
         Condition cond;
         IPlanningOperator op;
         
@@ -597,7 +590,7 @@ public class Plan implements Cloneable, Serializable
         
         //first stage, searching and removing unnecessary steps
 
-        for(ListIterator li = _links.listIterator(); li.hasNext();)
+        for(ListIterator<CausalLink> li = _links.listIterator(); li.hasNext();)
         {
             link = (CausalLink) li.next();
             if(!link.getSource().equals(this._start.getID()))
@@ -649,7 +642,7 @@ public class Plan implements Cloneable, Serializable
         
         //this is still the first stage, now we need to add to the plan
         //all the links to Start created
-        for(ListIterator li = linksToAdd.listIterator(); li.hasNext();)
+        for(ListIterator<CausalLink> li = linksToAdd.listIterator(); li.hasNext();)
         {
         	AddLink((CausalLink) li.next());
         	//when a link to start is created (or extended), we also need to 
@@ -662,7 +655,7 @@ public class Plan implements Cloneable, Serializable
         //and its also removed
         if(linksToRemove.size() > 0)
         {
-        	for(ListIterator li = linksToRemove.listIterator(); li.hasNext();)
+        	for(ListIterator<CausalLink> li = linksToRemove.listIterator(); li.hasNext();)
             {
             	link = (CausalLink) li.next();
             	RemoveCausalLink(link);
@@ -692,7 +685,7 @@ public class Plan implements Cloneable, Serializable
         
         //second stage. Now that all redundant links and steps have been
         //removed, we can safely search for unsupported links
-        for(ListIterator li = _links.listIterator(); li.hasNext();)
+        for(ListIterator<CausalLink> li = _links.listIterator(); li.hasNext();)
         {
         	link = (CausalLink) li.next();
         	if(link.getSource().equals(this._start.getID()))
@@ -715,7 +708,7 @@ public class Plan implements Cloneable, Serializable
         
         //finally at the end of the second stage we must still remove
         //all the unsupported links that were found
-        for(ListIterator li = linksToRemove.listIterator(); li.hasNext();)
+        for(ListIterator<CausalLink> li = linksToRemove.listIterator(); li.hasNext();)
         {
         	link = (CausalLink) li.next();
         	RemoveCausalLink(link);
@@ -741,7 +734,7 @@ public class Plan implements Cloneable, Serializable
     	Integer stepID;
     	boolean foundRedundantSteps = false;
     	
-    	for(ListIterator li = _steps.listIterator();li.hasNext();)
+    	for(ListIterator<IPlanningOperator> li = _steps.listIterator();li.hasNext();)
     	{
     		op = (IPlanningOperator) li.next();
     		stepID = op.getID();
@@ -770,7 +763,6 @@ public class Plan implements Cloneable, Serializable
      */
     public Object clone()
     {
-        ListIterator li;
 
         Plan p = new Plan();
         p._valid = this._valid;
@@ -782,37 +774,36 @@ public class Plan implements Cloneable, Serializable
         p._finish = (Step) this._finish.clone();
 
         //Clone member by member
-        p._inequalityConstraints = new ArrayList();
-        li = this._inequalityConstraints.listIterator();
-        while (li.hasNext())
+        p._inequalityConstraints = new ArrayList<Inequality>();
+        for(Inequality ine : this._inequalityConstraints)
         {
-            p._inequalityConstraints.add(((Inequality) li.next()).clone());
+            p._inequalityConstraints.add((Inequality)ine.clone());
         }
 
-        p._orderingConstraints = new ArrayList();
-        li = this._orderingConstraints.listIterator();
-        while (li.hasNext())
+        p._orderingConstraints = new ArrayList<OrderRelation>();
+        
+        for(OrderRelation or : this._orderingConstraints)
         {
-            p._orderingConstraints.add(((OrderRelation) li.next()).clone());
+        	p._orderingConstraints.add((OrderRelation)or.clone());
         }
+        
 
-        p._steps = new ArrayList();
-        li = this._steps.listIterator();
-        while (li.hasNext())
+        p._steps = new ArrayList<IPlanningOperator>();
+        for(IPlanningOperator ip : this._steps)
         {
-            p._steps.add(((IPlanningOperator) li.next()).clone());
+        	p._steps.add((IPlanningOperator)ip.clone());
         }
 
         //no need to clone the elements
-        p._bindingConstraints = (HashMap) _bindingConstraints.clone();
-        p._openPreconditions = (ArrayList) _openPreconditions.clone();
-        p._links = (ArrayList) _links.clone();
-        p._causalConflicts = (ArrayList) _causalConflicts.clone();
+        p._bindingConstraints = (HashMap<String,Substitution>) _bindingConstraints.clone();
+        p._openPreconditions = (ArrayList<OpenPrecondition>) _openPreconditions.clone();
+        p._links = (ArrayList<CausalLink>) _links.clone();
+        p._causalConflicts = (ArrayList<CausalConflictFlaw>) _causalConflicts.clone();
 
         //TODO think about these ones
         p._protectedConditions = _protectedConditions;
-        p._protectionThreats = (ArrayList) _protectionThreats.clone();
-        p._ignoredConflicts = (ArrayList) _ignoredConflicts.clone();
+        p._protectionThreats = (ArrayList<GoalThreat>) _protectionThreats.clone();
+        p._ignoredConflicts = (ArrayList<CausalConflictFlaw>) _ignoredConflicts.clone();
 
         return p;
     }
@@ -831,7 +822,7 @@ public class Plan implements Cloneable, Serializable
      * coping strategies (denial or whishfull thinking)
      * @return an ArrayList with ignored CausalConflicts
      */
-    public ArrayList getIgnoredConflicts()
+    public ArrayList<CausalConflictFlaw> getIgnoredConflicts()
     {
         return _ignoredConflicts;
     }
@@ -840,7 +831,7 @@ public class Plan implements Cloneable, Serializable
      * Gets the plan CausalLinks
      * @return an ArrayList with all the plan's CausalLinks
      */
-    public ArrayList getLinks()
+    public ArrayList<CausalLink> getLinks()
     {
         return _links;
     }
@@ -858,7 +849,7 @@ public class Plan implements Cloneable, Serializable
      * Gets the plan's OpenPreconditions
      * @return an ArrayList with all the plan's preconditions
      */
-    public ArrayList getOpenPreconditions()
+    public ArrayList<OpenPrecondition> getOpenPreconditions()
     {
         return _openPreconditions;
     }
@@ -867,7 +858,7 @@ public class Plan implements Cloneable, Serializable
      * Gets the OrderConstraints or OrderRelations in the plan
      * @return an ArrayList with OrderRelations between the distinct steps in the plan
      */
-    public ArrayList getOrderingConstraints()
+    public ArrayList<OrderRelation> getOrderingConstraints()
     {
         return _orderingConstraints;
     }
@@ -905,7 +896,7 @@ public class Plan implements Cloneable, Serializable
             return this._finish;
         }
         
-        for(ListIterator li = _steps.listIterator();li.hasNext();)
+        for(ListIterator<IPlanningOperator> li = _steps.listIterator();li.hasNext();)
         {
         	op = (IPlanningOperator) li.next();
         	if(op.getID().equals(stepID))
@@ -940,7 +931,7 @@ public class Plan implements Cloneable, Serializable
      * Gets all the plan's steps
      * @return an ArrayList with all the plan's steps
      */
-    public ArrayList getSteps()
+    public ArrayList<IPlanningOperator> getSteps()
     {
         return _steps;
     }
@@ -949,14 +940,14 @@ public class Plan implements Cloneable, Serializable
      * Gets the plan's threats to InterestGoals 
      * @return an ArrayList with the plan's GoalThreats to InterestGoals
      */
-    public ArrayList getThreatenedInterestConstraints()
+    public ArrayList<GoalThreat> getThreatenedInterestConstraints()
     {
         return _protectionThreats;
     }
 
 
     /**
-     * Gets a heuristic value H for the plan. Usefull for comparing plans.
+     * Gets a heuristic value H for the plan. Useful for comparing plans.
      * The lowest value of H corresponds to the likely better plan to 
      * continue planning.
      * @return the value H
@@ -1017,7 +1008,7 @@ public class Plan implements Cloneable, Serializable
      */
     public int NumberOfSourceLinks(Integer stepID)
     {
-        ListIterator li;
+        ListIterator<CausalLink> li;
         int number = 0;
         li = _links.listIterator();
 
@@ -1037,7 +1028,7 @@ public class Plan implements Cloneable, Serializable
     public void RemoveOperator(Integer operatorID)
     {
     	IPlanningOperator op;
-    	for(ListIterator li = _steps.listIterator(); li.hasNext();)
+    	for(ListIterator<IPlanningOperator> li = _steps.listIterator(); li.hasNext();)
     	{
     		op = (IPlanningOperator) li.next();
     		if(op.getID().equals(operatorID))
@@ -1066,7 +1057,7 @@ public class Plan implements Cloneable, Serializable
      */
     public void RemoveCausalLinks(Integer stepID)
     {
-        ListIterator li;
+        ListIterator<CausalLink> li;
         CausalLink link;
         li = _links.listIterator();
 
@@ -1089,7 +1080,7 @@ public class Plan implements Cloneable, Serializable
      */
     public void RemoveOpenPreconditions(Integer stepID)
     {
-        ListIterator li;
+        ListIterator<OpenPrecondition> li;
         OpenPrecondition openPre;
 
         li = _openPreconditions.listIterator();
@@ -1108,7 +1099,7 @@ public class Plan implements Cloneable, Serializable
     {
     	CausalConflictFlaw conflict;
     	
-    	for(ListIterator li = _causalConflicts.listIterator();li.hasNext();)
+    	for(ListIterator<CausalConflictFlaw> li = _causalConflicts.listIterator();li.hasNext();)
     	{
     		conflict = (CausalConflictFlaw) li.next();
     		//the causal conflict between A-p->B and C-!p-> should be removed if: 
@@ -1126,7 +1117,7 @@ public class Plan implements Cloneable, Serializable
     {
     	CausalConflictFlaw conflict;
     	
-    	for(ListIterator li = _ignoredConflicts.listIterator();li.hasNext();)
+    	for(ListIterator<CausalConflictFlaw> li = _ignoredConflicts.listIterator();li.hasNext();)
     	{
     		conflict = (CausalConflictFlaw) li.next();
     		//the causal conflict between A-p->B and C-!p-> should be removed if: 
@@ -1144,7 +1135,7 @@ public class Plan implements Cloneable, Serializable
     {
     	GoalThreat threat;
     	
-    	for(ListIterator li = _protectionThreats.listIterator();li.hasNext();)
+    	for(ListIterator<GoalThreat> li = _protectionThreats.listIterator();li.hasNext();)
     	{
     		threat = (GoalThreat) li.next();
     		if(threat.getOperator().getID().equals(stepID))
@@ -1160,7 +1151,7 @@ public class Plan implements Cloneable, Serializable
      */
     public void RemoveOrderingConstraint(OrderingConstraint orderConstraint)
     {
-        ListIterator li;
+        ListIterator<OrderRelation> li;
         OrderRelation order;
         li = this._orderingConstraints.listIterator();
         // TODO this does not work properly because there might exist order relations
@@ -1187,7 +1178,7 @@ public class Plan implements Cloneable, Serializable
      */
     public void RemoveOrderingConstraints(Integer stepID)
     {
-        ListIterator li;
+        ListIterator<OrderRelation> li;
         OrderRelation order;
         li = this._orderingConstraints.listIterator();
 
@@ -1225,7 +1216,7 @@ public class Plan implements Cloneable, Serializable
      */
     public IPlanningOperator UnexecutedAction(AgentModel am)
     {
-        ListIterator li;
+        ListIterator<IPlanningOperator> li;
         IPlanningOperator op;
         IPlanningOperator possibleActionOfOther = null;
 
@@ -1276,10 +1267,10 @@ public class Plan implements Cloneable, Serializable
      * the action. If you want to execute an action, use the GetNextAction method instead 
      * @return a list with steps that are the first to be executed in a plan
      */
-    public ArrayList GetFirstActions()
+    public ArrayList<IPlanningOperator> GetFirstActions()
     {
-    	ArrayList nextActions = new ArrayList();
-    	ListIterator li;
+    	ArrayList<IPlanningOperator> nextActions = new ArrayList<IPlanningOperator>();
+    	ListIterator<IPlanningOperator> li;
         IPlanningOperator op;
 
         li = _steps.listIterator();
@@ -1307,14 +1298,10 @@ public class Plan implements Cloneable, Serializable
 
         OrderRelation orderBefore = null;
         OrderRelation orderAfter = null;
-        OrderRelation order;
         OrderRelation aux;
 
         boolean afterChanged = false;
         boolean beforeChanged = false;
-
-        ListIterator li;
-        Integer stepID;
 
         if (before.equals(after))
         {
@@ -1328,11 +1315,8 @@ public class Plan implements Cloneable, Serializable
             return;
         }
 
-        li = this._orderingConstraints.listIterator();
-        while (li.hasNext())
-        {
-            order = (OrderRelation) li.next();
-
+        for(OrderRelation order : this._orderingConstraints)
+        {        
             if (order.getStepID().equals(before))
             {
                 orderBefore = order;
@@ -1386,52 +1370,46 @@ public class Plan implements Cloneable, Serializable
         if (beforeChanged)
         {
             //Adding ciclic relations
-            li = orderBefore.getBefore().listIterator();
-            while (li.hasNext())
-            {
-                stepID = (Integer) li.next();
-                AddOrderingConstraint(stepID, after);
-            }
+        	for(Integer i : orderBefore.getBefore())
+        	{
+        		AddOrderingConstraint(i, after);
+        	}
         }
 
         if (afterChanged)
         {
             //Adding ciclic relations
-            li = orderAfter.getAfter().listIterator();
-            while (li.hasNext())
-            {
-                stepID = (Integer) li.next();
-                AddOrderingConstraint(before, stepID);
-            }
+        	for(Integer i : orderAfter.getAfter())
+        	{
+        		AddOrderingConstraint(before,i);
+        	}
         }
     }
     
     public void ReplaceUnboundVariables(int variableID) 
     {
-    	ListIterator li;
-    	Iterator it;
-    	Substitution oldBinding;
-    	HashMap newBindings = new HashMap();
+    	HashMap<String,Substitution> newBindings = new HashMap<String,Substitution>();
     	
-    	for(li = this._inequalityConstraints.listIterator(); li.hasNext();)
+    	for(Inequality ine : this._inequalityConstraints)
     	{
-    		((Inequality) li.next()).ReplaceUnboundVariables(variableID);
+    		ine.ReplaceUnboundVariables(variableID);
     	}
     	
-    	for(it = this._bindingConstraints.values().iterator(); it.hasNext();)
+    	for(Substitution sub : this._bindingConstraints.values())
     	{
-    		oldBinding = (Substitution) it.next();
-    		oldBinding.getVariable().ReplaceUnboundVariables(variableID);
-    		oldBinding.getValue().ReplaceUnboundVariables(variableID);
-    		newBindings.put(oldBinding.getVariable().toString(),oldBinding);
+    		sub.getVariable().ReplaceUnboundVariables(variableID);
+    		sub.getValue().ReplaceUnboundVariables(variableID);
+    		newBindings.put(sub.getVariable().toString(), sub);
     	}
+    	
     	
     	this._bindingConstraints = newBindings;
     	
-    	for(li = this._steps.listIterator(); li.hasNext();)
+    	for(IPlanningOperator ip : this._steps)
     	{
-    		((IPlanningOperator) li.next()).ReplaceUnboundVariables(variableID);
+    		ip.ReplaceUnboundVariables(variableID);
     	}
+    	
     	
         this._start.ReplaceUnboundVariables(variableID);
         this._finish.ReplaceUnboundVariables(variableID);
@@ -1445,9 +1423,9 @@ public class Plan implements Cloneable, Serializable
 	 * @param bindings - A list of substitutions of the type "[Variable]/value"
 	 * @see Substitution
 	 */
-    private void MakeGround(ArrayList substs)
+    private void MakeGround(ArrayList<Substitution> substs)
     {
-        ListIterator li;
+        ListIterator<Inequality> li;
         Inequality ineq;
 
         for(li = this._inequalityConstraints.listIterator(); li.hasNext();)
@@ -1467,11 +1445,11 @@ public class Plan implements Cloneable, Serializable
             }
         }
         
-        li = this._steps.listIterator();
-        while(li.hasNext())
+        for(IPlanningOperator ip : this._steps)
         {
-        	((IPlanningOperator) li.next()).MakeGround(substs);
+        	ip.MakeGround(substs);
         }
+        
         
         this._start.MakeGround(substs);
         this._finish.MakeGround(substs);
@@ -1480,7 +1458,7 @@ public class Plan implements Cloneable, Serializable
     private boolean HasNoneBefore(Integer stepID)
     {
 
-        ListIterator li;
+        ListIterator<OrderRelation> li;
         OrderRelation order;
         li = _orderingConstraints.listIterator();
 
@@ -1501,43 +1479,33 @@ public class Plan implements Cloneable, Serializable
 
     private void UpdatePlanProbability(AgentModel am)
     {
-        ListIterator li;
-        CausalLink l;
-        CausalConflictFlaw conflict;
         Effect e;
-        IPlanningOperator op;
         float prob = 1;
         
-        for(li = _steps.listIterator();li.hasNext();)
+        for(IPlanningOperator ip : this._steps)
         {
-        	op = (IPlanningOperator) li.next();
-        	if(!op.getID().equals(_start.getID()) && 
-        			!op.getID().equals(_finish.getID()))
+        	if(!ip.getID().equals(_start.getID()) && 
+        			!ip.getID().equals(_finish.getID()))
         	{
-        		prob = prob * op.getProbability(am);
+        		prob = prob * ip.getProbability(am);
         	}
         }
-
-        li = _links.listIterator();
-
-        while (li.hasNext())
+        
+        for(CausalLink l : this._links)
         {
-            l = (CausalLink) li.next();
-            if (!l.getSource().equals(_start.getID()))
+        	if (!l.getSource().equals(_start.getID()))
             {
             	e = getOperator(l.getSource()).getEffect(l.getEffect());
             	prob = prob * e.GetProbability(am);
-            }   
+            }
         }
 
-        li = _ignoredConflicts.listIterator();
-
-        while (li.hasNext())
+     
+        for(CausalConflictFlaw cc: this._ignoredConflicts)
         {
-            conflict = (CausalConflictFlaw) li.next();
-            prob = prob * (1 - conflict.GetEffect().GetProbability(am));
+        	prob = prob * (1 - cc.GetEffect().GetProbability(am));
         }
-
+        
         _probability = prob;
         if (_probability == 0)
             _valid = false;

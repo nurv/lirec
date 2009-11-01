@@ -75,7 +75,6 @@ import FAtiMA.util.enumerables.EmotionType;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
 import FAtiMA.wellFormedNames.Symbol;
-import FAtiMA.motivationalSystem.MotivationalState;
 import FAtiMA.motivationalSystem.Motivator;
 import FAtiMA.util.enumerables.MotivatorType;
 import FAtiMA.exceptions.InvalidMotivatorTypeException;

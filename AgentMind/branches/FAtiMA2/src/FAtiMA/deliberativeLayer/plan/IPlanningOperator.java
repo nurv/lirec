@@ -70,14 +70,14 @@ public interface IPlanningOperator extends Cloneable, IGroundable {
 	 * Gets the operator's effects
 	 * @return an ArrayList with all the operators's effects
 	 */
-	public ArrayList getEffects();
+	public ArrayList<Effect> getEffects();
 	
 	
 	/**
 	 * Gets the operator effects on the drives of the motivational system
 	 * @return an ArrayList with all the step's effects on drives
 	 */
-	public ArrayList getEffectsOnDrives();
+	public ArrayList<EffectOnDrive> getEffectsOnDrives();
 	
 	/**
 	 * Gets the ID of the Operator in the plan
@@ -102,7 +102,7 @@ public interface IPlanningOperator extends Cloneable, IGroundable {
 	 * Gets the preconditions of the Operator
 	 * @return an ArrayList with all the Operator's preconditions
 	 */
-	public ArrayList getPreconditions(); 
+	public ArrayList<Condition> getPreconditions(); 
 	
 	/**
 	 * Gets the operator's precondition with the given ID

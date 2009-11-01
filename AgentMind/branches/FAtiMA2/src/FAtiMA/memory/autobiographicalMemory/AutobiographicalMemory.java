@@ -43,18 +43,15 @@
 
 package FAtiMA.memory.autobiographicalMemory;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
-import FAtiMA.AgentSimulationTime;
 import FAtiMA.deliberativeLayer.goals.Goal;
 import FAtiMA.memory.ActionDetail;
 import FAtiMA.memory.Memory;
+import FAtiMA.memory.SearchKey;
 import FAtiMA.memory.Time;
 import FAtiMA.sensorEffector.Event;
 import FAtiMA.util.AgentLogger;
@@ -66,17 +63,16 @@ public class AutobiographicalMemory implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private ArrayList _memoryEvents;
+	private ArrayList<MemoryEpisode> _memoryEvents;
 	
 	public AutobiographicalMemory()
 	{
-		this._memoryEvents = new ArrayList();
+		this._memoryEvents = new ArrayList<MemoryEpisode>();
 	}
 	
 	public void StoreAction(ActionDetail action)
 	{
 		MemoryEpisode event;
-		String oldLocation;	
 		boolean found = false;
 		
 		synchronized (this) {
@@ -105,7 +101,7 @@ public class AutobiographicalMemory implements Serializable {
 			// add events from STM to the relevant episode
 			for (int i = this._memoryEvents.size()-1; i >= 0 && !found; i--)
 			{
-				event = (MemoryEpisode) this._memoryEvents.get(i);
+				event = this._memoryEvents.get(i);
 				if (event.getLocation().equals(action.getLocation()))
 				{
 					//if (event.getTime() == null)
@@ -153,7 +149,7 @@ public class AutobiographicalMemory implements Serializable {
 		return this;
 	}
 	
-	public ArrayList GetAllEpisodes()
+	public ArrayList<MemoryEpisode> GetAllEpisodes()
 	{
 		return this._memoryEvents;
 	}
@@ -165,10 +161,10 @@ public class AutobiographicalMemory implements Serializable {
 		
 		synchronized(this)
 		{
-			ListIterator li = this._memoryEvents.listIterator();
+			ListIterator<MemoryEpisode> li = this._memoryEvents.listIterator();
 			while(li.hasNext())
 			{
-				episode = (MemoryEpisode) li.next();
+				episode = li.next();
 				aux += episode.getDetails().size();
 			}
 			return aux;
@@ -215,12 +211,10 @@ public class AutobiographicalMemory implements Serializable {
 		return familiarity;
 	}
 	
-	public int CountEvent(ArrayList searchKeys)
+	public int CountEvent(ArrayList<SearchKey> searchKeys)
 	{
 		MemoryEpisode episode;
 		int count = 0;
-		ActionDetail action;
-		ListIterator li;
 		
 		synchronized(this)
 		{
@@ -228,7 +222,7 @@ public class AutobiographicalMemory implements Serializable {
 			{
 				for(int i=0; i<this._memoryEvents.size(); i++)
 				{
-					episode = (MemoryEpisode) this._memoryEvents.get(i);
+					episode = this._memoryEvents.get(i);
 					count+= episode.CountEvent(searchKeys);
 				}
 			}
@@ -236,30 +230,30 @@ public class AutobiographicalMemory implements Serializable {
 		}
 	}
 	
-	public ArrayList SearchForRecentEvents(ArrayList searchKeys)
+	public ArrayList<ActionDetail> SearchForRecentEvents(ArrayList<SearchKey> searchKeys)
 	{
 		MemoryEpisode currentEpisode;
 		
 		synchronized (this) {
 			if(this._memoryEvents.size() > 0)
 			{
-				currentEpisode = (MemoryEpisode) this._memoryEvents.get(this._memoryEvents.size()-1);
+				currentEpisode = this._memoryEvents.get(this._memoryEvents.size()-1);
 				return currentEpisode.GetDetailsByKeys(searchKeys);
 			}
-			return new ArrayList();
+			return new ArrayList<ActionDetail>();
 		}
 	}
 	
-	public ArrayList SearchForPastEvents(ArrayList keys) 
+	public ArrayList<ActionDetail> SearchForPastEvents(ArrayList<SearchKey> keys) 
 	{
 		MemoryEpisode episode;
-		ArrayList details;
+		ArrayList<ActionDetail> details;
 		ActionDetail action;
-		ListIterator li;
+		ListIterator<ActionDetail> li;
 		
 		synchronized(this)
 		{
-			ArrayList foundPastEvents = new ArrayList();
+			ArrayList<ActionDetail> foundPastEvents = new ArrayList<ActionDetail>();
 			if(this._memoryEvents.size() > 1)
 			{
 				for(int i=0; i<this._memoryEvents.size()-1; i++)
@@ -269,7 +263,7 @@ public class AutobiographicalMemory implements Serializable {
 					li = details.listIterator();
 					while(li.hasNext())
 					{
-						action = (ActionDetail) li.next();
+						action =  li.next();
 						if(!foundPastEvents.contains(action))
 						{
 							foundPastEvents.add(action);
@@ -282,7 +276,7 @@ public class AutobiographicalMemory implements Serializable {
 		}
 	}
 	
-	public boolean ContainsRecentEvent(ArrayList searchKeys)
+	public boolean ContainsRecentEvent(ArrayList<SearchKey> searchKeys)
 	{
 		MemoryEpisode currentEpisode;
 		
@@ -297,7 +291,7 @@ public class AutobiographicalMemory implements Serializable {
 		}
 	}
 	
-	public boolean ContainsPastEvent(ArrayList searchKeys)
+	public boolean ContainsPastEvent(ArrayList<SearchKey> searchKeys)
 	{
 		synchronized (this) {
 			if(this._memoryEvents.size() > 1)
@@ -346,9 +340,9 @@ public class AutobiographicalMemory implements Serializable {
 	public String toXML()
 	{
 		String am  = "<AutobiographicMemory>";
-		for(ListIterator li = this._memoryEvents.listIterator();li.hasNext();)
+		for(ListIterator<MemoryEpisode> li = this._memoryEvents.listIterator();li.hasNext();)
 		{
-			MemoryEpisode episode = (MemoryEpisode) li.next();
+			MemoryEpisode episode = li.next();
 			am += episode.toXML();
 		}
 		am += "</AutobiographicMemory>";

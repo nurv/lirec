@@ -68,10 +68,9 @@ import FAtiMA.AgentProcess;
 import FAtiMA.ValuedAction;
 import FAtiMA.emotionalState.AppraisalVector;
 import FAtiMA.emotionalState.BaseEmotion;
-import FAtiMA.emotionalState.EmotionalState;
 import FAtiMA.sensorEffector.Event;
 import FAtiMA.socialRelations.LikeRelation;
-import FAtiMA.wellFormedNames.Symbol;
+import FAtiMA.util.Constants;
 
 /**
  * Implements FearNot's Agent Reactive Layer (appraisal and coping processes)
@@ -158,9 +157,9 @@ public class ReactiveProcess extends AgentProcess {
 	 * reaction rules
 	 */
 	public void Appraisal(AgentModel am) {
-		ListIterator li;
+		ListIterator<Event> li;
 		Event event;
-		ArrayList emotions;
+		ArrayList<BaseEmotion> emotions;
 		Reaction evaluation;
 		
 		
@@ -176,10 +175,10 @@ public class ReactiveProcess extends AgentProcess {
 					
 					emotions = FAtiMA.emotionalState.Appraisal.GenerateEmotions(am, event, translateEmotionalReaction(evaluation), evaluation.getOther());
 						
-					ListIterator li2 = emotions.listIterator();
+					ListIterator<BaseEmotion> li2 = emotions.listIterator();
 					while(li2.hasNext())
 					{
-						am.getEmotionalState().AddEmotion((BaseEmotion) li2.next(), am);
+						am.getEmotionalState().AddEmotion(li2.next(), am);
 					}			
 				}
 			}
@@ -271,12 +270,12 @@ public class ReactiveProcess extends AgentProcess {
 	
 	public Reaction Evaluate(AgentModel am, Event event)
 	{
-		ArrayList emotions = new ArrayList();
+	
 		Reaction emotionalReaction;
 		
 		if(event.GetAction().equals("look-at"))
 		{
-			int relationShip = Math.round(LikeRelation.getRelation("SELF", event.GetTarget()).getValue(am.getMemory()));
+			int relationShip = Math.round(LikeRelation.getRelation(Constants.SELF, event.GetTarget()).getValue(am.getMemory()));
 			emotionalReaction = new Reaction(event);
 			emotionalReaction.setLike(new Integer(relationShip));
 		}

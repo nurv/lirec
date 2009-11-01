@@ -64,8 +64,7 @@ import FAtiMA.IntegrityValidator;
 import FAtiMA.conditions.Condition;
 import FAtiMA.exceptions.UnknownSpeechActException;
 import FAtiMA.exceptions.UnspecifiedVariableException;
-import FAtiMA.knowledgeBase.KnowledgeBase;
-import FAtiMA.motivationalSystem.MotivationalState;
+import FAtiMA.util.Constants;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
 import FAtiMA.wellFormedNames.Symbol;
@@ -90,9 +89,9 @@ public class Step implements IPlanningOperator, Cloneable, Serializable {
 	
 	private Name _name;
 	private Symbol _agent;
-	private ArrayList _preconditions;
-	private ArrayList _effects;
-	private ArrayList _effectsOnDrives;
+	private ArrayList<Condition> _preconditions;
+	private ArrayList<Effect> _effects;
+	private ArrayList<EffectOnDrive> _effectsOnDrives;
 	
 	private float _baseprob;
 	
@@ -108,12 +107,12 @@ public class Step implements IPlanningOperator, Cloneable, Serializable {
 	public Step(Symbol agent, Name action, float probability) {
 		_agent = agent;
 		_name = action;
-		_effects = new ArrayList(3);
-		_effectsOnDrives = new ArrayList(3);
-		_preconditions = new ArrayList(3);
+		_effects = new ArrayList<Effect>(3);
+		_effectsOnDrives = new ArrayList<EffectOnDrive>(3);
+		_preconditions = new ArrayList<Condition>(3);
 		
 		_selfExecutable = (!_agent.isGrounded()) || 
-				_agent.toString().equals("SELF");
+				_agent.toString().equals(Constants.SELF);
 		
 		_baseprob = probability;
 	}
@@ -127,7 +126,7 @@ public class Step implements IPlanningOperator, Cloneable, Serializable {
 	 * @param probability - the likelihood of the action's execution
 	 * 						by another agent 
 	 */
-	public Step(Symbol agent, Name action, float probability, ArrayList preconditions, ArrayList effects, ArrayList effectsOnDrives) {
+	public Step(Symbol agent, Name action, float probability, ArrayList<Condition> preconditions, ArrayList<Effect> effects, ArrayList<EffectOnDrive> effectsOnDrives) {
 		_agent = agent;
 		_name = action;
 		_effects = effects;
@@ -136,7 +135,7 @@ public class Step implements IPlanningOperator, Cloneable, Serializable {
 		_baseprob = probability;
 		
 		_selfExecutable = !_agent.isGrounded() || 
-		_agent.toString().equals("SELF");
+		_agent.toString().equals(Constants.SELF);
 	}
 
 	private Step() {
@@ -168,11 +167,9 @@ public class Step implements IPlanningOperator, Cloneable, Serializable {
 	
 	private Name GetBiasName()
 	{
-		Symbol s;
 		String name = "ProbBias(" + _agent;
-		for(ListIterator li = _name.GetLiteralList().listIterator();li.hasNext();)
+		for(Symbol s : _name.GetLiteralList())
 		{
-			s = (Symbol) li.next();
 			if(s.isGrounded())
 			{
 				name = name + "," + s;
@@ -271,7 +268,7 @@ public class Step implements IPlanningOperator, Cloneable, Serializable {
 	public void updateEffectsProbability(AgentModel am)
 	{
 		Effect e;
-		ListIterator li =  _effects.listIterator();
+		ListIterator<Effect> li =  _effects.listIterator();
 		
 		while(li.hasNext()) {
 			e = (Effect) li.next();
@@ -308,13 +305,17 @@ public class Step implements IPlanningOperator, Cloneable, Serializable {
 	    Step s3;
 	    s2 = (Step) this.clone();
 	    s2.ReplaceUnboundVariables(0);
-	    Condition c1;
+	    @SuppressWarnings("unused")
+		Condition c1;
 	    Condition c2;
 	    Condition c3;
-	    ArrayList substs = new ArrayList();
-	    ListIterator li1;
-	    ListIterator li2;
-	    ListIterator li3;
+	    ArrayList<Substitution> substs = new ArrayList<Substitution>();
+	    ListIterator<Condition> lc1;
+	    ListIterator<Condition> lc2;
+	    ListIterator<Condition> lc3;
+	    ListIterator<Effect> le1;
+	    ListIterator<Effect> le2;
+	    ListIterator<Effect> le3;
 	    
 	    //search for unreachable preconditions
 	    val.FindUnreachableConditions(this._name.toString(),_preconditions);
@@ -324,28 +325,28 @@ public class Step implements IPlanningOperator, Cloneable, Serializable {
 	    		Unifier.Unify(this._name, s2._name,substs)) {
 	    	s3 = (Step) this.clone();
 	    	s3.MakeGround(substs);
-	        li1 = this._preconditions.listIterator();
-	        li2 = s2._preconditions.listIterator();
-	        li3 = s3._preconditions.listIterator();
+	        lc1 = this._preconditions.listIterator();
+	        lc2 = s2._preconditions.listIterator();
+	        lc3 = s3._preconditions.listIterator();
 	        
-	        while(li1.hasNext()) {
-	            c1 = (Condition) li1.next();
-	            c2 = (Condition) li2.next();
-	            c3 = (Condition) li3.next();
+	        while(lc1.hasNext()) {
+	            c1 = (Condition) lc1.next();
+	            c2 = (Condition) lc2.next();
+	            c3 = (Condition) lc3.next();
 	            if(!c2.toString().equals(c3.toString())) {
 	            	//System.out.println("WARNING: variable used in condition/effect " + c1 + " was not declared in step: " + _name);
 	                //throw new UnspecifiedVariableException(this._name.toString(),c1.toString());
 	            }
 	        }
 	        
-	        li1 = this._effects.listIterator();
-	        li2 = s2._effects.listIterator();
-	        li3 = s3._effects.listIterator();
+	        le1 = this._effects.listIterator();
+	        le2 = s2._effects.listIterator();
+	        le3 = s3._effects.listIterator();
 	        
-	        while(li1.hasNext()) {
-	            c1 = ((Effect) li1.next()).GetEffect();
-	            c2 = ((Effect) li2.next()).GetEffect();
-	            c3 = ((Effect) li3.next()).GetEffect();
+	        while(le1.hasNext()) {
+	            c1 = ((Effect) le1.next()).GetEffect();
+	            c2 = ((Effect) le2.next()).GetEffect();
+	            c3 = ((Effect) le3.next()).GetEffect();
 	            if(!c2.toString().equals(c3.toString())) {
 	            	//System.out.println("WARNING: variable used in condition/effect " + c1 + " was not declared in step: " + _name);
 	                //throw new UnspecifiedVariableException(this._name.toString(),c1.toString());
@@ -366,12 +367,12 @@ public class Step implements IPlanningOperator, Cloneable, Serializable {
 	 * 		   in the KnowledgeBase, false otherwise
 	 */
 	public boolean checkPreconditions(AgentModel am) {
-		ListIterator li;
-		li = _preconditions.listIterator();
 		
-		while(li.hasNext()) {
-			if (!((Condition) li.next()).CheckCondition(am)) return false;
+		for(Condition c : _preconditions)
+		{
+			if(!c.CheckCondition(am)) return false;
 		}
+		
 		return true;
 	}
 
@@ -388,7 +389,7 @@ public class Step implements IPlanningOperator, Cloneable, Serializable {
 	 * Gets the step's effects
 	 * @return an ArrayList with all the step's effects
 	 */
-	public ArrayList getEffects() {
+	public ArrayList<Effect> getEffects() {
 		return _effects;
 	}
 	
@@ -397,7 +398,7 @@ public class Step implements IPlanningOperator, Cloneable, Serializable {
 	 * Gets the step's effects on drives
 	 * @return an ArrayList with all the step's effects on drives
 	 */
-	public ArrayList getEffectsOnDrives() {
+	public ArrayList<EffectOnDrive> getEffectsOnDrives() {
 		return _effectsOnDrives;
 	}
 	
@@ -431,7 +432,7 @@ public class Step implements IPlanningOperator, Cloneable, Serializable {
 	 * Gets the preconditions of the Step
 	 * @return an ArrayList with all the Step's preconditions
 	 */
-	public ArrayList getPreconditions() {
+	public ArrayList<Condition> getPreconditions() {
 		return _preconditions;
 	}
 	
@@ -477,37 +478,30 @@ public class Step implements IPlanningOperator, Cloneable, Serializable {
 		op._baseprob = this._baseprob;
 		op._selfExecutable = this._selfExecutable;
 		
-		ListIterator li;
-		Condition cond;
-		Effect effect;
-		EffectOnDrive effectOnDrive;
-		
 		if(_preconditions != null) {
-			op._preconditions = new ArrayList(_preconditions.size());
-			li = _preconditions.listIterator();
-			while(li.hasNext()) {
-				cond = (Condition) li.next();
-				op._preconditions.add(cond.clone());
+			op._preconditions = new ArrayList<Condition>(_preconditions.size());
+			for(Condition cond : _preconditions)
+			{
+				op._preconditions.add((Condition)cond.clone());
 			}	
 		}
 		
 		if(_effects != null) {
-			op._effects = new ArrayList(_effects.size());
-			li = _effects.listIterator();
-			while(li.hasNext()) {
-				effect = (Effect) li.next();
-				op._effects.add(effect.clone());
+			op._effects = new ArrayList<Effect>(_effects.size());
+			for(Effect effect : _effects)
+			{
+				op._effects.add((Effect)effect.clone());
 			}	
 		}
 		
 		// by Meiyii
 		if(_effectsOnDrives != null) {
-			op._effectsOnDrives = new ArrayList(_effectsOnDrives.size());
-			li = _effectsOnDrives.listIterator();
-			while(li.hasNext()) {
-				effectOnDrive = (EffectOnDrive) li.next();
-				op._effectsOnDrives.add(effectOnDrive.clone());
-			}	
+			op._effectsOnDrives = new ArrayList<EffectOnDrive>(_effectsOnDrives.size());
+			
+			for(EffectOnDrive effOnDrive : _effectsOnDrives)
+			{
+				op._effectsOnDrives.add((EffectOnDrive)effOnDrive.clone());
+			}
 		}
 		
 		return op;
@@ -538,39 +532,35 @@ public class Step implements IPlanningOperator, Cloneable, Serializable {
 	 */
     public void ReplaceUnboundVariables(int variableID)
     {
-    	ListIterator li;
     	
     	this._agent.ReplaceUnboundVariables(variableID); 
     	this._name.ReplaceUnboundVariables(variableID);
     	 
     	 if(this._preconditions != null)
     	 {
-    	 	li = this._preconditions.listIterator();
-	       	while(li.hasNext())
-	       	{
-	       		((Condition) li.next()).ReplaceUnboundVariables(variableID);
-	       	}
+    		for(Condition c : this._preconditions)
+     	 	{
+     			c.ReplaceUnboundVariables(variableID);
+ 	       	 
+     	 	}
     	 }
-
+    	 
     	 if(this._effects != null)
     	 {
-    	 	li = this._effects.listIterator();
-
-	       	 while(li.hasNext())
-	       	 {
-	       	 	((Effect) li.next()).ReplaceUnboundVariables(variableID);
-	       	 }
+    		for(Effect e : this._effects)
+    	 	{
+    			e.ReplaceUnboundVariables(variableID);
+	       	 
+    	 	}
     	 }
     	 
     	 //by Meiyii
     	 if(this._effectsOnDrives != null)
     	 {
-    	 	li = this._effectsOnDrives.listIterator();
-
-	       	 while(li.hasNext())
-	       	 {
-	       	 	((EffectOnDrive) li.next()).ReplaceUnboundVariables(variableID);
-	       	 }
+    		for(EffectOnDrive e : this._effectsOnDrives)
+     	 	{
+     			e.ReplaceUnboundVariables(variableID);
+     	 	}
     	 }
     }
     
@@ -583,7 +573,7 @@ public class Step implements IPlanningOperator, Cloneable, Serializable {
 	 * @return a new Step with the substitutions applied
 	 * @see Substitution
 	 */
-	public Object Ground(ArrayList bindingConstraints)
+	public Object Ground(ArrayList<Substitution> bindingConstraints)
 	{
 		Step aux = (Step) this.clone();
 		aux.MakeGround(bindingConstraints);
@@ -598,43 +588,36 @@ public class Step implements IPlanningOperator, Cloneable, Serializable {
 	 * @param bindings - A list of substitutions of the type "[Variable]/value"
 	 * @see Substitution
 	 */
-    public void MakeGround(ArrayList bindings) 
+    public void MakeGround(ArrayList<Substitution> bindings) 
     {
-         ListIterator li;
          
          this._agent.MakeGround(bindings);
     	 this._name.MakeGround(bindings);
     	 
     	 if(this._preconditions != null)
     	 {
-    	 	li = this._preconditions.listIterator();
-	       	while(li.hasNext())
-	       	{
-	       		((Condition) li.next()).MakeGround(bindings);
-	       	}
+    		for(Condition c : _preconditions)
+    		{
+    			c.MakeGround(bindings);
+    		}
     	 }
- 
+    	 
     	 if(this._effects != null)
     	 {
-    	 	li = this._effects.listIterator();
-
-	       	 while(li.hasNext())
-	       	 {
-	       	 	((Effect) li.next()).MakeGround(bindings);
-	       	 }
+    		for(Effect e : _effects)
+    		{
+    			e.MakeGround(bindings);
+    		}
     	 }
     	 
-    	 //by Meiyii
     	 if(this._effectsOnDrives != null)
     	 {
-    	 	li = this._effectsOnDrives.listIterator();
-
-    	 	 while(li.hasNext())
-	       	 {
-	       	 	((EffectOnDrive) li.next()).MakeGround(bindings);
-	       	 }
+    		for(EffectOnDrive e : _effectsOnDrives)
+    		{
+    			e.MakeGround(bindings);
+    		}
     	 }
-    	 
+    	 	    	 
     	 UpdateSelfExecutable();
     }
     
@@ -665,40 +648,33 @@ public class Step implements IPlanningOperator, Cloneable, Serializable {
 	 */
     public void MakeGround(Substitution subst)
     {
-    	ListIterator li;
     	
     	this._agent.MakeGround(subst);
     	this._name.MakeGround(subst);
    	 
     	if(this._preconditions != null)
-    	{
-    		li = this._preconditions.listIterator();
-       	 	while(li.hasNext())
-       	 	{
-       	 		((Condition) li.next()).MakeGround(subst);
-       	 	}
-    	}
-   	 	
-    	if(this._effects != null)
-    	{
-    		li = this._effects.listIterator();
-
-       	 	while(li.hasNext())
-       	 	{
-       	 		((Effect) li.next()).MakeGround(subst);
-       	 	}
-    	}
-    	
-    	 //by Meiyii
-	   	 if(this._effectsOnDrives != null)
-	   	 {
-	   	 	li = this._effectsOnDrives.listIterator();
-	
-	   	 	while(li.hasNext())
-    	 	{
-    	 		((EffectOnDrive) li.next()).MakeGround(subst);
-    	 	}
-	   	 }
+   	 	{
+    		for(Condition c : _preconditions)
+    		{
+    			c.MakeGround(subst);
+    		}
+   	 	}
+   	 
+   	 	if(this._effects != null)
+   	 	{
+   	 		for(Effect e : _effects)
+   	 		{
+   	 			e.MakeGround(subst);
+   	 		}
+   	 	}
+   	 
+   	 	if(this._effectsOnDrives != null)
+   	 	{
+   	 		for(EffectOnDrive e : _effectsOnDrives)
+   	 		{
+   	 			e.MakeGround(subst);
+   	 		}
+   	 	}
     	
     	UpdateSelfExecutable();
     }
@@ -709,49 +685,36 @@ public class Step implements IPlanningOperator, Cloneable, Serializable {
 	 * @return true if the name is grounded, false otherwise
 	 */
     public boolean isGrounded()
-    {
-    	ListIterator li;
-		
+    {	
     	if (!this._agent.isGrounded()) return false;
     	if (!this._name.isGrounded()) return false;
     	
+    	
+    	
+    	
     	if(this._preconditions != null)
     	{
-    		li = this._preconditions.listIterator();
-       	 	while(li.hasNext())
-       	 	{
-       	 		if(!((Condition) li.next()).isGrounded())
-       	 		{
-       	 			return false;
-       	 		}
-       	 	}
+    		for(Condition c : _preconditions)
+        	{
+        		if(!c.isGrounded()) return false;
+        	}
     	}
     	
     	if(this._effects != null)
     	{
-    		li = this._effects.listIterator();
-
-       	 	while(li.hasNext())
-       	 	{
-       	 		if(!((Effect) li.next()).isGrounded())
-       	 		{
-       	 			return false;
-       	 		}
-       	 	}
+    		for(Effect e : _effects)
+        	{
+        		if(!e.isGrounded()) return false;
+        	}    	
     	}
    	 	  
     	 //by Meiyii
 	   	 if(this._effectsOnDrives != null)
 	   	 {
-	   	 	li = this._effectsOnDrives.listIterator();
-	
-	   	 	while(li.hasNext())
-    	 	{
-    	 		if(!((EffectOnDrive) li.next()).isGrounded())
-    	 		{
-    	 			return false;
-    	 		}
-    	 	}
+	   		for(EffectOnDrive e : _effectsOnDrives)
+	    	{
+	    		if(!e.isGrounded()) return false;
+	    	}
 	   	 }
     	
         return true;

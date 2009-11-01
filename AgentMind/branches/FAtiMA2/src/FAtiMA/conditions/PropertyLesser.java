@@ -52,10 +52,8 @@
 
 package FAtiMA.conditions;
 
-import java.util.ArrayList;
 
 import FAtiMA.AgentModel;
-import FAtiMA.knowledgeBase.KnowledgeBase;
 import FAtiMA.util.AgentLogger;
 import FAtiMA.wellFormedNames.Name;
 

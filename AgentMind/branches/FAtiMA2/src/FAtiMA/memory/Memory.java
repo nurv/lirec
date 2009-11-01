@@ -67,10 +67,10 @@ public class Memory {
 	private WorkingMemory _wm;
 	private KnowledgeBase _kb;
 	
-	public static ArrayList GenerateSearchKeys(Event e)
+	public static ArrayList<SearchKey> GenerateSearchKeys(Event e)
 	{	
-		ArrayList keys = new ArrayList();
-		ArrayList params = new ArrayList();
+		ArrayList<SearchKey> keys = new ArrayList<SearchKey>();
+		ArrayList<String> params = new ArrayList<String>();
 		Parameter param;
 		
 		keys.add(new SearchKey(SearchKey.SUBJECT,e.GetSubject()));
@@ -84,7 +84,7 @@ public class Memory {
 		
 		if(e.GetParameters().size() > 0)
 		{
-			for(ListIterator li = e.GetParameters().listIterator();li.hasNext();)
+			for(ListIterator<Parameter> li = e.GetParameters().listIterator();li.hasNext();)
 			{
 				param = (Parameter) li.next();
 				params.add(param.GetValue().toString());
@@ -107,7 +107,7 @@ public class Memory {
 	{
 		int numberOfSuccess;
 		int numberOfTries;
-		ArrayList searchKeys = GenerateSearchKeys(g.GetActivationEvent());
+		ArrayList<SearchKey> searchKeys = GenerateSearchKeys(g.GetActivationEvent());
 		
 		numberOfTries = _am.CountEvent(searchKeys) 
 						+ _stm.CountEvent(searchKeys);
@@ -177,8 +177,8 @@ public class Memory {
 	 * @return a list of SubstitutionSets that make the received name to match predicates or 
      *         properties that do exist in the WorkingMemory
 	 */
-	public ArrayList GetPossibleBindings(Name name) {
-		ArrayList bindingSets = null;
+	public ArrayList<SubstitutionSet> GetPossibleBindings(Name name) {
+		ArrayList<SubstitutionSet> bindingSets = null;
 		
 		bindingSets = MatchLiteralList(name.GetLiteralList(), 0, _wm.GetWorkingMemory());
 		
@@ -186,15 +186,15 @@ public class Memory {
 			bindingSets = (MatchLiteralList(name.GetLiteralList(), 0, _kb.GetKnowledgeBase()));
 		else
 		{
-			ArrayList bindingSets2 = MatchLiteralList(name.GetLiteralList(), 0, _kb.GetKnowledgeBase());
+			ArrayList<SubstitutionSet> bindingSets2 = MatchLiteralList(name.GetLiteralList(), 0, _kb.GetKnowledgeBase());
 			if (bindingSets2 != null)
 			{
-				ListIterator li = bindingSets2.listIterator();
+				ListIterator<SubstitutionSet> li = bindingSets2.listIterator();
 
 				synchronized (this) {
 					while (li.hasNext()) {
 						
-						SubstitutionSet ss = (SubstitutionSet) li.next();
+						SubstitutionSet ss = li.next();
 						if( !bindingSets.contains(ss) )
 							bindingSets.add(ss);
 					}
@@ -258,14 +258,14 @@ public class Memory {
 	private Object Ask(Name name, KnowledgeSlot slots) {
 		KnowledgeSlot aux = slots;
 		KnowledgeSlot currentSlot;
-		ArrayList fetchList = name.GetLiteralList();
-		ListIterator li = fetchList.listIterator();
+		ArrayList<Symbol> fetchList = name.GetLiteralList();
+		ListIterator<Symbol> li = fetchList.listIterator();
 		Symbol l;
 
 		synchronized (this) {
 			while (li.hasNext()) {
 					currentSlot = aux;
-					l = (Symbol) li.next();
+					l = li.next();
 					if (currentSlot.containsKey(l.toString())) {
 						aux = currentSlot.get(l.toString());
 					} 
@@ -275,16 +275,16 @@ public class Memory {
 		}
 	}
 
-	private ArrayList MatchLiteralList(ArrayList literals, int index, KnowledgeSlot kSlot) {
+	private ArrayList<SubstitutionSet> MatchLiteralList(ArrayList<Symbol> literals, int index, KnowledgeSlot kSlot) {
 		Symbol l;
 		String key;
-		ArrayList bindingSets;
-		ArrayList newBindingSets;
+		ArrayList<SubstitutionSet> bindingSets;
+		ArrayList<SubstitutionSet> newBindingSets;
 		SubstitutionSet subSet;
-		ListIterator li;
-		Iterator it;
+		ListIterator<SubstitutionSet> li;
+		Iterator<String> it;
 
-		newBindingSets = new ArrayList();
+		newBindingSets = new ArrayList<SubstitutionSet>();
 
 		if (index >= literals.size()) {
 			newBindingSets.add(new SubstitutionSet());

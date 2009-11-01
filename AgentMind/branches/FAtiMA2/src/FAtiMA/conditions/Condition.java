@@ -67,6 +67,7 @@ import FAtiMA.AgentModel;
 import FAtiMA.knowledgeBase.KnowledgeBase;
 import FAtiMA.wellFormedNames.IGroundable;
 import FAtiMA.wellFormedNames.Name;
+import FAtiMA.wellFormedNames.Substitution;
 import FAtiMA.wellFormedNames.SubstitutionSet;
 
 
@@ -85,6 +86,11 @@ import FAtiMA.wellFormedNames.SubstitutionSet;
 public abstract class Condition implements IGroundable, Cloneable, Serializable {
 
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * Checks if a list of conditions (usually preconditions) to see
 	 * if all of them are verified. The method returns a list of possible 
 	 * SubstitutionSets. Each of the returned SustitutionSet applied to the entire set of conditions
@@ -100,26 +106,24 @@ public abstract class Condition implements IGroundable, Cloneable, Serializable 
 	 * returns null if no such SubstitutionSet exists
 	 * @see SubstitutionSet
 	 */
-	public static ArrayList CheckActivation(AgentModel am, ArrayList preconditions) {
-		ListIterator subsi;
-		Condition cond;
+	public static ArrayList<SubstitutionSet> CheckActivation(AgentModel am, ArrayList<Condition> preconditions) {
+		ListIterator<SubstitutionSet> subsi;
 		Condition newCond;
 		SubstitutionSet subSet;
-		ArrayList aux;
-		SubstitutionSet newSubSet;
-		ArrayList validSubstitutionsSet = new ArrayList();
-		ArrayList newValidSubstitutionsSet;
+		ArrayList<SubstitutionSet> aux;
+		ArrayList<SubstitutionSet> validSubstitutionsSet = new ArrayList<SubstitutionSet>();
+		ArrayList<SubstitutionSet> newValidSubstitutionsSet;
 		
-		for(ListIterator li = preconditions.listIterator(); li.hasNext();)
+		for(Condition cond : preconditions)
 		{
 			//For each condition we need to verify if it is valid
-			cond = (Condition) li.next();
+			
 
 			//This list contains the SubstitutionSets that correspond to Substitutions 
 			//that if applied to the tested conditions, will make them true
 			//this list is rebuilt from scratch at each condition, because a previous
 			//valid Substitution may become invalid when testing another condition 
-			newValidSubstitutionsSet = new ArrayList();
+			newValidSubstitutionsSet = new ArrayList<SubstitutionSet>();
 			
 			//if there are substitutions that resulted from testing previous conditions
 			//we need to apply them and test the new grounded condition. For example, consider 
@@ -147,9 +151,7 @@ public abstract class Condition implements IGroundable, Cloneable, Serializable 
 						//true, and there might exist more than one set of substitutions that does that.
 						//So, for each valid set of substitutions we need to add the substitutions
 						//that satisfy the previous conditions, and the result is a valid SubstitutionSet
-						for(ListIterator li2 = aux.listIterator();li2.hasNext();)
-						{
-						 	newSubSet = (SubstitutionSet) li2.next();
+						for(SubstitutionSet newSubSet : aux){
 						 	//We're adding the substitutions needed for the previous conditions
 						 	//to the SubstitutionSet that verifies the current condition 
 						 	newSubSet.AddSubstitutions(subSet.GetSubstitutions());
@@ -222,11 +224,11 @@ public abstract class Condition implements IGroundable, Cloneable, Serializable 
      * @see KnowledgeBase
 	 * @see AutobiographicalMemory
 	 */
-	public ArrayList GetValidBindings(AgentModel am) {
-		ArrayList validSubstitutionSets = new ArrayList();
-		ArrayList bindingSets;
-		ArrayList bindings;
-		ArrayList aux;
+	public ArrayList<SubstitutionSet> GetValidBindings(AgentModel am) {
+		ArrayList<SubstitutionSet> validSubstitutionSets = new ArrayList<SubstitutionSet>();
+		ArrayList<SubstitutionSet> bindingSets;
+		ArrayList<Substitution> bindings;
+		ArrayList<Substitution> aux;
 		SubstitutionSet subSet;
 		Condition cond;
 
@@ -242,7 +244,7 @@ public abstract class Condition implements IGroundable, Cloneable, Serializable 
 		if (bindingSets == null)
 			return null;
 
-		ListIterator li = bindingSets.listIterator();
+		ListIterator<SubstitutionSet> li = bindingSets.listIterator();
 		while (li.hasNext()) {
 			subSet = (SubstitutionSet) li.next();
 			cond = (Condition) this.clone();
@@ -296,5 +298,5 @@ public abstract class Condition implements IGroundable, Cloneable, Serializable 
      * If John owns the ball, the method returns [x]/John
      * @return returns all set of Substitutions that make the condition valid.
 	 */
-	protected abstract ArrayList GetValueBindings(AgentModel am);
+	protected abstract ArrayList<Substitution> GetValueBindings(AgentModel am);
 }

@@ -123,9 +123,9 @@ public class Reaction implements IIntegrityTester, Serializable, IGroundable, Cl
 	public void CheckIntegrity(IntegrityValidator val) throws UnknownSpeechActException {
 	    String aux;
 	    aux = _event.GetAction() + "(" +  _event.GetTarget();
-	    ListIterator li = _event.GetParameters().listIterator();
+	    ListIterator<Parameter> li = _event.GetParameters().listIterator();
 	    while(li.hasNext()) {
-	        aux = aux + "," + ((Parameter) li.next()).GetValue();
+	        aux = aux + "," + (li.next()).GetValue();
 	    }
 	    aux = aux + ")";
 	    val.CheckSpeechAction(Name.ParseName(aux));
@@ -262,7 +262,7 @@ public class Reaction implements IIntegrityTester, Serializable, IGroundable, Cl
 	 * @return a new Predicate with the substitutions applied
 	 * @see Substitution
 	 */
-	public Object Ground(ArrayList bindings) {
+	public Object Ground(ArrayList<Substitution> bindings) {
 		Reaction aux = (Reaction) this.clone();
 		aux.MakeGround(bindings);
 		return aux;
@@ -276,7 +276,7 @@ public class Reaction implements IIntegrityTester, Serializable, IGroundable, Cl
 	 * @param bindings - A list of substitutions of the type "[Variable]/value"
 	 * @see Substitution
 	 */
-    public void MakeGround(ArrayList bindings)
+    public void MakeGround(ArrayList<Substitution> bindings)
     {
     	if(this._other != null)
     	{

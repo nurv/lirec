@@ -38,22 +38,17 @@ import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 
 import java.util.ArrayList;
 
 import FAtiMA.AgentModel;
 import FAtiMA.memory.ActionDetail;
 import FAtiMA.memory.shortTermMemory.STMemoryRecord;
-import FAtiMA.memory.shortTermMemory.ShortTermMemory;
-import FAtiMA.memory.shortTermMemory.WorkingMemory;
 
 public class STMRecordDisplay {
 
 	private JPanel _panel;
     private JPanel _details;
-    private static int _lastID = 0;
-    private static int _previousID = 0;
     
     public STMRecordDisplay(AgentModel am, STMemoryRecord records) {
 
@@ -137,9 +132,9 @@ public class STMRecordDisplay {
 		JScrollPane propertiesScroll = new JScrollPane(prop);
 		propertiesScroll.setAutoscrolls(true);
 		
-		ListIterator li = records.getDetails().listIterator();
+		ListIterator<ActionDetail> li = records.getDetails().listIterator();
 	
-		ArrayList newRecords = am.getMemory().getSTM().GetNewRecords();
+		ArrayList<ActionDetail> newRecords = am.getMemory().getSTM().GetNewRecords();
 		
 		while(li.hasNext())
 		{

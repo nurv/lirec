@@ -30,7 +30,7 @@ public class NullPlaceCondition extends PlaceCondition {
 		return this;
 	}
 	
-	public void MakeGround(ArrayList bindings)
+	public void MakeGround(ArrayList<Substitution> bindings)
     {
 		return;
     }
@@ -48,8 +48,8 @@ public class NullPlaceCondition extends PlaceCondition {
 		return true;
 	}
 	
-	public ArrayList GetValidBindings(AgentModel am) {
-		ArrayList list = new ArrayList();
+	public ArrayList<SubstitutionSet> GetValidBindings(AgentModel am) {
+		ArrayList<SubstitutionSet> list = new ArrayList<SubstitutionSet>();
 		list.add(new SubstitutionSet());
 		return list;
 	}

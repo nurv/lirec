@@ -137,13 +137,12 @@ import FAtiMA.deliberativeLayer.plan.Plan;
 import FAtiMA.deliberativeLayer.plan.ProtectedCondition;
 import FAtiMA.deliberativeLayer.plan.Step;
 import FAtiMA.emotionalState.ActiveEmotion;
-import FAtiMA.emotionalState.EmotionalState;
 import FAtiMA.exceptions.InvalidMotivatorTypeException;
 import FAtiMA.exceptions.UnknownGoalException;
-import FAtiMA.motivationalSystem.MotivationalState;
 import FAtiMA.sensorEffector.Event;
 import FAtiMA.sensorEffector.Parameter;
 import FAtiMA.util.AgentLogger;
+import FAtiMA.util.Constants;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
 import FAtiMA.wellFormedNames.SubstitutionSet;
@@ -167,8 +166,8 @@ public class DeliberativeProcess extends AgentProcess {
 	private static final float MINIMUMUTILITY = 8;
 	private static final float SELECTIONTHRESHOLD = 1.2f; 
 	
-	private ArrayList _goals;
-	private ArrayList _rituals;
+	private ArrayList<Goal> _goals;
+	private ArrayList<Ritual> _rituals;
 	private GoalLibrary _goalLibrary;
 	private EmotionalPlanner _planner;
 	
@@ -176,15 +175,11 @@ public class DeliberativeProcess extends AgentProcess {
 	private Plan _selectedPlan;
 	private Step _selectedAction;
 	private ActiveEmotion _selectedActionEmotion;
-	private ArrayList _options;
-	private HashMap _intentions;
-	private HashMap _ritualOptions;
-	private ArrayList _protectionConstraints;
+	private ArrayList<ActivePursuitGoal> _options;
+	private HashMap<String,Intention> _intentions;
+	private HashMap<String,Ritual> _ritualOptions;
+	private ArrayList<ProtectedCondition> _protectionConstraints;
 	private Intention _currentIntention;
-	
-	private DeliberativeProcess()
-	{
-	}
 	
 	/**
 	 * Creates a new DeliberativeProcess
@@ -195,17 +190,17 @@ public class DeliberativeProcess extends AgentProcess {
 	 */
 	public DeliberativeProcess(String name, GoalLibrary goalLibrary,  EmotionalPlanner planner) {
 		super(name);
-		_goals = new ArrayList();
-		_rituals = new ArrayList();
+		_goals = new ArrayList<Goal>();
+		_rituals = new ArrayList<Ritual>();
 		_goalLibrary = goalLibrary;
 		_planner = planner;
 		_actionMonitor = null;
 		_selectedAction = null;
 		_selectedPlan = null;
-		_options = new ArrayList();
-		_ritualOptions = new HashMap();
-		_intentions = new HashMap();
-		_protectionConstraints = new ArrayList();
+		_options = new ArrayList<ActivePursuitGoal>();
+		_ritualOptions = new HashMap<String,Ritual>();
+		_intentions = new HashMap<String,Intention>();
+		_protectionConstraints = new ArrayList<ProtectedCondition>();
 		_currentIntention = null;
 	}
 	
@@ -215,8 +210,8 @@ public class DeliberativeProcess extends AgentProcess {
 	 */
 	public void AddGoal(Goal goal) {
 		InterestGoal iGoal;
-		ArrayList protectionConstraints;
-		ListIterator li;
+		ArrayList<Condition> protectionConstraints;
+		ListIterator<Condition> li;
 		
 		synchronized (this) {
 			if(!_goals.contains(goal)) {
@@ -260,7 +255,7 @@ public class DeliberativeProcess extends AgentProcess {
 	 * it updates all plans of all current active intentions
 	 */
 	public void CheckLinks(AgentModel am) {
-		Iterator it;
+		Iterator<Intention> it;
 		
 		synchronized(this)
 		{
@@ -297,7 +292,7 @@ public class DeliberativeProcess extends AgentProcess {
 	 * 						   the String "CIF" changes the importance of failure
 	 */
 	public void ChangeGoalImportance(AgentModel am, String goalName, float importance, String importanceType) {
-		ListIterator li;
+		ListIterator<Goal> li;
 		
 		synchronized (this) {
 			li = _goals.listIterator();
@@ -404,7 +399,7 @@ public class DeliberativeProcess extends AgentProcess {
 	 * @param goal - the goal that we want to add
 	 */
 	public void AddIntention(AgentModel am, ActivePursuitGoal goal) {
-		ArrayList plans;
+		ArrayList<Plan> plans;
 		Plan newPlan;
 		Intention intention;
 		String goalName = goal.getNameWithCharactersOrdered();
@@ -431,7 +426,7 @@ public class DeliberativeProcess extends AgentProcess {
 	
 	public void AddSubIntention(AgentModel am, Intention mainIntention, ActivePursuitGoal goal)
 	{
-		ArrayList plans;
+		ArrayList<Plan> plans;
 		Plan newPlan;
 		Intention subIntention;
 		
@@ -456,7 +451,7 @@ public class DeliberativeProcess extends AgentProcess {
 	 * Gets the agent's goals
 	 * @return a list with the agent's goals
 	 */
-	public ArrayList GetGoals() {
+	public ArrayList<Goal> GetGoals() {
 		return _goals;
 	}
 	
@@ -480,7 +475,7 @@ public class DeliberativeProcess extends AgentProcess {
 	 * Gets a set of IntentionKeys
 	 * @return a set with the keys used to store all intentions
 	 */
-	public Set GetIntentionKeysSet() {
+	public Set<String> GetIntentionKeysSet() {
 		synchronized(this)
 		{
 			return _intentions.keySet();
@@ -492,7 +487,7 @@ public class DeliberativeProcess extends AgentProcess {
 	 * Intentions
 	 * @return
 	 */
-	public Iterator GetIntentionsIterator() {
+	public Iterator<Intention> GetIntentionsIterator() {
 		return _intentions.values().iterator();
 	}
 	
@@ -500,7 +495,7 @@ public class DeliberativeProcess extends AgentProcess {
 	{
 		Goal g;
 		coping = coping.toLowerCase();
-		for(ListIterator li = _goalLibrary.GetGoals();li.hasNext();)
+		for(ListIterator<Goal> li = _goalLibrary.GetGoals();li.hasNext();)
 		{
 			g = (Goal) li.next();
 			if(g.getName().toString().toLowerCase().startsWith(coping)
@@ -602,7 +597,7 @@ public class DeliberativeProcess extends AgentProcess {
 	 * @throws InvalidMotivatorTypeException 
 	 */
 	public void Appraisal(AgentModel am) {
-		ListIterator li;
+		ListIterator<Event> li;
 		Event event;
 		
 		
@@ -629,7 +624,7 @@ public class DeliberativeProcess extends AgentProcess {
 			if(li.hasNext()) {
 				
 		        while (li.hasNext()) {
-					event = (Event) li.next();
+					event = li.next();
 					
 					am.getMotivationalState().UpdateMotivators(am, event, _planner.GetOperators());
 					
@@ -688,16 +683,17 @@ public class DeliberativeProcess extends AgentProcess {
 	{
 		Goal g;
 		ActivePursuitGoal aGoal;
-		ListIterator li,li2;
+		ListIterator<Goal> li;
+		ListIterator<SubstitutionSet> li2;
 		ActivePursuitGoal desire;
 		SubstitutionSet subSet;
-		ArrayList substitutionSets;
+		ArrayList<SubstitutionSet> substitutionSets;
 		
 		Ritual r;
 		Ritual r2;
 		Ritual r3;
-		ArrayList substitutions;
-		ArrayList substitutions2;
+		ArrayList<SubstitutionSet> substitutions;
+		ArrayList<SubstitutionSet> substitutions2;
 		SubstitutionSet sSet;
 		SubstitutionSet sSet2;
 		Event event; 
@@ -706,20 +702,20 @@ public class DeliberativeProcess extends AgentProcess {
 		_options.clear();
 		
 		
-		for(ListIterator eventIterator = this._eventPool.listIterator(); eventIterator.hasNext();)
+		for(ListIterator<Event> eventIterator = this._eventPool.listIterator(); eventIterator.hasNext();)
 		{
-			event = (Event) eventIterator.next();
+			event = eventIterator.next();
 		
 			//this section detects if a ritual has started with another agent's action
-			if(!event.GetSubject().equals("SELF"))
+			if(!event.GetSubject().equals(Constants.SELF))
 			{
-				for(ListIterator rIterator = this._rituals.listIterator(); rIterator.hasNext();)
+				for(ListIterator<Ritual> rIterator = this._rituals.listIterator(); rIterator.hasNext();)
 				{
-					r = (Ritual) rIterator.next();
+					r = rIterator.next();
 					
 						
 					substitutions = r.findMatchWithStep(new Symbol(event.GetSubject()),event.toStepName());
-					for(ListIterator sIterator = substitutions.listIterator(); sIterator.hasNext();)
+					for(ListIterator<SubstitutionSet> sIterator = substitutions.listIterator(); sIterator.hasNext();)
 					{
 						// a possible activation of a ritual
 						sSet = (SubstitutionSet) sIterator.next();
@@ -730,7 +726,7 @@ public class DeliberativeProcess extends AgentProcess {
 						substitutions2 = Condition.CheckActivation(am,r2.GetPreconditions());
 						if(substitutions2 != null)
 						{
-							for(ListIterator s2Iterator = substitutions2.listIterator(); s2Iterator.hasNext();)
+							for(ListIterator<SubstitutionSet> s2Iterator = substitutions2.listIterator(); s2Iterator.hasNext();)
 							{
 								//good, the preconditions are satisfied by this subset
 								sSet2 = (SubstitutionSet) s2Iterator.next();
@@ -797,23 +793,21 @@ public class DeliberativeProcess extends AgentProcess {
 		}
 	}
 	
-	public ActivePursuitGoal Filter(AgentModel am, ArrayList options) {
+	public ActivePursuitGoal Filter(AgentModel am, ArrayList<ActivePursuitGoal> options) {
 		ActivePursuitGoal g; 
-		Intention currentIntention = null;
 		ActivePursuitGoal maxGoal = null;
 		float maxUtility;
 		// expected utility of achieving a goal
 		float EU;
 		
-		int i = 0;
 		
 		
 		maxUtility = -200;
 		
-		ListIterator li = options.listIterator();
+		ListIterator<ActivePursuitGoal> li = options.listIterator();
 		while(li.hasNext())
 		{
-			g = (ActivePursuitGoal) li.next();
+			g = li.next();
 			if(!ContainsIntention(g))
 			{		
 				EU = g.GetExpectedUtility(am);
@@ -848,7 +842,7 @@ public class DeliberativeProcess extends AgentProcess {
 	 * @return - the most relevant intention (the one with highest expected utility)
 	 */
 	public Intention Filter2ndLevel(AgentModel am) {
-		Iterator it;
+		Iterator<Intention> it;
 		Intention intention;
 		float highestUtility; 
 		Intention maxIntention = null;
@@ -1098,7 +1092,7 @@ public class DeliberativeProcess extends AgentProcess {
 			return;
 		}
 		
-		ListIterator li = _selectedAction.getName().GetLiteralList().listIterator();
+		ListIterator<Symbol> li = _selectedAction.getName().GetLiteralList().listIterator();
 	    
 	    action = li.next().toString();
 	    
@@ -1153,7 +1147,7 @@ public class DeliberativeProcess extends AgentProcess {
 	 */
 	public void UpdateProbabilities() {
 		
-		Iterator it; 
+		Iterator<Intention> it; 
 		
 		it = _intentions.values().iterator();
 		while (it.hasNext()) {

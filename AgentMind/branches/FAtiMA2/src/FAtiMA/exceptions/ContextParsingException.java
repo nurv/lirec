@@ -1,6 +1,12 @@
 package FAtiMA.exceptions;
 
 public class ContextParsingException extends Exception {
+	
+	 /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
 	public ContextParsingException( String msg ){
 		super( "Error parsing Context - " + msg );
 	}

@@ -33,21 +33,15 @@
 
 package FAtiMA.memory.shortTermMemory;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.ListIterator;
 
 import FAtiMA.deliberativeLayer.goals.Goal;
 import FAtiMA.emotionalState.ActiveEmotion;
 import FAtiMA.memory.ActionDetail;
 import FAtiMA.memory.Memory;
-import FAtiMA.memory.autobiographicalMemory.AutobiographicalMemory;
+import FAtiMA.memory.SearchKey;
 import FAtiMA.sensorEffector.Event;
-import FAtiMA.util.AgentLogger;
 import FAtiMA.util.Constants;
 import FAtiMA.util.enumerables.EmotionType;
 import FAtiMA.wellFormedNames.Name;
@@ -70,14 +64,14 @@ public class ShortTermMemory implements Serializable {
 	
 		
 	private STMemoryRecord _records;
-	private ArrayList _newRecords;
+	private ArrayList<ActionDetail> _newRecords;
 	private boolean _newData;	
 	private String _previousLocation;
 	
 	public ShortTermMemory()
 	{
 		this._records = new STMemoryRecord();
-		this._newRecords = new ArrayList();
+		this._newRecords = new ArrayList<ActionDetail>();
 		this._newData = false;
 		this._previousLocation = "";
 	}
@@ -155,7 +149,7 @@ public class ShortTermMemory implements Serializable {
 		return this._records;
 	}
 	
-	public ArrayList GetNewRecords()
+	public ArrayList<ActionDetail> GetNewRecords()
 	{
 		return this._newRecords;
 	}
@@ -178,10 +172,9 @@ public class ShortTermMemory implements Serializable {
 		return similarEvents;
 	}
 	
-	public int CountEvent(ArrayList searchKeys)
+	public int CountEvent(ArrayList<SearchKey> searchKeys)
 	{
 		int count = 0;	
-		ListIterator li;
 		
 		synchronized(this)
 		{
@@ -193,18 +186,18 @@ public class ShortTermMemory implements Serializable {
 		}
 	}	
 	
-	public ArrayList SearchForRecentEvents(ArrayList searchKeys)
+	public ArrayList<ActionDetail> SearchForRecentEvents(ArrayList<SearchKey> searchKeys)
 	{		
 		synchronized (this) {
 			if(this._records.GetCount() > 0)
 			{
 				return _records.GetDetailsByKeys(searchKeys);
 			}
-			return new ArrayList();
+			return new ArrayList<ActionDetail>();
 		}
 	}
 	
-	public boolean ContainsRecentEvent(ArrayList searchKeys)
+	public boolean ContainsRecentEvent(ArrayList<SearchKey> searchKeys)
 	{		
 		synchronized (this) {
 			if(this._records.GetCount() > 0)

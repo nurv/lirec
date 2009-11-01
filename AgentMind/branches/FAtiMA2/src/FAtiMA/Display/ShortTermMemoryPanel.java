@@ -32,7 +32,6 @@ package FAtiMA.Display;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.ListIterator;
 
 import javax.swing.BorderFactory;
@@ -41,12 +40,9 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import FAtiMA.Agent;
-import FAtiMA.AgentModel;
 import FAtiMA.memory.KnowledgeSlot;
 import FAtiMA.memory.shortTermMemory.WorkingMemory;
 import FAtiMA.memory.shortTermMemory.STMemoryRecord;
-import FAtiMA.memory.shortTermMemory.ShortTermMemory;
-import FAtiMA.knowledgeBase.KnowledgeBase;
 
 public class ShortTermMemoryPanel extends AgentDisplayPanel {
 	
@@ -59,7 +55,7 @@ public class ShortTermMemoryPanel extends AgentDisplayPanel {
     
     //private JPanel _knowledgePanel;
     private static int _knowledgeSize = 0;
-    private ArrayList _knowledgeFactList;
+    private ArrayList<KnowledgeFactDisplay> _knowledgeFactList;
     private JPanel _knowledgeFactsPanel;
    
     private JPanel _workingFactsPanel;
@@ -81,7 +77,7 @@ public class ShortTermMemoryPanel extends AgentDisplayPanel {
 		
 		this.add(eventsScrool);
 		
-		_knowledgeFactList = new ArrayList();
+		_knowledgeFactList = new ArrayList<KnowledgeFactDisplay>();
 	       
 	    _knowledgeFactsPanel = new JPanel();
 	    _knowledgeFactsPanel.setBorder(BorderFactory.createTitledBorder("Long Term Memory"));
@@ -137,7 +133,7 @@ public class ShortTermMemoryPanel extends AgentDisplayPanel {
             _memoryRecords.add(_stmRecordDisplay.getSTMRecordPanel());   	
         }     
         
-        ListIterator li = ag.getMemory().getKB().GetFactList();
+        ListIterator<KnowledgeSlot> li = ag.getMemory().getKB().GetFactList();
         
         KnowledgeSlot slot;
         KnowledgeFactDisplay kDisplay;
@@ -161,7 +157,7 @@ public class ShortTermMemoryPanel extends AgentDisplayPanel {
         }
         
         li = ag.getMemory().getWM().GetFactList();
-        ArrayList changeList = ag.getMemory().getWM().GetChangeList();
+        ArrayList<KnowledgeSlot> changeList = ag.getMemory().getWM().GetChangeList();
         _workingFactsSubPanel1.removeAll();
         _workingFactsSubPanel2.removeAll();
         short half = (WorkingMemory.MAXENTRY)/2;

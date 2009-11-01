@@ -43,11 +43,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
-import FAtiMA.Agent;
-import FAtiMA.AgentModel;
 import FAtiMA.emotionalState.ActiveEmotion;
 import FAtiMA.emotionalState.BaseEmotion;
-import FAtiMA.knowledgeBase.KnowledgeBase;
 import FAtiMA.memory.Memory;
 import FAtiMA.sensorEffector.Event;
 import FAtiMA.sensorEffector.Parameter;
@@ -73,7 +70,7 @@ public class ActionDetail implements Serializable {
 	private String _subject;
 	private String _action;
 	private String _target;
-	private ArrayList _parameters = null;
+	private ArrayList<Parameter> _parameters = null;
 	
 	private KnowledgeSlot _subjectDetails = null;
 	private KnowledgeSlot _targetDetails = null;
@@ -83,7 +80,7 @@ public class ActionDetail implements Serializable {
 	
 	private BaseEmotion _emotion;
 	
-	private ArrayList _evaluation;
+	private ArrayList<String> _evaluation;
 		
 	public ActionDetail(Memory m, int ID, Event e, String location)
 	{
@@ -108,15 +105,15 @@ public class ActionDetail implements Serializable {
 		
 		if(e.GetParameters() != null)
 		{
-			this._parameters = new ArrayList(e.GetParameters());
+			this._parameters = new ArrayList<Parameter>(e.GetParameters());
 		}
 		
 		this._emotion = new BaseEmotion(EmotionType.NEUTRAL,0,null,null);
 		
-		this._evaluation = new ArrayList();
+		this._evaluation = new ArrayList<String>();
 	}
 	
-	public ActionDetail(int ID, String subject, String action, String target, ArrayList parameters, ArrayList evaluation, Time time, String location, BaseEmotion emotion)
+	public ActionDetail(int ID, String subject, String action, String target, ArrayList<Parameter> parameters, ArrayList<String> evaluation, Time time, String location, BaseEmotion emotion)
 	{
 		this._id = ID;
 		
@@ -152,7 +149,7 @@ public class ActionDetail implements Serializable {
 		return this._location;
 	}
 	
-	public ArrayList getParameters()
+	public ArrayList<Parameter> getParameters()
 	{
 		return this._parameters;
 	}
@@ -201,7 +198,7 @@ public class ActionDetail implements Serializable {
 		return this._emotion;
 	}
 	
-	public ArrayList getEvaluation()
+	public ArrayList<String> getEvaluation()
 	{
 		return this._evaluation;
 	}
@@ -382,7 +379,7 @@ public class ActionDetail implements Serializable {
 		}
 		else if(key.getField() == SearchKey.PARAMETERS)
 		{
-			ArrayList params = (ArrayList) key.getKey();
+			ArrayList<String> params = (ArrayList<String>) key.getKey();
 			String aux;
 			Parameter p;
 			if(this._parameters.size() < params.size())
@@ -391,8 +388,8 @@ public class ActionDetail implements Serializable {
 			}
 			for(int i=0; i < params.size(); i++)
 			{
-				aux = (String) params.get(i);
-				p = (Parameter) this._parameters.get(i);
+				aux = params.get(i);
+				p =  this._parameters.get(i);
 				if(!aux.equals("*") && !aux.equals(p.GetValue()))
 				{
 					return false;
@@ -418,12 +415,12 @@ public class ActionDetail implements Serializable {
 		else return false;
 	}
 	
-	public boolean verifiesKeys(ArrayList keys)
+	public boolean verifiesKeys(ArrayList<SearchKey> keys)
 	{
-		ListIterator li = keys.listIterator();
+		ListIterator<SearchKey> li = keys.listIterator();
 		while(li.hasNext())
 		{
-			if(!this.verifiesKey((SearchKey)li.next()))
+			if(!this.verifiesKey(li.next()))
 			{
 				return false;
 			}

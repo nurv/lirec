@@ -38,6 +38,8 @@ import java.util.ArrayList;
 import java.util.ListIterator;
 
 import FAtiMA.AgentModel;
+import FAtiMA.memory.ActionDetail;
+import FAtiMA.memory.SearchKey;
 import FAtiMA.sensorEffector.Event;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
@@ -76,7 +78,7 @@ public class RecentEventCondition extends PastEventCondition {
 		super(occurred, event);	
 	}
 	
-	public RecentEventCondition(boolean occurred, Symbol subject, Symbol action, Symbol target, ArrayList parameters)
+	public RecentEventCondition(boolean occurred, Symbol subject, Symbol action, Symbol target, ArrayList<Symbol> parameters)
 	{
 		super(occurred, subject, action, target, parameters);
 	}
@@ -99,13 +101,13 @@ public class RecentEventCondition extends PastEventCondition {
 			newEvent._target = (Symbol) this._target.clone();
 		}
 		
-		newEvent._parameters = new ArrayList(this._parameters.size());
+		newEvent._parameters = new ArrayList<Symbol>(this._parameters.size());
 		
-		ListIterator li = this._parameters.listIterator();
+		ListIterator<Symbol> li = this._parameters.listIterator();
 		
 		while(li.hasNext())
 		{
-			newEvent._parameters.add(((Symbol)li.next()).clone());
+			newEvent._parameters.add((Symbol)li.next().clone());
 		}
 		
 		return newEvent;
@@ -126,21 +128,21 @@ public class RecentEventCondition extends PastEventCondition {
 			this._target.ReplaceUnboundVariables(variableID);
 		}
 		
-		ListIterator li = this._parameters.listIterator();
+		ListIterator<Symbol> li = this._parameters.listIterator();
 		while(li.hasNext())
 		{
-			((Symbol) li.next()).ReplaceUnboundVariables(variableID);
+			li.next().ReplaceUnboundVariables(variableID);
 		}
 	}
 
-	public Object Ground(ArrayList bindingConstraints) {
+	public Object Ground(ArrayList<Substitution> bindingConstraints) {
 		
 		RecentEventCondition event = (RecentEventCondition) this.clone();
 		event.MakeGround(bindingConstraints);
 		return event;
 	}
 
-	public void MakeGround(ArrayList bindings) {
+	public void MakeGround(ArrayList<Substitution> bindings) {
 		this._name.MakeGround(bindings);
 		this._subject.MakeGround(bindings);
 		this._action.MakeGround(bindings);
@@ -149,10 +151,10 @@ public class RecentEventCondition extends PastEventCondition {
 			this._target.MakeGround(bindings);
 		}
 		
-		ListIterator li = this._parameters.listIterator();
+		ListIterator<Symbol> li = this._parameters.listIterator();
 		while(li.hasNext())
 		{
-			((Symbol) li.next()).MakeGround(bindings);
+			li.next().MakeGround(bindings);
 		}
 	}
 
@@ -171,10 +173,10 @@ public class RecentEventCondition extends PastEventCondition {
 			this._target.MakeGround(subst);
 		}
 		
-		ListIterator li = this._parameters.listIterator();
+		ListIterator<Symbol> li = this._parameters.listIterator();
 		while(li.hasNext())
 		{
-			((Symbol) li.next()).MakeGround(subst);
+			li.next().MakeGround(subst);
 		}
 	}
 	
@@ -190,16 +192,16 @@ public class RecentEventCondition extends PastEventCondition {
 		return _positive == am.getMemory().getSTM().ContainsRecentEvent(GetSearchKeys()); 
 	}
 	
-	protected ArrayList GetPossibleBindings(AgentModel am)
+	protected ArrayList<ActionDetail> GetPossibleBindings(AgentModel am)
 	{
 		return am.getMemory().getSTM().
 				SearchForRecentEvents(GetSearchKeys());
 	}
 	
 	
-	protected ArrayList GetSearchKeys()
+	protected ArrayList<SearchKey> GetSearchKeys()
 	{
-		ArrayList keys = super.GetSearchKeys();
+		ArrayList<SearchKey> keys = super.GetSearchKeys();
 		
 		//we only want to search for events that happened at most 1 second before
 		//keys.add(new SearchKey(SearchKey.MAXELAPSEDTIME, new Long(1000)));

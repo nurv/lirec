@@ -39,14 +39,14 @@ import java.util.ListIterator;
 import FAtiMA.ActionLibrary;
 import FAtiMA.AgentModel;
 import FAtiMA.conditions.Condition;
-import FAtiMA.conditions.NewEventCondition;
-import FAtiMA.conditions.RecentEventCondition;
 import FAtiMA.conditions.RitualCondition;
 import FAtiMA.deliberativeLayer.goals.ActivePursuitGoal;
 import FAtiMA.deliberativeLayer.plan.CausalLink;
 import FAtiMA.deliberativeLayer.plan.Effect;
+import FAtiMA.deliberativeLayer.plan.IPlanningOperator;
 import FAtiMA.deliberativeLayer.plan.OrderingConstraint;
 import FAtiMA.deliberativeLayer.plan.Plan;
+import FAtiMA.deliberativeLayer.plan.ProtectedCondition;
 import FAtiMA.deliberativeLayer.plan.Step;
 import FAtiMA.exceptions.InvalidReplaceUnboundVariableException;
 import FAtiMA.sensorEffector.Event;
@@ -62,13 +62,13 @@ public class Ritual extends ActivePursuitGoal {
 	 * 
 	 */
 	
-	private static final float EXPECTED_AFFILIATION_ONIGNORE_VALUE = -10f;
+	//private static final float EXPECTED_AFFILIATION_ONIGNORE_VALUE = -10f;
 	private static final long serialVersionUID = 1L;
 	
-	private ArrayList _roles;
+	private ArrayList<Symbol> _roles;
 	private Plan _plan;
-	private ArrayList _steps;
-	private ArrayList _links;
+	private ArrayList<Step> _steps;
+	private ArrayList<OrderingConstraint> _links;
 	
 	private Ritual()
 	{
@@ -80,14 +80,14 @@ public class Ritual extends ActivePursuitGoal {
 		super(description);
 		
 		//this.SetExpectedEffectOnDrive("OnIgnore","Affiliation","[SELF]",EXPECTED_AFFILIATION_ONIGNORE_VALUE);
-		_steps = new ArrayList(5);
-		_links = new ArrayList();
-		_roles = new ArrayList(3);
+		_steps = new ArrayList<Step>(5);
+		_links = new ArrayList<OrderingConstraint>();
+		_roles = new ArrayList<Symbol>(3);
 	}
 	
 	public void AddStep(Name actionName, Name role)
 	{
-		ArrayList subst;
+		ArrayList<Substitution> subst;
 		Step action = ActionLibrary.GetInstance().GetAction(_steps.size(), actionName);
 		if(action != null)
 		{
@@ -148,7 +148,7 @@ public class Ritual extends ActivePursuitGoal {
 		_roles.add(role);
 	}
 	
-	public ArrayList GetRoles()
+	public ArrayList<Symbol> GetRoles()
 	{
 		return this._roles;
 	}
@@ -157,7 +157,7 @@ public class Ritual extends ActivePursuitGoal {
 	{
 		Step s;
 		OrderingConstraint o;
-		_plan = new Plan(new ArrayList(),_successConditions);
+		_plan = new Plan(new ArrayList<ProtectedCondition>(),_successConditions);
 		
 		for(int i=0; i < _steps.size(); i++)
 		{
@@ -207,9 +207,9 @@ public class Ritual extends ActivePursuitGoal {
 		} 
 	}
 	
-	public ArrayList getPlans(AgentModel am)
+	public ArrayList<Plan> getPlans(AgentModel am)
 	{
-		ArrayList plans = new ArrayList();
+		ArrayList<Plan> plans = new ArrayList<Plan>();
 		this._plan.UpdatePlan(am);
 		plans.add(this._plan);
 		return plans;
@@ -252,7 +252,7 @@ public class Ritual extends ActivePursuitGoal {
     public void ReplaceUnboundVariables(int variableID) 
     {
     	
-    	ListIterator li;
+    	ListIterator<Condition> li;
     
     	this._name.ReplaceUnboundVariables(variableID);
     	
@@ -274,17 +274,16 @@ public class Ritual extends ActivePursuitGoal {
     		((Condition) li.next()).ReplaceUnboundVariables(variableID);
     	}
     	
-    	li = this._effects.listIterator();
-    	while(li.hasNext())
+    	for(Effect e : this._effects)
     	{
-    		((Effect) li.next()).ReplaceUnboundVariables(variableID);
+    		e.ReplaceUnboundVariables(variableID);
     	}
     	
-    	li = this._roles.listIterator();
-    	while(li.hasNext())
+    	for(Symbol s : this._roles)
     	{
-    		((Symbol) li.next()).ReplaceUnboundVariables(variableID);
+    		s.ReplaceUnboundVariables(variableID);
     	}
+    	
     	
     	this._agent.ReplaceUnboundVariables(variableID);
     	
@@ -301,7 +300,7 @@ public class Ritual extends ActivePursuitGoal {
 	 * @return a new Goal with the substitutions applied
 	 * @see Substitution
 	 */
-	public Object Ground(ArrayList bindingConstraints) 
+	public Object Ground(ArrayList<Substitution> bindingConstraints) 
 	{
 		Ritual aux = (Ritual) this.clone();
 		aux.MakeGround(bindingConstraints);
@@ -316,46 +315,39 @@ public class Ritual extends ActivePursuitGoal {
 	 * @param bindings - A list of substitutions of the type "[Variable]/value"
 	 * @see Substitution
 	 */
-    public void MakeGround(ArrayList bindings)
+    public void MakeGround(ArrayList<Substitution> bindings)
     {
-    	ListIterator li;
     	
     	this._name.MakeGround(bindings);
-    	
-    	li = this._preConditions.listIterator();
-    	while(li.hasNext())
+
+    	for(Condition c : this._preConditions)
     	{
-    		((Condition) li.next()).MakeGround(bindings);
+    		c.MakeGround(bindings);
     	}
     	
-    	li = this._failureConditions.listIterator();
-    	while(li.hasNext())
+    	for(Condition c : this._failureConditions)
     	{
-    		((Condition) li.next()).MakeGround(bindings);
+    		c.MakeGround(bindings);
     	}
     	
-    	li = this._successConditions.listIterator();
-    	while(li.hasNext())
+    	for(Condition c : this._successConditions)
     	{
-    		((Condition) li.next()).MakeGround(bindings);
+    		c.MakeGround(bindings);
     	}
     	
     	this._plan.AddBindingConstraints(bindings);
     	
-    	li = this._roles.listIterator();
-    	while(li.hasNext())
+    	for(Symbol s : this._roles)
     	{
-    		((Symbol) li.next()).MakeGround(bindings);
+    		s.MakeGround(bindings);
     	}
     	
     	this._agent.MakeGround(bindings);
     	
-    	li = this._effects.listIterator();
-    	while(li.hasNext())
+    	for(Effect e : this._effects)
     	{
-    		((Effect) li.next()).MakeGround(bindings);
+    		e.MakeGround(bindings);
     	}
-
     }
     
    
@@ -385,44 +377,36 @@ public class Ritual extends ActivePursuitGoal {
 	 */
     public void MakeGround(Substitution subst)
     {
-    	ListIterator li;
-    	
     	this._name.MakeGround(subst);
-    	
-    	li = this._preConditions.listIterator();
-    	while(li.hasNext())
+
+    	for(Condition c : this._preConditions)
     	{
-    		((Condition) li.next()).MakeGround(subst);
+    		c.MakeGround(subst);
     	}
     	
-    	li = this._failureConditions.listIterator();
-    	while(li.hasNext())
+    	for(Condition c : this._failureConditions)
     	{
-    		((Condition) li.next()).MakeGround(subst);
+    		c.MakeGround(subst);
     	}
     	
-    	li = this._successConditions.listIterator();
-    	while(li.hasNext())
+    	for(Condition c : this._successConditions)
     	{
-    		((Condition) li.next()).MakeGround(subst);
+    		c.MakeGround(subst);
     	}
     	
     	this._plan.AddBindingConstraint(subst);
     	
-    	li = this._roles.listIterator();
-    	while(li.hasNext())
+    	for(Symbol s : this._roles)
     	{
-    		((Symbol) li.next()).MakeGround(subst);
+    		s.MakeGround(subst);
     	}
     	
     	this._agent.MakeGround(subst);
     	
-    	li = this._effects.listIterator();
-    	while(li.hasNext())
+    	for(Effect e : this._effects)
     	{
-    		((Effect) li.next()).MakeGround(subst);
-    	}
-    	
+    		e.MakeGround(subst);
+    	}	
     }
 	
 	/**
@@ -432,7 +416,6 @@ public class Ritual extends ActivePursuitGoal {
 	 */
 	public Object clone()
 	{
-		ListIterator li;
 		Ritual r = new Ritual();
 		r._goalID = this._goalID;
 		r._active = this._active;
@@ -444,45 +427,43 @@ public class Ritual extends ActivePursuitGoal {
 		
 		r._numberOfTries = this._numberOfTries;
 		
-		r._expectedEffects = (Hashtable) this._expectedEffects.clone();
+		r._expectedEffects = (Hashtable<String,Float>) this._expectedEffects.clone();
 		
 		if(this._preConditions != null)
 		{
-			r._preConditions = new ArrayList(this._preConditions.size());
-			li = this._preConditions.listIterator();
-			while(li.hasNext())
+			r._preConditions = new ArrayList<Condition>(this._preConditions.size());
+			for(Condition c : this._preConditions)
 			{
-				r._preConditions.add(((Condition) li.next()).clone());
+				r._preConditions.add((Condition) c.clone());
 			}
 		}
 		
 		if(this._failureConditions != null)
 		{
-			r._failureConditions = new ArrayList(this._failureConditions.size());
-			li = this._failureConditions.listIterator();
-			while(li.hasNext())
+			r._failureConditions = new ArrayList<Condition>(this._failureConditions.size());
+			
+			for(Condition c : this._failureConditions)
 			{
-				r._failureConditions.add(((Condition) li.next()).clone());
+				r._failureConditions.add((Condition) c.clone());
 			}
 		}
 		
 		if(this._successConditions != null)
 		{
-			r._successConditions = new ArrayList(this._successConditions.size());
-			li = this._successConditions.listIterator();
-			while(li.hasNext())
+			r._successConditions = new ArrayList<Condition>(this._successConditions.size());
+			
+			for(Condition c : this._successConditions)
 			{
-				r._successConditions.add(((Condition) li.next()).clone());
+				r._successConditions.add((Condition) c.clone());
 			}
 		}
 		
 		if(this._roles != null)
 		{
-			r._roles = new ArrayList(this._roles.size());
-			li = this._roles.listIterator();
-			while(li.hasNext())
+			r._roles = new ArrayList<Symbol>(this._roles.size());
+			for(Symbol s : this._roles)
 			{
-				r._roles.add(((Symbol) li.next()).clone());
+				r._roles.add((Symbol) s.clone());
 			}
 		}
 		
@@ -499,11 +480,10 @@ public class Ritual extends ActivePursuitGoal {
 		
 		if(this._effects != null)
 		{
-			r._effects = new ArrayList(this._effects.size());
-			li = this._effects.listIterator();
-			while(li.hasNext())
+			r._effects = new ArrayList<Effect>(this._effects.size());
+			for(Effect e : this._effects)
 			{
-				r._effects.add(((Effect) li.next()).clone());
+				r._effects.add((Effect) e.clone());
 			}
 		}
 		
@@ -511,24 +491,24 @@ public class Ritual extends ActivePursuitGoal {
 		
 	}
 	
-	public ArrayList findMatchWithStep(Symbol agent, Name stepName)
+	public ArrayList<SubstitutionSet> findMatchWithStep(Symbol agent, Name stepName)
 	{
-		ArrayList substitutions = new ArrayList();
+		ArrayList<SubstitutionSet> substitutions = new ArrayList<SubstitutionSet>();
 		SubstitutionSet subSet;
-		ArrayList subst;
-		Step s;
+		ArrayList<Substitution> subst;
+		IPlanningOperator ip;
 		
-		for(ListIterator li = this._plan.GetFirstActions().listIterator(); li.hasNext();)
+		for(ListIterator<IPlanningOperator> li = this._plan.GetFirstActions().listIterator(); li.hasNext();)
 		{
-			s = (Step) li.next();
+			ip = li.next();
 			
-			subst = Unifier.Unify(s.getName(), stepName);
+			subst = Unifier.Unify(ip.getName(), stepName);
 			if(subst != null)
 			{
-				if(Unifier.Unify(s.getAgent(), agent)!=null)
+				if(Unifier.Unify(ip.getAgent(), agent)!=null)
 				{
 					subSet = new SubstitutionSet(subst);
-					subSet.AddSubstitution(new Substitution(s.getAgent(),agent));
+					subSet.AddSubstitution(new Substitution(ip.getAgent(),agent));
 					substitutions.add(subSet);
 				}
 			}

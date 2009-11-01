@@ -50,7 +50,7 @@ public class ConditionsPanel extends JPanel {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public ConditionsPanel(String title, ListIterator conditions) {
+	public ConditionsPanel(String title, ListIterator<Condition> conditions) {
 		
 		super();
 		this.setBorder(BorderFactory.createTitledBorder(title));

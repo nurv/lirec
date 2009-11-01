@@ -42,12 +42,9 @@
 
 package FAtiMA.util.parsers;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 
 import org.xml.sax.Attributes;
 
@@ -62,13 +59,11 @@ import FAtiMA.conditions.PropertyCondition;
 import FAtiMA.deliberativeLayer.plan.Effect;
 import FAtiMA.deliberativeLayer.plan.EffectOnDrive;
 import FAtiMA.deliberativeLayer.plan.Step;
-import FAtiMA.exceptions.ActionsParsingException;
 import FAtiMA.exceptions.InvalidEmotionTypeException;
-import FAtiMA.knowledgeBase.KnowledgeBase;
+import FAtiMA.util.Constants;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
 import FAtiMA.wellFormedNames.Symbol;
-import FAtiMA.exceptions.InvalidMotivatorTypeException;
 
 
 /**
@@ -77,17 +72,17 @@ import FAtiMA.exceptions.InvalidMotivatorTypeException;
  */
 public class StripsOperatorsLoaderHandler extends ReflectXMLHandler {
 	private Step _currentOperator;
-	private ArrayList _operators; 
+	private ArrayList<Step> _operators; 
 	private boolean _precondition;
 	private float _probability;
 	private Substitution _self;
 	private AgentModel _am;
 	
 	public StripsOperatorsLoaderHandler(AgentModel am) {
-		_operators = new ArrayList();
+		_operators = new ArrayList<Step>();
 		_precondition = true;
 		_am = am;
-		_self = new Substitution(new Symbol("[SELF]"), new Symbol("SELF"));
+		_self = new Substitution(new Symbol("[SELF]"), new Symbol(Constants.SELF));
 	}
 	
 	
@@ -121,7 +116,7 @@ public class StripsOperatorsLoaderHandler extends ReflectXMLHandler {
 		else
 		{
 			//adds the event effect
-			ListIterator li = action.GetLiteralList().listIterator();
+			ListIterator<Symbol> li = action.GetLiteralList().listIterator();
 			firstName = li.next().toString();
 			event = "EVENT([AGENT]," + firstName;
 			while(li.hasNext()) {
@@ -144,7 +139,7 @@ public class StripsOperatorsLoaderHandler extends ReflectXMLHandler {
 	/**
 	 * @return
 	 */
-	public ArrayList getOperators() {
+	public ArrayList<Step> getOperators() {
 		return _operators;
 	}
 	
@@ -232,7 +227,7 @@ public class StripsOperatorsLoaderHandler extends ReflectXMLHandler {
 		if(_precondition) 
 			_currentOperator.AddPrecondition(mc);
 		else {
-			String operatorName = _currentOperator.getName().GetFirstLiteral().toString();
+			//String operatorName = _currentOperator.getName().GetFirstLiteral().toString();
 			_currentOperator.AddEffectOnDrive(new EffectOnDrive(mc));	
 		}
 	}

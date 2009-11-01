@@ -3,7 +3,6 @@ package FAtiMA.socialRelations;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
-import FAtiMA.knowledgeBase.KnowledgeBase;
 import FAtiMA.memory.Memory;
 import FAtiMA.util.enumerables.RelationType;
 import FAtiMA.wellFormedNames.Name;

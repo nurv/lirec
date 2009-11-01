@@ -1,29 +1,25 @@
 package FAtiMA.culture;
 
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Random;
+
 
 import FAtiMA.AgentModel;
 import FAtiMA.deliberativeLayer.goals.ActivePursuitGoal;
-import FAtiMA.knowledgeBase.KnowledgeBase;
-import FAtiMA.motivationalSystem.MotivationalState;
 import FAtiMA.motivationalSystem.Motivator;
-import FAtiMA.util.AgentLogger;
 import FAtiMA.util.enumerables.CulturalDimensionType;
 import FAtiMA.util.enumerables.MotivatorType;
 import FAtiMA.wellFormedNames.Name;
-import FAtiMA.wellFormedNames.SubstitutionSet;
+
 
 public class CulturalDimensions {
 	final float ALPHA = 0.3f;
 	final float POWER_DISTANCE_K = 1.2f;
 
 	int[] _dimensionalValues;
-	ArrayList _positiveLSignals;
-	ArrayList _negativeLSignals;
-	ArrayList _positiveReplyLSignals;
-	ArrayList _negativeReplyLSignals;
+	ArrayList<String> _positiveLSignals;
+	ArrayList<String> _negativeLSignals;
+	ArrayList<String> _positiveReplyLSignals;
+	ArrayList<String> _negativeReplyLSignals;
 	
 	
 
@@ -46,10 +42,10 @@ public class CulturalDimensions {
 
 	private CulturalDimensions() {
 		_dimensionalValues = new int[CulturalDimensionType.numberOfTypes()];
-		_positiveLSignals = new ArrayList();
-		_negativeLSignals = new ArrayList();
-		_positiveReplyLSignals = new ArrayList();
-		_negativeReplyLSignals = new ArrayList();
+		_positiveLSignals = new ArrayList<String>();
+		_negativeLSignals = new ArrayList<String>();
+		_positiveReplyLSignals = new ArrayList<String>();
+		_negativeReplyLSignals = new ArrayList<String>();
 	}
 
 	
@@ -102,15 +98,15 @@ public class CulturalDimensions {
 	public float determineCulturalUtility(AgentModel am, ActivePursuitGoal goal, float selfContrib, float otherContrib){
 
 		
-		float powerDistanceCoefficient = _dimensionalValues[CulturalDimensionType.POWERDISTANCE] * 0.01f;
+		//float powerDistanceCoefficient = _dimensionalValues[CulturalDimensionType.POWERDISTANCE] * 0.01f;
 		float collectivismCoefficient = _dimensionalValues[CulturalDimensionType.COLLECTIVISM] * 0.01f;
 		float individualismCoefficient = 1 - collectivismCoefficient; 
 	
-		String goalName = goal.getName().GetFirstLiteral().toString();	
+		//String goalName = goal.getName().GetFirstLiteral().toString();	
 		String target = goal.getName().GetLiteralList().get(1).toString();
 		
 		float likeValue = this.obtainLikeRelationshipFromKB(am, target);
-		float differenceInPower = this.obtainDifferenceInPowerFromKB(am, target);
+		//float differenceInPower = this.obtainDifferenceInPowerFromKB(am, target);
 			
 		float result = selfContrib + //(otherContrib * Math.pow(POWER_DISTANCE_K, differenceInPower) + 
 												 (otherContrib * collectivismCoefficient)+ 
@@ -130,7 +126,7 @@ public class CulturalDimensions {
 		}	
 	}
 
-	private int obtainDifferenceInPowerFromKB(AgentModel am, String targetAgent){
+	/*private int obtainDifferenceInPowerFromKB(AgentModel am, String targetAgent){
 
 		String agentName = am.getName();
 
@@ -148,7 +144,7 @@ public class CulturalDimensions {
 
 			return targetPowerValue - selfPowerValue;
 		}
-	}
+	}*/
 
 	public float determineAffiliationEffectFromLSignal(String subject, String target, String signalName, float signalValue) {
 		return signalValue;

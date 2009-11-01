@@ -8,7 +8,6 @@ import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 
-import FAtiMA.Agent;
 import FAtiMA.AgentModel;
 import FAtiMA.motivationalSystem.MotivationalState;
 import FAtiMA.util.enumerables.MotivatorType;

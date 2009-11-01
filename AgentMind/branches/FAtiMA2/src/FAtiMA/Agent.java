@@ -20,21 +20,17 @@ import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.SAXException;
 
 import FAtiMA.Display.AgentDisplay;
-import FAtiMA.conditions.Condition;
 import FAtiMA.culture.CulturalDimensions;
 import FAtiMA.culture.Ritual;
 import FAtiMA.deliberativeLayer.DeliberativeProcess;
 import FAtiMA.deliberativeLayer.EmotionalPlanner;
 import FAtiMA.deliberativeLayer.goals.GoalLibrary;
-import FAtiMA.deliberativeLayer.plan.Effect;
-import FAtiMA.deliberativeLayer.plan.Step;
 import FAtiMA.emotionalState.ActiveEmotion;
 import FAtiMA.emotionalState.Appraisal;
 import FAtiMA.emotionalState.AppraisalVector;
 import FAtiMA.emotionalState.BaseEmotion;
 import FAtiMA.emotionalState.EmotionalState;
 import FAtiMA.exceptions.UnknownGoalException;
-import FAtiMA.knowledgeBase.KnowledgeBase;
 import FAtiMA.memory.KnowledgeSlot;
 import FAtiMA.memory.Memory;
 import FAtiMA.motivationalSystem.MotivationalState;
@@ -55,7 +51,6 @@ import FAtiMA.util.parsers.AgentLoaderHandler;
 import FAtiMA.util.parsers.CultureLoaderHandler;
 import FAtiMA.util.parsers.ScenarioLoaderHandler;
 import FAtiMA.wellFormedNames.Name;
-import FAtiMA.wellFormedNames.SubstitutionSet;
 
 public class Agent implements AgentModel {
 	
@@ -117,8 +112,8 @@ public class Agent implements AgentModel {
 				if (args.length == 4){
 					new Agent(agentPlatform, args[1],Integer.parseInt(args[2]),saveDirectory,args[3]);
 				}else if(args.length >= 11){
-					HashMap properties = new HashMap();
-					ArrayList goals = new ArrayList();
+					HashMap<String,String> properties = new HashMap<String,String>();
+					ArrayList<String> goals = new ArrayList<String>();
 					readPropertiesAndGoals(args, properties, goals);
 					new Agent(agentPlatform,args[1], Integer.parseInt(args[2]),saveDirectory,Boolean.parseBoolean(args[3]),args[4],null,null, args[5], args[6], args[7],args[8],args[9],args[10], properties, goals);		
 				}else{
@@ -129,7 +124,7 @@ public class Agent implements AgentModel {
 
 	}
 	
-	static private void readPropertiesAndGoals(String args[],HashMap properties,ArrayList goals){
+	static private void readPropertiesAndGoals(String args[],HashMap<String,String> properties,ArrayList<String> goals){
 		StringTokenizer st;
 		String left;
 			
@@ -153,8 +148,8 @@ public class Agent implements AgentModel {
 	protected ReactiveProcess _reactiveLayer;
 	protected DialogManager _dialogManager;
 
-	protected ArrayList _actionsForExecution;
-	protected ArrayList _perceivedEvents;
+	protected ArrayList<ValuedAction> _actionsForExecution;
+	protected ArrayList<Event> _perceivedEvents;
 
 	protected RemoteAgent _remoteAgent;
 	protected String _role;
@@ -174,7 +169,10 @@ public class Agent implements AgentModel {
 	public static final String MIND_PATH = "data/characters/minds/";
 	private static final Name ACTION_CONTEXT = Name.ParseName("ActionContext()");
 
-	public Agent(short agentPlatform, String host, int port, String saveDirectory, boolean displayMode, String name,String lActDatabase, String userLActDatabase, String sex, String role, String displayName, String actionsFile, String goalsFile, String cultureName, HashMap properties, ArrayList goalList) {
+	public Agent(short agentPlatform, String host, int port, String saveDirectory, boolean displayMode, String name,String lActDatabase, 
+			String userLActDatabase, String sex, String role, 
+			String displayName, String actionsFile, 
+			String goalsFile, String cultureName, HashMap<String,String> properties, ArrayList<String> goalList) {
 
 		_emotionalState = new EmotionalState();
 		_memory = new Memory();
@@ -189,8 +187,8 @@ public class Agent implements AgentModel {
 		_displayName = displayName;
 		_showStateWindow = displayMode;
 		_currentEmotion = EmotionType.NEUTRAL;//neutral emotion - no emotion
-		_actionsForExecution = new ArrayList();
-		_perceivedEvents = new ArrayList();
+		_actionsForExecution = new ArrayList<ValuedAction>();
+		_perceivedEvents = new ArrayList<Event>();
 		_dialogManager = new DialogManager();
 
 		if(agentPlatform == AgentPlatform.WORLDSIM){
@@ -262,7 +260,7 @@ public class Agent implements AgentModel {
 			}
 			else if (agentPlatform == AgentPlatform.WORLDSIM)
 			{
-				_remoteAgent = new WorldSimulatorRemoteAgent(host,port,this,new HashMap());
+				_remoteAgent = new WorldSimulatorRemoteAgent(host,port,this,new HashMap<String,String>());
 			}
 			 
 			LoadAgentState(directory + fileName);
@@ -281,7 +279,7 @@ public class Agent implements AgentModel {
 		}
 	}
 	
-	private void loadPersonality(String personalityFile, short agentPlatform, ArrayList goalList) 
+	private void loadPersonality(String personalityFile, short agentPlatform, ArrayList<String> goalList) 
 		throws	ParserConfigurationException, SAXException, IOException, UnknownGoalException{
 		
 		AgentLogger.GetInstance().log("LOADING Personality: " + personalityFile);
@@ -299,7 +297,7 @@ public class Agent implements AgentModel {
 
 		//The WorldSimulator Agent loads additional goals provided in the starting goal list
 		if(agentPlatform == AgentPlatform.WORLDSIM){
-			ListIterator lt = goalList.listIterator();
+			ListIterator<String> lt = goalList.listIterator();
 			String goal;
 			String goalName;
 			StringTokenizer st;
@@ -328,7 +326,7 @@ public class Agent implements AgentModel {
 		parser.parse(new File(MIND_PATH + cultureName + ".xml"), culture);
 		
 		Ritual r;
-		ListIterator li = culture.GetRituals(this).listIterator();
+		ListIterator<Ritual> li = culture.GetRituals(this).listIterator();
 		while(li.hasNext())
 		{
 			r = (Ritual) li.next();
@@ -399,8 +397,8 @@ public class Agent implements AgentModel {
 		this._currentEmotion = ((Short) s.readObject()).shortValue();
 		this._displayName = (String) s.readObject();
 		this._showStateWindow = ((Boolean) s.readObject()).booleanValue();
-		this._actionsForExecution = (ArrayList) s.readObject();
-		this._perceivedEvents = (ArrayList) s.readObject();
+		this._actionsForExecution = (ArrayList<ValuedAction>) s.readObject();
+		this._perceivedEvents = (ArrayList<Event>) s.readObject();
 		this._saveDirectory = (String) s.readObject();
 		s.close();
 		in.close();
@@ -553,7 +551,7 @@ public class Agent implements AgentModel {
 					//perceives and appraises new events
 					synchronized (this)
 					{
-						for(ListIterator li = this._perceivedEvents.listIterator(); li.hasNext();)
+						for(ListIterator<Event> li = this._perceivedEvents.listIterator(); li.hasNext();)
 						{
 							Event e = (Event) li.next();
 							e = e.ApplyPerspective(_name);
@@ -589,9 +587,9 @@ public class Agent implements AgentModel {
 						
 						synchronized (_memory.getWM())
 						{
-							ArrayList facts = _memory.getWM().GetNewFacts();
+							ArrayList<KnowledgeSlot> facts = _memory.getWM().GetNewFacts();
 							
-							for(ListIterator li = facts.listIterator();li.hasNext();)
+							for(ListIterator<KnowledgeSlot> li = facts.listIterator();li.hasNext();)
 							{
 								KnowledgeSlot ks = (KnowledgeSlot) li.next();
 								if(ks.getName().startsWith(Constants.SELF))
@@ -701,9 +699,9 @@ public class Agent implements AgentModel {
 		_dialogManager.SpeechStarted();
 	}
 	
-	public ActiveEmotion simulateAppraisal(String action, String name, ArrayList parameters)
+	public ActiveEmotion simulateAppraisal(String action, String name, ArrayList<String> parameters)
 	{
-		ArrayList emotions;
+		ArrayList<BaseEmotion> emotions;
 		BaseEmotion em;
 		Event e;
 		ActiveEmotion aem;
@@ -735,7 +733,7 @@ public class Agent implements AgentModel {
 			
 			Reaction r = _reactiveLayer.Evaluate(this, e);
 			emotions = Appraisal.GenerateEmotions(this, e, _reactiveLayer.translateEmotionalReaction(r),r.getOther());
-			ListIterator li = emotions.listIterator();
+			ListIterator<BaseEmotion> li = emotions.listIterator();
 			
 			while(li.hasNext())
 			{

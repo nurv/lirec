@@ -57,13 +57,13 @@ public class EmotionalStatePanel extends AgentDisplayPanel {
     
     JPanel _emotionsPanel;
     
-    protected Hashtable _emotionDisplays;
+    protected Hashtable<String,EmotionDisplay> _emotionDisplays;
     
     public EmotionalStatePanel() {
         super();
         this.setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
         
-        _emotionDisplays = new Hashtable();
+        _emotionDisplays = new Hashtable<String,EmotionDisplay>();
 
         
         /*JPanel arousalPanel = new JPanel();
@@ -115,10 +115,10 @@ public class EmotionalStatePanel extends AgentDisplayPanel {
             //in this case, we just have to update the values for the intensity of emotions
             //since the emotions displayed in the previous update are the same emotions
             //in the current update
-             Iterator it = es.GetEmotionsIterator();
+             Iterator<ActiveEmotion> it = es.GetEmotionsIterator();
              EmotionDisplay emotionDisplay;
              while(it.hasNext()) {
-                 em = (ActiveEmotion) it.next();     
+                 em = it.next();     
                  emotionDisplay = (EmotionDisplay) _emotionDisplays.get(em.GetHashKey());
                  emotionDisplay.SetValue(em.GetIntensity());
              }    
@@ -130,10 +130,10 @@ public class EmotionalStatePanel extends AgentDisplayPanel {
             _emotionsPanel.removeAll(); //removes all displayed emotions from the panel
             _emotionDisplays.clear();
             
-            Iterator it = es.GetEmotionsIterator();
+            Iterator<ActiveEmotion> it = es.GetEmotionsIterator();
             EmotionDisplay emotionDisplay;
             while(it.hasNext()) {
-                em = (ActiveEmotion) it.next();
+                em = it.next();
                 emotionDisplay = new EmotionDisplay(em);
                 
                 _emotionsPanel.add(emotionDisplay.GetEmotionPanel());
@@ -150,7 +150,7 @@ public class EmotionalStatePanel extends AgentDisplayPanel {
         ActiveEmotion em = es.GetStrongestEmotion();
         
         if(em != null) {
-        	Iterator it = _emotionDisplays.values().iterator();
+        	Iterator<EmotionDisplay> it = _emotionDisplays.values().iterator();
 	        EmotionDisplay emotionDisplay;
 	        while(it.hasNext()) {
 	            emotionDisplay = (EmotionDisplay) it.next();

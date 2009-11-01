@@ -12,12 +12,11 @@ import javax.swing.JScrollPane;
 
 import FAtiMA.Agent;
 import FAtiMA.AgentModel;
-import FAtiMA.motivationalSystem.MotivationalState;
 
 public class NeedsPanel extends AgentDisplayPanel {
 	private static final long serialVersionUID = 1L;
 	
-	private Hashtable _drivesDisplays;
+	private Hashtable<String,DrivesDisplay> _drivesDisplays;
 	 
 	private JPanel _needs;
 	private int _previousKnownAgents;
@@ -29,7 +28,7 @@ public class NeedsPanel extends AgentDisplayPanel {
 		
         this.setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
       
-        _drivesDisplays = new Hashtable();
+        _drivesDisplays = new Hashtable<String, DrivesDisplay>();
 		
         _needs = new JPanel();
         _needs.setBorder(BorderFactory.createTitledBorder("Needs"));
@@ -53,16 +52,12 @@ public class NeedsPanel extends AgentDisplayPanel {
 	public boolean Update(Agent ag) {
 
 		CheckForOtherAgents(ag);
-	
-		Collection displays  = _drivesDisplays.values();
 		
-		Iterator it = displays.iterator();
-		
-		while(it.hasNext()){
-			DrivesDisplay dd = (DrivesDisplay)it.next();
-			
+		for(DrivesDisplay dd : _drivesDisplays.values())
+		{
 			dd.Update(ag);
 		}
+	
 		return false;
 	}
 	 
@@ -73,9 +68,9 @@ public class NeedsPanel extends AgentDisplayPanel {
 		if(numOfKnownAgents > _previousKnownAgents){
 			_previousKnownAgents = numOfKnownAgents;
 			
-			Collection otherAgentsNames  = am.getMotivationalState().getOtherAgentsMotivators().keySet();
+			Collection<String> otherAgentsNames  = am.getMotivationalState().getOtherAgentsMotivators().keySet();
 		
-			Iterator it = otherAgentsNames.iterator();
+			Iterator<String> it = otherAgentsNames.iterator();
 			
 			while(it.hasNext()){
 				String agentName = (String)it.next();

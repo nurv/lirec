@@ -52,11 +52,9 @@ import org.xml.sax.InputSource;
 
 import FAtiMA.AgentModel;
 import FAtiMA.ValuedAction;
-import FAtiMA.culture.CulturalDimensions;
-import FAtiMA.culture.SymbolTranslator;
 import FAtiMA.emotionalState.ActiveEmotion;
-import FAtiMA.emotionalState.EmotionalState;
 import FAtiMA.util.parsers.RemoteActionHandler;
+import FAtiMA.wellFormedNames.Symbol;
 
 
 public class RemoteAction implements Serializable {
@@ -69,7 +67,7 @@ public class RemoteAction implements Serializable {
 	protected String _subject;
 	protected String _actionType;
 	protected String _target;
-	protected ArrayList _parameters;
+	protected ArrayList<String> _parameters;
 	protected ActiveEmotion _emotion;
 	
 	//camera and perspective fields
@@ -103,7 +101,7 @@ public class RemoteAction implements Serializable {
 	 */
 	public RemoteAction()
 	{
-		_parameters = new ArrayList();
+		_parameters = new ArrayList<String>();
 	}
 	
 	public RemoteAction(AgentModel am, ValuedAction va)
@@ -111,12 +109,12 @@ public class RemoteAction implements Serializable {
 		
 
 		String actionName;
-		ListIterator li = va.GetAction().GetLiteralList().listIterator();
+		ListIterator<Symbol> li = va.GetAction().GetLiteralList().listIterator();
 		
 		actionName = li.next().toString();
 		_actionType = actionName;
 		_subject = am.getName();
-		_parameters = new ArrayList();
+		_parameters = new ArrayList<String>();
 		_target = null;
 		
 		
@@ -142,7 +140,7 @@ public class RemoteAction implements Serializable {
 		_parameters.add(param);
 	}
 	
-	public ArrayList GetParameters()
+	public ArrayList<String> GetParameters()
 	{
 		return _parameters;
 	}
@@ -243,7 +241,7 @@ public class RemoteAction implements Serializable {
 	    Event event;
 	    event = new Event(_subject,_actionType,_target);
 		
-		for(ListIterator li = _parameters.listIterator(); li.hasNext();)
+		for(ListIterator<String> li = _parameters.listIterator(); li.hasNext();)
 		{
 			event.AddParameter(new Parameter("param",li.next()));
 		}
@@ -265,7 +263,7 @@ public class RemoteAction implements Serializable {
     	
     	xmlAction = xmlAction + "<Parameters>";
     	
-    	ListIterator li = _parameters.listIterator();
+    	ListIterator<String> li = _parameters.listIterator();
     	while(li.hasNext())
     	{
     		xmlAction = xmlAction + "<Param>" + li.next() + "</Param>";
@@ -300,7 +298,7 @@ public class RemoteAction implements Serializable {
     	}
     	if(_parameters.size() > 0)
     	{
-    		ListIterator li = _parameters.listIterator();
+    		ListIterator<String> li = _parameters.listIterator();
     		while(li.hasNext())
     		{
     			msg = msg + " " + li.next();

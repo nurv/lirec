@@ -75,15 +75,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
-import FAtiMA.conditions.Condition;
-import FAtiMA.deliberativeLayer.plan.Effect;
 import FAtiMA.deliberativeLayer.plan.Step;
 import FAtiMA.memory.KnowledgeSlot;
-import FAtiMA.util.AgentLogger;
-import FAtiMA.util.ApplicationLogger;
 import FAtiMA.wellFormedNames.Name;
-import FAtiMA.wellFormedNames.Substitution;
-import FAtiMA.wellFormedNames.SubstitutionSet;
 import FAtiMA.wellFormedNames.Symbol;
 
 
@@ -105,16 +99,16 @@ public class KnowledgeBase implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	private KnowledgeSlot _kB;
-	private ArrayList _factList;
-	private ArrayList _inferenceOperators;
+	private ArrayList<KnowledgeSlot> _factList;
+	private ArrayList<Step> _inferenceOperators;
 
 	/**
 	 * Creates a new Empty KnowledgeBase
 	 */
 	public KnowledgeBase() {
 		_kB = new KnowledgeSlot("KB");
-		_factList = new ArrayList();
-		_inferenceOperators = new ArrayList();
+		_factList = new ArrayList<KnowledgeSlot>();
+		_inferenceOperators = new ArrayList<Step>();
 	}
 	
 	/**
@@ -150,7 +144,7 @@ public class KnowledgeBase implements Serializable {
 	 * @return the inference operators
 	 */
     // Added 19/03/09
-	public ArrayList GetInferenceOperators()
+	public ArrayList<Step> GetInferenceOperators()
 	{
 		return _inferenceOperators;
 	}
@@ -174,15 +168,15 @@ public class KnowledgeBase implements Serializable {
 		
 		KnowledgeSlot aux = _kB;
 		KnowledgeSlot currentSlot = _kB;
-		ArrayList fetchList = predicate.GetLiteralList();
-		ListIterator li = fetchList.listIterator();
+		ArrayList<Symbol> fetchList = predicate.GetLiteralList();
+		ListIterator<Symbol> li = fetchList.listIterator();
 		Symbol l = null;
 			
 		synchronized (this) {
 			
 			while (li.hasNext()) {
 				currentSlot =  aux;
-				l = (Symbol) li.next();
+				l = li.next();
 				if (currentSlot.containsKey(l.toString())) {
 					aux = currentSlot.get(l.toString());
 				} else
@@ -200,10 +194,10 @@ public class KnowledgeBase implements Serializable {
             }
 			
 			KnowledgeSlot ks;
-			li = _factList.listIterator();
-			while(li.hasNext())
+			ListIterator<KnowledgeSlot> li2 = _factList.listIterator();
+			while(li2.hasNext())
 			{
-				ks = (KnowledgeSlot) li.next();
+				ks = li2.next();
 				if(ks.getName().equals(predicate.toString()))
 				{
 					li.remove();
@@ -223,14 +217,14 @@ public class KnowledgeBase implements Serializable {
 		boolean newProperty = false;
 		KnowledgeSlot aux = _kB;
 		KnowledgeSlot currentSlot;
-		ArrayList fetchList = property.GetLiteralList();
-		ListIterator li = fetchList.listIterator();
+		ArrayList<Symbol> fetchList = property.GetLiteralList();
+		ListIterator<Symbol> li = fetchList.listIterator();
 		Symbol l;		
 
 		synchronized (this) {
 			while (li.hasNext()) {
 				currentSlot = aux;
-				l = (Symbol) li.next();
+				l = li.next();
 				if (currentSlot.containsKey(l.toString())) {
 					aux = currentSlot.get(l.toString());
 				} else {
@@ -256,10 +250,10 @@ public class KnowledgeBase implements Serializable {
 			else
 			{
 				KnowledgeSlot ks;
-				li = _factList.listIterator();
-				while(li.hasNext())
+				ListIterator<KnowledgeSlot> li2 = _factList.listIterator();
+				while(li2.hasNext())
 				{
-					ks = (KnowledgeSlot) li.next();
+					ks = li2.next();
 					if(ks.getName().equals(property.toString()))
 					{
 						ks.setValue(value);
@@ -270,7 +264,7 @@ public class KnowledgeBase implements Serializable {
 		}
 	}
 	
-	public ListIterator GetFactList() {
+	public ListIterator<KnowledgeSlot> GetFactList() {
 	    return _factList.listIterator();
 	}
 

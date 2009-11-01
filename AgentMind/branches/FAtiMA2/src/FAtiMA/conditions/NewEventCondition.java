@@ -5,7 +5,6 @@ import java.util.ListIterator;
 
 import FAtiMA.AgentModel;
 import FAtiMA.memory.SearchKey;
-import FAtiMA.sensorEffector.Event;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Symbol;
 
@@ -36,13 +35,13 @@ public class NewEventCondition extends RecentEventCondition {
 			newEvent._target = (Symbol) this._target.clone();
 		}
 		
-		newEvent._parameters = new ArrayList(this._parameters.size());
+		newEvent._parameters = new ArrayList<Symbol>(this._parameters.size());
 		
-		ListIterator li = this._parameters.listIterator();
+		ListIterator<Symbol> li = this._parameters.listIterator();
 		
 		while(li.hasNext())
 		{
-			newEvent._parameters.add(((Symbol)li.next()).clone());
+			newEvent._parameters.add((Symbol)li.next().clone());
 		}
 		
 		return newEvent;
@@ -88,9 +87,9 @@ public class NewEventCondition extends RecentEventCondition {
 	}
 	
 	
-	protected ArrayList GetSearchKeys()
+	protected ArrayList<SearchKey> GetSearchKeys()
 	{
-		ArrayList keys = super.GetSearchKeys();
+		ArrayList<SearchKey> keys = super.GetSearchKeys();
 		
 		//we only want to search for events that happened at most 1 second before
 		keys.add(new SearchKey(SearchKey.MAXELAPSEDTIME, new Long(4000)));

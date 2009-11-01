@@ -36,7 +36,6 @@ import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 
-import FAtiMA.knowledgeBase.KnowledgeBase;
 import FAtiMA.memory.Memory;
 import FAtiMA.socialRelations.LikeRelation;
 import FAtiMA.socialRelations.Relation;

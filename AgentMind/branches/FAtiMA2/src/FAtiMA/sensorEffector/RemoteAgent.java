@@ -81,7 +81,6 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -92,8 +91,6 @@ import FAtiMA.AgentSimulationTime;
 import FAtiMA.ValuedAction;
 import FAtiMA.emotionalState.ActiveEmotion;
 import FAtiMA.emotionalState.EmotionalState;
-import FAtiMA.knowledgeBase.KnowledgeBase;
-import FAtiMA.motivationalSystem.MotivationalState;
 import FAtiMA.socialRelations.LikeRelation;
 import FAtiMA.socialRelations.RespectRelation;
 import FAtiMA.util.AgentLogger;
@@ -131,7 +128,7 @@ public abstract class RemoteAgent extends SocketListener {
 	protected static final String STOP_TIME = "STOP-TIME";
 	protected static final String RESUME_TIME = "RESUME-TIME";
 	
-	protected ArrayList _actions;
+	protected ArrayList<ValuedAction> _actions;
 	
 	protected Agent _agent;
 	protected boolean _canAct;
@@ -139,8 +136,7 @@ public abstract class RemoteAgent extends SocketListener {
 	//protected FileWriter _fileWriter;
 	//protected File _logFile;
 	
-	protected ArrayList _lookAtList;
-	protected HashMap _objectIdentifiers;
+	protected ArrayList<String> _lookAtList;
 	protected boolean _running;
 	protected String _userName;
 	//protected LanguageEngine _languageEngine;
@@ -149,12 +145,11 @@ public abstract class RemoteAgent extends SocketListener {
 	
 	
 	
-	protected RemoteAgent(String host, int port, Agent agent, Map arguments) throws UnknownHostException, IOException
+	protected RemoteAgent(String host, int port, Agent agent, Map<String,String> arguments) throws UnknownHostException, IOException
 	{
 		_agent = agent;
-		_lookAtList = new ArrayList();
-		_actions = new ArrayList();
-		_objectIdentifiers = new HashMap();
+		_lookAtList = new ArrayList<String>();
+		_actions = new ArrayList<ValuedAction>();
 		_canAct = true;
 		_running = true;
 		
@@ -181,7 +176,7 @@ public abstract class RemoteAgent extends SocketListener {
 	}
 	
 	
-	public abstract String getInitializationMessage(Map arguments);
+	public abstract String getInitializationMessage(Map<String,String> arguments);
 
 	/**
 	 * Add an action to an execution list. The action will be executed as soon
@@ -365,21 +360,22 @@ public abstract class RemoteAgent extends SocketListener {
 		
 		LikeRelation like;
 		RespectRelation respect;
-		ArrayList relations = LikeRelation.getAllRelations(this._agent.getMemory(), this._agent.getName());
+		ArrayList<LikeRelation> relations = LikeRelation.getAllRelations(this._agent.getMemory(), this._agent.getName());
 		msg="<Relations>";
-		for(ListIterator li = relations.listIterator();li.hasNext();)
+		for(ListIterator<LikeRelation> li = relations.listIterator();li.hasNext();)
 		{
-			like = (LikeRelation) li.next();
+			like = li.next();
 			msg += "<Like>";
 			msg += "<Subject>" + like.getSubject() + "</Subject>";
 			msg += "<Target>" + like.getTarget() + "</Target>";
 			msg += "<Value>" + like.getValue(this._agent.getMemory()) + "</Value>";
 			msg += "</Like>";
 		}
-		relations = RespectRelation.getAllRelations(this._agent.getMemory(), this._agent.getName());
-		for(ListIterator li = relations.listIterator();li.hasNext();)
+		
+		ArrayList<RespectRelation> relations2 =  RespectRelation.getAllRelations(this._agent.getMemory(), this._agent.getName());
+		for(ListIterator<RespectRelation> li = relations2.listIterator();li.hasNext();)
 		{
-			respect = (RespectRelation) li.next();
+			respect =  li.next();
 			msg += "<Respect>";
 			msg += "<Subject>" + respect.getSubject() + "</Subject>";
 			msg += "<Target>" + respect.getTarget() + "</Target>";
@@ -456,11 +452,11 @@ public abstract class RemoteAgent extends SocketListener {
 			Name auxName;
 			String displayName;
 			String role;
-			ArrayList binds = am.getMemory().GetPossibleBindings(n1);
+			ArrayList<SubstitutionSet> binds = am.getMemory().GetPossibleBindings(n1);
 			
 			if(binds != null)
 			{
-				for(ListIterator li = binds.listIterator();li.hasNext();)
+				for(ListIterator<SubstitutionSet> li = binds.listIterator();li.hasNext();)
 				{
 					ss = (SubstitutionSet) li.next();
 					auxName = (Name) n1.clone();
@@ -576,7 +572,6 @@ public abstract class RemoteAgent extends SocketListener {
 	    	
 	    	s.writeObject(_actions);
 	    	s.writeObject(_lookAtList);
-	    	s.writeObject(_objectIdentifiers);
 	    	s.writeObject(_userName);
 	    	s.writeObject(new Boolean(_canAct));
 	    	//s.writeObject(new Boolean(_running));
@@ -591,6 +586,7 @@ public abstract class RemoteAgent extends SocketListener {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void LoadState(String fileName)
 	{
 		try
@@ -598,9 +594,8 @@ public abstract class RemoteAgent extends SocketListener {
 			FileInputStream in = new FileInputStream(fileName);
 			ObjectInputStream s = new ObjectInputStream(in);
 			
-			this._actions = (ArrayList) s.readObject();
-			this._lookAtList = (ArrayList) s.readObject();
-			this._objectIdentifiers = (HashMap) s.readObject();
+			this._actions = (ArrayList<ValuedAction>) s.readObject();
+			this._lookAtList = (ArrayList<String>) s.readObject();
 			this._userName = (String) s.readObject();
 			this._canAct = ((Boolean) s.readObject()).booleanValue();
 			//this._running = ((Boolean) s.readObject()).booleanValue();
@@ -674,7 +669,7 @@ public abstract class RemoteAgent extends SocketListener {
 			String actionRepresentation;
 			String param;
 			int intensity;
-			ArrayList parameters = new ArrayList();
+			ArrayList<String> parameters = new ArrayList<String>();
 			StringTokenizer st = new StringTokenizer(perc, " ");
 			st.nextToken();
 			String triggerID = st.nextToken();
@@ -750,7 +745,6 @@ public abstract class RemoteAgent extends SocketListener {
 	
 	protected void LookAtPerception(String perc)
 	{ 
-		Name propertyName;
 		StringTokenizer st = new StringTokenizer(perc," ");
 		//perception about the properties of a given object/character
 		//the second word corresponds to the object/character

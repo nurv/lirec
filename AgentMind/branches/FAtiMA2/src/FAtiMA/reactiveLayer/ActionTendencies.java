@@ -44,13 +44,13 @@ import FAtiMA.AgentSimulationTime;
 import FAtiMA.IntegrityValidator;
 import FAtiMA.ValuedAction;
 import FAtiMA.conditions.Condition;
-import FAtiMA.emotionalState.ActiveEmotion;
 import FAtiMA.emotionalState.BaseEmotion;
 import FAtiMA.emotionalState.EmotionalState;
 import FAtiMA.exceptions.UnknownSpeechActException;
 import FAtiMA.sensorEffector.Event;
 import FAtiMA.util.AgentLogger;
 import FAtiMA.wellFormedNames.Name;
+import FAtiMA.wellFormedNames.Substitution;
 import FAtiMA.wellFormedNames.Unifier;
 
 
@@ -67,15 +67,15 @@ public class ActionTendencies implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private ArrayList _actions;
-	private HashMap _filteredActions;
+	private ArrayList<Action> _actions;
+	private HashMap<String,Long> _filteredActions;
 	
 	/**
 	 * Create a new ActionTendenciesSet
 	 */
 	public ActionTendencies() {
-		_actions = new ArrayList();
-		_filteredActions = new HashMap();
+		_actions = new ArrayList<Action>();
+		_filteredActions = new HashMap<String,Long>();
 	}
 
 	/**
@@ -95,10 +95,10 @@ public class ActionTendencies implements Serializable {
 	 * @see IntegrityValidator
 	 */
 	public void CheckIntegrity(IntegrityValidator val) throws UnknownSpeechActException {
-	    ListIterator li = _actions.listIterator();
+	    ListIterator<Action> li = _actions.listIterator();
 	
 	    while(li.hasNext()) {
-	       ((Action) li.next()).CheckIntegrity(val);
+	       li.next().CheckIntegrity(val);
 	    }
 	}
 	
@@ -130,7 +130,7 @@ public class ActionTendencies implements Serializable {
 	 * @return the most relevant Action (according to the emotional state)
 	 */
 	public ValuedAction SelectAction(AgentModel am) {
-		Iterator it;
+		Iterator<Action> it;
 		Action a;
 		ValuedAction va;
 		ValuedAction bestAction = null;
@@ -138,7 +138,7 @@ public class ActionTendencies implements Serializable {
 		
 		it = _actions.iterator();
 		while(it.hasNext()) {
-			a = (Action) it.next();
+			a = it.next();
 			va = a.TriggerAction(am, emState.GetEmotionsIterator());
 			if (va != null && !isIgnored(va)) {
 				if(bestAction == null || va.GetValue(emState) > bestAction.GetValue(emState)) 
@@ -153,10 +153,10 @@ public class ActionTendencies implements Serializable {
 	
 	public BaseEmotion RecognizeEmotion(AgentModel am, Event e, Name action)
 	{
-		Iterator it;
+		Iterator<Action> it;
 		Action a;
 		Action a2;
-		ArrayList bindings = new ArrayList();
+		ArrayList<Substitution> bindings = new ArrayList<Substitution>();
 		
 		it = _actions.iterator();
 		while(it.hasNext())
@@ -180,9 +180,9 @@ public class ActionTendencies implements Serializable {
 	{
 		action = action.toLowerCase();
 		Action a;
-		for(ListIterator li = _actions.listIterator();li.hasNext();)
+		for(ListIterator<Action> li = _actions.listIterator();li.hasNext();)
 		{
-			a = (Action) li.next();
+			a =  li.next();
 			if(a.getName().toString().toLowerCase().contains(action))
 			{
 				AgentLogger.GetInstance().log("Reinforcing AT: " + a.getName());	
@@ -194,9 +194,9 @@ public class ActionTendencies implements Serializable {
 	public void Print()
 	{
 		Action act;
-		for(ListIterator li = _actions.listIterator();li.hasNext();)
+		for(ListIterator<Action> li = _actions.listIterator();li.hasNext();)
 		{
-			act = (Action) li.next();
+			act = li.next();
 			AgentLogger.GetInstance().logAndPrint(act.toString());
 		}
 	}

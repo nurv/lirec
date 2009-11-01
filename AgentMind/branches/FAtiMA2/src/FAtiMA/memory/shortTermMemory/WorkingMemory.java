@@ -38,27 +38,20 @@
 
 package FAtiMA.memory.shortTermMemory;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.ListIterator;
 
 import FAtiMA.AgentModel;
 import FAtiMA.conditions.Condition;
 import FAtiMA.deliberativeLayer.plan.Effect;
 import FAtiMA.deliberativeLayer.plan.Step;
-import FAtiMA.util.AgentLogger;
-import FAtiMA.util.ApplicationLogger;
+
 import FAtiMA.wellFormedNames.Name;
-import FAtiMA.wellFormedNames.Substitution;
 import FAtiMA.wellFormedNames.SubstitutionSet;
 import FAtiMA.wellFormedNames.Symbol;
-import FAtiMA.knowledgeBase.*;
-import FAtiMA.memory.ActionDetail;
+
 import FAtiMA.memory.KnowledgeSlot;
 import FAtiMA.memory.Memory;
 
@@ -83,20 +76,20 @@ public class WorkingMemory implements Serializable {
 	
 
 	private KnowledgeSlot _wM;
-	private ArrayList _factList;
+	private ArrayList<KnowledgeSlot> _factList;
 	private boolean _newKnowledge;
-	private ArrayList _newFacts;
-	private ArrayList _changeList;
+	private ArrayList<KnowledgeSlot> _newFacts;
+	private ArrayList<KnowledgeSlot> _changeList;
 
 	/**
 	 * Creates a new Empty WorkingMemory
 	 */
 	public WorkingMemory() {
 		_wM = new KnowledgeSlot("WM");
-		_factList = new ArrayList(WorkingMemory.MAXENTRY);
+		_factList = new ArrayList<KnowledgeSlot>(WorkingMemory.MAXENTRY);
 		_newKnowledge = false;
-		_newFacts = new ArrayList();
-		_changeList = new ArrayList(WorkingMemory.MAXENTRY);
+		_newFacts = new ArrayList<KnowledgeSlot>();
+		_changeList = new ArrayList<KnowledgeSlot>(WorkingMemory.MAXENTRY);
 	}
     
 	/**
@@ -119,7 +112,7 @@ public class WorkingMemory implements Serializable {
     	return this._newKnowledge;
     }
     
-    public ArrayList GetNewFacts()
+    public ArrayList<KnowledgeSlot> GetNewFacts()
     {
     	return this._newFacts;
     }
@@ -137,21 +130,21 @@ public class WorkingMemory implements Serializable {
     {
     	Step infOp;
     	Step groundInfOp;
-    	ArrayList substitutionSets;
+    	ArrayList<SubstitutionSet> substitutionSets;
     	SubstitutionSet sSet;
     	
     	_newKnowledge = false;
     	_newFacts.clear();
     	
-		for(ListIterator li = am.getMemory().getKB().GetInferenceOperators().listIterator();li.hasNext();)
+		for(ListIterator<Step> li = am.getMemory().getKB().GetInferenceOperators().listIterator();li.hasNext();)
 		{
 			infOp = (Step) li.next();
 			substitutionSets = Condition.CheckActivation(am, infOp.getPreconditions());
 			if(substitutionSets != null)
 			{
-				for(ListIterator li2 = substitutionSets.listIterator();li2.hasNext();)
+				for(ListIterator<SubstitutionSet> li2 = substitutionSets.listIterator();li2.hasNext();)
 				{
-					sSet = (SubstitutionSet) li2.next();
+					sSet = li2.next();
 					groundInfOp = (Step) infOp.clone();
 					groundInfOp.MakeGround(sSet.GetSubstitutions());
 					InferEffects(am.getMemory(), groundInfOp);
@@ -165,7 +158,7 @@ public class WorkingMemory implements Serializable {
     private void InferEffects(Memory m, Step infOp)
     {
     	Effect eff;
-    	for(ListIterator li = infOp.getEffects().listIterator();li.hasNext();)
+    	for(ListIterator<Effect> li = infOp.getEffects().listIterator();li.hasNext();)
     	{
     		eff = (Effect) li.next();
     		if(eff.isGrounded())
@@ -206,15 +199,16 @@ public class WorkingMemory implements Serializable {
 		
 		KnowledgeSlot aux = _wM;
 		KnowledgeSlot currentSlot = _wM;
-		ArrayList fetchList = predicate.GetLiteralList();
-		ListIterator li = fetchList.listIterator();
+		ArrayList<Symbol> fetchList = predicate.GetLiteralList();
+		ListIterator<Symbol> li = fetchList.listIterator();
+		ListIterator<KnowledgeSlot> li2;
 		Symbol l = null;
 			
 		synchronized (this) {
 			
 			while (li.hasNext()) {
 				currentSlot =  aux;
-				l = (Symbol) li.next();
+				l =  li.next();
 				if (currentSlot.containsKey(l.toString())) {
 					aux = currentSlot.get(l.toString());
 				} else
@@ -232,13 +226,13 @@ public class WorkingMemory implements Serializable {
             }
 			
 			KnowledgeSlot ks;
-			li = _factList.listIterator();
-			while(li.hasNext())
+			li2 = _factList.listIterator();
+			while(li2.hasNext())
 			{
-				ks = (KnowledgeSlot) li.next();
+				ks = li2.next();
 				if(ks.getName().equals(predicate.toString()))
 				{
-					li.remove();
+					li2.remove();
 					return;
 				}
 			}
@@ -255,14 +249,14 @@ public class WorkingMemory implements Serializable {
 		boolean newProperty = false;
 		KnowledgeSlot aux = _wM;
 		KnowledgeSlot currentSlot = _wM;
-		ArrayList fetchList = property.GetLiteralList();
-		ListIterator li = fetchList.listIterator();
+		ArrayList<Symbol> fetchList = property.GetLiteralList();
+		ListIterator<Symbol> li = fetchList.listIterator();
 		Symbol l = null;		
 
 		synchronized (this) {
 			while (li.hasNext()) {
 				currentSlot = aux;
-				l = (Symbol) li.next();
+				l = li.next();
 				if (currentSlot.containsKey(l.toString())) {
 					aux = currentSlot.get(l.toString());
 				} else {
@@ -296,10 +290,10 @@ public class WorkingMemory implements Serializable {
 			else
 			{
 				KnowledgeSlot ks;
-				li = _factList.listIterator();
-				while(li.hasNext())
+				ListIterator<KnowledgeSlot> li2 =  _factList.listIterator();
+				while(li2.hasNext())
 				{
-					ks = (KnowledgeSlot) li.next();
+					ks = li2.next();
 					if(ks.getName().equals(property.toString()))
 					{
 						ks.setValue(value);
@@ -316,7 +310,7 @@ public class WorkingMemory implements Serializable {
 				KnowledgeSlot temp = (KnowledgeSlot) _factList.get(0);
 				
 				Name tempName = Name.ParseName(temp.getName());
-				ArrayList literals = tempName.GetLiteralList();
+				ArrayList<Symbol> literals = tempName.GetLiteralList();
 				li = literals.listIterator();
 			
 				aux = _wM;
@@ -354,8 +348,8 @@ public class WorkingMemory implements Serializable {
 	public void RearrangeWorkingMemory(Name predicate)
 	{
 		KnowledgeSlot ks;
-		ArrayList tempFactList = (ArrayList) _factList.clone();
-		ListIterator li = tempFactList.listIterator();
+		ArrayList<KnowledgeSlot> tempFactList = (ArrayList<KnowledgeSlot>) _factList.clone();
+		ListIterator<KnowledgeSlot> li = tempFactList.listIterator();
 		synchronized (this) {
 			while(li.hasNext())
 			{
@@ -372,11 +366,11 @@ public class WorkingMemory implements Serializable {
 		}			
 	}
 	
-	public ListIterator GetFactList() {
+	public ListIterator<KnowledgeSlot> GetFactList() {
 	    return _factList.listIterator();
 	}
 	
-	public ArrayList GetChangeList() {
+	public ArrayList<KnowledgeSlot> GetChangeList() {
 	    return _changeList;
 	}
 	
@@ -396,9 +390,9 @@ public class WorkingMemory implements Serializable {
 	{
 		KnowledgeSlot slot;
 		String facts = "<Fact>";
-		for(ListIterator li = _factList.listIterator();li.hasNext();)
+		for(ListIterator<KnowledgeSlot> li = _factList.listIterator();li.hasNext();)
 		{
-			slot = (KnowledgeSlot) li.next();
+			slot = li.next();
 			facts += slot.toString();
 		}
 		facts += "</Fact>\n";

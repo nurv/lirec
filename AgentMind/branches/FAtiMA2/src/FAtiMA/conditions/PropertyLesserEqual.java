@@ -31,7 +31,6 @@
 package FAtiMA.conditions;
 
 import FAtiMA.AgentModel;
-import FAtiMA.knowledgeBase.KnowledgeBase;
 import FAtiMA.util.AgentLogger;
 import FAtiMA.wellFormedNames.Name;
 
