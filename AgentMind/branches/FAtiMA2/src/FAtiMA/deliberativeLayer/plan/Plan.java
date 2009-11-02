@@ -795,15 +795,17 @@ public class Plan implements Cloneable, Serializable
         }
 
         //no need to clone the elements
-        p._bindingConstraints = (HashMap<String,Substitution>) _bindingConstraints.clone();
-        p._openPreconditions = (ArrayList<OpenPrecondition>) _openPreconditions.clone();
-        p._links = (ArrayList<CausalLink>) _links.clone();
-        p._causalConflicts = (ArrayList<CausalConflictFlaw>) _causalConflicts.clone();
+        p._bindingConstraints = new HashMap<String,Substitution>(_bindingConstraints);
+        p._openPreconditions = new ArrayList<OpenPrecondition>(_openPreconditions);
+        p._links = new ArrayList<CausalLink>(_links);
+        p._causalConflicts = new ArrayList<CausalConflictFlaw>(_causalConflicts);
+        
 
         //TODO think about these ones
-        p._protectedConditions = _protectedConditions;
-        p._protectionThreats = (ArrayList<GoalThreat>) _protectionThreats.clone();
-        p._ignoredConflicts = (ArrayList<CausalConflictFlaw>) _ignoredConflicts.clone();
+        p._protectedConditions = new ArrayList<ProtectedCondition>(_protectedConditions);
+        
+        p._protectionThreats = new ArrayList<GoalThreat>(_protectionThreats); 
+        p._ignoredConflicts = new ArrayList<CausalConflictFlaw>(_ignoredConflicts); 
 
         return p;
     }

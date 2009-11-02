@@ -427,7 +427,7 @@ public class Ritual extends ActivePursuitGoal {
 		
 		r._numberOfTries = this._numberOfTries;
 		
-		r._expectedEffects = (Hashtable<String,Float>) this._expectedEffects.clone();
+		r._expectedEffects = new Hashtable<String,Float>(this._expectedEffects);
 		
 		if(this._preConditions != null)
 		{

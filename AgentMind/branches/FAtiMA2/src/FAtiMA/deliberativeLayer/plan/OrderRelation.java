@@ -132,8 +132,8 @@ public class OrderRelation implements Cloneable, Serializable
     {
         OrderRelation order = new OrderRelation();
         order._stepID = this._stepID;
-        order._after = (ArrayList<Integer>) this._after.clone();
-        order._before = (ArrayList<Integer>) this._before.clone();
+        order._after = new ArrayList<Integer>(this._after);
+        order._before = new ArrayList<Integer>(this._before); 
 
         return order;
     }

@@ -358,6 +358,7 @@ public class ActionDetail implements Serializable {
 		
 	}*/
 	
+	@SuppressWarnings("unchecked")
 	public boolean verifiesKey(SearchKey key)
 	{
 		if(key.getField() == SearchKey.ACTION) 

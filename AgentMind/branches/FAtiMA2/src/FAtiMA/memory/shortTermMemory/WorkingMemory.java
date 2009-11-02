@@ -348,7 +348,7 @@ public class WorkingMemory implements Serializable {
 	public void RearrangeWorkingMemory(Name predicate)
 	{
 		KnowledgeSlot ks;
-		ArrayList<KnowledgeSlot> tempFactList = (ArrayList<KnowledgeSlot>) _factList.clone();
+		ArrayList<KnowledgeSlot> tempFactList = new ArrayList<KnowledgeSlot>(_factList); 
 		ListIterator<KnowledgeSlot> li = tempFactList.listIterator();
 		synchronized (this) {
 			while(li.hasNext())

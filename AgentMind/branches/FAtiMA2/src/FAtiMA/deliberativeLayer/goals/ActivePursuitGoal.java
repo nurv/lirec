@@ -794,7 +794,7 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
 		
 		g._numberOfTries = this._numberOfTries;
 	
-		g._expectedEffects = (Hashtable<String,Float>) this._expectedEffects.clone();
+		g._expectedEffects = new Hashtable<String,Float>(this._expectedEffects);
 		
 		if(this._preConditions != null)
 		{

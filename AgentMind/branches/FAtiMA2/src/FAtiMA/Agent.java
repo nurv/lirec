@@ -379,8 +379,10 @@ public class Agent implements AgentModel {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void LoadAgentState(String fileName) 
 		throws IOException, ClassNotFoundException{
+		
 		
 		FileInputStream in = new FileInputStream(fileName);
 		ObjectInputStream s = new ObjectInputStream(in);

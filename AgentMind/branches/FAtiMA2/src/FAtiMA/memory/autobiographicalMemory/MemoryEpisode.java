@@ -287,7 +287,7 @@ public class MemoryEpisode implements Serializable {
 		int numberOfDetails = _numberOfDominantActions;
 		
 		// version with both internal and external events
-		List<ActionDetail> auxList = (List<ActionDetail>) _details.clone();
+		List<ActionDetail> auxList = new ArrayList<ActionDetail>(_details);
 		// version with only internal events
 		//List auxList = (List) FilterInternalEvents(_details);
 		// version with only external events
