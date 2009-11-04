@@ -73,11 +73,15 @@ public class ShortTermMemory implements Serializable {
 		this._records = new STMemoryRecord();
 		this._newRecords = new ArrayList<ActionDetail>();
 		this._newData = false;
-		this._previousLocation = "";
+		this._previousLocation = Constants.EMPTY_LOCATION;
 	}
 	
 	public void StoreAction(Memory m, Event e, String location)
-	{		
+	{
+		if(location == null)
+		{
+			location = Constants.EMPTY_LOCATION;
+		}
 		
 		// 31/03/2009 - Create a new episode if the location changes to allow goals reset
 		// If this if block is commented, goals decay over time and reset automatically

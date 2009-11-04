@@ -75,7 +75,7 @@ public class Agent implements AgentModel {
 			ScenarioLoaderHandler scenHandler = new ScenarioLoaderHandler(args[0],args[1]);
 			SAXParserFactory factory = SAXParserFactory.newInstance();
 			SAXParser parser = factory.newSAXParser();
-			parser.parse(new File(MIND_PATH + "scenarios.xml"), scenHandler);
+			parser.parse(new File(MIND_PATH + "LIRECScenarios.xml"), scenHandler);
 			args = scenHandler.getAgentArguments();
 		}
 		
@@ -560,7 +560,7 @@ public class Agent implements AgentModel {
 							AgentLogger.GetInstance().log("Perceiving event: " + e.toName());
 							//inserting the event in AM
 							
-						    _memory.getSTM().StoreAction(_memory, e, location);
+							_memory.getSTM().StoreAction(_memory, e, location);
 						    //registering an Action Context property in the KB
 							_memory.getWM().Tell(_memory, ACTION_CONTEXT,e.toName().toString());
 							
