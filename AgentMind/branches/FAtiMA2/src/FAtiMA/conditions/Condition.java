@@ -64,7 +64,7 @@ import java.util.ArrayList;
 import java.util.ListIterator;
 
 import FAtiMA.AgentModel;
-import FAtiMA.knowledgeBase.KnowledgeBase;
+import FAtiMA.memory.semanticMemory.KnowledgeBase;
 import FAtiMA.wellFormedNames.IGroundable;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
@@ -240,7 +240,7 @@ public abstract class Condition implements IGroundable, Cloneable, Serializable 
 			return validSubstitutionSets;
 		}
 
-		bindingSets = am.getMemory().GetPossibleBindings(_name);
+		bindingSets = am.getMemory().getSemanticMemory().GetPossibleBindings(_name);
 		if (bindingSets == null)
 			return null;
 

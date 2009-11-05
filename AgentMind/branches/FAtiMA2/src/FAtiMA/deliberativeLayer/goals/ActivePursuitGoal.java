@@ -359,7 +359,7 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
 		if(!_probabilityDetermined)
 		{
 			_probabilityDetermined = true;
-			_probability = am.getMemory().AssessGoalProbability(this);
+			_probability = am.getMemory().getEpisodicMemory().AssessGoalProbability(this);
 		}
 		
 		return _probability;
@@ -372,14 +372,14 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
 	
 	public float getUncertainty(AgentModel am)
 	{
-		Float aux = (Float) am.getMemory().AskProperty(this.getName());
+		Float aux = (Float) am.getMemory().getSemanticMemory().AskProperty(this.getName());
 		if(aux != null) return aux.floatValue();
 		else return 0.0f;
 	}
 	
 	public void setUncertainty(AgentModel am, float uncertainty)
 	{	
-		am.getMemory().getWM().Tell(am.getMemory(),this.getName(), new Float(uncertainty));
+		am.getMemory().getSemanticMemory().Tell(this.getName(), new Float(uncertainty));
 	}
 	
 	

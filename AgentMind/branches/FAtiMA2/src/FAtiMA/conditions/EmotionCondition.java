@@ -38,7 +38,7 @@ import FAtiMA.AgentModel;
 import FAtiMA.emotionalState.ActiveEmotion;
 import FAtiMA.emotionalState.EmotionalState;
 import FAtiMA.exceptions.InvalidEmotionTypeException;
-import FAtiMA.knowledgeBase.KnowledgeBase;
+import FAtiMA.memory.semanticMemory.KnowledgeBase;
 import FAtiMA.util.enumerables.EmotionType;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;

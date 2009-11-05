@@ -38,8 +38,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import FAtiMA.Agent;
-import FAtiMA.knowledgeBase.KnowledgeBase;
-import FAtiMA.memory.KnowledgeSlot;
+import FAtiMA.memory.semanticMemory.KnowledgeSlot;
+
 
 
 public class KnowledgeBasePanel extends AgentDisplayPanel {
@@ -70,9 +70,8 @@ public class KnowledgeBasePanel extends AgentDisplayPanel {
     }
    
     public boolean Update(Agent ag) {
-        KnowledgeBase kb = ag.getMemory().getKB();
         
-        ListIterator<KnowledgeSlot> li = kb.GetFactList();
+        ListIterator<KnowledgeSlot> li = ag.getMemory().getSemanticMemory().GetFactList();
         
         KnowledgeSlot slot;
         KnowledgeFactDisplay kDisplay;

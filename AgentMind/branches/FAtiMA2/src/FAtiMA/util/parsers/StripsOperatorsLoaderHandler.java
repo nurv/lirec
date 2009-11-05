@@ -111,7 +111,7 @@ public class StripsOperatorsLoaderHandler extends ReflectXMLHandler {
 		if(action.toString().startsWith("Inference"))
 		{
 			//inference operator, we must add it to the KnowledgeBase
-			_am.getMemory().getKB().AddInferenceOperator(_currentOperator);
+			_am.getMemory().getSemanticMemory().AddInferenceOperator(_currentOperator);
 		}
 		else
 		{

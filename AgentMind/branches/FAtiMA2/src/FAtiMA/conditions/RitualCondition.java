@@ -36,7 +36,7 @@ import java.util.StringTokenizer;
 import org.xml.sax.Attributes;
 
 import FAtiMA.AgentModel;
-import FAtiMA.memory.SearchKey;
+import FAtiMA.memory.episodicMemory.SearchKey;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
 import FAtiMA.wellFormedNames.Symbol;
@@ -213,7 +213,7 @@ public class RitualCondition extends PredicateCondition {
 		}
 		
 		
-		return am.getMemory().getSTM().ContainsRecentEvent(keys);
+		return am.getMemory().getEpisodicMemory().ContainsRecentEvent(keys);
 		
 	}
 	

@@ -31,8 +31,8 @@ import FAtiMA.emotionalState.AppraisalVector;
 import FAtiMA.emotionalState.BaseEmotion;
 import FAtiMA.emotionalState.EmotionalState;
 import FAtiMA.exceptions.UnknownGoalException;
-import FAtiMA.memory.KnowledgeSlot;
 import FAtiMA.memory.Memory;
+import FAtiMA.memory.semanticMemory.KnowledgeSlot;
 import FAtiMA.motivationalSystem.MotivationalState;
 import FAtiMA.reactiveLayer.Reaction;
 import FAtiMA.reactiveLayer.ReactiveProcess;
@@ -545,10 +545,7 @@ public class Agent implements AgentModel {
 					//decay the agent's emotional state
 					_emotionalState.Decay();
 					_motivationalState.Decay();
-					_dialogManager.DecayCauseIDontHaveABetterName(_memory.getKB());
-					
-					Name locationKey = Name.ParseName(Constants.SELF + "(location)");
-					String location = (String) _memory.AskProperty(locationKey);
+					_dialogManager.DecayCauseIDontHaveABetterName(_memory);
 					
 					//perceives and appraises new events
 					synchronized (this)
@@ -560,13 +557,13 @@ public class Agent implements AgentModel {
 							AgentLogger.GetInstance().log("Perceiving event: " + e.toName());
 							//inserting the event in AM
 							
-							_memory.getSTM().StoreAction(_memory, e, location);
+							_memory.getEpisodicMemory().StoreAction(_memory, e);
 						    //registering an Action Context property in the KB
-							_memory.getWM().Tell(_memory, ACTION_CONTEXT,e.toName().toString());
+							_memory.getSemanticMemory().Tell(ACTION_CONTEXT,e.toName().toString());
 							
 							if(SpeechAct.isSpeechAct(e.GetAction()))
 							{
-								_dialogManager.UpdateDialogState(e, _memory.getKB());
+								_dialogManager.UpdateDialogState(e, _memory);
 							}
 									
 							//adds the event to the deliberative and reactive layers so that they can appraise
@@ -580,16 +577,16 @@ public class Agent implements AgentModel {
 					
 					//if there was new data or knowledge added we must apply inference operators
 					//update any inferred property to the outside and appraise the events
-					if(_memory.getSTM().HasNewData() ||
-							_memory.getWM().HasNewKnowledge())
+					if(_memory.getEpisodicMemory().HasNewData() ||
+							_memory.getSemanticMemory().HasNewKnowledge())
 					{
 						
 						//calling the KnowledgeBase inference process
-						_memory.getWM().PerformInference(this);
+						_memory.getSemanticMemory().PerformInference(this);
 						
-						synchronized (_memory.getWM())
+						synchronized (_memory.getSemanticMemory())
 						{
-							ArrayList<KnowledgeSlot> facts = _memory.getWM().GetNewFacts();
+							ArrayList<KnowledgeSlot> facts = _memory.getSemanticMemory().getNewFacts();
 							
 							for(ListIterator<KnowledgeSlot> li = facts.listIterator();li.hasNext();)
 							{
@@ -790,7 +787,7 @@ public class Agent implements AgentModel {
 		}
 		
 		Name propertyName = Name.ParseName(subject + "(" + property + ")");
-		_memory.getWM().Tell(_memory, propertyName, value);
+		_memory.getSemanticMemory().Tell(propertyName, value);
 	}
 	
 	public void PerceivePropertyRemoved(String subject, String property)
@@ -801,7 +798,7 @@ public class Agent implements AgentModel {
 		}
 		
 		Name propertyName = Name.ParseName(subject + "(" + property + ")");
-		_memory.Retract(propertyName);
+		_memory.getSemanticMemory().Retract(propertyName);
 		
 	}
 

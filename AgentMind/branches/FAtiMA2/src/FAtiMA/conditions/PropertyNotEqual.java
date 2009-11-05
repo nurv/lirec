@@ -160,7 +160,7 @@ public class PropertyNotEqual extends PropertyCondition {
 		}
 		
 		//if the name is not grounded we try to get all possible bindings for it
-		bindingSets = am.getMemory().GetPossibleBindings(_name);
+		bindingSets = am.getMemory().getSemanticMemory().GetPossibleBindings(_name);
 		if (bindingSets == null)
 			return null;
 

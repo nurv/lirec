@@ -57,7 +57,7 @@ import java.util.ArrayList;
 import org.xml.sax.Attributes;
 
 import FAtiMA.AgentModel;
-import FAtiMA.knowledgeBase.KnowledgeBase;
+import FAtiMA.memory.semanticMemory.KnowledgeBase;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
 import FAtiMA.wellFormedNames.Symbol;
@@ -121,7 +121,7 @@ public class PredicateCondition extends Condition {
 	public boolean CheckCondition(AgentModel am) {
 		boolean result;
 		if(!_name.isGrounded()) return false;
-		result = am.getMemory().AskPredicate(_name); 
+		result = am.getMemory().getSemanticMemory().AskPredicate(_name); 
 		return _positive == result;
 	}
 	

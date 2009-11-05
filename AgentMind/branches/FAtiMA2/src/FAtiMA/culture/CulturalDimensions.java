@@ -117,7 +117,7 @@ public class CulturalDimensions {
 
 	private float obtainLikeRelationshipFromKB(AgentModel am, String targetAgent){
 		Name likeProperty = Name.ParseName("Like("+ am.getName() + "," + targetAgent +")");
-		Float likeValue = (Float) am.getMemory().AskProperty(likeProperty);
+		Float likeValue = (Float) am.getMemory().getSemanticMemory().AskProperty(likeProperty);
 
 		if(likeValue == null){	
 			return 0f;

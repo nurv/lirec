@@ -42,15 +42,16 @@ import javax.swing.JScrollPane;
 import java.util.ArrayList;
 
 import FAtiMA.AgentModel;
-import FAtiMA.memory.ActionDetail;
-import FAtiMA.memory.shortTermMemory.STMemoryRecord;
+import FAtiMA.memory.episodicMemory.ActionDetail;
 
 public class STMRecordDisplay {
 
 	private JPanel _panel;
     private JPanel _details;
+    private static int _lastID = 0;
+    private static int _previousID = 0;
     
-    public STMRecordDisplay(AgentModel am, STMemoryRecord records) {
+    public STMRecordDisplay(AgentModel am) {
 
     	_panel = new JPanel();
         _panel.setBorder(BorderFactory.createEtchedBorder());
@@ -132,9 +133,9 @@ public class STMRecordDisplay {
 		JScrollPane propertiesScroll = new JScrollPane(prop);
 		propertiesScroll.setAutoscrolls(true);
 		
-		ListIterator<ActionDetail> li = records.getDetails().listIterator();
+		ListIterator<ActionDetail> li = am.getMemory().getEpisodicMemory().getDetails().listIterator();
 	
-		ArrayList<ActionDetail> newRecords = am.getMemory().getSTM().GetNewRecords();
+		ArrayList<FAtiMA.memory.episodicMemory.ActionDetail> newRecords = am.getMemory().getEpisodicMemory().GetNewRecords();
 		
 		while(li.hasNext())
 		{
@@ -146,9 +147,9 @@ public class STMRecordDisplay {
 				
 			prop.add(recordDetailPanel);
 		}
-		synchronized(am.getMemory().getSTM())
+		synchronized(am.getMemory().getEpisodicMemory())
 		{
-			am.getMemory().getSTM().ClearNewRecords();
+			am.getMemory().getEpisodicMemory().ClearNewRecords();
 		}
 	
 		_details.add(propertiesScroll);

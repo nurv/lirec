@@ -40,9 +40,9 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import FAtiMA.Agent;
-import FAtiMA.memory.KnowledgeSlot;
-import FAtiMA.memory.shortTermMemory.WorkingMemory;
-import FAtiMA.memory.shortTermMemory.STMemoryRecord;
+import FAtiMA.memory.semanticMemory.KnowledgeSlot;
+import FAtiMA.memory.semanticMemory.SemanticMemory;
+import FAtiMA.memory.semanticMemory.WorkingMemory;
 
 public class ShortTermMemoryPanel extends AgentDisplayPanel {
 	
@@ -127,22 +127,23 @@ public class ShortTermMemoryPanel extends AgentDisplayPanel {
     	
         _memoryRecords.removeAll();
         	
-        synchronized(ag.getMemory().getSTM().GetSyncRoot()){
-        	STMemoryRecord records = ag.getMemory().getSTM().GetAllRecords();
-        	_stmRecordDisplay = new STMRecordDisplay(ag, records);
-            _memoryRecords.add(_stmRecordDisplay.getSTMRecordPanel());   	
-        }     
+        //EpisodicMemory em = ag.getMemory().getEpisodicMemory();
+        SemanticMemory sm = ag.getMemory().getSemanticMemory();
+        	
+        _stmRecordDisplay = new STMRecordDisplay(ag);
+        _memoryRecords.add(_stmRecordDisplay.getSTMRecordPanel());   	
+     
         
-        ListIterator<KnowledgeSlot> li = ag.getMemory().getKB().GetFactList();
+        ListIterator<KnowledgeSlot> li = sm.GetFactList();
         
         KnowledgeSlot slot;
         KnowledgeFactDisplay kDisplay;
         int index;         
         
-        if (ag.getMemory().getKB().Count() >= _knowledgeSize)
+        if (sm.Count() >= _knowledgeSize)
         {
         	 _knowledgeFactsPanel.removeAll();
-        	 _knowledgeSize = ag.getMemory().getKB().Count();
+        	 _knowledgeSize = sm.Count();
         }
         
         while (li.hasNext()) {
@@ -156,8 +157,8 @@ public class ShortTermMemoryPanel extends AgentDisplayPanel {
             }
         }
         
-        li = ag.getMemory().getWM().GetFactList();
-        ArrayList<KnowledgeSlot> changeList = ag.getMemory().getWM().GetChangeList();
+        li = sm.GetFactList();
+        ArrayList<KnowledgeSlot> changeList = sm.GetChangeList();
         _workingFactsSubPanel1.removeAll();
         _workingFactsSubPanel2.removeAll();
         short half = (WorkingMemory.MAXENTRY)/2;
@@ -173,9 +174,9 @@ public class ShortTermMemoryPanel extends AgentDisplayPanel {
             else
             	_workingFactsSubPanel1.add(kDisplay.GetPanel());
         }
-        synchronized(ag.getMemory().getWM())
+        synchronized(sm)
         {
-        	ag.getMemory().getWM().ClearChangeList();
+        	sm.ClearChangeList();
         }
   
         return true;

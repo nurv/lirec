@@ -45,11 +45,11 @@ public class RespectRelation extends Relation{
 	public float getValue(Memory m)
 	{
 		Name respectProperty = Name.ParseName("Respect(" + this._subj1 + "," + this._subj2 + ")");
-		Float result = (Float) m.AskProperty(respectProperty);
+		Float result = (Float) m.getSemanticMemory().AskProperty(respectProperty);
 		//If relation doesn't exists, create it in a neutral state
 		if(result == null)
 		{
-			m.getKB().Tell(respectProperty, new Float(0));
+			m.getSemanticMemory().Tell(respectProperty, new Float(0));
 			return 0;
 		}
 		return result.floatValue();
@@ -58,7 +58,7 @@ public class RespectRelation extends Relation{
 	public void setValue(Memory m, float like)
 	{
 		Name respectProperty = Name.ParseName("Respect(" + this._subj1 + "," + this._subj2 + ")");
-		m.getKB().Tell(respectProperty, new Float(like));
+		m.getSemanticMemory().Tell(respectProperty, new Float(like));
 	}
 	
 	public String getHashKey() {
@@ -81,7 +81,7 @@ public class RespectRelation extends Relation{
 		ArrayList<RespectRelation> relations = new ArrayList<RespectRelation>();
 
 		Name relationProperty = Name.ParseName("Respect(" + subject1 + ",[X])");
-		ArrayList<SubstitutionSet> bindingSets = m.GetPossibleBindings(relationProperty);
+		ArrayList<SubstitutionSet> bindingSets = m.getSemanticMemory().GetPossibleBindings(relationProperty);
 
 		if (bindingSets != null) {
 			for (ListIterator<SubstitutionSet> li = bindingSets.listIterator(); li.hasNext();) {

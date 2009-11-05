@@ -81,7 +81,7 @@ public class Effect implements IGroundable, Cloneable, Serializable {
 			this._biasName = Name.ParseName("ProbBias(" + stepName + idCounter++ + ")");
 			if(am != null)
 			{
-				am.getMemory().getWM().Tell(am.getMemory(),this._biasName, new Float(0));
+				am.getMemory().getSemanticMemory().Tell(this._biasName, new Float(0));
 			}
 		}
 	}
@@ -100,11 +100,11 @@ public class Effect implements IGroundable, Cloneable, Serializable {
 		float newprob;
 		float newbias;
 		
-		bias = ((Float) am.getMemory().AskProperty(_biasName)).floatValue();
+		bias = ((Float) am.getMemory().getSemanticMemory().AskProperty(_biasName)).floatValue();
 		prob = bias + _baseprob;
 		newprob = 0.6f * prob;
 		newbias = newprob - _baseprob;
-		am.getMemory().getWM().Tell(am.getMemory(),_biasName,new Float(newbias));   
+		am.getMemory().getSemanticMemory().Tell(_biasName,new Float(newbias));   
 	}
 	
 	/**
@@ -121,7 +121,7 @@ public class Effect implements IGroundable, Cloneable, Serializable {
 	 */
 	public float GetProbability(AgentModel am) {
 		if(am == null) return _baseprob;
-		return _baseprob + ((Float) am.getMemory().AskProperty(_biasName)).floatValue();
+		return _baseprob + ((Float) am.getMemory().getSemanticMemory().AskProperty(_biasName)).floatValue();
 	}
 	
 	/**
@@ -228,11 +228,11 @@ public class Effect implements IGroundable, Cloneable, Serializable {
 		float newprob;
 		float newbias;
 		
-		bias = ((Float) am.getMemory().AskProperty(_biasName)).floatValue(); 
+		bias = ((Float) am.getMemory().getSemanticMemory().AskProperty(_biasName)).floatValue(); 
 		prob = bias + _baseprob;
 		newprob = 0.6f * prob + 0.4f;
 		newbias = newprob - _baseprob;
-		am.getMemory().getWM().Tell(am.getMemory(),_biasName,new Float(newbias));   
+		am.getMemory().getSemanticMemory().Tell(_biasName,new Float(newbias));   
 	}
 	
 	/**

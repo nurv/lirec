@@ -39,8 +39,8 @@ import java.util.StringTokenizer;
 import org.xml.sax.Attributes;
 
 import FAtiMA.AgentModel;
-import FAtiMA.memory.ActionDetail;
-import FAtiMA.memory.SearchKey;
+import FAtiMA.memory.episodicMemory.ActionDetail;
+import FAtiMA.memory.episodicMemory.SearchKey;
 import FAtiMA.sensorEffector.Event;
 import FAtiMA.sensorEffector.Parameter;
 import FAtiMA.wellFormedNames.Name;
@@ -227,7 +227,7 @@ public class PastEventCondition extends PredicateCondition {
 	
 	protected ArrayList<ActionDetail> GetPossibleBindings(AgentModel am)
 	{
-		return am.getMemory().getAM().SearchForPastEvents(GetSearchKeys());
+		return am.getMemory().getEpisodicMemory().SearchForPastEvents(GetSearchKeys());
 	}
 	
 	/**
@@ -314,7 +314,7 @@ public class PastEventCondition extends PredicateCondition {
 		
 		if(!_name.isGrounded()) return false;
 		
-		return _positive == am.getMemory().getAM().ContainsPastEvent(GetSearchKeys()); 
+		return _positive == am.getMemory().getEpisodicMemory().ContainsPastEvent(GetSearchKeys()); 
 	}
 	
 	protected ArrayList<SearchKey> GetSearchKeys()

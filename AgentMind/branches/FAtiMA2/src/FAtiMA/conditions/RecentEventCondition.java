@@ -38,8 +38,8 @@ import java.util.ArrayList;
 import java.util.ListIterator;
 
 import FAtiMA.AgentModel;
-import FAtiMA.memory.ActionDetail;
-import FAtiMA.memory.SearchKey;
+import FAtiMA.memory.episodicMemory.ActionDetail;
+import FAtiMA.memory.episodicMemory.SearchKey;
 import FAtiMA.sensorEffector.Event;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
@@ -189,12 +189,12 @@ public class RecentEventCondition extends PastEventCondition {
 		
 		if(!_name.isGrounded()) return false;
 		
-		return _positive == am.getMemory().getSTM().ContainsRecentEvent(GetSearchKeys()); 
+		return _positive == am.getMemory().getEpisodicMemory().ContainsRecentEvent(GetSearchKeys()); 
 	}
 	
 	protected ArrayList<ActionDetail> GetPossibleBindings(AgentModel am)
 	{
-		return am.getMemory().getSTM().
+		return am.getMemory().getEpisodicMemory().
 				SearchForRecentEvents(GetSearchKeys());
 	}
 	

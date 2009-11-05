@@ -425,19 +425,19 @@ public abstract class RemoteAgent extends SocketListener {
 			
 			/* for the next context variables we need to retrieve them from the KB */
 			
-			Object yourole = am.getMemory().AskProperty(Name.ParseName(speechAct.getReceiver() + "(role)"));
+			Object yourole = am.getMemory().getSemanticMemory().AskProperty(Name.ParseName(speechAct.getReceiver() + "(role)"));
 			if(yourole != null)
 			{
 				speechAct.AddContextVariable("yourole", yourole.toString().toLowerCase());
 			}
 			
-			Object you = am.getMemory().AskProperty(Name.ParseName(speechAct.getReceiver() + "(displayName)"));
+			Object you = am.getMemory().getSemanticMemory().AskProperty(Name.ParseName(speechAct.getReceiver() + "(displayName)"));
 			if(you != null)
 			{
 				speechAct.AddContextVariable("you", you.toString());
 			}
 			
-			Object episode = am.getMemory().AskProperty(Name.ParseName("Episode(name)"));
+			Object episode = am.getMemory().getSemanticMemory().AskProperty(Name.ParseName("Episode(name)"));
 			if(episode != null)
 			{
 				speechAct.AddContextVariable("episode", episode.toString());
@@ -452,7 +452,7 @@ public abstract class RemoteAgent extends SocketListener {
 			Name auxName;
 			String displayName;
 			String role;
-			ArrayList<SubstitutionSet> binds = am.getMemory().GetPossibleBindings(n1);
+			ArrayList<SubstitutionSet> binds = am.getMemory().getSemanticMemory().GetPossibleBindings(n1);
 			
 			if(binds != null)
 			{
@@ -461,11 +461,11 @@ public abstract class RemoteAgent extends SocketListener {
 					ss = (SubstitutionSet) li.next();
 					auxName = (Name) n1.clone();
 					auxName.MakeGround(ss.GetSubstitutions());
-					role = (String) am.getMemory().AskProperty(auxName);
+					role = (String) am.getMemory().getSemanticMemory().AskProperty(auxName);
 					
 					auxName = (Name) n2.clone();
 					auxName.MakeGround(ss.GetSubstitutions());
-					displayName = (String) am.getMemory().AskProperty(auxName);
+					displayName = (String) am.getMemory().getSemanticMemory().AskProperty(auxName);
 					
 					if(displayName != null && role != null)
 					{
@@ -477,7 +477,7 @@ public abstract class RemoteAgent extends SocketListener {
 			if(speechAct.getMeaning().equals("episodesummary"))
 			{
 				String summaryInfo = "<ABMemory><Receiver>" + you + "</Receiver>";
-				summaryInfo += am.getMemory().getAM().SummarizeLastEvent(am.getMemory());
+				summaryInfo += am.getMemory().getEpisodicMemory().SummarizeLastEvent(am.getMemory());
 				summaryInfo += "</ABMemory>";
 				AgentLogger.GetInstance().log(summaryInfo);
 				speechAct.setAMSummary(summaryInfo);

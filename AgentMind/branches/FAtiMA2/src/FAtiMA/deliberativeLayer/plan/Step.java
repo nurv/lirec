@@ -190,7 +190,7 @@ public class Step implements IPlanningOperator, Cloneable, Serializable {
 		float newprob;
 		float newbias;
 		
-		bias = (Float) am.getMemory().AskProperty(GetBiasName());
+		bias = (Float) am.getMemory().getSemanticMemory().AskProperty(GetBiasName());
 		if(bias != null)
 		{
 			prob = bias.floatValue() + _baseprob;
@@ -203,7 +203,7 @@ public class Step implements IPlanningOperator, Cloneable, Serializable {
 		newprob = 0.6f * prob;
 		newbias = newprob - _baseprob;
 		
-		am.getMemory().getWM().Tell(am.getMemory(),GetBiasName(),new Float(newbias));   
+		am.getMemory().getSemanticMemory().Tell(GetBiasName(),new Float(newbias));   
 	}
 	
 	/**
@@ -215,7 +215,7 @@ public class Step implements IPlanningOperator, Cloneable, Serializable {
 		float newprob;
 		float newbias;
 		
-		bias = (Float) am.getMemory().AskProperty(GetBiasName());
+		bias = (Float) am.getMemory().getSemanticMemory().AskProperty(GetBiasName());
 		if(bias != null)
 		{
 			prob = bias.floatValue() + _baseprob;
@@ -227,7 +227,7 @@ public class Step implements IPlanningOperator, Cloneable, Serializable {
 		
 		newprob = 0.6f * prob + 0.4f;
 		newbias = newprob - _baseprob;
-		am.getMemory().getWM().Tell(am.getMemory(),GetBiasName(),new Float(newbias));   
+		am.getMemory().getSemanticMemory().Tell(GetBiasName(),new Float(newbias));   
 	}
 	
 	/**
@@ -238,7 +238,7 @@ public class Step implements IPlanningOperator, Cloneable, Serializable {
 		
 		if(!_selfExecutable)
 		{
-			Float aux = (Float) am.getMemory().AskProperty(GetBiasName());
+			Float aux = (Float) am.getMemory().getSemanticMemory().AskProperty(GetBiasName());
 			if(aux != null)
 			{
 				return _baseprob + aux.floatValue();

@@ -40,8 +40,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-import FAtiMA.memory.ActionDetail;
-import FAtiMA.memory.autobiographicalMemory.MemoryEpisode;
+import FAtiMA.memory.episodicMemory.ActionDetail;
+import FAtiMA.memory.episodicMemory.MemoryEpisode;
 
 
 
@@ -77,7 +77,7 @@ public class MemoryEpisodeDisplay {
         pnl.setMaximumSize(new Dimension(550,100));
         
         //ABSTRACT 
-        JPanel aux = new JPanel();
+        /*JPanel aux = new JPanel();
         aux.setLayout(new BoxLayout(aux,BoxLayout.Y_AXIS));
         aux.setMaximumSize(d2);  
         aux.setMinimumSize(d2);
@@ -85,24 +85,25 @@ public class MemoryEpisodeDisplay {
         JLabel lbl = new JLabel("Abstract");
         lbl.setMaximumSize(d1);
         lbl.setMinimumSize(d1);
-        aux.add(lbl);
+        aux.add(lbl);*/
+        
         //_abstract = new JTextArea(episode.getAbstract());
-        _abstract = new JTextArea("");
+        /*_abstract = new JTextArea("");
         _abstract.setLineWrap(true);
         _abstract.setMaximumSize(d3);
         _abstract.setMinimumSize(d3);
         aux.add(_abstract);
-        pnl.add(aux);
+        pnl.add(aux);*/
        
         
         
         //TIME
-        aux = new JPanel();
+        JPanel aux = new JPanel();
         aux.setLayout(new BoxLayout(aux,BoxLayout.Y_AXIS));
         aux.setMaximumSize(d2);
         aux.setMinimumSize(d2);
         aux.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
-        lbl = new JLabel("Time");
+        JLabel lbl = new JLabel("Time");
         lbl.setMaximumSize(d1);
         lbl.setMinimumSize(d1);
         aux.add(lbl);
@@ -194,25 +195,25 @@ public class MemoryEpisodeDisplay {
         lbl.setMaximumSize(new Dimension(30,30));
         aux.add(lbl);*/
         
-        lbl = new JLabel("Who?");
+        lbl = new JLabel("Subject"); // Who?
         lbl.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
         lbl.setMinimumSize(new Dimension(50,30));
         lbl.setMaximumSize(new Dimension(50,30));
         aux.add(lbl);
         
-        lbl = new JLabel("What?");
+        lbl = new JLabel("Action"); // What?
         lbl.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
         lbl.setMinimumSize(new Dimension(80,30));
         lbl.setMaximumSize(new Dimension(80,30));
         aux.add(lbl);
         
-        lbl = new JLabel("Whom?");
+        lbl = new JLabel("Target"); // Whom?
         lbl.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
         lbl.setMinimumSize(new Dimension(80,30));
         lbl.setMaximumSize(new Dimension(80,30));
         aux.add(lbl);
         
-        lbl = new JLabel("How?");
+        lbl = new JLabel("Parameters"); // How?
         lbl.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
         lbl.setMinimumSize(new Dimension(100,30));
         lbl.setMaximumSize(new Dimension(100,30));
@@ -242,7 +243,7 @@ public class MemoryEpisodeDisplay {
 		ListIterator<ActionDetail> li = episode.getDetails().listIterator();
 		while(li.hasNext())
 		{
-			prop.add(new MemoryDetailPanel(li.next()));
+			prop.add(new MemoryDetailPanel((ActionDetail)li.next()));
 			_numberOfDetails ++;
 		}
 		

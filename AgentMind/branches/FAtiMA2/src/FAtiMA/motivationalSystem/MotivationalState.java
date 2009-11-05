@@ -129,7 +129,7 @@ public class MotivationalState implements Serializable {
 			
 			String lSignalName = ((Parameter)e.GetParameters().get(1)).toString();
 			Name lSignalValueProperty = Name.ParseName(lSignalName + "(value)");
-			float lSignalValue = ((Float)am.getMemory().AskProperty(lSignalValueProperty)).floatValue();
+			float lSignalValue = ((Float)am.getMemory().getSemanticMemory().AskProperty(lSignalValueProperty)).floatValue();
 			
 			
 			float affiliationEffect = CulturalDimensions.GetInstance().determineAffiliationEffectFromLSignal(eventSubject,eventTarget,lSignalName,lSignalValue);

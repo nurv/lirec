@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.ListIterator;
 
 import FAtiMA.AgentModel;
-import FAtiMA.memory.SearchKey;
+import FAtiMA.memory.episodicMemory.SearchKey;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Symbol;
 
@@ -77,7 +77,7 @@ public class NewEventCondition extends RecentEventCondition {
 			return true;
 		}
 	
-		conditionVerified = (_positive == am.getMemory().getSTM().ContainsRecentEvent(GetSearchKeys()));
+		conditionVerified = (_positive == am.getMemory().getEpisodicMemory().ContainsRecentEvent(GetSearchKeys()));
 		
 		if(conditionVerified){
 			_conditionAlreadyVerified = true;

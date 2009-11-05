@@ -49,7 +49,6 @@ import FAtiMA.emotionalState.BaseEmotion;
 import FAtiMA.emotionalState.EmotionalState;
 import FAtiMA.sensorEffector.Event;
 import FAtiMA.util.AgentLogger;
-import FAtiMA.wellFormedNames.Name;
 
 
 /**
@@ -357,12 +356,9 @@ public class Intention implements Serializable {
 	{
 	    Event e = _goal.GetActivationEvent();
 	    
-	    Name locationKey = Name.ParseName(am.getName() + "(location)");
-		String location = (String) am.getMemory().AskProperty(locationKey);
-	    
 	    AgentLogger.GetInstance().logAndPrint("Adding a new Strong Intention: " + _goal.getName().toString());
 	  
-	    am.getMemory().getSTM().StoreAction(am.getMemory(), e, location);
+	    am.getMemory().getEpisodicMemory().StoreAction(am.getMemory(), e);
 	    
 	    float probability = GetProbability(am);
 	    BaseEmotion aux = Appraisal.AppraiseGoalSuccessProbability(am, _goal, probability);
@@ -380,8 +376,6 @@ public class Intention implements Serializable {
 	 */
 	public void ProcessIntentionFailure(AgentModel am) 
 	{	
-		 Name locationKey = Name.ParseName(am.getName() + "(location)");
-		 String location = (String) am.getMemory().AskProperty(locationKey);
 			
 		//mental disengagement consists in lowering the goal's importance
 		_goal.DecreaseImportanceOfFailure(am, 0.5f);
@@ -403,7 +397,7 @@ public class Intention implements Serializable {
 	    am.getMotivationalState().UpdateCertainty(-deltaError);
 	    _goal.setUncertainty(am, newExpectedError);
 	    
-	    am.getMemory().getSTM().StoreAction(am.getMemory(), e, location);
+	    am.getMemory().getEpisodicMemory().StoreAction(am.getMemory(), e);
 	    
 	    ActiveEmotion hope = GetHope(am.getEmotionalState());
 	    ActiveEmotion fear = GetFear(am.getEmotionalState());
@@ -427,8 +421,6 @@ public class Intention implements Serializable {
 	 */
 	public void ProcessIntentionSuccess(AgentModel am) 
 	{
-		Name locationKey = Name.ParseName(am.getName() + "(location)");
-		String location = (String) am.getMemory().AskProperty(locationKey);
 		
 		EmotionalState es = am.getEmotionalState();
 		//_numberOfGoalsAchieved++;
@@ -448,7 +440,7 @@ public class Intention implements Serializable {
 	    _goal.setUncertainty(am,newExpectedError);
 	    
 	    
-	    am.getMemory().getSTM().StoreAction(am.getMemory(), e, location);
+	    am.getMemory().getEpisodicMemory().StoreAction(am.getMemory(), e);
 	    
 	    ActiveEmotion hope = GetHope(es);
 	    ActiveEmotion fear = GetFear(es);

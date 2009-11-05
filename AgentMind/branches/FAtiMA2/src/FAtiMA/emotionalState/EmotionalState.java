@@ -157,7 +157,7 @@ public class EmotionalState implements Serializable {
 			else {
 				auxEmotion = new ActiveEmotion(potEm, potential, threshold, decay);
 				_emotionPool.put(potEm.GetHashKey(), auxEmotion);
-				am.getMemory().getSTM().AssociateEmotionToAction(am.getMemory(), 
+				am.getMemory().getEpisodicMemory().AssociateEmotionToAction(am.getMemory(), 
 						auxEmotion,
 						auxEmotion.GetCause());
 				this.GenerateCompoundEmotions(potEm, am);

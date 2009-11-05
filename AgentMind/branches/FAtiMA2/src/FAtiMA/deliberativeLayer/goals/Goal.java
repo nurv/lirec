@@ -174,7 +174,7 @@ public abstract class Goal implements IGroundable, Cloneable, Serializable {
 	public void DecreaseImportanceOfFailure(AgentModel am, float decr) {
 		if(decr <= 0) return;
 		
-		Float iof = (Float) am.getMemory().AskProperty(_dynamicIOF);
+		Float iof = (Float) am.getMemory().getSemanticMemory().AskProperty(_dynamicIOF);
 		if(iof == null)
 		{
 			iof = new Float(0);
@@ -185,7 +185,7 @@ public abstract class Goal implements IGroundable, Cloneable, Serializable {
 		}
 		else iof = new Float(0 - _baseIOF);
 		
-		am.getMemory().getWM().Tell(am.getMemory(),_dynamicIOF,iof);
+		am.getMemory().getSemanticMemory().Tell(_dynamicIOF,iof);
 	}
 	
 	/**
@@ -195,7 +195,7 @@ public abstract class Goal implements IGroundable, Cloneable, Serializable {
 	public void IncreaseImportanceOfFailure(AgentModel am, float incr) {
 		if(incr <= 0) return;
 		
-		Float iof = (Float) am.getMemory().AskProperty(_dynamicIOF);
+		Float iof = (Float) am.getMemory().getSemanticMemory().AskProperty(_dynamicIOF);
 		if(iof == null)
 		{
 			iof = new Float(incr);
@@ -205,7 +205,7 @@ public abstract class Goal implements IGroundable, Cloneable, Serializable {
 			iof = new Float(iof.floatValue() + incr);
 		}
 		
-		am.getMemory().getWM().Tell(am.getMemory(),_dynamicIOF,iof);
+		am.getMemory().getSemanticMemory().Tell(_dynamicIOF,iof);
 	}
 	
 	/**
@@ -215,7 +215,7 @@ public abstract class Goal implements IGroundable, Cloneable, Serializable {
 	public void DecreaseImportanceOfSuccess(AgentModel am, float decr) {
 		if(decr <= 0) return;
 		
-		Float ios = (Float) am.getMemory().AskProperty(_dynamicIOS);
+		Float ios = (Float) am.getMemory().getSemanticMemory().AskProperty(_dynamicIOS);
 		if(ios == null)
 		{
 			ios = new Float(0);
@@ -227,7 +227,7 @@ public abstract class Goal implements IGroundable, Cloneable, Serializable {
 		}
 		else ios = new Float(0 - _baseIOS);
 		
-		am.getMemory().getWM().Tell(am.getMemory(),_dynamicIOS,ios);
+		am.getMemory().getSemanticMemory().Tell(_dynamicIOS,ios);
 	}
 	
 	/**
@@ -237,7 +237,7 @@ public abstract class Goal implements IGroundable, Cloneable, Serializable {
 	public void IncreaseImportanceOfSuccess(AgentModel am, float incr) {
 		if(incr <= 0) return;
 		
-		Float ios = (Float) am.getMemory().AskProperty(_dynamicIOS);
+		Float ios = (Float) am.getMemory().getSemanticMemory().AskProperty(_dynamicIOS);
 		if(ios == null)
 		{
 			ios = new Float(incr);
@@ -247,7 +247,7 @@ public abstract class Goal implements IGroundable, Cloneable, Serializable {
 			ios = new Float(ios.floatValue() + incr);
 		}
 		
-		am.getMemory().getWM().Tell(am.getMemory(),_dynamicIOS,ios);
+		am.getMemory().getSemanticMemory().Tell(_dynamicIOS,ios);
 	}
 	
 	/**
@@ -255,7 +255,7 @@ public abstract class Goal implements IGroundable, Cloneable, Serializable {
 	 * @return the importance of failure ranged [0;10]
 	 */
 	public float GetImportanceOfFailure(AgentModel am) {
-		Float aux = (Float) am.getMemory().AskProperty(this._dynamicIOF);
+		Float aux = (Float) am.getMemory().getSemanticMemory().AskProperty(this._dynamicIOF);
 		if(aux != null) return aux.floatValue() + _baseIOF;
 		else return _baseIOF;
 	}
@@ -265,7 +265,7 @@ public abstract class Goal implements IGroundable, Cloneable, Serializable {
 	 * @return the importance of success ranged [0;10]
 	 */
 	public float GetImportanceOfSuccess(AgentModel am) {
-		Float aux = (Float) am.getMemory().AskProperty(this._dynamicIOS);
+		Float aux = (Float) am.getMemory().getSemanticMemory().AskProperty(this._dynamicIOS);
 		if(aux != null) return aux.floatValue() + _baseIOS;
 		else return _baseIOS;
 	}
@@ -413,13 +413,13 @@ public abstract class Goal implements IGroundable, Cloneable, Serializable {
 		
 		_baseIOF = Math.round(imp);
 		
-		Float iof = (Float) am.getMemory().AskProperty(_dynamicIOF);
+		Float iof = (Float) am.getMemory().getSemanticMemory().AskProperty(_dynamicIOF);
 		if(iof != null)
 		{
 			float aux = _baseIOF + iof.floatValue();
 			if(aux < 0) {
 				iof = new Float(0 - _baseIOF);
-				am.getMemory().getWM().Tell(am.getMemory(),this._dynamicIOF,iof);
+				am.getMemory().getSemanticMemory().Tell(this._dynamicIOF,iof);
 			}
 		}
 	}
@@ -440,13 +440,13 @@ public abstract class Goal implements IGroundable, Cloneable, Serializable {
 		
 		_baseIOS = Math.round(imp);
 		
-		Float ios = (Float) am.getMemory().AskProperty(_dynamicIOS);
+		Float ios = (Float) am.getMemory().getSemanticMemory().AskProperty(_dynamicIOS);
 		if(ios != null)
 		{
 			float aux = _baseIOS + ios.floatValue();
 			if(aux < 0) {
 				ios = new Float(0 - _baseIOS);
-				am.getMemory().getWM().Tell(am.getMemory(),this._dynamicIOS,ios);
+				am.getMemory().getSemanticMemory().Tell(this._dynamicIOS,ios);
 			}
 		}
 	}

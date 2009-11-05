@@ -147,7 +147,7 @@ public class ComposedName extends Name implements Serializable {
 			//All ComposedNames correspond to properties or predicates and in this case
 		    //we must retrieve its value from the KnowledgeBase
 		    if (!this._grounded) return null;
-		    return m.AskProperty(this);
+		    return m.getSemanticMemory().AskProperty(this);
 		}
 		else return this.toString();
 	}

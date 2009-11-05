@@ -273,7 +273,7 @@ public class IONRemoteAgent extends RemoteAgent {
 	    			speechAct.getMeaning().equals("acceptreason"))
 	    	{
 	    		//the agent accepts the coping strategy
-	    		Object coping = _agent.getMemory().AskProperty(
+	    		Object coping = _agent.getMemory().getSemanticMemory().AskProperty(
 	    				Name.ParseName(_agent.getName()+"(copingStrategy)"));
 	    		if(coping != null)
 	    		{
