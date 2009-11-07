@@ -45,7 +45,6 @@ public class MotivationalState implements Serializable {
 	
 	
 	private static final long serialVersionUID = 1L;
-	protected String _selfName;
 	protected Motivator[]  _selfMotivators;
 	protected Hashtable<String,Motivator[]> _otherAgentsMotivators;
 	protected long _lastTime;
@@ -89,9 +88,8 @@ public class MotivationalState implements Serializable {
 	/** 
 	 * Adds a motivator to the MotivationalState
 	 */
-	public void AddSelfMotivator(String characterName, Motivator motivator)
+	public void AddSelfMotivator(Motivator motivator)
 	{
-		_selfName = new String(characterName);
 		_selfMotivators[motivator.GetType()] = new Motivator(motivator);
 	}
 	
@@ -257,7 +255,7 @@ public class MotivationalState implements Serializable {
 	 */
 	public float GetIntensity(String agentName, short type)
 	{
-		if(agentName.equalsIgnoreCase(_selfName)){
+		if(agentName.equalsIgnoreCase(Constants.SELF)){
 			return _selfMotivators[type].GetIntensity();
 		}else{
 
@@ -302,7 +300,7 @@ public class MotivationalState implements Serializable {
 	 */
 	public float GetNeedUrgency(String agentName, short type)
 	{
-		if(agentName.equalsIgnoreCase(_selfName)){
+		if(agentName.equalsIgnoreCase(Constants.SELF)){
 			return _selfMotivators[type].GetNeedUrgency();
 		}else{
 		
@@ -327,7 +325,7 @@ public class MotivationalState implements Serializable {
 	 */
 	public float GetWeight(String agentName, short type)
 	{
-		if(agentName.equalsIgnoreCase(_selfName)){
+		if(agentName.equalsIgnoreCase(Constants.SELF)){
 			return _selfMotivators[type].GetWeight();
 		}else{
 			return ((Motivator[])_otherAgentsMotivators.get(agentName))[type].GetWeight();

@@ -71,6 +71,7 @@ import FAtiMA.sensorEffector.Event;
 import FAtiMA.socialRelations.LikeRelation;
 import FAtiMA.socialRelations.RespectRelation;
 import FAtiMA.util.AgentLogger;
+import FAtiMA.util.Constants;
 import FAtiMA.util.enumerables.EmotionType;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
@@ -98,7 +99,7 @@ public class AgentLoaderHandler extends ReflectXMLHandler {
     	this._deliberativeLayer = deliberativeLayer;
     	this._emotionalState = es;
     	//this is just because of compatibility issues.
-    	this._self = new Substitution(new Symbol("[SELF]"), new Symbol("SELF"));
+    	this._self = new Substitution(new Symbol("[SELF]"), new Symbol(Constants.SELF));
     	this._am = am;
     }
     
@@ -173,7 +174,7 @@ public class AgentLoaderHandler extends ReflectXMLHandler {
     	
     	motivatorName = attributes.getValue("motivator");
     	type = MotivatorType.ParseType(motivatorName);
-        _am.getMotivationalState().AddSelfMotivator(_am.getName(), new Motivator(type,
+        _am.getMotivationalState().AddSelfMotivator(new Motivator(type,
         												new Float(attributes.getValue("decayFactor")).floatValue(),
         												new Float(attributes.getValue("weight")).floatValue(),
         												new Float(attributes.getValue("intensity")).floatValue()));
@@ -189,7 +190,7 @@ public class AgentLoaderHandler extends ReflectXMLHandler {
 			
     	Event event = Event.ParseEvent(subject, action, target, parameters);
     	//this is a trick just to save time
-    	event = event.ApplyPerspective("[SELF]");
+    	event = event.ApplyPerspective(Constants.SELF);
      
     	_eventReaction.setEvent(event);
     	_reactiveLayer.getEmotionalReactions().AddEmotionalReaction(_eventReaction);
@@ -288,7 +289,7 @@ public class AgentLoaderHandler extends ReflectXMLHandler {
     	float respect;
     	String target = attributes.getValue("target");
     	float like = Float.parseFloat(attributes.getValue("like"));
-    	LikeRelation.getRelation("SELF", target).setValue(_am.getMemory(),like);
+    	LikeRelation.getRelation(Constants.SELF, target).setValue(_am.getMemory(),like);
     	
     	String auxRespect = attributes.getValue("respect");
     	if(auxRespect == null)
@@ -299,6 +300,6 @@ public class AgentLoaderHandler extends ReflectXMLHandler {
     	{
     		respect = Float.parseFloat(auxRespect);
     	}
-    	RespectRelation.getRelation("SELF", target).setValue(_am.getMemory(),respect);
+    	RespectRelation.getRelation(Constants.SELF, target).setValue(_am.getMemory(),respect);
     }
 }

@@ -85,32 +85,28 @@ public class WorldSimulatorRemoteAgent extends RemoteAgent {
 		//percept-type object property newvalue 
 		//Ex: PROPERTYCHANGED Luke pose onfloor
 		
-		String value = null;
 		Name propertyName = null;
-		
-		propertyName = Name.ParseName(st.nextToken());	
-		value = st.nextToken();
-		
-		ArrayList<Symbol> aux = propertyName.GetLiteralList();
-		String subject = ((Symbol) aux.get(0)).getName();
-		String property = ((Symbol) aux.get(1)).getName();
+		String subject = null;
+		String property = null;
+		String value = null;
+
+		if( st.countTokens() == 3 ){
+			subject = st.nextToken();
+			property = st.nextToken();
+			value = st.nextToken();
+			
+		}
+		else if( st.countTokens() == 2 ){
+			
+			String subjectWithProperty = st.nextToken();
+			propertyName = Name.ParseName(subjectWithProperty);
+			subject = propertyName.GetFirstLiteral().toString();
+			property = propertyName.GetLiteralList().get(1).toString();
+			value = st.nextToken();
+		}
 		
 		_agent.PerceivePropertyChanged(subject, property, value);
-
 		
-		/*String subject = st.nextToken();
-		String property = st.nextToken();
-		String value = st.nextToken();
-		Name propertyName = Name.ParseName(subject + "(" + property + ")");
-		KnowledgeBase.GetInstance().Tell(propertyName, value);*/
-
-		/*Event event = null;
-		event = new Event(propertyName.GetFirstLiteral().toString(),
-				PROPERTY_CHANGED,
-				propertyName.GetLiteralList().get(1).toString());
-		event.AddParameter(new Parameter("param",value));
-
-		_agent.PerceiveEvent(event);*/
 	}
 	
 	protected void PropertyRemovedPerception(String perc){

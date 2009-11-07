@@ -84,6 +84,9 @@ public class AgentDisplay {
 		panel = new EpisodicMemoryPanel();
 		_displayPane.addTab("Episodic Memory", null, panel, "displays all the records in the character's episodic memory");
 	
+		panel = new ShortTermMemoryPanel();
+		_displayPane.addTab("Short Term Memory", null, panel, "displays all the records in the character's short term memory");
+	
 		
 		JButton teste = new JButton("Save");
 		teste.addActionListener(new TestAction(ag));

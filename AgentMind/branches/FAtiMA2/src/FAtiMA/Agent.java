@@ -206,7 +206,7 @@ public class Agent implements AgentModel {
 			EmotionalPlanner planner = new EmotionalPlanner(ActionLibrary.GetInstance().GetActions());
 
 			// Load GoalLibrary
-			GoalLibrary goalLibrary = new GoalLibrary(MIND_PATH + goalsFile + ".xml", _name);
+			GoalLibrary goalLibrary = new GoalLibrary(MIND_PATH + goalsFile + ".xml");
 
 
 			//For efficiency reasons these two are not real processes

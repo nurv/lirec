@@ -67,8 +67,8 @@ public class GoalLibrary implements Serializable {
 	 * @throws GoalLibParsingException - thrown when there is a parsing error when reading
 	 * 		   the GoalLibrary file
 	 */
-	public GoalLibrary(String file, String self) throws GoalLibParsingException {
-		GoalLoaderHandler g = Load(file, self);
+	public GoalLibrary(String file) throws GoalLibParsingException {
+		GoalLoaderHandler g = Load(file);
 		_goals = g.GetGoals();
 		//SetGoalLinks();
 	}
@@ -109,12 +109,12 @@ public class GoalLibrary implements Serializable {
 		return null;
 	}
 
-	private GoalLoaderHandler Load(String xmlFile, String self) throws GoalLibParsingException {
+	private GoalLoaderHandler Load(String xmlFile) throws GoalLibParsingException {
 		AgentLogger.GetInstance().logAndPrint("LOAD: " + xmlFile);
 		
 		//com.sun.xml.parser.Parser parser;
 		//parser = new com.sun.xml.parser.Parser();
-		GoalLoaderHandler g = new GoalLoaderHandler(self);
+		GoalLoaderHandler g = new GoalLoaderHandler();
 		//parser.setDocumentHandler(g);
 		try {
 			SAXParserFactory factory = SAXParserFactory.newInstance();
