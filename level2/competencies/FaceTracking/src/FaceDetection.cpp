@@ -62,8 +62,8 @@ FaceDetection::~FaceDetection()
 
 void FaceDetection::InitFaceDetection(void)
 {
-	this->cascade_name = "C:/Program Files/OpenCV/data/haarcascades/haarcascade_frontalface_alt.xml";
-	this->cascade_name_lateral = "C:/Program Files/OpenCV/data/haarcascades/haarcascade_profileface.xml";
+	this->cascade_name = "haarcascade_frontalface_alt.xml";
+	this->cascade_name_lateral = "haarcascade_profileface.xml";
 	
 	this->storage = cvCreateMemStorage(0); // Allocate the memory storage
 

@@ -1,13 +1,12 @@
-TARGET  := FaceTracker
+TARGET  := expressionrecog
 
-SRCS    := src/Main.cpp\
-	src/CaptureFrame.cpp\
-	src/FaceDetection.cpp\
-	src/Camshift_wrapper/camshift_wrapper.cpp
+SRCS    := src/main.cpp\
+	src/App.cpp
 
-CCFLAGS = -I"src/Camshift_wrapper/" `pkg-config --cflags opencv` -ggdb -Wall -O3 -ffast-math -Wno-unused -DTIXML_USE_STL 
-LDFLAGS = 
-LIBS    = `pkg-config --libs opencv` 
+# for the minute, go out and up to link to the vision lib
+CCFLAGS = -I../../../libs/suds/src `pkg-config --cflags opencv` -ggdb -Wall -O3 -ffast-math -Wno-unused -DTIXML_USE_STL 
+LDFLAGS = -L../../../libs/suds/
+LIBS    = `pkg-config --libs opencv` -lYARP_dev -lYARP_sig -lYARP_OS -lACE -lsuds 
 
 CC = g++
 OBJS    := ${SRCS:.cpp=.o} 

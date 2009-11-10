@@ -29,8 +29,9 @@
 // Copyright (c) 2007, Robin Hewitt (http://www.robin-hewitt.com)
 // See License.txt, in the Camshift wrapper folder, for details.
 
-
+#ifdef WIN32
 #include "stdafx.h"
+#endif
 
 #include "cv.h"
 #include "highgui.h"
@@ -48,7 +49,7 @@
 
 #include <vector> 
 
-#include "camshift_wrapper.h"
+#include <camshift_wrapper.h>
 
 #include "CaptureFrame.h"
 #include "FaceDetection.h"
