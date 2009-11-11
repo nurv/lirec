@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import glob,string
-from suds import *
+from magicsquares import *
 from faces import *
 	
 # just try projecting onto vectors that seem 'happy'

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from suds import *
+from magicsquares import *
 
 v2 = Image(10,10,8,3)
 

@@ -1,4 +1,4 @@
-%module suds
+%module magicsquares
 %{
 #include "PCA.h"
 #include "Classifier.h"

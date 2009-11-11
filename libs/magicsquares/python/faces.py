@@ -4,7 +4,7 @@
 import glob,string
 import numpy as np
 import scipy.misc.pilutil as smp
-from suds import *
+from magicsquares import *
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

@@ -1,4 +1,4 @@
-TARGET  := libsuds.a
+TARGET  := libmagicsquares.a
 
 SRCS    := src/Image.cpp\
 	src/Rendering.cpp\
@@ -49,9 +49,9 @@ cleandeps:: clean
 distclean:: clean
 
 python:: ${TARGET}
-	swig -c++ -python src/suds.i 
-	g++ ${CCFLAGS} -c src/suds_wrap.cxx ${PYTHON_INCLUDE}
-	g++ -shared ${OBJS} suds_wrap.o ${LIBS} -o _suds.so
-	mv _suds.so python
-	mv src/suds.py python
+	swig -c++ -python src/magicsquares.i 
+	g++ ${CCFLAGS} -c src/magicsquares_wrap.cxx ${PYTHON_INCLUDE}
+	g++ -shared ${OBJS} magicsquares_wrap.o ${LIBS} -o _magicsquares.so
+	mv _magicsquares.so python
+	mv src/magicsquares.py python
 	
