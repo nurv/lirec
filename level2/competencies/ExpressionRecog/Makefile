@@ -4,9 +4,9 @@ SRCS    := src/main.cpp\
 	src/App.cpp
 
 # for the minute, go out and up to link to the vision lib
-CCFLAGS = -I../../../libs/suds/src `pkg-config --cflags opencv` -ggdb -Wall -O3 -ffast-math -Wno-unused -DTIXML_USE_STL 
-LDFLAGS = -L../../../libs/suds/
-LIBS    = `pkg-config --libs opencv` -lYARP_dev -lYARP_sig -lYARP_OS -lACE -lsuds 
+CCFLAGS = -I../../../libs/magicsquares/src `pkg-config --cflags opencv` -ggdb -Wall -O3 -ffast-math -Wno-unused -DTIXML_USE_STL 
+LDFLAGS = -L../../../libs/magicsquares/
+LIBS    = `pkg-config --libs opencv` -lYARP_dev -lYARP_sig -lYARP_OS -lACE -lmagicsquares 
 
 CC = g++
 OBJS    := ${SRCS:.cpp=.o} 

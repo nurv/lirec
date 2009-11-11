@@ -54,7 +54,7 @@ m_FrameNum(0)
 	
 	m_PCA = new PCA(w*h);
 	//FILE *f=fopen("../no-redist/eigenspaces/spacek-50x80.pca", "rb");
-	FILE *f=fopen("../../../libs/suds/data/eigenspaces/spacek-20x30.pca", "rb");
+	FILE *f=fopen("../../../libs/magicsquares/data/eigenspaces/spacek-20x30.pca", "rb");
 	m_PCA->Load(f);
 	fclose(f);
 	m_PCA->Compress(30,70);
