@@ -59,6 +59,7 @@ public:
 	T Mean();
 	T DistanceFrom(const Vector &other) const;
 	T Magnitude() const;
+	T Dot(const Vector<T> &other);
 	Vector Normalised() const;
 
 	Vector &operator=(const Vector &other);
@@ -183,6 +184,18 @@ T Vector<T>::Magnitude() const
 	}
 	
 	return sqrt(acc);
+}
+
+template<class T>
+T Vector<T>::Dot(const Vector<T> &other)
+{
+	assert(m_Size==other.m_Size);
+	T acc=0;
+	for (unsigned int i=0; i<m_Size; i++)
+	{
+		acc+=(*this)[i]*other[i];
+	}
+	return acc;
 }
 
 template<class T>

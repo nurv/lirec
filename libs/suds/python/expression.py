@@ -13,7 +13,7 @@ def print_weight(filename,param,pca,w,h):
 	p = pca.Project(v)
 	print(p[param])
 
-pca = load_pca("yalefaces-30x50.pca")
+pca = load_pca("../data/eigenspaces/yalefaces-30x50.pca")
 w = 30
 h = 50
 filename = "../data/images/faces/dave/expression/normal.png"

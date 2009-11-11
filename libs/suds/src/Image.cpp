@@ -31,6 +31,8 @@ Image::Image(const string &filename)
 	m_Image=cvLoadImage(filename.c_str());
 	if (m_Image==NULL) cerr<<"Could not open image: "<<filename<<endl;
 	assert(m_Image);
+cerr<<filename<<" "<<m_Image->nChannels<<endl;
+
 }
 
 Image::Image(const Image &other)
