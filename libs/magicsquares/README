@@ -1,8 +1,9 @@
-General purpose machine vision code
+Chinese literature dating from as early as 650 BC tells the legend of Lo Shu 
+or "scroll of the river Lo". In ancient China there was a huge flood. The great 
+king Yu tried to channel the water out to sea where then emerged from the water 
+a turtle with a curious figure/pattern on its shell; circular dots of numbers 
+which were arranged in a three by three grid pattern such that the sum of the 
+numbers in each row, column and diagonal was the same: 15, which is also the 
+number of days in each of the 24 cycles of the Chinese solar year.
 
-Right now, mainly maths, PCA and LDA classification. 
-
-I'm trying to keep as independant of opencv as possible, although it's 
-currently used inside the image class.
-
-dave@fo.am
+This pattern, in a certain way, was used by the people in controlling the river.
