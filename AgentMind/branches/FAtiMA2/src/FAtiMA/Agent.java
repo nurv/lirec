@@ -51,6 +51,7 @@ import FAtiMA.util.parsers.AgentLoaderHandler;
 import FAtiMA.util.parsers.CultureLoaderHandler;
 import FAtiMA.util.parsers.ScenarioLoaderHandler;
 import FAtiMA.wellFormedNames.Name;
+import FAtiMA.wellFormedNames.Symbol;
 
 public class Agent implements AgentModel {
 	
@@ -804,6 +805,25 @@ public class Agent implements AgentModel {
 		Name propertyName = Name.ParseName(subject + "(" + property + ")");
 		_memory.getSemanticMemory().Tell(propertyName, value);
 	}
+	
+	public void PerceivePropertyChanged(Name propertyName, String value)
+	{
+		ArrayList<Symbol> symbols;
+		symbols = propertyName.GetLiteralList();
+		
+		//I'm changing directly the received name; not a good thing to do
+		for(int i = 0; i < symbols.size(); i++)
+		{
+			if(symbols.get(i).getName().equals(_name))
+			{
+				symbols.set(i, new Symbol(Constants.SELF));
+			}
+		}
+		
+		_memory.getSemanticMemory().Tell(propertyName, value);
+	}
+	
+	
 	
 	public void PerceivePropertyRemoved(String subject, String property)
 	{

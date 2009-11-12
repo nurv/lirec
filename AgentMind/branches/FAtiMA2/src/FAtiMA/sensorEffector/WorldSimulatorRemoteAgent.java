@@ -94,18 +94,18 @@ public class WorldSimulatorRemoteAgent extends RemoteAgent {
 			subject = st.nextToken();
 			property = st.nextToken();
 			value = st.nextToken();
+			_agent.PerceivePropertyChanged(subject, property, value);
 			
 		}
 		else if( st.countTokens() == 2 ){
 			
 			String subjectWithProperty = st.nextToken();
 			propertyName = Name.ParseName(subjectWithProperty);
-			subject = propertyName.GetFirstLiteral().toString();
-			property = propertyName.GetLiteralList().get(1).toString();
 			value = st.nextToken();
+			_agent.PerceivePropertyChanged(propertyName, value);
 		}
 		
-		_agent.PerceivePropertyChanged(subject, property, value);
+		
 		
 	}
 	
