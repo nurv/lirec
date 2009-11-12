@@ -763,8 +763,9 @@ public abstract class RemoteAgent extends SocketListener {
 			//If the agent looks at another agent it initializes it's needs
 			if(!subject.equalsIgnoreCase(_agent.getName()) && 
 		       properties[0].equalsIgnoreCase("isPerson") ||
-		       (properties[0].equalsIgnoreCase("type") && properties[1].equalsIgnoreCase("character"))){
-				
+		       (properties[0].equalsIgnoreCase("type") && properties[1].equalsIgnoreCase("character")))
+			{
+				_agent.initializeModelOfOther(subject);
 				_agent.getMotivationalState().InitializeOtherAgentMotivators(subject);
 				
 			}

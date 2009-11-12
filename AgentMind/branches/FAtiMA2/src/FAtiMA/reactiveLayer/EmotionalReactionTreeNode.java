@@ -47,8 +47,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
-import FAtiMA.IIntegrityTester;
 import FAtiMA.IntegrityValidator;
 import FAtiMA.exceptions.UnknownSpeechActException;
 import FAtiMA.sensorEffector.Event;
@@ -63,7 +63,7 @@ import FAtiMA.sensorEffector.Parameter;
  * @author João Dias
  */
 
-public class EmotionalReactionTreeNode implements IIntegrityTester, Serializable {
+public class EmotionalReactionTreeNode implements Serializable, IReactionNode {
     
 	/**
 	 * 
@@ -78,7 +78,7 @@ public class EmotionalReactionTreeNode implements IIntegrityTester, Serializable
 	public static String param3Node = "p3";
 	private static String nullValue = "null";
 	
-	private HashMap<String,Object> _childs;
+	private HashMap<String,IReactionNode> _childs;
 
 	private String _type;
 	
@@ -91,7 +91,7 @@ public class EmotionalReactionTreeNode implements IIntegrityTester, Serializable
 	 * EmotionalReactionTreeNode(String type) instead 
 	 */
 	public EmotionalReactionTreeNode(String type, String value) {
-		_childs = new HashMap<String,Object>();
+		_childs = new HashMap<String,IReactionNode>();
 		_type = type;
 	}
 	
@@ -101,7 +101,7 @@ public class EmotionalReactionTreeNode implements IIntegrityTester, Serializable
 	 */
 	public EmotionalReactionTreeNode(String type)
 	{
-	    _childs = new HashMap<String,Object>();
+	    _childs = new HashMap<String,IReactionNode>();
 	    _type = type;
 	}
 	
@@ -176,10 +176,10 @@ public class EmotionalReactionTreeNode implements IIntegrityTester, Serializable
 	 * an exception
 	 */ 
 	public void CheckIntegrity(IntegrityValidator val) throws UnknownSpeechActException {
-	    Iterator<Object> it = _childs.values().iterator();
+	    Iterator<IReactionNode> it = _childs.values().iterator();
 	    
 	    while(it.hasNext()) {
-	        ((IIntegrityTester) it.next()).CheckIntegrity(val);
+	        it.next().CheckIntegrity(val);
 	    }
 	}
 	
@@ -266,5 +266,23 @@ public class EmotionalReactionTreeNode implements IIntegrityTester, Serializable
 		    return (Reaction) obj;
 		}
 		else return ((EmotionalReactionTreeNode) obj).MatchEvent(e);
+	}
+	
+	public Object clone()
+	{
+		EmotionalReactionTreeNode n = new EmotionalReactionTreeNode(_type);
+		n._childs = new HashMap<String, IReactionNode>();
+		
+		for(Map.Entry<String, IReactionNode> e : _childs.entrySet())
+		{
+			n._childs.put(e.getKey(), (IReactionNode) e.getValue().clone());
+		}
+		 
+		return n;
+	}
+
+	@Override
+	public Reaction getReaction(Event e) {
+		return MatchEvent(e);
 	}
 }

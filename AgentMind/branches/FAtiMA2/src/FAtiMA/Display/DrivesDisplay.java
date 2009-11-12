@@ -10,6 +10,7 @@ import javax.swing.JProgressBar;
 
 import FAtiMA.AgentModel;
 import FAtiMA.motivationalSystem.MotivationalState;
+import FAtiMA.util.Constants;
 import FAtiMA.util.enumerables.MotivatorType;
 
 public class DrivesDisplay {
@@ -25,22 +26,16 @@ public class DrivesDisplay {
 
 	//TODO: The way that the constructor distinguishes from the agent's needs panel
 	//of the other agents needs panel is getting agentName == null; 
-	public DrivesDisplay(String agentName, String selfName) {
+	public DrivesDisplay(String agentName) {
 
 		super();
 
 		_agentName = agentName;
-		boolean isSelf = (agentName.equalsIgnoreCase(selfName));
+		boolean isSelf = (agentName.equalsIgnoreCase(Constants.SELF));
 
 		_panel = new JPanel();
 		
-		
-		
-		if(isSelf){
-			_panel.setBorder(BorderFactory.createTitledBorder("Self"));		
-		}else{
-			_panel.setBorder(BorderFactory.createTitledBorder(agentName));
-		}
+		_panel.setBorder(BorderFactory.createTitledBorder(agentName));
 	    
 		
 		_panel.setLayout(new BoxLayout(_panel,BoxLayout.Y_AXIS));

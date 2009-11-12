@@ -68,7 +68,7 @@ public class AgentDisplay {
 		/*panel = new DrivesPanel();
 		_displayPane.addTab("Drives", null, panel, "displays the character's drives.");*/
 		
-		panel = new NeedsPanel(ag.getName(), ag.getName());
+		panel = new NeedsPanel();
 		_displayPane.addTab("Needs",null,panel,"displays the characters needs");
 		
 		

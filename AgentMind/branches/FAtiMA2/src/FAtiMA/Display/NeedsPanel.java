@@ -12,6 +12,7 @@ import javax.swing.JScrollPane;
 
 import FAtiMA.Agent;
 import FAtiMA.AgentModel;
+import FAtiMA.util.Constants;
 
 public class NeedsPanel extends AgentDisplayPanel {
 	private static final long serialVersionUID = 1L;
@@ -21,7 +22,7 @@ public class NeedsPanel extends AgentDisplayPanel {
 	private JPanel _needs;
 	private int _previousKnownAgents;
 
-	public NeedsPanel(String agentName, String selfName) {
+	public NeedsPanel() {
 		
 		super();
 		_previousKnownAgents = 0;
@@ -41,9 +42,9 @@ public class NeedsPanel extends AgentDisplayPanel {
 		
 		this.add(goalsScrool);
 		
-		DrivesDisplay aux = new DrivesDisplay(agentName, selfName);
+		DrivesDisplay aux = new DrivesDisplay(Constants.SELF);
 		_needs.add(aux.getDrivesPanel());
-		_drivesDisplays.put(agentName,aux);
+		_drivesDisplays.put(Constants.SELF,aux);
 		
 		
 	}
@@ -76,7 +77,7 @@ public class NeedsPanel extends AgentDisplayPanel {
 				String agentName = (String)it.next();
 				
 				if(_drivesDisplays.get(agentName) == null){
-					DrivesDisplay aux = new DrivesDisplay(agentName, am.getName());
+					DrivesDisplay aux = new DrivesDisplay(agentName);
 					_needs.add(aux.getDrivesPanel());
 					_drivesDisplays.put(agentName,aux);
 				}

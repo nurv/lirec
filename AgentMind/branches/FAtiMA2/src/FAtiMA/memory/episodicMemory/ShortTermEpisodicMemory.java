@@ -72,7 +72,7 @@ public class ShortTermEpisodicMemory implements Serializable {
 		ActionDetail action;
 		//System.out.println("EventID: " + eventID);
 		
-		action = new ActionDetail(m, eventID++, e, location);
+		action = new ActionDetail(m, ShortTermEpisodicMemory.eventID++, e, location);
 				
 		//System.out.println("Action added: " + action.toXML());
 		
@@ -88,12 +88,12 @@ public class ShortTermEpisodicMemory implements Serializable {
 	
 	public void SetEventID(int eventID)
 	{
-		this.eventID = eventID;
+		ShortTermEpisodicMemory.eventID = eventID;
 	}
 	
 	public void ResetEventID()
 	{
-		this.eventID = 0;
+		ShortTermEpisodicMemory.eventID = 0;
 	}
 	
 	public ActionDetail GetNewestRecord()

@@ -48,8 +48,7 @@ public class STMRecordDisplay {
 
 	private JPanel _panel;
     private JPanel _details;
-    private static int _lastID = 0;
-    private static int _previousID = 0;
+
     
     public STMRecordDisplay(AgentModel am) {
 

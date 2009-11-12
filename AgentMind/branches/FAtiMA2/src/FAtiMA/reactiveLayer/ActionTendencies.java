@@ -60,7 +60,7 @@ import FAtiMA.wellFormedNames.Unifier;
  * 
  * @author João Dias
  */
-public class ActionTendencies implements Serializable {
+public class ActionTendencies implements Serializable, Cloneable {
 
 	/**
 	 * 
@@ -112,6 +112,11 @@ public class ActionTendencies implements Serializable {
 	public void IgnoreActionForDuration(ValuedAction va, long time) {
 		Long wakeUpTime = new Long(AgentSimulationTime.GetInstance().Time() + time);
 		_filteredActions.put(va.GetAction().toString(),wakeUpTime);
+	}
+	
+	public void ClearFilters()
+	{
+		_filteredActions.clear();
 	}
 	
 	private boolean isIgnored(ValuedAction va) {
@@ -199,5 +204,18 @@ public class ActionTendencies implements Serializable {
 			act = li.next();
 			AgentLogger.GetInstance().logAndPrint(act.toString());
 		}
+	}
+	
+	public Object clone()
+	{
+		ActionTendencies at = new ActionTendencies();
+		for(Action a : this._actions)
+		{
+			at._actions.add(a);
+		}
+		
+		at._filteredActions = new HashMap<String,Long>(_filteredActions);
+		
+		return at;
 	}
 }

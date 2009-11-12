@@ -138,6 +138,8 @@ public class Agent implements AgentModel {
 		}
 	}
 	
+	protected HashMap<String,ModelOfOther> _ToM;
+	
 	protected EmotionalState _emotionalState;
 	protected MotivationalState _motivationalState;
 	protected Memory _memory;
@@ -177,6 +179,8 @@ public class Agent implements AgentModel {
 		_emotionalState = new EmotionalState();
 		_memory = new Memory();
 		_motivationalState = new MotivationalState();
+		
+		_ToM = new HashMap<String, ModelOfOther>();
 		
 		_saveDirectory = saveDirectory;
 		_shutdown = false;
@@ -353,6 +357,7 @@ public class Agent implements AgentModel {
 			FileOutputStream out = new FileOutputStream(fileName);
 			ObjectOutputStream s = new ObjectOutputStream(out);
 
+			s.writeObject(_ToM);
 			s.writeObject(_deliberativeLayer);
 			s.writeObject(_reactiveLayer);
 			s.writeObject(_emotionalState);
@@ -386,6 +391,7 @@ public class Agent implements AgentModel {
 		
 		FileInputStream in = new FileInputStream(fileName);
 		ObjectInputStream s = new ObjectInputStream(in);
+		this._ToM = (HashMap<String, ModelOfOther>) s.readObject();
 		this._deliberativeLayer = (DeliberativeProcess) s.readObject();
 		this._reactiveLayer = (ReactiveProcess) s.readObject();
 		this._emotionalState = (EmotionalState) s.readObject();
@@ -667,6 +673,15 @@ public class Agent implements AgentModel {
 			    ex.printStackTrace();
 			    //System.out.println(ex);
 			}
+		}
+	}
+	
+	public void initializeModelOfOther(String name)
+	{
+		if(!_ToM.containsKey(name))
+		{
+			ModelOfOther model = new ModelOfOther(name, _reactiveLayer.getEmotionalReactions(), _reactiveLayer.getActionTendencies());
+			_ToM.put(name, model);
 		}
 	}
 	

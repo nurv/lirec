@@ -40,7 +40,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
-import FAtiMA.IIntegrityTester;
 import FAtiMA.IntegrityValidator;
 import FAtiMA.exceptions.UnknownSpeechActException;
 import FAtiMA.sensorEffector.Event;
@@ -58,7 +57,7 @@ import FAtiMA.wellFormedNames.Symbol;
  * 
  * @author João Dias
  */
-public class Reaction implements IIntegrityTester, Serializable, IGroundable, Cloneable {
+public class Reaction implements Serializable, IGroundable, IReactionNode {
 	
 	/**
 	 * 
@@ -346,5 +345,10 @@ public class Reaction implements IIntegrityTester, Serializable, IGroundable, Cl
 	 */
 	public String toString() {
 		return _event + " (" + _desirability + "," + _desirabilityForOther + "," + _praiseworthiness + ")";
+	}
+
+	@Override
+	public Reaction getReaction(Event e) {
+		return this;
 	}
 }
