@@ -41,10 +41,13 @@ package FAtiMA.memory.semanticMemory;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.ListIterator;
 
 
 import FAtiMA.wellFormedNames.Name;
+import FAtiMA.wellFormedNames.Substitution;
+import FAtiMA.wellFormedNames.SubstitutionSet;
 import FAtiMA.wellFormedNames.Symbol;
 
 
@@ -84,6 +87,26 @@ public class WorkingMemory implements Serializable {
 		_newFacts = new ArrayList<KnowledgeSlot>();
 		_changeList = new ArrayList<KnowledgeSlot>(WorkingMemory.MAXENTRY);
 	}
+	
+	public Object Ask(Name name) {
+		KnowledgeSlot aux = _wM;
+		KnowledgeSlot currentSlot;
+		ArrayList<Symbol> fetchList = name.GetLiteralList();
+		ListIterator<Symbol> li = fetchList.listIterator();
+		Symbol l;
+
+		synchronized (this) {
+			while (li.hasNext()) {
+					currentSlot = aux;
+					l = li.next();
+					if (currentSlot.containsKey(l.toString())) {
+						aux = currentSlot.get(l.toString());
+					} 
+					else return null;
+			}
+			return aux;
+		}
+	}
     
 	/**
 	 * Empties the WorkingMemory
@@ -116,15 +139,6 @@ public class WorkingMemory implements Serializable {
     	return this._newFacts;
     }
 
-	/**
-	 * Gets the working memory slots
-	 * @return the working memory slots
-	 */
-	// Added 18/03/09
-	public KnowledgeSlot GetWorkingMemory()
-	{
-		return _wM;
-	}
 
 	/**
      * Gets a value that indicates whether new Knowledge has been added to the WorkingMemory since
@@ -314,6 +328,70 @@ public class WorkingMemory implements Serializable {
 				_changeList.remove(temp);
 			}
 		}
+	}
+	
+	public ArrayList<SubstitutionSet> GetPossibleBindings(Name name) {
+		ArrayList<SubstitutionSet> bindingSets = null;
+
+		bindingSets = MatchLiteralList(name.GetLiteralList(), 0, _wM);
+		
+		if (bindingSets == null || bindingSets.size() == 0)
+			return null;
+		else
+			return bindingSets;
+	}
+	
+	public KnowledgeSlot GetObjectDetails(String objectName)
+	{
+		return _wM.get(objectName);
+	}
+	
+	private ArrayList<SubstitutionSet> MatchLiteralList(ArrayList<Symbol> literals, int index, KnowledgeSlot ks) {
+		Symbol l;
+		String key;
+		ArrayList<SubstitutionSet> bindingSets;
+		ArrayList<SubstitutionSet> newBindingSets;
+		SubstitutionSet subSet;
+		ListIterator<SubstitutionSet> li;
+		Iterator<String> it;
+
+		newBindingSets = new ArrayList<SubstitutionSet>();
+
+		if (index >= literals.size()) {
+			newBindingSets.add(new SubstitutionSet());
+			return newBindingSets;
+		}
+
+		synchronized (this) {
+			l = (Symbol) literals.get(index++);
+
+			if (l.isGrounded()) {
+				if (ks.containsKey(l.toString())) {
+					return MatchLiteralList(literals, index, ks.get(l.toString()));
+				} else
+					return null;
+			}
+
+			it = ks.getKeyIterator();
+			while (it.hasNext()) {
+				key = (String) it.next();
+				bindingSets = MatchLiteralList(literals, index, ks.get(key));
+				if (bindingSets != null) {
+					li = bindingSets.listIterator();
+					while (li.hasNext()) {
+						subSet = (SubstitutionSet) li.next();
+						subSet.AddSubstitution(new Substitution(l, new Symbol(
+								key)));
+						newBindingSets.add(subSet);
+					}
+				}
+			}
+		}
+
+		if (newBindingSets.size() == 0)
+			return null;
+		else
+			return newBindingSets;
 	}
 	
 	/**

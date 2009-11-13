@@ -451,8 +451,7 @@ public class Intention implements Serializable {
 	    {
 	    	es.AddEmotion(em, am);
 	    }
-	    
-	    
+	 
 	    
 	    if(!isRootIntention())
 	    {

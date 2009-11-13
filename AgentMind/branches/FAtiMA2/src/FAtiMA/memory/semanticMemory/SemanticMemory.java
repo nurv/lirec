@@ -1,7 +1,6 @@
 package FAtiMA.memory.semanticMemory;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.ListIterator;
 
 import FAtiMA.AgentModel;
@@ -9,7 +8,6 @@ import FAtiMA.conditions.Condition;
 import FAtiMA.deliberativeLayer.plan.Effect;
 import FAtiMA.deliberativeLayer.plan.Step;
 import FAtiMA.wellFormedNames.Name;
-import FAtiMA.wellFormedNames.Substitution;
 import FAtiMA.wellFormedNames.SubstitutionSet;
 import FAtiMA.wellFormedNames.Symbol;
 
@@ -26,28 +24,11 @@ public class SemanticMemory {
 	
 	public void AddInferenceOperator(Step op)
 	{
-		_kb.AddInferenceOperator(op);
-	}
-	
-	 private Object Ask(Name name, KnowledgeSlot slots) {
-		KnowledgeSlot aux = slots;
-		KnowledgeSlot currentSlot;
-		ArrayList<Symbol> fetchList = name.GetLiteralList();
-		ListIterator<Symbol> li = fetchList.listIterator();
-		Symbol l;
-
 		synchronized (this) {
-			while (li.hasNext()) {
-					currentSlot = aux;
-					l = li.next();
-					if (currentSlot.containsKey(l.toString())) {
-						aux = currentSlot.get(l.toString());
-					} 
-					else return null;
-			}
-			return aux;
+			_kb.AddInferenceOperator(op);
 		}
 	}
+	 
 	
 	/**
      * Asks the Memory the Truth value of the received predicate
@@ -58,22 +39,24 @@ public class SemanticMemory {
     
 	public boolean AskPredicate(Name predicate) 
 	{
-        KnowledgeSlot ks = (KnowledgeSlot) Ask(predicate, _stm.GetWorkingMemory());
-        if (ks != null && ks.getValue() != null && ks.getValue().toString().equals("True"))
-        {
-        	_stm.RearrangeWorkingMemory(predicate);
-            return true;
-        }
-        else
-        {
-        	ks= (KnowledgeSlot) Ask(predicate, _kb.GetKnowledgeBase());
-        	if (ks != null && ks.getValue() != null && ks.getValue().toString().equals("True"))
-            {
-        		_stm.Tell(_kb,predicate, ks.getValue());
-                return true;
-            }
-        }
-        return false;
+		synchronized (this) {
+			KnowledgeSlot ks = (KnowledgeSlot) _stm.Ask(predicate);
+	        if (ks != null && ks.getValue() != null && ks.getValue().toString().equals("True"))
+	        {
+	        	_stm.RearrangeWorkingMemory(predicate);
+	            return true;
+	        }
+	        else
+	        {
+	        	ks= (KnowledgeSlot) _kb.Ask(predicate);
+	        	if (ks != null && ks.getValue() != null && ks.getValue().toString().equals("True"))
+	            {
+	        		_stm.Tell(_kb,predicate, ks.getValue());
+	                return true;
+	            }
+	        }
+	        return false;
+		}   
 	}
 	
 	/**
@@ -83,20 +66,23 @@ public class SemanticMemory {
      *         property does not exist, it returns null
 	 */
 	public Object AskProperty(Name property) {
-		KnowledgeSlot prop = (KnowledgeSlot) Ask(property, _stm.GetWorkingMemory());
-		if (prop == null)
+		synchronized(this)
 		{
-			prop = (KnowledgeSlot) Ask(property, _kb.GetKnowledgeBase());
+			KnowledgeSlot prop = (KnowledgeSlot) _stm.Ask(property);
 			if (prop == null)
-				return null;
+			{
+				prop = (KnowledgeSlot) _kb.Ask(property);
+				if (prop == null)
+					return null;
+				else
+					_stm.Tell(_kb, property, prop.getValue());
+			}
 			else
-				_stm.Tell(_kb, property, prop.getValue());
+			{
+				_stm.RearrangeWorkingMemory(property);
+			}
+			return prop.getValue();
 		}
-		else
-		{
-			_stm.RearrangeWorkingMemory(property);
-		}
-		return prop.getValue();
 	}
 	
 	/**
@@ -104,17 +90,24 @@ public class SemanticMemory {
 	 * @param predicate - the predicate to be inserted
 	 */
 	public void Assert(Name predicate) {
-		_stm.Tell(_kb, predicate,new Symbol("True"));
+		synchronized(this)
+		{
+			_stm.Tell(_kb, predicate,new Symbol("True"));
+		}
 	}
 	
 	public void ClearChangeList() {
-	    _stm.ClearChangeList();
+		synchronized(this)
+		{
+			_stm.ClearChangeList();
+		}
 	}
 	
 	public int Count()
 	{
 		return _kb.Count();
 	}
+
 	
 	public ArrayList<KnowledgeSlot> GetChangeList() {
 	    return _stm.GetChangeList();
@@ -131,10 +124,13 @@ public class SemanticMemory {
 	
 	public KnowledgeSlot GetObjectDetails(String objectName)
 	{
-		KnowledgeSlot object = (_stm.GetWorkingMemory()).get(objectName);
-		if(object == null)
-			object = (_kb.GetKnowledgeBase()).get(objectName);
-		return object;
+		synchronized(this)
+		{
+			KnowledgeSlot object = _stm.GetObjectDetails(objectName);
+			if(object == null)
+				object = _kb.GetObjectDetails(objectName);
+			return object;
+		}
 	}
 	
 	/**
@@ -176,33 +172,42 @@ public class SemanticMemory {
 	 * @param name - a name (that correspond to a predicate or property)
 	 * @return a list of SubstitutionSets that make the received name to match predicates or 
      *         properties that do exist in the WorkingMemory
+     *         
 	 */
+	
+	
+
 	public ArrayList<SubstitutionSet> GetPossibleBindings(Name name) {
 		ArrayList<SubstitutionSet> bindingSets = null;
 		
-		bindingSets = MatchLiteralList(name.GetLiteralList(), 0, _stm.GetWorkingMemory());
-		
-		if (bindingSets == null || bindingSets.size() == 0)
-			bindingSets = (MatchLiteralList(name.GetLiteralList(), 0, _kb.GetKnowledgeBase()));
-		else
+		synchronized(this)
 		{
-			ArrayList<SubstitutionSet> bindingSets2 = MatchLiteralList(name.GetLiteralList(), 0, _kb.GetKnowledgeBase());
-			if (bindingSets2 != null)
+			
+		
+			bindingSets = _stm.GetPossibleBindings(name);
+			
+			if (bindingSets == null)
+				bindingSets = _kb.GetPossibleBindings(name);
+			else
 			{
-				ListIterator<SubstitutionSet> li = bindingSets2.listIterator();
-
-				synchronized (this) {
-					while (li.hasNext()) {
-						
-						SubstitutionSet ss = li.next();
-						if( !bindingSets.contains(ss) )
-							bindingSets.add(ss);
+				ArrayList<SubstitutionSet> bindingSets2 = _kb.GetPossibleBindings(name);
+				if (bindingSets2 != null)
+				{
+					ListIterator<SubstitutionSet> li = bindingSets2.listIterator();
+	
+					synchronized (this) {
+						while (li.hasNext()) {
+							
+							SubstitutionSet ss = li.next();
+							if( !bindingSets.contains(ss) )
+								bindingSets.add(ss);
+						}
 					}
 				}
 			}
+			
+			return bindingSets;
 		}
-		
-		return bindingSets;
 	}
 
 	/**
@@ -231,58 +236,12 @@ public class SemanticMemory {
 	
 	public void InitializeProperty(Name property, Object value)
 	{
-		_kb.Tell(property, value);
+		synchronized(this)
+		{
+			_kb.Tell(property, value);
+		}
 	}
 	
-	private ArrayList<SubstitutionSet> MatchLiteralList(ArrayList<Symbol> literals, int index, KnowledgeSlot kSlot) {
-		Symbol l;
-		String key;
-		ArrayList<SubstitutionSet> bindingSets;
-		ArrayList<SubstitutionSet> newBindingSets;
-		SubstitutionSet subSet;
-		ListIterator<SubstitutionSet> li;
-		Iterator<String> it;
-
-		newBindingSets = new ArrayList<SubstitutionSet>();
-
-		if (index >= literals.size()) {
-			newBindingSets.add(new SubstitutionSet());
-			return newBindingSets;
-		}
-
-		synchronized (this) {
-			l = (Symbol) literals.get(index++);
-
-			if (l.isGrounded()) {
-				if (kSlot.containsKey(l.toString())) {
-					return MatchLiteralList(literals, index, kSlot.get(l
-							.toString()));
-				} else
-					return null;
-			}
-
-			it = kSlot.getKeyIterator();
-			while (it.hasNext()) {
-				key = (String) it.next();
-				bindingSets = MatchLiteralList(literals, index, kSlot
-						.get(key));
-				if (bindingSets != null) {
-					li = bindingSets.listIterator();
-					while (li.hasNext()) {
-						subSet = (SubstitutionSet) li.next();
-						subSet.AddSubstitution(new Substitution(l, new Symbol(
-								key)));
-						newBindingSets.add(subSet);
-					}
-				}
-			}
-		}
-
-		if (newBindingSets.size() == 0)
-			return null;
-		else
-			return newBindingSets;
-	}
 	
 	/**
      *  This method should be called every simulation cycle, and will try to apply InferenceOperators.
@@ -299,26 +258,29 @@ public class SemanticMemory {
     	Step groundInfOp;
     	ArrayList<SubstitutionSet> substitutionSets;
     	SubstitutionSet sSet;
-    	
-    	_stm.ResetNewKnowledge();
-    	
-		for(ListIterator<Step> li = _kb.GetInferenceOperators().listIterator();li.hasNext();)
-		{
-			infOp = (Step) li.next();
-			substitutionSets = Condition.CheckActivation(am, infOp.getPreconditions());
-			if(substitutionSets != null)
+
+    	synchronized(this)
+    	{
+	    	_stm.ResetNewKnowledge();
+	    	
+			for(ListIterator<Step> li = _kb.GetInferenceOperators().listIterator();li.hasNext();)
 			{
-				for(ListIterator<SubstitutionSet> li2 = substitutionSets.listIterator();li2.hasNext();)
+				infOp = (Step) li.next();
+				substitutionSets = Condition.CheckActivation(am, infOp.getPreconditions());
+				if(substitutionSets != null)
 				{
-					sSet = li2.next();
-					groundInfOp = (Step) infOp.clone();
-					groundInfOp.MakeGround(sSet.GetSubstitutions());
-					InferEffects(groundInfOp);
+					for(ListIterator<SubstitutionSet> li2 = substitutionSets.listIterator();li2.hasNext();)
+					{
+						sSet = li2.next();
+						groundInfOp = (Step) infOp.clone();
+						groundInfOp.MakeGround(sSet.GetSubstitutions());
+						InferEffects(groundInfOp);
+					}
 				}
 			}
-		}
-    	
-    	return _stm.HasNewKnowledge();
+	    	
+	    	return _stm.HasNewKnowledge();
+    	}
     }
 	
     /**
@@ -327,12 +289,18 @@ public class SemanticMemory {
 	 */
 	public void Retract(Name predicate) 
 	{
-		_kb.Retract(predicate);
-		_stm.Retract(predicate);
+		synchronized(this)
+		{
+			_kb.Retract(predicate);
+			_stm.Retract(predicate);
+		}
 	}
     
 	public void Tell(Name property, Object value) {
-		_stm.Tell(_kb, property, value);
+		synchronized(this)
+		{
+			_stm.Tell(_kb, property, value);
+		}	
 	}
 
 }
