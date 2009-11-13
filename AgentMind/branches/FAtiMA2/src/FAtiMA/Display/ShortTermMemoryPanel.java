@@ -40,6 +40,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import FAtiMA.Agent;
+import FAtiMA.AgentModel;
 import FAtiMA.memory.semanticMemory.KnowledgeSlot;
 import FAtiMA.memory.semanticMemory.SemanticMemory;
 import FAtiMA.memory.semanticMemory.WorkingMemory;
@@ -122,15 +123,19 @@ public class ShortTermMemoryPanel extends AgentDisplayPanel {
 		_knowledgePanel.add(_workingFactsPanel);*/
     }
     
+    public boolean Update(Agent ag)
+    {
+    	return Update((AgentModel) ag);
+    }
     
-    public boolean Update(Agent ag) {
+    public boolean Update(AgentModel am) {
     	
         _memoryRecords.removeAll();
         	
         //EpisodicMemory em = ag.getMemory().getEpisodicMemory();
-        SemanticMemory sm = ag.getMemory().getSemanticMemory();
+        SemanticMemory sm = am.getMemory().getSemanticMemory();
         	
-        _stmRecordDisplay = new STMRecordDisplay(ag);
+        _stmRecordDisplay = new STMRecordDisplay(am);
         _memoryRecords.add(_stmRecordDisplay.getSTMRecordPanel());   	
      
         

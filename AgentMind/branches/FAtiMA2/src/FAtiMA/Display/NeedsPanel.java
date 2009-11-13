@@ -49,8 +49,13 @@ public class NeedsPanel extends AgentDisplayPanel {
 		
 	}
 	
+	public boolean Update(Agent ag)
+	{
+		return Update((AgentModel) ag);
+	}
 	
-	public boolean Update(Agent ag) {
+	
+	public boolean Update(AgentModel ag) {
 
 		CheckForOtherAgents(ag);
 		

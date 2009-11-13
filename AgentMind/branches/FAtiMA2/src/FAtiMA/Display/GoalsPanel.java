@@ -40,6 +40,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import FAtiMA.Agent;
+import FAtiMA.AgentModel;
 import FAtiMA.deliberativeLayer.DeliberativeProcess;
 import FAtiMA.deliberativeLayer.Intention;
 import FAtiMA.deliberativeLayer.goals.Goal;
@@ -84,6 +85,11 @@ public class GoalsPanel extends AgentDisplayPanel {
 		JScrollPane intentionsScroll = new JScrollPane(_intentions);
 		
 		this.add(intentionsScroll);
+    }
+    
+    public boolean Update(AgentModel am)
+    {
+    	return false;
     }
     
     

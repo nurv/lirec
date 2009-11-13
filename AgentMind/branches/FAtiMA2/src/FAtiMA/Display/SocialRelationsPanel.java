@@ -10,6 +10,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import FAtiMA.Agent;
+import FAtiMA.AgentModel;
 import FAtiMA.socialRelations.LikeRelation;
 import FAtiMA.socialRelations.Relation;
 import FAtiMA.socialRelations.RespectRelation;
@@ -38,6 +39,11 @@ public class SocialRelationsPanel extends AgentDisplayPanel {
 				.createTitledBorder("Social Relations"));
 
 		this.add(relationsScroll);
+	}
+	
+	public boolean Update(AgentModel am)
+	{
+		return false;
 	}
 
 	public boolean Update(Agent ag) {

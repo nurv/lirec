@@ -121,6 +121,11 @@ public class EpisodicMemory {
 	}
 	
 	public boolean ContainsRecentEvent(ArrayList<SearchKey> searchKeys)
+	{
+		return _am.ContainsRecentEvent(searchKeys) || ContainsNewEvent(searchKeys);
+	}
+	
+	public boolean ContainsNewEvent(ArrayList<SearchKey> searchKeys)
 	{		
 		synchronized (this) {
 			if(this._stm.GetCount() > 0)
@@ -175,7 +180,15 @@ public class EpisodicMemory {
 		return _am.SearchForPastEvents(keys);
 	}
 	
-	public ArrayList<ActionDetail> SearchForRecentEvents(ArrayList<SearchKey> searchKeys)
+	public ArrayList<ActionDetail> SearchForRecentEvents(ArrayList<SearchKey> keys)
+	{
+		ArrayList<ActionDetail> aux = _am.SearchForRecentEvents(keys);
+		aux.addAll(_stm.GetDetailsByKeys(keys));
+		
+		return aux;
+	}
+	
+	public ArrayList<ActionDetail> SearchForNewEvents(ArrayList<SearchKey> searchKeys)
 	{		
 		synchronized (this) {
 			if(this._stm.GetCount() > 0)

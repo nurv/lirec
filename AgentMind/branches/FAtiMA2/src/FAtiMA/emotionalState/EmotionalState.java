@@ -140,6 +140,8 @@ public class EmotionalState implements Serializable {
 		int decay;
 		ActiveEmotion auxEmotion;
 		EmotionDisposition disposition;
+		
+		if(potEm == null) return null;
 
 		potential = DeterminePotential(potEm);
 

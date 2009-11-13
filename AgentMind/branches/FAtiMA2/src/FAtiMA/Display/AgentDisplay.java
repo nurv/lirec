@@ -86,6 +86,9 @@ public class AgentDisplay {
 	
 		panel = new ShortTermMemoryPanel();
 		_displayPane.addTab("Short Term Memory", null, panel, "displays all the records in the character's short term memory");
+		
+		panel = new ToMPanel();
+		_displayPane.addTab("Theory of Mind",null, panel, "displays the ToM (memory, emotional state,etc) of the other agent's");
 	
 		
 		JButton teste = new JButton("Save");

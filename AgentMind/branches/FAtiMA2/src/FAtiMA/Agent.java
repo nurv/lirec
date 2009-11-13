@@ -284,104 +284,108 @@ public class Agent implements AgentModel {
 		}
 	}
 	
-	private void loadPersonality(String personalityFile, short agentPlatform, ArrayList<String> goalList) 
-		throws	ParserConfigurationException, SAXException, IOException, UnknownGoalException{
-		
-		AgentLogger.GetInstance().log("LOADING Personality: " + personalityFile);
-		AgentLoaderHandler c = new AgentLoaderHandler(this,_reactiveLayer,_deliberativeLayer,_emotionalState);
-
-		SAXParserFactory factory = SAXParserFactory.newInstance();
-		SAXParser parser = factory.newSAXParser();
-		parser.parse(new File(personalityFile), c);
-
-		//The ION Agent does not load the goals initially from the personality file, therefore we
-		//must clear all the goals loaded.
-		if(agentPlatform == AgentPlatform.ION){
-			_deliberativeLayer.RemoveAllGoals();
-		}
-
-		//The WorldSimulator Agent loads additional goals provided in the starting goal list
-		if(agentPlatform == AgentPlatform.WORLDSIM){
-			ListIterator<String> lt = goalList.listIterator();
-			String goal;
-			String goalName;
-			StringTokenizer st;
-			float impOfSuccess;
-			float impOfFailure;
-			while(lt.hasNext()) {
-				goal = (String) lt.next();
-				st = new StringTokenizer(goal, "|");
-				goalName = st.nextToken();
-				impOfSuccess = Float.parseFloat(st.nextToken());
-				impOfFailure = Float.parseFloat(st.nextToken());
-
-				_deliberativeLayer.AddGoal(this, goalName, impOfSuccess, impOfFailure);   
-			}	
-		}
+	/**
+	 * Specifies that the agent must give an answer to a received
+	 * SpeechAct
+	 * @param speechAct - the SpeechAct that needs an answer 
+	 */
+	public void AnswerToSpeechAct(SpeechAct speechAct) {
+	    _speechAct = speechAct;
 	}
 	
-	private void loadCulture(String cultureName)
-		throws ParserConfigurationException, SAXException, IOException{
-
-		AgentLogger.GetInstance().log("LOADING Culture: " + cultureName);
-		
-		CultureLoaderHandler culture = new CultureLoaderHandler(this, _reactiveLayer,_deliberativeLayer);
-		SAXParserFactory factory = SAXParserFactory.newInstance();
-		SAXParser parser = factory.newSAXParser();
-		parser.parse(new File(MIND_PATH + cultureName + ".xml"), culture);
-		
-		Ritual r;
-		ListIterator<Ritual> li = culture.GetRituals(this).listIterator();
-		while(li.hasNext())
-		{
-			r = (Ritual) li.next();
-			_deliberativeLayer.AddRitual(r);
-			_deliberativeLayer.AddGoal(r);
-			AgentLogger.GetInstance().log("Ritual: "+ r.toString());
-		}
-		
-		CulturalDimensions.GetInstance().changeNeedsWeightsAndDecays(this);
-	}
-	
-	
-
-	public void SaveAgentState(String agentName)
+	public void AppraiseSelfActionFailed(Event e)
 	{
-		String fileName = _saveDirectory + agentName;
+		_deliberativeLayer.AppraiseSelfActionFailed(e);
+	}
+	
+	
 
-		AgentSimulationTime.SaveState(fileName+"-Timer.dat");
-		ActionLibrary.SaveState(fileName+"-ActionLibrary.dat");
-		_remoteAgent.SaveState(fileName+"-RemoteAgent.dat");
-
-		try
+	/**
+	 * Gets the agent's name that is displayed externally
+	 * @return the agent's external name
+	 */
+	public String displayName() {
+	    return _displayName;
+	}
+	
+	public void EnforceCopingStrategy(String coping)
+	{
+		_deliberativeLayer.EnforceCopingStrategy(this, coping);
+		_reactiveLayer.EnforceCopingStrategy(coping);
+	}
+	
+	private ValuedAction FilterSpeechAction(ValuedAction action)
+	{
+		ValuedAction aux=null;
+		
+		if(action != null)
 		{
-			FileOutputStream out = new FileOutputStream(fileName);
-			ObjectOutputStream s = new ObjectOutputStream(out);
-
-			s.writeObject(_ToM);
-			s.writeObject(_deliberativeLayer);
-			s.writeObject(_reactiveLayer);
-			s.writeObject(_emotionalState);
-			s.writeObject(_memory);
-			s.writeObject(_motivationalState);
-			s.writeObject(_dialogManager);
-			s.writeObject(_role);
-			s.writeObject(_name);
-			s.writeObject(_sex);
-			s.writeObject(_speechAct);
-			s.writeObject(new Short(_currentEmotion));
-			s.writeObject(_displayName);
-			s.writeObject(new Boolean(_showStateWindow));
-			s.writeObject(_actionsForExecution);
-			s.writeObject(_perceivedEvents);
-			s.writeObject(_saveDirectory);
-			s.flush();
-			s.close();
-			out.close();
+			String actionName = action.GetAction().GetFirstLiteral().toString();
+			if(_dialogManager.CanSpeak() || !SpeechAct.isSpeechAct(actionName))
+			{
+				aux = action;
+			}
 		}
-		catch(Exception e)
+		
+		return aux;
+	}
+
+	/**
+	 * Gets the agent's Deliberative Layer that you can use
+	 * to get access to Deliberative structures such as 
+	 * the goals and planner
+	 * @return the agent's Deliberative Layer
+	 */
+	public DeliberativeProcess getDeliberativeLayer()
+	{
+		return this._deliberativeLayer;
+	}
+	
+	public EmotionalState getEmotionalState()
+	{
+		return _emotionalState;
+	}
+	
+	public Memory getMemory()
+	{
+		return _memory;
+	}
+	
+	public MotivationalState getMotivationalState()
+	{
+		return _motivationalState;
+	}
+	
+	/**
+	 * Gets the name of the agent
+	 * @return the agent's name
+	 */
+	public String getName() {
+		return _name;
+	}
+	
+	/**
+	 * Gets the agent's Reactive Layer that you can use
+	 * to get access to reactive structures such as 
+	 * ActionTendencies and  EmotionalReactions
+	 * @return the agent's Reactive Layer
+	 */
+	public ReactiveProcess getReactiveLayer()
+	{
+		return this._reactiveLayer;
+	}
+	
+	public HashMap<String,ModelOfOther> getToM()
+	{
+		return this._ToM;
+	}
+	
+	public void initializeModelOfOther(String name)
+	{
+		if(!_ToM.containsKey(name))
 		{
-			e.printStackTrace();
+			ModelOfOther model = new ModelOfOther(name, _reactiveLayer.getEmotionalReactions(), _reactiveLayer.getActionTendencies());
+			_ToM.put(name, model);
 		}
 	}
 	
@@ -418,82 +422,63 @@ public class Agent implements AgentModel {
 		_remoteAgent.LoadState(fileName+"-RemoteAgent.dat");
 	}
 	
-	private void terminateExecution(){
-		_deliberativeLayer.ShutDown();
-		_reactiveLayer.ShutDown();
-		_remoteAgent.ShutDown();
-		if(_showStateWindow && _agentDisplay != null) _agentDisplay.dispose();
-	}
+	private void loadCulture(String cultureName)
+		throws ParserConfigurationException, SAXException, IOException{
 
-	/**
-	 * Gets the name of the agent
-	 * @return the agent's name
-	 */
-	public String getName() {
-		return _name;
+		AgentLogger.GetInstance().log("LOADING Culture: " + cultureName);
+		
+		CultureLoaderHandler culture = new CultureLoaderHandler(this, _reactiveLayer,_deliberativeLayer);
+		SAXParserFactory factory = SAXParserFactory.newInstance();
+		SAXParser parser = factory.newSAXParser();
+		parser.parse(new File(MIND_PATH + cultureName + ".xml"), culture);
+		
+		Ritual r;
+		ListIterator<Ritual> li = culture.GetRituals(this).listIterator();
+		while(li.hasNext())
+		{
+			r = (Ritual) li.next();
+			_deliberativeLayer.AddRitual(r);
+			_deliberativeLayer.AddGoal(r);
+			AgentLogger.GetInstance().log("Ritual: "+ r.toString());
+		}
+		
+		CulturalDimensions.GetInstance().changeNeedsWeightsAndDecays(this);
 	}
 	
-	/**
-	 * Gets the gender of the agent
-	 * @return the agent's sex
-	 */
-	public String sex() 
-	{
-		return _sex;
-	}
-	
-	/**
-	 * Gets the agent's name that is displayed externally
-	 * @return the agent's external name
-	 */
-	public String displayName() {
-	    return _displayName;
-	}
-	
-	public EmotionalState getEmotionalState()
-	{
-		return _emotionalState;
-	}
-	
-	public Memory getMemory()
-	{
-		return _memory;
-	}
-	
-	public MotivationalState getMotivationalState()
-	{
-		return _motivationalState;
-	}
-	
-	/**
-	 * Gets the agent's Reactive Layer that you can use
-	 * to get access to reactive structures such as 
-	 * ActionTendencies and  EmotionalReactions
-	 * @return the agent's Reactive Layer
-	 */
-	public ReactiveProcess getReactiveLayer()
-	{
-		return this._reactiveLayer;
-	}
-	
-	/**
-	 * Gets the agent's Deliberative Layer that you can use
-	 * to get access to Deliberative structures such as 
-	 * the goals and planner
-	 * @return the agent's Deliberative Layer
-	 */
-	public DeliberativeProcess getDeliberativeLayer()
-	{
-		return this._deliberativeLayer;
-	}
-	
-	/**
-	 * Specifies that the agent must give an answer to a received
-	 * SpeechAct
-	 * @param speechAct - the SpeechAct that needs an answer 
-	 */
-	public void AnswerToSpeechAct(SpeechAct speechAct) {
-	    _speechAct = speechAct;
+	private void loadPersonality(String personalityFile, short agentPlatform, ArrayList<String> goalList) 
+		throws	ParserConfigurationException, SAXException, IOException, UnknownGoalException{
+		
+		AgentLogger.GetInstance().log("LOADING Personality: " + personalityFile);
+		AgentLoaderHandler c = new AgentLoaderHandler(this,_reactiveLayer,_deliberativeLayer,_emotionalState);
+
+		SAXParserFactory factory = SAXParserFactory.newInstance();
+		SAXParser parser = factory.newSAXParser();
+		parser.parse(new File(personalityFile), c);
+
+		//The ION Agent does not load the goals initially from the personality file, therefore we
+		//must clear all the goals loaded.
+		if(agentPlatform == AgentPlatform.ION){
+			_deliberativeLayer.RemoveAllGoals();
+		}
+
+		//The WorldSimulator Agent loads additional goals provided in the starting goal list
+		if(agentPlatform == AgentPlatform.WORLDSIM){
+			ListIterator<String> lt = goalList.listIterator();
+			String goal;
+			String goalName;
+			StringTokenizer st;
+			float impOfSuccess;
+			float impOfFailure;
+			while(lt.hasNext()) {
+				goal = (String) lt.next();
+				st = new StringTokenizer(goal, "|");
+				goalName = st.nextToken();
+				impOfSuccess = Float.parseFloat(st.nextToken());
+				impOfFailure = Float.parseFloat(st.nextToken());
+
+				_deliberativeLayer.AddGoal(this, goalName, impOfSuccess, impOfFailure);   
+			}	
+		}
 	}
 	
 	/**
@@ -507,6 +492,48 @@ public class Agent implements AgentModel {
 			_perceivedEvents.add(e);
 		}
 	}
+	
+	public void PerceivePropertyChanged(Name propertyName, String value)
+	{
+		ArrayList<Symbol> symbols;
+		symbols = propertyName.GetLiteralList();
+		
+		//I'm changing directly the received name; not a good thing to do
+		for(int i = 0; i < symbols.size(); i++)
+		{
+			if(symbols.get(i).getName().equals(_name))
+			{
+				symbols.set(i, new Symbol(Constants.SELF));
+			}
+		}
+		
+		_memory.getSemanticMemory().Tell(propertyName, value);
+	}
+
+	public void PerceivePropertyChanged(String subject, String property, String value)
+	{
+		if(subject.equals(_name))
+		{
+			subject = Constants.SELF;
+		}
+		
+		Name propertyName = Name.ParseName(subject + "(" + property + ")");
+		_memory.getSemanticMemory().Tell(propertyName, value);
+	}
+	
+	public void PerceivePropertyRemoved(String subject, String property)
+	{
+		if(subject.equals(_name))
+		{
+			subject = Constants.SELF;
+		}
+		
+		Name propertyName = Name.ParseName(subject + "(" + property + ")");
+		_memory.getSemanticMemory().Retract(propertyName);
+		
+	}
+	
+	
 	
 	/**
 	 * Resets the agent's reasoning layers (deliberative + cognitive)
@@ -527,7 +554,7 @@ public class Agent implements AgentModel {
 	public String role() {
 		return _role;
 	}
-
+	
 	/**
 	 * Runs the agent, endless loop until there is a shutdown
 	 */
@@ -677,41 +704,77 @@ public class Agent implements AgentModel {
 		}
 	}
 	
-	public void initializeModelOfOther(String name)
+	public void SaveAgentState(String agentName)
 	{
-		if(!_ToM.containsKey(name))
+		String fileName = _saveDirectory + agentName;
+
+		AgentSimulationTime.SaveState(fileName+"-Timer.dat");
+		ActionLibrary.SaveState(fileName+"-ActionLibrary.dat");
+		_remoteAgent.SaveState(fileName+"-RemoteAgent.dat");
+
+		try
 		{
-			ModelOfOther model = new ModelOfOther(name, _reactiveLayer.getEmotionalReactions(), _reactiveLayer.getActionTendencies());
-			_ToM.put(name, model);
+			FileOutputStream out = new FileOutputStream(fileName);
+			ObjectOutputStream s = new ObjectOutputStream(out);
+
+			s.writeObject(_ToM);
+			s.writeObject(_deliberativeLayer);
+			s.writeObject(_reactiveLayer);
+			s.writeObject(_emotionalState);
+			s.writeObject(_memory);
+			s.writeObject(_motivationalState);
+			s.writeObject(_dialogManager);
+			s.writeObject(_role);
+			s.writeObject(_name);
+			s.writeObject(_sex);
+			s.writeObject(_speechAct);
+			s.writeObject(new Short(_currentEmotion));
+			s.writeObject(_displayName);
+			s.writeObject(new Boolean(_showStateWindow));
+			s.writeObject(_actionsForExecution);
+			s.writeObject(_perceivedEvents);
+			s.writeObject(_saveDirectory);
+			s.flush();
+			s.close();
+			out.close();
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
 		}
 	}
 	
 	
-	
-	private ValuedAction FilterSpeechAction(ValuedAction action)
-	{
-		ValuedAction aux=null;
+	protected ValuedAction SelectBestAction() {
 		
-		if(action != null)
+		ValuedAction bestAction = null;
+		ValuedAction action;
+		int removeHere=-1;
+		
+		for(int i=0; i < _actionsForExecution.size(); i++)
 		{
-			String actionName = action.GetAction().GetFirstLiteral().toString();
-			if(_dialogManager.CanSpeak() || !SpeechAct.isSpeechAct(actionName))
+			action = (ValuedAction) _actionsForExecution.get(i);
+			if(bestAction == null || action.GetValue(_emotionalState) > bestAction.GetValue(_emotionalState))
 			{
-				aux = action;
+				bestAction = action;
+				removeHere = i;
 			}
 		}
 		
-		return aux;
+		if(bestAction != null)
+		{
+			_actionsForExecution.remove(removeHere);
+		}
+		return bestAction;
 	}
 	
-	public void AppraiseSelfActionFailed(Event e)
+	/**
+	 * Gets the gender of the agent
+	 * @return the agent's sex
+	 */
+	public String sex() 
 	{
-		_deliberativeLayer.AppraiseSelfActionFailed(e);
-	}
-	
-	public void SpeechStarted()
-	{
-		_dialogManager.SpeechStarted();
+		return _sex;
 	}
 	
 	public ActiveEmotion simulateAppraisal(String action, String name, ArrayList<String> parameters)
@@ -765,76 +828,18 @@ public class Agent implements AgentModel {
 		else return null;
 	}
 	
-	
-	protected ValuedAction SelectBestAction() {
-		
-		ValuedAction bestAction = null;
-		ValuedAction action;
-		int removeHere=-1;
-		
-		for(int i=0; i < _actionsForExecution.size(); i++)
-		{
-			action = (ValuedAction) _actionsForExecution.get(i);
-			if(bestAction == null || action.GetValue(_emotionalState) > bestAction.GetValue(_emotionalState))
-			{
-				bestAction = action;
-				removeHere = i;
-			}
-		}
-		
-		if(bestAction != null)
-		{
-			_actionsForExecution.remove(removeHere);
-		}
-		return bestAction;
-	}
-	
-	public void EnforceCopingStrategy(String coping)
+	public void SpeechStarted()
 	{
-		_deliberativeLayer.EnforceCopingStrategy(this, coping);
-		_reactiveLayer.EnforceCopingStrategy(coping);
-	}
-	
-	public void PerceivePropertyChanged(String subject, String property, String value)
-	{
-		if(subject.equals(_name))
-		{
-			subject = Constants.SELF;
-		}
-		
-		Name propertyName = Name.ParseName(subject + "(" + property + ")");
-		_memory.getSemanticMemory().Tell(propertyName, value);
-	}
-	
-	public void PerceivePropertyChanged(Name propertyName, String value)
-	{
-		ArrayList<Symbol> symbols;
-		symbols = propertyName.GetLiteralList();
-		
-		//I'm changing directly the received name; not a good thing to do
-		for(int i = 0; i < symbols.size(); i++)
-		{
-			if(symbols.get(i).getName().equals(_name))
-			{
-				symbols.set(i, new Symbol(Constants.SELF));
-			}
-		}
-		
-		_memory.getSemanticMemory().Tell(propertyName, value);
+		_dialogManager.SpeechStarted();
 	}
 	
 	
 	
-	public void PerceivePropertyRemoved(String subject, String property)
-	{
-		if(subject.equals(_name))
-		{
-			subject = Constants.SELF;
-		}
-		
-		Name propertyName = Name.ParseName(subject + "(" + property + ")");
-		_memory.getSemanticMemory().Retract(propertyName);
-		
+	private void terminateExecution(){
+		_deliberativeLayer.ShutDown();
+		_reactiveLayer.ShutDown();
+		_remoteAgent.ShutDown();
+		if(_showStateWindow && _agentDisplay != null) _agentDisplay.dispose();
 	}
 
 

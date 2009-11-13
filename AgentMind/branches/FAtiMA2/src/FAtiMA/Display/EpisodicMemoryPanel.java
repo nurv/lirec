@@ -40,6 +40,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import FAtiMA.Agent;
+import FAtiMA.AgentModel;
 import FAtiMA.memory.episodicMemory.MemoryEpisode;
 
 
@@ -71,19 +72,24 @@ public class EpisodicMemoryPanel extends AgentDisplayPanel {
 		this.add(eventsScrool);
     }
     
+    public boolean Update(Agent ag)
+    {
+    	return Update((AgentModel) ag);
+    }
     
-    public boolean Update(Agent ag) {
+    
+    public boolean Update(AgentModel am) {
     	
     	boolean update = false;
         
-        if(countMemoryDetails() != ag.getMemory().getEpisodicMemory().countMemoryDetails()) {
+        if(countMemoryDetails() != am.getMemory().getEpisodicMemory().countMemoryDetails()) {
         	update = true;
         	_memoryEpisodes.removeAll();
         	_memoryEpisodeDisplays.clear();
         	
         	
-        	synchronized(ag.getMemory().getEpisodicMemory().GetSyncRoot()){
-        		Iterator<MemoryEpisode> it = ag.getMemory().getEpisodicMemory().GetAllEpisodes().iterator();
+        	synchronized(am.getMemory().getEpisodicMemory().GetSyncRoot()){
+        		Iterator<MemoryEpisode> it = am.getMemory().getEpisodicMemory().GetAllEpisodes().iterator();
             	MemoryEpisodeDisplay mDisplay;
             	MemoryEpisode episode;
             	while(it.hasNext()) {

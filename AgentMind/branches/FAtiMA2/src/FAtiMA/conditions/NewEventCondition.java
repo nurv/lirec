@@ -77,7 +77,7 @@ public class NewEventCondition extends RecentEventCondition {
 			return true;
 		}
 	
-		conditionVerified = (_positive == am.getMemory().getEpisodicMemory().ContainsRecentEvent(GetSearchKeys()));
+		conditionVerified = (_positive == am.getMemory().getEpisodicMemory().ContainsNewEvent(GetSearchKeys()));
 		
 		if(conditionVerified){
 			_conditionAlreadyVerified = true;
