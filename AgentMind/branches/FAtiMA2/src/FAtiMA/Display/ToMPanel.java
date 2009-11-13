@@ -58,6 +58,8 @@ public class ToMPanel extends AgentDisplayPanel {
 			_agentsPanel.addTab(m.getName(), null, new ModelOfOtherPanel(m),"Theory of Mind for agent " + m.getName());
 		}
 		
+		_currentAgents = ToM.size();
+		
 	}
 
 }

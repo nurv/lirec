@@ -34,6 +34,7 @@ import FAtiMA.exceptions.UnknownGoalException;
 import FAtiMA.memory.Memory;
 import FAtiMA.memory.semanticMemory.KnowledgeSlot;
 import FAtiMA.motivationalSystem.MotivationalState;
+import FAtiMA.reactiveLayer.ActionTendencies;
 import FAtiMA.reactiveLayer.Reaction;
 import FAtiMA.reactiveLayer.ReactiveProcess;
 import FAtiMA.sensorEffector.Event;
@@ -840,6 +841,11 @@ public class Agent implements AgentModel {
 		_reactiveLayer.ShutDown();
 		_remoteAgent.ShutDown();
 		if(_showStateWindow && _agentDisplay != null) _agentDisplay.dispose();
+	}
+
+	@Override
+	public ActionTendencies getActionTendencies() {
+		return _reactiveLayer.getActionTendencies();
 	}
 
 

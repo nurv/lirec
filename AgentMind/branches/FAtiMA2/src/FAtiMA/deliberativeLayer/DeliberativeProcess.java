@@ -928,7 +928,13 @@ public class DeliberativeProcess extends AgentProcess {
 			i = _currentIntention.GetSubIntention();
 			
 			//TODO adicionar e remover intenções de memória.
-			if(i.IsStrongCommitment() && i.NumberOfAlternativePlans() == 0)
+			
+			if(i.IsStrongCommitment() && i.getGoal().CheckFailure(am))
+			{
+				RemoveIntention(i);
+				i.ProcessIntentionFailure(am);
+			}
+			else if(i.IsStrongCommitment() && i.NumberOfAlternativePlans() == 0)
 			{
 				
 				RemoveIntention(i);

@@ -7,6 +7,7 @@ import javax.swing.JScrollPane;
 
 import FAtiMA.Agent;
 import FAtiMA.AgentModel;
+import FAtiMA.reactiveLayer.ActionTendencies;
 
 public class ActionTendenciesPanel extends AgentDisplayPanel {
 	
@@ -16,11 +17,14 @@ public class ActionTendenciesPanel extends AgentDisplayPanel {
 	private static final long serialVersionUID = 1L;
 	
 	private JPanel _actionsPanel;
+	private int _numberOfAT;
 
 	public ActionTendenciesPanel()
 	{
 		super();
 		this.setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
+		
+		_numberOfAT = 0;
 		
 		_actionsPanel = new JPanel();
 		_actionsPanel.setLayout(new BoxLayout(_actionsPanel,BoxLayout.Y_AXIS));
@@ -39,7 +43,9 @@ public class ActionTendenciesPanel extends AgentDisplayPanel {
 
 	@Override
 	public boolean Update(AgentModel am) {
-		// TODO Auto-generated method stub
+		ActionTendencies at = am.getActionTendencies();
+		//if(at.)
+		
 		return false;
 	}
 
