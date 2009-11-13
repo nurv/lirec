@@ -19,7 +19,7 @@
 #include "FileTools.h"
 #include "PCA.h"
 
-#define SAVE_FRAMES
+//#define SAVE_FRAMES
 
 using namespace std;
 
@@ -123,8 +123,8 @@ void App::Update(Image &camera)
 	
 	switch (key)
 	{
-		case 'h': learn=0; break;
-		case 's': learn=1; break;
+		case 's': learn=0; break;
+		case 'f': learn=1; break;
 	}
 			
 	vector<Rect> rects = m_FaceFinder.Find(camera,true);
@@ -137,6 +137,9 @@ void App::Update(Image &camera)
 		
 		if (learn!=-1) 
 		{
+			if (learn==0) cvSaveImage("smile.png",face.m_Image);
+			if (learn==1) cvSaveImage("frown.png",face.m_Image);
+			
 			m_Extremes[learn] = new Vector<float>(params);
 			if (m_Extremes[0]!=NULL && m_Extremes[1]!=NULL)
 			{

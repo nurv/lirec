@@ -96,6 +96,16 @@ def load_pca(filename):
 	CloseFile(f)
 	return pca
 	
+def vec2npimg(w,h,v):
+	c=0
+	image = np.zeros( (h,w,3), dtype=np.uint8 )
+	for iy in range(0,h):
+		for ix in range(0,w):
+			i = int(max(min(256*v[c],256),0))
+			image[iy,ix] = [i,i,i] 
+			c=c+1
+	return image
+	
 def plot_eigenface(image,x,y,w,h,pca,row,gain):
 	eigenface = pca.GetEigenTransform().GetRowVector(row)*gain+pca.GetMean()
 	c=0
