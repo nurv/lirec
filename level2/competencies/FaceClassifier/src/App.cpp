@@ -40,7 +40,7 @@ frame(NULL),
 frame_copy(NULL),
 m_FrameNum(0)
 {
-	m_CtrlPort.open("/faceident-ctrl"); 
+	m_CtrlPort.open("/faceclassifier-ctrl"); 
 	
 	if (filename=="")
 	{

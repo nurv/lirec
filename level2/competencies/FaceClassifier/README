@@ -1,3 +1,26 @@
-A face identity classifer based on eigenfaces, not ready for general use yet.
+A face identity classifer based on eigenfaces.
 
+Keyboard interface:
+-------------------
 
+Number keys : Learn user
+"d" : Detect mode
+"c" : Clear classifier
+
+Yarp interface:
+---------------
+
+Output port       Bottle contents                 Meaning
+/faceclassifier   "user appeared" ID confidence   A user has entered the view of the camera
+/faceclassifier   "user disappeared" ID           The user has left the camera view
+
+You can also drive the program via yarp with the following input messages:
+
+Input port            Bottle contents                 Meaning
+/faceclassifier-ctrl  "train" ID                      Train for this user
+/faceclassifier-ctrl  "detect"                        Switch to detection mode
+/faceclassifier-ctrl  "save" sessionname              Save the detected faces 
+/faceclassifier-ctrl  "load" sessionname              Load previously detected faces 
+/faceclassifier-ctrl  "clear"                         Clears all faces
+/faceclassifier-ctrl  "idle"                          Switch to idle mode, mostly frees up cpu
+/faceclassifier-ctrl  "errorthresh" value             Set the error threshold (default 0.2)
