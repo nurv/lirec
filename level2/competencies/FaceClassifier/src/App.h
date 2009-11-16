@@ -48,6 +48,7 @@ private:
 	
 	int m_FaceNum;
 	bool m_Learn; 
+	bool m_Idle;
 	CvFont m_Font; 
 	CvFont m_LargeFont; 
 	

@@ -35,6 +35,7 @@ m_Classifier(NULL),
 m_FaceBank(NULL),
 m_FaceNum(1),
 m_Learn(true),
+m_Idle(false),
 frame(NULL),
 frame_copy(NULL),
 m_FrameNum(0)
@@ -138,77 +139,130 @@ void App::Update(Image &camera)
 		case '0': m_FaceNum=0; m_Learn=true; break;
 		case 'c': m_FaceBank->Clear(); break;
 	}
-			
-	vector<Rect> rects = m_FaceFinder.Find(camera,m_Learn);
-	for(vector<Rect>::iterator i = rects.begin(); i!=rects.end(); i++ )
+		
+
+	///////////////////////////////////
+	// read from yarp
+
+	Bottle *b=m_CtrlPort.read(false);
+	if (b!=NULL)
 	{
-		unsigned int ID=999;
-		int imagenum=-1;
-		float confidence=0;
-		// get the face area as a sub image
-		Image face = camera.SubImage(*i);
-		
-		//face.SubMean();
-		//camera.Blit(face.Scale(w,h).RGB2GRAY(),100,100);
-		
-		// pass it into the face bank 
-		if (m_Learn)
+		if (b->get(0).asString()=="train")
 		{
-			confidence=m_FaceBank->Suggest(face,m_FaceNum);
-			ID=m_FaceNum;
+			m_FaceNum=b->get(1).asInt();
+			m_Learn=true;
+			m_Idle=false;
 		}
-		else
-		{	
-			confidence=m_FaceBank->Identify(face,ID,imagenum);
-		}				
-
-		// if it's recognised the face (should really check the confidence)
-		if (ID!=999)
+		if (b->get(0).asString()=="idle")
 		{
-			char s[32];
-			map<int,string>::iterator d = m_DebugNames.find(ID);
-			if (d!=m_DebugNames.end())
-			{
-				sprintf(s,"%s",d->second.c_str());
-			}
-			else
-			{
-				sprintf(s,"%d",ID);
-			}
-			
-			cvPutText(camera.m_Image, s, cvPoint(i->x,i->y+i->h-5), &m_LargeFont, colors[ID]);
-
-			if (!m_Learn)
-			{
-				m_SceneState.AddPresent(ID, SceneState::User(confidence));
-			}
+			m_FaceNum=b->get(1).asInt();
+			m_Idle=true;
 		}
-
-		cvRectangle(camera.m_Image, cvPoint(i->x,i->y), cvPoint(i->x+i->w,i->y+i->h), colors[0]);
+		else if (b->get(0).asString()=="clear")
+		{
+			m_FaceBank->Clear();
+		}
+		else if (b->get(0).asString()=="detect")
+		{
+			m_Learn=false;
+			m_Idle=false;
+		}
+		else if (b->get(0).asString()=="load")
+		{
+			m_FaceBank->Load(b->get(1).asString().c_str());
+		}
+		else if (b->get(0).asString()=="save")
+		{
+			m_FaceBank->Save(b->get(1).asString().c_str());
+		}
+		else if (b->get(0).asString()=="errorthresh")
+		{
+			m_FaceBank->SetErrorThresh(b->get(1).asDouble());
+		}
 	}
 
-	char info[256];
-	if (m_Learn)
+	if (m_Idle)
 	{
-		snprintf(info,256,"Learning user :%d",m_FaceNum);
-		
-		PCAClassifier *c = static_cast<PCAClassifier*>(m_FaceBank->GetClassifier());
-		if (c->GroupExists(m_FaceNum))
-		{
-			Vector<float> p = c->GetGroupMean(m_FaceNum);
-			Vector<float> r = c->GetPCA().Synth(p);
-			camera.Blit(Image(w,h,1,r),0,100);
-		}
+			// idling, so free up some cpu
+		#ifdef WIN32
+			Sleep(2000);
+		#else
+			usleep(200000);
+		#endif
 	}
 	else
 	{
-		snprintf(info,256,"Detecting users");
+		vector<Rect> rects = m_FaceFinder.Find(camera,m_Learn);
+		for(vector<Rect>::iterator i = rects.begin(); i!=rects.end(); i++ )
+		{
+			unsigned int ID=999;
+			int imagenum=-1;
+			float confidence=0;
+			// get the face area as a sub image
+			Image face = camera.SubImage(*i);
+
+			//face.SubMean();
+			//camera.Blit(face.Scale(w,h).RGB2GRAY(),100,100);
+
+			// pass it into the face bank 
+			if (m_Learn)
+			{
+				confidence=m_FaceBank->Suggest(face,m_FaceNum);
+				ID=m_FaceNum;
+			}
+			else
+			{	
+				confidence=m_FaceBank->Identify(face,ID,imagenum);
+			}				
+
+			// if it's recognised the face (should really check the confidence)
+			if (ID!=999)
+			{
+				char s[32];
+				map<int,string>::iterator d = m_DebugNames.find(ID);
+				if (d!=m_DebugNames.end())
+				{
+					sprintf(s,"%s",d->second.c_str());
+				}
+				else
+				{
+					sprintf(s,"%d",ID);
+				}
+
+				cvPutText(camera.m_Image, s, cvPoint(i->x,i->y+i->h-5), &m_LargeFont, colors[ID]);
+
+				if (!m_Learn)
+				{
+					m_SceneState.AddPresent(ID, SceneState::User(confidence));
+				}
+			}
+
+			cvRectangle(camera.m_Image, cvPoint(i->x,i->y), cvPoint(i->x+i->w,i->y+i->h), colors[0]);
+		}
+
+		char info[256];
+		if (m_Learn)
+		{
+			snprintf(info,256,"Learning user :%d",m_FaceNum);
+
+			PCAClassifier *c = static_cast<PCAClassifier*>(m_FaceBank->GetClassifier());
+			if (c->GroupExists(m_FaceNum))
+			{
+				Vector<float> p = c->GetGroupMean(m_FaceNum);
+				Vector<float> r = c->GetPCA().Synth(p);
+				camera.Blit(Image(w,h,1,r),0,100);
+			}
+		}
+		else
+		{
+			snprintf(info,256,"Detecting users");
+		}
+
+		cvPutText(camera.m_Image, info, cvPoint(10,10), &m_Font, colors[0]);
+
+		m_SceneState.Update();
 	}
 	
-	cvPutText(camera.m_Image, info, cvPoint(10,10), &m_Font, colors[0]);
-
-	m_SceneState.Update();
-
 }
 
 void App::Benchmark(const string &test)

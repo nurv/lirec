@@ -22,7 +22,7 @@ using namespace yarp::os;
 SceneState::SceneState()
 {
 	cerr<<"connecting to yarp..."<<endl;
-	m_YarpPort.open("/faceident");
+	m_YarpPort.open("/faceclassifier");
 }
 
 SceneState::~SceneState()
