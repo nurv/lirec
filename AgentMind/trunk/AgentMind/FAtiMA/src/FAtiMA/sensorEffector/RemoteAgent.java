@@ -94,6 +94,8 @@ import FAtiMA.emotionalState.EmotionalState;
 import FAtiMA.knowledgeBase.KnowledgeBase;
 import FAtiMA.memory.Memory;
 import FAtiMA.memory.autobiographicalMemory.AutobiographicalMemory;
+import FAtiMA.memory.eventQuery.CompoundCue;
+import FAtiMA.memory.eventQuery.SpreadActivate;
 import FAtiMA.memory.shortTermMemory.WorkingMemory;
 import FAtiMA.motivationalSystem.MotivationalState;
 import FAtiMA.socialRelations.LikeRelation;
@@ -133,6 +135,8 @@ public abstract class RemoteAgent extends SocketListener {
 	protected static final String STOP_TIME = "STOP-TIME";
 	protected static final String RESUME_TIME = "RESUME-TIME";
 	protected static final String READY_FOR_NEXT_STEP = "READY-FOR-NEXT-STEP";
+	
+	protected static final String QUERY_MEMORY = "QUERY-MEMORY";
 	
 	protected ArrayList _actions;
 	
@@ -337,6 +341,11 @@ public abstract class RemoteAgent extends SocketListener {
 					_readyForNextStep = true;
 				_agent.setReadyForNextStep(_readyForNextStep);	
 						
+			}
+			else if(msgType.equals(QUERY_MEMORY))
+			{
+				SpreadActivate.GetInstance().Spread();
+				CompoundCue.GetInstance().Match();						
 			}
 			
 			while(_lookAtList.size() > 0)

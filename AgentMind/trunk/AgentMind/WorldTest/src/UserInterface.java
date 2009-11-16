@@ -194,10 +194,19 @@ public class UserInterface implements ActionListener {
 			}
 		});
         
+     // Button to perform the next step
+        JButton queryButton = new JButton("Query");;
+        queryButton.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent arg0) {
+				_world.QueryMemory();
+			}
+		});
+        
         JPanel buttonsPanel = new JPanel();
         buttonsPanel.setLayout(new BoxLayout(buttonsPanel,BoxLayout.X_AXIS));
         buttonsPanel.add(okButton);
         buttonsPanel.add(stepButton);
+        buttonsPanel.add(queryButton);
         
         _frame.getContentPane().add(caseBox);
         _frame.getContentPane().add(timeBox);

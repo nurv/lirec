@@ -57,6 +57,24 @@ import FAtiMA.memory.ActionDetail;
 import FAtiMA.memory.Time;
 import FAtiMA.sensorEffector.Event;
 import FAtiMA.util.AgentLogger;
+import FAtiMA.memory.eventQuery.SAQuery;
+import FAtiMA.memory.shortTermMemory.ShortTermMemory;
+import FAtiMA.memory.shortTermMemory.STMemoryRecord;
+
+import org.drools.KnowledgeBase;
+import org.drools.KnowledgeBaseFactory;
+import org.drools.builder.KnowledgeBuilder;
+import org.drools.builder.KnowledgeBuilderError;
+import org.drools.builder.KnowledgeBuilderErrors;
+import org.drools.builder.KnowledgeBuilderFactory;
+import org.drools.builder.ResourceType;
+import org.drools.event.rule.DebugAgendaEventListener;
+import org.drools.event.rule.DebugWorkingMemoryEventListener;
+import org.drools.io.ResourceFactory;
+import org.drools.logger.KnowledgeRuntimeLogger;
+import org.drools.logger.KnowledgeRuntimeLoggerFactory;
+import org.drools.runtime.StatefulKnowledgeSession;
+
 
 public class AutobiographicalMemory implements Serializable {
 	
@@ -206,7 +224,7 @@ public class AutobiographicalMemory implements Serializable {
 					this._memoryEvents.add(event);
 				}
 			}
-		}		
+		}	
 	}
 	
 	public Object GetSyncRoot()

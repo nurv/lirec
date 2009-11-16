@@ -92,22 +92,27 @@ public class ScenarioLoaderHandler extends ReflectXMLHandler{
 		if(_isPretendedScenario){
 			if(_characterName.equalsIgnoreCase(attributes.getValue("name"))){
 				this._isPretendedCharacter = true;
-				_agentArgs.add(attributes.getValue("platform"));
-				_agentArgs.add(attributes.getValue("host"));
-				_agentArgs.add(attributes.getValue("port"));
-				_agentArgs.add(attributes.getValue("displayMode"));
-				_agentArgs.add(attributes.getValue("name"));
-				_agentArgs.add(attributes.getValue("sex"));
-				_agentArgs.add(attributes.getValue("role"));
-				_agentArgs.add(attributes.getValue("displayName"));
-				_agentArgs.add(attributes.getValue("actionsFile"));
-				_agentArgs.add(attributes.getValue("goalsFile"));
-				_agentArgs.add(attributes.getValue("cultureName"));
-				
-				/*_agentArgs.add(attributes.getValue("platform"));
-				_agentArgs.add(attributes.getValue("host"));
-				_agentArgs.add(attributes.getValue("port"));
-				_agentArgs.add(attributes.getValue("name"));*/
+				if (attributes.getLength() > 4)
+				{
+					_agentArgs.add(attributes.getValue("platform"));
+					_agentArgs.add(attributes.getValue("host"));
+					_agentArgs.add(attributes.getValue("port"));
+					_agentArgs.add(attributes.getValue("displayMode"));
+					_agentArgs.add(attributes.getValue("name"));
+					_agentArgs.add(attributes.getValue("sex"));
+					_agentArgs.add(attributes.getValue("role"));
+					_agentArgs.add(attributes.getValue("displayName"));
+					_agentArgs.add(attributes.getValue("actionsFile"));
+					_agentArgs.add(attributes.getValue("goalsFile"));
+					_agentArgs.add(attributes.getValue("cultureName"));
+				}
+				else
+				{				
+					_agentArgs.add(attributes.getValue("platform"));
+					_agentArgs.add(attributes.getValue("host"));
+					_agentArgs.add(attributes.getValue("port"));
+					_agentArgs.add(attributes.getValue("name"));
+				}
 			}else{
 				this._isPretendedCharacter = false;
 			}    		

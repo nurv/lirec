@@ -360,6 +360,10 @@ public class WorldTest {
 		SendPerceptionToAll( "READY-FOR-NEXT-STEP" );
 	}
 	
+	public void QueryMemory(){
+		SendPerceptionToAll( "QUERY-MEMORY" );
+	}
+	
 	public synchronized void removeAgent(RemoteAgent ra){
 		_agents.remove(ra);
 		_userInterface.WriteLine(ra.Name() + " disconnected\n");

@@ -1,0 +1,260 @@
+import FAtiMA.memory.ActionDetail;
+import FAtiMA.memory.eventQuery.SAQuery;
+import FAtiMA.memory.eventQuery.CandidateActionDetail;
+
+
+rule "subject-subject"
+	no-loop true
+	when
+		$q: SAQuery($s1: subject)
+		$cad: CandidateActionDetail(subject != true)
+		$ad: ActionDetail(subject == $s1) from $cad.actionDetail		
+	then		
+		//insert (new CandidateActionDetail($ad, "p1", "s-s"));
+		//retract ($ad);
+		modify ($cad)
+		{
+			increasePhase(), 
+			setExtension("subject"),
+			setSubject(true)		
+		}
+		System.out.println("Subject " + $s1);
+		System.out.println("subject-subject " + $ad.getID());
+end
+
+rule "target-target"
+	no-loop true
+	when
+		$q: SAQuery($t1: target)
+		$cad: CandidateActionDetail(target != true)
+		$ad: ActionDetail(target == $t1) from $cad.actionDetail		
+	then
+		modify ($cad) {
+			increasePhase(), 
+			setExtension("target"),
+			setTarget(true)
+		}
+		System.out.println("Target " + $t1);
+		System.out.println("target-target " + $ad.getID());
+end
+
+rule "action-action"
+	no-loop true
+	when
+		$q: SAQuery($a1: action)
+		$cad: CandidateActionDetail(action != true) 
+		$ad: ActionDetail(action == $a1) from $cad.actionDetail		
+	then
+		modify ($cad) {
+			increasePhase(), 
+			setExtension("action"),
+			setAction(true)
+		}
+		System.out.println("Action " + $a1);
+		System.out.println("action-action " + $ad.getID());
+end
+
+rule "location-location"
+	no-loop true
+	when
+		$q: SAQuery($l1: location)
+		$cad: CandidateActionDetail(location != true)
+		$ad: ActionDetail(location == $l1) from $cad.actionDetail		
+	then
+		modify ($cad) {
+			increasePhase(), 
+			setExtension("location"),
+			setLocation(true)
+		}
+		System.out.println("Location " + $l1);
+		System.out.println("location-location " + $ad.getID());
+end
+
+rule "subject"
+	no-loop true
+	when
+		$q: SAQuery(question == "subject")
+		$cad: CandidateActionDetail( phase == $q.numKnownVar )
+		$ad: ActionDetail($s: subject) from $cad.actionDetail		
+	then			
+		modify ($q) {
+			setAnswers($s)
+		}
+		System.out.println("Subject " + $s);
+		System.out.println("Retracted " + $ad.getID() + "\n");
+		retract ($cad);			
+end
+
+rule "target"
+	no-loop true
+	when
+		$q: SAQuery(question == "target")
+		$cad: CandidateActionDetail( phase == $q.numKnownVar )
+		$ad: ActionDetail($t: target) from $cad.actionDetail		
+	then			
+		modify ($q) {
+			setAnswers($t)
+		}
+		System.out.println("Target " + $t);
+		System.out.println("Retracted " + $ad.getID() + "\n");
+		retract ($cad);			
+end
+
+rule "action"
+	no-loop true
+	when
+		$q: SAQuery(question == "action")
+		$cad: CandidateActionDetail( phase == $q.numKnownVar )
+		$ad: ActionDetail($a: action) from $cad.actionDetail		
+	then			
+		modify ($q) {
+			setAnswers($a)
+		}
+		System.out.println("Action " + $a);
+		System.out.println("Retracted " + $ad.getID() + "\n");
+		retract ($cad);			
+end
+
+rule "location"
+	no-loop true
+	when
+		$q: SAQuery(question == "location")
+		$cad: CandidateActionDetail( phase == $q.numKnownVar )
+		$ad: ActionDetail($l: location) from $cad.actionDetail		
+	then			
+		modify ($q) {
+			setAnswers($l)
+		}
+		System.out.println("Location " + $l);
+		System.out.println("Retracted " + $ad.getID());
+		retract ($cad);			
+end
+
+/*rule "subject-subject"
+	no-loop true
+	when
+		$q: SAQuery($s1: subject)
+		$cad: CandidateActionDetail(subject == $s1)
+		//$ad: ActionDetail(subject == $s1) from $cad.actionDetail		
+	then		
+		//insert (new CandidateActionDetail($ad, "p1", "s-s"));
+		//retract ($ad);
+		modify ($cad)
+		{
+			increasePhase(), 
+			setExtension("subject"),
+			setSubject("fired")		
+		}
+		System.out.println("Subject " + $s1);
+		System.out.println("subject-subject " + $cad.getID());
+end
+
+rule "target-target"
+	no-loop true
+	when
+		$q: SAQuery($t1: target)
+		$cad: CandidateActionDetail(target == $t1)
+		//$ad: ActionDetail(target == $t1) from $cad.actionDetail		
+	then
+		modify ($cad) {
+			increasePhase(), 
+			setExtension("target"),
+			setTarget("fired")
+		}
+		System.out.println("Target " + $t1);
+		System.out.println("target-target " + $cad.getID());
+end
+
+rule "action-action"
+	no-loop true
+	when
+		$q: SAQuery($a1: action)
+		$cad: CandidateActionDetail(action == $a1)
+		//$ad: ActionDetail(target == $t1) from $cad.actionDetail		
+	then
+		modify ($cad) {
+			increasePhase(), 
+			setExtension("action"),
+			setAction("fired")
+		}
+		System.out.println("Action " + $a1);
+		System.out.println("action-action " + $cad.getID());
+end
+
+rule "location-location"
+	no-loop true
+	when
+		$q: SAQuery($l1: location)
+		$cad: CandidateActionDetail(location == $l1)
+		//$ad: ActionDetail(target == $t1) from $cad.actionDetail		
+	then
+		modify ($cad) {
+			increasePhase(), 
+			setExtension("location"),
+			setLocation("fired")
+		}
+		System.out.println("Location " + $l1);
+		System.out.println("location-location " + $cad.getID());
+end
+
+rule "subject"
+	no-loop true
+	when
+		$q: SAQuery(question == "subject")
+		$cad: CandidateActionDetail( $s: subject, phase == $q.numKnownVar )
+		//$ad: ActionDetail($a: action) from $cad.actionDetail		
+	then			
+		modify ($q) {
+			setAnswers($s)
+		}
+		System.out.println("Subject " + $s);
+		System.out.println("Retracted " + $cad.getID() + "\n");
+		retract ($cad);			
+end
+
+rule "target"
+	no-loop true
+	when
+		$q: SAQuery(question == "target")
+		$cad: CandidateActionDetail( $t: target, phase == $q.numKnownVar )
+		//$ad: ActionDetail($a: action) from $cad.actionDetail		
+	then			
+		modify ($q) {
+			setAnswers($t)
+		}
+		System.out.println("Target " + $t);
+		System.out.println("Retracted " + $cad.getID() + "\n");
+		retract ($cad);			
+end
+
+rule "action"
+	no-loop true
+	when
+		$q: SAQuery(question == "action")
+		$cad: CandidateActionDetail( $a: action, phase == $q.numKnownVar )
+		//$ad: ActionDetail($a: action) from $cad.actionDetail		
+	then			
+		modify ($q) {
+			setAnswers($a)
+		}
+		System.out.println("Action " + $a);
+		System.out.println("Retracted " + $cad.getID() + "\n");
+		retract ($cad);			
+end
+
+rule "location"
+	no-loop true
+	when
+		$q: SAQuery(question == "location")
+		$cad: CandidateActionDetail( $l: location, phase == $q.numKnownVar )
+		//$ad: ActionDetail($a: action) from $cad.actionDetail		
+	then			
+		modify ($q) {
+			setAnswers($l)
+		}
+		System.out.println("Location " + $l);
+		System.out.println("Retracted " + $cad.getID());
+		retract ($cad);			
+end*/
+
+

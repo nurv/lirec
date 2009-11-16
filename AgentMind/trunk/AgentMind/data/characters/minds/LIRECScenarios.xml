@@ -6,8 +6,6 @@
 						userOptionsFile="LIRECOptions">		
 			<Objects>
 				<Object name="Amy"/>
-				<!--Object name="Jenny"/>
-				<Object name="Susan"/-->
 				<Object name="apple"/>
 				<Object name="orange"/>
 				<Object name="banana"/>
@@ -15,15 +13,15 @@
 			</Objects>
 	
 		</WorldSimulator>	
-		<Agent name="Greta" displayName="Greta" role="Greta" platform="worldsim" host="localhost" 
+		<!--Agent name="Greta" displayName="Greta" role="Greta" platform="worldsim" host="localhost" 
 			   port="46874" displayMode="True" sex="F" actionsFile="LIRECActions" 
 			   goalsFile="LIRECGoalLibrary" cultureName="NoCulture">
 			<Properties>				
 				<Property name="time" value="Morning"/>
 				<Property name="isPerson" value="True"/>
 				<Property name="location" value="LivingRoom"/>
-			</Properties>	
-		<!--Agent name="Greta" platform="worldsim" host="localhost" port="46874"-->
+			</Properties-->	
+		<Agent name="Greta" platform="worldsim" host="localhost" port="46874">
 		</Agent>
 	</Scenario>	
 	
