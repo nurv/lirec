@@ -34,23 +34,21 @@ import FAtiMA.AgentModel;
 import FAtiMA.deliberativeLayer.goals.Goal;
 import FAtiMA.sensorEffector.Event;
 import FAtiMA.socialRelations.LikeRelation;
+import FAtiMA.util.Constants;
 import FAtiMA.util.enumerables.EmotionType;
 
 import FAtiMA.wellFormedNames.Name;
-import FAtiMA.wellFormedNames.Symbol;
 
 public abstract class Appraisal {
 	
-	public static ArrayList<BaseEmotion> GenerateEmotions(AgentModel am, Event event, AppraisalVector vector, Symbol other)
+	public static ArrayList<BaseEmotion> GenerateSelfEmotions(AgentModel am, Event event, AppraisalVector vector)
 	{
 		ArrayList<BaseEmotion> emotions = new ArrayList<BaseEmotion>();
 		float desirability;
-		float desirabilityForOther;
 		float praiseworthiness;
 		float like;
 		
 		desirability = vector.getAppraisalVariable(AppraisalVector.DESIRABILITY);
-		desirabilityForOther = vector.getAppraisalVariable(AppraisalVector.DESIRABILITY_FOR_OTHER);
 		praiseworthiness = vector.getAppraisalVariable(AppraisalVector.PRAISEWORTHINESS);
 		like = vector.getAppraisalVariable(AppraisalVector.LIKE);
 		
@@ -63,11 +61,6 @@ public abstract class Appraisal {
 		//WellBeingEmotions: Joy, Distress
 		if (desirability != 0) {
 			emotions.add(OCCAppraiseWellBeing(event, desirability));
-				
-			//FortuneOfOtherEmotions: HappyFor, Gloating, Resentment, Pitty
-			if(desirabilityForOther != 0) {
-				emotions.addAll(OCCAppraiseFortuneForAll(am, event, desirability, desirabilityForOther, other));
-			}
 		}
 		
 		if (praiseworthiness != 0) {
@@ -194,57 +187,33 @@ public abstract class Appraisal {
 		return em;
 	}
 	
-	private static ArrayList<BaseEmotion> OCCAppraiseFortuneForAll(AgentModel am, Event event, float desirability, float desirabilityForOther, Symbol other)
+	public static BaseEmotion GenerateEmotionForOther(AgentModel am, Event event, AppraisalVector v, String other)
 	{
+		float desirabilityForOther = v.getAppraisalVariable(AppraisalVector.DESIRABILITY_FOR_OTHER);
+		float desirability = v.getAppraisalVariable(AppraisalVector.DESIRABILITY);
 		float targetBias = 0;
 		float subjectBias = 0;
 		float bias;
 		float newDesirability = 0;
-		ArrayList<BaseEmotion> emotions = new ArrayList<BaseEmotion>();
+	
 		
-		String appraisingAgent = am.getName();
-		String target = event.GetTarget();
 		String subject = event.GetSubject();
 		
-		if(other != null && other.isGrounded())
+		if(desirabilityForOther == 0) return null;
+		
+		targetBias = LikeRelation.getRelation(Constants.SELF,other).getValue(am.getMemory()) * desirabilityForOther/10;
+		bias = targetBias;
+		if(!subject.equals(Constants.SELF))
 		{
-			target = other.toString();
-		}		
-
-				
-		if(target != null && !target.equals(appraisingAgent))
-		{	
-			targetBias = LikeRelation.getRelation(appraisingAgent,event.GetTarget()).getValue(am.getMemory()) * desirabilityForOther/10;
-			bias = targetBias;
-			if(!subject.equals(appraisingAgent))
-			{
-				subjectBias = LikeRelation.getRelation(appraisingAgent, event.GetSubject()).getValue(am.getMemory());
+				subjectBias = LikeRelation.getRelation(Constants.SELF, subject).getValue(am.getMemory());
 				bias = (bias + subjectBias)/2;
-			}
-		}
-		else 
-		{
-			subjectBias = LikeRelation.getRelation(appraisingAgent,event.GetSubject()).getValue(am.getMemory()) * desirabilityForOther/10;
-			bias = subjectBias;
-		}
-
-		newDesirability = Math.round((desirability + bias)/2);
-
-		if(target != null && !target.equals(appraisingAgent))
-		{
-			emotions.add(OCCAppraiseFortuneOfOthers(event, newDesirability, desirabilityForOther, target));
-			
-			if(!subject.equals(appraisingAgent))
-			{
-				emotions.add(OCCAppraiseFortuneOfOthers(event, newDesirability, 10, subject));
-			}
-		}
-		else
-		{
-			emotions.add(OCCAppraiseFortuneOfOthers(event, newDesirability, desirabilityForOther, subject));
 		}
 		
-		return emotions;
+		newDesirability = (desirability + bias)/2;
+
+		
+		return OCCAppraiseFortuneOfOthers(event, newDesirability, desirabilityForOther, other);
+					
 	}
 	
 	/**

@@ -768,6 +768,7 @@ public abstract class RemoteAgent extends SocketListener {
 			{
 				_agent.initializeModelOfOther(subject);
 				_agent.getMotivationalState().InitializeOtherAgentMotivators(subject);
+				_agent.AddNearByAgent(subject);
 				
 			}
 		}
@@ -786,6 +787,8 @@ public abstract class RemoteAgent extends SocketListener {
 	
 	protected void EntityRemovedPerception(String perc)
 	{
+		StringTokenizer st = new StringTokenizer(perc, " ");
+		_agent.RemoveNearByAgent(st.nextToken());
 	}
 	
 	

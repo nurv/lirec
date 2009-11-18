@@ -216,7 +216,7 @@ public class MotivationalState implements Serializable {
 		vec.setAppraisalVariable(AppraisalVector.DESIRABILITY, contributionToSelfNeeds);
 		vec.setAppraisalVariable(AppraisalVector.PRAISEWORTHINESS, praiseWorthiness);
 	
-		emotions = Appraisal.GenerateEmotions(am, e, vec, null);
+		emotions = Appraisal.GenerateSelfEmotions(am, e, vec);
 		
 		
 		ListIterator<BaseEmotion> li = emotions.listIterator();

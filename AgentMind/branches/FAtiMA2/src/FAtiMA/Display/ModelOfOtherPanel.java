@@ -29,6 +29,8 @@ public class ModelOfOtherPanel extends AgentDisplayPanel {
 	     
 	     _components.addTab("ShortTermMemory", null, new ShortTermMemoryPanel());
 	     
+	     _components.addTab("ActionTendencies", null, new ActionTendenciesPanel());
+	     
 	     
 	     this.add(_components);
 		_model = m;

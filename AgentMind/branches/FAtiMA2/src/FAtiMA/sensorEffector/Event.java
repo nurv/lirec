@@ -174,6 +174,58 @@ public class Event implements Cloneable, Serializable {
 		return e;
 	}
 	
+	public Event RemovePerspective(String agentName)
+	{
+		Parameter p1;
+		Parameter p2;
+		
+		Event e = new Event(this._subject);
+		
+		if(this._subject.equals(Constants.SELF))
+		{
+			e._subject = agentName;
+		}
+		else
+		{
+			e._subject = this._subject;
+		}
+		
+		e._action = this._action;
+		
+		if(this._target.equals(Constants.SELF))
+		{
+			e._target = agentName;
+		}
+		else
+		{
+			e._target = this._target;
+		}
+		
+		e._time = this._time;
+		
+		if(this._parameters != null)
+		{
+			e._parameters = new ArrayList<Parameter>();
+			ListIterator<Parameter> li = this._parameters.listIterator();
+			while(li.hasNext())
+			{
+				p1 = li.next();
+				if(p1.GetValue().equals(Constants.SELF))
+				{
+					p2 = new Parameter("param",agentName);
+				}
+				else
+				{
+					p2 = (Parameter) p1.clone();
+				}
+				e._parameters.add(p2);
+			}
+		}
+		
+		return e;
+	}
+	
+	
 	/**
 	 * Parses an event from a XML attributes list
 	 * @param selfName - the name of the agent (thus its called selfName)

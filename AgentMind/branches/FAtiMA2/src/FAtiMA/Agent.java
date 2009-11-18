@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.ListIterator;
 import java.util.StringTokenizer;
@@ -35,6 +36,7 @@ import FAtiMA.memory.Memory;
 import FAtiMA.memory.semanticMemory.KnowledgeSlot;
 import FAtiMA.motivationalSystem.MotivationalState;
 import FAtiMA.reactiveLayer.ActionTendencies;
+import FAtiMA.reactiveLayer.EmotionalReactionTreeNode;
 import FAtiMA.reactiveLayer.Reaction;
 import FAtiMA.reactiveLayer.ReactiveProcess;
 import FAtiMA.sensorEffector.Event;
@@ -77,7 +79,7 @@ public class Agent implements AgentModel {
 			ScenarioLoaderHandler scenHandler = new ScenarioLoaderHandler(args[0],args[1]);
 			SAXParserFactory factory = SAXParserFactory.newInstance();
 			SAXParser parser = factory.newSAXParser();
-			parser.parse(new File(MIND_PATH + "LIRECScenarios.xml"), scenHandler);
+			parser.parse(new File(MIND_PATH + "Scenarios.xml"), scenHandler);
 			args = scenHandler.getAgentArguments();
 		}
 		
@@ -141,6 +143,7 @@ public class Agent implements AgentModel {
 	}
 	
 	protected HashMap<String,ModelOfOther> _ToM;
+	protected ArrayList<String> _nearbyAgents;
 	
 	protected EmotionalState _emotionalState;
 	protected MotivationalState _motivationalState;
@@ -183,6 +186,7 @@ public class Agent implements AgentModel {
 		_motivationalState = new MotivationalState();
 		
 		_ToM = new HashMap<String, ModelOfOther>();
+		_nearbyAgents = new ArrayList<String>();
 		
 		_saveDirectory = saveDirectory;
 		_shutdown = false;
@@ -381,6 +385,24 @@ public class Agent implements AgentModel {
 		return this._ToM;
 	}
 	
+	public Collection<String> getNearByAgents()
+	{
+		return this._nearbyAgents;
+	}
+	
+	public void AddNearByAgent(String agent)
+	{
+		if(!agent.equals(this._name))
+		{
+			this._nearbyAgents.add(agent);
+		}
+	}
+	
+	public void RemoveNearByAgent(String entity)
+	{
+		this._nearbyAgents.remove(entity);
+	}
+	
 	public void initializeModelOfOther(String name)
 	{
 		if(!_ToM.containsKey(name))
@@ -398,6 +420,7 @@ public class Agent implements AgentModel {
 		FileInputStream in = new FileInputStream(fileName);
 		ObjectInputStream s = new ObjectInputStream(in);
 		this._ToM = (HashMap<String, ModelOfOther>) s.readObject();
+		this._nearbyAgents = (ArrayList<String>) s.readObject();
 		this._deliberativeLayer = (DeliberativeProcess) s.readObject();
 		this._reactiveLayer = (ReactiveProcess) s.readObject();
 		this._emotionalState = (EmotionalState) s.readObject();
@@ -588,8 +611,23 @@ public class Agent implements AgentModel {
 						for(ListIterator<Event> li = this._perceivedEvents.listIterator(); li.hasNext();)
 						{
 							Event e = (Event) li.next();
-							e = e.ApplyPerspective(_name);
 							AgentLogger.GetInstance().log("Perceiving event: " + e.toName());
+							
+							
+							//ToM of others
+							for(String other : _nearbyAgents)
+							{
+								Event e2 = e.ApplyPerspective(other);
+								ModelOfOther m = _ToM.get(other);
+								m.getMemory().getEpisodicMemory().StoreAction(m.getMemory(), e2);
+								m.getMemory().getSemanticMemory().Tell(ACTION_CONTEXT,e2.toName().toString());
+								m.AddEvent(e2);
+								
+							}
+							
+							//SELF
+							e = e.ApplyPerspective(_name);
+							
 							//inserting the event in AM
 							
 							_memory.getEpisodicMemory().StoreAction(_memory, e);
@@ -637,6 +675,12 @@ public class Agent implements AgentModel {
 					
 					//Appraise the events and changes in data
 					_reactiveLayer.Appraisal(this);
+					
+					for(ModelOfOther m : _ToM.values())
+					{
+						_reactiveLayer.Appraisal(m);
+					}
+					
 				    _deliberativeLayer.Appraisal(this);	
 				    
 					
@@ -719,6 +763,7 @@ public class Agent implements AgentModel {
 			ObjectOutputStream s = new ObjectOutputStream(out);
 
 			s.writeObject(_ToM);
+			s.writeObject(_nearbyAgents);
 			s.writeObject(_deliberativeLayer);
 			s.writeObject(_reactiveLayer);
 			s.writeObject(_emotionalState);
@@ -792,7 +837,7 @@ public class Agent implements AgentModel {
 			int like = Math.round(LikeRelation.getRelation(Constants.SELF, name).getValue(_memory));
 			AppraisalVector v = new AppraisalVector();
 			v.setAppraisalVariable(AppraisalVector.LIKE, like);
-			em = (BaseEmotion) Appraisal.GenerateEmotions(this, e, v, null).get(0);
+			em = (BaseEmotion) Appraisal.GenerateSelfEmotions(this, e, v).get(0);
 			return _emotionalState.DetermineActiveEmotion(em);
 		}
 		else if(action.equals("ACT_FOR_CHARACTER"))
@@ -810,8 +855,8 @@ public class Agent implements AgentModel {
 				}
 			}
 			
-			Reaction r = _reactiveLayer.Evaluate(this, e);
-			emotions = Appraisal.GenerateEmotions(this, e, _reactiveLayer.translateEmotionalReaction(r),r.getOther());
+			Reaction r = ReactiveProcess.Evaluate(this, e);
+			emotions = Appraisal.GenerateSelfEmotions(this, e, ReactiveProcess.translateEmotionalReaction(r));
 			ListIterator<BaseEmotion> li = emotions.listIterator();
 			
 			while(li.hasNext())
@@ -846,6 +891,21 @@ public class Agent implements AgentModel {
 	@Override
 	public ActionTendencies getActionTendencies() {
 		return _reactiveLayer.getActionTendencies();
+	}
+	
+	public EmotionalReactionTreeNode getEmotionalReactions()
+	{
+		return _reactiveLayer.getEmotionalReactions();
+	}
+
+	@Override
+	public void clearEvents() {
+		_reactiveLayer.clearEvents();	
+	}
+
+	@Override
+	public Collection<Event> getEvents() {
+		return _reactiveLayer.getEvents();
 	}
 
 

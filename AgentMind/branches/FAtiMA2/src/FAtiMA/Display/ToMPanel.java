@@ -42,6 +42,8 @@ public class ToMPanel extends AgentDisplayPanel {
 			update = true;
 		}
 		
+		update = ((ModelOfOtherPanel)_agentsPanel.getSelectedComponent()).Update(ag) || update;
+		
 		return update;
 	}
 	

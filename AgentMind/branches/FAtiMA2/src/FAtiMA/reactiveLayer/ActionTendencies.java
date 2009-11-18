@@ -86,6 +86,11 @@ public class ActionTendencies implements Serializable, Cloneable {
 		_actions.add(action);
 	}
 	
+	public ArrayList<Action> getActions()
+	{
+		return _actions;
+	}
+	
 	/**
 	 * Checks the Integrity of all the actions by testing if any of them
 	 * refers to a SpeechAct not defined

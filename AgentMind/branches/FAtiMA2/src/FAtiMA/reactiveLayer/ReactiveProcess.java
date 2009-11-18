@@ -61,10 +61,12 @@
 package FAtiMA.reactiveLayer;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.ListIterator;
 
 import FAtiMA.AgentModel;
 import FAtiMA.AgentProcess;
+import FAtiMA.ModelOfOther;
 import FAtiMA.ValuedAction;
 import FAtiMA.emotionalState.AppraisalVector;
 import FAtiMA.emotionalState.BaseEmotion;
@@ -124,6 +126,16 @@ public class ReactiveProcess extends AgentProcess {
 		return _actionTendencies;
 	}
 	
+	public Collection<Event> getEvents()
+	{
+		return _eventPool;
+	}
+	
+	public void clearEvents()
+	{
+		_eventPool.clear();
+	}
+	
 	/**
 	 * Determines an answer to a SpeechAct according to the agent's emotional reactions
 	 * @return the best answer to give according to emotional reactions
@@ -156,33 +168,74 @@ public class ReactiveProcess extends AgentProcess {
 	 * Reactive appraisal. Appraises received events according to the emotional
 	 * reaction rules
 	 */
-	public void Appraisal(AgentModel am) {
-		ListIterator<Event> li;
-		Event event;
+	public void Appraisal(AgentModel ag) {
+		Event event2;
+		Event event3;
 		ArrayList<BaseEmotion> emotions;
-		Reaction evaluation;
+		BaseEmotion emotionForOther;
+		Reaction selfEvaluation;
+		Reaction otherEvaluation;
+		AppraisalVector v;
 		
 		
-		synchronized (_eventPool) {
-			li = _eventPool.listIterator();
-			while (li.hasNext()) {
-				event = (Event) li.next();
-
-				evaluation = Evaluate(am, event);
+		synchronized (ag.getEvents()) {
+			for(Event event : ag.getEvents())
+			{
+			
+				//self evaluation
+				selfEvaluation = Evaluate(ag, event);
 				
-				if(evaluation != null)
+				if(selfEvaluation != null)
 				{
 					
-					emotions = FAtiMA.emotionalState.Appraisal.GenerateEmotions(am, event, translateEmotionalReaction(evaluation), evaluation.getOther());
+					emotions = FAtiMA.emotionalState.Appraisal.GenerateSelfEmotions(
+							ag, 
+							event, 
+							translateEmotionalReaction(selfEvaluation));
 						
 					ListIterator<BaseEmotion> li2 = emotions.listIterator();
 					while(li2.hasNext())
 					{
-						am.getEmotionalState().AddEmotion(li2.next(), am);
+						ag.getEmotionalState().AddEmotion(li2.next(), ag);
 					}			
 				}
+				
+				if(ag.getToM() != null)
+				{
+				
+					event2 = event.RemovePerspective(ag.getName());
+					
+					// generating fortune of others emotions
+					for(String other : ag.getNearByAgents())
+					{
+						event3 = event2.ApplyPerspective(other);
+						ModelOfOther m = ag.getToM().get(other);
+						otherEvaluation = Evaluate(m, event3);
+						v = new AppraisalVector();
+						if(selfEvaluation != null && selfEvaluation.getDesirability() != null)
+						{
+							v.setAppraisalVariable(AppraisalVector.DESIRABILITY, selfEvaluation.getDesirability());
+						}
+						
+						if(otherEvaluation != null && otherEvaluation.getDesirability() != null)
+						{
+							v.setAppraisalVariable(AppraisalVector.DESIRABILITY_FOR_OTHER, otherEvaluation.getDesirability());
+						}
+						
+						
+						emotionForOther = FAtiMA.emotionalState.Appraisal.GenerateEmotionForOther(
+								ag,
+								event, 
+								v,
+								other);
+						if(emotionForOther != null)
+						{
+							ag.getEmotionalState().AddEmotion(emotionForOther, ag);
+						}
+					}
+				}
 			}
-			_eventPool.clear();
+			ag.clearEvents();
 		}
 	}
 	
@@ -198,7 +251,7 @@ public class ReactiveProcess extends AgentProcess {
 		}
 	}
 	
-	public AppraisalVector translateEmotionalReaction(Reaction r)
+	public static AppraisalVector translateEmotionalReaction(Reaction r)
 	{
 		AppraisalVector vector = new AppraisalVector();
 		
@@ -268,7 +321,7 @@ public class ReactiveProcess extends AgentProcess {
 	public void ShutDown() {
 	}
 	
-	public Reaction Evaluate(AgentModel am, Event event)
+	public static Reaction Evaluate(AgentModel am, Event event)
 	{
 	
 		Reaction emotionalReaction;
@@ -281,7 +334,7 @@ public class ReactiveProcess extends AgentProcess {
 		}
 		else
 		{
-			emotionalReaction = _emotionalReactions.MatchEvent(event);
+			emotionalReaction = am.getEmotionalReactions().MatchEvent(event);
 			if(emotionalReaction != null)
 			{
 				emotionalReaction = (Reaction) emotionalReaction.clone();
