@@ -174,7 +174,7 @@ public class AgentLoaderHandler extends ReflectXMLHandler {
     	
     	motivatorName = attributes.getValue("motivator");
     	type = MotivatorType.ParseType(motivatorName);
-        _am.getMotivationalState().AddSelfMotivator(new Motivator(type,
+        _am.getMotivationalState().AddMotivator(new Motivator(type,
         												new Float(attributes.getValue("decayFactor")).floatValue(),
         												new Float(attributes.getValue("weight")).floatValue(),
         												new Float(attributes.getValue("intensity")).floatValue()));

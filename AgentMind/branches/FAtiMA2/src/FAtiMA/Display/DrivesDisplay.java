@@ -22,15 +22,12 @@ public class DrivesDisplay {
 	JProgressBar _certaintyBar;
 	JProgressBar _competenceBar;
 
-	private String _agentName;
-
 	//TODO: The way that the constructor distinguishes from the agent's needs panel
 	//of the other agents needs panel is getting agentName == null; 
 	public DrivesDisplay(String agentName) {
 
 		super();
 
-		_agentName = agentName;
 		boolean isSelf = (agentName.equalsIgnoreCase(Constants.SELF));
 
 		_panel = new JPanel();
@@ -81,23 +78,23 @@ public class DrivesDisplay {
         
         MotivationalState ms = ag.getMotivationalState();
         
-        aux = new Float(ms.GetIntensity(_agentName,MotivatorType.ENERGY));
+        aux = new Float(ms.GetIntensity(MotivatorType.ENERGY));
         _energyBar.setString(aux.toString());
         _energyBar.setValue(Math.round(aux.floatValue()*10));
         
-        aux = new Float(ms.GetIntensity(_agentName,MotivatorType.INTEGRITY));
+        aux = new Float(ms.GetIntensity(MotivatorType.INTEGRITY));
         _integrityBar.setString(aux.toString());
         _integrityBar.setValue(Math.round(aux.floatValue()*10));
         
-        aux = new Float(ms.GetIntensity(_agentName,MotivatorType.AFFILIATION));
+        aux = new Float(ms.GetIntensity(MotivatorType.AFFILIATION));
         _affiliationBar.setString(aux.toString());
         _affiliationBar.setValue(Math.round(aux.floatValue()*10));
         
-        aux = new Float(ms.GetIntensity(_agentName,MotivatorType.CERTAINTY));
+        aux = new Float(ms.GetIntensity(MotivatorType.CERTAINTY));
         _certaintyBar.setString(aux.toString());
         _certaintyBar.setValue(Math.round(aux.floatValue()*10));
         
-        aux = new Float(ms.GetIntensity(_agentName,MotivatorType.COMPETENCE));
+        aux = new Float(ms.GetIntensity(MotivatorType.COMPETENCE));
         _competenceBar.setString(aux.toString());
         _competenceBar.setValue(Math.round(aux.floatValue()*10));
         

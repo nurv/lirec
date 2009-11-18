@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
+import FAtiMA.emotionalState.EmotionDisposition;
 import FAtiMA.emotionalState.EmotionalState;
 import FAtiMA.memory.Memory;
 import FAtiMA.motivationalSystem.MotivationalState;
+import FAtiMA.motivationalSystem.Motivator;
 import FAtiMA.reactiveLayer.ActionTendencies;
 import FAtiMA.reactiveLayer.EmotionalReactionTreeNode;
 import FAtiMA.sensorEffector.Event;
@@ -21,15 +23,29 @@ public class ModelOfOther implements AgentModel {
 	private EmotionalReactionTreeNode _emotionalReactions;
 	private ActionTendencies _actionTendencies;
 	
-	public ModelOfOther(String name, EmotionalReactionTreeNode reactions, ActionTendencies at)
+	public ModelOfOther(String name, AgentModel am)
 	{
 		_name = name;
 		_es = new EmotionalState();
 		_mem = new Memory();
 		_ms = new MotivationalState();
+		
+		for(Motivator m : am.getMotivationalState().getMotivators())
+		{
+			Motivator m2 = new Motivator(m);
+			m2.SetIntensity(5);
+			_ms.AddMotivator(m2);
+		}
+		
+		for(EmotionDisposition ed : am.getEmotionalState().getEmotionDispositions())
+		{
+			_es.AddEmotionDisposition(ed);
+		}
+		
+		
 		_perceivedEvents = new ArrayList<Event>();
-		_emotionalReactions = (EmotionalReactionTreeNode) reactions.clone();
-		_actionTendencies = (ActionTendencies) at.clone();
+		_emotionalReactions = (EmotionalReactionTreeNode) am.getEmotionalReactions().clone();
+		_actionTendencies = (ActionTendencies) am.getActionTendencies().clone();
 		_actionTendencies.ClearFilters();
 		
 	}

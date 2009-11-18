@@ -79,7 +79,7 @@ public class Agent implements AgentModel {
 			ScenarioLoaderHandler scenHandler = new ScenarioLoaderHandler(args[0],args[1]);
 			SAXParserFactory factory = SAXParserFactory.newInstance();
 			SAXParser parser = factory.newSAXParser();
-			parser.parse(new File(MIND_PATH + "Scenarios.xml"), scenHandler);
+			parser.parse(new File(MIND_PATH + "LirecScenarios.xml"), scenHandler);
 			args = scenHandler.getAgentArguments();
 		}
 		
@@ -407,7 +407,7 @@ public class Agent implements AgentModel {
 	{
 		if(!_ToM.containsKey(name))
 		{
-			ModelOfOther model = new ModelOfOther(name, _reactiveLayer.getEmotionalReactions(), _reactiveLayer.getActionTendencies());
+			ModelOfOther model = new ModelOfOther(name, this);
 			_ToM.put(name, model);
 		}
 	}
@@ -601,9 +601,19 @@ public class Agent implements AgentModel {
 			    
 				if (_remoteAgent.isRunning()) {
 					//decay the agent's emotional state
+					//self
 					_emotionalState.Decay();
 					_motivationalState.Decay();
 					_dialogManager.DecayCauseIDontHaveABetterName(_memory);
+					
+					//others
+					//TODO question: apply decay to all models or only to the agents nearby?
+					for(String other: _nearbyAgents)
+					{
+						ModelOfOther m = _ToM.get(other);
+						m.getEmotionalState().Decay();
+						m.getMotivationalState().Decay();
+					}
 					
 					//perceives and appraises new events
 					synchronized (this)

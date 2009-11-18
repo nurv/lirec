@@ -215,7 +215,10 @@ public class EmotionalState implements Serializable {
 	}
 	
 	
-	
+	public EmotionDisposition[] getEmotionDispositions()
+	{
+		return _emotionDispositions;
+	}
 
 	
 	/**

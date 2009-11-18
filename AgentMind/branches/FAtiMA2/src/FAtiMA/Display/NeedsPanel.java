@@ -1,9 +1,7 @@
 package FAtiMA.Display;
 
 import java.awt.Dimension;
-import java.util.Collection;
 import java.util.Hashtable;
-import java.util.Iterator;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -20,12 +18,10 @@ public class NeedsPanel extends AgentDisplayPanel {
 	private Hashtable<String,DrivesDisplay> _drivesDisplays;
 	 
 	private JPanel _needs;
-	private int _previousKnownAgents;
 
 	public NeedsPanel() {
 		
 		super();
-		_previousKnownAgents = 0;
 		
         this.setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
       
@@ -57,7 +53,7 @@ public class NeedsPanel extends AgentDisplayPanel {
 	
 	public boolean Update(AgentModel ag) {
 
-		CheckForOtherAgents(ag);
+		//CheckForOtherAgents(ag);
 		
 		for(DrivesDisplay dd : _drivesDisplays.values())
 		{
@@ -68,7 +64,7 @@ public class NeedsPanel extends AgentDisplayPanel {
 	}
 	 
 	
-	private void CheckForOtherAgents(AgentModel am){
+	/*private void CheckForOtherAgents(AgentModel am){
 		int numOfKnownAgents = am.getMotivationalState().getOtherAgentsMotivators().size();
 		
 		if(numOfKnownAgents > _previousKnownAgents){
@@ -88,7 +84,7 @@ public class NeedsPanel extends AgentDisplayPanel {
 				}
 			}	
 		}
-	}
+	}*/
 	
 	
 }

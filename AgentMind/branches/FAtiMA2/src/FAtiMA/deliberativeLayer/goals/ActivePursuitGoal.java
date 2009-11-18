@@ -78,6 +78,7 @@ import java.util.ListIterator;
 
 import FAtiMA.AgentModel;
 import FAtiMA.IntegrityValidator;
+import FAtiMA.ModelOfOther;
 import FAtiMA.conditions.Condition;
 import FAtiMA.conditions.NewEventCondition;
 import FAtiMA.conditions.RecentEventCondition;
@@ -444,40 +445,44 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
 					
 					for(int i = 0; i < nonCognitiveDrives.length; i++){
 						expectedContribution = this.GetExpectedEffectOnDrive(effectTypes[c], nonCognitiveDrives[i], "[SELF]").floatValue();
-						currentIntensity =  am.getMotivationalState().GetIntensity(_agent.getName(),MotivatorType.ParseType(nonCognitiveDrives[i]));
+						currentIntensity =  am.getMotivationalState().GetIntensity(MotivatorType.ParseType(nonCognitiveDrives[i]));
 						result +=  auxMultiplier * this.determineQuadraticNeedVariation(currentIntensity, expectedContribution); 
 					}
 					auxMultiplier = -1;
 
 				}
 				
-				float currentCompetenceIntensity = am.getMotivationalState().GetIntensity(_agent.getName(),MotivatorType.COMPETENCE);
+				float currentCompetenceIntensity = am.getMotivationalState().GetIntensity(MotivatorType.COMPETENCE);
 				float expectedCompetenceContribution = am.getMotivationalState().PredictCompetenceChange(true);
 				result += this.determineQuadraticNeedVariation(currentCompetenceIntensity, expectedCompetenceContribution);
 				
-				float currentUncertaintyIntensity = am.getMotivationalState().GetIntensity(_agent.getName(), MotivatorType.CERTAINTY);
-				//expected error assuming that the goal is successfull
+				float currentUncertaintyIntensity = am.getMotivationalState().GetIntensity(MotivatorType.CERTAINTY);
+				//expected error assuming that the goal is successful
 				float expectedError = 1 - getProbability(am);
 				float currentError = getUncertainty(am);
 				float expectedUncertaintyContribution = 10*(currentError - expectedError); 
 				result += this.determineQuadraticNeedVariation(currentUncertaintyIntensity,expectedUncertaintyContribution);	
 								
 			}
-		
-			
+			else{
 			// If target is NOT SELF
 			// Only the non-cognitive needs are taken into account for other agents. This is because his actions cannot impact those needs.
-			if(!target.equalsIgnoreCase("[SELF]")){
-				auxMultiplier = 1;
-				//Calculate the effect on Non-Cognitive Needs
-				for (int c = 0; c < effectTypes.length; c++ ){
-					for(int i = 0; i < nonCognitiveDrives.length; i++){
-						expectedContribution = this.GetExpectedEffectOnDrive(effectTypes[c], nonCognitiveDrives[i], "[target]").floatValue();
-						currentIntensity =  am.getMotivationalState().GetIntensity(target,MotivatorType.ParseType(nonCognitiveDrives[i]));
-						result += auxMultiplier * this.determineQuadraticNeedVariation(currentIntensity, expectedContribution); 		
-					}
-					auxMultiplier = -1;
-				} 
+				
+				if(am.getToM().containsKey(target))
+				{
+					auxMultiplier = 1;
+					ModelOfOther m = am.getToM().get(target);
+					
+					//Calculate the effect on Non-Cognitive Needs
+					for (int c = 0; c < effectTypes.length; c++ ){
+						for(int i = 0; i < nonCognitiveDrives.length; i++){
+							expectedContribution = this.GetExpectedEffectOnDrive(effectTypes[c], nonCognitiveDrives[i], "[target]").floatValue();
+							currentIntensity =  m.getMotivationalState().GetIntensity(MotivatorType.ParseType(nonCognitiveDrives[i]));
+							result += auxMultiplier * this.determineQuadraticNeedVariation(currentIntensity, expectedContribution); 		
+						}
+						auxMultiplier = -1;
+					}		
+				}
 			}
 		} catch (InvalidMotivatorTypeException e) {
 			AgentLogger.GetInstance().log("EXCEPTION:" + e);
@@ -520,14 +525,14 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
 	}*/
 	
 	private float getCompetence(AgentModel am){
-		float generalCompetence = am.getMotivationalState().GetIntensity(_agent.getName(),MotivatorType.COMPETENCE)/10;
+		float generalCompetence = am.getMotivationalState().GetIntensity(MotivatorType.COMPETENCE)/10;
 		Float probability = GetProbability(am);
 		
 		if(probability != null){
 			return (generalCompetence + probability.floatValue())/2;
 		}else{
 			//if there is no knowledge about the goal probability, the goal was never executed before
-			//however, the agent assumes that he will be succesfull in achieving it 
+			//however, the agent assumes that he will be successful in achieving it 
 			return (generalCompetence + 1)/2;
 		}
 	}

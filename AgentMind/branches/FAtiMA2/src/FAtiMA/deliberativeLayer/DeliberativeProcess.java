@@ -125,6 +125,7 @@ import java.util.Set;
 
 import FAtiMA.AgentModel;
 import FAtiMA.AgentProcess;
+import FAtiMA.ModelOfOther;
 import FAtiMA.ValuedAction;
 import FAtiMA.conditions.Condition;
 import FAtiMA.culture.Ritual;
@@ -626,12 +627,17 @@ public class DeliberativeProcess extends AgentProcess {
 		        while (li.hasNext()) {
 					event = li.next();
 					
+					//updating selfMotivators
 					am.getMotivationalState().UpdateMotivators(am, event, _planner.GetOperators());
 					
-					if(_actionMonitor != null)
+					Event event2 = event.RemovePerspective(am.getName());
+					//TODO this should not be done here but at the agent level, by calling the deliberative
+					//appraisal process to all models of others
+					for(String other : am.getNearByAgents())
 					{
-						int t = 1;
-						t = t+1;
+						Event event3 = event2.ApplyPerspective(other);
+						ModelOfOther m = am.getToM().get(other);
+						m.getMotivationalState().UpdateMotivators(m, event3, _planner.GetOperators());
 					}
 						
 					if(_actionMonitor != null && _actionMonitor.MatchEvent(event)) {

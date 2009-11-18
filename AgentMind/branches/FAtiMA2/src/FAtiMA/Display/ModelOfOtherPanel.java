@@ -27,9 +27,14 @@ public class ModelOfOtherPanel extends AgentDisplayPanel {
 	     
 	     _components.addTab("Emotional State", null, new EmotionalStatePanel());
 	     
+	     _components.addTab("Relations", null, new SocialRelationsPanel());
+	     
+	     _components.addTab("Needs", null, new NeedsPanel());
+	     
 	     _components.addTab("ShortTermMemory", null, new ShortTermMemoryPanel());
 	     
 	     _components.addTab("ActionTendencies", null, new ActionTendenciesPanel());
+	     
 	     
 	     
 	     this.add(_components);

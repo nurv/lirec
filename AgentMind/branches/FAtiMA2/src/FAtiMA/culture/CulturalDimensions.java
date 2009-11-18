@@ -79,7 +79,7 @@ public class CulturalDimensions {
 	public void changeNeedsWeightsAndDecays(AgentModel am) {
 
 		float collectivismCoefficient = _dimensionalValues[CulturalDimensionType.COLLECTIVISM] * 0.01f;
-		Motivator affiliationMotivator = am.getMotivationalState().GetSelfMotivator(MotivatorType.AFFILIATION);		
+		Motivator affiliationMotivator = am.getMotivationalState().GetMotivator(MotivatorType.AFFILIATION);		
 		float personalityAffiliationWeight = affiliationMotivator.GetWeight();
 		float personalityAffiliationDecayFactor = affiliationMotivator.GetDecayFactor();
 		float affiliationAvgWeight = 0.5f;

@@ -54,7 +54,7 @@ public class Motivator {
 	 * Creates a new Motivator that consists in a copy of a given motivator
 	 * @param mot - the motivator that will be copied into the new motivator
 	 */
-	protected Motivator(Motivator mot) {
+	public Motivator(Motivator mot) {
 		_type = mot._type;
 		_decayFactor = mot._decayFactor;
 		_weight = mot._weight;
