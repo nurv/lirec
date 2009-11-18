@@ -519,30 +519,60 @@ public class Agent implements AgentModel {
 	
 	public void PerceivePropertyChanged(Name propertyName, String value)
 	{
-		ArrayList<Symbol> symbols;
-		symbols = propertyName.GetLiteralList();
+
+		_memory.getSemanticMemory().Tell(applyPerspective(propertyName, _name), value);
+		
+		for(String other : _nearbyAgents)
+		{
+			ModelOfOther m = _ToM.get(other);
+			m.getMemory().getSemanticMemory().Tell(applyPerspective(propertyName,other), value);
+		}
+	}
+	
+	private Name applyPerspective(Name n, String agentName)
+	{
+		Name newName = (Name) n.clone();
+		ArrayList<Symbol> symbols = newName.GetLiteralList();
 		
 		//I'm changing directly the received name; not a good thing to do
 		for(int i = 0; i < symbols.size(); i++)
 		{
-			if(symbols.get(i).getName().equals(_name))
+			if(symbols.get(i).getName().equals(agentName))
 			{
 				symbols.set(i, new Symbol(Constants.SELF));
 			}
 		}
 		
-		_memory.getSemanticMemory().Tell(propertyName, value);
+		return newName;
 	}
 
 	public void PerceivePropertyChanged(String subject, String property, String value)
 	{
+		String newSubject = subject;
+		Name propertyName;
+		
 		if(subject.equals(_name))
 		{
-			subject = Constants.SELF;
+			newSubject = Constants.SELF;
 		}
 		
-		Name propertyName = Name.ParseName(subject + "(" + property + ")");
+		propertyName = Name.ParseName(newSubject + "(" + property + ")");
 		_memory.getSemanticMemory().Tell(propertyName, value);
+		
+		for(String other : _nearbyAgents)
+		{
+			if(subject.equals(other))
+			{
+				newSubject = Constants.SELF; 
+			}
+			else
+			{
+				newSubject = subject;
+			}
+			ModelOfOther m = _ToM.get(other);
+			propertyName = Name.ParseName(newSubject + "(" + property + ")");
+			m.getMemory().getSemanticMemory().Tell(propertyName, value);
+		}
 	}
 	
 	public void PerceivePropertyRemoved(String subject, String property)
