@@ -1,6 +1,7 @@
 package FAtiMA;
 
 import java.io.File;
+
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -56,91 +57,10 @@ import FAtiMA.util.parsers.ScenarioLoaderHandler;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Symbol;
 
-public class Agent implements AgentModel {
-	
-	 /**
-     * The main method
-	 * @throws SAXException 
-	 * @throws ParserConfigurationException 
-	 * @throws IOException 
-     */
-	
-	static public void main(String args[]) throws ParserConfigurationException, SAXException, IOException  {
-		short agentPlatform = 0;
-		String platform;
-				
-		if(args.length == 0){
-			System.out.println("ERROR: zero arguments.");
-			System.exit(1);	
-		}
-		
-		//Load the arguments from the scenario definition present in scenarios.xml	
-		if(args.length == 2){
-			ScenarioLoaderHandler scenHandler = new ScenarioLoaderHandler(args[0],args[1]);
-			SAXParserFactory factory = SAXParserFactory.newInstance();
-			SAXParser parser = factory.newSAXParser();
-			parser.parse(new File(MIND_PATH + "LirecScenarios.xml"), scenHandler);
-			args = scenHandler.getAgentArguments();
-		}
-		
-		platform = args[0];
-		
-		if(platform.equalsIgnoreCase("ION")){
-			agentPlatform = AgentPlatform.ION;
-		}else if(platform.equalsIgnoreCase("WORLDSIM")){
-			agentPlatform = AgentPlatform.WORLDSIM;
-		}else{
-			System.err.println("ERROR: The first argument should be 'ion' or 'worldsim' according to the platform in use.");
-			System.exit(1);
-		}
-		
-		switch(agentPlatform){
-			case AgentPlatform.ION:
-				if(args.length == 14){
-					
-					new Agent(agentPlatform,args[1], Integer.parseInt(args[2]), args[3],Boolean.parseBoolean(args[10]), args[4], args[5], args[6], args[7], args[8], args[9],args[11],args[12],args[13],null,null);
-				}
-				else if(args.length == 5)
-				{
-					System.err.println("Creating the agent instance");
-					new Agent(agentPlatform,args[1],Integer.parseInt(args[2]), args[3], args[4]);
-				}
-				else
-				{
-					System.err.println("Wrong number of arguments!");
-				}
-				break;
-				
-			case AgentPlatform.WORLDSIM:
-				String saveDirectory = "";
-				if (args.length == 4){
-					new Agent(agentPlatform, args[1],Integer.parseInt(args[2]),saveDirectory,args[3]);
-				}else if(args.length >= 11){
-					HashMap<String,String> properties = new HashMap<String,String>();
-					ArrayList<String> goals = new ArrayList<String>();
-					readPropertiesAndGoals(args, properties, goals);
-					new Agent(agentPlatform,args[1], Integer.parseInt(args[2]),saveDirectory,Boolean.parseBoolean(args[3]),args[4],null,null, args[5], args[6], args[7],args[8],args[9],args[10], properties, goals);		
-				}else{
-					System.err.println("Wrong number of arguments!");
-				}
-				break;
-		}
+import FAtiMA.memory.ICompoundCue;
+import FAtiMA.memory.ISpreadActivate;
 
-	}
-	
-	static private void readPropertiesAndGoals(String args[],HashMap<String,String> properties,ArrayList<String> goals){
-		StringTokenizer st;
-		String left;
-			
-		for(int i = 11; i < args.length; i++) {
-			st = new StringTokenizer(args[i], ":");
-			left = st.nextToken();
-			if(left.equals("GOAL")) {
-			    goals.add(st.nextToken());
-			}
-			else properties.put(left, st.nextToken());
-		}
-	}
+public class Agent implements AgentModel {
 	
 	protected HashMap<String,ModelOfOther> _ToM;
 	protected ArrayList<String> _nearbyAgents;
@@ -172,6 +92,9 @@ public class Agent implements AgentModel {
 	protected boolean _showStateWindow;
 	protected Logger _logger;
 
+	protected ICompoundCue _compoundCue;
+	protected ISpreadActivate _spreadActivate;
+	
 	private String _saveDirectory;
 	public static final String MIND_PATH = "data/characters/minds/";
 	private static final Name ACTION_CONTEXT = Name.ParseName("ActionContext()");
@@ -241,14 +164,6 @@ public class Agent implements AgentModel {
 			 * simulation time
 			 */
 			AgentSimulationTime.GetInstance();
-
-			_remoteAgent.start();
-
-			if(_showStateWindow){
-				 _agentDisplay = new AgentDisplay(this);
-			}
-
-			this.Run();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -273,8 +188,22 @@ public class Agent implements AgentModel {
 				_remoteAgent = new WorldSimulatorRemoteAgent(host,port,this,new HashMap<String,String>());
 			}
 			 
-			LoadAgentState(directory + fileName);
-			 
+			LoadAgentState(directory + fileName);			 
+			
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			this.terminateExecution();
+		}
+	}
+	
+	/**
+	 * Starting the agent
+	 * added by Meiyii 19/11/09
+	 */
+	public void StartAgent()
+	{
+		try{
 			_remoteAgent.start();
 	        
 			if(_showStateWindow){
@@ -369,6 +298,24 @@ public class Agent implements AgentModel {
 		return _name;
 	}
 	
+	/** 
+	 * Gets the compound cue mechanism of the agent
+	 * @return the compound cue mechanism
+	 * added by Meiyii 19/11/09
+	 */	
+	public ICompoundCue getCompoundCue() {
+		return _compoundCue;
+	}
+	
+	/** 
+	 * Gets the spread activate mechanism of the agent
+	 * @return the spread activate mechanism
+	 *  added by Meiyii 19/11/09
+	 */	
+	public ISpreadActivate getSpreadActivate() {
+		return _spreadActivate;
+	}
+	
 	/**
 	 * Gets the agent's Reactive Layer that you can use
 	 * to get access to reactive structures such as 
@@ -410,6 +357,25 @@ public class Agent implements AgentModel {
 			ModelOfOther model = new ModelOfOther(name, this);
 			_ToM.put(name, model);
 		}
+	}
+	
+	
+	/** 
+	 * Set the compound cue mechanism object of the agent
+	 * @param compoundCue
+	 *  added by Meiyii 19/11/09
+	 */	
+	public void setCompoundCue(ICompoundCue compoundCue) {
+		this._compoundCue = compoundCue;
+	}
+	
+	/** 
+	 * Set the spread activate mechanism object of the agent
+	 * @param spreadActivate
+	 *  added by Meiyii 19/11/09
+	 */	
+	public void setSpreadActivate(ISpreadActivate spreadActivate) {
+		this._spreadActivate = spreadActivate;
 	}
 	
 	@SuppressWarnings("unchecked")

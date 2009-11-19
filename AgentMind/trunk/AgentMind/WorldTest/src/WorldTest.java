@@ -121,7 +121,7 @@ public class WorldTest {
 		_userInterface.WriteLine("LOAD: " + xmlFile);
 		//com.sun.xml.parser.Parser parser;
 		//parser = new com.sun.xml.parser.Parser();
-		StripsOperatorsLoaderHandler op = new StripsOperatorsLoaderHandler(self);
+		StripsOperatorsLoaderHandler op = new StripsOperatorsLoaderHandler(null);
 		//parser.setDocumentHandler(op);
 		try 
 		{
@@ -360,10 +360,20 @@ public class WorldTest {
 		SendPerceptionToAll( "READY-FOR-NEXT-STEP" );
 	}
 	
-	public void QueryMemory(){
-		SendPerceptionToAll( "QUERY-MEMORY" );
+	String knownInfo = "";
+	public void AddKnownInfo( String info ){
+		knownInfo = knownInfo + info + "*";
 	}
 	
+	public void CCMemory(){
+		SendPerceptionToAll( "CC-MEMORY");
+	}
+	
+	public void SAMemory(String question){
+		SendPerceptionToAll( "SA-MEMORY " + question + "$" + knownInfo );
+		knownInfo = "";
+	}
+		
 	public synchronized void removeAgent(RemoteAgent ra){
 		_agents.remove(ra);
 		_userInterface.WriteLine(ra.Name() + " disconnected\n");

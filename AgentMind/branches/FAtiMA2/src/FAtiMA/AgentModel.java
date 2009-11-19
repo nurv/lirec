@@ -9,6 +9,7 @@ import FAtiMA.motivationalSystem.MotivationalState;
 import FAtiMA.reactiveLayer.ActionTendencies;
 import FAtiMA.reactiveLayer.EmotionalReactionTreeNode;
 import FAtiMA.sensorEffector.Event;
+import FAtiMA.memory.ICompoundCue;
 
 public interface AgentModel {
 	
@@ -31,4 +32,5 @@ public interface AgentModel {
 	public Collection<Event> getEvents();
 	
 	public void clearEvents();
+	
 }

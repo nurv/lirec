@@ -18,6 +18,9 @@ import javax.swing.JPanel;
 
 import FAtiMA.deliberativeLayer.plan.Effect;
 import FAtiMA.deliberativeLayer.plan.Step;
+import FAtiMA.emotionalState.BaseEmotion;
+import FAtiMA.memory.episodicMemory.Time;
+import FAtiMA.sensorEffector.Parameter;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
 import FAtiMA.wellFormedNames.Symbol;
@@ -40,6 +43,9 @@ public class UserInterface implements ActionListener {
 	JComboBox _userOptions;
 	JComboBox _timeOptions;
 	JComboBox _locationOptions;
+	JComboBox _infoOptions;
+	JComboBox _queryOptions;
+	JComboBox _eventOptions;
 	WorldTest _world;
 	
 	public static final String CASE1 = "Case1";
@@ -71,7 +77,7 @@ public class UserInterface implements ActionListener {
     
         _frame = new JFrame("WorldTest User Interface");
         _frame.getContentPane().setLayout(new BoxLayout(_frame.getContentPane(),BoxLayout.Y_AXIS));
-		_frame.setSize(350,750);
+		_frame.setSize(500,800);
 		_frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		textArea = new JTextArea(40, 200);
@@ -182,6 +188,41 @@ public class UserInterface implements ActionListener {
         userBox.add(new JLabel("User: "));
         userBox.add(_userOptions);
         
+        // Meiyii 19/11/09
+        _infoOptions = new JComboBox();
+        _infoOptions.addItem("subject SELF");
+        _infoOptions.addItem("subject Amy");
+        _infoOptions.addItem("target SELF");
+        _infoOptions.addItem("target Amy");
+        _infoOptions.addItem("location LivingRoom");
+        _infoOptions.addItem("action Greet");
+        _infoOptions.addItem("action SpeechAct");
+		_infoOptions.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent arg0) {
+				_world.AddKnownInfo(_infoOptions.getSelectedItem().toString());
+		    	WriteLine("=> Add known info for SA query: " + _infoOptions.getSelectedItem().toString());
+			}
+		});
+		
+		Box infoBox = new Box(BoxLayout.X_AXIS);
+        infoBox.add(new JLabel("Known info: "));
+        infoBox.add(_infoOptions );
+        
+        _queryOptions = new JComboBox();
+        _queryOptions.addItem("subject");
+        _queryOptions.addItem("target");
+        _queryOptions.addItem("location");
+        _queryOptions.addItem("action");
+		_queryOptions.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent arg0) {
+		    	WriteLine("=> Change the SA query: " + _queryOptions.getSelectedItem().toString());
+			}
+		});
+        
+		Box queryBox = new Box(BoxLayout.X_AXIS);
+        queryBox.add(new JLabel("Query: "));
+        queryBox.add(_queryOptions );
+        
         // Create the OK button to confirm input
         JButton okButton = new JButton("OK");
         okButton.addActionListener(this);
@@ -194,11 +235,19 @@ public class UserInterface implements ActionListener {
 			}
 		});
         
-     // Button to perform the next step
-        JButton queryButton = new JButton("Query");;
-        queryButton.addActionListener(new ActionListener(){
+        // Button to perform spreading activation
+        JButton saButton = new JButton("SpreadActivate");;
+        saButton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0) {
-				_world.QueryMemory();
+				_world.SAMemory(_queryOptions.getSelectedItem().toString());
+			}
+		});
+        
+        // Button to perform compound cue matching
+        JButton ccButton = new JButton("CompoundCue");;
+        ccButton.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent arg0) {
+				_world.CCMemory();
 			}
 		});
         
@@ -206,14 +255,19 @@ public class UserInterface implements ActionListener {
         buttonsPanel.setLayout(new BoxLayout(buttonsPanel,BoxLayout.X_AXIS));
         buttonsPanel.add(okButton);
         buttonsPanel.add(stepButton);
-        buttonsPanel.add(queryButton);
+        buttonsPanel.add(saButton);
+        buttonsPanel.add(ccButton);
         
         _frame.getContentPane().add(caseBox);
         _frame.getContentPane().add(timeBox);
         _frame.getContentPane().add(locationBox);
         _frame.getContentPane().add(userBox);
+		_frame.getContentPane().add(infoBox);
+		_frame.getContentPane().add(queryBox);
 		_frame.getContentPane().add(inputList);
 		_frame.getContentPane().add(buttonsPanel);
+		
+		
 		//_frame.getContentPane().add(okButton);
 		//_frame.getContentPane().add(stepButton);
 		_frame.setVisible(true);
@@ -308,6 +362,7 @@ public class UserInterface implements ActionListener {
 		}		
 	}
     
+    
     private void PropertiesChanged(ArrayList effects)
 	{
 		ListIterator li = effects.listIterator();
@@ -320,7 +375,7 @@ public class UserInterface implements ActionListener {
 			String name = e.GetEffect().getName().toString();
 			if(!name.startsWith("EVENT") && !name.startsWith("SpeechContext"))
 			{
-				if(e.GetProbability() > _r.nextFloat())
+				if(e.GetProbability(null) > _r.nextFloat())
 				{
 					msg = "PROPERTY-CHANGED " + name + " " + e.GetEffect().GetValue();
 					

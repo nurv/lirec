@@ -81,9 +81,11 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.Hashtable;
 
 import FAtiMA.Agent;
 import FAtiMA.AgentModel;
@@ -97,6 +99,8 @@ import FAtiMA.util.AgentLogger;
 import FAtiMA.util.parsers.SocketListener;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.SubstitutionSet;
+
+import FAtiMA.memory.episodicMemory.*;
 
 /**
  * Connection to the virtual world as a RemoteAgent. Implements 
@@ -127,6 +131,8 @@ public abstract class RemoteAgent extends SocketListener {
 	protected static final String ADVANCE_TIME = "ADVANCE-TIME";
 	protected static final String STOP_TIME = "STOP-TIME";
 	protected static final String RESUME_TIME = "RESUME-TIME";
+	protected static final String SA_MEMORY = "SA-MEMORY";
+	protected static final String CC_MEMORY = "CC-MEMORY";
 	
 	protected ArrayList<ValuedAction> _actions;
 	
@@ -317,6 +323,48 @@ public abstract class RemoteAgent extends SocketListener {
 			{
 				ResumeTimePerception(perception);
 			}
+			else if(msgType.equals(SA_MEMORY))
+			{
+				
+				st = new StringTokenizer(perception, "$");
+				String question = st.nextToken();
+				String known = "";
+				while(st.hasMoreTokens())
+				{
+					known = known + st.nextToken();
+				}					
+				System.out.println("question " + question);
+				ArrayList<String> knownInfo = ExtractKnownInfo(known);
+				//ArrayList<MemoryEpisode> episodes = _agent.getMemory().getEpisodicMemory().GetAllEpisodes();
+				//ArrayList<ActionDetail> records = _agent.getMemory().getEpisodicMemory().getDetails();
+				_agent.getSpreadActivate().Spread(question, knownInfo, _agent.getMemory().getEpisodicMemory());
+				
+				Hashtable<String, Integer> saResult = _agent.getSpreadActivate().getSAResult();
+				Iterator it = saResult.keySet().iterator();
+				while (it.hasNext())
+				{
+					String result = (String) it.next();
+					System.out.println(question + " " + result + " frequency " + saResult.get(result));
+				}
+			
+				System.out.println("\n\n");
+			}
+			else if(msgType.equals(CC_MEMORY))
+			{
+				int index = (int) (Math.random()*10);
+				ActionDetail event = _agent.getMemory().getEpisodicMemory().getDetails().get(index);
+				_agent.getCompoundCue().Match(event, _agent.getMemory().getEpisodicMemory());
+				System.out.println("\nEvent ID to match on " + event.getID());
+				
+				Hashtable<Integer, Float>  results = _agent.getCompoundCue().getCCResults();
+				Iterator it = results.keySet().iterator();
+				while (it.hasNext())
+				{
+					int id = (Integer) it.next();
+					System.out.println("ID " + id + " evaluation " + results.get(id));
+				}
+				System.out.println("\n\n");
+			}
 			
 			while(_lookAtList.size() > 0)
 			{
@@ -331,6 +379,26 @@ public abstract class RemoteAgent extends SocketListener {
 			AgentLogger.GetInstance().log("Error parsing a received message!");
 			e.printStackTrace();
 		}
+	}
+	
+	/**
+	 * Extract known information
+	 * @param 
+	 * @return
+	 * added by Meiyii 19/11/09
+	 */
+	private ArrayList<String> ExtractKnownInfo(String known)
+	{
+		ArrayList<String> knownInfo = new ArrayList<String>();
+			
+		StringTokenizer st = new StringTokenizer(known, "*");
+		while(st.hasMoreTokens())
+		{
+			String knownStr = st.nextToken();
+			knownInfo.add(knownStr);
+			System.out.println("Known String " + knownStr);
+		}
+		return knownInfo;
 	}
 	
 	protected final boolean Send(String msg) {

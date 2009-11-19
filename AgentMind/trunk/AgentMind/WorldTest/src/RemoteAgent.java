@@ -48,7 +48,7 @@ public class RemoteAgent extends SocketListener {
 		_properties = new ArrayList();
 		_world = world;
 		_r = new Random();
-		Memory.GetInstance().setSelf(_name);
+		//Memory.GetInstance().setSelf(_name);
 		
 		this.socket = s;
 
@@ -198,7 +198,7 @@ public class RemoteAgent extends SocketListener {
 			String name = e.GetEffect().getName().toString();
 			if(!name.startsWith("EVENT") && !name.startsWith("SpeechContext"))
 			{
-				if(e.GetProbability() > _r.nextFloat())
+				if(e.GetProbability(null) > _r.nextFloat())
 				{
 					msg = "PROPERTY-CHANGED " + name + " " + e.GetEffect().GetValue();
 
