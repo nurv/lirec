@@ -1,0 +1,9 @@
+<?xml version="1.0" ?>
+<!DOCTYPE CompetencyLibrary SYSTEM "CompetencyLibrary.dtd">
+
+<CompetencyLibrary>
+
+<Competency ClassName="cmion.inTheWild.competencies.GretaBMLCreator" />
+<Competency ClassName="cmion.inTheWild.competencies.GretaBMLSender" ConstructorParameters="localhost" /> 
+			
+</CompetencyLibrary>

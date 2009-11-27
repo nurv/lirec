@@ -1,0 +1,25 @@
+<?xml version="1.0" ?>
+<!DOCTYPE CompetencyLibrary SYSTEM "CompetencyLibrary.dtd">
+
+<CompetencyLibrary>
+
+<!-- Competency library for the test scenario. Following all competencies
+have to be listed. You need to specify 
+a) the class name, 
+b) optional parameters that should be passed to the competency during 
+construction (assumed parameter type is String, parameters are seperated by comma).
+c) if you include the attribute runInBackground and set it to "true" the competency
+will be started and run in background as soon as it is initialised, it will then however
+not be available to include in competency execution plans, since it will be already
+running in the background. -->
+
+<Competency ClassName="cmion.level2.competencies.test.TestCompetency1" 
+			ConstructorParameters="" />
+<Competency ClassName="cmion.level2.competencies.test.TestCompetency2" /> 
+<Competency ClassName="cmion.level2.competencies.test.TestCompetency3" /> 
+<Competency ClassName="cmion.level2.competencies.test.TestCompetency4" /> 
+<Competency ClassName="cmion.level2.competencies.test.TestCompetency5"
+			ConstructorParameters="Pizza,Pasta" /> 
+<Competency ClassName="cmion.level2.competencies.test.TestCompetency6" RunInBackground="true" />
+			
+</CompetencyLibrary>

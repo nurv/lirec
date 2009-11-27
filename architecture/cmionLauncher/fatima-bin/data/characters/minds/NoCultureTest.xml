@@ -1,0 +1,8 @@
+<Culture name="NoCulture">	
+	
+	<Praiseworthiness> 
+		<Action name="TestAction" value="2"/>	
+		<Action name="TestAction2" value="2"/>	
+	</Praiseworthiness>	
+	
+</Culture>
