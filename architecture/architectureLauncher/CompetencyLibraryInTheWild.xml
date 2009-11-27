@@ -1,9 +1,0 @@
-<?xml version="1.0" ?>
-<!DOCTYPE CompetencyLibrary SYSTEM "CompetencyLibrary.dtd">
-
-<CompetencyLibrary>
-
-<Competency ClassName="lirec.addOns.level2.competencies.GretaBMLCreator" />
-<Competency ClassName="lirec.addOns.level2.competencies.GretaBMLSender" ConstructorParameters="localhost" /> 
-			
-</CompetencyLibrary>

@@ -1,1 +1,0 @@
-java -cp "FAtiMA.jar" FAtiMA.Agent ArchitectureTest SpiritOfTheBuilding
