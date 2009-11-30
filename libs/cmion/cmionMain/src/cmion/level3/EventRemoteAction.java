@@ -1,5 +1,5 @@
 /*	
-        Lirec Architecture
+    CMION
 	Copyright(C) 2009 Heriot Watt University
 
 	This library is free software; you can redistribute it and/or
@@ -22,17 +22,19 @@
   ---
   09/10/2009      Michael Kriegel <mk95@hw.ac.uk>
   First version.
+  27/11/2009      Michael Kriegel <mk95@hw.ac.uk>
+  Renamed to CMION
   ---  
 */
 
-package lirec.level3;
-import ion.Meta.Event;
+package cmion.level3;
+import cmion.architecture.CmionEvent;
 
 /** this type of event can be raised by any sensing competency. It represents someone
  *  other than the companion (e.g. a user) performing an action. The action is represented
  *  as an agent mind action. The agent mind connector listens for those events and sends 
  *  them to the agent mind*/
-public class EventRemoteAction extends Event 
+public class EventRemoteAction extends CmionEvent 
 {
 	/** create a new event remote action*/
 	EventRemoteAction(MindAction remoteAction)
@@ -48,5 +50,16 @@ public class EventRemoteAction extends Event
 	public MindAction getRemoteAction()
 	{
 		return remoteAction;
+	}
+	
+	/** displays information about this event */
+	@Override
+	public String toString()
+	{
+		String evtString =  "Remote Action by " + remoteAction.getSubject() +
+		                    ": "  + remoteAction.getName();
+		for (String parameter : remoteAction.getParameters())
+			evtString += " " + parameter;
+		return evtString;		
 	}
 }

@@ -1,5 +1,5 @@
 /*	
-        Lirec Architecture
+    CMION
 	Copyright(C) 2009 Heriot Watt University
 
 	This library is free software; you can redistribute it and/or
@@ -22,14 +22,16 @@
   ---
   09/10/2009      Michael Kriegel <mk95@hw.ac.uk>
   First version.
+  27/11/2009      Michael Kriegel <mk95@hw.ac.uk>
+  Renamed to CMION
   ---  
 */
 
-package lirec.level3.supersimplemind;
+package cmion.level3.supersimplemind;
 
-import lirec.architecture.IArchitecture;
-import lirec.level3.AgentMindConnector;
-import lirec.level3.MindAction;
+import cmion.architecture.IArchitecture;
+import cmion.level3.AgentMindConnector;
+import cmion.level3.MindAction;
 
 /** The connector to a SuperSimpleMind (example implementation of a simple mind interface) */
 public class SuperSimpleMindConnector extends AgentMindConnector {
@@ -101,6 +103,13 @@ public class SuperSimpleMindConnector extends AgentMindConnector {
 	@Override
 	protected void processPropertyRemoved(String entityName, String propertyName) {
 		mind.sendPropertyRemoved(entityName,propertyName);
+	}
+
+
+	@Override
+	protected void architectureReady() 
+	{	
+		mind.sendAwake();
 	}
 
 }

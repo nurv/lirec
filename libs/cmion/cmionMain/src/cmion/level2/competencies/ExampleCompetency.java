@@ -1,5 +1,5 @@
 /*	
-        Lirec Architecture
+    CMION
 	Copyright(C) 2009 Heriot Watt University
 
 	This library is free software; you can redistribute it and/or
@@ -22,15 +22,18 @@
   ---
   09/10/2009      Michael Kriegel <mk95@hw.ac.uk>
   First version.
+  27/11/2009      Michael Kriegel <mk95@hw.ac.uk>
+  Renamed to CMION
   ---  
 */
 
-package lirec.level2.competencies;
+package cmion.level2.competencies;
 
 import java.util.HashMap;
 
-import lirec.architecture.IArchitecture;
-import lirec.level2.Competency;
+import cmion.architecture.IArchitecture;
+import cmion.level2.Competency;
+
 
 /** example of the implementation of a competency, with comments explaining how
  * to define competencies, this is not actually doing anything serious */

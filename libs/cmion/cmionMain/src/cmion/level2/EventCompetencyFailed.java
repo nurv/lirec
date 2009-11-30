@@ -1,5 +1,5 @@
 /*	
-        Lirec Architecture
+    CMION
 	Copyright(C) 2009 Heriot Watt University
 
 	This library is free software; you can redistribute it and/or
@@ -22,17 +22,19 @@
   ---
   09/10/2009      Michael Kriegel <mk95@hw.ac.uk>
   First version.
+  27/11/2009      Michael Kriegel <mk95@hw.ac.uk>
+  Renamed to CMION
   ---  
 */
 
-package lirec.level2;
-
-import ion.Meta.Event;
+package cmion.level2;
 
 import java.util.HashMap;
 
+import cmion.architecture.CmionEvent;
+
 /** this event signifies that the execution of a competency has failed */
-public class EventCompetencyFailed extends Event 
+public class EventCompetencyFailed extends CmionEvent 
 {
 
 	/** a reference to the competency that has failed  */
@@ -61,4 +63,16 @@ public class EventCompetencyFailed extends Event
 		return parameters;
 	}	
 	
+	/** displays information about this event */
+	@Override
+	public String toString()
+	{
+		String evtString =  "Competency failed: " + competency.getCompetencyName();
+		evtString += ", parameters:";
+		if (parameters.size()==0) evtString += " none";
+		else for (String parameterName : parameters.keySet())
+			evtString += " " + parameterName +"="+parameters.get(parameterName);
+		return evtString;		
+	}
+
 }

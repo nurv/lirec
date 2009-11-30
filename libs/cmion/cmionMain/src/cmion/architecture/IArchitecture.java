@@ -1,5 +1,5 @@
 /*	
-        Lirec Architecture
+    CMION
 	Copyright(C) 2009 Heriot Watt University
 
 	This library is free software; you can redistribute it and/or
@@ -20,20 +20,22 @@
 
 	Revision History:
   ---
-  20/10/2009      Michael Kriegel <mk95@hw.ac.uk>
+  09/10/2009      Michael Kriegel <mk95@hw.ac.uk>
   First version.
+  27/11/2009      Michael Kriegel <mk95@hw.ac.uk>
+  Renamed to CMION
   ---  
 */
 
-package lirec.architecture;
+package cmion.architecture;
 
-import lirec.level2.CompetencyExecution;
-import lirec.level2.CompetencyLibrary;
-import lirec.level3.CompetencyManager;
-import lirec.storage.LirecStorageContainer;
-import lirec.storage.WorldModel;
+import cmion.level2.CompetencyExecution;
+import cmion.level2.CompetencyLibrary;
+import cmion.level3.CompetencyManager;
+import cmion.storage.CmionStorageContainer;
+import cmion.storage.WorldModel;
 
-/** specifies an interface for an architecture class that constructs the architecture components and
+/** specifies an interface for an architecture class that constructs the cmion components and
  *  stores references to them */
 public interface IArchitecture {
 
@@ -41,7 +43,7 @@ public interface IArchitecture {
 	public WorldModel getWorldModel();
 
 	/** in this method the architecture must return a reference to the Black Board component */
-	public LirecStorageContainer getBlackBoard();
+	public CmionStorageContainer getBlackBoard();
 	
 	/** in this method the architecture must return a reference to the competency execution component */	
 	public CompetencyExecution getCompetencyExecution();

@@ -20,34 +20,18 @@
 
 	Revision History:
   ---
-  09/10/2009      Michael Kriegel <mk95@hw.ac.uk>
-  First version.
   27/11/2009      Michael Kriegel <mk95@hw.ac.uk>
-  Renamed to CMION
+  First version.
   ---  
 */
 
-package cmion.storage;
+package cmion.architecture;
 
-import ion.Meta.Request;
+import ion.Meta.Event;
 
-/** Request a container to remove property of the given name. If such a property 
- *  existed will result in the container raising an EventPropertyRemoved. */
-public class RequestRemoveProperty extends Request {
-
-/** the name of the property to remove*/
-private String propertyName;	
-
-/** create a new request to remove a property of given name */
-public RequestRemoveProperty(String propertyName)
+/** A class that all events within cmion should inherit from to distinguish them
+ *  easily from other ION events */
+public abstract class CmionEvent extends Event 
 {
-	this.propertyName = propertyName;
-}
-
-/** return the name of the removed property */
-public String getPropertyName()
-{
-	return propertyName;
-}
 	
 }

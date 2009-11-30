@@ -1,5 +1,5 @@
 /*	
-        Lirec Architecture
+    CMION
 	Copyright(C) 2009 Heriot Watt University
 
 	This library is free software; you can redistribute it and/or
@@ -22,41 +22,52 @@
   ---
   09/10/2009      Michael Kriegel <mk95@hw.ac.uk>
   First version.
+  27/11/2009      Michael Kriegel <mk95@hw.ac.uk>
+  Renamed to CMION
   ---  
 */
 
-package lirec.storage;
+package cmion.storage;
 
-import ion.Meta.Event;
+import cmion.architecture.CmionEvent;
 
-/** an event informing that a new subcontainer has been added to a LirecStorageContainer
+/** an event informing that a new subcontainer has been added to a CMION StorageContainer
  *  This will be raised by the owner container*/
-public class EventSubContainerAdded extends Event{
+public class EventSubContainerAdded extends CmionEvent{
 
 /** the sub container that has been added */
-private LirecStorageContainer subContainer;
+private CmionStorageContainer subContainer;
 
 /** the parent container that has added the sub container*/
-private LirecStorageContainer parentContainer;
+private CmionStorageContainer parentContainer;
 
 
 /** create a new event sub container added */
-public EventSubContainerAdded(LirecStorageContainer parentContainer, LirecStorageContainer subContainer)
+public EventSubContainerAdded(CmionStorageContainer parentContainer, CmionStorageContainer subContainer)
 {
 	this.parentContainer = parentContainer;
 	this.subContainer =  subContainer;
 }
 
 /** returns the sub container that has been added */
-public LirecStorageContainer getSubContainer()
+public CmionStorageContainer getSubContainer()
 {
 	return subContainer;
 }
 
 /** returns the container that has added the sub container */
-public LirecStorageContainer getParentContainer()
+public CmionStorageContainer getParentContainer()
 {
 	return parentContainer;
+}
+
+/** displays information about this event */
+@Override
+public String toString()
+{
+	String evtString =  "Sub Container added to " + parentContainer.getContainerName() +
+	                    ": " + subContainer.getContainerName();
+	return evtString;		
 }
 
 

@@ -1,5 +1,5 @@
 /*	
-        Lirec Architecture
+    CMION
 	Copyright(C) 2009 Heriot Watt University
 
 	This library is free software; you can redistribute it and/or
@@ -22,10 +22,12 @@
   ---
   09/10/2009      Michael Kriegel <mk95@hw.ac.uk>
   First version.
+  27/11/2009      Michael Kriegel <mk95@hw.ac.uk>
+  Renamed to CMION
   ---  
 */
 
-package lirec.level2;
+package cmion.level2;
 
 import ion.Meta.EventHandler;
 import ion.Meta.IEvent;
@@ -38,12 +40,13 @@ import ion.Meta.TypeSet;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import lirec.architecture.IArchitecture;
-import lirec.architecture.LirecComponent;
+import cmion.architecture.IArchitecture;
+import cmion.architecture.CmionComponent;
 
-/** this component is responsible for executing plans of competencies it has received from the competency
- *  manager */
-public class CompetencyExecution extends LirecComponent {
+
+/** this component is responsible for executing plans of competencies it has received 
+ * (normally from the competency manager) */
+public class CompetencyExecution extends CmionComponent {
 	
 	/** store all plans that we are currently executing */
 	private ArrayList<CompetencyExecutionPlan> currentPlans;

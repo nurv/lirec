@@ -1,5 +1,5 @@
 /*	
-        Lirec Architecture
+    CMION
 	Copyright(C) 2009 Heriot Watt University
 
 	This library is free software; you can redistribute it and/or
@@ -22,12 +22,14 @@
   ---
   09/10/2009      Michael Kriegel <mk95@hw.ac.uk>
   First version.
+  27/11/2009      Michael Kriegel <mk95@hw.ac.uk>
+  Renamed to CMION
   ---  
 */
 
-package lirec.level3.supersimplemind;
+package cmion.level3.supersimplemind;
 
-import lirec.level3.MindAction;
+import cmion.level3.MindAction;
 
 /** an example mind that does almost nothing except executing random actions,
  * this is just to show how one could interface a different mind then FAtiMA,

@@ -29,7 +29,7 @@
  * Rui Prada: 01/04/2002 - File created
  */
 
-package lirec.util;
+package cmion.util;
 
 import java.io.BufferedReader;
 import java.io.IOException;

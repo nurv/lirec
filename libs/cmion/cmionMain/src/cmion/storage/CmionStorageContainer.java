@@ -1,5 +1,5 @@
 /*	
-        Lirec Architecture
+    CMION
 	Copyright(C) 2009 Heriot Watt University
 
 	This library is free software; you can redistribute it and/or
@@ -22,10 +22,12 @@
   ---
   09/10/2009      Michael Kriegel <mk95@hw.ac.uk>
   First version.
+  27/11/2009      Michael Kriegel <mk95@hw.ac.uk>
+  Renamed to CMION
   ---  
 */
 
-package lirec.storage;
+package cmion.storage;
 
 import ion.Meta.EventHandler;
 import ion.Meta.IReadOnlyQueueSet;
@@ -37,8 +39,9 @@ import ion.Meta.TypeSet;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import lirec.architecture.IArchitecture;
-import lirec.architecture.LirecComponent;
+import cmion.architecture.IArchitecture;
+import cmion.architecture.CmionComponent;
+
 
 /** a storage container is used for storing data that is shared between the components.
  *  The world model and the black board are examples of storage containers. The way the stored
@@ -55,10 +58,10 @@ import lirec.architecture.LirecComponent;
  *  Storage containers additionally have a type field (if not needed it should just contain ""), 
  *  so that the storage hierarchy itself can also contain information about the type of information stored.
  *  For example if there are containers for Agents and Objects as in WorldModel, the type
- *  can help ditinguishing them. For properties the type is not stored explicitly but implicit
+ *  can help distinguishing them. For properties the type is not stored explicitly but implicit
  *  through the class of the property object. */
 
-public class LirecStorageContainer extends LirecComponent {	
+public class CmionStorageContainer extends CmionComponent {	
 	
 	/** the name (identifier) of this container */
 	private String containerName;
@@ -67,43 +70,43 @@ public class LirecStorageContainer extends LirecComponent {
 	private String containerType;
 	
 	/** all sub containers stored in this container */
-	private HashMap <String,LirecStorageContainer> subContainers; 
+	private HashMap <String,CmionStorageContainer> subContainers; 
 	
 	/** all properties stored in this container */
 	private HashMap <String, Object> properties;
 	
 	/** the parent container that owns this container (null for top container in a hierarchy */
-	private LirecStorageContainer parentContainer;
+	private CmionStorageContainer parentContainer;
 	
 	/** the event handlers that would like to be registered with sub components  */
 	private ArrayList<EventHandler> subContainerEventHandlers;
 
 		
-	/** create a new Lirec Storage Container (this constructor is protected because it
+	/** create a new CMION Storage Container (this constructor is protected because it
 	 * should not be accessed from outside) to create a new top level container, use the 
 	 * public constructor)
 	 * @param name the name of this container, should be unique along siblings in storage hierarchy 
 	 * @param type the type/class of this container 
 	 * @param parentContainer the container that owns this container or null for a top container in a hierarchy
-	 * @param architecture reference to the lirec architecture object
+	 * @param architecture reference to the architecture object
 	 */
-	protected LirecStorageContainer(IArchitecture architecture, String name, String type, LirecStorageContainer parentContainer) 
+	protected CmionStorageContainer(IArchitecture architecture, String name, String type, CmionStorageContainer parentContainer) 
 	{
 		super(architecture);
 		this.containerName = name;
 		this.containerType = type;
 		this.parentContainer = parentContainer;
-		subContainers = new HashMap<String,LirecStorageContainer>();
+		subContainers = new HashMap<String,CmionStorageContainer>();
 		properties = new HashMap<String, Object>();
 		subContainerEventHandlers = new ArrayList<EventHandler>();
 	}	
 
-	/** create a new Lirec Storage Container 
+	/** create a new CMION Storage Container 
 	 * @param name the name of this container, should be unique along siblings in storage hierarchy 
 	 * @param type the type/class of this container 
-	 * @param architecture reference to the lirec architecture object
+	 * @param architecture reference to the architecture object
 	 */
-	public LirecStorageContainer(IArchitecture architecture, String name, String type) 
+	public CmionStorageContainer(IArchitecture architecture, String name, String type) 
 	{
 		this(architecture,name,type,null);
 	}
@@ -113,7 +116,7 @@ public class LirecStorageContainer extends LirecComponent {
 	public synchronized void registerEventHandlerWithSubContainers(EventHandler handler)
 	{
 		// register handler with all sub containers we have currently
-		for (LirecStorageContainer container : subContainers.values())
+		for (CmionStorageContainer container : subContainers.values())
 			container.getEventHandlers().add(handler);
 		
 		// keep a reference, so we can add this handler to sub containers that are added in the future
@@ -123,14 +126,14 @@ public class LirecStorageContainer extends LirecComponent {
 	
 	/** returns the sub container with the provided name or null, if there is no
 	 *  such container in this storage container */
-	public LirecStorageContainer getSubContainer(String subContainerName)
+	public CmionStorageContainer getSubContainer(String subContainerName)
 	{
 		return subContainers.get(subContainerName);
 	}
 	
 	/** returns the parent container or null if this is the top container of a storage
 	 * hierarchy */
-	 public LirecStorageContainer getParentContainer()
+	 public CmionStorageContainer getParentContainer()
 	 {
 		 return parentContainer;
 	 }
@@ -244,7 +247,7 @@ public class LirecStorageContainer extends LirecComponent {
 	{
 		if  (subContainers.containsKey(name))
 		{
-			LirecStorageContainer c = subContainers.get(name);
+			CmionStorageContainer c = subContainers.get(name);
 			if (c==null) return false;
 			if (c.getContainerType().equals(type)) return true;
 			else return false;
@@ -288,7 +291,7 @@ public class LirecStorageContainer extends LirecComponent {
 		if (!subContainers.containsKey(name))
 		{
 			// ok we don't have such a sub container yet, create it then
-			LirecStorageContainer container = new LirecStorageContainer(architecture,name,type,this);
+			CmionStorageContainer container = new CmionStorageContainer(architecture,name,type,this);
 			
 			// add it to our list of sub containers
 			subContainers.put(name, container);
@@ -323,7 +326,7 @@ public class LirecStorageContainer extends LirecComponent {
 	private synchronized void removeAndDestroy()
 	{
 		// first of all call this recursively for all our children
-		for (LirecStorageContainer container : subContainers.values())
+		for (CmionStorageContainer container : subContainers.values())
 			container.removeAndDestroy();
 		
 		// clear all subContainers
@@ -350,7 +353,7 @@ public class LirecStorageContainer extends LirecComponent {
 		if (subContainers.containsKey(name))
 		{
 			// obtain a reference to the container
-			LirecStorageContainer container = subContainers.get(name);
+			CmionStorageContainer container = subContainers.get(name);
 			
 			// obtain the type of the container
 			String type = container.getContainerType();

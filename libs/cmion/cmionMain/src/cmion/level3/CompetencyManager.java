@@ -1,5 +1,5 @@
 /*	
-        Lirec Architecture
+    CMION
 	Copyright(C) 2009 Heriot Watt University
 
 	This library is free software; you can redistribute it and/or
@@ -22,10 +22,12 @@
   ---
   09/10/2009      Michael Kriegel <mk95@hw.ac.uk>
   First version.
+  27/11/2009      Michael Kriegel <mk95@hw.ac.uk>
+  Renamed to CMION
   ---  
 */
 
-package lirec.level3;
+package cmion.level3;
 
 import ion.Meta.EventHandler;
 import ion.Meta.IEvent;
@@ -41,20 +43,20 @@ import java.util.HashMap;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import lirec.architecture.IArchitecture;
-import lirec.architecture.LirecComponent;
-import lirec.level2.CompetencyExecutionPlan;
-import lirec.level2.EventCompetencyExecutionPlanFailed;
-import lirec.level2.EventCompetencyExecutionPlanSucceeded;
-import lirec.level2.RequestNewCompetencyExecutionPlan;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
-/** the competency manager keeps a dynamic overview about which competencies are connected, 
- * receives actions from the mind for execution and decomposes them into competencies,
- * for execution */
-public class CompetencyManager extends LirecComponent 
+import cmion.architecture.IArchitecture;
+import cmion.architecture.CmionComponent;
+import cmion.level2.CompetencyExecutionPlan;
+import cmion.level2.EventCompetencyExecutionPlanFailed;
+import cmion.level2.EventCompetencyExecutionPlanSucceeded;
+import cmion.level2.RequestNewCompetencyExecutionPlan;
+
+/** the competency manager receives actions from the mind for execution and decomposes 
+ *  them into a plan of competencies for execution */
+public class CompetencyManager extends CmionComponent 
 {
 
 	/** stores all rules that map from mind action to competency execution plan */

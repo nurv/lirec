@@ -1,5 +1,5 @@
 /*	
-        Lirec Architecture
+    CMION
 	Copyright(C) 2009 Heriot Watt University
 
 	This library is free software; you can redistribute it and/or
@@ -22,17 +22,20 @@
   ---
   09/10/2009      Michael Kriegel <mk95@hw.ac.uk>
   First version.
+  27/11/2009      Michael Kriegel <mk95@hw.ac.uk>
+  Renamed to CMION
   ---  
 */
 
-package lirec.level3.fatima;
+package cmion.level3.fatima;
 
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 
-import lirec.storage.WorldModel;
-import lirec.util.SocketListener;
+import cmion.storage.WorldModel;
+import cmion.util.SocketListener;
+
 
 /** In this thread we communicate with the FAtiMA mind through a remote connection */
 public class FAtiMAListenerThread extends SocketListener {

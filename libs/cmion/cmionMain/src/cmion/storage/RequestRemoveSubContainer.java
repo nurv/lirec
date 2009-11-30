@@ -1,5 +1,5 @@
 /*	
-        Lirec Architecture
+    CMION
 	Copyright(C) 2009 Heriot Watt University
 
 	This library is free software; you can redistribute it and/or
@@ -22,14 +22,16 @@
   ---
   09/10/2009      Michael Kriegel <mk95@hw.ac.uk>
   First version.
+  27/11/2009      Michael Kriegel <mk95@hw.ac.uk>
+  Renamed to CMION
   ---  
 */
 
-package lirec.storage;
+package cmion.storage;
 
 import ion.Meta.Request;
 
-/** a request that can be made to any Lirec Storage Container for removing an
+/** a request that can be made to any CMION Storage Container for removing an
  *  existing sub container (does not remove sub sub containers)*/
 public class RequestRemoveSubContainer extends Request {
 

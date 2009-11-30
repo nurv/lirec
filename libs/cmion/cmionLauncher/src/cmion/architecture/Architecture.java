@@ -1,5 +1,5 @@
 /*	
-        Lirec Architecture
+    CMION
 	Copyright(C) 2009 Heriot Watt University
 
 	This library is free software; you can redistribute it and/or
@@ -22,10 +22,12 @@
   ---
   09/10/2009      Michael Kriegel <mk95@hw.ac.uk>
   First version.
+  27/11/2009      Michael Kriegel <mk95@hw.ac.uk>
+  Renamed to CMION
   ---  
 */
 
-package lirec.architecture;
+package cmion.architecture;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
@@ -40,26 +42,29 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import cmion.architecture.EventCmionReady;
+import cmion.architecture.IArchitecture;
+import cmion.architecture.CmionComponent;
+import cmion.level2.CompetencyExecution;
+import cmion.level2.CompetencyLibrary;
+import cmion.level3.CompetencyManager;
+import cmion.storage.CmionStorageContainer;
+import cmion.storage.WorldModel;
+
 import ion.Meta.Element;
 import ion.Meta.Simulation;
-import lirec.level2.CompetencyExecution;
-import lirec.level2.CompetencyLibrary;
-import lirec.level3.CompetencyManager;
-import lirec.storage.LirecStorageContainer;
-import lirec.storage.WorldModel;
 
 
-/** this class is used at the moment as the executable / main entry point for the 
- * Lirec architecture. It is also used for accessing references to all main 
- * architecture components */
-public class Architecture implements IArchitecture {
+/** this class is used at the moment as the executable / main entry point for CMION
+ *  It is also used for accessing references to all main CMION components */
+public class Architecture extends Element implements IArchitecture {
 		
 	/** the world model in which we store high level symbolic information */
 	private WorldModel worldModel;
 
 	/** the black board that stores lower level information for competencies to share
 	 *  between each other */
-	private LirecStorageContainer blackBoard;
+	private CmionStorageContainer blackBoard;
 	
 	/** the competency execution system */
 	private CompetencyExecution competencyExecution;
@@ -78,16 +83,20 @@ public class Architecture implements IArchitecture {
 	
 	/** This list stores all custom components that are loaded dynamically, depending on the 
 	 *  architecture configuration, i.e. the scenario*/
-	private ArrayList<LirecComponent> customComponents; 
+	private ArrayList<CmionComponent> customComponents; 
 	
 	/** create a new architecture */
 	public Architecture(String architectureConfigurationFile) throws Exception
 	{	
 		// initialise lists
-		customComponents = new ArrayList<LirecComponent>();
+		customComponents = new ArrayList<CmionComponent>();
 		
 		// load the configuration file (in here custom components will be built)
 		loadConfigFile(architectureConfigurationFile);
+		
+		// add the architecture itself to the ION Simulation
+		Simulation.instance.getElements().add(this);
+		Simulation.instance.update();
 		
 		// now build default components
 		
@@ -96,7 +105,7 @@ public class Architecture implements IArchitecture {
 		Simulation.instance.getElements().add(worldModel);
 		Simulation.instance.update();
 		
-		blackBoard = new LirecStorageContainer(this,"BlackBoard","BlackBoard");
+		blackBoard = new CmionStorageContainer(this,"BlackBoard","BlackBoard");
 		Simulation.instance.getElements().add(blackBoard);
 		Simulation.instance.update();
 		
@@ -115,12 +124,12 @@ public class Architecture implements IArchitecture {
 		Simulation.instance.getElements().add(competencyManager);
 		Simulation.instance.update();
 				
-		// now register handlers for all Lirec Components
+		// now register handlers for all CMION Components
 		for (Element element : Simulation.instance.getElements())
-			if (element instanceof LirecComponent)
-				((LirecComponent)element).registerHandlers();
+			if (element instanceof CmionComponent)
+				((CmionComponent)element).registerHandlers();
 		
-		System.out.println("Lirec Architecture initialised");
+		System.out.println("CMION initialised");
 	}
 	
 	/** parses the architecture configuration file that defines what components
@@ -189,7 +198,7 @@ public class Architecture implements IArchitecture {
 				// create array that specifies the classes of the parameters of the constructor
 				ArrayList<Class<?>> constructorClasses = new ArrayList<Class<?>>();
 				
-				// the first parameter to the constructor is always a reference to the architecture for all lirec components
+				// the first parameter to the constructor is always a reference to the architecture for all CMION components
 				constructorParameters.add(this);
 				// its class is IArchitecture
 				constructorClasses.add(IArchitecture.class);
@@ -219,11 +228,11 @@ public class Architecture implements IArchitecture {
 				Object instance = constructor.newInstance(constructorParameters.toArray());
 				
 				// check if instance is of the right type
-				if (!(instance instanceof LirecComponent)) throw new Exception("Architecture component could not be built. "+ className+ " is not a subclass of LirecComponent");
+				if (!(instance instanceof CmionComponent)) throw new Exception("CMION component could not be built. "+ className+ " is not a subclass of CmionComponent");
 				
 				// add custom component to the simulation
-				customComponents.add((LirecComponent) instance);
-				Simulation.instance.getElements().add((LirecComponent) instance);		
+				customComponents.add((CmionComponent) instance);
+				Simulation.instance.getElements().add((CmionComponent) instance);		
 				Simulation.instance.update();
 				
 			}
@@ -234,11 +243,13 @@ public class Architecture implements IArchitecture {
 	/** function that updates the ion simulation regularly*/
 	private void runSimulation()
 	{
-		System.out.println("Lirec Architecture running");
+		System.out.println("CMION running");
 		
 		// first start the competencies that are constantly running in the background
 		competencyLibrary.startBackgroundCompetencies();
 		
+		int counter = 0;
+				
 		// run the ion simulation in an endless loop
 		while (true)
 		{	
@@ -248,6 +259,13 @@ public class Architecture implements IArchitecture {
 			try {
 				Thread.sleep(50);
 			} catch (InterruptedException e) {}
+
+			counter++;
+			
+			// for now, raise the event that architecture is ready here after waiting for a while, later needs to be more 
+			// sophisticated (maybe receiving signals from competencies that they are ready)
+			if (counter == 20) 
+				this.raise(new EventCmionReady());
 		}		
 	}
 	
@@ -260,7 +278,7 @@ public class Architecture implements IArchitecture {
 	
 	/** returns the black board component */
 	@Override
-	public LirecStorageContainer getBlackBoard()
+	public CmionStorageContainer getBlackBoard()
 	{
 		return blackBoard;
 	}
@@ -307,6 +325,12 @@ public class Architecture implements IArchitecture {
 		}
 		
 			
+	}
+
+	@Override
+	public void onDestroy() {
+		// TODO Auto-generated method stub
+		
 	}
 	
 

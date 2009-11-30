@@ -1,0 +1,37 @@
+<?xml version="1.0" ?>
+<!DOCTYPE CompetencyManagerRules SYSTEM "CompetencyManagerRules.dtd">
+
+<CompetencyManagerRules>
+	
+
+
+	<Rule>
+		
+		<MindAction Name="DeliverPhoneTo">
+				<Parameter No="1" Value="*" />
+		</MindAction>		
+		
+		<CompetencyExecutionPlan>
+			
+			<Competency ID="1" Type="MoveTo">
+				<CompetencyParameter Name="Target" Value="$parameter1" />
+			</Competency>
+			
+			<Competency ID="2" Type="PhoneSensor" >
+				<CompetencyParameter Name="PickedUp" Value="True" />
+			</Competency>
+			
+			<Competency ID="3" Type="PhoneSensor" Dependency ="2" >
+				<CompetencyParameter Name="PickedUp" Value="False" />
+			</Competency>
+			
+			<Competency ID="4" Type="MoveTo" Dependency ="3" >
+				<CompetencyParameter Name="Target" Value="Home" />
+			</Competency>
+			
+			
+		</CompetencyExecutionPlan>
+		
+	</Rule>
+
+</CompetencyManagerRules>

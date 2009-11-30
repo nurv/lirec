@@ -1,5 +1,5 @@
 /*	
-        Lirec Architecture
+    CMION
 	Copyright(C) 2009 Heriot Watt University
 
 	This library is free software; you can redistribute it and/or
@@ -22,16 +22,18 @@
   ---
   09/10/2009      Michael Kriegel <mk95@hw.ac.uk>
   First version.
+  27/11/2009      Michael Kriegel <mk95@hw.ac.uk>
+  Renamed to CMION
   ---  
 */
 
-package lirec.level2;
+package cmion.level2;
 
-import ion.Meta.Event;
+import cmion.architecture.CmionEvent;
 
 /** this type of event is raised by the competency execution system when a competency execution plan has been carried out successfully 
 *  the competency manager listens for those events */
-public class EventCompetencyExecutionPlanSucceeded extends Event 
+public class EventCompetencyExecutionPlanSucceeded extends CmionEvent 
 {
 
 	/** creates a new event */
@@ -48,4 +50,14 @@ public class EventCompetencyExecutionPlanSucceeded extends Event
 	{
 		return executionPlan;
 	}
+	
+	/** displays information about this event */
+	@Override
+	public String toString()
+	{
+		// not sure how to display more concise short information about this
+		String evtString =  "Competency Execution plan succeeded";
+		return evtString;
+	}
+
 }

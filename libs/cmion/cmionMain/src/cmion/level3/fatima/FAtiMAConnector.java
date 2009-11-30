@@ -1,5 +1,5 @@
 /*	
-        Lirec Architecture
+    CMION
 	Copyright(C) 2009 Heriot Watt University
 
 	This library is free software; you can redistribute it and/or
@@ -22,19 +22,22 @@
   ---
   09/10/2009      Michael Kriegel <mk95@hw.ac.uk>
   First version.
+  27/11/2009      Michael Kriegel <mk95@hw.ac.uk>
+  Renamed to CMION
   ---  
 */
 
-package lirec.level3.fatima;
+package cmion.level3.fatima;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
 
-import lirec.architecture.IArchitecture;
-import lirec.level3.AgentMindConnector;
-import lirec.level3.MindAction;
+import cmion.architecture.IArchitecture;
+import cmion.level3.AgentMindConnector;
+import cmion.level3.MindAction;
+
 
 public class FAtiMAConnector extends AgentMindConnector {
 
@@ -159,6 +162,12 @@ public class FAtiMAConnector extends AgentMindConnector {
 			
 		}
 		
+		
+	}
+
+	@Override
+	protected void architectureReady() {
+		// TODO Auto-generated method stub
 		
 	}
 

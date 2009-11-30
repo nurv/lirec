@@ -1,5 +1,5 @@
 /*	
-        Lirec Architecture
+    CMION
 	Copyright(C) 2009 Heriot Watt University
 
 	This library is free software; you can redistribute it and/or
@@ -22,19 +22,22 @@
   ---
   09/10/2009      Michael Kriegel <mk95@hw.ac.uk>
   First version.
+  27/11/2009      Michael Kriegel <mk95@hw.ac.uk>
+  Renamed to CMION
   ---  
 */
 
-package lirec.storage;
+package cmion.storage;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import lirec.architecture.IArchitecture;
+import cmion.architecture.IArchitecture;
 
-/** a specific subclass of lirec storage container with convenience methods added 
+
+/** a specific subclass of cmion storage container with convenience methods added 
  * for handling "agent" and "object" sub containers. */
-public class WorldModel extends LirecStorageContainer {
+public class WorldModel extends CmionStorageContainer {
 
 	public static String AGENT_TYPE_NAME = "agent";
 	public static String OBJECT_TYPE_NAME = "object";
@@ -110,7 +113,7 @@ public class WorldModel extends LirecStorageContainer {
 	
 	/** returns the agent storage container with the specified name or null if 
 	 * it does not exist in this world model */
-	public synchronized LirecStorageContainer getAgent(String name)
+	public synchronized CmionStorageContainer getAgent(String name)
 	{
 		if (this.hasAgent(name)) return this.getSubContainer(name);
 		else return null;
@@ -118,7 +121,7 @@ public class WorldModel extends LirecStorageContainer {
 	
 	/** returns the object storage container with the specified name or null if 
 	 * it does not exist in this world model */
-	public synchronized LirecStorageContainer getObject(String name)
+	public synchronized CmionStorageContainer getObject(String name)
 	{
 		if (this.hasObject(name)) return this.getSubContainer(name);
 		else return null;

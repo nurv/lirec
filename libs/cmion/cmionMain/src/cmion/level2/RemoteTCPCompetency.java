@@ -1,5 +1,5 @@
 /*	
-        Lirec Architecture
+    CMION
 	Copyright(C) 2009 Heriot Watt University
 
 	This library is free software; you can redistribute it and/or
@@ -22,10 +22,12 @@
   ---
   09/10/2009      Michael Kriegel <mk95@hw.ac.uk>
   First version.
+  27/11/2009      Michael Kriegel <mk95@hw.ac.uk>
+  Renamed to CMION
   ---  
 */
 
-package lirec.level2;
+package cmion.level2;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -35,9 +37,10 @@ import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import lirec.architecture.IArchitecture;
+import cmion.architecture.IArchitecture;
 
-/** A class encapsulating tcp communication we another process on the network. */
+
+/** A class encapsulating tcp communication with another process on the network. */
 public abstract class RemoteTCPCompetency extends RemoteCompetency {
 
 	/** indicates whether this side (the Java ION side) is the server (true) or

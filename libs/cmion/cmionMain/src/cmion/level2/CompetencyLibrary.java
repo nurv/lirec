@@ -1,5 +1,5 @@
 /*	
-        Lirec Architecture
+    CMION
 	Copyright(C) 2009 Heriot Watt University
 
 	This library is free software; you can redistribute it and/or
@@ -22,10 +22,12 @@
   ---
   09/10/2009      Michael Kriegel <mk95@hw.ac.uk>
   First version.
+  27/11/2009      Michael Kriegel <mk95@hw.ac.uk>
+  Renamed to CMION
   ---  
 */
 
-package lirec.level2;
+package cmion.level2;
 
 import ion.Meta.Simulation;
 
@@ -43,11 +45,12 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import lirec.architecture.IArchitecture;
-import lirec.architecture.LirecComponent;
+import cmion.architecture.IArchitecture;
+import cmion.architecture.CmionComponent;
+
 
 /** the competency library is the component that registers all components */
-public class CompetencyLibrary extends LirecComponent {
+public class CompetencyLibrary extends CmionComponent {
 
 	/** the list of competencies that are available for execution by the competency
 	 *  execution system */
@@ -143,7 +146,7 @@ public class CompetencyLibrary extends LirecComponent {
 				// create array that specifies the classes of the parameters of the constructor
 				ArrayList<Class<?>> constructorClasses = new ArrayList<Class<?>>();
 				
-				// the first parameter to the constructor is always a reference to the architecture for all lirec components				
+				// the first parameter to the constructor is always a reference to the architecture for all cmion components				
 				constructorParameters.add(architecture);
 				// it's class is IArchitecture
 				constructorClasses.add(IArchitecture.class);

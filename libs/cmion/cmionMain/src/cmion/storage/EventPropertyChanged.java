@@ -1,5 +1,5 @@
 /*	
-        Lirec Architecture
+    CMION
 	Copyright(C) 2009 Heriot Watt University
 
 	This library is free software; you can redistribute it and/or
@@ -22,17 +22,19 @@
   ---
   09/10/2009      Michael Kriegel <mk95@hw.ac.uk>
   First version.
+  27/11/2009      Michael Kriegel <mk95@hw.ac.uk>
+  Renamed to CMION
   ---  
 */
 
-package lirec.storage;
+package cmion.storage;
 
-import ion.Meta.Event;
+import cmion.architecture.CmionEvent;
 
 /** This event is raised whenever a property value has been set through a
  *  RequestSetProperty. Also raised when the property did not exist before and was 
  *  created.*/
-public class EventPropertyChanged extends Event {
+public class EventPropertyChanged extends CmionEvent {
 
 	/** the name of the property whose value has changed*/
 	private String propertyName;	
@@ -41,10 +43,10 @@ public class EventPropertyChanged extends Event {
 	private Object propertyValue;
 	
 	/** the container to which the changed property belongs */
-	private LirecStorageContainer parentContainer;
+	private CmionStorageContainer parentContainer;
 
 	/** create a new event that a property of given name to given value*/
-	public EventPropertyChanged(String propertyName, Object propertyValue, LirecStorageContainer parentContainer)
+	public EventPropertyChanged(String propertyName, Object propertyValue, CmionStorageContainer parentContainer)
 	{
 		this.propertyName = propertyName;
 		this.propertyValue = propertyValue;
@@ -64,9 +66,18 @@ public class EventPropertyChanged extends Event {
 	}	
 	
 	/** return the container which the changed property belongs to */
-	public LirecStorageContainer getParentContainer()
+	public CmionStorageContainer getParentContainer()
 	{
 		return parentContainer;
+	}
+	
+	/** displays information about this event */
+	@Override
+	public String toString()
+	{
+		String evtString =  "Property changed of " + parentContainer.getContainerName() +
+		                    ": "  + propertyName +" = " + propertyValue ;
+		return evtString;		
 	}
 	
 }

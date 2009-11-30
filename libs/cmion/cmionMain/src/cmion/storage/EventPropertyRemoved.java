@@ -1,5 +1,5 @@
 /*	
-        Lirec Architecture
+    CMION
 	Copyright(C) 2009 Heriot Watt University
 
 	This library is free software; you can redistribute it and/or
@@ -22,27 +22,29 @@
   ---
   09/10/2009      Michael Kriegel <mk95@hw.ac.uk>
   First version.
+  27/11/2009      Michael Kriegel <mk95@hw.ac.uk>
+  Renamed to CMION
   ---  
 */
 
-package lirec.storage;
+package cmion.storage;
 
-import ion.Meta.Event;
+import cmion.architecture.CmionEvent;
 
 /** This event is raised by a container whenever a property is removed from this
  * container. The event is not raised if the property is deleted because the container
  * itself or its parent grandparent etc is removed. 
  */
-public class EventPropertyRemoved extends Event {
+public class EventPropertyRemoved extends CmionEvent {
 
 	/** the name of the property whose value has changed*/
 	private String propertyName;	
 
 	/** the container from which the property was removed */
-	private LirecStorageContainer parentContainer;
+	private CmionStorageContainer parentContainer;
 	
 	/** create a new event that a property of given name was removed*/
-	public EventPropertyRemoved(String propertyName, LirecStorageContainer parentContainer)
+	public EventPropertyRemoved(String propertyName, CmionStorageContainer parentContainer)
 	{
 		this.propertyName = propertyName;
 		this.parentContainer = parentContainer;
@@ -55,9 +57,19 @@ public class EventPropertyRemoved extends Event {
 	}
 	
 	/** returns a reference to the container from which the property was removed  */
-	public LirecStorageContainer getParentContainer()
+	public CmionStorageContainer getParentContainer()
 	{
 		return parentContainer;
 	}
+	
+	/** displays information about this event */
+	@Override
+	public String toString()
+	{
+		String evtString =  "Property removed of " + parentContainer.getContainerName() +
+		                    ": "  + propertyName;
+		return evtString;		
+	}
+	
 	
 }

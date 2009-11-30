@@ -1,5 +1,5 @@
 /*	
-        Lirec Architecture
+    CMION
 	Copyright(C) 2009 Heriot Watt University
 
 	This library is free software; you can redistribute it and/or
@@ -22,10 +22,12 @@
   ---
   09/10/2009      Michael Kriegel <mk95@hw.ac.uk>
   First version.
+  27/11/2009      Michael Kriegel <mk95@hw.ac.uk>
+  Renamed to CMION
   ---  
 */
 
-package lirec.level2;
+package cmion.level2;
 
 import ion.Meta.IReadOnlyQueueSet;
 import ion.Meta.Request;
@@ -34,11 +36,12 @@ import ion.Meta.TypeSet;
 
 import java.util.HashMap;
 
-import lirec.architecture.IArchitecture;
-import lirec.architecture.LirecComponent;
+import cmion.architecture.IArchitecture;
+import cmion.architecture.CmionComponent;
+
 
 /** competencies are represented by objects of subclasses of this class */
-public abstract class Competency extends LirecComponent implements Runnable
+public abstract class Competency extends CmionComponent implements Runnable
 {
 	
 	/** the name of the competency, what is it called */

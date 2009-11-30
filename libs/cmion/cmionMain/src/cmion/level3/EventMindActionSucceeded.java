@@ -1,5 +1,5 @@
 /*	
-        Lirec Architecture
+    CMION
 	Copyright(C) 2009 Heriot Watt University
 
 	This library is free software; you can redistribute it and/or
@@ -22,16 +22,18 @@
   ---
   09/10/2009      Michael Kriegel <mk95@hw.ac.uk>
   First version.
+  27/11/2009      Michael Kriegel <mk95@hw.ac.uk>
+  Renamed to CMION
   ---  
 */
 
-package lirec.level3;
+package cmion.level3;
 
-import ion.Meta.Event;
+import cmion.architecture.CmionEvent;
 
 	/** this type of event is raised by the competency manager when a mind action has succeeded 
 	 *  the agent mind connector listens for those events and sends them to the agent mind*/
-public class EventMindActionSucceeded extends Event 
+public class EventMindActionSucceeded extends CmionEvent 
 {
 
 	EventMindActionSucceeded(MindAction mindAction)
@@ -47,5 +49,15 @@ public class EventMindActionSucceeded extends Event
 	public MindAction getMindAction()
 	{
 		return mindAction;
+	}
+	
+	/** displays information about this event */
+	@Override
+	public String toString()
+	{
+		String evtString =  "Mind Action succeeded: " + mindAction.getName();
+		for (String parameter : mindAction.getParameters())
+			evtString += " " + parameter;
+		return evtString;		
 	}
 }

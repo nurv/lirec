@@ -1,5 +1,5 @@
 /*	
-        Lirec Architecture
+    CMION
 	Copyright(C) 2009 Heriot Watt University
 
 	This library is free software; you can redistribute it and/or
@@ -22,21 +22,24 @@
   ---
   09/10/2009      Michael Kriegel <mk95@hw.ac.uk>
   First version.
+  27/11/2009      Michael Kriegel <mk95@hw.ac.uk>
+  Renamed to CMION
   ---  
 */
 
-package lirec.level3;
+package cmion.level3;
 
+import cmion.architecture.EventCmionReady;
+import cmion.architecture.IArchitecture;
+import cmion.architecture.CmionComponent;
+import cmion.storage.EventPropertyChanged;
+import cmion.storage.EventPropertyRemoved;
+import cmion.storage.EventSubContainerAdded;
+import cmion.storage.EventSubContainerRemoved;
+import cmion.storage.WorldModel;
 import ion.Meta.EventHandler;
 import ion.Meta.IEvent;
 import ion.Meta.Simulation;
-import lirec.architecture.IArchitecture;
-import lirec.architecture.LirecComponent;
-import lirec.storage.EventPropertyChanged;
-import lirec.storage.EventPropertyRemoved;
-import lirec.storage.EventSubContainerAdded;
-import lirec.storage.EventSubContainerRemoved;
-import lirec.storage.WorldModel;
 
 /** This abstract class describes the functionality an agent mind interface should provide. 
  * A concrete implementation of an AgentMind connector has to implement the abstract methods 
@@ -45,7 +48,7 @@ import lirec.storage.WorldModel;
  * integrated.
  * 
  * */
-public abstract class AgentMindConnector extends LirecComponent 
+public abstract class AgentMindConnector extends CmionComponent 
 {
 	
 /** create a new Agent Mind Connector */	
@@ -86,7 +89,8 @@ protected abstract void processPropertyChanged(String entityName,String property
 /** informs the mind that a property of an agent or object in the world model has been removed*/
 protected abstract void processPropertyRemoved(String entityName,String propertyName);
 
-
+/** informs the mind that the architecture is ready for the mind executing actions */
+protected abstract void architectureReady();
 
 /** in this method the mind connector registers its request and event handlers with ION*/
 @Override
@@ -111,6 +115,9 @@ public final void registerHandlers()
 	// and properties changed and removed from entities in the world model
 	architecture.getWorldModel().registerEventHandlerWithSubContainers(new HandlePropertyChanged());
 	architecture.getWorldModel().registerEventHandlerWithSubContainers(new HandlePropertyRemoved());	
+
+	// register handler for event architecture ready
+	Simulation.instance.getEventHandlers().add(new HandleArchitectureReady());
 }
 
 
@@ -264,5 +271,18 @@ private class HandlePropertyRemoved extends EventHandler {
     }
 }
 
+/** internal event handler class for listening to architecture ready events */
+private class HandleArchitectureReady extends EventHandler {
+
+    public HandleArchitectureReady() {
+        super(EventCmionReady.class);
+    }
+
+    @Override
+    public void invoke(IEvent evt) 
+    {
+    	architectureReady();
+    }
+}
 
 }
