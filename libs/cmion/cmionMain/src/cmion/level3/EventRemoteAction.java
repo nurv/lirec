@@ -37,7 +37,7 @@ import cmion.architecture.CmionEvent;
 public class EventRemoteAction extends CmionEvent 
 {
 	/** create a new event remote action*/
-	EventRemoteAction(MindAction remoteAction)
+	public EventRemoteAction(MindAction remoteAction)
 	{
 		super();
 		this.remoteAction = remoteAction;
