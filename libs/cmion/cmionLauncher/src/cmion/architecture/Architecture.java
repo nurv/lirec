@@ -44,11 +44,10 @@ import org.w3c.dom.NodeList;
 
 import cmion.architecture.EventCmionReady;
 import cmion.architecture.IArchitecture;
-import cmion.architecture.CmionComponent;
 import cmion.level2.CompetencyExecution;
 import cmion.level2.CompetencyLibrary;
 import cmion.level3.CompetencyManager;
-import cmion.storage.CmionStorageContainer;
+import cmion.storage.BlackBoard;
 import cmion.storage.WorldModel;
 
 import ion.Meta.Element;
@@ -64,7 +63,7 @@ public class Architecture extends Element implements IArchitecture {
 
 	/** the black board that stores lower level information for competencies to share
 	 *  between each other */
-	private CmionStorageContainer blackBoard;
+	private BlackBoard blackBoard;
 	
 	/** the competency execution system */
 	private CompetencyExecution competencyExecution;
@@ -105,7 +104,7 @@ public class Architecture extends Element implements IArchitecture {
 		Simulation.instance.getElements().add(worldModel);
 		Simulation.instance.update();
 		
-		blackBoard = new CmionStorageContainer(this,"BlackBoard","BlackBoard");
+		blackBoard = new BlackBoard(this,"BlackBoard");
 		Simulation.instance.getElements().add(blackBoard);
 		Simulation.instance.update();
 		
@@ -278,7 +277,7 @@ public class Architecture extends Element implements IArchitecture {
 	
 	/** returns the black board component */
 	@Override
-	public CmionStorageContainer getBlackBoard()
+	public BlackBoard getBlackBoard()
 	{
 		return blackBoard;
 	}
@@ -326,13 +325,8 @@ public class Architecture extends Element implements IArchitecture {
 		
 			
 	}
-
-	@Override
-	public void onDestroy() {
-		// TODO Auto-generated method stub
-		
-	}
 	
-
+	@Override
+	public void onDestroy() {}
 
 }

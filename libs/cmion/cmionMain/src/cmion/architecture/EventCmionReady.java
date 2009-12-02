@@ -31,7 +31,7 @@ package cmion.architecture;
 /** this event signifies that cmion is ready for executing actions, it is mainly used as a
  *  signal to the mind that it can start executing actions */
 public class EventCmionReady extends CmionEvent {
-
+		
 /** displays information about this event */
 @Override
 public String toString()
@@ -39,5 +39,5 @@ public String toString()
 	String evtString =  "CMION Ready";
 	return evtString;
 }
-	
+
 }

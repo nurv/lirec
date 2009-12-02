@@ -20,33 +20,24 @@
 
 	Revision History:
   ---
-  27/11/2009      Michael Kriegel <mk95@hw.ac.uk>
+  02/12/2009      Michael Kriegel <mk95@hw.ac.uk>
   First version.
   ---  
 */
 
-package cmion.architecture;
+package cmion.storage;
 
-import ion.Meta.Event;
+import cmion.architecture.IArchitecture;
 
-/** A class that all events within cmion should inherit from to distinguish them
- *  easily from other ION events */
-public abstract class CmionEvent extends Event 
+/** The BlackBoard  is a storage container for competencies to share information
+ *  with each other */
+public class BlackBoard extends CmionStorageContainer 
 {
-	/** the cmion component that raised this event*/
-	private CmionComponent originator;
-	
-	/** sets the originator (the cmion component that raised this event)*/
-	public void setOriginator(CmionComponent originator)
-	{
-		this.originator = originator;
-	}
-	
-	/** returns the cmion component that raised this event or null if this event was not raised
-	 *  by a cmion component or not raised at all */
-	public CmionComponent getOriginator()
-	{
-		return originator;
-	}
+
+	/** create a new black board with the specified name */
+	public BlackBoard(IArchitecture architecture, String name) {
+		// this container is of the type "WorldModel"
+		super(architecture,name, "BlackBoard", null);
+	}	
 	
 }

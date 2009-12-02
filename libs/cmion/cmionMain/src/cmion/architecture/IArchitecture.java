@@ -32,7 +32,7 @@ package cmion.architecture;
 import cmion.level2.CompetencyExecution;
 import cmion.level2.CompetencyLibrary;
 import cmion.level3.CompetencyManager;
-import cmion.storage.CmionStorageContainer;
+import cmion.storage.BlackBoard;
 import cmion.storage.WorldModel;
 
 /** specifies an interface for an architecture class that constructs the cmion components and
@@ -43,7 +43,7 @@ public interface IArchitecture {
 	public WorldModel getWorldModel();
 
 	/** in this method the architecture must return a reference to the Black Board component */
-	public CmionStorageContainer getBlackBoard();
+	public BlackBoard getBlackBoard();
 	
 	/** in this method the architecture must return a reference to the competency execution component */	
 	public CompetencyExecution getCompetencyExecution();

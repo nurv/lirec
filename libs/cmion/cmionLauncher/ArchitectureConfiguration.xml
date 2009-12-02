@@ -21,6 +21,6 @@
       library xml file -->
  
  <ArchitectureComponent ClassName="cmion.level3.fatima.FAtiMAConnector" ConstructorParameters="" /><ArchitectureComponent
- 	ClassName="cmion.addOns.monitors.IonEventMonitor" />
+ 	ClassName="cmion.addOns.monitors.CmionEventMonitor" />
 
 </ArchitectureConfiguration>

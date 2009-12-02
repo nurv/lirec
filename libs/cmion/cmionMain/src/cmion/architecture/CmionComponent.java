@@ -30,6 +30,7 @@
 package cmion.architecture;
 
 import ion.Meta.Element;
+import ion.Meta.Event;
 
 /** parent class for all cmion components */
 public abstract class CmionComponent extends Element {
@@ -66,4 +67,14 @@ public void onDestroy() {
 	
 }
 
+@Override
+public void raise(Event evt) 
+{
+	// if the event is a cmion event, register ourselves as originator
+	if (evt instanceof CmionEvent)
+		((CmionEvent) evt).setOriginator(this);
+
+	super.raise(evt);
+}
+	
 }
