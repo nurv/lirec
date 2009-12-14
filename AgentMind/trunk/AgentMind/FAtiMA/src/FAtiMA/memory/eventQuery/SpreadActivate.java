@@ -55,6 +55,7 @@ public class SpreadActivate implements Serializable {
 			// load up the knowledge base
 			_kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
 			_kbuilder.add(ResourceFactory.newClassPathResource("rules/SpreadActivate.drl"), ResourceType.DRL);
+			_kbuilder.add(ResourceFactory.newClassPathResource("rules/CompoundCue.drl"), ResourceType.DRL);
 			KnowledgeBuilderErrors errors = _kbuilder.getErrors();
 			if (errors.size() > 0) {
 				for (KnowledgeBuilderError error: errors) {
@@ -81,7 +82,7 @@ public class SpreadActivate implements Serializable {
 	/**
 	 * Spread activate through the memory
 	 */
-	public void Spread()
+	public void Spread(ArrayList<MemoryEpisode> episodes, STMemoryRecord records)
 	{			
 		try {
 			MemoryEpisode event;
@@ -91,7 +92,6 @@ public class SpreadActivate implements Serializable {
 			
 			System.out.println("Spreading Activation");
 			
-			ArrayList<MemoryEpisode> episodes = AutobiographicalMemory.GetInstance().GetAllEpisodes();
 			for (int i = 0; i < episodes.size(); i++)
 			{
 				event = (MemoryEpisode) episodes.get(i);
@@ -104,7 +104,7 @@ public class SpreadActivate implements Serializable {
 				}
 				
 			}
-			STMemoryRecord records = ShortTermMemory.GetInstance().GetAllRecords();				
+		
 			details = records.getDetails();
 			
 			for (int j = 0; j < details.size(); j++)

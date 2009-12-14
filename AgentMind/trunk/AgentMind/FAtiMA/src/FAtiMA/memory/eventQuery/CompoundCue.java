@@ -82,7 +82,7 @@ public class CompoundCue implements Serializable {
 	/**
 	 * Match current entry with events in memory
 	 */
-	public void Match()
+	public void Match(ArrayList<MemoryEpisode> episodes, STMemoryRecord records)
 	{			
 		try {		
 			MemoryEpisode event;
@@ -92,7 +92,6 @@ public class CompoundCue implements Serializable {
 			
 			System.out.println("Compound Cue");
 			
-			ArrayList<MemoryEpisode> episodes = AutobiographicalMemory.GetInstance().GetAllEpisodes();
 			for (int i = 0; i < episodes.size(); i++)
 			{
 				event = (MemoryEpisode) episodes.get(i);
@@ -105,7 +104,6 @@ public class CompoundCue implements Serializable {
 				}
 				
 			}
-			STMemoryRecord records = ShortTermMemory.GetInstance().GetAllRecords();				
 			details = records.getDetails();
 			
 			for (int j = 0; j < details.size(); j++)

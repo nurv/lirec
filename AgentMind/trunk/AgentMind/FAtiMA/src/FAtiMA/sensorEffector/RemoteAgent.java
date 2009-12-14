@@ -94,8 +94,10 @@ import FAtiMA.emotionalState.EmotionalState;
 import FAtiMA.knowledgeBase.KnowledgeBase;
 import FAtiMA.memory.Memory;
 import FAtiMA.memory.autobiographicalMemory.AutobiographicalMemory;
+import FAtiMA.memory.autobiographicalMemory.MemoryEpisode;
 import FAtiMA.memory.eventQuery.CompoundCue;
 import FAtiMA.memory.eventQuery.SpreadActivate;
+import FAtiMA.memory.shortTermMemory.ShortTermMemory;
 import FAtiMA.memory.shortTermMemory.WorkingMemory;
 import FAtiMA.motivationalSystem.MotivationalState;
 import FAtiMA.socialRelations.LikeRelation;
@@ -344,8 +346,8 @@ public abstract class RemoteAgent extends SocketListener {
 			}
 			else if(msgType.equals(QUERY_MEMORY))
 			{
-				SpreadActivate.GetInstance().Spread();
-				CompoundCue.GetInstance().Match();						
+				SpreadActivate.GetInstance().Spread(AutobiographicalMemory.GetInstance().GetAllEpisodes(), ShortTermMemory.GetInstance().GetAllRecords());
+				//CompoundCue.GetInstance().Match(AutobiographicalMemory.GetInstance().GetAllEpisodes(), ShortTermMemory.GetInstance().GetAllRecords());						
 			}
 			
 			while(_lookAtList.size() > 0)
