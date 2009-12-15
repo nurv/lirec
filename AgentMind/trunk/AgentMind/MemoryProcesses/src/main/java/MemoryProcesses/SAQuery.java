@@ -64,6 +64,7 @@ public class SAQuery {
 		StringTokenizer query;
 		String queryType;
 		
+		this.resetQuery();
 		for (int i = 0; i < info.size(); i++)
 		{
 			known = (String) info.get(i);
@@ -105,7 +106,17 @@ public class SAQuery {
 		System.out.println("subject " + _subject + " target " + _target + " action " + _action + " location " + _location);
 		_question = question;		
 	}
-	 
+	 	
+	private void resetQuery(){
+		this._question = "";
+		this._subject = "";
+		this._target = "";
+		this._action = "";
+		this._location = "";
+		this._numKnownVar = 0;		
+		this._results.clear();
+	}
+	
     public String getSubject(){
     	return this._subject;
     }

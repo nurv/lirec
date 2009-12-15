@@ -67,6 +67,8 @@ public class RuleEngine implements Serializable {
 			ActionDetail actionDetail;
 			CandidateEvent cad; 
 			
+			_ksession = _kbase.newStatefulKnowledgeSession();
+			
 			ArrayList<MemoryEpisode> episodes = episodicMemory.GetAllEpisodes(); 
 			for (int i = 0; i < episodes.size(); i++)
 			{
@@ -91,7 +93,5 @@ public class RuleEngine implements Serializable {
 		} catch (Throwable t) {
 			t.printStackTrace();
 		}		
-	}
-	
-	
+	}	
 }

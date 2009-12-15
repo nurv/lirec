@@ -62,7 +62,7 @@ public class CCQuery {
 	}
     
 	public void setQuery(ActionDetail actionDetail){
-		
+		this._results.clear();
 		this._actionDetail = actionDetail;
 	}
 	
