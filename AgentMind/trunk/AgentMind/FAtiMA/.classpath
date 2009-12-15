@@ -2,15 +2,5 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="C:/Meiyii/LIREC/Ontology/Rule Engine/drools/drools-5.0-bin/drools-compiler-5.0.1.jar"/>
-	<classpathentry kind="lib" path="C:/Meiyii/LIREC/Ontology/Rule Engine/drools/drools-5.0-bin/drools-core-5.0.1.jar"/>
-	<classpathentry kind="lib" path="C:/Meiyii/LIREC/Ontology/Rule Engine/drools/drools-5.0-bin/lib/xstream-1.3.1.jar"/>
-	<classpathentry kind="lib" path="C:/Meiyii/LIREC/Ontology/Rule Engine/drools/drools-5.0-bin/lib/core-3.4.2.v_883_R34x.jar"/>
-	<classpathentry kind="lib" path="C:/Meiyii/LIREC/Ontology/Rule Engine/drools/drools-5.0-bin/drools-api-5.0.1.jar"/>
-	<classpathentry kind="lib" path="C:/Meiyii/LIREC/Ontology/Rule Engine/drools/drools-5.0-bin/drools-jsr94-5.0.1.jar"/>
-	<classpathentry kind="lib" path="C:/Meiyii/LIREC/Ontology/Rule Engine/drools/drools-5.0-bin/lib/jsr94-1.1.jar"/>
-	<classpathentry kind="lib" path="C:/Meiyii/LIREC/Ontology/Rule Engine/drools/drools-5.0-bin/lib/mvel2-2.0.10.jar"/>
-	<classpathentry kind="lib" path="C:/Meiyii/LIREC/Ontology/Rule Engine/drools/drools-5.0-bin/lib/antlr-runtime-3.1.1.jar"/>
-	<classpathentry kind="lib" path="C:/Meiyii/LIREC/Ontology/Rule Engine/drools/drools-5.0-bin/lib/joda-time-1.6.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

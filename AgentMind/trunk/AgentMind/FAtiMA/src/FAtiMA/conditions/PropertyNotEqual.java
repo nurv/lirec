@@ -74,8 +74,7 @@ package FAtiMA.conditions;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
-import FAtiMA.knowledgeBase.KnowledgeBase;
-import FAtiMA.memory.Memory;
+import FAtiMA.AgentModel;
 import FAtiMA.util.AgentLogger;
 import FAtiMA.wellFormedNames.Inequality;
 import FAtiMA.wellFormedNames.Name;
@@ -111,16 +110,15 @@ public class PropertyNotEqual extends PropertyCondition {
      * Checks if the Property Condition is verified in the agent's Memory (KB + AM)
      * @return true if the condition is verified, false otherwise
      */
-	public boolean CheckCondition() {
+	public boolean CheckCondition(AgentModel am) {
 		Object propertyValue;
 		Object value;
 
-		if (!super.CheckCondition())
+		if (!super.CheckCondition(am))
 			return false;
-		//KnowledgeBase kb = KnowledgeBase.GetInstance();
-		Memory memory = Memory.GetInstance();
-		propertyValue = this._name.evaluate(memory);
-		value = this._value.evaluate(memory);
+		
+		propertyValue = this._name.evaluate(am.getMemory());
+		value = this._value.evaluate(am.getMemory());
 
 		if (propertyValue == null || value == null) 
 		{
@@ -138,10 +136,9 @@ public class PropertyNotEqual extends PropertyCondition {
      * will make it valid (true) according to the current Memory
      * @return A list with all SubstitutionsSets that make the condition valid
 	 */
-	public ArrayList GetValidBindings() {
-		ArrayList validSubstitutionSets = new ArrayList();
-		ArrayList bindingSets;
-		SubstitutionSet subSet;
+	public ArrayList<SubstitutionSet> GetValidBindings(AgentModel am) {
+		ArrayList<SubstitutionSet> validSubstitutionSets = new ArrayList<SubstitutionSet>();
+		ArrayList<SubstitutionSet> bindingSets;
 		Condition cond;
 		
 		//if the value part of a PropertyNotEqual is not grounded, we cannot
@@ -154,7 +151,7 @@ public class PropertyNotEqual extends PropertyCondition {
 		if (_name.isGrounded()) {
 			//if the name is ground, both name and value are grounded and we
 			//just need to call the checkcondition function
-			if(CheckCondition())
+			if(CheckCondition(am))
 			{
 				validSubstitutionSets.add(new SubstitutionSet());
 				return validSubstitutionSets;
@@ -163,16 +160,15 @@ public class PropertyNotEqual extends PropertyCondition {
 		}
 		
 		//if the name is not grounded we try to get all possible bindings for it
-		bindingSets = Memory.GetInstance().GetPossibleBindings(_name);
+		bindingSets = am.getMemory().getSemanticMemory().GetPossibleBindings(_name);
 		if (bindingSets == null)
 			return null;
 
-		for(ListIterator li = bindingSets.listIterator(); li.hasNext();)
+		for(SubstitutionSet subSet : bindingSets)
 		{
-			subSet = (SubstitutionSet) li.next();
 			cond = (Condition) this.clone();
 			cond.MakeGround(subSet.GetSubstitutions());
-			if(cond.CheckCondition())
+			if(cond.CheckCondition(am))
 			{
 				validSubstitutionSets.add(subSet);
 			}
@@ -194,10 +190,10 @@ public class PropertyNotEqual extends PropertyCondition {
      * @return A list with all SubstitutionSets (with inequalities inside)
      * that if they are verified, the NotEqualCondition is also verified
 	 */
-	public ArrayList GetValidInequalities() {
-		ArrayList validSubstitutionSets = new ArrayList();
-		ListIterator li;
-		ArrayList bindings;
+	public ArrayList<SubstitutionSet> GetValidInequalities(AgentModel am) {
+		ArrayList<SubstitutionSet> validSubstitutionSets = new ArrayList<SubstitutionSet>();
+		ListIterator<Substitution> li;
+		ArrayList<Substitution> bindings;
 		SubstitutionSet subSet;
 
 		
@@ -205,12 +201,12 @@ public class PropertyNotEqual extends PropertyCondition {
 		//must be grounded. i.e, we cannot determine inequalities between
 		// [X] != [Y]
 		if (_name.isGrounded()) {
-			bindings = this.GetBindings(_name,_value);
+			bindings = this.GetBindings(am,_name,_value);
 			if (bindings == null)
 				return null;
 		}
 		else if(_value.isGrounded()) {
-			bindings = this.GetBindings(_value,_name);
+			bindings = this.GetBindings(am,_value,_name);
 			if (bindings == null)
 				return null;
 		}
@@ -220,14 +216,14 @@ public class PropertyNotEqual extends PropertyCondition {
 		
 		li = bindings.listIterator();
 		while (li.hasNext()) {
-			subSet.AddSubstitution(new Inequality((Substitution)li.next()));
+			subSet.AddSubstitution(new Inequality(li.next()));
 		}
 		validSubstitutionSets.add(subSet);
 		return validSubstitutionSets;
 	}
 	
 	
-	protected ArrayList GetValueBindings()
+	protected ArrayList<Substitution> GetValueBindings()
 	{
 		//this method should never be called
 		return null;

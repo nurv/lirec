@@ -62,7 +62,7 @@ public class InterestGoal extends Goal {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private ArrayList _protectionConstraints;
+	private ArrayList<Condition> _protectionConstraints;
 	
 	/**
 	 * Creates a new InterestGoal
@@ -70,11 +70,11 @@ public class InterestGoal extends Goal {
 	 */
 	public InterestGoal(Name description) {
 		super(description);
-		_protectionConstraints = new ArrayList(1);
+		_protectionConstraints = new ArrayList<Condition>(1);
 	}
 
 	private InterestGoal() {
-		_protectionConstraints = new ArrayList(1);
+		_protectionConstraints = new ArrayList<Condition>(1);
 	}
 
 	/**
@@ -108,7 +108,7 @@ public class InterestGoal extends Goal {
 	 * Gets the InterestGoal's protected conditions
 	 * @return an ArrayList with the conditions that the goal wants to protect
 	 */
-	public ArrayList getProtectionConstraints() {
+	public ArrayList<Condition> getProtectionConstraints() {
 		return _protectionConstraints;
 	}
 	
@@ -137,7 +137,7 @@ public class InterestGoal extends Goal {
 	 */
     public void ReplaceUnboundVariables(int variableID)
     {
-    	ListIterator li;
+    	ListIterator<Condition> li;
     	
     	this._name.ReplaceUnboundVariables(variableID);
     	
@@ -157,7 +157,7 @@ public class InterestGoal extends Goal {
 	 * @return a new Goal with the substitutions applied
 	 * @see Substitution
 	 */
-	public Object Ground(ArrayList bindingConstraints) 
+	public Object Ground(ArrayList<Substitution> bindingConstraints) 
 	{
 		InterestGoal aux = (InterestGoal) this.clone();
 		aux.MakeGround(bindingConstraints);
@@ -172,9 +172,9 @@ public class InterestGoal extends Goal {
 	 * @param bindings - A list of substitutions of the type "[Variable]/value"
 	 * @see Substitution
 	 */
-    public void MakeGround(ArrayList bindings)
+    public void MakeGround(ArrayList<Substitution> bindings)
     {
-    	ListIterator li;
+    	ListIterator<Condition> li;
     	
     	this._name.MakeGround(bindings);
     	
@@ -212,7 +212,7 @@ public class InterestGoal extends Goal {
 	 */
     public void MakeGround(Substitution subst)
     {
-    	ListIterator li;
+    	ListIterator<Condition> li;
     	
     	this._name.MakeGround(subst);
     	
@@ -230,7 +230,7 @@ public class InterestGoal extends Goal {
 	 */
 	public Object clone()
 	{
-		ListIterator li;
+		ListIterator<Condition> li;
 		InterestGoal g = new InterestGoal();
 		
 		g._goalID = this._goalID;
@@ -242,11 +242,11 @@ public class InterestGoal extends Goal {
 		
 		if(this._protectionConstraints != null)
 		{
-			g._protectionConstraints = new ArrayList(this._protectionConstraints.size());
+			g._protectionConstraints = new ArrayList<Condition>(this._protectionConstraints.size());
 			li = this._protectionConstraints.listIterator();
 			while(li.hasNext())
 			{
-				g._protectionConstraints.add(((Condition) li.next()).clone());
+				g._protectionConstraints.add((Condition) li.next().clone());
 			}
 		}
 		

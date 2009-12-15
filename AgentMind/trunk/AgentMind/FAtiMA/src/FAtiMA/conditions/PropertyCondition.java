@@ -57,8 +57,7 @@ import java.util.ArrayList;
 
 import org.xml.sax.Attributes;
 
-import FAtiMA.knowledgeBase.KnowledgeBase;
-import FAtiMA.memory.Memory;
+import FAtiMA.AgentModel;
 import FAtiMA.util.AgentLogger;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
@@ -77,6 +76,11 @@ import FAtiMA.wellFormedNames.Unifier;
 public abstract class PropertyCondition extends Condition {
 
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * Parses a PropertyTest given a XML attribute list
 	 * @param attributes - A list of XMl attributes
 	 * @return - the PropertyTest Parsed
@@ -158,7 +162,7 @@ public abstract class PropertyCondition extends Condition {
 	 * Checks if the Property Condition is verified in the agent's memory (KB + AM)
 	 * @return true if the condition is verified, false otherwise
 	 */
-	public boolean CheckCondition() {
+	public boolean CheckCondition(AgentModel am) {
 		if (!_name.isGrounded() && !_value.isGrounded())
 			return false;
 		return true;
@@ -210,7 +214,7 @@ public abstract class PropertyCondition extends Condition {
 	 * @return a new Property with the substitutions applied
 	 * @see Substitution
 	 */
-	public Object Ground(ArrayList bindingConstraints)
+	public Object Ground(ArrayList<Substitution> bindingConstraints)
 	{
 		PropertyCondition aux = (PropertyCondition) this.clone();
 		aux.MakeGround(bindingConstraints);
@@ -225,7 +229,7 @@ public abstract class PropertyCondition extends Condition {
 	 * @param bindings - A list of substitutions of the type "[Variable]/value"
 	 * @see Substitution
 	 */
-    public void MakeGround(ArrayList bindings)
+    public void MakeGround(ArrayList<Substitution> bindings)
     {
     	this._name.MakeGround(bindings);
     	this._value.MakeGround(bindings);
@@ -278,23 +282,23 @@ public abstract class PropertyCondition extends Condition {
 		AgentLogger.GetInstance().logAndPrint("    Property= " + _name + " value= " + _value);
 	}
 	
-	protected ArrayList GetBindings(Name groundValue, Name value) {
+	protected ArrayList<Substitution> GetBindings(AgentModel am, Name groundValue, Name value) {
 		Object val;
-		ArrayList bindings;
+		ArrayList<Substitution> bindings;
 		if (!groundValue.isGrounded())
 			return null;
 		if (!value.isGrounded()) {
-			val = groundValue.evaluate(Memory.GetInstance());
+			val = groundValue.evaluate(am.getMemory());
 			if (val != null) {
-				bindings = new ArrayList();
+				bindings = new ArrayList<Substitution>();
 				if(Unifier.Unify(value, Name.ParseName((String) val), bindings))
 					return bindings;
 				else return null;
 			}
 			else return null;
 		}
-		else if (this.CheckCondition()) {
-			return new ArrayList();
+		else if (this.CheckCondition(am)) {
+			return new ArrayList<Substitution>();
 		}
 		else return null;
 	}
@@ -308,7 +312,7 @@ public abstract class PropertyCondition extends Condition {
      * If John owns the ball, the method returns [x]/John
      * @return returns all set of Substitutions that make the condition valid.
      */
-	protected ArrayList GetValueBindings() {
-		return GetBindings(_name, _value);
+	protected ArrayList<Substitution> GetValueBindings(AgentModel am) {
+		return GetBindings(am, _name, _value);
 	}
 }

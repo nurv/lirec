@@ -47,6 +47,7 @@ package FAtiMA;
 import java.util.ArrayList;
 
 
+import FAtiMA.conditions.Condition;
 import FAtiMA.exceptions.UnknownSpeechActException;
 import FAtiMA.sensorEffector.SpeechAct;
 import FAtiMA.wellFormedNames.Name;
@@ -61,7 +62,7 @@ import FAtiMA.wellFormedNames.Name;
  */
 public class IntegrityValidator {
     
-    ArrayList _operators;
+   // ArrayList _operators;
     /*LanguageEngine _language;
     LanguageEngine _user;*/
     
@@ -93,7 +94,7 @@ public class IntegrityValidator {
      * @param conditions - the list of conditions to test if they are unreacheable
      * @return true if any of the conditions received is unreacheable, false otherwise
      */
-    public boolean FindUnreachableConditions(String objectName, ArrayList conditions)
+    public boolean FindUnreachableConditions(String objectName, ArrayList<Condition> conditions)
 	{
 	   /* boolean foundUnreachable = false;
 	    boolean ok;

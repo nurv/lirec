@@ -38,10 +38,9 @@ import java.util.StringTokenizer;
 
 import org.xml.sax.Attributes;
 
-import FAtiMA.memory.ActionDetail;
-import FAtiMA.memory.SearchKey;
-import FAtiMA.memory.autobiographicalMemory.AutobiographicalMemory;
-import FAtiMA.memory.shortTermMemory.ShortTermMemory;
+import FAtiMA.AgentModel;
+import FAtiMA.memory.episodicMemory.ActionDetail;
+import FAtiMA.memory.episodicMemory.SearchKey;
 import FAtiMA.sensorEffector.Event;
 import FAtiMA.sensorEffector.Parameter;
 import FAtiMA.wellFormedNames.Name;
@@ -66,7 +65,7 @@ public class PastEventCondition extends PredicateCondition {
 		Symbol subject;
 		Symbol action;
 		Symbol target = null;
-		ArrayList parameters = new ArrayList();
+		ArrayList<Symbol> parameters = new ArrayList<Symbol>();
 		
 		String aux;
 		aux = attributes.getValue("occurred");
@@ -105,7 +104,7 @@ public class PastEventCondition extends PredicateCondition {
 	protected Symbol _subject;
 	protected Symbol _action;
 	protected Symbol _target;
-	protected ArrayList _parameters;
+	protected ArrayList<Symbol> _parameters;
 	
 	
 	
@@ -113,7 +112,7 @@ public class PastEventCondition extends PredicateCondition {
 	{
 	}
 	
-	public PastEventCondition(boolean occurred, Symbol subject, Symbol action, Symbol target, ArrayList parameters)
+	public PastEventCondition(boolean occurred, Symbol subject, Symbol action, Symbol target, ArrayList<Symbol> parameters)
 	{
 		this._positive = occurred;
 		this._subject = subject;
@@ -128,7 +127,7 @@ public class PastEventCondition extends PredicateCondition {
 			aux = aux + "," + this._target;
 		}
 		
-		ListIterator li = this._parameters.listIterator();
+		ListIterator<Symbol> li = this._parameters.listIterator();
 		while(li.hasNext())
 		{
 			aux = aux + "," + li.next();
@@ -143,7 +142,7 @@ public class PastEventCondition extends PredicateCondition {
 		this._subject = new Symbol(e.GetSubject());
 		this._action = new Symbol(e.GetAction());
 		this._target = new Symbol(e.GetTarget());
-		this._parameters = new ArrayList(e.GetParameters().size());
+		this._parameters = new ArrayList<Symbol>(e.GetParameters().size());
 		
 		String aux = this._subject + "," + this._action;
 		if(this._target != null)
@@ -152,10 +151,10 @@ public class PastEventCondition extends PredicateCondition {
 		}
 		
 		Parameter p;
-		ListIterator li = e.GetParameters().listIterator();
+		ListIterator<Parameter> li = e.GetParameters().listIterator();
 		while(li.hasNext())
 		{
-			p = (Parameter) li.next();
+			p = li.next();
 			_parameters.add(new Symbol(p.GetValue().toString()));
 			aux = aux + "," + p.GetValue();
 		}
@@ -167,7 +166,7 @@ public class PastEventCondition extends PredicateCondition {
 	{
 		super(occurred, event);
 		
-		ListIterator li = event.GetLiteralList().listIterator();
+		ListIterator<Symbol> li = event.GetLiteralList().listIterator();
 		li.next();
 		this._subject = (Symbol) li.next();
 		this._action = (Symbol) li.next();
@@ -175,7 +174,7 @@ public class PastEventCondition extends PredicateCondition {
 		{
 			this._target = (Symbol) li.next();
 		}
-		this._parameters = new ArrayList();
+		this._parameters = new ArrayList<Symbol>();
 		while(li.hasNext())
 		{
 			this._parameters.add(li.next());
@@ -195,13 +194,13 @@ public class PastEventCondition extends PredicateCondition {
 			newEvent._target = (Symbol) this._target.clone();
 		}
 		
-		newEvent._parameters = new ArrayList(this._parameters.size());
+		newEvent._parameters = new ArrayList<Symbol>(this._parameters.size());
 		
-		ListIterator li = this._parameters.listIterator();
+		ListIterator<Symbol> li = this._parameters.listIterator();
 		
 		while(li.hasNext())
 		{
-			newEvent._parameters.add(((Symbol)li.next()).clone());
+			newEvent._parameters.add((Symbol)li.next().clone());
 		}
 		
 		return newEvent;
@@ -213,7 +212,7 @@ public class PastEventCondition extends PredicateCondition {
 		return event;
 	}
 
-	public Object Ground(ArrayList bindingConstraints) {
+	public Object Ground(ArrayList<Substitution> bindingConstraints) {
 		
 		PastEventCondition event = (PastEventCondition) this.clone();
 		event.MakeGround(bindingConstraints);
@@ -226,9 +225,9 @@ public class PastEventCondition extends PredicateCondition {
 		return event;
 	}
 	
-	protected ArrayList GetPossibleBindings()
+	protected ArrayList<ActionDetail> GetPossibleBindings(AgentModel am)
 	{
-		return AutobiographicalMemory.GetInstance().SearchForPastEvents(GetSearchKeys());		
+		return am.getMemory().getEpisodicMemory().SearchForPastEvents(GetSearchKeys());
 	}
 	
 	/**
@@ -236,16 +235,17 @@ public class PastEventCondition extends PredicateCondition {
      * will make it valid (true) according to the agent's AutobiographicalMemory 
      * @return A list with all SubstitutionsSets that make the condition valid
 	 * @see AutobiographicalMemory
-	 */public ArrayList GetValidBindings() {
+	 */
+	public ArrayList<SubstitutionSet> GetValidBindings(AgentModel am) {
 		ActionDetail detail;
 		Substitution sub;
 		SubstitutionSet subSet;
 		Symbol param;
-		ArrayList bindingSets = new ArrayList();
-		ArrayList details;
+		ArrayList<SubstitutionSet> bindingSets = new ArrayList<SubstitutionSet>();
+		ArrayList<ActionDetail> details;
 		
 		if (_name.isGrounded()) {
-			if(CheckCondition())
+			if(CheckCondition(am))
 			{
 				bindingSets.add(new SubstitutionSet());
 				return bindingSets;
@@ -253,7 +253,7 @@ public class PastEventCondition extends PredicateCondition {
 			else return null;
 		}
 		
-		details = GetPossibleBindings();
+		details = GetPossibleBindings(am);
 		
 		//we cannot determine bindings for negative event conditions,
 		//assume false
@@ -269,7 +269,7 @@ public class PastEventCondition extends PredicateCondition {
 		
 		if(details.size() == 0) return null;
 		
-		Iterator it = details.iterator();
+		Iterator<ActionDetail> it = details.iterator();
 		while(it.hasNext())
 		{
 			detail = (ActionDetail) it.next();
@@ -310,18 +310,18 @@ public class PastEventCondition extends PredicateCondition {
 	 * @return true if the PastPredicate is verified, false otherwise
 	 * @see AutobiographicalMemory
 	 */
-	public boolean CheckCondition() {
+	public boolean CheckCondition(AgentModel am) {
 		
 		if(!_name.isGrounded()) return false;
 		
-		return _positive == AutobiographicalMemory.GetInstance().ContainsPastEvent(GetSearchKeys()); 
+		return _positive == am.getMemory().getEpisodicMemory().ContainsPastEvent(GetSearchKeys()); 
 	}
 	
-	protected ArrayList GetSearchKeys()
+	protected ArrayList<SearchKey> GetSearchKeys()
 	{
 		Symbol param;
 		
-		ArrayList keys = new ArrayList();
+		ArrayList<SearchKey> keys = new ArrayList<SearchKey>();
 		if(this._subject.isGrounded())
 		{
 			keys.add(new SearchKey(SearchKey.SUBJECT,this._subject.toString()));
@@ -336,8 +336,8 @@ public class PastEventCondition extends PredicateCondition {
 		}
 		if(this._parameters.size() > 0)
 		{
-			ArrayList params = new ArrayList();
-			for(ListIterator li = this._parameters.listIterator();li.hasNext();)
+			ArrayList<String> params = new ArrayList<String>();
+			for(ListIterator<Symbol> li = this._parameters.listIterator();li.hasNext();)
 			{
 				param = (Symbol) li.next();
 				if(param.isGrounded())

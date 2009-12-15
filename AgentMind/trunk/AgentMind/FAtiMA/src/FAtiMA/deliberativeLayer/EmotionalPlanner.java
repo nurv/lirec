@@ -110,16 +110,13 @@ package FAtiMA.deliberativeLayer;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.ListIterator;
-import java.util.Set;
 
+import FAtiMA.AgentModel;
 import FAtiMA.IntegrityValidator;
 import FAtiMA.conditions.Condition;
 import FAtiMA.conditions.PropertyNotEqual;
 import FAtiMA.deliberativeLayer.goals.ActivePursuitGoal;
-import FAtiMA.deliberativeLayer.goals.Goal;
 import FAtiMA.deliberativeLayer.plan.CausalConflictFlaw;
 import FAtiMA.deliberativeLayer.plan.CausalLink;
 import FAtiMA.deliberativeLayer.plan.Effect;
@@ -130,14 +127,13 @@ import FAtiMA.deliberativeLayer.plan.Plan;
 import FAtiMA.deliberativeLayer.plan.ProtectedCondition;
 import FAtiMA.deliberativeLayer.plan.Step;
 import FAtiMA.emotionalState.ActiveEmotion;
-import FAtiMA.emotionalState.EmotionalState;
+import FAtiMA.emotionalState.Appraisal;
+import FAtiMA.emotionalState.BaseEmotion;
 import FAtiMA.exceptions.UnknownSpeechActException;
 import FAtiMA.exceptions.UnspecifiedVariableException;
-import FAtiMA.memory.autobiographicalMemory.AutobiographicalMemory;
-import FAtiMA.motivationalSystem.MotivationalState;
-import FAtiMA.sensorEffector.Event;
 import FAtiMA.util.AgentLogger;
 import FAtiMA.wellFormedNames.Name;
+import FAtiMA.wellFormedNames.Substitution;
 import FAtiMA.wellFormedNames.SubstitutionSet;
 import FAtiMA.wellFormedNames.Unifier;
 
@@ -149,7 +145,7 @@ public class EmotionalPlanner implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private ArrayList _actions;
+	private ArrayList<Step> _actions;
 	private int _variableIdentifier;
 	//private int _numberOfGoalsTried = 0;
 	//private int _numberOfGoalsAchieved = 0;
@@ -159,7 +155,7 @@ public class EmotionalPlanner implements Serializable {
 	 * @param operators - a list with the actions to be used in the planner
 	 * @param es - the character's emotional state
 	 */
-	public EmotionalPlanner(ArrayList operators)
+	public EmotionalPlanner(ArrayList<Step> operators)
 	{
 	    this._variableIdentifier = 1;
 	    //this._closedGoals = new HashMap();
@@ -223,10 +219,10 @@ public class EmotionalPlanner implements Serializable {
 	 * 									   SpeechAct not defined
 	 */
 	public void CheckIntegrity(IntegrityValidator val) throws UnspecifiedVariableException, UnknownSpeechActException {
-	    ListIterator li = _actions.listIterator();
+	    ListIterator<Step> li = _actions.listIterator();
 	    
 	    while(li.hasNext()) {
-	        ((Step) li.next()).CheckIntegrity(val);
+	         li.next().CheckIntegrity(val);
 	    }
 	}
 
@@ -244,11 +240,11 @@ public class EmotionalPlanner implements Serializable {
 	 * 					Step, false - uses the steps that the received plan contains
 	 */
 	public void FindStepFor(Intention intention, Plan p, OpenPrecondition openPrecond, boolean newStep) {
-		ListIterator li;
+		ListIterator<? extends IPlanningOperator> li;
 		Condition cond;
 		Effect effect;
 		Condition effectCond;
-		ArrayList substs;
+		ArrayList<Substitution> substs;
 		Name condValue;
 		Name effectValue;
 		IPlanningOperator op;
@@ -266,7 +262,7 @@ public class EmotionalPlanner implements Serializable {
 			li = p.getSteps().listIterator();
 
 		while (li.hasNext()) {
-			op = (IPlanningOperator) li.next();
+			op = li.next();
 			if(!op.getName().equals(oldOp.getName())) {
 				if (newStep)
 				{
@@ -279,7 +275,7 @@ public class EmotionalPlanner implements Serializable {
 				{
 					effect = (Effect) op.getEffects().get(i);
 					effectCond = effect.GetEffect();
-					substs = new ArrayList();
+					substs = new ArrayList<Substitution>();
 					if (Unifier.Unify(cond.getName(), effectCond.getName(), substs)) {
 						condValue = cond.GetValue();
 						effectValue = effectCond.GetValue();
@@ -342,11 +338,11 @@ public class EmotionalPlanner implements Serializable {
 	 * Gets the planner's operators/sets/actions
 	 * @return a list with Steps
 	 */
-	public ArrayList GetOperators() {
+	public ArrayList<Step> GetOperators() {
 	    return _actions;
 	}
 	
-	public void AddOperator(IPlanningOperator op)
+	public void AddOperator(Step op)
 	{
 		_actions.add(op);
 	}
@@ -357,16 +353,16 @@ public class EmotionalPlanner implements Serializable {
 	 * @return the searched step if it is found, null otherwise
 	 */
 	public Step GetStep(Name name) {
-		ListIterator li;
+		ListIterator<Step> li;
 		Step s;
-		ArrayList substs;
-		ArrayList bestSubsts=null;
+		ArrayList<Substitution> substs;
+		ArrayList<Substitution> bestSubsts=null;
 		Step bestStep=null;
 		
 		li = _actions.listIterator();
 		while(li.hasNext()) {
 			s = (Step) li.next();
-			substs = new ArrayList();
+			substs = new ArrayList<Substitution>();
 			if(Unifier.Unify(s.getName(),name, substs)) {
 			    if(bestSubsts != null) {
 			        if(substs.size() < bestSubsts.size()) {
@@ -398,17 +394,16 @@ public class EmotionalPlanner implements Serializable {
 	 * 			 were detected, this best plan is returned. If not, the method
 	 * 			 returns null
 	 */
-	public Plan ThinkAbout(Intention intention) {
+	public Plan ThinkAbout(AgentModel am, Intention intention) {
 		Plan p;
 		Plan newPlan;
 		boolean newPlans = false;
 		CausalConflictFlaw flaw;
-		SubstitutionSet subSet;
 		OpenPrecondition openPrecond;
 		Condition cond;
-		ArrayList substitutionSets;
-		ArrayList openConditions;
-		ListIterator li;
+		ArrayList<SubstitutionSet> substitutionSets;
+		ArrayList<OpenPrecondition> openConditions;
+		ListIterator<GoalThreat> li;
 		GoalThreat goalThreat;
 		
 		ActiveEmotion fearEmotion;
@@ -421,8 +416,7 @@ public class EmotionalPlanner implements Serializable {
 		float prob;
 		
 		
-		
-		p = intention.GetBestPlan(); //gets the best plan so far to achieve the intention
+		p = intention.GetBestPlan(am); //gets the best plan so far to achieve the intention
 		//System.out.println("BEST PLAN: " + p);
 
 		if (p == null) {
@@ -433,14 +427,17 @@ public class EmotionalPlanner implements Serializable {
 		else if (p.getOpenPreconditions().size() == 0 && p.getSteps().size() == 0) {
 		    //There aren't open conditions left and no steps in the plan, it means that the goal has been achieved
 			
-			
 			return null;
 		}
 		
 		//APPRAISAL/REAPPRAISAL - the plan brought into the agent's mind will generate/update
 		//hope and fear emotions according to the plan probability
-		hopeEmotion = EmotionalState.GetInstance().AppraiseGoalSucessProbability(intention.getGoal(),p.getProbability());
-		fearEmotion = EmotionalState.GetInstance().AppraiseGoalFailureProbability(intention.getGoal(),1-p.getProbability());
+		BaseEmotion auxEmotion = Appraisal.AppraiseGoalSuccessProbability(am, intention.getGoal(),p.getProbability(am));
+		hopeEmotion = am.getEmotionalState().UpdateProspectEmotion(auxEmotion, am);
+		
+		auxEmotion = Appraisal.AppraiseGoalFailureProbability(am, intention.getGoal(),1-p.getProbability(am));
+		fearEmotion = am.getEmotionalState().UpdateProspectEmotion(auxEmotion, am);
+		
 		intention.SetHope(hopeEmotion);
 		intention.SetFear(fearEmotion);
 		if(hopeEmotion != null) hopeIntensity = hopeEmotion.GetIntensity();
@@ -450,11 +447,11 @@ public class EmotionalPlanner implements Serializable {
 		//this plan, but the mood also influences this threshold, characters on positive moods will give up
 		//goals more easily and thus the threshold is higher, character on negative moods will have a lower
 		//threshold. This threshold is ranged between 5% and 15%, it is 10% for characters in a neutral mood
-		float threshold = 0.1f + EmotionalState.GetInstance().GetMood()*0.0167f;
-		if(p.getProbability() < threshold) {
+		float threshold = 0.1f + am.getEmotionalState().GetMood()*0.0167f;
+		if(p.getProbability(am) < threshold) {
 			//this coping strategy is used in tandem with mental disengagement...
 		    //that consists in lowering the goal importance
-			intention.getGoal().DecreaseImportanceOfFailure(0.5f);
+			intention.getGoal().DecreaseImportanceOfFailure(am, 0.5f);
 			intention.RemovePlan(p);
 			AgentLogger.GetInstance().log("ACCEPTANCE - Plan prob to low - " + intention.getGoal().getName().toString());
 			return null;
@@ -462,17 +459,18 @@ public class EmotionalPlanner implements Serializable {
 		
 		li = p.getThreatenedInterestConstraints().listIterator();
 		while(li.hasNext()) {
-			float threatImportance;
+			//float threatImportance;
 			float failureImportance;
-			float aux;
+			//float aux;
 			
 			goalThreat = (GoalThreat) li.next();
-			prob = goalThreat.getEffect().GetProbability();
-			threatImportance = goalThreat.getCond().getGoal().GetImportanceOfFailure();
-			aux = prob * threatImportance;
-			failureImportance = intention.getGoal().GetImportanceOfFailure();
+			prob = goalThreat.getEffect().GetProbability(am);
+			//threatImportance = goalThreat.getCond().getGoal().GetImportanceOfFailure(am);
+			//aux = prob * threatImportance;
+			failureImportance = intention.getGoal().GetImportanceOfFailure(am);
 			
-			threatEmotion = EmotionalState.GetInstance().AppraiseGoalFailureProbability(goalThreat.getCond().getGoal(),prob);
+			auxEmotion = Appraisal.AppraiseGoalFailureProbability(am, goalThreat.getCond().getGoal(),prob); 
+			threatEmotion = am.getEmotionalState().UpdateProspectEmotion(auxEmotion, am);
 			if(threatEmotion != null) { //if does not exist a fear caused by the threat, emotion coping is not necessary
 				threatIntensity = threatEmotion.GetIntensity();
 			}
@@ -510,13 +508,13 @@ public class EmotionalPlanner implements Serializable {
 			 *  
 			 */
 			
-			if(failureImportance*p.getProbability() <= threatIntensity - hopeIntensity) {
+			if(failureImportance*p.getProbability(am) <= threatIntensity - hopeIntensity) {
 			//if(threatIntensity >= hopeIntensity && aux >= failureImportance) {
 				
 				
 				//this coping strategy is used in tandem with mental disengagement...
 			    //that consists in lowering the goal importance
-				intention.getGoal().DecreaseImportanceOfFailure(0.5f);
+				intention.getGoal().DecreaseImportanceOfFailure(am, 0.5f);
 				//coping strategy: Acceptance. This plan is rejected by the agent
 				intention.RemovePlan(p);
 				AgentLogger.GetInstance().log("ACCEPTANCE - GoalThreat - " + intention.getGoal().getName().toString());
@@ -528,7 +526,7 @@ public class EmotionalPlanner implements Serializable {
 					//coping strategy: Acceptance. The agent accepts that the interest goal
 					//will fail
 					li.remove();
-					goalThreat.getCond().getGoal().DecreaseImportanceOfFailure(0.5f);
+					goalThreat.getCond().getGoal().DecreaseImportanceOfFailure(am, 0.5f);
 					AgentLogger.GetInstance().log("ACCEPTANCE - Interest goal droped - " + goalThreat.getCond().getGoal().getName());
 				}
 				/*else if(prob >= 0.2) {
@@ -540,16 +538,15 @@ public class EmotionalPlanner implements Serializable {
 		}
 		
 		//emotion-focused coping: Denial/Positive Thinking
-		ArrayList ignoredConflicts = p.getIgnoredConflicts();
+		ArrayList<CausalConflictFlaw> ignoredConflicts = p.getIgnoredConflicts();
 		if(ignoredConflicts.size() > 0) 
 		{
 			float deltaPot = fearIntensity - hopeIntensity;
 			if(deltaPot >= 0 && deltaPot <= 2) 
 			{
-				li = ignoredConflicts.listIterator();
-				while(li.hasNext()) {
-					flaw = (CausalConflictFlaw) li.next();
-					flaw.GetEffect().DecreaseProbability();
+				for(CausalConflictFlaw f : ignoredConflicts)
+				{
+					f.GetEffect().DecreaseProbability(am);
 					AgentLogger.GetInstance().log("DENIAL - Effect probability lowered - " + intention.getGoal().getName().toString());
 				}
 			}
@@ -597,7 +594,7 @@ public class EmotionalPlanner implements Serializable {
 			//first we must determine if the condition is verified in the start step
 			//TODO I've just realized a PROBLEM, even if the condition is grounded and verified 
 			// in the start step, we must check whether adding a new operator is a better move!
-			if (cond.isGrounded() && cond.CheckCondition()) {
+			if (cond.isGrounded() && cond.CheckCondition(am)) {
 				//in this case, we don't have to do much, just add a causal link from start
 				newPlan = (Plan) p.clone();
 				newPlan.AddLink(new CausalLink(p.getStart().getID(),
@@ -622,17 +619,16 @@ public class EmotionalPlanner implements Serializable {
 				if(cond instanceof PropertyNotEqual)
 				{
 					//System.out.println("Testing != operator: " + cond);
-					substitutionSets = ((PropertyNotEqual) cond).GetValidInequalities();
+					substitutionSets = ((PropertyNotEqual) cond).GetValidInequalities(am);
 				}
 				else
 				{
-					substitutionSets = cond.GetValidBindings();
+					substitutionSets = cond.GetValidBindings(am);
 				}
 				
 				if (substitutionSets != null) {
-					li = substitutionSets.listIterator();
-					while (li.hasNext()) {
-						subSet = (SubstitutionSet) li.next();
+					for(SubstitutionSet subSet : substitutionSets)
+					{
 						newPlan = (Plan) p.clone();
 						newPlan.AddBindingConstraints(subSet.GetSubstitutions());
 						newPlan.AddLink(new CausalLink(p.getStart().getID(),
@@ -647,6 +643,7 @@ public class EmotionalPlanner implements Serializable {
 							//System.out.println("Adding new Plan: " + newPlan);
 						    intention.AddPlan(newPlan);
 						}
+						
 					}
 				}
 			}
@@ -675,16 +672,16 @@ public class EmotionalPlanner implements Serializable {
 	 * @return - A list of actions that if executed in the 
 	 * 		     specified order will achieve the goal
 	 */
-	public Plan DevelopPlan(ActivePursuitGoal goal)
+	public Plan DevelopPlan(AgentModel am, ActivePursuitGoal goal)
     {
-	    Plan p = new Plan(new ArrayList(),goal.GetSuccessConditions());
+	    Plan p = new Plan(new ArrayList<ProtectedCondition>(),goal.GetSuccessConditions());
         Intention i = new Intention(goal);
         i.AddPlan(p);
         Plan completePlan = null;
         
         while (i.NumberOfAlternativePlans() > 0)
         {
-            completePlan = ThinkAbout(i);
+            completePlan = ThinkAbout(am, i);
             if(completePlan != null)
             {
                 return completePlan;

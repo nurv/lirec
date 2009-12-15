@@ -38,8 +38,9 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import FAtiMA.Agent;
-import FAtiMA.knowledgeBase.KnowledgeBase;
-import FAtiMA.memory.KnowledgeSlot;
+import FAtiMA.AgentModel;
+import FAtiMA.memory.semanticMemory.KnowledgeSlot;
+
 
 
 public class KnowledgeBasePanel extends AgentDisplayPanel {
@@ -50,7 +51,7 @@ public class KnowledgeBasePanel extends AgentDisplayPanel {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private ArrayList _knowledgeFactList;
+	private ArrayList<KnowledgeFactDisplay> _knowledgeFactList;
     
     private JPanel _knowledgeFactsPanel;
     
@@ -58,7 +59,7 @@ public class KnowledgeBasePanel extends AgentDisplayPanel {
         super();
         this.setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
         
-        _knowledgeFactList = new ArrayList();
+        _knowledgeFactList = new ArrayList<KnowledgeFactDisplay>();
         
         _knowledgeFactsPanel = new JPanel();
 		_knowledgeFactsPanel.setLayout(new BoxLayout(_knowledgeFactsPanel,BoxLayout.Y_AXIS));
@@ -68,11 +69,15 @@ public class KnowledgeBasePanel extends AgentDisplayPanel {
 		this.add(emotionsScroll);
 		
     }
+    
+    public boolean Update(Agent ag)
+    {
+    	return Update((AgentModel)ag);
+    }
    
-    public boolean Update(Agent ag) {
-        KnowledgeBase kb = KnowledgeBase.GetInstance();
+    public boolean Update(AgentModel am) {
         
-        ListIterator li = kb.GetFactList();
+        ListIterator<KnowledgeSlot> li = am.getMemory().getSemanticMemory().GetFactList();
         
         KnowledgeSlot slot;
         KnowledgeFactDisplay kDisplay;

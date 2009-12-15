@@ -1,5 +1,5 @@
 /** 
- * SearchKey.java - 
+ * ActionDetailComparator.java - 
  *  
  * Copyright (C) 2006 GAIPS/INESC-ID 
  *  
@@ -19,48 +19,56 @@
  * 
  * Company: GAIPS/INESC-ID
  * Project: FAtiMA
- * Created: 19/Jul/2006 
+ * Created: 27/08/2006 
  * @author: João Dias
  * Email to: joao.assis@tagus.ist.utl.pt
  * 
  * History: 
- * João Dias: 19/Jul/2006 - File created
- * João Dias: 02/10/2006 - Now its possible to have SearchKeys with objects instead
- * 						   of Strings
+ * João Dias: 27/08/2006 - File created
  * Meiyii Lim: 13/03/2009 - Moved the class from FAtiMA.autobiographicalMemory package
- * **/
+ */
 
-package FAtiMA.memory;
+package FAtiMA.memory.episodicMemory;
 
-public class SearchKey {
+import java.util.Comparator;
+
+
+/**
+ * @author João Dias
+ *
+ * TODO To change the template for this generated type comment go to
+ * Window - Preferences - Java - Code Style - Code Templates
+ */
+
+
+public class ActionDetailComparator implements Comparator<ActionDetail>{ 
 	
-	public static short PEOPLE = 1;
-	public static short LOCATION = 2;
-	public static short OBJECTS = 3;
-	public static short ACTION = 4;
-	public static short SUBJECT = 5;
-	public static short TARGET = 6;
-	public static short PARAMETERS = 7;
-	public static short MAXELAPSEDTIME = 8;
-	public static short CONTAINSPARAMETER = 9;
+	public static byte CompareByEmotionIntensity = 0;
+	public static byte CompareByOrder = 1;
 	
-	private short _field;
-	private Object _key;
 	
-	public SearchKey(short field, Object key)
-	{
-		this._field = field;
-		this._key = key;
+	private byte _fieldToCompare;
+	
+	public ActionDetailComparator(byte compareField)
+	{	
+		this._fieldToCompare = compareField;
 	}
 	
-	public short getField()
-	{
-		return this._field;
-	}
 	
-	public Object getKey()
+	public int compare(ActionDetail a1, ActionDetail a2)
 	{
-		return this._key;
-	}
-
+		float aux;
+		if(_fieldToCompare == CompareByEmotionIntensity)
+		{
+			aux = a2.getEmotion().GetPotential() - a1.getEmotion().GetPotential();
+		}
+		else
+		{
+			aux = a2.getID() - a1.getID();
+		}
+		 
+		if(aux > 0) return -1;
+		if(aux == 0) return 0;
+		else return 1;
+	}	
 }

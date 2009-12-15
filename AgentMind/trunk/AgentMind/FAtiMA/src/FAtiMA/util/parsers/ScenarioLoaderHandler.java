@@ -5,8 +5,6 @@ import java.util.Iterator;
 
 import org.xml.sax.Attributes;
 
-import FAtiMA.culture.Ritual;
-
 /**
  * @author Samuel
  */
@@ -15,14 +13,14 @@ public class ScenarioLoaderHandler extends ReflectXMLHandler{
 	private String _characterName;
 	private boolean _isPretendedScenario;
 	private boolean _isPretendedCharacter;
-	private ArrayList _worldSimArgs;
-	private ArrayList _agentArgs;
+	private ArrayList<String> _worldSimArgs;
+	private ArrayList<String> _agentArgs;
 	
 	public ScenarioLoaderHandler(String scenarioName){
 		this._scenarioName = scenarioName;
 		this._characterName = "";
-		this._worldSimArgs = new ArrayList();
-		this._agentArgs = new ArrayList();
+		this._worldSimArgs = new ArrayList<String>();
+		this._agentArgs = new ArrayList<String>();
 		this._isPretendedScenario = false;	
 	}
 	
@@ -30,19 +28,19 @@ public class ScenarioLoaderHandler extends ReflectXMLHandler{
 	public ScenarioLoaderHandler(String scenarioName, String characterName){
 		this._scenarioName = scenarioName;
 		this._characterName = characterName;
-		this._agentArgs = new ArrayList();
-		this._worldSimArgs = new ArrayList();
+		this._agentArgs = new ArrayList<String>();
+		this._worldSimArgs = new ArrayList<String>();
 		this._isPretendedScenario = false;
 		this._isPretendedCharacter = false;
 	}
 	
 	public String[] getWorldSimArguments(){
 		String[] result = new String[_worldSimArgs.size()];		
-		Iterator it = _worldSimArgs.iterator();
+		Iterator<String> it = _worldSimArgs.iterator();
 		int i = 0;
 		
 		while(it.hasNext()){
-			String arg = (String) it.next();
+			String arg = it.next();
 			result[i] = arg;
 			i++;
 		}
@@ -51,11 +49,11 @@ public class ScenarioLoaderHandler extends ReflectXMLHandler{
 	
 	public String[] getAgentArguments(){
 		String[] result = new String[_agentArgs.size()];		
-		Iterator it = _agentArgs.iterator();
+		Iterator<String> it = _agentArgs.iterator();
 		int i = 0;
 		
 		while(it.hasNext()){
-			String arg = (String) it.next();
+			String arg = it.next();
 			result[i] = arg;
 			i++;
 		}
@@ -92,27 +90,17 @@ public class ScenarioLoaderHandler extends ReflectXMLHandler{
 		if(_isPretendedScenario){
 			if(_characterName.equalsIgnoreCase(attributes.getValue("name"))){
 				this._isPretendedCharacter = true;
-				if (attributes.getLength() > 4)
-				{
-					_agentArgs.add(attributes.getValue("platform"));
-					_agentArgs.add(attributes.getValue("host"));
-					_agentArgs.add(attributes.getValue("port"));
-					_agentArgs.add(attributes.getValue("displayMode"));
-					_agentArgs.add(attributes.getValue("name"));
-					_agentArgs.add(attributes.getValue("sex"));
-					_agentArgs.add(attributes.getValue("role"));
-					_agentArgs.add(attributes.getValue("displayName"));
-					_agentArgs.add(attributes.getValue("actionsFile"));
-					_agentArgs.add(attributes.getValue("goalsFile"));
-					_agentArgs.add(attributes.getValue("cultureName"));
-				}
-				else
-				{				
-					_agentArgs.add(attributes.getValue("platform"));
-					_agentArgs.add(attributes.getValue("host"));
-					_agentArgs.add(attributes.getValue("port"));
-					_agentArgs.add(attributes.getValue("name"));
-				}
+				_agentArgs.add(attributes.getValue("platform"));
+				_agentArgs.add(attributes.getValue("host"));
+				_agentArgs.add(attributes.getValue("port"));
+				_agentArgs.add(attributes.getValue("displayMode"));
+				_agentArgs.add(attributes.getValue("name"));
+				_agentArgs.add(attributes.getValue("sex"));
+				_agentArgs.add(attributes.getValue("role"));
+				_agentArgs.add(attributes.getValue("displayName"));
+				_agentArgs.add(attributes.getValue("actionsFile"));
+				_agentArgs.add(attributes.getValue("goalsFile"));
+				_agentArgs.add(attributes.getValue("cultureName"));				
 			}else{
 				this._isPretendedCharacter = false;
 			}    		

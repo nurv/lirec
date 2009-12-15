@@ -40,7 +40,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
-import FAtiMA.IIntegrityTester;
 import FAtiMA.IntegrityValidator;
 import FAtiMA.exceptions.UnknownSpeechActException;
 import FAtiMA.sensorEffector.Event;
@@ -58,7 +57,7 @@ import FAtiMA.wellFormedNames.Symbol;
  * 
  * @author João Dias
  */
-public class Reaction implements IIntegrityTester, Serializable, IGroundable, Cloneable {
+public class Reaction implements Serializable, IGroundable, IReactionNode {
 	
 	/**
 	 * 
@@ -68,6 +67,7 @@ public class Reaction implements IIntegrityTester, Serializable, IGroundable, Cl
 	protected Integer _desirability;
 	protected Integer _desirabilityForOther;
 	protected Integer _praiseworthiness;
+	protected Integer _like;
 	
 	protected Symbol _other;
 	
@@ -81,6 +81,7 @@ public class Reaction implements IIntegrityTester, Serializable, IGroundable, Cl
 		_desirability = null;
 		_desirabilityForOther = null;
 		_praiseworthiness = null;
+		_like = null;
 		_event = null;
 		_other = null;
 	}
@@ -94,6 +95,7 @@ public class Reaction implements IIntegrityTester, Serializable, IGroundable, Cl
 		_desirability = null;
 		_praiseworthiness = null;
 		_desirabilityForOther = null;
+		_like = null;
 		_other = null;
 	}
 	
@@ -109,6 +111,7 @@ public class Reaction implements IIntegrityTester, Serializable, IGroundable, Cl
 		_desirabilityForOther = desirabilityForOther;
 		_praiseworthiness = praiseworthiness;
 		_other = other;
+		_like = null;
 		_event = null;
 	}
 	
@@ -119,9 +122,9 @@ public class Reaction implements IIntegrityTester, Serializable, IGroundable, Cl
 	public void CheckIntegrity(IntegrityValidator val) throws UnknownSpeechActException {
 	    String aux;
 	    aux = _event.GetAction() + "(" +  _event.GetTarget();
-	    ListIterator li = _event.GetParameters().listIterator();
+	    ListIterator<Parameter> li = _event.GetParameters().listIterator();
 	    while(li.hasNext()) {
-	        aux = aux + "," + ((Parameter) li.next()).GetValue();
+	        aux = aux + "," + (li.next()).GetValue();
 	    }
 	    aux = aux + ")";
 	    val.CheckSpeechAction(Name.ParseName(aux));
@@ -141,6 +144,11 @@ public class Reaction implements IIntegrityTester, Serializable, IGroundable, Cl
 	 */
 	public Integer getDesirabilityForOther() {
 		return _desirabilityForOther;
+	}
+	
+	public Integer getLike()
+	{
+		return _like;
 	}
 
 	/**
@@ -171,7 +179,7 @@ public class Reaction implements IIntegrityTester, Serializable, IGroundable, Cl
 
 	/**
 	 * tests if a given event matches the emotional Reaction
-	 * @param eventPerception - the event to test againt the Reaction
+	 * @param eventPerception - the event to test with the Reaction
 	 * @return true if the event corresponds to the emotional Reaction, false otherwise
 	 */
 	public boolean MatchEvent(Event eventPerception) {
@@ -192,6 +200,11 @@ public class Reaction implements IIntegrityTester, Serializable, IGroundable, Cl
 	 */
 	public void setDesirabilityForOther(Integer integer) {
 		_desirabilityForOther = integer;
+	}
+	
+	public void setLike(Integer integer)
+	{
+		_like = integer;
 	}
 
 	/**
@@ -248,7 +261,7 @@ public class Reaction implements IIntegrityTester, Serializable, IGroundable, Cl
 	 * @return a new Predicate with the substitutions applied
 	 * @see Substitution
 	 */
-	public Object Ground(ArrayList bindings) {
+	public Object Ground(ArrayList<Substitution> bindings) {
 		Reaction aux = (Reaction) this.clone();
 		aux.MakeGround(bindings);
 		return aux;
@@ -262,7 +275,7 @@ public class Reaction implements IIntegrityTester, Serializable, IGroundable, Cl
 	 * @param bindings - A list of substitutions of the type "[Variable]/value"
 	 * @see Substitution
 	 */
-    public void MakeGround(ArrayList bindings)
+    public void MakeGround(ArrayList<Substitution> bindings)
     {
     	if(this._other != null)
     	{
@@ -332,5 +345,10 @@ public class Reaction implements IIntegrityTester, Serializable, IGroundable, Cl
 	 */
 	public String toString() {
 		return _event + " (" + _desirability + "," + _desirabilityForOther + "," + _praiseworthiness + ")";
+	}
+
+	@Override
+	public Reaction getReaction(Event e) {
+		return this;
 	}
 }

@@ -3,10 +3,8 @@ package FAtiMA.conditions;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
-import FAtiMA.memory.SearchKey;
-import FAtiMA.memory.autobiographicalMemory.AutobiographicalMemory;
-import FAtiMA.memory.shortTermMemory.ShortTermMemory;
-import FAtiMA.sensorEffector.Event;
+import FAtiMA.AgentModel;
+import FAtiMA.memory.episodicMemory.SearchKey;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Symbol;
 
@@ -37,15 +35,15 @@ public class NewEventCondition extends RecentEventCondition {
 			newEvent._target = (Symbol) this._target.clone();
 		}
 		
-		newEvent._parameters = new ArrayList(this._parameters.size());
+		newEvent._parameters = new ArrayList<Symbol>(this._parameters.size());
 		
-		ListIterator li = this._parameters.listIterator();
+		ListIterator<Symbol> li = this._parameters.listIterator();
 		
 		while(li.hasNext())
 		{
-			newEvent._parameters.add(((Symbol)li.next()).clone());
+			newEvent._parameters.add((Symbol)li.next().clone());
 		}
-	
+		
 		return newEvent;
 	}
 	
@@ -67,7 +65,7 @@ public class NewEventCondition extends RecentEventCondition {
 	}
 	
 
-	public boolean CheckCondition() {
+	public boolean CheckCondition(AgentModel am) {
 		boolean conditionVerified;
 		
 
@@ -79,9 +77,7 @@ public class NewEventCondition extends RecentEventCondition {
 			return true;
 		}
 	
-		ArrayList searchKeys = GetSearchKeys();
-		conditionVerified = (_positive == (ShortTermMemory.GetInstance().ContainsRecentEvent(searchKeys)
-								|| AutobiographicalMemory.GetInstance().ContainsRecentEvent(searchKeys)));
+		conditionVerified = (_positive == am.getMemory().getEpisodicMemory().ContainsNewEvent(GetSearchKeys()));
 		
 		if(conditionVerified){
 			_conditionAlreadyVerified = true;
@@ -91,9 +87,9 @@ public class NewEventCondition extends RecentEventCondition {
 	}
 	
 	
-	protected ArrayList GetSearchKeys()
+	protected ArrayList<SearchKey> GetSearchKeys()
 	{
-		ArrayList keys = super.GetSearchKeys();
+		ArrayList<SearchKey> keys = super.GetSearchKeys();
 		
 		//we only want to search for events that happened at most 1 second before
 		keys.add(new SearchKey(SearchKey.MAXELAPSEDTIME, new Long(4000)));

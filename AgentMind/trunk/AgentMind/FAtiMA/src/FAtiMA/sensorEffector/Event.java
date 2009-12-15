@@ -55,9 +55,9 @@ import java.util.ArrayList;
 import java.util.ListIterator;
 import java.util.StringTokenizer;
 
-import org.xml.sax.Attributes;
 
 import FAtiMA.AgentSimulationTime;
+import FAtiMA.util.Constants;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
 import FAtiMA.wellFormedNames.Symbol;
@@ -76,7 +76,7 @@ public class Event implements Cloneable, Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	protected String _action;
-	protected ArrayList _parameters;
+	protected ArrayList<Parameter> _parameters;
 	protected String _subject;
 	protected String _target;
 	protected long _time;
@@ -107,12 +107,12 @@ public class Event implements Cloneable, Serializable {
 		if(matchRule._parameters != null) {
 			Parameter p1;
 			Parameter p2;
-			ListIterator li1 = matchRule._parameters.listIterator();
-			ListIterator li2 = eventPerception._parameters.listIterator();
+			ListIterator<Parameter> li1 = matchRule._parameters.listIterator();
+			ListIterator<Parameter> li2 = eventPerception._parameters.listIterator();
 			while(li1.hasNext()) {
 				if(!li2.hasNext()) return false;
-				p1 = (Parameter) li1.next();
-				p2 = (Parameter) li2.next();
+				p1 =  li1.next();
+				p2 =  li2.next();
 				if(!p1.GetValue().equals("*") && !p1.GetValue().equals(p2.GetValue()))
 				{
 					return false;
@@ -123,22 +123,123 @@ public class Event implements Cloneable, Serializable {
 		return true;
 	}
 	
+	public Event ApplyPerspective(String agentName)
+	{
+		Parameter p1;
+		Parameter p2;
+		
+		Event e = new Event(this._subject);
+		
+		if(this._subject.equals(agentName))
+		{
+			e._subject = Constants.SELF;
+		}
+		else
+		{
+			e._subject = this._subject;
+		}
+		
+		e._action = this._action;
+		
+		if(this._target.equals(agentName))
+		{
+			e._target = Constants.SELF;
+		}
+		else
+		{
+			e._target = this._target;
+		}
+		
+		e._time = this._time;
+		
+		if(this._parameters != null)
+		{
+			e._parameters = new ArrayList<Parameter>();
+			ListIterator<Parameter> li = this._parameters.listIterator();
+			while(li.hasNext())
+			{
+				p1 = li.next();
+				if(p1.GetValue().equals(agentName))
+				{
+					p2 = new Parameter("param",Constants.SELF);
+				}
+				else
+				{
+					p2 = (Parameter) p1.clone();
+				}
+				e._parameters.add(p2);
+			}
+		}
+		
+		return e;
+	}
+	
+	public Event RemovePerspective(String agentName)
+	{
+		Parameter p1;
+		Parameter p2;
+		
+		Event e = new Event(this._subject);
+		
+		if(this._subject.equals(Constants.SELF))
+		{
+			e._subject = agentName;
+		}
+		else
+		{
+			e._subject = this._subject;
+		}
+		
+		e._action = this._action;
+		
+		if(this._target.equals(Constants.SELF))
+		{
+			e._target = agentName;
+		}
+		else
+		{
+			e._target = this._target;
+		}
+		
+		e._time = this._time;
+		
+		if(this._parameters != null)
+		{
+			e._parameters = new ArrayList<Parameter>();
+			ListIterator<Parameter> li = this._parameters.listIterator();
+			while(li.hasNext())
+			{
+				p1 = li.next();
+				if(p1.GetValue().equals(Constants.SELF))
+				{
+					p2 = new Parameter("param",agentName);
+				}
+				else
+				{
+					p2 = (Parameter) p1.clone();
+				}
+				e._parameters.add(p2);
+			}
+		}
+		
+		return e;
+	}
+	
+	
 	/**
 	 * Parses an event from a XML attributes list
 	 * @param selfName - the name of the agent (thus its called selfName)
 	 * @param attributes - the XML attributes list
 	 * @return the parsed Event
 	 */
-	public static Event ParseEvent(String selfName,String subject, String action, String target, String parameters){
+	public static Event ParseEvent(String subject, String action, String target, String parameters){
 		String aux;
 		Event e;
 		
 
 		if(subject != null) {
-			if(subject.equals("[SELF]")) {
-				subject = selfName;
-			} 
-			else if(subject.equals("OTHER") || subject.equals("ANY") || subject.equals("*")) {
+			
+			if(subject.equals("OTHER") || subject.equals("ANY") || subject.equals("*")) {
 				subject = null;
 			}
 		}
@@ -152,10 +253,7 @@ public class Event implements Cloneable, Serializable {
 		}
 		
 		if(target != null) {
-			if(target.equals("[SELF]")) 
-			{
-				target = selfName;
-			} else if(target.equals("OTHER") || target.equals("ANY") || target.equals("*")) {
+			if(target.equals("OTHER") || target.equals("ANY") || target.equals("*")) {
 				target = null;
 			}
 		}
@@ -166,11 +264,7 @@ public class Event implements Cloneable, Serializable {
 			StringTokenizer st = new StringTokenizer(parameters, ",");
 			while(st.hasMoreTokens()) {
 				aux = st.nextToken();
-				if(aux.equals("[SELF]"))
-				{
-					aux = selfName;
-				}
-				else if(aux.equals("OTHER") || aux.equals("ANY") || aux.equals("*"))
+				if(aux.equals("OTHER") || aux.equals("ANY") || aux.equals("*"))
 				{
 					e.AddParameter(new Parameter("param","*"));
 				}
@@ -188,7 +282,7 @@ public class Event implements Cloneable, Serializable {
 	 * @param subject - the subject of the event (who performed the action)
 	 */
 	public Event(String subject) {
-		_parameters = new ArrayList();
+		_parameters = new ArrayList<Parameter>();
 		_time = AgentSimulationTime.GetInstance().Time();
 		_subject = subject;
 	}
@@ -201,7 +295,7 @@ public class Event implements Cloneable, Serializable {
 	 */
 	public Event(String subject, String action, String target) {
 		_time = AgentSimulationTime.GetInstance().Time();
-		_parameters = new ArrayList();
+		_parameters = new ArrayList<Parameter>();
 		_subject = subject;
 		_action = action;
 		_target = target;
@@ -229,7 +323,7 @@ public class Event implements Cloneable, Serializable {
 	 * @return an ArrayList with all the parameters
 	 * @see Parameter
 	 */
-	public ArrayList GetParameters() {
+	public ArrayList<Parameter> GetParameters() {
 		return _parameters;
 	}
 
@@ -296,11 +390,11 @@ public class Event implements Cloneable, Serializable {
 		
 		if(this._parameters != null)
 		{
-			e._parameters = new ArrayList();
-			ListIterator li = this._parameters.listIterator();
+			e._parameters = new ArrayList<Parameter>();
+			ListIterator<Parameter> li = this._parameters.listIterator();
 			while(li.hasNext())
 			{
-				e._parameters.add(((Parameter)li.next()).clone());
+				e._parameters.add((Parameter)li.next().clone());
 			}
 		}
 		
@@ -318,12 +412,12 @@ public class Event implements Cloneable, Serializable {
 	 * @param bindings - A list of substitutions of the type "[Variable]/value"
 	 * @see Substitution
 	 */
-	public void MakeGround(ArrayList substitutions)
+	public void MakeGround(ArrayList<Substitution> substitutions)
 	{
 		Substitution sub;
 		String aux;
 		
-		for(ListIterator li = substitutions.listIterator();li.hasNext();)
+		for(ListIterator<Substitution> li = substitutions.listIterator();li.hasNext();)
 		{
 			sub = (Substitution) li.next();
 			aux = sub.getVariable().toString();
@@ -377,9 +471,9 @@ public class Event implements Cloneable, Serializable {
 	 * target and parameters 
 	 * @return the mentioned list of substitutions
 	 */
-	public ArrayList GenerateBindings()
+	public ArrayList<Substitution> GenerateBindings()
 	{
-		ArrayList bindings = new ArrayList(5);
+		ArrayList<Substitution> bindings = new ArrayList<Substitution>(5);
 		
 		bindings.add(new Substitution(new Symbol("[Subject]"), new Symbol(_subject)));
 		bindings.add(new Substitution(new Symbol("[Action]"), new Symbol(_action)));
@@ -389,9 +483,9 @@ public class Event implements Cloneable, Serializable {
 		
 		int i=1;
 		Parameter p;
-		for(ListIterator li = _parameters.listIterator(); li.hasNext();i++)
+		for(ListIterator<Parameter> li = _parameters.listIterator(); li.hasNext();i++)
 		{
-			p = (Parameter) li.next();
+			p =  li.next();
 			bindings.add(new Substitution(new Symbol("[P" + i + "]"), new Symbol(p.GetValue().toString())));
 		}
 		
@@ -414,9 +508,9 @@ public class Event implements Cloneable, Serializable {
 				aux = aux + "," + _target;
 			}
 			if(_parameters!=null) {
-				ListIterator li = _parameters.listIterator();
+				ListIterator<Parameter> li = _parameters.listIterator();
 				while(li.hasNext()) {
-					p = (Parameter) li.next();
+					p =  li.next();
 					aux = aux + "," + p.GetValue();
 				}
 			}
@@ -442,9 +536,9 @@ public class Event implements Cloneable, Serializable {
 		
 		if(this._parameters != null)	
 		{
-			for(ListIterator li = this._parameters.listIterator();li.hasNext();)
+			for(ListIterator<Parameter> li = this._parameters.listIterator();li.hasNext();)
 			{
-				p = (Parameter) li.next();
+				p = li.next();
 				aux = aux + "," + p.GetValue();
 			}
 		}
@@ -460,9 +554,9 @@ public class Event implements Cloneable, Serializable {
 	public String toString() {
 	    Parameter p;
 	    String aux = _subject + " " + _action + " " + _target;
-	    ListIterator li = _parameters.listIterator();
+	    ListIterator<Parameter> li = _parameters.listIterator();
 	    while(li.hasNext()) {
-	        p = (Parameter) li.next();
+	        p =  li.next();
 	        aux = aux + " "  + p.GetValue();
 	    }
 	    return aux;

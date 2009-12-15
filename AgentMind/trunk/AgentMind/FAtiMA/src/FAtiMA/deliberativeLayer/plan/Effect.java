@@ -41,10 +41,8 @@ package FAtiMA.deliberativeLayer.plan;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import FAtiMA.AgentModel;
 import FAtiMA.conditions.Condition;
-import FAtiMA.knowledgeBase.KnowledgeBase;
-import FAtiMA.memory.Memory;
-import FAtiMA.memory.shortTermMemory.WorkingMemory;
 import FAtiMA.wellFormedNames.IGroundable;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
@@ -75,14 +73,16 @@ public class Effect implements IGroundable, Cloneable, Serializable {
 	 * @param prob - the effect's probability
 	 * @param effect - the condition that represents the effect
 	 */
-	public Effect(String stepName, float prob, Condition effect) {
+	public Effect(AgentModel am, String stepName, float prob, Condition effect) {
 		this._baseprob = prob;
 		this._effect = effect;
 		if(!stepName.equals("Start")) 
 		{
 			this._biasName = Name.ParseName("ProbBias(" + stepName + idCounter++ + ")");
-			KnowledgeBase.GetInstance().Tell(this._biasName, new Float(0));
-			//System.out.println("Effect ");
+			if(am != null)
+			{
+				am.getMemory().getSemanticMemory().Tell(this._biasName, new Float(0));
+			}
 		}
 	}
 	
@@ -94,18 +94,17 @@ public class Effect implements IGroundable, Cloneable, Serializable {
 	 * Used to perform wishfull thinking or denial withing
 	 * emotion-focused coping strategies
 	 */
-	public void DecreaseProbability() {
+	public void DecreaseProbability(AgentModel am) {
 		float bias;
 		float prob;
 		float newprob;
 		float newbias;
 		
-		bias = ((Float) Memory.GetInstance().AskProperty(_biasName)).floatValue();
+		bias = ((Float) am.getMemory().getSemanticMemory().AskProperty(_biasName)).floatValue();
 		prob = bias + _baseprob;
 		newprob = 0.6f * prob;
 		newbias = newprob - _baseprob;
-		WorkingMemory.GetInstance().Tell(_biasName,new Float(newbias));   
-		//System.out.println("Decrease probability effect");
+		am.getMemory().getSemanticMemory().Tell(_biasName,new Float(newbias));   
 	}
 	
 	/**
@@ -120,8 +119,9 @@ public class Effect implements IGroundable, Cloneable, Serializable {
 	 * Gets the effect's probability
 	 * @return the effect's probability
 	 */
-	public float GetProbability() {
-		return _baseprob + ((Float) Memory.GetInstance().AskProperty(_biasName)).floatValue();
+	public float GetProbability(AgentModel am) {
+		if(am == null) return _baseprob;
+		return _baseprob + ((Float) am.getMemory().getSemanticMemory().AskProperty(_biasName)).floatValue();
 	}
 	
 	/**
@@ -159,7 +159,7 @@ public class Effect implements IGroundable, Cloneable, Serializable {
 	 * @see Substitution
 	 * @return a new Effect with its variables grounded
 	 */
-	public Object Ground(ArrayList substs) {
+	public Object Ground(ArrayList<Substitution> substs) {
 		Effect aux = (Effect) this.clone();
 		aux.MakeGround(substs);
 		return aux;
@@ -173,7 +173,7 @@ public class Effect implements IGroundable, Cloneable, Serializable {
 	 * @param bindings - A list of substitutions of the type "[Variable]/value"
 	 * @see Substitution
 	 */
-    public void MakeGround(ArrayList bindings)
+    public void MakeGround(ArrayList<Substitution> bindings)
     {
     	this._effect.MakeGround(bindings);
     }
@@ -222,18 +222,17 @@ public class Effect implements IGroundable, Cloneable, Serializable {
 	 * Used to perform wishfull thinking or denial withing
 	 * emotion-focused coping strategies
 	 */
-	public void IncreaseProbability() {
+	public void IncreaseProbability(AgentModel am) {
 		float bias;
 		float prob;
 		float newprob;
 		float newbias;
 		
-		bias = ((Float) Memory.GetInstance().AskProperty(_biasName)).floatValue(); 
+		bias = ((Float) am.getMemory().getSemanticMemory().AskProperty(_biasName)).floatValue(); 
 		prob = bias + _baseprob;
 		newprob = 0.6f * prob + 0.4f;
 		newbias = newprob - _baseprob;
-		WorkingMemory.GetInstance().Tell(_biasName,new Float(newbias));   
-		//System.out.println("Increase probability effect");
+		am.getMemory().getSemanticMemory().Tell(_biasName,new Float(newbias));   
 	}
 	
 	/**

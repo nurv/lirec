@@ -35,11 +35,8 @@ import java.util.StringTokenizer;
 
 import org.xml.sax.Attributes;
 
-import FAtiMA.memory.SearchKey;
-import FAtiMA.memory.Memory;
-import FAtiMA.memory.autobiographicalMemory.AutobiographicalMemory;
-import FAtiMA.memory.shortTermMemory.ShortTermMemory;
-import FAtiMA.sensorEffector.Event;
+import FAtiMA.AgentModel;
+import FAtiMA.memory.episodicMemory.SearchKey;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
 import FAtiMA.wellFormedNames.Symbol;
@@ -62,7 +59,7 @@ public class RitualCondition extends PredicateCondition {
 	
 	public static final RitualCondition ParseRitualCondition(Attributes attributes)
 	{
-		ArrayList roles = new ArrayList();
+		ArrayList<Symbol> roles = new ArrayList<Symbol>();
     	String aux;
     	Symbol ritualName = null;
     	
@@ -84,18 +81,19 @@ public class RitualCondition extends PredicateCondition {
 		return new RitualCondition(ritualName,roles);
 	}
 	
-	protected ArrayList _roles;
+	protected ArrayList<Symbol> _roles;
 	protected Symbol _ritualName;
 
 	protected RitualCondition()
 	{
 	}
 	
-	public RitualCondition(Symbol ritualName, ArrayList roles)
+	@SuppressWarnings("unchecked")
+	public RitualCondition(Symbol ritualName, ArrayList<Symbol> roles)
 	{
 		this._ritualName = ritualName;
 		this._positive = true;
-		this._roles = (ArrayList) roles.clone();
+		this._roles = (ArrayList<Symbol>) roles.clone();
 		
 		String name = ritualName + "(";
 		
@@ -124,12 +122,12 @@ public class RitualCondition extends PredicateCondition {
 		rc._ritualName = (Symbol) this._ritualName.clone();
 		rc._name = (Name) this._name.clone();
 		
-		rc._roles = new ArrayList(this._roles.size());
-		ListIterator li = this._roles.listIterator();
+		rc._roles = new ArrayList<Symbol>(this._roles.size());
+		ListIterator<Symbol> li = this._roles.listIterator();
 		
 		while(li.hasNext())
 		{
-			rc._roles.add(((Symbol)li.next()).clone());
+			rc._roles.add((Symbol)li.next().clone());
 		}
 		
 		return rc;
@@ -145,28 +143,28 @@ public class RitualCondition extends PredicateCondition {
 		this._name.ReplaceUnboundVariables(variableID);
 		this._ritualName.ReplaceUnboundVariables(variableID);
 		
-		ListIterator li = this._roles.listIterator();
+		ListIterator<Symbol> li = this._roles.listIterator();
 		while(li.hasNext())
 		{
-			((Symbol) li.next()).ReplaceUnboundVariables(variableID);
+			li.next().ReplaceUnboundVariables(variableID);
 		}
 	}
 
-	public Object Ground(ArrayList bindingConstraints) {
+	public Object Ground(ArrayList<Substitution> bindingConstraints) {
 		
 		RitualCondition rc = (RitualCondition) this.clone();
 		rc.MakeGround(bindingConstraints);
 		return rc;
 	}
 
-	public void MakeGround(ArrayList bindings) {
+	public void MakeGround(ArrayList<Substitution> bindings) {
 		this._name.MakeGround(bindings);
 		this._ritualName.MakeGround(bindings);
 				
-		ListIterator li = this._roles.listIterator();
+		ListIterator<Symbol> li = this._roles.listIterator();
 		while(li.hasNext())
 		{
-			((Symbol) li.next()).MakeGround(bindings);
+			li.next().MakeGround(bindings);
 		}
 	}
 
@@ -180,10 +178,10 @@ public class RitualCondition extends PredicateCondition {
 		this._name.MakeGround(subst);
 		this._ritualName.MakeGround(subst);
 		
-		ListIterator li = this._roles.listIterator();
+		ListIterator<Symbol> li = this._roles.listIterator();
 		while(li.hasNext())
 		{
-			((Symbol) li.next()).MakeGround(subst);
+			li.next().MakeGround(subst);
 		}
 	}
 	
@@ -192,13 +190,13 @@ public class RitualCondition extends PredicateCondition {
 	 * @return true if the RitualCondition is verified, false otherwise
 	 * @see AutobiographicalMemory
 	 */
-	public boolean CheckCondition() {
+	public boolean CheckCondition(AgentModel am) {
 		
 		if(!_name.isGrounded()) return false;
 		
-		ArrayList keys = new ArrayList();
+		ArrayList<SearchKey> keys = new ArrayList<SearchKey>();
 		
-		keys.add(new SearchKey(SearchKey.SUBJECT,Memory.GetInstance().getSelf()));
+		keys.add(new SearchKey(SearchKey.SUBJECT,am.getName()));
 		
 		keys.add(new SearchKey(SearchKey.ACTION,"succeed"));
 		
@@ -214,15 +212,11 @@ public class RitualCondition extends PredicateCondition {
 			keys.add(new SearchKey(SearchKey.MAXELAPSEDTIME, new Long(1000)));
 		}
 		
-		return (ShortTermMemory.GetInstance().ContainsRecentEvent(keys) 
-			|| AutobiographicalMemory.GetInstance().ContainsRecentEvent(keys));
+		
+		return am.getMemory().getEpisodicMemory().ContainsRecentEvent(keys);
 		
 	}
 	
-	protected ArrayList GetPossibleBindings()
-	{
-		return null;
-	}
 
 	public void setRepeat(boolean repeat) {
 		_repeat = repeat;

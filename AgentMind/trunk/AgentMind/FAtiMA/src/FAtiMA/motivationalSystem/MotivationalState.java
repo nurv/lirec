@@ -4,31 +4,26 @@
 
 package FAtiMA.motivationalSystem;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.ListIterator;
 
+import FAtiMA.AgentModel;
 import FAtiMA.AgentSimulationTime;
 import FAtiMA.conditions.MotivatorCondition;
 import FAtiMA.culture.CulturalDimensions;
 import FAtiMA.deliberativeLayer.plan.EffectOnDrive;
 import FAtiMA.deliberativeLayer.plan.IPlanningOperator;
 import FAtiMA.deliberativeLayer.plan.Step;
+import FAtiMA.emotionalState.Appraisal;
+import FAtiMA.emotionalState.AppraisalVector;
 import FAtiMA.emotionalState.BaseEmotion;
-import FAtiMA.emotionalState.EmotionalState;
 import FAtiMA.exceptions.InvalidMotivatorTypeException;
-import FAtiMA.knowledgeBase.KnowledgeBase;
-import FAtiMA.memory.Memory;
 import FAtiMA.sensorEffector.Event;
 import FAtiMA.sensorEffector.Parameter;
 import FAtiMA.util.AgentLogger;
+import FAtiMA.util.Constants;
 import FAtiMA.util.enumerables.MotivatorType;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
@@ -43,126 +38,46 @@ import FAtiMA.wellFormedNames.Unifier;
  * @author Meiyii Lim, Samuel Mascarenhas 
  */
 
-public class MotivationalState implements Serializable {
+public class MotivationalState implements Serializable, Cloneable {
 	
 	
 	private static final long serialVersionUID = 1L;
-	protected String _selfName;
-	protected Motivator[]  _selfMotivators;
-	protected Hashtable _otherAgentsMotivators;
+	protected Motivator[]  _motivators;
+	//protected Hashtable<String,Motivator[]> _otherAgentsMotivators;
 	protected long _lastTime;
 	protected int _goalTried;
 	protected int _goalSucceeded;
 
-	/**
- 	 * Singleton pattern 
-	 */
-	private static MotivationalState _motStateInstance = null;
-	
-	/**
-	 * Gets the instance of the MotivationalState
-	 * @return the MotivationalState instance
-	 */
-	public static MotivationalState GetInstance()
-	{
-		if(_motStateInstance == null)
-		{
-			_motStateInstance = new MotivationalState();
-		}
-		return _motStateInstance;
-	}
-	
-	/**
-	 * Saves the state of the current MotivationalState to a file,
-	 * so that it can be later restored from file
-	 * @param fileName - the name of the file where we must write
-	 * 		             the motivational state
-	 */
-	public static void SaveState(String fileName)
-	{
-		try 
-		{
-			FileOutputStream out = new FileOutputStream(fileName);
-	    	ObjectOutputStream s = new ObjectOutputStream(out);
-	    	
-	    	s.writeObject(_motStateInstance);
-        	s.flush();
-        	s.close();
-        	out.close();
-		}
-		catch(Exception e)
-		{
-			AgentLogger.GetInstance().logAndPrint("Exception: " + e);			
-			e.printStackTrace();
-		}
-	}
-	
-	/**
-	 * Loads a specific state of the MotivationalState from a previously
-	 * saved file
-	 * @param fileName - the name of the file that contains the stored
-	 * 					 MotivationalState
-	 */
-	public static void LoadState(String fileName)
-	{
-		try
-		{
-			FileInputStream in = new FileInputStream(fileName);
-        	ObjectInputStream s = new ObjectInputStream(in);
-        	_motStateInstance = (MotivationalState) s.readObject();
-        	s.close();
-        	in.close();
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-	}
+
 
 	/**
 	 * Creates an empty MotivationalState
 	 */
-	private MotivationalState() {
-		_selfMotivators = new Motivator[MotivatorType.numberOfTypes()];
-		_otherAgentsMotivators = new Hashtable();
+	public MotivationalState() {
+		_motivators = new Motivator[MotivatorType.numberOfTypes()];
+		//_otherAgentsMotivators = new Hashtable<String,Motivator[]>();
 		_goalTried = 0;
 		_goalSucceeded = 0;
 		_lastTime = AgentSimulationTime.GetInstance().Time();
 	}
 
-	public Hashtable getOtherAgentsMotivators(){
-		return _otherAgentsMotivators;
-	}
 	
-	public Motivator[] getSelfMotivators(){
-		return _selfMotivators;
-	}
-	
-	
-	public void InitializeOtherAgentMotivators(String agentName){
-		Motivator[]  agentMotivators = new Motivator[5];
-				
-		for(int i=0; i < agentMotivators.length; i++){
-			agentMotivators[i] = new Motivator(_selfMotivators[i]);
-			agentMotivators[i].SetIntensity(5);
-		}
-		
-		_otherAgentsMotivators.put(agentName, agentMotivators);
+	public Motivator[] getMotivators(){
+		return _motivators;
 	}
 	
 	
 	/** 
 	 * Adds a motivator to the MotivationalState
 	 */
-	public void AddSelfMotivator(String characterName, Motivator motivator)
+	public void AddMotivator(Motivator motivator)
 	{
-		_selfName = new String(characterName);
-		_selfMotivators[motivator.GetType()] = new Motivator(motivator);
+		_motivators[motivator.GetType()] = new Motivator(motivator);
 	}
 	
 	
-	public Motivator GetSelfMotivator(short motivatorType){
-		return _selfMotivators[motivatorType];
+	public Motivator GetMotivator(short motivatorType){
+		return _motivators[motivatorType];
 	}
 	
 	
@@ -171,9 +86,9 @@ public class MotivationalState implements Serializable {
 	 * Updates the intensity of the motivators based on the event received
 	 * @throws InvalidMotivatorTypeException 
 	 */
-	public void UpdateMotivators(Event e, ArrayList operators)
+	public void UpdateMotivators(AgentModel am, Event e, ArrayList<? extends IPlanningOperator> operators)
 	{
-		ArrayList substitutions;
+		ArrayList<Substitution> substitutions;
 		IPlanningOperator operator;
 		Step action;
 		EffectOnDrive effectOnDrive;
@@ -194,30 +109,24 @@ public class MotivationalState implements Serializable {
 			
 			String lSignalName = ((Parameter)e.GetParameters().get(1)).toString();
 			Name lSignalValueProperty = Name.ParseName(lSignalName + "(value)");
-			float lSignalValue = ((Float)Memory.GetInstance().AskProperty(lSignalValueProperty)).floatValue();
+			float lSignalValue = ((Float)am.getMemory().getSemanticMemory().AskProperty(lSignalValueProperty)).floatValue();
 			
 			
 			float affiliationEffect = CulturalDimensions.GetInstance().determineAffiliationEffectFromLSignal(eventSubject,eventTarget,lSignalName,lSignalValue);
 			
 			
-			if(eventTarget.equalsIgnoreCase(Memory.GetInstance().getSelf())){	
-				Motivator [] selfMotivators = (Motivator[]) MotivationalState.GetInstance().getSelfMotivators();	
-				contributionToSelfNeeds += selfMotivators[MotivatorType.AFFILIATION].UpdateIntensity(affiliationEffect);
+			if(eventTarget.equalsIgnoreCase(Constants.SELF)){		
+				contributionToSelfNeeds += _motivators[MotivatorType.AFFILIATION].UpdateIntensity(affiliationEffect);
 				
-			}else{
-				Motivator[] otherAgentsMotivators = (Motivator[]) MotivationalState.GetInstance().getOtherAgentsMotivators().get(eventTarget.toString());
-				if(otherAgentsMotivators != null){
-					otherAgentsMotivators[MotivatorType.AFFILIATION].UpdateIntensity(affiliationEffect);
-				}
 			}	
 		}
 		
 		
-		//Other Events Update The Motivatores According to The Effects Specified By the Author in The Actions.xml 
-		for(ListIterator li = operators.listIterator(); li.hasNext();)
+		//Other Events Update The Motivators According to The Effects Specified By the Author in The Actions.xml 
+		for(ListIterator<? extends IPlanningOperator> li = operators.listIterator(); li.hasNext();)
 		{
 			
-			operator = (IPlanningOperator) li.next();
+			operator = li.next();
 			if(operator instanceof Step)
 			{
 				action = (Step) operator;
@@ -229,34 +138,19 @@ public class MotivationalState implements Serializable {
 					action = (Step) action.clone();
 					action.MakeGround(substitutions);
 
-					for(ListIterator li2 = action.getEffectsOnDrives().listIterator(); li2.hasNext();)
+					for(ListIterator<EffectOnDrive> li2 = action.getEffectsOnDrives().listIterator(); li2.hasNext();)
 					{
 						effectOnDrive = (EffectOnDrive) li2.next();
 						motCondition = (MotivatorCondition) effectOnDrive.GetEffectOnDrive();
 						Name target = motCondition.GetTarget();
 
-						if (target.toString().equalsIgnoreCase(Memory.GetInstance().getSelf()))
+						if (target.toString().equalsIgnoreCase(Constants.SELF))
 						{
 							AgentLogger.GetInstance().log("Updating self motivator " + motCondition.GetDrive());
 							try {
 								short driveType = MotivatorType.ParseType(motCondition.GetDrive());
-								contributionToNeed = _selfMotivators[driveType].UpdateIntensity(motCondition.GetEffect());
+								contributionToNeed = _motivators[driveType].UpdateIntensity(motCondition.GetEffect());
 								contributionToSelfNeeds += contributionToNeed;
-							} catch (InvalidMotivatorTypeException e1) {
-								e1.printStackTrace();
-							}
-						}else{
-							try {
-								short driveType = MotivatorType.ParseType(motCondition.GetDrive());
-								Motivator[] otherAgentsMotivators = (Motivator[]) _otherAgentsMotivators.get(target.toString());
-								if(otherAgentsMotivators != null && otherAgentsMotivators[driveType] != null)
-								{
-									contributionToNeed = otherAgentsMotivators[driveType].UpdateIntensity(motCondition.GetEffect());
-								}		
-								else
-								{
-									System.out.println("Null Motivator - Target:" + target.toString() + " Drive: " + motCondition.GetDrive());
-								}
 							} catch (InvalidMotivatorTypeException e1) {
 								e1.printStackTrace();
 							}
@@ -272,28 +166,33 @@ public class MotivationalState implements Serializable {
 			}			
 		}
 		
-	
-	
 		
-		this.updateEmotionalState(e, contributionToSelfNeeds, contributionToSubjectNeeds, contributionToTargetNeeds);
+		this.updateEmotionalState(am, e, contributionToSelfNeeds, contributionToSubjectNeeds, contributionToTargetNeeds);
 		
 	}
 
 	
 	
-	private void updateEmotionalState(Event e, float contributionToSelfNeeds, float contributionToSubjectNeeds, float contributionToTargetNeeds) {
-		BaseEmotion bEmotion;
-	
-	
-		bEmotion = EmotionalState.GetInstance().OCCAppraiseWellBeing(e, Math.round(contributionToSelfNeeds));
-		EmotionalState.GetInstance().AddEmotion(bEmotion);
-
+	private void updateEmotionalState(AgentModel am, Event e, float contributionToSelfNeeds, float contributionToSubjectNeeds, float contributionToTargetNeeds) {
+		ArrayList<BaseEmotion> emotions;
+		BaseEmotion em;
+		
 		float praiseWorthiness = CulturalDimensions.GetInstance().determinePraiseWorthiness( contributionToSubjectNeeds,contributionToTargetNeeds);
 		
+		AppraisalVector vec = new AppraisalVector();
+		vec.setAppraisalVariable(AppraisalVector.DESIRABILITY, contributionToSelfNeeds);
+		vec.setAppraisalVariable(AppraisalVector.PRAISEWORTHINESS, praiseWorthiness);
+	
+		//emotions of self
+		emotions = Appraisal.GenerateSelfEmotions(am, e, vec);
 		
-		bEmotion = EmotionalState.GetInstance().OCCAppraisePraiseworthiness(e,Math.round(praiseWorthiness));
-		EmotionalState.GetInstance().AddEmotion(bEmotion);
-
+		
+		ListIterator<BaseEmotion> li = emotions.listIterator();
+		while(li.hasNext())
+		{
+			em = li.next();
+			am.getEmotionalState().AddEmotion(em, am);
+		}
 	}
 
 	/**
@@ -302,15 +201,14 @@ public class MotivationalState implements Serializable {
 	 * @return the motivator with the highest need or null if motivational state is empty
 	 */
 	// CURRENTLY NOT BEING USED
-	public Motivator GetSelfHighestNeedMotivator() {
+	public Motivator GetHighestNeedMotivator() {
 		float maxNeed = 0;
-		Motivator currentMotivator;
 		Motivator maxMotivator=null;
 		
-		for(int i = 0; i < _selfMotivators.length; i++){
-			if(_selfMotivators[i].GetNeed() > maxNeed) {
-				maxMotivator = _selfMotivators[i];
-				maxNeed = _selfMotivators[i].GetNeed();
+		for(int i = 0; i < _motivators.length; i++){
+			if(_motivators[i].GetNeed() > maxNeed) {
+				maxMotivator = _motivators[i];
+				maxNeed = _motivators[i].GetNeed();
 			}
 		}
 		
@@ -321,9 +219,11 @@ public class MotivationalState implements Serializable {
 	 * Gets the received motivator's intensity, i.e. the current level of the motivator
 	 * @return a float value corresponding to the motivator's intensity
 	 */
-	public float GetIntensity(String agentName, short type)
+	public float GetIntensity(short type)
 	{
-		if(agentName.equalsIgnoreCase(_selfName)){
+		return _motivators[type].GetIntensity();
+		
+		/*if(agentName.equalsIgnoreCase(Constants.SELF)){
 			return _selfMotivators[type].GetIntensity();
 		}else{
 
@@ -334,7 +234,7 @@ public class MotivationalState implements Serializable {
 			}else{
 				return 0;
 			}
-		}
+		}*/
 	}
 	
 	/**
@@ -368,21 +268,7 @@ public class MotivationalState implements Serializable {
 	 */
 	public float GetNeedUrgency(String agentName, short type)
 	{
-		if(agentName.equalsIgnoreCase(_selfName)){
-			return _selfMotivators[type].GetNeedUrgency();
-		}else{
-		
-			
-			Motivator[] otherAgentMotivator = (Motivator[])_otherAgentsMotivators.get(agentName);
-		
-			
-			if(otherAgentMotivator != null){
-				return otherAgentMotivator[type].GetNeedUrgency();
-			}else{
-				return 0;
-			}
-			
-		}
+		return _motivators[type].GetNeedUrgency();
 	}
 	
 	
@@ -391,13 +277,9 @@ public class MotivationalState implements Serializable {
 	 * Gets the received motivator's weight, i.e. how important is the motivator to the agent
 	 * @return a float value corresponding to the motivator's weight
 	 */
-	public float GetWeight(String agentName, short type)
-	{
-		if(agentName.equalsIgnoreCase(_selfName)){
-			return _selfMotivators[type].GetWeight();
-		}else{
-			return ((Motivator[])_otherAgentsMotivators.get(agentName))[type].GetWeight();
-		}
+	public float GetWeight(short type)
+	{	
+		return _motivators[type].GetWeight();
 	}
 	
 	
@@ -407,7 +289,7 @@ public class MotivationalState implements Serializable {
 	 */
 	public void UpdateCompetence(boolean succeed)
 	{
-		Motivator competenceM = _selfMotivators[MotivatorType.COMPETENCE];
+		Motivator competenceM = _motivators[MotivatorType.COMPETENCE];
 		//System.out.println("Competence before update" + competenceM.GetIntensity());
 		
 		competenceM.SetIntensity(newCompetence(succeed));
@@ -424,7 +306,7 @@ public class MotivationalState implements Serializable {
 			value = 10;
 		}
 		
-		Motivator competenceM = _selfMotivators[MotivatorType.COMPETENCE];
+		Motivator competenceM = _motivators[MotivatorType.COMPETENCE];
 		
 		newCompetence = alpha * value + (1 - alpha) * competenceM.GetIntensity();
 		
@@ -438,7 +320,7 @@ public class MotivationalState implements Serializable {
 	
 	public float PredictCompetenceChange(boolean succeed)
 	{
-		Motivator competenceM = _selfMotivators[MotivatorType.COMPETENCE];
+		Motivator competenceM = _motivators[MotivatorType.COMPETENCE];
 		return newCompetence(succeed) - competenceM.GetIntensity();
 	}
 	
@@ -451,7 +333,7 @@ public class MotivationalState implements Serializable {
 	public void UpdateCertainty(float expectation)
 	{
 		//System.out.println("Certainty before update" + _selfMotivators[MotivatorType.CERTAINTY].GetIntensity());
-		_selfMotivators[MotivatorType.CERTAINTY].UpdateIntensity(expectation*3);
+		_motivators[MotivatorType.CERTAINTY].UpdateIntensity(expectation*3);
 		//System.out.println("Certainty after update" + _selfMotivators[MotivatorType.CERTAINTY].GetIntensity());
 	}
 	
@@ -467,25 +349,10 @@ public class MotivationalState implements Serializable {
 			
 			
 			//decay self motivators
-			for(int i = 0; i < _selfMotivators.length; i++){
-				_selfMotivators[i].DecayMotivator();
+			for(int i = 0; i < _motivators.length; i++){
+				_motivators[i].DecayMotivator();
 			}
 			
-			
-			//decay other motivators
-			
-			Collection listOfOtherAgentsMotivators = _otherAgentsMotivators.values();
-
-			Iterator it;
-		
-			it = listOfOtherAgentsMotivators.iterator();
-			
-			while (it.hasNext()){
-				Motivator[] otherAgentsMotivators = (Motivator[]) it.next();
-				for(int i = 0; i < _selfMotivators.length; i++){
-					otherAgentsMotivators[i].DecayMotivator();
-				}	
-			}
 		}
 	}
 	
@@ -496,12 +363,10 @@ public class MotivationalState implements Serializable {
 	 */
 	public String toXml() {
 		String result;
-		Iterator it;
 
 		result = "<MotivationalState>";
-		for(int i = 0; i < _selfMotivators.length; i++){
-			if(_selfMotivators[i] != null)
-				result = result + _selfMotivators[i].toXml();
+		for(int i = 0; i < _motivators.length; i++){
+			result = result + _motivators[i].toXml();
 		}
 		
 		result = result + "</MotivationalState>";

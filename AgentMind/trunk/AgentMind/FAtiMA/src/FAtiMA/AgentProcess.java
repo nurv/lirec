@@ -53,7 +53,12 @@ import FAtiMA.sensorEffector.Event;
  */
 public abstract class AgentProcess implements Serializable {
 
-	protected ArrayList _eventPool;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	protected ArrayList<Event> _eventPool;
 	protected String _self;
 	
 	protected AgentProcess()
@@ -70,7 +75,7 @@ public abstract class AgentProcess implements Serializable {
 	 */
 	public AgentProcess(String name) {
 		_self = name;
-		_eventPool = new ArrayList();
+		_eventPool = new ArrayList<Event>();
 	}
 	
 	/**
@@ -92,12 +97,12 @@ public abstract class AgentProcess implements Serializable {
 	/**
 	 * runs one round of the Appraisal process. 
 	 */
-	public abstract void Appraisal();
+	public abstract void Appraisal(AgentModel am);
 	
 	/**
 	 * runs one round of the Coping process
 	 */
-	public abstract void Coping();
+	public abstract void Coping(AgentModel am);
 	
 	/**
 	 * Gets the action selected in the coping cycle, if any.

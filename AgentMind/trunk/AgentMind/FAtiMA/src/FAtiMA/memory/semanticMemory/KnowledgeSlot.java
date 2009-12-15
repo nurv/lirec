@@ -32,13 +32,12 @@
  * João Dias: 22/05/2006 - Added comments to each public method's header 
  */
 
-package FAtiMA.memory;
+package FAtiMA.memory.semanticMemory;
 
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import FAtiMA.knowledgeBase.KnowledgeBase;
 
 /**
  * Class used to store knowledge in the KnowledgeBase. A KnowledgeSlot can store
@@ -58,7 +57,7 @@ public class KnowledgeSlot implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private HashMap _children;
+	private HashMap<String,Object> _children;
     private String _name;
     private Object _value;
     
@@ -68,7 +67,7 @@ public class KnowledgeSlot implements Serializable {
      */
     public KnowledgeSlot(String name) {
         _name = name;
-        _children = new HashMap();
+        _children = new HashMap<String,Object>();
     }
 	
     /**
@@ -103,7 +102,7 @@ public class KnowledgeSlot implements Serializable {
 	 * Gets an Iterator that iterates over the set of existing child Keys
 	 * @return the key Iterator
 	 */
-	public Iterator getKeyIterator() {
+	public Iterator<String> getKeyIterator() {
 	    return _children.keySet().iterator();
 	}
 	
@@ -135,7 +134,7 @@ public class KnowledgeSlot implements Serializable {
         int number = 0;
         if(this._value != null) number++;
         
-        Iterator it = this._children.values().iterator();
+        Iterator<Object> it = this._children.values().iterator();
         
         while(it.hasNext()) {
         	ks = (KnowledgeSlot) it.next();
@@ -175,7 +174,7 @@ public class KnowledgeSlot implements Serializable {
 	 * @return the converted String
 	 */
 	public String toString() {
-	    Iterator it;
+	    Iterator<Object> it;
 	    String aux;
 	    if(_value == null) {
 	        aux = _name + ":";

@@ -36,29 +36,20 @@
  * **/
 
 
-package FAtiMA.memory.shortTermMemory;
+package FAtiMA.memory.semanticMemory;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.ListIterator;
 
-import FAtiMA.conditions.Condition;
-import FAtiMA.deliberativeLayer.plan.Effect;
-import FAtiMA.deliberativeLayer.plan.Step;
-import FAtiMA.util.AgentLogger;
-import FAtiMA.util.ApplicationLogger;
+
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
 import FAtiMA.wellFormedNames.SubstitutionSet;
 import FAtiMA.wellFormedNames.Symbol;
-import FAtiMA.knowledgeBase.*;
-import FAtiMA.memory.ActionDetail;
-import FAtiMA.memory.KnowledgeSlot;
+
 
 
 /**
@@ -79,176 +70,44 @@ public class WorkingMemory implements Serializable {
 	private static final long serialVersionUID = 1L;
 	public static final short MAXENTRY = 28;
 	
-	/**
-	 * Singleton pattern 
-	 */
-	private static WorkingMemory _wmInstance = null;
-	
-	/**
-	 * Gets the Agent's WorkingMemory
-	 * @return the WorkingMemory
-	 */
-	public static WorkingMemory GetInstance()
-	{
-		if(_wmInstance == null)
-		{
-			_wmInstance = new WorkingMemory();
-		}
-		return _wmInstance;
-	}
-	
-	/**
-	 * Saves the state of the current WorkingMemory to a file,
-	 * so that it can be later restored from file
-	 * @param fileName - the name of the file where we must write
-	 * 		             the WorkingMemory
-	 */
-	public static void SaveState(String fileName)
-	{
-		synchronized(_wmInstance)
-		{
-			try 		
-			{
-				FileOutputStream out = new FileOutputStream(fileName);
-		    	ObjectOutputStream s = new ObjectOutputStream(out);
-		    	
-		    	s.writeObject(_wmInstance);
-	        	s.flush();
-	        	s.close();
-	        	out.close();
-			}
-			catch(Exception e)
-			{
-				AgentLogger.GetInstance().logAndPrint("Exception: " + e);
-				ApplicationLogger.Write(e.getMessage());
-			}
-		}
-	}
-	
-	/**
-	 * Loads a specific state of the WorkingMemory from a previously
-	 * saved file
-	 * @param fileName - the name of the file that contains the stored
-	 * 					 WorkingMemory
-	 */
-	public static void LoadState(String fileName)
-	{	
-		try
-		{
-			FileInputStream in = new FileInputStream(fileName);
-        	ObjectInputStream s = new ObjectInputStream(in);
-        	_wmInstance = (WorkingMemory) s.readObject();
-        	s.close();
-        	in.close();
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}		
-	}
-	
+
 	private KnowledgeSlot _wM;
-	private ArrayList _factList;
+	private ArrayList<KnowledgeSlot> _factList;
 	private boolean _newKnowledge;
-	private ArrayList _newFacts;
-	private ArrayList _changeList;
+	private ArrayList<KnowledgeSlot> _newFacts;
+	private ArrayList<KnowledgeSlot> _changeList;
 
 	/**
 	 * Creates a new Empty WorkingMemory
 	 */
-	private WorkingMemory() {
+	public WorkingMemory() {
 		_wM = new KnowledgeSlot("WM");
-		_factList = new ArrayList(WorkingMemory.MAXENTRY);
+		_factList = new ArrayList<KnowledgeSlot>(WorkingMemory.MAXENTRY);
 		_newKnowledge = false;
-		_newFacts = new ArrayList();
-		_changeList = new ArrayList(WorkingMemory.MAXENTRY);
-	}
-    
-	/**
-	 * Gets the working memory slots
-	 * @return the working memory slots
-	 */
-	// Added 18/03/09
-	public KnowledgeSlot GetWorkingMemory()
-	{
-		return _wM;
+		_newFacts = new ArrayList<KnowledgeSlot>();
+		_changeList = new ArrayList<KnowledgeSlot>(WorkingMemory.MAXENTRY);
 	}
 	
-    /**
-     * Gets a value that indicates whether new Knowledge has been added to the WorkingMemory since
-     * the last inference process
-     * @return true if there is new Knowledge in the WM, false otherwise
-     */
-    public boolean HasNewKnowledge()
-    {
-    	return this._newKnowledge;
-    }
-    
-    public ArrayList GetNewFacts()
-    {
-    	return this._newFacts;
-    }
-    
-    /**
-     *  This method should be called every simulation cycle, and will try to apply InferenceOperators.
-     * 	Note, that if new knowledge results from this process, it will be added immediately to the
-     *  WM. However, the inference will not continue (by trying to use the new knowledge to activate
-     *  more operators) until the method PerformInference is called in next cycle.
-     * 
-     * @return true if the Inference resulted in new Knowledge being added, false if no
-     * new knowledge was inferred
-     */
-    public boolean PerformInference()
-    {
-    	Step infOp;
-    	Step groundInfOp;
-    	ArrayList substitutionSets;
-    	SubstitutionSet sSet;
-    	
-    	_newKnowledge = false;
-    	_newFacts.clear();
-    	
-		for(ListIterator li = KnowledgeBase.GetInstance().GetInferenceOperators().listIterator();li.hasNext();)
-		{
-			infOp = (Step) li.next();
-			substitutionSets = Condition.CheckActivation(infOp.getPreconditions());
-			if(substitutionSets != null)
-			{
-				for(ListIterator li2 = substitutionSets.listIterator();li2.hasNext();)
-				{
-					sSet = (SubstitutionSet) li2.next();
-					groundInfOp = (Step) infOp.clone();
-					groundInfOp.MakeGround(sSet.GetSubstitutions());
-					InferEffects(groundInfOp);
-				}
-			}
-		}
-    	
-    	return _newKnowledge;
-    }
-    
-    private void InferEffects(Step infOp)
-    {
-    	Effect eff;
-    	for(ListIterator li = infOp.getEffects().listIterator();li.hasNext();)
-    	{
-    		eff = (Effect) li.next();
-    		if(eff.isGrounded())
-    		{
-    			Tell(eff.GetEffect().getName(),eff.GetEffect().GetValue().toString());
-    			//System.out.println("InferEffects");    			
-    		}
-    	}
-    }
-    
-	/**
-	 * Inserts a Predicate in the WorkingMemory
-	 * @param predicate - the predicate to be inserted
-	 */
-	public void Assert(Name predicate) {
-		this.Tell(predicate,new Symbol("True"));
-	}
+	public Object Ask(Name name) {
+		KnowledgeSlot aux = _wM;
+		KnowledgeSlot currentSlot;
+		ArrayList<Symbol> fetchList = name.GetLiteralList();
+		ListIterator<Symbol> li = fetchList.listIterator();
+		Symbol l;
 
+		synchronized (this) {
+			while (li.hasNext()) {
+					currentSlot = aux;
+					l = li.next();
+					if (currentSlot.containsKey(l.toString())) {
+						aux = currentSlot.get(l.toString());
+					} 
+					else return null;
+			}
+			return aux;
+		}
+	}
+    
 	/**
 	 * Empties the WorkingMemory
 	 *
@@ -262,7 +121,64 @@ public class WorkingMemory implements Serializable {
 			this._changeList.clear();
 		}
 	}
+	
+    public void ClearChangeList() {
+	    _changeList.clear();
+	}
+    
+    public ArrayList<KnowledgeSlot> GetChangeList() {
+	    return _changeList;
+	}
+    
+    public ListIterator<KnowledgeSlot> GetFactList() {
+	    return _factList.listIterator();
+	}
 
+	public ArrayList<KnowledgeSlot> GetNewFacts()
+    {
+    	return this._newFacts;
+    }
+
+
+	/**
+     * Gets a value that indicates whether new Knowledge has been added to the WorkingMemory since
+     * the last inference process
+     * @return true if there is new Knowledge in the WM, false otherwise
+     */
+    public boolean HasNewKnowledge()
+    {
+    	return this._newKnowledge;
+    }
+	
+	/**
+	 * Rearrange the working memory entries so that the most current accessed entry comes last
+	 */
+	public void RearrangeWorkingMemory(Name predicate)
+	{
+		KnowledgeSlot ks;
+		ArrayList<KnowledgeSlot> tempFactList = new ArrayList<KnowledgeSlot>(_factList); 
+		ListIterator<KnowledgeSlot> li = tempFactList.listIterator();
+		synchronized (this) {
+			while(li.hasNext())
+			{
+				ks = (KnowledgeSlot) li.next();
+				if(ks.getName().equals(predicate.toString()))
+				{
+					_factList.remove(ks);
+					_factList.add(ks);
+					//if(!_changeList.contains(ks))
+					//	_changeList.add(ks);
+					return;
+				}
+			}
+		}			
+	}
+	
+	public void ResetNewKnowledge()
+    {
+    	this._newKnowledge = false;
+    }
+	
 	/**
      * Removes a predicate from the WorkingMemory
 	 * @param predicate - the predicate to be removed
@@ -271,15 +187,16 @@ public class WorkingMemory implements Serializable {
 		
 		KnowledgeSlot aux = _wM;
 		KnowledgeSlot currentSlot = _wM;
-		ArrayList fetchList = predicate.GetLiteralList();
-		ListIterator li = fetchList.listIterator();
+		ArrayList<Symbol> fetchList = predicate.GetLiteralList();
+		ListIterator<Symbol> li = fetchList.listIterator();
+		ListIterator<KnowledgeSlot> li2;
 		Symbol l = null;
 			
 		synchronized (this) {
 			
 			while (li.hasNext()) {
 				currentSlot =  aux;
-				l = (Symbol) li.next();
+				l =  li.next();
 				if (currentSlot.containsKey(l.toString())) {
 					aux = currentSlot.get(l.toString());
 				} else
@@ -297,37 +214,37 @@ public class WorkingMemory implements Serializable {
             }
 			
 			KnowledgeSlot ks;
-			li = _factList.listIterator();
-			while(li.hasNext())
+			li2 = _factList.listIterator();
+			while(li2.hasNext())
 			{
-				ks = (KnowledgeSlot) li.next();
+				ks = li2.next();
 				if(ks.getName().equals(predicate.toString()))
 				{
-					li.remove();
+					li2.remove();
 					return;
 				}
 			}
 		}
 	}
-
+	
 	/**
 	 * Adds a new property or sets its value (if already exists) in the WorkingMemory
 	 * @param property - the property to be added/changed
 	 * @param value - the value to be stored in the property
 	 */
-	public void Tell(Name property, Object value) {
+	public void Tell(KnowledgeBase kb, Name property, Object value) {
 
 		boolean newProperty = false;
 		KnowledgeSlot aux = _wM;
 		KnowledgeSlot currentSlot = _wM;
-		ArrayList fetchList = property.GetLiteralList();
-		ListIterator li = fetchList.listIterator();
+		ArrayList<Symbol> fetchList = property.GetLiteralList();
+		ListIterator<Symbol> li = fetchList.listIterator();
 		Symbol l = null;		
 
 		synchronized (this) {
 			while (li.hasNext()) {
 				currentSlot = aux;
-				l = (Symbol) li.next();
+				l = li.next();
 				if (currentSlot.containsKey(l.toString())) {
 					aux = currentSlot.get(l.toString());
 				} else {
@@ -361,10 +278,10 @@ public class WorkingMemory implements Serializable {
 			else
 			{
 				KnowledgeSlot ks;
-				li = _factList.listIterator();
-				while(li.hasNext())
+				ListIterator<KnowledgeSlot> li2 =  _factList.listIterator();
+				while(li2.hasNext())
 				{
-					ks = (KnowledgeSlot) li.next();
+					ks = li2.next();
 					if(ks.getName().equals(property.toString()))
 					{
 						ks.setValue(value);
@@ -381,7 +298,7 @@ public class WorkingMemory implements Serializable {
 				KnowledgeSlot temp = (KnowledgeSlot) _factList.get(0);
 				
 				Name tempName = Name.ParseName(temp.getName());
-				ArrayList literals = tempName.GetLiteralList();
+				ArrayList<Symbol> literals = tempName.GetLiteralList();
 				li = literals.listIterator();
 			
 				aux = _wM;
@@ -406,47 +323,75 @@ public class WorkingMemory implements Serializable {
 	            }*/
 				currentSlot.remove(l.toString());
 				
-				KnowledgeBase.GetInstance().Tell(tempName, temp.getValue());
+				kb.Tell(tempName, temp.getValue());
 				_factList.remove(temp);		
 				_changeList.remove(temp);
 			}
 		}
 	}
 	
-	/**
-	 * Rearrange the working memory entries so that the most current accessed entry comes last
-	 */
-	public void RearrangeWorkingMemory(Name predicate)
+	public ArrayList<SubstitutionSet> GetPossibleBindings(Name name) {
+		ArrayList<SubstitutionSet> bindingSets = null;
+
+		bindingSets = MatchLiteralList(name.GetLiteralList(), 0, _wM);
+		
+		if (bindingSets == null || bindingSets.size() == 0)
+			return null;
+		else
+			return bindingSets;
+	}
+	
+	public KnowledgeSlot GetObjectDetails(String objectName)
 	{
-		KnowledgeSlot ks;
-		ArrayList tempFactList = (ArrayList) _factList.clone();
-		ListIterator li = tempFactList.listIterator();
+		return _wM.get(objectName);
+	}
+	
+	private ArrayList<SubstitutionSet> MatchLiteralList(ArrayList<Symbol> literals, int index, KnowledgeSlot ks) {
+		Symbol l;
+		String key;
+		ArrayList<SubstitutionSet> bindingSets;
+		ArrayList<SubstitutionSet> newBindingSets;
+		SubstitutionSet subSet;
+		ListIterator<SubstitutionSet> li;
+		Iterator<String> it;
+
+		newBindingSets = new ArrayList<SubstitutionSet>();
+
+		if (index >= literals.size()) {
+			newBindingSets.add(new SubstitutionSet());
+			return newBindingSets;
+		}
+
 		synchronized (this) {
-			while(li.hasNext())
-			{
-				ks = (KnowledgeSlot) li.next();
-				if(ks.getName().equals(predicate.toString()))
-				{
-					_factList.remove(ks);
-					_factList.add(ks);
-					//if(!_changeList.contains(ks))
-					//	_changeList.add(ks);
-					return;
+			l = (Symbol) literals.get(index++);
+
+			if (l.isGrounded()) {
+				if (ks.containsKey(l.toString())) {
+					return MatchLiteralList(literals, index, ks.get(l.toString()));
+				} else
+					return null;
+			}
+
+			it = ks.getKeyIterator();
+			while (it.hasNext()) {
+				key = (String) it.next();
+				bindingSets = MatchLiteralList(literals, index, ks.get(key));
+				if (bindingSets != null) {
+					li = bindingSets.listIterator();
+					while (li.hasNext()) {
+						subSet = (SubstitutionSet) li.next();
+						subSet.AddSubstitution(new Substitution(l, new Symbol(
+								key)));
+						newBindingSets.add(subSet);
+					}
 				}
 			}
-		}			
-	}
-	
-	public ListIterator GetFactList() {
-	    return _factList.listIterator();
-	}
-	
-	public ArrayList GetChangeList() {
-	    return _changeList;
-	}
-	
-	public void ClearChangeList() {
-	    _changeList.clear();
+		}
+
+		if (newBindingSets.size() == 0)
+			return null;
+		else
+			return newBindingSets;
 	}
 	
 	/**
@@ -461,9 +406,9 @@ public class WorkingMemory implements Serializable {
 	{
 		KnowledgeSlot slot;
 		String facts = "<Fact>";
-		for(ListIterator li = _factList.listIterator();li.hasNext();)
+		for(ListIterator<KnowledgeSlot> li = _factList.listIterator();li.hasNext();)
 		{
-			slot = (KnowledgeSlot) li.next();
+			slot = li.next();
 			facts += slot.toString();
 		}
 		facts += "</Fact>\n";

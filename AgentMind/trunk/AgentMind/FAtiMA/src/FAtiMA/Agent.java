@@ -1,12 +1,14 @@
 package FAtiMA;
 
 import java.io.File;
+
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.ListIterator;
 import java.util.StringTokenizer;
@@ -26,15 +28,17 @@ import FAtiMA.deliberativeLayer.DeliberativeProcess;
 import FAtiMA.deliberativeLayer.EmotionalPlanner;
 import FAtiMA.deliberativeLayer.goals.GoalLibrary;
 import FAtiMA.emotionalState.ActiveEmotion;
+import FAtiMA.emotionalState.Appraisal;
+import FAtiMA.emotionalState.AppraisalVector;
 import FAtiMA.emotionalState.BaseEmotion;
 import FAtiMA.emotionalState.EmotionalState;
 import FAtiMA.exceptions.UnknownGoalException;
-import FAtiMA.knowledgeBase.KnowledgeBase;
-import FAtiMA.memory.KnowledgeSlot;
 import FAtiMA.memory.Memory;
-import FAtiMA.memory.autobiographicalMemory.AutobiographicalMemory;
-import FAtiMA.memory.shortTermMemory.ShortTermMemory;
+import FAtiMA.memory.semanticMemory.KnowledgeSlot;
 import FAtiMA.motivationalSystem.MotivationalState;
+import FAtiMA.reactiveLayer.ActionTendencies;
+import FAtiMA.reactiveLayer.EmotionalReactionTreeNode;
+import FAtiMA.reactiveLayer.Reaction;
 import FAtiMA.reactiveLayer.ReactiveProcess;
 import FAtiMA.sensorEffector.Event;
 import FAtiMA.sensorEffector.IONRemoteAgent;
@@ -44,101 +48,26 @@ import FAtiMA.sensorEffector.SpeechAct;
 import FAtiMA.sensorEffector.WorldSimulatorRemoteAgent;
 import FAtiMA.socialRelations.LikeRelation;
 import FAtiMA.util.AgentLogger;
+import FAtiMA.util.Constants;
 import FAtiMA.util.enumerables.AgentPlatform;
 import FAtiMA.util.enumerables.EmotionType;
 import FAtiMA.util.parsers.AgentLoaderHandler;
 import FAtiMA.util.parsers.CultureLoaderHandler;
 import FAtiMA.util.parsers.ScenarioLoaderHandler;
 import FAtiMA.wellFormedNames.Name;
-import FAtiMA.memory.shortTermMemory.WorkingMemory;
+import FAtiMA.wellFormedNames.Symbol;
 
-public class Agent {
-	
-	 /**
-     * The main method
-	 * @throws SAXException 
-	 * @throws ParserConfigurationException 
-	 * @throws IOException 
-     */
-	
-	static public void main(String args[]) throws ParserConfigurationException, SAXException, IOException  {
-		short agentPlatform = 0;
-		String platform;
-				
-		if(args.length == 0){
-			System.out.println("ERROR: zero arguments.");
-			System.exit(1);	
-		}
-		
-		//Load the arguments from the scenario definition present in scenarios.xml	
-		if(args.length == 2){
-			ScenarioLoaderHandler scenHandler = new ScenarioLoaderHandler(args[0],args[1]);
-			SAXParserFactory factory = SAXParserFactory.newInstance();
-			SAXParser parser = factory.newSAXParser();
-			//parser.parse(new File(MIND_PATH + "Scenarios.xml"), scenHandler);
-			parser.parse(new File(MIND_PATH + "LIRECScenarios.xml"), scenHandler);
-			args = scenHandler.getAgentArguments();
-		}
-		
-		platform = args[0];
-		
-		if(platform.equalsIgnoreCase("ION")){
-			agentPlatform = AgentPlatform.ION;
-		}else if(platform.equalsIgnoreCase("WORLDSIM")){
-			agentPlatform = AgentPlatform.WORLDSIM;
-		}else{
-			System.err.println("ERROR: The first argument should be 'ion' or 'worldsim' according to the platform in use.");
-			System.exit(1);
-		}
-		
-		switch(agentPlatform){
-			case AgentPlatform.ION:
-				if(args.length == 14){
-					
-					new Agent(agentPlatform,args[1], Integer.parseInt(args[2]), args[3],Boolean.parseBoolean(args[10]), args[4], args[5], args[6], args[7], args[8], args[9],args[11],args[12],args[13],null,null);
-				}
-				else if(args.length == 5)
-				{
-					System.err.println("Creating the agent instance");
-					new Agent(agentPlatform,args[1],Integer.parseInt(args[2]), args[3], args[4]);
-				}
-				else
-				{
-					System.err.println("Wrong number of arguments!");
-				}
-				break;
-				
-			case AgentPlatform.WORLDSIM:
-				String saveDirectory = "data/log/";
-				if (args.length == 4){
-					new Agent(agentPlatform, args[1],Integer.parseInt(args[2]),saveDirectory,args[3]);
-				}else if(args.length >= 11){
-					HashMap properties = new HashMap();
-					ArrayList goals = new ArrayList();
-					readPropertiesAndGoals(args, properties, goals);
-					new Agent(agentPlatform,args[1], Integer.parseInt(args[2]),saveDirectory,Boolean.parseBoolean(args[3]),args[4],null,null, args[5], args[6], args[7],args[8],args[9],args[10], properties, goals);		
-				}else{
-					System.err.println("Wrong number of arguments!");
-				}
-				break;
-		}
+import FAtiMA.memory.ICompoundCue;
+import FAtiMA.memory.ISpreadActivate;
 
-	}
+public class Agent implements AgentModel {
 	
-	static private void readPropertiesAndGoals(String args[],HashMap properties,ArrayList goals){
-		StringTokenizer st;
-		String left;
-			
-		for(int i = 11; i < args.length; i++) {
-			st = new StringTokenizer(args[i], ":");
-			left = st.nextToken();
-			if(left.equals("GOAL")) {
-			    goals.add(st.nextToken());
-			}
-			else properties.put(left, st.nextToken());
-		}
-	}
+	protected HashMap<String,ModelOfOther> _ToM;
+	protected ArrayList<String> _nearbyAgents;
 	
+	protected EmotionalState _emotionalState;
+	protected MotivationalState _motivationalState;
+	protected Memory _memory;
 	
 	
 	protected boolean _shutdown;
@@ -146,12 +75,12 @@ public class Agent {
 	protected ReactiveProcess _reactiveLayer;
 	protected DialogManager _dialogManager;
 
-	protected ArrayList _actionsForExecution;
-	protected ArrayList _perceivedEvents;
+	protected ArrayList<ValuedAction> _actionsForExecution;
+	protected ArrayList<Event> _perceivedEvents;
 
 	protected RemoteAgent _remoteAgent;
 	protected String _role;
-	protected String _self; //the agent's name
+	protected String _name; //the agent's name
 	protected String _sex;
 	protected String _displayName; 
 	protected SpeechAct _speechAct;
@@ -163,53 +92,64 @@ public class Agent {
 	protected boolean _showStateWindow;
 	protected Logger _logger;
 
+	protected ICompoundCue _compoundCue;
+	protected ISpreadActivate _spreadActivate;
+	
 	private String _saveDirectory;
 	public static final String MIND_PATH = "data/characters/minds/";
 	private static final Name ACTION_CONTEXT = Name.ParseName("ActionContext()");
-	
-	private boolean _readyForNextStep = false;
 
-	public Agent(short agentPlatform, String host, int port, String saveDirectory, boolean displayMode, String name,String lActDatabase, String userLActDatabase, String sex, String role, String displayName, String actionsFile, String goalsFile, String cultureName, HashMap properties, ArrayList goalList) {
+	public Agent(short agentPlatform, String host, int port, String saveDirectory, boolean displayMode, String name,String lActDatabase, 
+			String userLActDatabase, String sex, String role, 
+			String displayName, String actionsFile, 
+			String goalsFile, String cultureName, HashMap<String,String> properties, ArrayList<String> goalList) {
 
+		_emotionalState = new EmotionalState();
+		_memory = new Memory();
+		_motivationalState = new MotivationalState();
+		
+		_ToM = new HashMap<String, ModelOfOther>();
+		_nearbyAgents = new ArrayList<String>();
+		
 		_saveDirectory = saveDirectory;
 		_shutdown = false;
 		_numberOfCycles = 0;
-		_self = name;
+		_name = name;
 		_role = role;
 		_sex = sex;
 		_displayName = displayName;
 		_showStateWindow = displayMode;
 		_currentEmotion = EmotionType.NEUTRAL;//neutral emotion - no emotion
-		_actionsForExecution = new ArrayList();
-		_perceivedEvents = new ArrayList();
+		_actionsForExecution = new ArrayList<ValuedAction>();
+		_perceivedEvents = new ArrayList<Event>();
 		_dialogManager = new DialogManager();
 
 		if(agentPlatform == AgentPlatform.WORLDSIM){
-			properties.put("name", _self);
+			properties.put("name", _name);
 			properties.put("role", _role);
 			properties.put("sex", _sex);	
 		}
-		
-		Memory.GetInstance().setSelf(_self);
+
 
 		try{
 			AgentLogger.GetInstance().initialize(name);
 
 			// Load Plan Operators
-			ActionLibrary.GetInstance().LoadActionsFile("" + MIND_PATH + actionsFile + ".xml", _self);
+			ActionLibrary.GetInstance().LoadActionsFile("" + MIND_PATH + actionsFile + ".xml", this);
 			EmotionalPlanner planner = new EmotionalPlanner(ActionLibrary.GetInstance().GetActions());
 
 			// Load GoalLibrary
-			GoalLibrary goalLibrary = new GoalLibrary(MIND_PATH + goalsFile + ".xml", _self);
+			GoalLibrary goalLibrary = new GoalLibrary(MIND_PATH + goalsFile + ".xml");
 
 
 			//For efficiency reasons these two are not real processes
-			_reactiveLayer = new ReactiveProcess(_self);
+			_reactiveLayer = new ReactiveProcess(_name);
 
-			_deliberativeLayer = new DeliberativeProcess(_self,goalLibrary,planner);
+			_deliberativeLayer = new DeliberativeProcess(_name,goalLibrary,planner);
 	
 			String personalityFile = MIND_PATH + "roles/" + role + "/" + role + ".xml";
 			loadPersonality(personalityFile,agentPlatform, goalList);
+			
 			
 			loadCulture(cultureName);
 			
@@ -218,20 +158,12 @@ public class Agent {
 			}else if (agentPlatform == AgentPlatform.ION){
 				_remoteAgent = new IONRemoteAgent(host, port, this);	
 			}
-			 		
+			 
 			/*
 			 * This call will initialize the timer for the agent's
 			 * simulation time
 			 */
 			AgentSimulationTime.GetInstance();
-
-			_remoteAgent.start();
-
-			if(_showStateWindow){
-				 _agentDisplay = new AgentDisplay(this);
-			}
-
-			this.Run();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -244,10 +176,6 @@ public class Agent {
 	public Agent(short agentPlatform, String host, int port, String directory, String fileName)
 	{
 		try{
-			_self = fileName;
-			Memory.GetInstance().setSelf(_self);
-			AgentLogger.GetInstance().initialize(fileName);
-			
 			_shutdown = false;
 			_numberOfCycles = 0;
 			
@@ -257,11 +185,25 @@ public class Agent {
 			}
 			else if (agentPlatform == AgentPlatform.WORLDSIM)
 			{
-				_remoteAgent = new WorldSimulatorRemoteAgent(host,port,this,new HashMap());
+				_remoteAgent = new WorldSimulatorRemoteAgent(host,port,this,new HashMap<String,String>());
 			}
 			 
-			LoadAgentState(directory + fileName);
-			 
+			LoadAgentState(directory + fileName);			 
+			
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			this.terminateExecution();
+		}
+	}
+	
+	/**
+	 * Starting the agent
+	 * added by Meiyii 19/11/09
+	 */
+	public void StartAgent()
+	{
+		try{
 			_remoteAgent.start();
 	        
 			if(_showStateWindow){
@@ -276,238 +218,102 @@ public class Agent {
 		}
 	}
 	
-	private void loadPersonality(String personalityFile, short agentPlatform, ArrayList goalList) 
-		throws	ParserConfigurationException, SAXException, IOException, UnknownGoalException{
-		
-		AgentLogger.GetInstance().log("LOADING Personality: " + personalityFile);
-		AgentLoaderHandler c = new AgentLoaderHandler(_self,_reactiveLayer,_deliberativeLayer);
-
-		SAXParserFactory factory = SAXParserFactory.newInstance();
-		SAXParser parser = factory.newSAXParser();
-		parser.parse(new File(personalityFile), c);
-
-		//The ION Agent does not load the goals initially from the personality file, therefore we
-		//must clear all the goals loaded.
-		if(agentPlatform == AgentPlatform.ION){
-			_deliberativeLayer.RemoveAllGoals();
-		}
-
-		//The WorldSimulator Agent loads additional goals provided in the starting goal list
-		if(agentPlatform == AgentPlatform.WORLDSIM){
-			ListIterator lt = goalList.listIterator();
-			String goal;
-			String goalName;
-			StringTokenizer st;
-			float impOfSuccess;
-			float impOfFailure;
-			while(lt.hasNext()) {
-				goal = (String) lt.next();
-				st = new StringTokenizer(goal, "|");
-				goalName = st.nextToken();
-				impOfSuccess = Float.parseFloat(st.nextToken());
-				impOfFailure = Float.parseFloat(st.nextToken());
-
-				_deliberativeLayer.AddGoal(goalName, impOfSuccess, impOfFailure);   
-			}	
-		}
-	}
-	
-	private void loadCulture(String cultureName)
-		throws ParserConfigurationException, SAXException, IOException{
-
-		AgentLogger.GetInstance().log("LOADING Culture: " + cultureName);
-		
-		CultureLoaderHandler culture = new CultureLoaderHandler(_self, _reactiveLayer,_deliberativeLayer);
-		SAXParserFactory factory = SAXParserFactory.newInstance();
-		SAXParser parser = factory.newSAXParser();
-		parser.parse(new File(MIND_PATH + cultureName + ".xml"), culture);
-		
-		Ritual r;
-		ListIterator li = culture.GetRituals().listIterator();
-		while(li.hasNext())
-		{
-			r = (Ritual) li.next();
-			_deliberativeLayer.AddRitual(r);
-			_deliberativeLayer.AddGoal(r);
-			AgentLogger.GetInstance().log("Ritual: "+ r.toString());
-		}
-		
-		CulturalDimensions.GetInstance().changeNeedsWeightsAndDecays();
-	}
-	
-	/*private void loadMemory(String memoryName)
-	throws ParserConfigurationException, SAXException, IOException{
-
-		AgentLogger.GetInstance().log("LOADING AM: " + memoryName);
-		
-		AMLoaderHandler am = new AMLoaderHandler();
-		SAXParserFactory factory = SAXParserFactory.newInstance();
-		SAXParser parser = factory.newSAXParser();
-		parser.parse(new File(MIND_PATH + memoryName + ".xml"), am);
-	}*/
-	
-
-	public void SaveAgentState(String agentName)
-	{
-		String fileName = _saveDirectory + agentName;
-
-		AgentSimulationTime.SaveState(fileName+"-Timer.dat");
-		EmotionalState.SaveState(fileName+"-EmotionalState.dat");
-		MotivationalState.SaveState(fileName+"-MotivationalState.dat");
-		KnowledgeBase.SaveState(fileName+"-KnowledgeBase.dat");
-		AutobiographicalMemory.SaveState(fileName+"-AutobiographicalMemory.dat");
-		ShortTermMemory.SaveState(fileName+"-ShortTermMemory.dat");
-		WorkingMemory.SaveState(fileName+"-WorkingMemory.dat");
-		ActionLibrary.SaveState(fileName+"-ActionLibrary.dat");
-		_remoteAgent.SaveState(fileName+"-RemoteAgent.dat");
-
-		try
-		{
-			FileOutputStream out = new FileOutputStream(fileName,false);
-			ObjectOutputStream s = new ObjectOutputStream(out);
-
-			s.writeObject(_deliberativeLayer);
-			s.writeObject(_reactiveLayer);
-			s.writeObject(_dialogManager);
-			s.writeObject(_role);
-			s.writeObject(_self);
-			s.writeObject(_sex);
-			s.writeObject(_speechAct);
-			s.writeObject(new Short(_currentEmotion));
-			s.writeObject(_displayName);
-			s.writeObject(new Boolean(_showStateWindow));
-			s.writeObject(_actionsForExecution);
-			s.writeObject(_perceivedEvents);
-			s.writeObject(_saveDirectory);
-			s.flush();
-			s.close();
-			out.close();
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-	}
-
-	public void SaveAM(String agentName)
-	{
-		String fileName = _saveDirectory + agentName + "-AM.txt";
-		try
-		{
-			FileOutputStream out = new FileOutputStream(fileName);
-			out.write(AutobiographicalMemory.GetInstance().toXML().getBytes());
-			out.flush();
-			out.close();
-			
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-	}
-	
-	public void SaveSTM(String agentName)
-	{
-		String fileName = _saveDirectory + agentName + "-STM.txt";
-		try
-		{
-			FileOutputStream out = new FileOutputStream(fileName);
-			out.write(ShortTermMemory.GetInstance().toXML().getBytes());
-			out.flush();
-			out.close();
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-	}
-	
-	public void SaveWM(String agentName)
-	{
-		String fileName = _saveDirectory + agentName + "-WM.txt";
-		try
-		{
-			FileOutputStream out = new FileOutputStream(fileName);
-			out.write(WorkingMemory.GetInstance().toXML().getBytes());
-			out.flush();
-			out.close();
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-	}
-	
-	public void LoadAgentState(String fileName) 
-		throws IOException, ClassNotFoundException{
-		
-		//FileInputStream in = new FileInputStream("C:\\Meiyii\\LIREC\\AgentMind\\data\\log\\Greta");
-		FileInputStream in = new FileInputStream(fileName);
-		ObjectInputStream s = new ObjectInputStream(in);
-		this._deliberativeLayer = (DeliberativeProcess) s.readObject();
-		this._reactiveLayer = (ReactiveProcess) s.readObject();
-		this._dialogManager = (DialogManager) s.readObject();
-		this._role = (String) s.readObject();
-		this._self = (String) s.readObject();
-		this._sex = (String) s.readObject();
-		this._speechAct = (SpeechAct) s.readObject();
-		this._currentEmotion = ((Short) s.readObject()).shortValue();
-		this._displayName = (String) s.readObject();
-		this._showStateWindow = ((Boolean) s.readObject()).booleanValue();
-		this._actionsForExecution = (ArrayList) s.readObject();
-		this._perceivedEvents = (ArrayList) s.readObject();
-		this._saveDirectory = (String) s.readObject();
-		s.close();
-		in.close();
-
-		KnowledgeBase.LoadState(fileName+"-KnowledgeBase.dat");
-		//System.out.println(KnowledgeBase.GetInstance().toString());
-		EmotionalState.LoadState(fileName+"-EmotionalState.dat");
-		//System.out.println(EmotionalState.GetInstance().toXml());
-		MotivationalState.LoadState(fileName+"-MotivationalState.dat");
-		//System.out.println(MotivationalState.GetInstance().toXml());
-		AgentSimulationTime.LoadState(fileName+"-Timer.dat");
-		AutobiographicalMemory.LoadState(fileName+"-AutobiographicalMemory.dat");
-		//System.out.println(AutobiographicalMemory.GetInstance().toXML());
-		ShortTermMemory.LoadState(fileName+"-ShortTermMemory.dat");
-		//System.out.println(ShortTermMemory.GetInstance().toXML());
-		WorkingMemory.LoadState(fileName+"-WorkingMemory.dat");
-		//System.out.println(WorkingMemory.GetInstance().toString());
-		ActionLibrary.LoadState(fileName+"-ActionLibrary.dat");	
-		//System.out.println(ActionLibrary.GetInstance().toString());
-		_remoteAgent.LoadState(fileName+"-RemoteAgent.dat");
-	}
-	
-	private void terminateExecution(){
-		_deliberativeLayer.ShutDown();
-		_reactiveLayer.ShutDown();
-		_remoteAgent.ShutDown();
-		if(_showStateWindow && _agentDisplay != null) _agentDisplay.dispose();
-	}
-
 	/**
-	 * Gets the name of the agent
-	 * @return the agent's name
+	 * Specifies that the agent must give an answer to a received
+	 * SpeechAct
+	 * @param speechAct - the SpeechAct that needs an answer 
 	 */
-	public String name() {
-		return _self;
+	public void AnswerToSpeechAct(SpeechAct speechAct) {
+	    _speechAct = speechAct;
 	}
 	
-	/**
-	 * Gets the gender of the agent
-	 * @return the agent's sex
-	 */
-	public String sex() 
+	public void AppraiseSelfActionFailed(Event e)
 	{
-		return _sex;
+		_deliberativeLayer.AppraiseSelfActionFailed(e);
 	}
 	
+	
+
 	/**
 	 * Gets the agent's name that is displayed externally
 	 * @return the agent's external name
 	 */
 	public String displayName() {
 	    return _displayName;
+	}
+	
+	public void EnforceCopingStrategy(String coping)
+	{
+		_deliberativeLayer.EnforceCopingStrategy(this, coping);
+		_reactiveLayer.EnforceCopingStrategy(coping);
+	}
+	
+	private ValuedAction FilterSpeechAction(ValuedAction action)
+	{
+		ValuedAction aux=null;
+		
+		if(action != null)
+		{
+			String actionName = action.GetAction().GetFirstLiteral().toString();
+			if(_dialogManager.CanSpeak() || !SpeechAct.isSpeechAct(actionName))
+			{
+				aux = action;
+			}
+		}
+		
+		return aux;
+	}
+
+	/**
+	 * Gets the agent's Deliberative Layer that you can use
+	 * to get access to Deliberative structures such as 
+	 * the goals and planner
+	 * @return the agent's Deliberative Layer
+	 */
+	public DeliberativeProcess getDeliberativeLayer()
+	{
+		return this._deliberativeLayer;
+	}
+	
+	public EmotionalState getEmotionalState()
+	{
+		return _emotionalState;
+	}
+	
+	public Memory getMemory()
+	{
+		return _memory;
+	}
+	
+	public MotivationalState getMotivationalState()
+	{
+		return _motivationalState;
+	}
+	
+	/**
+	 * Gets the name of the agent
+	 * @return the agent's name
+	 */
+	public String getName() {
+		return _name;
+	}
+	
+	/** 
+	 * Gets the compound cue mechanism of the agent
+	 * @return the compound cue mechanism
+	 * added by Meiyii 19/11/09
+	 */	
+	public ICompoundCue getCompoundCue() {
+		return _compoundCue;
+	}
+	
+	/** 
+	 * Gets the spread activate mechanism of the agent
+	 * @return the spread activate mechanism
+	 *  added by Meiyii 19/11/09
+	 */	
+	public ISpreadActivate getSpreadActivate() {
+		return _spreadActivate;
 	}
 	
 	/**
@@ -521,24 +327,148 @@ public class Agent {
 		return this._reactiveLayer;
 	}
 	
-	/**
-	 * Gets the agent's Deliberative Layer that you can use
-	 * to get access to Deliberative structures such as 
-	 * the goals and planner
-	 * @return the agent's Deliberative Layer
-	 */
-	public DeliberativeProcess getDeliberativeLayer()
+	public HashMap<String,ModelOfOther> getToM()
 	{
-		return this._deliberativeLayer;
+		return this._ToM;
 	}
 	
-	/**
-	 * Specifies that the agent must give an answer to a received
-	 * SpeechAct
-	 * @param speechAct - the SpeechAct that needs an answer 
-	 */
-	public void AnswerToSpeechAct(SpeechAct speechAct) {
-	    _speechAct = speechAct;
+	public Collection<String> getNearByAgents()
+	{
+		return this._nearbyAgents;
+	}
+	
+	public void AddNearByAgent(String agent)
+	{
+		if(!agent.equals(this._name))
+		{
+			this._nearbyAgents.add(agent);
+		}
+	}
+	
+	public void RemoveNearByAgent(String entity)
+	{
+		this._nearbyAgents.remove(entity);
+	}
+	
+	public void initializeModelOfOther(String name)
+	{
+		if(!_ToM.containsKey(name))
+		{
+			ModelOfOther model = new ModelOfOther(name, this);
+			_ToM.put(name, model);
+		}
+	}
+	
+	
+	/** 
+	 * Set the compound cue mechanism object of the agent
+	 * @param compoundCue
+	 *  added by Meiyii 19/11/09
+	 */	
+	public void setCompoundCue(ICompoundCue compoundCue) {
+		this._compoundCue = compoundCue;
+	}
+	
+	/** 
+	 * Set the spread activate mechanism object of the agent
+	 * @param spreadActivate
+	 *  added by Meiyii 19/11/09
+	 */	
+	public void setSpreadActivate(ISpreadActivate spreadActivate) {
+		this._spreadActivate = spreadActivate;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void LoadAgentState(String fileName) 
+		throws IOException, ClassNotFoundException{
+		
+		
+		FileInputStream in = new FileInputStream(fileName);
+		ObjectInputStream s = new ObjectInputStream(in);
+		this._ToM = (HashMap<String, ModelOfOther>) s.readObject();
+		this._nearbyAgents = (ArrayList<String>) s.readObject();
+		this._deliberativeLayer = (DeliberativeProcess) s.readObject();
+		this._reactiveLayer = (ReactiveProcess) s.readObject();
+		this._emotionalState = (EmotionalState) s.readObject();
+		this._memory = (Memory) s.readObject();
+		this._motivationalState = (MotivationalState) s.readObject();
+		this._dialogManager = (DialogManager) s.readObject();
+		this._role = (String) s.readObject();
+		this._name = (String) s.readObject();
+		this._sex = (String) s.readObject();
+		this._speechAct = (SpeechAct) s.readObject();
+		this._currentEmotion = ((Short) s.readObject()).shortValue();
+		this._displayName = (String) s.readObject();
+		this._showStateWindow = ((Boolean) s.readObject()).booleanValue();
+		this._actionsForExecution = (ArrayList<ValuedAction>) s.readObject();
+		this._perceivedEvents = (ArrayList<Event>) s.readObject();
+		this._saveDirectory = (String) s.readObject();
+		s.close();
+		in.close();
+
+		AgentSimulationTime.LoadState(fileName+"-Timer.dat");
+		ActionLibrary.LoadState(fileName+"-ActionLibrary.dat");
+		
+		_remoteAgent.LoadState(fileName+"-RemoteAgent.dat");
+	}
+	
+	private void loadCulture(String cultureName)
+		throws ParserConfigurationException, SAXException, IOException{
+
+		AgentLogger.GetInstance().log("LOADING Culture: " + cultureName);
+		
+		CultureLoaderHandler culture = new CultureLoaderHandler(this, _reactiveLayer,_deliberativeLayer);
+		SAXParserFactory factory = SAXParserFactory.newInstance();
+		SAXParser parser = factory.newSAXParser();
+		parser.parse(new File(MIND_PATH + cultureName + ".xml"), culture);
+		
+		Ritual r;
+		ListIterator<Ritual> li = culture.GetRituals(this).listIterator();
+		while(li.hasNext())
+		{
+			r = (Ritual) li.next();
+			_deliberativeLayer.AddRitual(r);
+			_deliberativeLayer.AddGoal(r);
+			AgentLogger.GetInstance().log("Ritual: "+ r.toString());
+		}
+		
+		CulturalDimensions.GetInstance().changeNeedsWeightsAndDecays(this);
+	}
+	
+	private void loadPersonality(String personalityFile, short agentPlatform, ArrayList<String> goalList) 
+		throws	ParserConfigurationException, SAXException, IOException, UnknownGoalException{
+		
+		AgentLogger.GetInstance().log("LOADING Personality: " + personalityFile);
+		AgentLoaderHandler c = new AgentLoaderHandler(this,_reactiveLayer,_deliberativeLayer,_emotionalState);
+
+		SAXParserFactory factory = SAXParserFactory.newInstance();
+		SAXParser parser = factory.newSAXParser();
+		parser.parse(new File(personalityFile), c);
+
+		//The ION Agent does not load the goals initially from the personality file, therefore we
+		//must clear all the goals loaded.
+		if(agentPlatform == AgentPlatform.ION){
+			_deliberativeLayer.RemoveAllGoals();
+		}
+
+		//The WorldSimulator Agent loads additional goals provided in the starting goal list
+		if(agentPlatform == AgentPlatform.WORLDSIM){
+			ListIterator<String> lt = goalList.listIterator();
+			String goal;
+			String goalName;
+			StringTokenizer st;
+			float impOfSuccess;
+			float impOfFailure;
+			while(lt.hasNext()) {
+				goal = (String) lt.next();
+				st = new StringTokenizer(goal, "|");
+				goalName = st.nextToken();
+				impOfSuccess = Float.parseFloat(st.nextToken());
+				impOfFailure = Float.parseFloat(st.nextToken());
+
+				_deliberativeLayer.AddGoal(this, goalName, impOfSuccess, impOfFailure);   
+			}	
+		}
 	}
 	
 	/**
@@ -552,6 +482,78 @@ public class Agent {
 			_perceivedEvents.add(e);
 		}
 	}
+	
+	public void PerceivePropertyChanged(Name propertyName, String value)
+	{
+
+		_memory.getSemanticMemory().Tell(applyPerspective(propertyName, _name), value);
+		
+		for(String other : _nearbyAgents)
+		{
+			ModelOfOther m = _ToM.get(other);
+			m.getMemory().getSemanticMemory().Tell(applyPerspective(propertyName,other), value);
+		}
+	}
+	
+	private Name applyPerspective(Name n, String agentName)
+	{
+		Name newName = (Name) n.clone();
+		ArrayList<Symbol> symbols = newName.GetLiteralList();
+		
+		//I'm changing directly the received name; not a good thing to do
+		for(int i = 0; i < symbols.size(); i++)
+		{
+			if(symbols.get(i).getName().equals(agentName))
+			{
+				symbols.set(i, new Symbol(Constants.SELF));
+			}
+		}
+		
+		return newName;
+	}
+
+	public void PerceivePropertyChanged(String subject, String property, String value)
+	{
+		String newSubject = subject;
+		Name propertyName;
+		
+		if(subject.equals(_name))
+		{
+			newSubject = Constants.SELF;
+		}
+		
+		propertyName = Name.ParseName(newSubject + "(" + property + ")");
+		_memory.getSemanticMemory().Tell(propertyName, value);
+		
+		for(String other : _nearbyAgents)
+		{
+			if(subject.equals(other))
+			{
+				newSubject = Constants.SELF; 
+			}
+			else
+			{
+				newSubject = subject;
+			}
+			ModelOfOther m = _ToM.get(other);
+			propertyName = Name.ParseName(newSubject + "(" + property + ")");
+			m.getMemory().getSemanticMemory().Tell(propertyName, value);
+		}
+	}
+	
+	public void PerceivePropertyRemoved(String subject, String property)
+	{
+		if(subject.equals(_name))
+		{
+			subject = Constants.SELF;
+		}
+		
+		Name propertyName = Name.ParseName(subject + "(" + property + ")");
+		_memory.getSemanticMemory().Retract(propertyName);
+		
+	}
+	
+	
 	
 	/**
 	 * Resets the agent's reasoning layers (deliberative + cognitive)
@@ -572,14 +574,6 @@ public class Agent {
 	public String role() {
 		return _role;
 	}
-
-	/**
-	 * Set the value for readyForNextStep
-	 * @param boolean value of readyForNextStep
-	 */
-	public void setReadyForNextStep(boolean readyForNextStep){
-		this._readyForNextStep = readyForNextStep;
-	}
 	
 	/**
 	 * Runs the agent, endless loop until there is a shutdown
@@ -588,290 +582,219 @@ public class Agent {
 		ValuedAction action;
 		long updateTime = System.currentTimeMillis();
 		
-		while (!_shutdown) {			
-			if(_readyForNextStep)
-			{
-				try {
+		while (!_shutdown) {
+			try {
+				
+			    if(_remoteAgent.isShutDown()) {
+				    _shutdown = true;
+			    }
+				
+			    //updates the agent's simulation timer
+			    AgentSimulationTime.GetInstance().Tick();
+			    
+			    _numberOfCycles++;
+			    long startCycleTime = System.currentTimeMillis();
+			    
+				if (_remoteAgent.isRunning()) {
+					//decay the agent's emotional state
+					//self
+					_emotionalState.Decay();
+					_motivationalState.Decay();
+					_dialogManager.DecayCauseIDontHaveABetterName(_memory);
 					
-					//Thread.sleep(2000);
+					//others
+					//TODO question: apply decay to all models or only to the agents nearby?
+					for(String other: _nearbyAgents)
+					{
+						ModelOfOther m = _ToM.get(other);
+						m.getEmotionalState().Decay();
+						m.getMotivationalState().Decay();
+					}
 					
-				    if(_remoteAgent.isShutDown()) {
-					    _shutdown = true;
-				    }
-					
-				    //updates the agent's simulation timer
-				    AgentSimulationTime.GetInstance().Tick();
-				    
-				    _numberOfCycles++;
-				    long startCycleTime = System.currentTimeMillis();
-				    
-					if (_remoteAgent.isRunning()) {
-						//decay the agent's emotional state
-						EmotionalState.GetInstance().Decay();
-						MotivationalState.GetInstance().Decay();
-						_dialogManager.DecayCauseIDontHaveABetterName();
-						
-						//perceives and appraises new events
-						synchronized (this)
+					//perceives and appraises new events
+					synchronized (this)
+					{
+						for(ListIterator<Event> li = this._perceivedEvents.listIterator(); li.hasNext();)
 						{
-							for(ListIterator li = this._perceivedEvents.listIterator(); li.hasNext();)
-							{
-								Event e = (Event) li.next();
-								AgentLogger.GetInstance().log("Perceiving event: " + e.toName());
-								//inserting the event in AM
-							    //AutobiographicalMemory.GetInstance().StoreAction(e);
-								
-								// Meiyii 11/03/09
-								ShortTermMemory.GetInstance().StoreAction(e);
-								
-							    //registering an Action Context property in the KB
-								WorkingMemory.GetInstance().Tell(ACTION_CONTEXT,e.toName().toString());
-								
-								if(SpeechAct.isSpeechAct(e.GetAction()))
-								{
-									_dialogManager.UpdateDialogState(e);
-								}
-										
-								//adds the event to the deliberative and reactive layers so that they can appraise
-								//the events
-								
-								_reactiveLayer.AddEvent(e);
-								_deliberativeLayer.AddEvent(e);
-							}
-							this._perceivedEvents.clear();
-						}
-						
-						//if there was new data or knowledge added we must apply inference operators
-						//update any inferred property to the outside and appraise the events
-						if(ShortTermMemory.GetInstance().HasNewData() ||
-								WorkingMemory.GetInstance().HasNewKnowledge())
-						{
+							Event e = (Event) li.next();
+							AgentLogger.GetInstance().log("Perceiving event: " + e.toName());
 							
-							//calling the KnowledgeBase inference process
-							WorkingMemory.GetInstance().PerformInference();
 							
-							synchronized (KnowledgeBase.GetInstance())
+							//ToM of others
+							for(String other : _nearbyAgents)
 							{
-								ArrayList facts = WorkingMemory.GetInstance().GetNewFacts();
-								
-								for(ListIterator li = facts.listIterator();li.hasNext();)
-								{
-									KnowledgeSlot ks = (KnowledgeSlot) li.next();
-									if(ks.getName().startsWith(this._self))
-									{
-										_remoteAgent.ReportInternalPropertyChange(Name.ParseName(ks.getName()),
-												ks.getValue());
-									}
-								}
-								
+								Event e2 = e.ApplyPerspective(other);
+								ModelOfOther m = _ToM.get(other);
+								m.getMemory().getEpisodicMemory().StoreAction(m.getMemory(), e2);
+								m.getMemory().getSemanticMemory().Tell(ACTION_CONTEXT,e2.toName().toString());
+								m.AddEvent(e2);
 								
 							}
+							
+							//SELF
+							e = e.ApplyPerspective(_name);
+							
+							//inserting the event in AM
+							
+							_memory.getEpisodicMemory().StoreAction(_memory, e);
+						    //registering an Action Context property in the KB
+							_memory.getSemanticMemory().Tell(ACTION_CONTEXT,e.toName().toString());
+							
+							if(SpeechAct.isSpeechAct(e.GetAction()))
+							{
+								_dialogManager.UpdateDialogState(e, _memory);
+							}
+									
+							//adds the event to the deliberative and reactive layers so that they can appraise
+							//the events
+							
+							_reactiveLayer.AddEvent(e);
+							_deliberativeLayer.AddEvent(e);
 						}
-						
-						//Appraise the events and changes in data
-						_reactiveLayer.Appraisal();
-					    _deliberativeLayer.Appraisal();	
-					    
-						
-					    _reactiveLayer.Coping();
-						
-						
-						_deliberativeLayer.Coping();
+						this._perceivedEvents.clear();
+					}
 					
-						if(_remoteAgent.FinishedExecuting() && _remoteAgent.isRunning()) {
+					//if there was new data or knowledge added we must apply inference operators
+					//update any inferred property to the outside and appraise the events
+					if(_memory.getEpisodicMemory().HasNewData() ||
+							_memory.getSemanticMemory().HasNewKnowledge())
+					{
+						
+						//calling the KnowledgeBase inference process
+						_memory.getSemanticMemory().PerformInference(this);
+						
+						synchronized (_memory.getSemanticMemory())
+						{
+							ArrayList<KnowledgeSlot> facts = _memory.getSemanticMemory().getNewFacts();
 							
-							action = FilterSpeechAction(_reactiveLayer.GetSelectedAction());
-							
-							if(action != null) 
+							for(ListIterator<KnowledgeSlot> li = facts.listIterator();li.hasNext();)
 							{
-								_reactiveLayer.RemoveSelectedAction();
-								_remoteAgent.AddAction(action);
-							}
-							else
-							{
-								action = FilterSpeechAction(_deliberativeLayer.GetSelectedAction());
-								if(action != null)
+								KnowledgeSlot ks = (KnowledgeSlot) li.next();
+								if(ks.getName().startsWith(Constants.SELF))
 								{
-									_deliberativeLayer.RemoveSelectedAction();
-									_remoteAgent.AddAction(action);
+									_remoteAgent.ReportInternalPropertyChange(this._name,Name.ParseName(ks.getName()),
+											ks.getValue());
 								}
 							}
-			
-							_remoteAgent.ExecuteNextAction();
-						}
-						
-						if(System.currentTimeMillis() - updateTime > 1000)
-						{
-							if(_showStateWindow && _agentDisplay != null) 
-							{
-								_agentDisplay.update();
-							}
-							
-							_remoteAgent.ReportInternalState();
-							
-							/*ActiveEmotion auxEmotion = EmotionalState.GetInstance().GetStrongestEmotion();
-							short nextEmotion;
-							if(auxEmotion != null) {
-							    nextEmotion = auxEmotion.GetType(); 
-							}
-							else nextEmotion = EmotionType.NEUTRAL;
-							
-							if(_currentEmotion != nextEmotion) {
-							    _currentEmotion = nextEmotion;
-							    _remoteAgent.ExpressEmotion(EmotionType.GetName(_currentEmotion));
-							}*/
-							
-							updateTime = System.currentTimeMillis();
 						}
 					}
 					
-					long cycleExecutionTime = System.currentTimeMillis() - startCycleTime;
-					_totalexecutingtime += cycleExecutionTime;
-					//System.out.println("Cycle execution (in Millis): " + cycleExecutionTime);
-					//System.out.println("Average time per cycle (in Millis): " + _totalexecutingtime / _numberOfCycles);
-					Thread.sleep(10);
-					//this._readyForNextStep = false;
+					//Appraise the events and changes in data
+					_reactiveLayer.Appraisal(this);
 					
-				}
-				catch (Exception ex) {
-				    //_shutdown = true;
-				    ex.printStackTrace();
-				    //System.out.println(ex);
-				}
-			}
-			/*else
-			{
-				try {
-					Thread.sleep(10);
-				}
-				catch (Exception ex) {				
-				    ex.printStackTrace();
-				}
-			}*/
-		}
-	}
-	
-	private ValuedAction FilterSpeechAction(ValuedAction action)
-	{
-		ValuedAction aux=null;
+					for(ModelOfOther m : _ToM.values())
+					{
+						_reactiveLayer.Appraisal(m);
+					}
+					
+				    _deliberativeLayer.Appraisal(this);	
+				    
+					
+				    _reactiveLayer.Coping(this);
+					_deliberativeLayer.Coping(this);
+				
+					if(_remoteAgent.FinishedExecuting() && _remoteAgent.isRunning()) {
+						
+						//action = FilterSpeechAction(_reactiveLayer.GetSelectedAction());
+						action = _reactiveLayer.GetSelectedAction();
+						
+						if(action != null) 
+						{
+							_reactiveLayer.RemoveSelectedAction();
+							_remoteAgent.AddAction(action);
+						}
+						else
+						{
+							action = FilterSpeechAction(_deliberativeLayer.GetSelectedAction());
+							if(action != null)
+							{
+								_deliberativeLayer.RemoveSelectedAction();
+								_remoteAgent.AddAction(action);
+							}
+						}
 		
-		if(action != null)
-		{
-			String actionName = action.GetAction().GetFirstLiteral().toString();
-			if(_dialogManager.CanSpeak() || !SpeechAct.isSpeechAct(actionName))
-			{
-				aux = action;
-			}
-		}
-		
-		return aux;
-	}
-	
-	public void AppraiseSelfActionFailed(Event e)
-	{
-		_deliberativeLayer.AppraiseSelfActionFailed(e);
-	}
-	
-	public void SpeechStarted()
-	{
-		_dialogManager.SpeechStarted();
-	}
-	
-	public ActiveEmotion simulateAppraisal(String action, String name, ArrayList parameters)
-	{
-		ArrayList emotions;
-		BaseEmotion em;
-		Event e;
-		ActiveEmotion aem;
-		ActiveEmotion maxEmotion = null;
-		
-		if(action.equals("INSERT_CHARACTER")||action.equals("INSERT_OBJECT"))
-		{
-			e = new Event(Memory.GetInstance().getSelf(), "look-at", name);
-			int like = Math.round(LikeRelation.getRelation(Memory.GetInstance().getSelf(), name).getValue());
-			em = EmotionalState.GetInstance().OCCAppraiseAttribution(e, like);
-			return EmotionalState.GetInstance().DetermineActiveEmotion(em);
-		}
-		else if(action.equals("ACT_FOR_CHARACTER"))
-		{
-			if(parameters.size() == 0)
-			{
-				e = new Event(Memory.GetInstance().getSelf(),name, null);
-			}
-			else
-			{
-				e = new Event(Memory.GetInstance().getSelf(),name, (String) parameters.get(0));
-				for(int i = 1; i < parameters.size(); i++)
-				{
-					e.AddParameter(new Parameter("param",parameters.get(i)));
+						_remoteAgent.ExecuteNextAction(this);
+					}
+					
+					if(System.currentTimeMillis() - updateTime > 1000)
+					{
+						if(_showStateWindow && _agentDisplay != null) 
+						{
+							_agentDisplay.update();
+						}
+						
+						_remoteAgent.ReportInternalState(_emotionalState);
+						
+						/*ActiveEmotion auxEmotion = EmotionalState.GetInstance().GetStrongestEmotion();
+						short nextEmotion;
+						if(auxEmotion != null) {
+						    nextEmotion = auxEmotion.GetType(); 
+						}
+						else nextEmotion = EmotionType.NEUTRAL;
+						
+						if(_currentEmotion != nextEmotion) {
+						    _currentEmotion = nextEmotion;
+						    _remoteAgent.ExpressEmotion(EmotionType.GetName(_currentEmotion));
+						}*/
+						
+						updateTime = System.currentTimeMillis();
+					}
 				}
+				
+				long cycleExecutionTime = System.currentTimeMillis() - startCycleTime;
+				_totalexecutingtime += cycleExecutionTime;
+				//System.out.println("Cycle execution (in Millis): " + cycleExecutionTime);
+				//System.out.println("Average time per cycle (in Millis): " + _totalexecutingtime / _numberOfCycles);
+				Thread.sleep(10);
 			}
-			
-			emotions = _reactiveLayer.AppraiseEvent(e);
-			ListIterator li = emotions.listIterator();
-			
-			while(li.hasNext())
-			{
-				em = (BaseEmotion) li.next();
-				aem = EmotionalState.GetInstance().DetermineActiveEmotion(em);
-				if(aem != null && (maxEmotion == null || aem.GetIntensity() > maxEmotion.GetIntensity()))
-				{
-					maxEmotion = aem;
-				}	
+			catch (Exception ex) {
+			    //_shutdown = true;
+			    ex.printStackTrace();
+			    //System.out.println(ex);
 			}
-			
-			return maxEmotion;
 		}
-		else return null;
 	}
 	
-	/*public ActiveEmotion simulateAppraisal(String action, String name, ArrayList parameters)
+	public void SaveAgentState(String agentName)
 	{
-		ArrayList emotions;
-		BaseEmotion em;
-		Event e;
-		ActiveEmotion aem;
-		ActiveEmotion maxEmotion = null;
-		
-		if(action.equals("INSERT_CHARACTER")||action.equals("INSERT_OBJECT"))
+		String fileName = _saveDirectory + agentName;
+
+		AgentSimulationTime.SaveState(fileName+"-Timer.dat");
+		ActionLibrary.SaveState(fileName+"-ActionLibrary.dat");
+		_remoteAgent.SaveState(fileName+"-RemoteAgent.dat");
+
+		try
 		{
-			e = new Event(AutobiographicalMemory.GetInstance().getSelf(), "look-at", name);
-			int like = Math.round(LikeRelation.getRelation(AutobiographicalMemory.GetInstance().getSelf(), name).getValue());
-			em = EmotionalState.GetInstance().OCCAppraiseAttribution(e, like);
-			return EmotionalState.GetInstance().DetermineActiveEmotion(em);
+			FileOutputStream out = new FileOutputStream(fileName);
+			ObjectOutputStream s = new ObjectOutputStream(out);
+
+			s.writeObject(_ToM);
+			s.writeObject(_nearbyAgents);
+			s.writeObject(_deliberativeLayer);
+			s.writeObject(_reactiveLayer);
+			s.writeObject(_emotionalState);
+			s.writeObject(_memory);
+			s.writeObject(_motivationalState);
+			s.writeObject(_dialogManager);
+			s.writeObject(_role);
+			s.writeObject(_name);
+			s.writeObject(_sex);
+			s.writeObject(_speechAct);
+			s.writeObject(new Short(_currentEmotion));
+			s.writeObject(_displayName);
+			s.writeObject(new Boolean(_showStateWindow));
+			s.writeObject(_actionsForExecution);
+			s.writeObject(_perceivedEvents);
+			s.writeObject(_saveDirectory);
+			s.flush();
+			s.close();
+			out.close();
 		}
-		else if(action.equals("ACT_FOR_CHARACTER"))
+		catch(Exception e)
 		{
-			if(parameters.size() == 0)
-			{
-				e = new Event(AutobiographicalMemory.GetInstance().getSelf(),name, null);
-			}
-			else
-			{
-				e = new Event(AutobiographicalMemory.GetInstance().getSelf(),name, (String) parameters.get(0));
-				for(int i = 1; i < parameters.size(); i++)
-				{
-					e.AddParameter(new Parameter("param",parameters.get(i)));
-				}
-			}
-			
-			emotions = _reactiveLayer.AppraiseEvent(e);
-			ListIterator li = emotions.listIterator();
-			
-			while(li.hasNext())
-			{
-				em = (BaseEmotion) li.next();
-				aem = EmotionalState.GetInstance().DetermineActiveEmotion(em);
-				if(aem != null && (maxEmotion == null || aem.GetIntensity() > maxEmotion.GetIntensity()))
-				{
-					maxEmotion = aem;
-				}	
-			}
-			
-			return maxEmotion;
+			e.printStackTrace();
 		}
-		else return null;
-	}*/
+	}
 	
 	
 	protected ValuedAction SelectBestAction() {
@@ -883,7 +806,7 @@ public class Agent {
 		for(int i=0; i < _actionsForExecution.size(); i++)
 		{
 			action = (ValuedAction) _actionsForExecution.get(i);
-			if(bestAction == null || action.GetValue() > bestAction.GetValue())
+			if(bestAction == null || action.GetValue(_emotionalState) > bestAction.GetValue(_emotionalState))
 			{
 				bestAction = action;
 				removeHere = i;
@@ -897,10 +820,98 @@ public class Agent {
 		return bestAction;
 	}
 	
-	public void EnforceCopingStrategy(String coping)
+	/**
+	 * Gets the gender of the agent
+	 * @return the agent's sex
+	 */
+	public String sex() 
 	{
-		_deliberativeLayer.EnforceCopingStrategy(coping);
-		_reactiveLayer.EnforceCopingStrategy(coping);
+		return _sex;
+	}
+	
+	public ActiveEmotion simulateAppraisal(String action, String name, ArrayList<String> parameters)
+	{
+		ArrayList<BaseEmotion> emotions;
+		BaseEmotion em;
+		Event e;
+		ActiveEmotion aem;
+		ActiveEmotion maxEmotion = null;
+		
+		if(action.equals("INSERT_CHARACTER")||action.equals("INSERT_OBJECT"))
+		{
+			e = new Event(Constants.SELF, "look-at", name);
+			int like = Math.round(LikeRelation.getRelation(Constants.SELF, name).getValue(_memory));
+			AppraisalVector v = new AppraisalVector();
+			v.setAppraisalVariable(AppraisalVector.LIKE, like);
+			em = (BaseEmotion) Appraisal.GenerateSelfEmotions(this, e, v).get(0);
+			return _emotionalState.DetermineActiveEmotion(em);
+		}
+		else if(action.equals("ACT_FOR_CHARACTER"))
+		{
+			if(parameters.size() == 0)
+			{
+				e = new Event(Constants.SELF,name, null);
+			}
+			else
+			{
+				e = new Event(Constants.SELF,name, (String) parameters.get(0));
+				for(int i = 1; i < parameters.size(); i++)
+				{
+					e.AddParameter(new Parameter("param",parameters.get(i)));
+				}
+			}
+			
+			Reaction r = ReactiveProcess.Evaluate(this, e);
+			emotions = Appraisal.GenerateSelfEmotions(this, e, ReactiveProcess.translateEmotionalReaction(r));
+			ListIterator<BaseEmotion> li = emotions.listIterator();
+			
+			while(li.hasNext())
+			{
+				em = (BaseEmotion) li.next();
+				aem = _emotionalState.DetermineActiveEmotion(em);
+				if(aem != null && (maxEmotion == null || aem.GetIntensity() > maxEmotion.GetIntensity()))
+				{
+					maxEmotion = aem;
+				}	
+			}
+			
+			return maxEmotion;
+		}
+		else return null;
+	}
+	
+	public void SpeechStarted()
+	{
+		_dialogManager.SpeechStarted();
+	}
+	
+	
+	
+	private void terminateExecution(){
+		_deliberativeLayer.ShutDown();
+		_reactiveLayer.ShutDown();
+		_remoteAgent.ShutDown();
+		if(_showStateWindow && _agentDisplay != null) _agentDisplay.dispose();
+	}
+
+	@Override
+	public ActionTendencies getActionTendencies() {
+		return _reactiveLayer.getActionTendencies();
+	}
+	
+	public EmotionalReactionTreeNode getEmotionalReactions()
+	{
+		return _reactiveLayer.getEmotionalReactions();
+	}
+
+	@Override
+	public void clearEvents() {
+		_reactiveLayer.clearEvents();	
+	}
+
+	@Override
+	public Collection<Event> getEvents() {
+		return _reactiveLayer.getEvents();
 	}
 
 

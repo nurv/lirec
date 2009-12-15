@@ -23,10 +23,10 @@ import org.xml.sax.helpers.DefaultHandler;
 
 public abstract class ReflectXMLHandler extends DefaultHandler {
     // used for reflect
-    Class[] argTypes = {Attributes.class};
-    Class[] charArgTypes = {String.class};
+    Class<?>[] argTypes = {Attributes.class};
+    Class<?>[] charArgTypes = {String.class};
     // used for reflect
-    Class cl;
+    Class<? extends ReflectXMLHandler> cl;
     String lastTag;
 
     public ReflectXMLHandler() {
@@ -58,8 +58,8 @@ public abstract class ReflectXMLHandler extends DefaultHandler {
       Method meth = null;
       try {
         // Fetches the method
-        meth = cl.getMethod(methodName,null);
-        meth.invoke(this,null);
+        meth = cl.getMethod(methodName,(Class<?>[])null);
+        meth.invoke(this,(Object[])null);
       }
       catch (java.lang.NoSuchMethodException e) {
         //System.err.println("Unable to handle message! No such method " + methodName + "(" + argTypes + ")");

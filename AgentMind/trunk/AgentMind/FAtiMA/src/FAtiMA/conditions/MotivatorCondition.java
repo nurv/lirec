@@ -4,20 +4,26 @@ import java.util.ArrayList;
 
 import org.xml.sax.Attributes;
 
+import FAtiMA.AgentModel;
 import FAtiMA.util.AgentLogger;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
+import FAtiMA.wellFormedNames.SubstitutionSet;
 import FAtiMA.wellFormedNames.Symbol;
 
 public class MotivatorCondition extends Condition {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Parses a Motivator given a XML attribute list
 	 * @param attributes - A list of XML attributes
 	 * @return - the Motivator Parsed
 	 */
 	public static MotivatorCondition ParseMotivator(Attributes attributes) {
-		MotivatorCondition cond;
 		String drive;
 		Name target;
 		float value;
@@ -54,7 +60,7 @@ public class MotivatorCondition extends Condition {
 	 * Checks if the Motivator Condition is verified in the agent's memory (KB + AM + Motivational System)
 	 * @return true if the condition is verified, false otherwise
 	 */
-	public boolean CheckCondition() {
+	public boolean CheckCondition(AgentModel am) {
 		//TODO: implment this based on the motivational system
 		return true;
 		
@@ -132,7 +138,7 @@ public class MotivatorCondition extends Condition {
 	 * @return a new Property with the substitutions applied
 	 * @see Substitution
 	 */
-	public Object Ground(ArrayList bindingConstraints)
+	public Object Ground(ArrayList<Substitution> bindingConstraints)
 	{
 		MotivatorCondition aux = (MotivatorCondition) this.clone();
 		aux.MakeGround(bindingConstraints);
@@ -147,7 +153,7 @@ public class MotivatorCondition extends Condition {
 	 * @param bindings - A list of substitutions of the type "[Variable]/value"
 	 * @see Substitution
 	 */
-    public void MakeGround(ArrayList bindings)
+    public void MakeGround(ArrayList<Substitution> bindings)
     {
     	this._target.MakeGround(bindings);
     }
@@ -198,7 +204,7 @@ public class MotivatorCondition extends Condition {
 		AgentLogger.GetInstance().logAndPrint("Motivator=" + _drive + " target=" + _target + " value=" + _value + "\n");
 	}
 	
-	protected ArrayList GetBindings(Name groundValue, Name value) {
+	protected ArrayList<SubstitutionSet> GetBindings(Name groundValue, Name value) {
 		return null;
 		//TODO: implement using motivational component
 	}
@@ -212,7 +218,7 @@ public class MotivatorCondition extends Condition {
      * If John owns the ball, the method returns [x]/John
      * @return returns all set of Substitutions that make the condition valid.
      */
-	protected ArrayList GetValueBindings() {
+	protected ArrayList<Substitution> GetValueBindings(AgentModel am) {
 		return null;
 		//TODO: implement using motivational component
 	}

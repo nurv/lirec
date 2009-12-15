@@ -33,10 +33,18 @@ package FAtiMA.Display;
 import javax.swing.JPanel;
 
 import FAtiMA.Agent;
+import FAtiMA.AgentModel;
 
 
 public abstract class AgentDisplayPanel extends JPanel {
     
-    public abstract boolean Update(Agent ag); 
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public abstract boolean Update(Agent ag);
+	
+	public abstract boolean Update(AgentModel am);
 
 }

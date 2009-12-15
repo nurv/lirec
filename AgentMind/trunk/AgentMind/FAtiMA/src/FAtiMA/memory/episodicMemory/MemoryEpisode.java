@@ -32,22 +32,18 @@
  *						   ready to be used by the LanguageEngine 
  * **/
 
-package FAtiMA.memory.autobiographicalMemory;
+package FAtiMA.memory.episodicMemory;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Random;
 
 import FAtiMA.deliberativeLayer.goals.Goal;
 import FAtiMA.emotionalState.BaseEmotion;
-import FAtiMA.memory.ActionDetail;
-import FAtiMA.memory.ActionDetailComparator;
-import FAtiMA.memory.SearchKey;
-import FAtiMA.memory.Time;
 import FAtiMA.sensorEffector.Event;
+import FAtiMA.util.Constants;
 import FAtiMA.util.enumerables.EmotionValence;
 import FAtiMA.memory.Memory;
 
@@ -61,11 +57,11 @@ public class MemoryEpisode implements Serializable {
 	
 	//private String _abstract;
 	private Time _time;
-	private ArrayList _people;
+	private ArrayList<String> _people;
 	private String _location;
-	private ArrayList _objects;
+	private ArrayList<String> _objects;
 	//private HashMap _detailsByKey;
-	private ArrayList _details;
+	private ArrayList<ActionDetail> _details;
 	
 	private int _numberOfDominantActions;
 	//private ArrayList _dominantActions;
@@ -74,10 +70,10 @@ public class MemoryEpisode implements Serializable {
 	{
 		this._location = location;
 		this._time = time;
-		this._people = new ArrayList();
-		this._objects = new ArrayList();
+		this._people = new ArrayList<String>();
+		this._objects = new ArrayList<String>();
 		//this._detailsByKey = new HashMap();
-		this._details = new ArrayList();
+		this._details = new ArrayList<ActionDetail>();
 		this._numberOfDominantActions = 3;
 		//this._dominantActions = new ArrayList(this._numberOfDominantActions);	
 	}
@@ -110,7 +106,7 @@ public class MemoryEpisode implements Serializable {
 		return this._time;
 	}
 	
-	public ArrayList getPeople()
+	public ArrayList<String> getPeople()
 	{
 		return this._people;
 	}
@@ -125,12 +121,12 @@ public class MemoryEpisode implements Serializable {
 		this._location = location;
 	}
 	
-	public ArrayList getObjects()
+	public ArrayList<String> getObjects()
 	{
 		return this._objects;
 	}
 	
-	public ArrayList getDetails()
+	public ArrayList<ActionDetail> getDetails()
 	{
 		return this._details;
 	}
@@ -244,11 +240,11 @@ public class MemoryEpisode implements Serializable {
 	}
 	*/
 	
-	private ArrayList FilterInternalEvents(ArrayList events)
+	/*private ArrayList<ActionDetail> FilterInternalEvents(ArrayList<ActionDetail> events)
 	{
 		ActionDetail action;
-		ArrayList newList = new ArrayList();
-		for(ListIterator li = events.listIterator();li.hasNext();)
+		ArrayList<ActionDetail> newList = new ArrayList<ActionDetail>();
+		for(ListIterator<ActionDetail> li = events.listIterator();li.hasNext();)
 		{
 			action = (ActionDetail) li.next();
 			if(action.getAction().equals("activate") || 
@@ -261,13 +257,13 @@ public class MemoryEpisode implements Serializable {
 		return newList;
 	}
 	
-	private ArrayList FilterExternalEvents(ArrayList events)
+	private ArrayList<ActionDetail> FilterExternalEvents(ArrayList<ActionDetail> events)
 	{
 		ActionDetail action;
-		ArrayList newList = new ArrayList();
-		for(ListIterator li = events.listIterator();li.hasNext();)
+		ArrayList<ActionDetail> newList = new ArrayList<ActionDetail>();
+		for(ListIterator<ActionDetail> li = events.listIterator();li.hasNext();)
 		{
-			action = (ActionDetail) li.next();
+			action = li.next();
 			if(!action.getAction().equals("activate") && 
 					!action.getAction().equals("succeed") &&
 					!action.getAction().equals("fail"))
@@ -277,17 +273,17 @@ public class MemoryEpisode implements Serializable {
 		}
 		return newList;
 	}
+	*/
 	
-	public String GenerateSummary()
+	public String GenerateSummary(Memory m)
 	{
-		Random random = new Random();
 		ActionDetail action;
 		BaseEmotion strongestEmotion = null;
 		BaseEmotion secondStrongestEmotion = null;
 		int numberOfDetails = _numberOfDominantActions;
 		
 		// version with both internal and external events
-		List auxList = (List) _details.clone();
+		List<ActionDetail> auxList = new ArrayList<ActionDetail>(_details);
 		// version with only internal events
 		//List auxList = (List) FilterInternalEvents(_details);
 		// version with only external events
@@ -331,10 +327,10 @@ public class MemoryEpisode implements Serializable {
 		String AMSummary = "";
 		boolean firstEvent = true;
 		
-		ListIterator li = auxList.listIterator();
+		ListIterator<ActionDetail> li = auxList.listIterator();
 		while(li.hasNext())
 		{
-			action = (ActionDetail) li.next();
+			action = li.next();
 			if(action.getEmotion().GetPotential() > 0)
 			{
 				AMSummary += "<Event>";
@@ -345,13 +341,13 @@ public class MemoryEpisode implements Serializable {
 					firstEvent = false;
 				}
 				
-				AMSummary += SummaryGenerator.GenerateActionSummary(action);
+				AMSummary += SummaryGenerator.GenerateActionSummary(m, action);
 				
 				if(strongestEmotion != null &&
 						action.getEmotion().GetType() == strongestEmotion.GetType() &&
 						action.getEmotion().GetPotential() == strongestEmotion.GetPotential())
 				{
-					AMSummary += SummaryGenerator.GenerateEmotionSummary(strongestEmotion);
+					AMSummary += SummaryGenerator.GenerateEmotionSummary(m, strongestEmotion);
 				}
 				
 				/*if(secondStrongestEmotion != null &&
@@ -371,7 +367,7 @@ public class MemoryEpisode implements Serializable {
 	public float determineEmotionAverage()
 	{
 	
-		ListIterator li;
+		ListIterator<ActionDetail> li;
 		ActionDetail action;
 		BaseEmotion em;
 		float value = 0;
@@ -380,7 +376,7 @@ public class MemoryEpisode implements Serializable {
 		//determine the average intensity of emotions in the episode
 		for(li = this._details.listIterator();li.hasNext();)
 		{
-			action = (ActionDetail) li.next();
+			action = li.next();
 			em = action.getEmotion();
 			if(em.GetPotential() > 0)
 			{
@@ -409,7 +405,7 @@ public class MemoryEpisode implements Serializable {
 	
 	public float determineEmotionStdDeviation()
 	{
-		ListIterator li;
+		ListIterator<ActionDetail> li;
 		ActionDetail action;
 		BaseEmotion em;
 		float quadraticError = 0;
@@ -420,7 +416,7 @@ public class MemoryEpisode implements Serializable {
 		//determine the standard deviation of emotion intensity in the episode 
 		for(li = this._details.listIterator();li.hasNext();)
 		{
-			action = (ActionDetail) li.next();
+			action = li.next();
 			em = action.getEmotion();
 			if(em.GetPotential() > 0)
 			{
@@ -475,12 +471,12 @@ public class MemoryEpisode implements Serializable {
 	{
 		float familiarity = 0;
 		ActionDetail action;
-		ListIterator li = _details.listIterator();
+		ListIterator<ActionDetail> li = _details.listIterator();
 		Event e = g.GetActivationEvent();
 		
 		while(li.hasNext())
 		{
-			action = (ActionDetail) li.next();
+			action = li.next();
 			if(action.getAction().equals(e.GetAction()))
 			{
 				//ok, we've found a goal activation
@@ -507,19 +503,19 @@ public class MemoryEpisode implements Serializable {
 	public float AssessFamiliarity(Event event)
 	{
 		ActionDetail action;
-		ListIterator li = _details.listIterator();
+		ListIterator<ActionDetail> li = _details.listIterator();
 		float familiarity = 0;
 		
 		while(li.hasNext())
 		{
-			action = (ActionDetail) li.next();
+			action = li.next();
 			if(action.getAction().equals(event.GetAction()))
 			{
 				//if I've seen the action before, I'm sligthly familiar 
 				
 				familiarity += 0.2;
 				
-				if(action.getSubject().equals(Memory.GetInstance().getSelf()))
+				if(action.getSubject().equals(Constants.SELF))
 				{
 					//if the event was performed by me, I'm more familiar with it
 					familiarity += 0.4; 
@@ -548,16 +544,16 @@ public class MemoryEpisode implements Serializable {
 		return familiarity;
 	}
 	
-	public int CountEvent(ArrayList searchKeys)
+	public int CountEvent(ArrayList<SearchKey> searchKeys)
 	{
-		ListIterator li;
+		ListIterator<ActionDetail> li;
 		ActionDetail action;
 		int count = 0;
 		
 		li = this._details.listIterator();
 		while(li.hasNext())
 		{
-			action = (ActionDetail) li.next();
+			action =  li.next();
 			if(action.verifiesKeys(searchKeys)) 
 			{
 				count++;
@@ -567,10 +563,10 @@ public class MemoryEpisode implements Serializable {
 		return count;
 	}
 	
-	public boolean VerifiesKeys(ArrayList searchKeys)
+	public boolean VerifiesKeys(ArrayList<SearchKey> searchKeys)
 	{
 		ActionDetail action;
-		ListIterator li = _details.listIterator();
+		ListIterator<ActionDetail> li = _details.listIterator();
 		
 		while(li.hasNext())
 		{
@@ -586,7 +582,7 @@ public class MemoryEpisode implements Serializable {
 	
 	public boolean VerifiesKey(SearchKey k)
 	{
-		ListIterator li;
+		ListIterator<ActionDetail> li;
 		ActionDetail action;
 		short field = k.getField();
 		
@@ -607,23 +603,19 @@ public class MemoryEpisode implements Serializable {
 			li = this._details.listIterator();
 			while(li.hasNext())
 			{
-				action = (ActionDetail) li.next();
+				action = li.next();
 				if(action.verifiesKey(k)) return true;
 			}
 			return false;
 		}
 	}	
 	
-	public ArrayList GetDetailsByKey(SearchKey key)
+	public ArrayList<ActionDetail> GetDetailsByKey(SearchKey key)
 	{
-		ListIterator li;
-		ActionDetail action;
-		ArrayList details = new ArrayList();
+		ArrayList<ActionDetail> details = new ArrayList<ActionDetail>();
 		
-		li = this._details.listIterator();
-		while(li.hasNext())
+		for(ActionDetail action : _details)
 		{
-			action = (ActionDetail) li.next();
 			if(action.verifiesKey(key)) 
 			{
 				details.add(action);
@@ -633,23 +625,19 @@ public class MemoryEpisode implements Serializable {
 		return details;
 	}
 	
-	public ArrayList GetDetailsByKeys(ArrayList keys)
+	public ArrayList<ActionDetail> GetDetailsByKeys(ArrayList<SearchKey> keys)
 	{
-		ListIterator li;
-		ActionDetail action;
-		ArrayList details = new ArrayList();
+		ArrayList<ActionDetail> details = new ArrayList<ActionDetail>();
 		
-		li = this._details.listIterator();
-		while(li.hasNext())
+		for(ActionDetail action : _details)
 		{
-			action = (ActionDetail) li.next();
 			if(action.verifiesKeys(keys) && !details.contains(action)) 
 			{
 				details.add(action);
 			}
 		}
-		
 		return details;
+		
 	}
 	
 	public String toXML()
@@ -660,7 +648,7 @@ public class MemoryEpisode implements Serializable {
 		episode += "<Time>" + this._time + "</Time>";
 		episode += "<People>" + this._people + "</People>";
 		episode += "<Objects>" + this._objects + "</Objects>";
-		for(ListIterator li = _details.listIterator();li.hasNext();)
+		for(ListIterator<ActionDetail> li = _details.listIterator();li.hasNext();)
 		{
 			detail = (ActionDetail) li.next();
 			episode += detail.toXML();

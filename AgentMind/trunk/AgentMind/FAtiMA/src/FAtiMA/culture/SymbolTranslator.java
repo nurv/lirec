@@ -1,21 +1,16 @@
 package FAtiMA.culture;
 
 import java.util.HashMap;
-import java.util.Iterator;
 
 import FAtiMA.exceptions.DuplicateSymbolTranslatorEntry;
-import FAtiMA.knowledgeBase.KnowledgeBase;
-import FAtiMA.sensorEffector.RemoteAction;
-import FAtiMA.util.AgentLogger;
-import FAtiMA.wellFormedNames.Name;
 
 /** @author: Samuel Mascarenhas
 */
 
 public class SymbolTranslator {
 
-	private HashMap _symbolToAction; //symbols are Strings
-	private HashMap _actionToSymbol; //actions are Strings
+	private HashMap<String,String> _symbolToAction; //symbols are Strings
+	private HashMap<String,String> _actionToSymbol; //actions are Strings
 	
 	/**
 	 * Singleton pattern 
@@ -24,8 +19,8 @@ public class SymbolTranslator {
 	
 	
 	private SymbolTranslator(){
-		this._symbolToAction = new HashMap();
-		this._actionToSymbol = new HashMap();
+		this._symbolToAction = new HashMap<String,String>();
+		this._actionToSymbol = new HashMap<String,String>();
 	}
 	
 	

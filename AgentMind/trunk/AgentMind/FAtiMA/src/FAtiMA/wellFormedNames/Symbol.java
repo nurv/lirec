@@ -44,6 +44,7 @@ import java.util.ListIterator;
 import FAtiMA.memory.Memory;
 
 
+
 /**
  * Well Formed Name with just one literal The alphabet that makes up the symbols
  * expressions consists of: 
@@ -100,9 +101,9 @@ public class Symbol extends Name implements Serializable
      * 
      * @return the list with the symbols
      */
-    public ArrayList GetLiteralList()
+    public ArrayList<Symbol> GetLiteralList()
     {
-        ArrayList literals = new ArrayList(1);
+        ArrayList<Symbol> literals = new ArrayList<Symbol>(1);
         literals.add(this);
         return literals;
     }
@@ -122,7 +123,7 @@ public class Symbol extends Name implements Serializable
      * @param kb - a reference to the KnowledgeBase
      * @return the Symbol's name
      */
-    public Object evaluate(Memory memory)
+    public Object evaluate(Memory m)
     {
         if (!this._grounded) return null;
         return this._name;
@@ -167,7 +168,7 @@ public class Symbol extends Name implements Serializable
 	 * @return a new Name with the substitutions applied
 	 * @see Substitution
 	 */
-    public Object Ground(ArrayList bindings)
+    public Object Ground(ArrayList<Substitution> bindings)
     {
     	Name aux = (Name) this.clone();
     	aux.MakeGround(bindings);
@@ -182,10 +183,10 @@ public class Symbol extends Name implements Serializable
 	 * @param bindings - A list of substitutions of the type "[Variable]/value"
 	 * @see Substitution
 	 */
-    public void MakeGround(ArrayList bindings)
+    public void MakeGround(ArrayList<Substitution> bindings)
     {
     	 Substitution b;
-         ListIterator li;
+         ListIterator<Substitution> li;
          
          if(this._grounded) return;
          
@@ -193,7 +194,7 @@ public class Symbol extends Name implements Serializable
          
          while (li.hasNext())
          {
-             b = (Substitution) li.next();
+             b =  li.next();
              if (this._name.equals(b.getVariable()._name))
              {
              	this._name = b.getValue()._name;

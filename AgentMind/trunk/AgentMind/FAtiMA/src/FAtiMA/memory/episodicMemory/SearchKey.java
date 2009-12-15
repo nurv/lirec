@@ -1,5 +1,5 @@
 /** 
- * ActionDetailComparator.java - 
+ * SearchKey.java - 
  *  
  * Copyright (C) 2006 GAIPS/INESC-ID 
  *  
@@ -19,55 +19,48 @@
  * 
  * Company: GAIPS/INESC-ID
  * Project: FAtiMA
- * Created: 27/08/2006 
+ * Created: 19/Jul/2006 
  * @author: João Dias
  * Email to: joao.assis@tagus.ist.utl.pt
  * 
  * History: 
- * João Dias: 27/08/2006 - File created
+ * João Dias: 19/Jul/2006 - File created
+ * João Dias: 02/10/2006 - Now its possible to have SearchKeys with objects instead
+ * 						   of Strings
  * Meiyii Lim: 13/03/2009 - Moved the class from FAtiMA.autobiographicalMemory package
- */
+ * **/
 
-package FAtiMA.memory;
+package FAtiMA.memory.episodicMemory;
 
-import java.util.Comparator;
-
-/**
- * @author João Dias
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
-
-
-public class ActionDetailComparator implements Comparator{ 
+public class SearchKey {
 	
-	public static byte CompareByEmotionIntensity = 0;
-	public static byte CompareByOrder = 1;
+	public static short PEOPLE = 1;
+	public static short LOCATION = 2;
+	public static short OBJECTS = 3;
+	public static short ACTION = 4;
+	public static short SUBJECT = 5;
+	public static short TARGET = 6;
+	public static short PARAMETERS = 7;
+	public static short MAXELAPSEDTIME = 8;
+	public static short CONTAINSPARAMETER = 9;
 	
+	private short _field;
+	private Object _key;
 	
-	private byte _fieldToCompare;
-	
-	public ActionDetailComparator(byte compareField)
-	{	
-		this._fieldToCompare = compareField;
+	public SearchKey(short field, Object key)
+	{
+		this._field = field;
+		this._key = key;
 	}
 	
-	
-	public int compare(Object a1, Object a2)
+	public short getField()
 	{
-		float aux;
-		if(_fieldToCompare == CompareByEmotionIntensity)
-		{
-			aux = ((ActionDetail) a2).getEmotion().GetPotential() - ((ActionDetail)a1).getEmotion().GetPotential();
-		}
-		else
-		{
-			aux = ((ActionDetail)a2).getID() - ((ActionDetail)a1).getID();
-		}
-		 
-		if(aux > 0) return -1;
-		if(aux == 0) return 0;
-		else return 1;
-	}	
+		return this._field;
+	}
+	
+	public Object getKey()
+	{
+		return this._key;
+	}
+
 }

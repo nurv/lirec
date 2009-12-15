@@ -9,9 +9,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 import FAtiMA.conditions.Condition;
-import FAtiMA.knowledgeBase.KnowledgeBase;
 import FAtiMA.wellFormedNames.IGroundable;
-import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
 
 /**
@@ -86,7 +84,7 @@ public class EffectOnDrive implements IGroundable, Cloneable, Serializable {
 	 * @see Substitution
 	 * @return a new Effect with its variables grounded
 	 */
-	public Object Ground(ArrayList substs) {
+	public Object Ground(ArrayList<Substitution> substs) {
 		Effect aux = (Effect) this.clone();
 		aux.MakeGround(substs);
 		return aux;
@@ -100,7 +98,7 @@ public class EffectOnDrive implements IGroundable, Cloneable, Serializable {
 	 * @param bindings - A list of substitutions of the type "[Variable]/value"
 	 * @see Substitution
 	 */
-    public void MakeGround(ArrayList bindings)
+    public void MakeGround(ArrayList<Substitution> bindings)
     {
     	this._effectOnDrive.MakeGround(bindings);
     }

@@ -56,7 +56,8 @@ import java.util.ArrayList;
 
 import org.xml.sax.Attributes;
 
-import FAtiMA.memory.Memory;
+import FAtiMA.AgentModel;
+import FAtiMA.memory.semanticMemory.KnowledgeBase;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
 import FAtiMA.wellFormedNames.Symbol;
@@ -117,10 +118,10 @@ public class PredicateCondition extends Condition {
 	 * @return true if the Predicate is verified, false otherwise
 	 * @see KnowledgeBase
 	 */
-	public boolean CheckCondition() {
+	public boolean CheckCondition(AgentModel am) {
 		boolean result;
 		if(!_name.isGrounded()) return false;
-		result = Memory.GetInstance().AskPredicate(_name); 
+		result = am.getMemory().getSemanticMemory().AskPredicate(_name); 
 		return _positive == result;
 	}
 	
@@ -168,7 +169,7 @@ public class PredicateCondition extends Condition {
 	 * @return a new Predicate with the substitutions applied
 	 * @see Substitution
 	 */
-	public Object Ground(ArrayList bindings) {
+	public Object Ground(ArrayList<Substitution> bindings) {
 		PredicateCondition aux = (PredicateCondition) this.clone();
 		aux.MakeGround(bindings);
 		return aux;
@@ -182,7 +183,7 @@ public class PredicateCondition extends Condition {
 	 * @param bindings - A list of substitutions of the type "[Variable]/value"
 	 * @see Substitution
 	 */
-    public void MakeGround(ArrayList bindings)
+    public void MakeGround(ArrayList<Substitution> bindings)
     {
     	this._name.MakeGround(bindings);
     }
@@ -261,9 +262,9 @@ public class PredicateCondition extends Condition {
      * If John owns the ball, the method returns [x]/John
      * @return returns all set of Substitutions that make the condition valid.
 	 */
-	protected ArrayList GetValueBindings() {
-		if(CheckCondition()) {
-			return new ArrayList();
+	protected ArrayList<Substitution> GetValueBindings(AgentModel am) {
+		if(CheckCondition(am)) {
+			return new ArrayList<Substitution>();
 		}
 		else return null;
 	}

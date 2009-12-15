@@ -40,8 +40,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import FAtiMA.Agent;
-import FAtiMA.memory.autobiographicalMemory.AutobiographicalMemory;
-import FAtiMA.memory.autobiographicalMemory.MemoryEpisode;
+import FAtiMA.AgentModel;
+import FAtiMA.memory.episodicMemory.MemoryEpisode;
 
 
 public class EpisodicMemoryPanel extends AgentDisplayPanel {
@@ -50,7 +50,7 @@ public class EpisodicMemoryPanel extends AgentDisplayPanel {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private ArrayList _memoryEpisodeDisplays;
+	private ArrayList<MemoryEpisodeDisplay> _memoryEpisodeDisplays;
     private JPanel _memoryEpisodes;
     
     public EpisodicMemoryPanel() {
@@ -58,7 +58,7 @@ public class EpisodicMemoryPanel extends AgentDisplayPanel {
         super();
         this.setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
         
-      	_memoryEpisodeDisplays = new ArrayList();
+      	_memoryEpisodeDisplays = new ArrayList<MemoryEpisodeDisplay>();
 		
 		_memoryEpisodes = new JPanel();
 		_memoryEpisodes.setBorder(BorderFactory.createTitledBorder("Memory Events"));
@@ -72,19 +72,24 @@ public class EpisodicMemoryPanel extends AgentDisplayPanel {
 		this.add(eventsScrool);
     }
     
+    public boolean Update(Agent ag)
+    {
+    	return Update((AgentModel) ag);
+    }
     
-    public boolean Update(Agent ag) {
+    
+    public boolean Update(AgentModel am) {
     	
     	boolean update = false;
         
-        if(countMemoryDetails() != AutobiographicalMemory.GetInstance().countMemoryDetails()) {
+        if(countMemoryDetails() != am.getMemory().getEpisodicMemory().countMemoryDetails()) {
         	update = true;
         	_memoryEpisodes.removeAll();
         	_memoryEpisodeDisplays.clear();
         	
         	
-        	synchronized(AutobiographicalMemory.GetInstance().GetSyncRoot()){
-        		Iterator it = AutobiographicalMemory.GetInstance().GetAllEpisodes().iterator();
+        	synchronized(am.getMemory().getEpisodicMemory().GetSyncRoot()){
+        		Iterator<MemoryEpisode> it = am.getMemory().getEpisodicMemory().GetAllEpisodes().iterator();
             	MemoryEpisodeDisplay mDisplay;
             	MemoryEpisode episode;
             	while(it.hasNext()) {
@@ -102,7 +107,7 @@ public class EpisodicMemoryPanel extends AgentDisplayPanel {
     private int countMemoryDetails()
 	{
     	int aux=0;
-    	ListIterator li = this._memoryEpisodeDisplays.listIterator();
+    	ListIterator<MemoryEpisodeDisplay> li = this._memoryEpisodeDisplays.listIterator();
     	while(li.hasNext())
     	{
     		aux += ((MemoryEpisodeDisplay) li.next()).countMemoryDetails();

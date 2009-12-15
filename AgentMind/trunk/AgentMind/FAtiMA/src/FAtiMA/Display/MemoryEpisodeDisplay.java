@@ -40,8 +40,9 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-import FAtiMA.memory.ActionDetail;
-import FAtiMA.memory.autobiographicalMemory.MemoryEpisode;
+import FAtiMA.memory.episodicMemory.ActionDetail;
+import FAtiMA.memory.episodicMemory.MemoryEpisode;
+
 
 
 public class MemoryEpisodeDisplay {
@@ -239,7 +240,7 @@ public class MemoryEpisodeDisplay {
 		
 		JScrollPane propertiesScroll = new JScrollPane(prop);
 		
-		ListIterator li = episode.getDetails().listIterator();
+		ListIterator<ActionDetail> li = episode.getDetails().listIterator();
 		while(li.hasNext())
 		{
 			prop.add(new MemoryDetailPanel((ActionDetail)li.next()));

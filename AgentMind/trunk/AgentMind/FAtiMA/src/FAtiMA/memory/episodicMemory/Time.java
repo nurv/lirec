@@ -28,7 +28,7 @@
  * Meiyii Lim: 13/03/2009 - Moved the class from FAtiMA.autobiographicalMemory package
  * **/
 
-package FAtiMA.memory;
+package FAtiMA.memory.episodicMemory;
 
 import java.io.Serializable;
 

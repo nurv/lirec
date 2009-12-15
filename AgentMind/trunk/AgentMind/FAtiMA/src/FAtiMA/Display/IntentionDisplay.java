@@ -37,6 +37,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import FAtiMA.AgentModel;
 import FAtiMA.deliberativeLayer.Intention;
 
 
@@ -50,7 +51,7 @@ public class IntentionDisplay {
     EmotionDisplay _hope;
     EmotionDisplay _fear;
     
-    public IntentionDisplay(Intention i) {
+    public IntentionDisplay(AgentModel am, Intention i) {
         
         _panel = new JPanel();
         _panel.setBorder(BorderFactory.createTitledBorder(i.getGoal().getName().toString()));
@@ -107,23 +108,23 @@ public class IntentionDisplay {
         pnl.add(_probability);
         
         _panel.add(pnl);
-        this.Update(i);
+        this.Update(am, i);
     }
     
-    public void Update(Intention i) {
+    public void Update(AgentModel am, Intention i) {
         Float aux;
         Integer aux2;
         
-        aux = new Float(i.getGoal().GetImportanceOfSuccess());
+        aux = new Float(i.getGoal().GetImportanceOfSuccess(am));
         _impOfSuccess.setText(aux.toString());
         
-        aux = new Float(i.getGoal().GetImportanceOfFailure());
+        aux = new Float(i.getGoal().GetImportanceOfFailure(am));
         _impOfFailure.setText(aux.toString());
         
         aux2 = new Integer(i.NumberOfAlternativePlans());
         _numberOfPlans.setText(aux2.toString());
         
-        aux = new Float(i.GetProbability());
+        aux = new Float(i.GetProbability(am));
         _probability.setText(aux.toString());
     }
     

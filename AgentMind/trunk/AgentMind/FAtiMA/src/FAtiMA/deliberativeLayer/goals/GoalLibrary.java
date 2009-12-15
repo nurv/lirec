@@ -57,7 +57,7 @@ public class GoalLibrary implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private ArrayList _goals;
+	private ArrayList<Goal> _goals;
 	
 	/**
 	 * Creates a new GoalLibrary
@@ -67,8 +67,8 @@ public class GoalLibrary implements Serializable {
 	 * @throws GoalLibParsingException - thrown when there is a parsing error when reading
 	 * 		   the GoalLibrary file
 	 */
-	public GoalLibrary(String file, String self) throws GoalLibParsingException {
-		GoalLoaderHandler g = Load(file, self);
+	public GoalLibrary(String file) throws GoalLibParsingException {
+		GoalLoaderHandler g = Load(file);
 		_goals = g.GetGoals();
 		//SetGoalLinks();
 	}
@@ -78,7 +78,7 @@ public class GoalLibrary implements Serializable {
 	 * the goal's library
 	 * @return a ListIterator over goals
 	 */
-	public ListIterator GetGoals() {
+	public ListIterator<Goal> GetGoals() {
 	    return _goals.listIterator();
 	}
 
@@ -97,7 +97,7 @@ public class GoalLibrary implements Serializable {
 	 * @return the searched goal if exists in the GoalLibrary, null otherwise
 	 */
 	public Goal GetGoal(Name goalName) {
-		ListIterator li;
+		ListIterator<Goal> li;
 		Goal g;
 
 		li = _goals.listIterator();
@@ -109,12 +109,12 @@ public class GoalLibrary implements Serializable {
 		return null;
 	}
 
-	private GoalLoaderHandler Load(String xmlFile, String self) throws GoalLibParsingException {
+	private GoalLoaderHandler Load(String xmlFile) throws GoalLibParsingException {
 		AgentLogger.GetInstance().logAndPrint("LOAD: " + xmlFile);
 		
 		//com.sun.xml.parser.Parser parser;
 		//parser = new com.sun.xml.parser.Parser();
-		GoalLoaderHandler g = new GoalLoaderHandler(self);
+		GoalLoaderHandler g = new GoalLoaderHandler();
 		//parser.setDocumentHandler(g);
 		try {
 			SAXParserFactory factory = SAXParserFactory.newInstance();

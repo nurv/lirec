@@ -39,12 +39,19 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.ListIterator;
 
+import FAtiMA.AgentModel;
 import FAtiMA.AgentSimulationTime;
 import FAtiMA.IntegrityValidator;
 import FAtiMA.ValuedAction;
+import FAtiMA.conditions.Condition;
+import FAtiMA.emotionalState.BaseEmotion;
 import FAtiMA.emotionalState.EmotionalState;
 import FAtiMA.exceptions.UnknownSpeechActException;
+import FAtiMA.sensorEffector.Event;
 import FAtiMA.util.AgentLogger;
+import FAtiMA.wellFormedNames.Name;
+import FAtiMA.wellFormedNames.Substitution;
+import FAtiMA.wellFormedNames.Unifier;
 
 
 /**
@@ -53,22 +60,22 @@ import FAtiMA.util.AgentLogger;
  * 
  * @author João Dias
  */
-public class ActionTendencies implements Serializable {
+public class ActionTendencies implements Serializable, Cloneable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private ArrayList _actions;
-	private HashMap _filteredActions;
+	private ArrayList<Action> _actions;
+	private HashMap<String,Long> _filteredActions;
 	
 	/**
 	 * Create a new ActionTendenciesSet
 	 */
 	public ActionTendencies() {
-		_actions = new ArrayList();
-		_filteredActions = new HashMap();
+		_actions = new ArrayList<Action>();
+		_filteredActions = new HashMap<String,Long>();
 	}
 
 	/**
@@ -77,6 +84,11 @@ public class ActionTendencies implements Serializable {
 	 */
 	public void AddAction(Action action) {
 		_actions.add(action);
+	}
+	
+	public ArrayList<Action> getActions()
+	{
+		return _actions;
 	}
 	
 	/**
@@ -88,10 +100,10 @@ public class ActionTendencies implements Serializable {
 	 * @see IntegrityValidator
 	 */
 	public void CheckIntegrity(IntegrityValidator val) throws UnknownSpeechActException {
-	    ListIterator li = _actions.listIterator();
+	    ListIterator<Action> li = _actions.listIterator();
 	
 	    while(li.hasNext()) {
-	       ((Action) li.next()).CheckIntegrity(val);
+	       li.next().CheckIntegrity(val);
 	    }
 	}
 	
@@ -105,6 +117,11 @@ public class ActionTendencies implements Serializable {
 	public void IgnoreActionForDuration(ValuedAction va, long time) {
 		Long wakeUpTime = new Long(AgentSimulationTime.GetInstance().Time() + time);
 		_filteredActions.put(va.GetAction().toString(),wakeUpTime);
+	}
+	
+	public void ClearFilters()
+	{
+		_filteredActions.clear();
 	}
 	
 	private boolean isIgnored(ValuedAction va) {
@@ -122,18 +139,19 @@ public class ActionTendencies implements Serializable {
 	 * @param emState - the agent's emotional state that influences the actions performed
 	 * @return the most relevant Action (according to the emotional state)
 	 */
-	public ValuedAction SelectAction(EmotionalState emState) {
-		Iterator it;
+	public ValuedAction SelectAction(AgentModel am) {
+		Iterator<Action> it;
 		Action a;
 		ValuedAction va;
 		ValuedAction bestAction = null;
+		EmotionalState emState = am.getEmotionalState();
 		
 		it = _actions.iterator();
 		while(it.hasNext()) {
-			a = (Action) it.next();
-			va = a.TriggerAction(emState.GetEmotionsIterator());
+			a = it.next();
+			va = a.TriggerAction(am, emState.GetEmotionsIterator());
 			if (va != null && !isIgnored(va)) {
-				if(bestAction == null || va.GetValue() > bestAction.GetValue()) 
+				if(bestAction == null || va.GetValue(emState) > bestAction.GetValue(emState)) 
 				{
 				    bestAction = va;
 				}
@@ -143,13 +161,38 @@ public class ActionTendencies implements Serializable {
 		return bestAction;
 	}
 	
+	public BaseEmotion RecognizeEmotion(AgentModel am, Event e, Name action)
+	{
+		Iterator<Action> it;
+		Action a;
+		Action a2;
+		ArrayList<Substitution> bindings = new ArrayList<Substitution>();
+		
+		it = _actions.iterator();
+		while(it.hasNext())
+		{
+			a = (Action) it.next();
+			if(Unifier.Unify(action, a.getName(), bindings))
+			{
+				a2 = (Action) a.clone();
+				a2.MakeGround(bindings);
+				if(Condition.CheckActivation(am, a2.GetPreconditions())!=null)
+				{
+					return a2.GetElicitingEmotion();
+				}
+			}
+		}
+		
+		return null;
+	}
+	
 	public void ReinforceActionTendency(String action)
 	{
 		action = action.toLowerCase();
 		Action a;
-		for(ListIterator li = _actions.listIterator();li.hasNext();)
+		for(ListIterator<Action> li = _actions.listIterator();li.hasNext();)
 		{
-			a = (Action) li.next();
+			a =  li.next();
 			if(a.getName().toString().toLowerCase().contains(action))
 			{
 				AgentLogger.GetInstance().log("Reinforcing AT: " + a.getName());	
@@ -161,10 +204,23 @@ public class ActionTendencies implements Serializable {
 	public void Print()
 	{
 		Action act;
-		for(ListIterator li = _actions.listIterator();li.hasNext();)
+		for(ListIterator<Action> li = _actions.listIterator();li.hasNext();)
 		{
-			act = (Action) li.next();
+			act = li.next();
 			AgentLogger.GetInstance().logAndPrint(act.toString());
 		}
+	}
+	
+	public Object clone()
+	{
+		ActionTendencies at = new ActionTendencies();
+		for(Action a : this._actions)
+		{
+			at._actions.add(a);
+		}
+		
+		at._filteredActions = new HashMap<String,Long>(_filteredActions);
+		
+		return at;
 	}
 }

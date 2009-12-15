@@ -42,15 +42,13 @@
 
 package FAtiMA.util.parsers;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 
 import org.xml.sax.Attributes;
 
+import FAtiMA.AgentModel;
 import FAtiMA.conditions.EmotionCondition;
 import FAtiMA.conditions.PastEventCondition;
 import FAtiMA.conditions.RecentEventCondition;
@@ -61,13 +59,11 @@ import FAtiMA.conditions.PropertyCondition;
 import FAtiMA.deliberativeLayer.plan.Effect;
 import FAtiMA.deliberativeLayer.plan.EffectOnDrive;
 import FAtiMA.deliberativeLayer.plan.Step;
-import FAtiMA.exceptions.ActionsParsingException;
 import FAtiMA.exceptions.InvalidEmotionTypeException;
-import FAtiMA.knowledgeBase.KnowledgeBase;
+import FAtiMA.util.Constants;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
 import FAtiMA.wellFormedNames.Symbol;
-import FAtiMA.exceptions.InvalidMotivatorTypeException;
 
 
 /**
@@ -76,15 +72,17 @@ import FAtiMA.exceptions.InvalidMotivatorTypeException;
  */
 public class StripsOperatorsLoaderHandler extends ReflectXMLHandler {
 	private Step _currentOperator;
-	private ArrayList _operators; 
+	private ArrayList<Step> _operators; 
 	private boolean _precondition;
 	private float _probability;
 	private Substitution _self;
+	private AgentModel _am;
 	
-	public StripsOperatorsLoaderHandler(String self) {
-		_operators = new ArrayList();
+	public StripsOperatorsLoaderHandler(AgentModel am) {
+		_operators = new ArrayList<Step>();
 		_precondition = true;
-		_self = new Substitution(new Symbol("[SELF]"), new Symbol(self));
+		_am = am;
+		_self = new Substitution(new Symbol("[SELF]"), new Symbol(Constants.SELF));
 	}
 	
 	
@@ -113,12 +111,12 @@ public class StripsOperatorsLoaderHandler extends ReflectXMLHandler {
 		if(action.toString().startsWith("Inference"))
 		{
 			//inference operator, we must add it to the KnowledgeBase
-			KnowledgeBase.GetInstance().AddInferenceOperator(_currentOperator);
+			_am.getMemory().getSemanticMemory().AddInferenceOperator(_currentOperator);
 		}
 		else
 		{
 			//adds the event effect
-			ListIterator li = action.GetLiteralList().listIterator();
+			ListIterator<Symbol> li = action.GetLiteralList().listIterator();
 			firstName = li.next().toString();
 			event = "EVENT([AGENT]," + firstName;
 			while(li.hasNext()) {
@@ -126,7 +124,7 @@ public class StripsOperatorsLoaderHandler extends ReflectXMLHandler {
 			}
 			event = event + ")";
 			RecentEventCondition eventCondition = new RecentEventCondition(true,Name.ParseName(event));
-			_currentOperator.AddEffect(new Effect(firstName,1.0f,eventCondition));
+			_currentOperator.AddEffect(new Effect(_am, firstName,1.0f,eventCondition));
 		}
 	}
 	
@@ -141,7 +139,7 @@ public class StripsOperatorsLoaderHandler extends ReflectXMLHandler {
 	/**
 	 * @return
 	 */
-	public ArrayList getOperators() {
+	public ArrayList<Step> getOperators() {
 		return _operators;
 	}
 	
@@ -167,7 +165,7 @@ public class StripsOperatorsLoaderHandler extends ReflectXMLHandler {
 			_currentOperator.AddPrecondition(p);
 		else {
 			String operatorName = _currentOperator.getName().GetFirstLiteral().toString();
-			_currentOperator.AddEffect(new Effect(operatorName,_probability, p));
+			_currentOperator.AddEffect(new Effect(_am, operatorName,_probability, p));
 		}
 	}
 	
@@ -181,7 +179,7 @@ public class StripsOperatorsLoaderHandler extends ReflectXMLHandler {
 	  	_currentOperator.AddPrecondition(p);
 	  else {
 	  	String operatorName = _currentOperator.getName().GetFirstLiteral().toString();
-	  	_currentOperator.AddEffect(new Effect(operatorName,_probability, p));	
+	  	_currentOperator.AddEffect(new Effect(_am, operatorName,_probability, p));	
 	  }
 	}
 	
@@ -195,7 +193,7 @@ public class StripsOperatorsLoaderHandler extends ReflectXMLHandler {
 		  	_currentOperator.AddPrecondition(event);
 		else {
 		  String operatorName = _currentOperator.getName().GetFirstLiteral().toString();
-		  _currentOperator.AddEffect(new Effect(operatorName,_probability, event));	
+		  _currentOperator.AddEffect(new Effect(_am, operatorName,_probability, event));	
 		}
 	}
 	
@@ -210,7 +208,7 @@ public class StripsOperatorsLoaderHandler extends ReflectXMLHandler {
 			  	_currentOperator.AddPrecondition(ec);
 			else {
 			  	String operatorName = _currentOperator.getName().GetFirstLiteral().toString();
-			  	_currentOperator.AddEffect(new Effect(operatorName,_probability, ec));	
+			  	_currentOperator.AddEffect(new Effect(_am, operatorName,_probability, ec));	
 			}
 		}
 		catch(InvalidEmotionTypeException e)
@@ -229,7 +227,7 @@ public class StripsOperatorsLoaderHandler extends ReflectXMLHandler {
 		if(_precondition) 
 			_currentOperator.AddPrecondition(mc);
 		else {
-			String operatorName = _currentOperator.getName().GetFirstLiteral().toString();
+			//String operatorName = _currentOperator.getName().GetFirstLiteral().toString();
 			_currentOperator.AddEffectOnDrive(new EffectOnDrive(mc));	
 		}
 	}
@@ -246,7 +244,7 @@ public class StripsOperatorsLoaderHandler extends ReflectXMLHandler {
     		  	_currentOperator.AddPrecondition(mc);
     		else {
     		  	String operatorName = _currentOperator.getName().GetFirstLiteral().toString();
-    		  	_currentOperator.AddEffect(new Effect(operatorName,_probability, mc));	
+    		  	_currentOperator.AddEffect(new Effect(_am, operatorName,_probability, mc));	
     		}
     	}
     	catch(Exception e)

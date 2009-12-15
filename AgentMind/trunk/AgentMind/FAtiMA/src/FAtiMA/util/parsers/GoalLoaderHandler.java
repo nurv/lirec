@@ -56,9 +56,8 @@ import FAtiMA.deliberativeLayer.goals.ActivePursuitGoal;
 import FAtiMA.deliberativeLayer.goals.Goal;
 import FAtiMA.deliberativeLayer.goals.InterestGoal;
 import FAtiMA.exceptions.InvalidEmotionTypeException;
-import FAtiMA.exceptions.InvalidMotivatorTypeException;
 import FAtiMA.util.AgentLogger;
-import FAtiMA.util.enumerables.MotivatorType;
+import FAtiMA.util.Constants;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
 import FAtiMA.wellFormedNames.Symbol;
@@ -67,12 +66,12 @@ import FAtiMA.wellFormedNames.Symbol;
 public class GoalLoaderHandler extends ReflectXMLHandler {
     protected String _conditionType;
     private Goal _currentGoal;
-    private ArrayList _goals;
+    private ArrayList<Goal> _goals;
     private Substitution _self;
 
-    public GoalLoaderHandler(String self) {
-      _goals = new ArrayList();
-      _self = new Substitution(new Symbol("[SELF]"), new Symbol(self));
+    public GoalLoaderHandler() {
+      _goals = new ArrayList<Goal>();
+      _self = new Substitution(new Symbol("[SELF]"), new Symbol(Constants.SELF));
     }
     
     public void ActivePursuitGoal(Attributes attributes) {
@@ -82,7 +81,7 @@ public class GoalLoaderHandler extends ReflectXMLHandler {
     	_goals.add(_currentGoal);
     }
 
-    public ArrayList GetGoals() {
+    public ArrayList<Goal> GetGoals() {
       return _goals;
     }
     

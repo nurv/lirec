@@ -66,7 +66,7 @@ public class ComposedName extends Name implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
-	protected ArrayList _literals;
+	protected ArrayList<Symbol> _literals;
 	protected boolean _evaluate = true;
 
 	/**
@@ -81,7 +81,7 @@ public class ComposedName extends Name implements Serializable {
 		Symbol l;
 
 		//initial size - two literals
-		_literals = new ArrayList(2);
+		_literals = new ArrayList<Symbol>(2);
 		_constant = false;
 		_grounded = true;
 		l = new Symbol(name);
@@ -128,7 +128,7 @@ public class ComposedName extends Name implements Serializable {
 	 * Generates a list with all symbols contained in the ComposedName
 	 * @return the list with the symbols
 	 */
-	public ArrayList GetLiteralList() {
+	public ArrayList<Symbol> GetLiteralList() {
 		return _literals;
 	}
 	
@@ -140,14 +140,14 @@ public class ComposedName extends Name implements Serializable {
 	 * @param kb - a reference to the KnowledgeBase
 	 * @return  the result of evaluation the ComposedName
 	 */
-	public Object evaluate(Memory memory) 
+	public Object evaluate(Memory m) 
 	{
 		if(_evaluate)
 		{
 			//All ComposedNames correspond to properties or predicates and in this case
 		    //we must retrieve its value from the KnowledgeBase
 		    if (!this._grounded) return null;
-		    return memory.AskProperty(this);
+		    return m.getSemanticMemory().AskProperty(this);
 		}
 		else return this.toString();
 	}
@@ -177,10 +177,10 @@ public class ComposedName extends Name implements Serializable {
 	{
 		if (this._grounded) return;
 		
-		ListIterator li = _literals.listIterator();
+		ListIterator<Symbol> li = _literals.listIterator();
 		while(li.hasNext())
 		{
-			((Symbol) li.next()).ReplaceUnboundVariables(id);
+			li.next().ReplaceUnboundVariables(id);
 		}
 	}
 
@@ -193,7 +193,7 @@ public class ComposedName extends Name implements Serializable {
 	 * @return a new Name with the substitutions applied
 	 * @see Substitution
 	 */
-	public Object Ground(ArrayList bindingConstraints) {
+	public Object Ground(ArrayList<Substitution> bindingConstraints) {
 		Name aux = (Name) this.clone();
 		aux.MakeGround(bindingConstraints);
 		return aux;
@@ -207,17 +207,17 @@ public class ComposedName extends Name implements Serializable {
 	 * @param bindings - A list of substitutions of the type "[Variable]/value"
 	 * @see Substitution
 	 */
-	public void MakeGround(ArrayList bindingConstraints)
+	public void MakeGround(ArrayList<Substitution> bindingConstraints)
 	{
 		Symbol s;
 		
 		if(this._grounded) return;
 		this._grounded = true;
 		
-		ListIterator li = _literals.listIterator();
+		ListIterator<Symbol> li = _literals.listIterator();
 		while(li.hasNext())
 		{
-			s = (Symbol) li.next();
+			s =  li.next();
 			s.MakeGround(bindingConstraints);
 			if(!s.isGrounded())
 			{
@@ -256,10 +256,10 @@ public class ComposedName extends Name implements Serializable {
 		if(this._grounded) return;
 		this._grounded = true;
 		
-		ListIterator li = _literals.listIterator();
+		ListIterator<Symbol> li = _literals.listIterator();
 		while(li.hasNext())
 		{
-			s = (Symbol) li.next();
+			s = li.next();
 			s.MakeGround(subst);
 			if(!s.isGrounded())
 			{
@@ -280,11 +280,11 @@ public class ComposedName extends Name implements Serializable {
 	    comp._grounded = this._grounded;
 	    comp._evaluate = this._evaluate;
 	    
-	    comp._literals = new ArrayList();
-	    ListIterator li = this._literals.listIterator();
+	    comp._literals = new ArrayList<Symbol>();
+	    ListIterator<Symbol> li = this._literals.listIterator();
 	    while(li.hasNext())
 	    {
-	        comp._literals.add(((Symbol)li.next()).clone());
+	        comp._literals.add((Symbol) li.next().clone());
 	    }
 	    return comp;
 	}
@@ -295,7 +295,7 @@ public class ComposedName extends Name implements Serializable {
 	 */
 	public String toString() {
 		String str;
-		ListIterator li;
+		ListIterator<Symbol> li;
 
 		li = _literals.listIterator();
 		str = li.next() + "(";

@@ -28,14 +28,14 @@
  * João Dias: 04/April/2007 - File created
  * **/
 
-package FAtiMA.memory.autobiographicalMemory;
+package FAtiMA.memory.episodicMemory;
 
 import java.util.ArrayList;
 
 import FAtiMA.emotionalState.BaseEmotion;
-import FAtiMA.knowledgeBase.KnowledgeBase;
-import FAtiMA.memory.ActionDetail;
+import FAtiMA.sensorEffector.Parameter;
 import FAtiMA.sensorEffector.SpeechAct;
+import FAtiMA.util.Constants;
 import FAtiMA.util.enumerables.EmotionType;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.memory.Memory;
@@ -48,25 +48,25 @@ import FAtiMA.memory.Memory;
  */
 public abstract class SummaryGenerator {
 	 
-	public static String GenerateActionSummary(ActionDetail action)
+	public static String GenerateActionSummary(Memory m, ActionDetail action)
 	{
 		
 		String actionSummary = "<Subject>";
 		
-		if(action.getSubject().equals(Memory.GetInstance().getSelf()))
+		if(action.getSubject().equals(Constants.SELF))
 		{
 			actionSummary += "I";
 		}
 		else
 		{
-			actionSummary += translateNameToDisplayName(action.getSubject());
+			actionSummary += translateNameToDisplayName(m, action.getSubject());
 		}
 		
 		actionSummary += "</Subject><Action>"; 
 		
 		if(SpeechAct.isSpeechAct(action.getAction()))
 		{
-			ArrayList params = action.getParameters();
+			ArrayList<Parameter> params = action.getParameters();
 			actionSummary += params.get(0);
 			
 			if(action.getAction().equals(SpeechAct.Reply))
@@ -100,7 +100,7 @@ public abstract class SummaryGenerator {
 		{
 			actionSummary += "<Target>";
 			
-			if(action.getTarget().equals(Memory.GetInstance().getSelf()))
+			if(action.getTarget().equals(Constants.SELF))
 			{
 				actionSummary += "me";
 			}
@@ -114,20 +114,20 @@ public abstract class SummaryGenerator {
 						Object aux2 = action.getTargetDetails("owner");
 						if(aux2 != null)
 						{
-							if(Memory.GetInstance().getSelf().equals(aux2))
+							if(Constants.SELF.equals(aux2))
 							{
 								actionSummary += "my ";
 							
 							}
 							else
 							{
-								actionSummary += translateNameToDisplayName(aux2.toString()) + "'s "; 
+								actionSummary += translateNameToDisplayName(m, aux2.toString()) + "'s "; 
 							}
 						}
 					}
 				}
 				
-				actionSummary += translateNameToDisplayName(action.getTarget());
+				actionSummary += translateNameToDisplayName(m, action.getTarget());
 			}
 			
 			actionSummary += "</Target>";
@@ -136,14 +136,14 @@ public abstract class SummaryGenerator {
 		if(action.getParameters().size() > 0)
 		{
 			actionSummary += "<Param>" + 
-				translateNameToDisplayName(action.getParameters().get(0).toString()) +
+				translateNameToDisplayName(m, action.getParameters().get(0).toString()) +
 				"</Param>";
 		}
 		
 		return actionSummary;
 	}
 	
-	public static String GenerateEmotionSummary(BaseEmotion em)
+	public static String GenerateEmotionSummary(Memory m, BaseEmotion em)
 	{
 		String EMSummary = "<Emotion intensity=\"";
 		
@@ -163,7 +163,7 @@ public abstract class SummaryGenerator {
 		
 		if(em.GetDirection() != null)
 		{
-			String direction = translateNameToDisplayName(em.GetDirection().toString());
+			String direction = translateNameToDisplayName(m, em.GetDirection().toString());
 			
 			EMSummary += "direction=\"" + direction + "\"";
 		}
@@ -199,9 +199,9 @@ public abstract class SummaryGenerator {
 		return "<Time count=\"" + hours + "\">hour</Time>";
 	}
 	
-	public static String translateNameToDisplayName(String name)
+	public static String translateNameToDisplayName(Memory m, String name)
 	{
-		Object displayName = Memory.GetInstance().AskProperty(Name.ParseName(name + "(displayName)"));
+		Object displayName = m.getSemanticMemory().AskProperty(Name.ParseName(name + "(displayName)"));
 		if(displayName != null)
 		{
 			return displayName.toString();

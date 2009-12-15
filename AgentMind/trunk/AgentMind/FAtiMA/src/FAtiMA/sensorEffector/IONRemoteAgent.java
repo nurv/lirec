@@ -59,11 +59,10 @@ import java.util.StringTokenizer;
 
 import FAtiMA.Agent;
 import FAtiMA.culture.SymbolTranslator;
-//import FAtiMA.knowledgeBase.KnowledgeBase;
-import FAtiMA.memory.Memory;
-import FAtiMA.memory.shortTermMemory.WorkingMemory;
 import FAtiMA.util.AgentLogger;
+import FAtiMA.util.Constants;
 import FAtiMA.wellFormedNames.Name;
+import FAtiMA.wellFormedNames.Symbol;
 
 /**
  * Connection to the ION Framework's virtual world as a RemoteAgent. Implements 
@@ -90,9 +89,9 @@ public class IONRemoteAgent extends RemoteAgent {
 		super(host,port,agent, null);
 	}
 	
-	public String getInitializationMessage(Map arguments)
+	public String getInitializationMessage(Map<String,String> arguments)
 	{
-		return this._agent.name();
+		return this._agent.getName();
 	}
 		
 	protected boolean SendAction(RemoteAction ra)
@@ -105,11 +104,15 @@ public class IONRemoteAgent extends RemoteAgent {
 		return Send(msg);
 	}
 	
-	public void ReportInternalPropertyChange(Name property, Object value)
+	public void ReportInternalPropertyChange(String agentName, Name property, Object value)
 	{
 		String prop = "";
-		ListIterator li = property.GetLiteralList().listIterator();
+		ListIterator<Symbol> li = property.GetLiteralList().listIterator();
 		String entity = li.next().toString();
+		if(entity.equals(Constants.SELF))
+		{
+			entity = agentName;
+		}
 		
 		if(li.hasNext())
 		{
@@ -138,28 +141,11 @@ public class IONRemoteAgent extends RemoteAgent {
 		//the perception specifies which property was changed and its new value
 		//percept-type object property newvalue 
 		//Ex: PROPERTYCHANGED Luke pose onfloor
-		
-		Name propertyName = null;
-
-		if( st.countTokens() == 3 ){
-			String subject = st.nextToken();
-			String property = st.nextToken();
-			propertyName = Name.ParseName(subject + "(" + property + ")");
-		}
-		else if( st.countTokens() == 2 ){
-			String subjectWithProperty = st.nextToken();
-			propertyName = Name.ParseName(subjectWithProperty);
-		}
-		
-		String value = st.nextToken();
-		WorkingMemory.GetInstance().Tell(propertyName, value);
-		System.out.println("Property changed perception IonRemoteAgent");
-		
-		/*String subject = st.nextToken();
+		String subject = st.nextToken();
 		String property = st.nextToken();
 		String value = st.nextToken();
-		Name propertyName = Name.ParseName(subject + "(" + property + ")");
-		KnowledgeBase.GetInstance().Tell(propertyName, value);*/
+		
+		_agent.PerceivePropertyChanged(subject, property, value);
 		
 		/*Event event;
 		event = new Event(subject,PROPERTY_CHANGED,property);
@@ -177,9 +163,9 @@ public class IONRemoteAgent extends RemoteAgent {
 		String subject = st.nextToken();
 		String property = st.nextToken();
 	
-		Name propertyName = Name.ParseName(subject + "(" + property + ")");
-		AgentLogger.GetInstance().logAndPrint("Removing Property: " + propertyName);
-		Memory.GetInstance().Retract(propertyName);
+		
+		AgentLogger.GetInstance().logAndPrint("Removing Property: " + subject + " " + property);
+		_agent.PerceivePropertyRemoved(subject, property);
 	}
 	
 	protected void UserSpeechPerception(String perc)
@@ -232,9 +218,9 @@ public class IONRemoteAgent extends RemoteAgent {
 		    if(speechAct.getMeaning().equals("suggestcopingstrategy") || 
 		    		speechAct.getMeaning().equals("yes"))
 		    {
-		    	ArrayList context = speechAct.getContextVariables();
+		    	ArrayList<Parameter> context = speechAct.getContextVariables();
 		    	Parameter p;
-		    	for(ListIterator li = context.listIterator();li.hasNext();)
+		    	for(ListIterator<Parameter> li = context.listIterator();li.hasNext();)
 		    	{
 		    		p = (Parameter) li.next();
 		    		if(p.GetName().equals("copingstrategy"))
@@ -283,12 +269,12 @@ public class IONRemoteAgent extends RemoteAgent {
 	    	//_agent.UpdateDialogState(speechAct);
 	 
 	    	//TODO change this test
-	    	if(speechAct.getSender().equals(_agent.name()) &&
+	    	if(speechAct.getSender().equals(_agent.getName()) &&
 	    			speechAct.getMeaning().equals("acceptreason"))
 	    	{
 	    		//the agent accepts the coping strategy
-	    		Object coping = Memory.GetInstance().AskProperty(
-	    				Name.ParseName(_agent.name()+"(copingStrategy)"));
+	    		Object coping = _agent.getMemory().getSemanticMemory().AskProperty(
+	    				Name.ParseName(_agent.getName()+"(copingStrategy)"));
 	    		if(coping != null)
 	    		{
 	    			AgentLogger.GetInstance().logAndPrint("");
@@ -319,7 +305,7 @@ public class IONRemoteAgent extends RemoteAgent {
 		_agent.PerceiveEvent(event);
 		
 		//the agent last action suceeded!
-		if(event.GetSubject().equals(_agent.name())) {
+		if(event.GetSubject().equals(_agent.getName())) {
 			_canAct = true;
 		}
 	}
@@ -337,7 +323,7 @@ public class IONRemoteAgent extends RemoteAgent {
 		}
 		
 		//the agent last action failed
-		if(rmAction.getSubject().equals(_agent.name()))
+		if(rmAction.getSubject().equals(_agent.getName()))
 		{
 			AgentLogger.GetInstance().logAndPrint("Self action failed, agent can act again");
 			_agent.AppraiseSelfActionFailed(rmAction.toEvent());

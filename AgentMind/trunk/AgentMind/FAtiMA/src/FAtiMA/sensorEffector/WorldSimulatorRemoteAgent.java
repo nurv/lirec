@@ -10,30 +10,29 @@ import java.util.StringTokenizer;
 
 import FAtiMA.Agent;
 import FAtiMA.culture.SymbolTranslator;
-//import FAtiMA.knowledgeBase.KnowledgeBase;
-import FAtiMA.memory.Memory;
-import FAtiMA.memory.shortTermMemory.WorkingMemory;
 import FAtiMA.util.AgentLogger;
+import FAtiMA.util.Constants;
 import FAtiMA.wellFormedNames.Name;
+import FAtiMA.wellFormedNames.Symbol;
 
 public class WorldSimulatorRemoteAgent extends RemoteAgent {
 
 	
-	public WorldSimulatorRemoteAgent(String host, int port, Agent agent, Map properties) throws IOException
+	public WorldSimulatorRemoteAgent(String host, int port, Agent agent, Map<String,String> properties) throws IOException
 	{
 		super(host,port,agent,properties);
 	}
 	
 	
-	public String getInitializationMessage(Map arguments) {
+	public String getInitializationMessage(Map<String,String> arguments) {
 		
 		String msg;
 		
 		/* sends the properties of the agent to the virtual world **/
 		
-		msg = _agent.name() + " " + _agent.role() + " " + _agent.displayName();
-		Set s = arguments.keySet();
-		Iterator it = s.iterator();
+		msg = _agent.getName() + " " + _agent.role() + " " + _agent.displayName();
+		Set<String> s = arguments.keySet();
+		Iterator<String> it = s.iterator();
 		Object property;
 		
 		while (it.hasNext())  {
@@ -44,8 +43,8 @@ public class WorldSimulatorRemoteAgent extends RemoteAgent {
 		
 		return msg; 
 	}
-
-
+	
+	@SuppressWarnings("deprecation")
 	protected boolean SendAction(RemoteAction ra) {
 		
 		String msg = ra.toPlainStringMessage();	
@@ -54,8 +53,26 @@ public class WorldSimulatorRemoteAgent extends RemoteAgent {
 	}
 
 
-	public void ReportInternalPropertyChange(Name property, Object value) {
-		String msg = PROPERTY_CHANGED + " " + property + " " + value;
+	public void ReportInternalPropertyChange(String agentName, Name property, Object value) {
+		
+		String prop = "";
+		ListIterator<Symbol> li = property.GetLiteralList().listIterator();
+		String entity = li.next().toString();
+		if(entity.equals(Constants.SELF))
+		{
+			entity = agentName;
+		}
+		
+		if(li.hasNext())
+		{
+			prop = li.next().toString();
+			while(li.hasNext())
+			{
+				prop = prop + "," + li.next().toString();
+			}
+		}
+		
+		String msg = PROPERTY_CHANGED + " " + entity + "(" + prop + ")" + value;
 		AgentLogger.GetInstance().log("Reporting property changed: " + msg);
 		Send(msg);
 	}
@@ -69,42 +86,27 @@ public class WorldSimulatorRemoteAgent extends RemoteAgent {
 		//Ex: PROPERTYCHANGED Luke pose onfloor
 		
 		Name propertyName = null;
+		String subject = null;
+		String property = null;
+		String value = null;
 
 		if( st.countTokens() == 3 ){
-			String subject = st.nextToken();
-			String property = st.nextToken();
-			propertyName = Name.ParseName(subject + "(" + property + ")");
+			subject = st.nextToken();
+			property = st.nextToken();
+			value = st.nextToken();
+			_agent.PerceivePropertyChanged(subject, property, value);
+			
 		}
 		else if( st.countTokens() == 2 ){
+			
 			String subjectWithProperty = st.nextToken();
 			propertyName = Name.ParseName(subjectWithProperty);
+			value = st.nextToken();
+			_agent.PerceivePropertyChanged(propertyName, value);
 		}
 		
-		String value = st.nextToken();
-		WorkingMemory.GetInstance().Tell(propertyName, value);
-		//System.out.println("Property changed perception World SimulatorRemoteAgent");
 		
-		/*String value = null;
-		Name propertyName = null;
 		
-		propertyName = Name.ParseName(st.nextToken());	
-		value = st.nextToken();
-
-		KnowledgeBase.GetInstance().Tell(propertyName, value);*/	
-		
-		/*String subject = st.nextToken();
-		String property = st.nextToken();
-		String value = st.nextToken();
-		Name propertyName = Name.ParseName(subject + "(" + property + ")");
-		KnowledgeBase.GetInstance().Tell(propertyName, value);*/
-
-		/*Event event = null;
-		event = new Event(propertyName.GetFirstLiteral().toString(),
-				PROPERTY_CHANGED,
-				propertyName.GetLiteralList().get(1).toString());
-		event.AddParameter(new Parameter("param",value));
-
-		_agent.PerceiveEvent(event);*/
 	}
 	
 	protected void PropertyRemovedPerception(String perc){
@@ -147,6 +149,7 @@ public class WorldSimulatorRemoteAgent extends RemoteAgent {
 			symbol += ")";
 		}*/
 
+		
 		subject = st.nextToken();
 		symbol = st.nextToken();
 
@@ -170,16 +173,18 @@ public class WorldSimulatorRemoteAgent extends RemoteAgent {
 				if(speechAct.getMeaning().equals("suggestcopingstrategy") || 
 						speechAct.getMeaning().equals("yes"))
 				{
-					ArrayList context = speechAct.getContextVariables();
+					ArrayList<Parameter> context = speechAct.getContextVariables();
 					Parameter p;
-					for(ListIterator li = context.listIterator();li.hasNext();)
+					for(ListIterator<Parameter> li = context.listIterator();li.hasNext();)
 					{
-						p = (Parameter) li.next();
+						p = li.next();
 						if(p.GetName().equals("copingstrategy"))
 						{
 							speechAct.AddParameter(p.GetValue().toString());
 						}
 					}
+
+
 				}
 				event = speechAct.toEvent();
 			}
@@ -199,12 +204,12 @@ public class WorldSimulatorRemoteAgent extends RemoteAgent {
 			event = speechAct.toEvent();
 
 			//TODO change this test
-			if(speechAct.getSender().equals(_agent.name()) &&
+			if(speechAct.getSender().equals(_agent.getName()) &&
 					speechAct.getMeaning().equals("acceptreason"))
 			{
 				//the agent accepts the coping strategy
-				Object coping = Memory.GetInstance().AskProperty(
-						Name.ParseName(_agent.name()+"(copingStrategy)"));
+				Object coping = _agent.getMemory().getSemanticMemory().AskProperty(
+						Name.ParseName(_agent.getName()+"(copingStrategy)"));
 				if(coping != null)
 				{
 					_agent.EnforceCopingStrategy(coping.toString());
@@ -238,7 +243,7 @@ public class WorldSimulatorRemoteAgent extends RemoteAgent {
 		_agent.PerceiveEvent(event);
 
 		//the agent last action suceeded!
-		if(subject.equals(_agent.name())) {
+		if(subject.equals(_agent.getName())) {
 	
 			AgentLogger.GetInstance().log("can act now!");
 			_canAct = true;
@@ -251,7 +256,7 @@ public class WorldSimulatorRemoteAgent extends RemoteAgent {
 		String subject = st.nextToken();
 		//TODO o agente tb tem de perceber quando a acção falhou..
 		//the agent last action failed
-		if(subject.equals(_agent.name()))
+		if(subject.equals(_agent.getName()))
 		{
 			_canAct = true;
 		}	

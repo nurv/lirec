@@ -32,6 +32,7 @@ package FAtiMA.deliberativeLayer.plan;
 
 import java.util.ArrayList;
 
+import FAtiMA.AgentModel;
 import FAtiMA.conditions.Condition;
 import FAtiMA.wellFormedNames.IGroundable;
 import FAtiMA.wellFormedNames.Name;
@@ -43,20 +44,20 @@ public interface IPlanningOperator extends Cloneable, IGroundable {
 	 * Gets the operator's probability of execution
 	 * @return the operators's probability
 	 */
-	public float getProbability();
+	public float getProbability(AgentModel am);
 	
 	
 	/**
 	 * Updates the probabilities of the operators's effects 
 	 */
-	public void updateEffectsProbability();
+	public void updateEffectsProbability(AgentModel am);
 	
 	/**
 	 * Checks if the operators's preconditions are verified in the current State
 	 * @return true if all preconditions are true according to the current State, 
 	 *         false otherwise
 	 */
-	public boolean checkPreconditions();
+	public boolean checkPreconditions(AgentModel am);
 	
 	/**
 	 * Compares this planOperator with another planOperator to see if they are equal
@@ -69,14 +70,14 @@ public interface IPlanningOperator extends Cloneable, IGroundable {
 	 * Gets the operator's effects
 	 * @return an ArrayList with all the operators's effects
 	 */
-	public ArrayList getEffects();
+	public ArrayList<Effect> getEffects();
 	
 	
 	/**
 	 * Gets the operator effects on the drives of the motivational system
 	 * @return an ArrayList with all the step's effects on drives
 	 */
-	public ArrayList getEffectsOnDrives();
+	public ArrayList<EffectOnDrive> getEffectsOnDrives();
 	
 	/**
 	 * Gets the ID of the Operator in the plan
@@ -101,7 +102,7 @@ public interface IPlanningOperator extends Cloneable, IGroundable {
 	 * Gets the preconditions of the Operator
 	 * @return an ArrayList with all the Operator's preconditions
 	 */
-	public ArrayList getPreconditions(); 
+	public ArrayList<Condition> getPreconditions(); 
 	
 	/**
 	 * Gets the operator's precondition with the given ID

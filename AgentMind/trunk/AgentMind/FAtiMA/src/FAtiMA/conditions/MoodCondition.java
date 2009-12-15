@@ -32,10 +32,10 @@ import java.util.ArrayList;
 
 import org.xml.sax.Attributes;
 
+import FAtiMA.AgentModel;
 import FAtiMA.emotionalState.EmotionalState;
 import FAtiMA.exceptions.InvalidMoodOperatorException;
 import FAtiMA.exceptions.NoMoodOperatorDefinedException;
-import FAtiMA.memory.Memory;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
 import FAtiMA.wellFormedNames.SubstitutionSet;
@@ -138,14 +138,9 @@ public class MoodCondition extends Condition {
 			this._value = value;
 		}
 		
-		UpdateName();
+		this._name = Name.ParseName("mood(" + this._operator + ")");
 	}
 	
-	private void UpdateName()
-	{
-		String aux = Memory.GetInstance().getSelf() + "(mood," + this._operator + ")";
-		this._name = Name.ParseName(aux);
-	}
 	
 	/**
 	 * Gets the condition's value - the object compared against the condition's name
@@ -161,9 +156,9 @@ public class MoodCondition extends Condition {
 	 * @return true if the Predicate is verified, false otherwise
 	 * @see KnowledgeBase
 	 */
-	public boolean CheckCondition() {
+	public boolean CheckCondition(AgentModel am) {
 		
-		float currentMood = EmotionalState.GetInstance().GetMood();
+		float currentMood = am.getEmotionalState().GetMood();
 		
 		switch(this._operator)
 		{
@@ -201,20 +196,20 @@ public class MoodCondition extends Condition {
      * @return A list with all SubstitutionsSets that make the condition valid
 	 * @see EmotionalState
 	 */
-	public ArrayList GetValidBindings() {
-		if(CheckCondition())
+	public ArrayList<SubstitutionSet> GetValidBindings(AgentModel am) {
+		if(CheckCondition(am))
 		{
-			ArrayList bindings = new ArrayList();
+			ArrayList<SubstitutionSet> bindings = new ArrayList<SubstitutionSet>();
 			bindings.add(new SubstitutionSet());
 			return bindings;
 		}
 		else return null;
 	}
 	
-	public ArrayList GetValueBindings()
+	public ArrayList<Substitution> GetValueBindings(AgentModel am)
 	{
-		if(CheckCondition()) {
-			return new ArrayList();
+		if(CheckCondition(am)) {
+			return new ArrayList<Substitution>();
 		}
 		else return null;
 	}
@@ -258,7 +253,7 @@ public class MoodCondition extends Condition {
 	 * @return a new Predicate with the substitutions applied
 	 * @see Substitution
 	 */
-	public Object Ground(ArrayList bindings) {
+	public Object Ground(ArrayList<Substitution> bindings) {
 		MoodCondition aux = (MoodCondition) this.clone();
 		aux.MakeGround(bindings);
 		return aux;
@@ -272,7 +267,7 @@ public class MoodCondition extends Condition {
 	 * @param bindings - A list of substitutions of the type "[Variable]/value"
 	 * @see Substitution
 	 */
-    public void MakeGround(ArrayList bindings)
+    public void MakeGround(ArrayList<Substitution> bindings)
     {
     }
 	

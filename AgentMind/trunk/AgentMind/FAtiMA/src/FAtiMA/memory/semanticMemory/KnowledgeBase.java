@@ -68,23 +68,15 @@
  * 							  provided by the SocialRelations Package 
  */
 
-package FAtiMA.knowledgeBase;
+package FAtiMA.memory.semanticMemory;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.ListIterator;
 
-import FAtiMA.conditions.Condition;
-import FAtiMA.deliberativeLayer.plan.Effect;
 import FAtiMA.deliberativeLayer.plan.Step;
-import FAtiMA.memory.KnowledgeSlot;
-import FAtiMA.util.AgentLogger;
-import FAtiMA.util.ApplicationLogger;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
 import FAtiMA.wellFormedNames.SubstitutionSet;
@@ -108,82 +100,17 @@ public class KnowledgeBase implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
-	/**
-	 * Singleton pattern 
-	 */
-	private static KnowledgeBase _kbInstance = null;
-	
-	/**
-	 * Gets the Agent's KnowledgeBase
-	 * @return the KnowledgeBase
-	 */
-	public static KnowledgeBase GetInstance()
-	{
-		if(_kbInstance == null)
-		{
-			_kbInstance = new KnowledgeBase();
-		}
-		return _kbInstance;
-	}
-	
-	/**
-	 * Saves the state of the current KnowledgeBase to a file,
-	 * so that it can be later restored from file
-	 * @param fileName - the name of the file where we must write
-	 * 		             the KnowledgeBase
-	 */
-	public static void SaveState(String fileName)
-	{
-		try 
-		{
-			FileOutputStream out = new FileOutputStream(fileName);
-	    	ObjectOutputStream s = new ObjectOutputStream(out);
-	    	
-	    	s.writeObject(_kbInstance);
-        	s.flush();
-        	s.close();
-        	out.close();
-		}
-		catch(Exception e)
-		{
-			AgentLogger.GetInstance().logAndPrint("Exception: " + e);
-			ApplicationLogger.Write(e.getMessage());
-		}
-	}
-	
-	/**
-	 * Loads a specific state of the KnowledgeBase from a previously
-	 * saved file
-	 * @param fileName - the name of the file that contains the stored
-	 * 					 KnowledgeBase
-	 */
-	public static void LoadState(String fileName)
-	{
-		try
-		{
-			FileInputStream in = new FileInputStream(fileName);
-        	ObjectInputStream s = new ObjectInputStream(in);
-        	_kbInstance = (KnowledgeBase) s.readObject();
-        	s.close();
-        	in.close();
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-	}
-	
 	private KnowledgeSlot _kB;
-	private ArrayList _factList;
-	private ArrayList _inferenceOperators;
+	private ArrayList<KnowledgeSlot> _factList;
+	private ArrayList<Step> _inferenceOperators;
 
 	/**
 	 * Creates a new Empty KnowledgeBase
 	 */
-	private KnowledgeBase() {
+	public KnowledgeBase() {
 		_kB = new KnowledgeSlot("KB");
-		_factList = new ArrayList();
-		_inferenceOperators = new ArrayList();
+		_factList = new ArrayList<KnowledgeSlot>();
+		_inferenceOperators = new ArrayList<Step>();
 	}
 	
 	/**
@@ -195,33 +122,24 @@ public class KnowledgeBase implements Serializable {
 		_inferenceOperators.add(op);
 	}
 	
-	/**
-	 * Gets the number of elements (predicates or properties) stored in the KnowledgeBase
-	 * @return the number of elements stored in the KB
-	 */
-    public int Count()
-    {
-    	return this._kB.CountElements();
-    }
-    
-    /**
-	 * Gets the knowledge base slots
-	 * @return the knowledge base slots
-	 */
-    // Added 18/03/09
-	public KnowledgeSlot GetKnowledgeBase()
-	{
-		return _kB;
-	}
+	public Object Ask(Name name) {
+		KnowledgeSlot aux = _kB;
+		KnowledgeSlot currentSlot;
+		ArrayList<Symbol> fetchList = name.GetLiteralList();
+		ListIterator<Symbol> li = fetchList.listIterator();
+		Symbol l;
 
-	 /**
-	 * Gets the inference operators
-	 * @return the inference operators
-	 */
-    // Added 19/03/09
-	public ArrayList GetInferenceOperators()
-	{
-		return _inferenceOperators;
+		synchronized (this) {
+			while (li.hasNext()) {
+					currentSlot = aux;
+					l = li.next();
+					if (currentSlot.containsKey(l.toString())) {
+						aux = currentSlot.get(l.toString());
+					} 
+					else return null;
+			}
+			return aux;
+		}
 	}
 	
 	/**
@@ -234,6 +152,29 @@ public class KnowledgeBase implements Serializable {
 			this._factList.clear();
 		}
 	}
+    
+    /**
+	 * Gets the number of elements (predicates or properties) stored in the KnowledgeBase
+	 * @return the number of elements stored in the KB
+	 */
+    public int Count()
+    {
+    	return this._kB.CountElements();
+    }
+
+	 public ListIterator<KnowledgeSlot> GetFactList() {
+	    return _factList.listIterator();
+	}
+	
+	/**
+	 * Gets the inference operators
+	 * @return the inference operators
+	 */
+    // Added 19/03/09
+	public ArrayList<Step> GetInferenceOperators()
+	{
+		return _inferenceOperators;
+	}
 
 	/**
      * Removes a predicate from the KnowledgeBase
@@ -243,15 +184,15 @@ public class KnowledgeBase implements Serializable {
 		
 		KnowledgeSlot aux = _kB;
 		KnowledgeSlot currentSlot = _kB;
-		ArrayList fetchList = predicate.GetLiteralList();
-		ListIterator li = fetchList.listIterator();
+		ArrayList<Symbol> fetchList = predicate.GetLiteralList();
+		ListIterator<Symbol> li = fetchList.listIterator();
 		Symbol l = null;
 			
 		synchronized (this) {
 			
 			while (li.hasNext()) {
 				currentSlot =  aux;
-				l = (Symbol) li.next();
+				l = li.next();
 				if (currentSlot.containsKey(l.toString())) {
 					aux = currentSlot.get(l.toString());
 				} else
@@ -269,10 +210,10 @@ public class KnowledgeBase implements Serializable {
             }
 			
 			KnowledgeSlot ks;
-			li = _factList.listIterator();
-			while(li.hasNext())
+			ListIterator<KnowledgeSlot> li2 = _factList.listIterator();
+			while(li2.hasNext())
 			{
-				ks = (KnowledgeSlot) li.next();
+				ks = li2.next();
 				if(ks.getName().equals(predicate.toString()))
 				{
 					li.remove();
@@ -281,7 +222,7 @@ public class KnowledgeBase implements Serializable {
 			}
 		}
 	}
-
+	
 	/**
 	 * Adds a new property or sets its value (if already exists) in the KnowledgeBase
 	 * @param property - the property to be added/changed
@@ -292,14 +233,14 @@ public class KnowledgeBase implements Serializable {
 		boolean newProperty = false;
 		KnowledgeSlot aux = _kB;
 		KnowledgeSlot currentSlot;
-		ArrayList fetchList = property.GetLiteralList();
-		ListIterator li = fetchList.listIterator();
+		ArrayList<Symbol> fetchList = property.GetLiteralList();
+		ListIterator<Symbol> li = fetchList.listIterator();
 		Symbol l;		
 
 		synchronized (this) {
 			while (li.hasNext()) {
 				currentSlot = aux;
-				l = (Symbol) li.next();
+				l = li.next();
 				if (currentSlot.containsKey(l.toString())) {
 					aux = currentSlot.get(l.toString());
 				} else {
@@ -325,10 +266,10 @@ public class KnowledgeBase implements Serializable {
 			else
 			{
 				KnowledgeSlot ks;
-				li = _factList.listIterator();
-				while(li.hasNext())
+				ListIterator<KnowledgeSlot> li2 = _factList.listIterator();
+				while(li2.hasNext())
 				{
-					ks = (KnowledgeSlot) li.next();
+					ks = li2.next();
 					if(ks.getName().equals(property.toString()))
 					{
 						ks.setValue(value);
@@ -339,8 +280,69 @@ public class KnowledgeBase implements Serializable {
 		}
 	}
 	
-	public ListIterator GetFactList() {
-	    return _factList.listIterator();
+	public ArrayList<SubstitutionSet> GetPossibleBindings(Name name) {
+		ArrayList<SubstitutionSet> bindingSets = null;
+
+		bindingSets = MatchLiteralList(name.GetLiteralList(), 0, _kB);
+		
+		if (bindingSets == null || bindingSets.size() == 0)
+			return null;
+		else
+			return bindingSets;
+	}
+	
+	public KnowledgeSlot GetObjectDetails(String objectName)
+	{
+		return _kB.get(objectName);
+	}
+
+	
+	private ArrayList<SubstitutionSet> MatchLiteralList(ArrayList<Symbol> literals, int index, KnowledgeSlot ks) {
+		Symbol l;
+		String key;
+		ArrayList<SubstitutionSet> bindingSets;
+		ArrayList<SubstitutionSet> newBindingSets;
+		SubstitutionSet subSet;
+		ListIterator<SubstitutionSet> li;
+		Iterator<String> it;
+
+		newBindingSets = new ArrayList<SubstitutionSet>();
+
+		if (index >= literals.size()) {
+			newBindingSets.add(new SubstitutionSet());
+			return newBindingSets;
+		}
+
+		synchronized (this) {
+			l = (Symbol) literals.get(index++);
+
+			if (l.isGrounded()) {
+				if (ks.containsKey(l.toString())) {
+					return MatchLiteralList(literals, index, ks.get(l.toString()));
+				} else
+					return null;
+			}
+
+			it = ks.getKeyIterator();
+			while (it.hasNext()) {
+				key = (String) it.next();
+				bindingSets = MatchLiteralList(literals, index, ks.get(key));
+				if (bindingSets != null) {
+					li = bindingSets.listIterator();
+					while (li.hasNext()) {
+						subSet = (SubstitutionSet) li.next();
+						subSet.AddSubstitution(new Substitution(l, new Symbol(
+								key)));
+						newBindingSets.add(subSet);
+					}
+				}
+			}
+		}
+
+		if (newBindingSets.size() == 0)
+			return null;
+		else
+			return newBindingSets;
 	}
 
 	/**
