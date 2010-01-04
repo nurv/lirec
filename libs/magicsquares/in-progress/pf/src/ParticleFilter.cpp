@@ -110,14 +110,20 @@ ParticleFilter::State ParticleFilter::Update(const Observation &Obs)
 	for (vector<Particle>::iterator i=m_Particles.begin(); 
 		i!=m_Particles.end(); ++i)
 	{	
-		// assign the weight to each particle, based on the 
+		// Assign the weight to each particle, based on the difference 
+		// between the one observation from the outside world, and the 
+		// observation of the particle's state
 		Observation PObs=i->m_State.Observe();
 		
 		// todo: angle error will be wrong around 360 -> 0 boundary
 		float AngErr = (Obs.Angle-PObs.Angle)+(m_ObsAngleNoiseLevel*GaussianNoise());
 		float DistErr = (Obs.Dist-PObs.Dist)+(m_ObsDistNoiseLevel*GaussianNoise());
 		
-		i->m_Weight =1/(AngErr*AngErr*0.1 + DistErr*DistErr);
+		// Here we can use information about our sensor to modify the error from
+		// different readings. We'll make it so the angle observation is less 'trustworthy'
+		// than the distance readings. This has the effect of making the pdf into a cresent 
+		// shape.
+		i->m_Weight = 1/(AngErr*AngErr*0.1 + DistErr*DistErr);
 		TotalWeight+=i->m_Weight;
 	}
 	
@@ -128,7 +134,7 @@ ParticleFilter::State ParticleFilter::Update(const Observation &Obs)
 		i->m_Weight/=TotalWeight;
 	}
 	
-	// Find the weighted average (this is our result)
+	// Find the weighted average to get an estimate
 	State ret;
 	ret.x=0; ret.y=0;
 	
