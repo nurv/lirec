@@ -69,6 +69,7 @@ static CvScalar colors[] =
         {{255,255,0}},
         {{255,0,0}},
         {{255,0,255}},
+		{{255,255,255}}
     };
 
 void App::Run()
@@ -101,35 +102,52 @@ void App::Run()
 	cvShowImage("pf", frame_copy);
 }
 
-void Plot(IplImage *Image, ParticleFilter::State State, int colour)
+void Plot(IplImage *Image, ParticleFilter::State State, int colour,int size)
 {
-	int x = State.x + 100;
-	int y = State.y + 100;
-	cvRectangle(Image, cvPoint(x,y), cvPoint(x+1,y+1), colors[colour]);	
+	int x = State.x*2 + 200;
+	int y = State.y*2 + 200;
+	cvRectangle(Image, cvPoint(x-size,y-size), cvPoint(x+size,y+size), colors[colour]);	
+}
+
+void PlotReal(IplImage *Image, ParticleFilter::State State, int colour)
+{
+	int x = State.x*2 + 200;
+	int y = State.y*2 + 200;
+	cvRectangle(Image, cvPoint(x-1,y-1), cvPoint(x+1,y+1), colors[colour]);	
+}
+
+void PlotEst(IplImage *Image, ParticleFilter::State State, int colour)
+{
+	int x = State.x*2 + 200;
+	int y = State.y*2 + 200;
+	cvLine(Image, cvPoint(200,200), cvPoint(x,y), colors[colour]);	
 }
 
 void App::Update(IplImage *camera)
 {	
 	int key=cvWaitKey(10);
 	
+	cvRectangle(camera, cvPoint(0,0), cvPoint(camera->width,camera->height), colors[8], -1);	
+	
 	m_PF.Predict();
 	
-	// our actual state
+	// Our actual state
 	ParticleFilter::State RealState;
 	RealState.x=50*sin(m_FrameNum*0.01f);
-	RealState.y=50;
+	RealState.y=-50;
 	
+	// Create an observation of the state
 	ParticleFilter::Observation Obs = RealState.Observe();
-
-	Plot(camera,RealState,1);	
-		
-	m_PF.Update(Obs);
+	PlotReal(camera,RealState,1);
+	
+	// Feed the observation in and return the estimated state
+	ParticleFilter::State Estimate = m_PF.Update(Obs);
+	PlotEst(camera,Estimate,3);
 	
 	const vector<ParticleFilter::Particle> &p = m_PF.GetParticles();
-	
 	for (vector<ParticleFilter::Particle>::const_iterator i=p.begin();
 		i!=p.end(); ++i)
 	{
-		Plot(camera,i->m_State,0);	
+		Plot(camera,i->m_State,0,i->m_Weight*20);
 	}
 }

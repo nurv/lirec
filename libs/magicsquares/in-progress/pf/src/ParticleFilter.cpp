@@ -21,6 +21,45 @@
 
 using namespace std;
 
+///////////////////////////////////////////////////////////////
+// Some util functions
+
+float FloatNoise()
+{
+	return rand()%INT_MAX/float(INT_MAX)*2-1;
+}
+
+float GaussianNoise()
+{
+	float l=0;
+	float x=0;
+	float y=0;
+	while (l>=1 || l==0)
+	{
+		x=FloatNoise();
+		y=FloatNoise();
+		l=x*x+y*y;
+	}
+	return sqrt(-2*log(l)/l)*x;
+}
+
+// gets the angle of a vector from 0 to 360 degrees
+float GetAngle(float x, float y)
+{
+	if(y==0) // prevent division by 0
+	{
+		if(x>=0) return 0;
+		else return 180;
+	}
+	else 
+	{
+		if (y>0) return 90-atan(x/y)*180/M_PI;
+		else return 270-atan(x/y)*180/M_PI;
+	} 
+}
+
+////////////////////////////////////////////////////////////////
+// The particle filter
 
 ParticleFilter::ParticleFilter(unsigned int NumParticles)
 {
@@ -35,29 +74,11 @@ ParticleFilter::ParticleFilter(unsigned int NumParticles)
 	}
 }
 
-float ParticleFilter::FloatNoise()
-{
-	return rand()%INT_MAX/float(INT_MAX)*2-1;
-}
-
-float ParticleFilter::GaussianNoise()
-{
-	float l=0;
-	float x=0;
-	float y=0;
-	while (l>=1 || l==0)
-	{
-		x=FloatNoise();
-		y=FloatNoise();
-		l=x*x+y*y;
-	}
-	return sqrt(-2*log(l)/l)*x;
-}
 
 ParticleFilter::Observation ParticleFilter::State::Observe()
 {
 	Observation NewObs;
-	NewObs.Angle=atan(y/x);
+	NewObs.Angle=GetAngle(x,y);
 	NewObs.Dist=sqrt(x*x+y*y);
 	return NewObs;
 }
@@ -84,21 +105,45 @@ void ParticleFilter::Predict()
 	}
 }
 	
-void ParticleFilter::Update(const Observation &Obs)
+ParticleFilter::State ParticleFilter::Update(const Observation &Obs)
 {
+	float TotalWeight = 0;
+
 	for (vector<Particle>::iterator i=m_Particles.begin(); 
 		i!=m_Particles.end(); ++i)
 	{	
 		// assign the weight to each particle, based on the 
 		Observation PObs=i->m_State.Observe();
 		
-		float AngErr = Obs.Angle-PObs.Angle+(m_ObsAngleNoiseLevel*GaussianNoise());
-		float DistErr = Obs.Dist-PObs.Dist+(m_ObsDistNoiseLevel*GaussianNoise());
+		// todo: angle error will be wrong around 360 -> 0 boundary
+		float AngErr = (Obs.Angle-PObs.Angle)+(m_ObsAngleNoiseLevel*GaussianNoise());
+		float DistErr = (Obs.Dist-PObs.Dist)+(m_ObsDistNoiseLevel*GaussianNoise());
 		
-		i->m_Weight =1/(AngErr*AngErr*100 + DistErr*DistErr);
+		i->m_Weight =1/(AngErr*AngErr*0.1 + DistErr*DistErr);
+		TotalWeight+=i->m_Weight;
+	}
+	
+	// Normalise the weights
+	for (vector<Particle>::iterator i=m_Particles.begin(); 
+		i!=m_Particles.end(); ++i)
+	{	
+		i->m_Weight/=TotalWeight;
+	}
+	
+	// Find the weighted average (this is our result)
+	State ret;
+	ret.x=0; ret.y=0;
+	
+	for (vector<Particle>::iterator i=m_Particles.begin(); 
+		i!=m_Particles.end(); ++i)
+	{	
+		ret.x += i->m_State.x * i->m_Weight;
+		ret.y += i->m_State.y * i->m_Weight;
 	}
 	
 	Resample();
+	
+	return ret;
 }
 
 void ParticleFilter::Resample()

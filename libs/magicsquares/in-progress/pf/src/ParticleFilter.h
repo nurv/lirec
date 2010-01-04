@@ -61,7 +61,7 @@ public:
 	
 	// Set the particle weights according to the current real observation,
 	// and resample particles with low weights, which 'tightens' the particles in.
-	void Update(const Observation &Obs);
+	State Update(const Observation &Obs);
 
 	void SetNoiseLevels(float Prediction, float ObsAngle, float ObsDist);
 	void SetResampleWeight(float Weight) { m_ResampleWeight=Weight; }
@@ -70,8 +70,6 @@ public:
 	const vector<Particle> &GetParticles() { return m_Particles; }
 
 private:
-	float FloatNoise();
-	float GaussianNoise();
 	void Resample();
 	
 	float m_PredictionNoiseLevel;
