@@ -69,8 +69,7 @@ ParticleFilter::ParticleFilter(unsigned int NumParticles)
 	for (vector<Particle>::iterator i=m_Particles.begin(); 
 		i!=m_Particles.end(); ++i)
 	{
-		i->m_State.x = FloatNoise()*100;
-		i->m_State.y = FloatNoise()*100;
+		i->m_State.Randomise();
 	}
 }
 
@@ -95,11 +94,10 @@ void ParticleFilter::Predict()
 	for (vector<Particle>::iterator i=m_Particles.begin(); 
 		i!=m_Particles.end(); ++i)
 	{
-		// As we don't have a model we can use for prediction
-		// we just add some noise to the state here.
-		// It would be quite simple to add velocity into our state,
-		// in which case we'd add the velocity to the position here 
-		// as well.
+		// Apply the velocity to the particle position
+		i->m_State.x+=i->m_State.dx;
+		i->m_State.y+=i->m_State.dy;
+		// Add some noise to the position
 		i->m_State.x+=GaussianNoise()*m_PredictionNoiseLevel;
 		i->m_State.y+=GaussianNoise()*m_PredictionNoiseLevel;
 	}
@@ -146,16 +144,47 @@ ParticleFilter::State ParticleFilter::Update(const Observation &Obs)
 	return ret;
 }
 
-void ParticleFilter::Resample()
+ParticleFilter::Particle* ParticleFilter::GetMostLikely()
 {
+	Particle *ret=NULL;
+	float HighestWeight=0;
 	for (vector<Particle>::iterator i=m_Particles.begin(); 
 		i!=m_Particles.end(); ++i)
 	{
+		if (i->m_Weight>HighestWeight)
+		{
+			ret = &(*i);
+			HighestWeight = i->m_Weight;
+		}
+	}
+	return ret;
+}
+
+void ParticleFilter::Resample()
+{
+	Particle *Highest = GetMostLikely();
+
+	for (vector<Particle>::iterator i=m_Particles.begin(); 
+		i!=m_Particles.end(); ++i)
+	{
+		// If this particle has a low weight
 		if (i->m_Weight<m_ResampleWeight)
 		{
-			// cast to a random position
-			i->m_State.x = FloatNoise()*100;
-			i->m_State.y = FloatNoise()*100;
+			// Randomly choose between either...
+			if (rand()%2==0)
+			{
+				// Cast to a new completely random position/velocity
+				i->m_State.Randomise();
+			}
+			else
+			{
+				// Copy settings from the 'best' current particle
+				i->m_State=Highest->m_State;
+				// And jitter them a little - this stops the particles 
+				// converging too much on one state
+				i->m_State.Jitter();
+			}
 		}	
 	}
 }
+

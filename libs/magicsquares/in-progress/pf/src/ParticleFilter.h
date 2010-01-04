@@ -21,6 +21,10 @@
 
 using namespace std;
 
+float FloatNoise();
+float GaussianNoise();
+float GetAngle(float x, float y);
+
 class ParticleFilter
 {
 public:
@@ -38,11 +42,31 @@ public:
 	class State
 	{
 	public:
-		float x,y;
 		// Gets the observation we would expect from this state
 		// includes some noise, based on our expectation of the sensor
 		// used to make the measurement.
 		Observation Observe();
+		
+		// Put the state into a random position and velocity
+		void Randomise()
+		{
+			x = FloatNoise()*100;
+			y = FloatNoise()*100;
+			dx = GaussianNoise();
+			dy = GaussianNoise();
+		}
+		
+		// Add a small random amount to the position and velocity
+		void Jitter()
+		{
+			x += GaussianNoise()*10;
+			y += GaussianNoise()*10;
+			dx += GaussianNoise()*0.5;
+			dy += GaussianNoise()*0.5;
+		}
+		
+		float x,y;
+		float dx,dy;
 	};
 
 	class Particle
@@ -52,6 +76,7 @@ public:
 		// weighting
 		State m_State;
 		float m_Weight;
+		
 	};
 	
 	// Use the model to predict the next state of each particle, 
@@ -70,6 +95,11 @@ public:
 	const vector<Particle> &GetParticles() { return m_Particles; }
 
 private:
+
+	// Returns the particle with the highest weight
+	Particle* GetMostLikely();
+	
+	// Reset particles with low weight
 	void Resample();
 	
 	float m_PredictionNoiseLevel;

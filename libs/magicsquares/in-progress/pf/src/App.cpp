@@ -50,7 +50,7 @@ m_FrameNum(0)
 	cvInitFont( &m_LargeFont, CV_FONT_HERSHEY_PLAIN, 25, 25, 0, 10, CV_AA );
 
 	m_PF.SetNoiseLevels(1,0.01,0.01);
-	m_PF.SetResampleWeight(0.01);
+	m_PF.SetResampleWeight(0.0001);
 
 	cvNamedWindow( "pf", 1 );
 }
@@ -133,6 +133,9 @@ void App::Update(IplImage *camera)
 	
 	// Our actual state
 	ParticleFilter::State RealState;
+	// We'll move the target on a sine wave - the particle state is not
+	// able to model this behaviour very well, as it only copes with 
+	// linear velocity
 	RealState.x=50*sin(m_FrameNum*0.01f);
 	RealState.y=-50;
 	
