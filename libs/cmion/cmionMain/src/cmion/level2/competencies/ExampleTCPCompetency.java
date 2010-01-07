@@ -60,6 +60,17 @@ public class ExampleTCPCompetency extends RemoteTCPCompetency {
 		competencyType = "DetectPerson";
 	}
 
+	/** this competency is invoked directly (does not run in background) */
+	@Override
+	public boolean runsInBackground() 
+	{
+		// note: if we return true here, startExecution (below) will be called only once
+		// directly at cmion start up and calling returnSuccess should be avoided as this
+		// will terminate the competency and background competencies usually don't terminate.
+
+		return false;
+	}	
+	
 	/** we must implement this method. It will be invoked whenever the 
 	 * competency is started. */
 	@Override

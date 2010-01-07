@@ -127,13 +127,6 @@ public class CompetencyLibrary extends CmionComponent {
 					className = atrClassName.getNodeValue();
 				else
 					throw new Exception("No class name specified for an architecture component in architecture configuration file.");
-
-				// read attribute RunInBackground default: false
-				boolean runInBackground = false;
-				Node atrRunInBg = attribs.getNamedItem("RunInBackground");
-				if (atrRunInBg!=null)
-					if (atrRunInBg.getNodeValue().trim().equalsIgnoreCase("True"))
-						runInBackground = true;
 				
 				// read attribute ConstructorParameters: default none
 				String constructorParametersStr = "";
@@ -141,7 +134,7 @@ public class CompetencyLibrary extends CmionComponent {
 				if (atrConstrPars!=null)
 					constructorParametersStr= atrConstrPars.getNodeValue();
 				
-				// create array to store values of contrucotr parameters
+				// create array to store values of constructor parameters
 				ArrayList<Object> constructorParameters = new ArrayList<Object>();
 				// create array that specifies the classes of the parameters of the constructor
 				ArrayList<Class<?>> constructorClasses = new ArrayList<Class<?>>();
@@ -176,12 +169,13 @@ public class CompetencyLibrary extends CmionComponent {
 				
 				// check if instance is of the right type
 				if (!(instance instanceof Competency)) throw new Exception("Competency could not be loaded because "+ className+ " is not a subclass of Competency");
-		
+				Competency competency = (Competency) instance;
+				
 				// add to our list of competencies
-				if (runInBackground)
-					backgroundCompetencies.add((Competency)instance);
+				if (competency.runsInBackground())
+					backgroundCompetencies.add(competency);
 				else	
-					competencies.add((Competency)instance);			
+					competencies.add(competency);			
 			}
 		}
 		

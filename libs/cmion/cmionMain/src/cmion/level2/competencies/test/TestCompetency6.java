@@ -50,6 +50,13 @@ public class TestCompetency6 extends Competency {
 		competencyType = "TestType6";
 	}
 
+	/** this competency runs in background and is not invoked directly */
+	@Override
+	public boolean runsInBackground() 
+	{
+		return true;
+	}
+	
 	
 	@Override
 	protected boolean competencyCode(HashMap<String, String> parameters) 

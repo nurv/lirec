@@ -67,6 +67,13 @@ public class TestCompetency5 extends Competency
 	public void initialize() {
 		available = true;
 	}
+	
+	/** this competency is invoked directly (does not run in background) */
+	@Override
+	public boolean runsInBackground() 
+	{
+		return false;
+	}	
 
 	/** competency code */
 	@Override

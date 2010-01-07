@@ -92,6 +92,11 @@ public abstract class Competency extends CmionComponent implements Runnable
 		return available;
 	}
 	
+	/** every competency must provide information of whether it will run in the background
+	 *  permanently (returns true) or whether it will be invoked through the competency 
+	 *  execution system (returns false) */
+	public abstract boolean runsInBackground();
+	
 	/** every competency sub class must implement this method and in it perform 
 	 * the competency code. This method will run in a seperate thread, so can take its time.
 	 * It should not be called from outside, instead a request should be scheduled or 

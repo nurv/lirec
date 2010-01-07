@@ -57,6 +57,13 @@ public class TestCompetency1 extends Competency
 		available = true;
 	}
 
+	/** this competency is invoked directly (does not run in background) */
+	@Override
+	public boolean runsInBackground() 
+	{
+		return false;
+	}	
+	
 	/** competency code */
 	@Override
 	protected boolean competencyCode(HashMap<String, String> parameters) 
@@ -67,6 +74,6 @@ public class TestCompetency1 extends Competency
 		
 		// test competency 1 always fails
 		return false;
-	}	
+	}
 	
 }

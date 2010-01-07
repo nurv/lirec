@@ -57,6 +57,13 @@ public class TestCompetency3 extends Competency
 		available = true;
 	}
 
+	/** this competency is invoked directly (does not run in background) */
+	@Override
+	public boolean runsInBackground() 
+	{
+		return false;
+	}	
+	
 	/** competency code */
 	@Override
 	protected boolean competencyCode(HashMap<String, String> parameters) 

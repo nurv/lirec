@@ -66,6 +66,16 @@ public class ExampleCompetency extends Competency {
 		available = true;
 	}
 
+	/** this competency is invoked directly (does not run in background) */
+	@Override
+	public boolean runsInBackground() 
+	{
+		//note: if we return true here, competencyCode (below) will be called only once
+		// directly at cmion start up and should be written as an endless loop
+
+		return false;
+	}	
+
 	
 	/** the custom code of the competence, this is already running in a thread */
 	@Override

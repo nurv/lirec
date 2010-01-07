@@ -1,5 +1,5 @@
 <!--Top Element of the competency library file -->
-<!ELEMENT CompetencyLibrary (Competency*)>
+<!ELEMENT CompetencyLibrary (Competency*,Samgar?)>
 
 <!--A competency to load dynamically when the architecture is started up-->
 <!ELEMENT Competency EMPTY>
@@ -14,7 +14,7 @@
  listed here. -->
 <!ATTLIST Competency ConstructorParameters CDATA #IMPLIED>
 
-<!--Specifies whether this competency should started immediately and run permanently in the background,
- or whether it will be available for execution through the competency execution system. If omitted, the
- competency will not run in the background.-->
-<!ATTLIST Competency RunInBackground (true|false) #IMPLIED>
+<!--An optional element to specify Samgar related information. If specified, CMION will attempt to contact
+the Samgar name server and dynamically add competencies which represent compatible running Samgar modules 
+within cmion. Omit this element if you do not want to use Samgar. -->
+<!ELEMENT SAMGAR EMPTY>
