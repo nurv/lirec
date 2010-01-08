@@ -86,17 +86,53 @@ public class STMRecordDisplay {
         lbl.setMaximumSize(new Dimension(80,30));
         aux.add(lbl);
         
+        lbl = new JLabel("Intention"); // Goal?
+        lbl.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
+        lbl.setMinimumSize(new Dimension(80,30));
+        lbl.setMaximumSize(new Dimension(80,30));
+        aux.add(lbl);
+        
         lbl = new JLabel("Target"); // Whom?
         lbl.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
         lbl.setMinimumSize(new Dimension(80,30));
         lbl.setMaximumSize(new Dimension(80,30));
         aux.add(lbl);
         
-        lbl = new JLabel("Parameters"); // How?
+        lbl = new JLabel("Status"); // Activation, Success, Failure?
+        lbl.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
+        lbl.setMinimumSize(new Dimension(80,30));
+        lbl.setMaximumSize(new Dimension(80,30));
+        aux.add(lbl);
+        
+        lbl = new JLabel("Meaning"); // Which speechAct?
+        lbl.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
+        lbl.setMinimumSize(new Dimension(80,30));
+        lbl.setMaximumSize(new Dimension(80,30));
+        aux.add(lbl);
+        
+        lbl = new JLabel("Path"); // Multimedia directory
+        lbl.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
+        lbl.setMinimumSize(new Dimension(80,30));
+        lbl.setMaximumSize(new Dimension(80,30));
+        aux.add(lbl);
+        
+        lbl = new JLabel("Desirability"); // Desirable?
+        lbl.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
+        lbl.setMinimumSize(new Dimension(80,30));
+        lbl.setMaximumSize(new Dimension(80,30));
+        aux.add(lbl);
+        
+        lbl = new JLabel("Praiseworthiness"); // Praiseworthy?
+        lbl.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
+        lbl.setMinimumSize(new Dimension(80,30));
+        lbl.setMaximumSize(new Dimension(80,30));
+        aux.add(lbl);
+        
+        /*lbl = new JLabel("Parameters"); // How?
         lbl.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
         lbl.setMinimumSize(new Dimension(100,30));
         lbl.setMaximumSize(new Dimension(100,30));
-        aux.add(lbl);
+        aux.add(lbl);*/
         
         lbl = new JLabel("Feeling");
         lbl.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
@@ -104,11 +140,11 @@ public class STMRecordDisplay {
         lbl.setMaximumSize(new Dimension(100,30));
         aux.add(lbl);
         
-        lbl = new JLabel("Evaluation");
+        /*lbl = new JLabel("Evaluation");
         lbl.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
         lbl.setMinimumSize(new Dimension(150,30));
         lbl.setMaximumSize(new Dimension(150,30));
-        aux.add(lbl);
+        aux.add(lbl);*/
         
         lbl = new JLabel("Time");
         lbl.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));

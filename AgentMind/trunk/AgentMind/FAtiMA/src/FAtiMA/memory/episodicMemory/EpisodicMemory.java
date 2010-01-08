@@ -10,6 +10,7 @@ import FAtiMA.sensorEffector.Event;
 import FAtiMA.sensorEffector.Parameter;
 import FAtiMA.util.Constants;
 import FAtiMA.util.enumerables.EmotionType;
+import FAtiMA.util.enumerables.GoalEvent;
 import FAtiMA.wellFormedNames.Name;
 
 public class EpisodicMemory {
@@ -214,21 +215,26 @@ public class EpisodicMemory {
 		if (!location.equals(_previousLocation))
 		{
 			_am.NewEpisode(location);
-			_stm.ResetEventID();
+			//_stm.ResetEventID(); 06/01/10 not resetting the eventID to support CC matching that returns the ID as results
 		}
 
 		synchronized (this) {
 			if(this._stm.GetCount() >= ShortTermEpisodicMemory.MAXRECORDS)
 			{
 				ActionDetail detail = _stm.GetOldestRecord();
+				//Meiyii 07/01/10
 				
-				if((detail.getAction().equals("activate") || 
+				/*if((detail.getAction().equals("activate") || 
 						detail.getAction().equals("succeed") ||
 						detail.getAction().equals("fail")) ||
 						((!detail.getAction().equals("activate") && 
 						!detail.getAction().equals("succeed") &&
 						!detail.getAction().equals("fail")) &&
-						(detail.getEmotion().GetType()) != EmotionType.NEUTRAL))
+						(detail.getEmotion().GetType()) != EmotionType.NEUTRAL))*/
+				if((detail.getIntention() != null && (detail.getStatus().equals(GoalEvent.GetName(GoalEvent.ACTIVATION)) || 
+						detail.getStatus().equals(GoalEvent.GetName(GoalEvent.SUCCESS)) ||
+						detail.getStatus().equals(GoalEvent.GetName(GoalEvent.FAILURE)))) ||
+						(detail.getAction() != null && (detail.getEmotion().GetType()) != EmotionType.NEUTRAL))
 				{
 					_am.StoreAction(detail);					
 				}

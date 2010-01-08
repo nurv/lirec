@@ -52,7 +52,10 @@ import FAtiMA.sensorEffector.Parameter;
 import FAtiMA.socialRelations.LikeRelation;
 import FAtiMA.socialRelations.RespectRelation;
 import FAtiMA.util.Constants;
+import FAtiMA.util.enumerables.ActionEvent;
 import FAtiMA.util.enumerables.EmotionType;
+import FAtiMA.util.enumerables.EventType;
+import FAtiMA.util.enumerables.GoalEvent;
 
 
 /**
@@ -70,8 +73,7 @@ public class ActionDetail implements Serializable {
 	
 	private String _subject;
 	private String _action;
-	private String _target;
-	private ArrayList<Parameter> _parameters = null;
+	private String _target;	
 	
 	private KnowledgeSlot _subjectDetails = null;
 	private KnowledgeSlot _targetDetails = null;
@@ -82,16 +84,40 @@ public class ActionDetail implements Serializable {
 	private BaseEmotion _emotion;
 	
 	private ArrayList<String> _evaluation;
+	private ArrayList<Parameter> _parameters = null;
+	
+	// 06/01/10 - Meiyii
+	private String _intention;
+	private String _status;
+	private String _speechActMeaning;
+	private String _multimediaPath;
+	
+	private float _desirability;
+	private float _praiseworthiness;
+	
 		
 	public ActionDetail(Memory m, int ID, Event e, String location)
-	{
+	{  
+		Parameter p;
+		
 		this._id = ID;
 		
 		this._subject = e.GetSubject();
-		this._action = e.GetAction();
+		
+		// Meiyii 07/01/10 separate events into intention and action
+		if(e.GetType() == EventType.GOAL)
+		{
+			this._intention = e.GetAction();
+			this._status = GoalEvent.GetName(e.GetStatus());
+		}
+		else if (e.GetType() == EventType.ACTION)
+		{
+			this._action = e.GetAction();
+			this._status = ActionEvent.GetName(e.GetStatus());
+		}
+		
 		this._target = e.GetTarget();
 		this._location = location;
-		
 		this._time = new Time();
 		
 		if(this._subject != null)
@@ -106,7 +132,21 @@ public class ActionDetail implements Serializable {
 		
 		if(e.GetParameters() != null)
 		{
+			// Meiyii 07/01/10 separate the parameters into individual fields
 			this._parameters = new ArrayList<Parameter>(e.GetParameters());
+			ListIterator<Parameter> li = this._parameters.listIterator();
+			while(li.hasNext())
+			{
+				p = li.next();
+				if(p.GetName().equals("type"))
+				{
+					this._speechActMeaning = p.GetValue().toString();
+				}				
+				else if(p.GetName().equals("link"))
+				{
+					this._multimediaPath = p.GetValue().toString();
+				}
+			}
 		}
 		
 		this._emotion = new BaseEmotion(EmotionType.NEUTRAL,0,null,null);
@@ -114,6 +154,7 @@ public class ActionDetail implements Serializable {
 		this._evaluation = new ArrayList<String>();
 	}
 	
+	// not used currently
 	public ActionDetail(int ID, String subject, String action, String target, ArrayList<Parameter> parameters, ArrayList<String> evaluation, Time time, String location, BaseEmotion emotion)
 	{
 		this._id = ID;
@@ -202,6 +243,37 @@ public class ActionDetail implements Serializable {
 	public ArrayList<String> getEvaluation()
 	{
 		return this._evaluation;
+	}
+	
+	//Meiyii 07/01/10
+	public String getIntention()
+	{
+		return this._intention;
+	}
+	
+	public String getStatus()
+	{
+		return this._status;
+	}
+	
+	public String getSpeechActMeaning()
+	{
+		return this._speechActMeaning;
+	}
+	
+	public String getMultimediaPath()
+	{
+		return this._multimediaPath;
+	}
+	
+	public float getDesirability()
+	{
+		return this._desirability;
+	}
+	
+	public float getPraiseworthiness()
+	{
+		return this._praiseworthiness;
 	}
 	
 //	TODO em revisao 15.03.2007
@@ -486,10 +558,16 @@ public class ActionDetail implements Serializable {
 		action += "<EventID>" + this.getID() + "</EventID>";
 		action += "<Emotion>" + EmotionType.GetName(this.getEmotion().GetType()) + " " + this.getEmotion().GetPotential() + "</Emotion>";
 		action += "<Subject>" + this.getSubject() + "</Subject>";
+		action += "<Intention>" + this.getIntention() + "</Intention>";
+		action += "<Status>" + this.getStatus() + "</Status>";
 		action += "<Action>" + this.getAction() + "</Action>";
 		action += "<Target>" + this.getTarget() + "</Target>";
 		action += "<Parameters>" + this.getParameters() + "</Parameters>";
-		action += "<Evaluation>" + this.getEvaluation() + "</Evaluation>";
+		action += "<SpeechActMeaning>" + this.getSpeechActMeaning() + "</SpeechActMeaning>";
+		action += "<MultimediaPath>" + this.getMultimediaPath() + "</MultimediaPath>";
+		action += "<Desirability>" + this.getDesirability() + "</Desirability>";
+		action += "<Praiseworthiness>" + this.getPraiseworthiness() + "</Praiseworthiness>";
+		//action += "<Evaluation>" + this.getEvaluation() + "</Evaluation>";
 		action += "<Time>" + this.getTime().getNarrativeTime() + "</Time>";
 		action += "<Location>" + this.getLocation() + "</Location>";
 		

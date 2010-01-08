@@ -64,6 +64,8 @@ import FAtiMA.conditions.Condition;
 import FAtiMA.exceptions.UnreachableGoalException;
 import FAtiMA.sensorEffector.Event;
 import FAtiMA.sensorEffector.Parameter;
+import FAtiMA.util.enumerables.EventType;
+import FAtiMA.util.enumerables.GoalEvent;
 import FAtiMA.wellFormedNames.IGroundable;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
@@ -289,7 +291,8 @@ public abstract class Goal implements IGroundable, Cloneable, Serializable {
 	 */
 	public Event GetActivationEvent()
 	{
-		return generateEventDescription(ACTIVATIONEVENT);
+		// Meiyii - using GoalEvent enum
+		return generateEventDescription(GoalEvent.ACTIVATION);
 	}
 	
 	/**
@@ -298,7 +301,8 @@ public abstract class Goal implements IGroundable, Cloneable, Serializable {
 	 */
 	public Event GetSuccessEvent()
 	{
-		return generateEventDescription(SUCCESSEVENT);
+		// Meiyii - using GoalEvent enum
+		return generateEventDescription(GoalEvent.SUCCESS);
 	}
 	
 	/**
@@ -307,15 +311,20 @@ public abstract class Goal implements IGroundable, Cloneable, Serializable {
 	 */
 	public Event GetFailureEvent()
 	{
-		return generateEventDescription(FAILUREEVENT);
+		// Meiyii - using GoalEvent enum
+		return generateEventDescription(GoalEvent.FAILURE);
 		
 	}
 	
-	private Event generateEventDescription(String action)
+	/* 06/01/10 - Meiyii
+	 * Modify the description so that the goal action (activation, success, failure)
+	 * is stored in the field status instead of action, added a GOAL eventType 
+	*/
+	private Event generateEventDescription(short goalEventType)
 	{
-		Event e = new Event("SELF",action,this._name.GetFirstLiteral().toString());
 		ListIterator<Symbol> li = this._name.GetLiteralList().listIterator();
-	    li.next();
+		Event e = new Event("SELF",li.next().toString(),li.next().toString(),EventType.GOAL,goalEventType);
+		
 	    while(li.hasNext())
 	    {
 	    	e.AddParameter(new Parameter("param",li.next().toString()));

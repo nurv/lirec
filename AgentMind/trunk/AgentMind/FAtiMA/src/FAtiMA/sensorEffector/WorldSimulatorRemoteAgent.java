@@ -12,6 +12,8 @@ import FAtiMA.Agent;
 import FAtiMA.culture.SymbolTranslator;
 import FAtiMA.util.AgentLogger;
 import FAtiMA.util.Constants;
+import FAtiMA.util.enumerables.ActionEvent;
+import FAtiMA.util.enumerables.EventType;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Symbol;
 
@@ -186,7 +188,7 @@ public class WorldSimulatorRemoteAgent extends RemoteAgent {
 
 
 				}
-				event = speechAct.toEvent();
+				event = speechAct.toEvent(ActionEvent.SUCCESS);
 			}
 			catch (Exception e) {
 				AgentLogger.GetInstance().log("Error converting a speechAct");
@@ -201,7 +203,7 @@ public class WorldSimulatorRemoteAgent extends RemoteAgent {
 			speechAct = (SpeechAct) SpeechAct.ParseFromXml(target);
 			//_agent.UpdateDialogState(speechAct);
 
-			event = speechAct.toEvent();
+			event = speechAct.toEvent(ActionEvent.SUCCESS);
 
 			//TODO change this test
 			if(speechAct.getSender().equals(_agent.getName()) &&
@@ -225,7 +227,7 @@ public class WorldSimulatorRemoteAgent extends RemoteAgent {
 				Name param = (Name) it.next();
 				event.AddParameter(new Parameter("param",param.toString()));
 			}*/
-			event = new Event(subject,action,target);
+			event = new Event(subject,action,target,EventType.ACTION,ActionEvent.SUCCESS);
 			String aux;
 			while(st.hasMoreTokens()) {
 				aux = st.nextToken();

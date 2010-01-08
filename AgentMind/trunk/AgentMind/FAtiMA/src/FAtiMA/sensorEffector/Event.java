@@ -81,6 +81,10 @@ public class Event implements Cloneable, Serializable {
 	protected String _target;
 	protected long _time;
 	
+	// 06/01/10 - Meiyii
+	protected short _status;
+	protected short _type;
+	
 	/**
 	 * Receives two events and sees if they match. Two events match if they
 	 * refer to the same subject, action, target and parameters
@@ -150,6 +154,8 @@ public class Event implements Cloneable, Serializable {
 			e._target = this._target;
 		}
 		
+		e._type = this._type;
+		e._status = this._status;
 		e._time = this._time;
 		
 		if(this._parameters != null)
@@ -202,6 +208,8 @@ public class Event implements Cloneable, Serializable {
 		}
 		
 		e._time = this._time;
+		e._type = this._type;
+		e._status = this._status;
 		
 		if(this._parameters != null)
 		{
@@ -302,6 +310,24 @@ public class Event implements Cloneable, Serializable {
 	}
 
 	/**
+	 * Creates a new event
+	 * @author Mei Yii Lim
+	 * @param subject - the subject of the event (who performed the action)
+	 * @param action - the action specified by the event
+	 * @param target - the target of the action
+	 * @param status - the status of the goal/action
+	 */
+	public Event(String subject, String action, String target, short type, short status) {
+		_time = AgentSimulationTime.GetInstance().Time();
+		_parameters = new ArrayList<Parameter>();
+		_subject = subject;
+		_action = action;
+		_target = target;
+		_type = type;
+		_status = status;
+	}
+	
+	/**
 	 * Adds a Parameter to the event (usually arguments or parameters of the action)
 	 * @param param - the Parameter to add
 	 * @see Parameter
@@ -336,13 +362,32 @@ public class Event implements Cloneable, Serializable {
 	}
 
 	/**
+	 * Meiyii 07/01/10
 	 * Gets the event's target (what is the target of the event's action)
 	 * @return the event's target
 	 */
 	public String GetTarget() {
 		return _target;
 	}
+	
+	/**
+	 * Meiyii 07/01/10
+	 * Gets the event's type (whether goal or action)
+	 * @return the event's type
+	 */
+	public short GetType() {
+		return _type;
+	}
 
+	/**
+	 * Gets the event's status 
+	 * (activation, success, failure for goal and success, failure for action)
+	 * @return the event's status
+	 */
+	public short GetStatus() {
+		return _status;
+	}
+	
 	/**
 	 * Sets the event's action (what happened)
 	 * @param action - the action to store in the event
@@ -359,6 +404,25 @@ public class Event implements Cloneable, Serializable {
 		_subject = subject;
 	}
 
+	/**
+	 * Meiyii 07/01/10
+	 * Sets the event's type (goal or action)
+	 * (activation, success, failure for goal and success, failure for action)
+	 * @param status - the status of the event
+	 */
+	public void SetStatus(short status) {
+		_status = status;
+	}
+	
+	/**
+	 * Meiyii 07/01/10
+	 * Sets the event's status 
+	 * @param type - the type of the event
+	 */
+	public void SetType(short type) {
+		_type = type;
+	}
+	
 	/**
 	 * Sets the event's target (what is the target of the event's action)
 	 * @param target - the target to store in the event

@@ -49,8 +49,10 @@ import FAtiMA.sensorEffector.WorldSimulatorRemoteAgent;
 import FAtiMA.socialRelations.LikeRelation;
 import FAtiMA.util.AgentLogger;
 import FAtiMA.util.Constants;
+import FAtiMA.util.enumerables.ActionEvent;
 import FAtiMA.util.enumerables.AgentPlatform;
 import FAtiMA.util.enumerables.EmotionType;
+import FAtiMA.util.enumerables.EventType;
 import FAtiMA.util.parsers.AgentLoaderHandler;
 import FAtiMA.util.parsers.CultureLoaderHandler;
 import FAtiMA.util.parsers.ScenarioLoaderHandler;
@@ -627,8 +629,7 @@ public class Agent implements AgentModel {
 								ModelOfOther m = _ToM.get(other);
 								m.getMemory().getEpisodicMemory().StoreAction(m.getMemory(), e2);
 								m.getMemory().getSemanticMemory().Tell(ACTION_CONTEXT,e2.toName().toString());
-								m.AddEvent(e2);
-								
+								m.AddEvent(e2);								
 							}
 							
 							//SELF
@@ -839,7 +840,7 @@ public class Agent implements AgentModel {
 		
 		if(action.equals("INSERT_CHARACTER")||action.equals("INSERT_OBJECT"))
 		{
-			e = new Event(Constants.SELF, "look-at", name);
+			e = new Event(Constants.SELF, "look-at", name, EventType.ACTION, ActionEvent.SUCCESS);
 			int like = Math.round(LikeRelation.getRelation(Constants.SELF, name).getValue(_memory));
 			AppraisalVector v = new AppraisalVector();
 			v.setAppraisalVariable(AppraisalVector.LIKE, like);
@@ -850,7 +851,7 @@ public class Agent implements AgentModel {
 		{
 			if(parameters.size() == 0)
 			{
-				e = new Event(Constants.SELF,name, null);
+				e = new Event(Constants.SELF,name,null);
 			}
 			else
 			{

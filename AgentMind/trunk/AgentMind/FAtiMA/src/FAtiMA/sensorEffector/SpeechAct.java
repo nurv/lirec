@@ -69,6 +69,7 @@ import org.xml.sax.InputSource;
 
 import FAtiMA.AgentModel;
 import FAtiMA.ValuedAction;
+import FAtiMA.util.enumerables.EventType;
 import FAtiMA.util.parsers.SpeechActHandler;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Symbol;
@@ -296,9 +297,9 @@ public class SpeechAct extends RemoteAction {
      * Converts the SpeechAct to an Event
      * @return the converted Event
      */
-	public Event toEvent() {
+	public Event toEvent(short actionEventType) {
 	    Event event;
-	    event = new Event(_subject,_actionType,_target);
+	    event = new Event(_subject,_actionType,_target,EventType.ACTION,actionEventType);
 		event.AddParameter(new Parameter("type", _meaning));
 		
 		for(ListIterator<String> li = _parameters.listIterator(); li.hasNext();)

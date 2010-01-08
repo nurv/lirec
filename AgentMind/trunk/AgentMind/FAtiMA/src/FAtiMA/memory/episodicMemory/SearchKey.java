@@ -44,6 +44,8 @@ public class SearchKey {
 	public static short MAXELAPSEDTIME = 8;
 	public static short CONTAINSPARAMETER = 9;
 	
+	//Meiyii 07/01/10
+	
 	private short _field;
 	private Object _key;
 	

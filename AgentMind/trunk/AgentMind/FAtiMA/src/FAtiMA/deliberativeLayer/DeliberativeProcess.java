@@ -144,6 +144,7 @@ import FAtiMA.sensorEffector.Event;
 import FAtiMA.sensorEffector.Parameter;
 import FAtiMA.util.AgentLogger;
 import FAtiMA.util.Constants;
+import FAtiMA.util.enumerables.EventType;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
 import FAtiMA.wellFormedNames.SubstitutionSet;

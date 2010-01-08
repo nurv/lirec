@@ -30,6 +30,14 @@ public class RecordDetailPanel extends JPanel {
     JTextField _time;
 	JTextField _location;
 	
+	//07/01/10
+	JTextField _intention;
+	JTextField _status;
+	JTextField _desirability;
+	JTextField _praiseworthiness;
+	JTextField _speechActMeaning;
+	JTextField _multimediaPath;
+	
 	public RecordDetailPanel(ActionDetail detail)
 	{
 		super();
@@ -56,17 +64,53 @@ public class RecordDetailPanel extends JPanel {
         _action.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
         this.add(_action);
         
+        _intention = new JTextField(detail.getIntention());
+        _intention.setMinimumSize(new Dimension(80,30));
+        _intention.setMaximumSize(new Dimension(80,30));
+        _intention.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
+        this.add(_intention);
+        
         _target = new JTextField(detail.getTarget());
         _target.setMinimumSize(new Dimension(80,30));
         _target.setMaximumSize(new Dimension(80,30));
         _target.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
         this.add(_target);
         
-        _parameters = new JTextField(detail.getParameters().toString());
+        _status = new JTextField(detail.getStatus());
+        _status.setMinimumSize(new Dimension(80,30));
+        _status.setMaximumSize(new Dimension(80,30));
+        _status.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
+        this.add(_status);
+        
+        _speechActMeaning = new JTextField(detail.getSpeechActMeaning());
+        _speechActMeaning.setMinimumSize(new Dimension(80,30));
+        _speechActMeaning.setMaximumSize(new Dimension(80,30));
+        _speechActMeaning.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
+        this.add(_speechActMeaning);
+        
+        _multimediaPath = new JTextField(detail.getMultimediaPath());
+        _multimediaPath.setMinimumSize(new Dimension(80,30));
+        _multimediaPath.setMaximumSize(new Dimension(80,30));
+        _multimediaPath.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
+        this.add(_multimediaPath);
+        
+        _desirability = new JTextField(Float.toString(detail.getDesirability()));
+        _desirability.setMinimumSize(new Dimension(80,30));
+        _desirability.setMaximumSize(new Dimension(80,30));
+        _desirability.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
+        this.add(_desirability);
+        
+        _praiseworthiness = new JTextField(Float.toString(detail.getPraiseworthiness()));
+        _praiseworthiness.setMinimumSize(new Dimension(80,30));
+        _praiseworthiness.setMaximumSize(new Dimension(80,30));
+        _praiseworthiness.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
+        this.add(_praiseworthiness);
+        
+        /*_parameters = new JTextField(detail.getParameters().toString());
         _parameters.setMinimumSize(new Dimension(100,30));
         _parameters.setMaximumSize(new Dimension(100,30));
         _parameters.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
-        this.add(_parameters);
+        this.add(_parameters);*/
 	
         _feeling = new JTextField(EmotionType.GetName(detail.getEmotion().GetType()) + "-" 
         		+ detail.getEmotion().GetPotential());
@@ -75,11 +119,11 @@ public class RecordDetailPanel extends JPanel {
         _feeling.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
         this.add(_feeling);
                 
-    	_evaluation = new JTextField(detail.getEvaluation().toString());
+    	/*_evaluation = new JTextField(detail.getEvaluation().toString());
         _evaluation.setMinimumSize(new Dimension(150,30));
         _evaluation.setMaximumSize(new Dimension(150,30));
         _evaluation.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
-        this.add(_evaluation);
+        this.add(_evaluation);*/
         
         _time = new JTextField(String.valueOf(detail.getTime().getNarrativeTime()));
         _time.setMinimumSize(new Dimension(100,30));

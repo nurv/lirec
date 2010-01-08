@@ -61,6 +61,7 @@ import FAtiMA.Agent;
 import FAtiMA.culture.SymbolTranslator;
 import FAtiMA.util.AgentLogger;
 import FAtiMA.util.Constants;
+import FAtiMA.util.enumerables.ActionEvent;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Symbol;
 
@@ -231,7 +232,7 @@ public class IONRemoteAgent extends RemoteAgent {
 		    }
 		    
 		    //_agent.UpdateDialogState(speechAct);
-		    Event event = speechAct.toEvent();
+		    Event event = speechAct.toEvent(ActionEvent.SUCCESS);
 		    AgentLogger.GetInstance().logAndPrint("Parsed Speech Act Event: " + event);
 			_agent.PerceiveEvent(event);
 			
@@ -283,14 +284,14 @@ public class IONRemoteAgent extends RemoteAgent {
 	    			_agent.EnforceCopingStrategy(coping.toString());
 	    		}
 	    	}
-	    	event = speechAct.toEvent();
+	    	event = speechAct.toEvent(ActionEvent.SUCCESS);
 	    }
 	    else
 	    {
 	    	RemoteAction rmAction = RemoteAction.ParseFromXml(perc);
 	    	
 	    	rmAction.setActionType(SymbolTranslator.GetInstance().translateSymbolToAction(rmAction.getActionType()));
-	    	event = rmAction.toEvent();
+	    	event = rmAction.toEvent(ActionEvent.SUCCESS);
 	    }
 		
 		/*try {
@@ -326,7 +327,7 @@ public class IONRemoteAgent extends RemoteAgent {
 		if(rmAction.getSubject().equals(_agent.getName()))
 		{
 			AgentLogger.GetInstance().logAndPrint("Self action failed, agent can act again");
-			_agent.AppraiseSelfActionFailed(rmAction.toEvent());
+			_agent.AppraiseSelfActionFailed(rmAction.toEvent(ActionEvent.FAILURE));
 			_canAct = true;
 		}
 	}

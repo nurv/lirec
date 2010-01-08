@@ -53,6 +53,7 @@ import org.xml.sax.InputSource;
 import FAtiMA.AgentModel;
 import FAtiMA.ValuedAction;
 import FAtiMA.emotionalState.ActiveEmotion;
+import FAtiMA.util.enumerables.EventType;
 import FAtiMA.util.parsers.RemoteActionHandler;
 import FAtiMA.wellFormedNames.Symbol;
 
@@ -237,9 +238,9 @@ public class RemoteAction implements Serializable {
      * Converts the RemoteAction to an Event
      * @return the converted Event
      */
-	public Event toEvent() {
+	public Event toEvent(short actionEventType) {
 	    Event event;
-	    event = new Event(_subject,_actionType,_target);
+	    event = new Event(_subject,_actionType,_target,EventType.ACTION,actionEventType);
 		
 		for(ListIterator<String> li = _parameters.listIterator(); li.hasNext();)
 		{
