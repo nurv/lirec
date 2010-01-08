@@ -54,8 +54,8 @@ import cmion.storage.BlackBoard;
 import cmion.storage.WorldModel;
 
 
-/** this class is a simple example of a monitor. This one lists all ION events within the 
- * 	simulation */
+/** this class is a simple example of a monitor. This one lists all 
+ *  CMION events within the simulation */
 public class CmionEventMonitor extends CmionComponent {
 
 	/** the gui for the monitor */
