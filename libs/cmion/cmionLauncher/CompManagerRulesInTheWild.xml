@@ -2,23 +2,87 @@
 <!DOCTYPE CompetencyManagerRules SYSTEM "CompetencyManagerRules.dtd">
 
 <CompetencyManagerRules>
-		<Rule>
+
+	<Rule>
 		
-		<MindAction Name="TestAction">
-				<Parameter No="1" Value="test" />
+		<MindAction Name="sendSMS">
+				<Parameter No="1" Value="*" />
+				<Parameter No="2" Value="*" />				
+		</MindAction>
+
+		<CompetencyExecutionPlan>
+			<Competency ID="1" Type="SMSSender">
+			 <CompetencyParameter Name="To" Value="$parameter1" />
+			 <CompetencyParameter Name="Content" Value="$parameter2" />			 
+			</Competency>
+
+		</CompetencyExecutionPlan>
+
+	</Rule>
+	
+	<Rule>
+		
+		<MindAction Name="talk">
+				<Parameter No="1" Value="*" />
 		</MindAction>		
 		
 		<CompetencyExecutionPlan>
 			<Competency ID="1" Type="GretaBMLCreator">
+			 <CompetencyParameter Name="Type" Value="talk" />
+			 <CompetencyParameter Name="Text" Value="$parameter1" />			 
 			 <CompetencyParameter Name="BmlOutName" Value="bmlVar" />
 			</Competency>
 
 			<Competency ID="2" Type="GretaBMLSender" Dependency="1">
 			 <CompetencyParameter Name="BmlInName" Value="bmlVar" />
 			</Competency>
-
 		</CompetencyExecutionPlan>
 		
 	</Rule>
+
+	<Rule>
+		
+		<MindAction Name="gesture">
+				<Parameter No="1" Value="*" />
+				<Parameter No="2" Value="*" />
+				<Parameter No="3" Value="*" />
+		</MindAction>		
+		
+		<CompetencyExecutionPlan>
+			<Competency ID="1" Type="GretaBMLCreator">
+			 <CompetencyParameter Name="Type" Value="gesture" />
+			 <CompetencyParameter Name="GestureName" Value="$parameter1" />			 
+			 <CompetencyParameter Name="GestureClass" Value="$parameter2" />			 
+			 <CompetencyParameter Name="GestureType" Value="$parameter3" />			 
+			 <CompetencyParameter Name="BmlOutName" Value="bmlVar" />
+			</Competency>
+
+			<Competency ID="2" Type="GretaBMLSender" Dependency="1">
+			 <CompetencyParameter Name="BmlInName" Value="bmlVar" />
+			</Competency>
+		</CompetencyExecutionPlan>
+		
+	</Rule>
+	
+	<Rule>
+		
+		<MindAction Name="emotion">
+				<Parameter No="1" Value="*" />
+		</MindAction>		
+		
+		<CompetencyExecutionPlan>
+			<Competency ID="1" Type="GretaBMLCreator">
+			 <CompetencyParameter Name="Type" Value="emotion" />
+			 <CompetencyParameter Name="Emotion" Value="$parameter1" />			 
+			 <CompetencyParameter Name="BmlOutName" Value="bmlVar" />
+			</Competency>
+
+			<Competency ID="2" Type="GretaBMLSender" Dependency="1">
+			 <CompetencyParameter Name="BmlInName" Value="bmlVar" />
+			</Competency>
+		</CompetencyExecutionPlan>
+		
+	</Rule>
+
 	
 </CompetencyManagerRules>
