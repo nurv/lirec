@@ -26,7 +26,7 @@ using namespace std;
 
 float FloatNoise()
 {
-	return rand()%INT_MAX/float(INT_MAX)*2-1;
+	return rand()%99999/float(99999)*2-1;
 }
 
 float GaussianNoise()
