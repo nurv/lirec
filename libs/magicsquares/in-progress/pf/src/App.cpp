@@ -135,6 +135,9 @@ void PlotRadar(IplImage *Image, ParticleFilter::State State, int colour)
 float avnoise=0;
 float averror=0;
 
+float avx = 0;
+float avy = 0;
+
 void App::Update(IplImage *camera)
 {	
 	int key=cvWaitKey();
@@ -148,7 +151,7 @@ void App::Update(IplImage *camera)
 	// We'll move the target on a sine wave - the particle state is not
 	// able to model this behaviour very well, as it only copes with 
 	// linear velocity
-	RealState.x=50*sin(m_FrameNum*0.01f);
+	RealState.x=50*sin(m_FrameNum*0.02f);
 	RealState.y=-50;
 	
 	// Create an observation of the state
@@ -179,9 +182,14 @@ void App::Update(IplImage *camera)
 	// Plot the real state we are trying to find
 	PlotXHairs(camera,RealState,1);
 
-	float blend=0.9;
+	float blend=0.9;	
+	
+	avx=(avx*blend)+(ToPF.x*(1-blend));
+	avy=(avy*blend)+(ToPF.y*(1-blend));
+	//cerr<<"average filter inputs: "<<Distance(avx, avy, RealState.x, RealState.y)<<endl;
 	avnoise=(avnoise*blend)+(Distance(ToPF.x, ToPF.y, RealState.x, RealState.y)*(1-blend));
 	averror=(averror*blend)+(Distance(Estimate.x, Estimate.y, RealState.x, RealState.y)*(1-blend));
+	//cerr<<"average filter error: "<<averror<<endl;
 	cerr<<"performance: "<<avnoise-averror<<endl;
 	
 }
