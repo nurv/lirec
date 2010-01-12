@@ -24,6 +24,8 @@ using namespace std;
 float FloatNoise();
 float GaussianNoise();
 float GetAngle(float x, float y);
+void GetPos(float a, float d, float &x, float &y);
+float Distance(float ax, float ay, float bx, float by);
 
 class ParticleFilter
 {
@@ -43,8 +45,6 @@ public:
 	{
 	public:
 		// Gets the observation we would expect from this state
-		// includes some noise, based on our expectation of the sensor
-		// used to make the measurement.
 		Observation Observe();
 		
 		// Put the state into a random position and velocity
@@ -59,10 +59,10 @@ public:
 		// Add a small random amount to the position and velocity
 		void Jitter()
 		{
-			x += GaussianNoise()*10;
-			y += GaussianNoise()*10;
-			dx += GaussianNoise()*0.5;
-			dy += GaussianNoise()*0.5;
+			x += GaussianNoise()*5;
+			y += GaussianNoise()*5;
+			dx += GaussianNoise()*0.05;
+			dy += GaussianNoise()*0.05;
 		}
 		
 		float x,y;
@@ -94,10 +94,11 @@ public:
 	// For debug rendering
 	const vector<Particle> &GetParticles() { return m_Particles; }
 
-private:
-
 	// Returns the particle with the highest weight
 	Particle* GetMostLikely();
+	
+private:
+
 	
 	// Reset particles with low weight
 	void Resample();

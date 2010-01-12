@@ -50,7 +50,7 @@ m_FrameNum(0)
 	cvInitFont( &m_LargeFont, CV_FONT_HERSHEY_PLAIN, 25, 25, 0, 10, CV_AA );
 
 	m_PF.SetNoiseLevels(1,0.01,0.01);
-	m_PF.SetResampleWeight(0.0001);
+	m_PF.SetResampleWeight(0.005);
 
 	cvNamedWindow( "pf", 1 );
 }
@@ -69,7 +69,8 @@ static CvScalar colors[] =
         {{255,255,0}},
         {{255,0,0}},
         {{255,0,255}},
-		{{255,255,255}}
+		{{255,255,255}},
+		{{0,0,0}}
     };
 
 void App::Run()
@@ -102,30 +103,41 @@ void App::Run()
 	cvShowImage("pf", frame_copy);
 }
 
-void Plot(IplImage *Image, ParticleFilter::State State, int colour,int size)
+void PlotPoint(IplImage *Image, ParticleFilter::State State, int colour,int size)
 {
 	int x = State.x*2 + 200;
 	int y = State.y*2 + 200;
-	cvRectangle(Image, cvPoint(x-size,y-size), cvPoint(x+size,y+size), colors[colour]);	
+	cvRectangle(Image, cvPoint(x-size,y-size), cvPoint(x+size,y+size), colors[colour]);
 }
 
-void PlotReal(IplImage *Image, ParticleFilter::State State, int colour)
+void PlotRect(IplImage *Image, ParticleFilter::State State, int colour)
 {
 	int x = State.x*2 + 200;
 	int y = State.y*2 + 200;
 	cvRectangle(Image, cvPoint(x-1,y-1), cvPoint(x+1,y+1), colors[colour]);	
 }
 
-void PlotEst(IplImage *Image, ParticleFilter::State State, int colour)
+void PlotXHairs(IplImage *Image, ParticleFilter::State State, int colour)
+{
+	int x = State.x*2 + 200;
+	int y = State.y*2 + 200;
+	cvLine(Image, cvPoint(x,0), cvPoint(x,400), colors[colour]);
+	cvLine(Image, cvPoint(0,y), cvPoint(400,y), colors[colour]);
+}
+
+void PlotRadar(IplImage *Image, ParticleFilter::State State, int colour)
 {
 	int x = State.x*2 + 200;
 	int y = State.y*2 + 200;
 	cvLine(Image, cvPoint(200,200), cvPoint(x,y), colors[colour]);	
 }
 
+float avnoise=0;
+float averror=0;
+
 void App::Update(IplImage *camera)
 {	
-	int key=cvWaitKey(10);
+	int key=cvWaitKey();
 	
 	cvRectangle(camera, cvPoint(0,0), cvPoint(camera->width,camera->height), colors[8], -1);	
 	
@@ -141,16 +153,35 @@ void App::Update(IplImage *camera)
 	
 	// Create an observation of the state
 	ParticleFilter::Observation Obs = RealState.Observe();
-	PlotReal(camera,RealState,1);
+	// Add noise to the observation
+	Obs.Angle+=GaussianNoise()*4;
+	Obs.Dist+=GaussianNoise()*2;
+	// Recalculate the state for this observation as we want to plot it
+	ParticleFilter::State ToPF;
+	GetPos(Obs.Angle, Obs.Dist, ToPF.x, ToPF.y);
 	
-	// Feed the observation in and return the estimated state
-	ParticleFilter::State Estimate = m_PF.Update(Obs);
-	PlotEst(camera,Estimate,3);
 	
 	const vector<ParticleFilter::Particle> &p = m_PF.GetParticles();
 	for (vector<ParticleFilter::Particle>::const_iterator i=p.begin();
 		i!=p.end(); ++i)
 	{
-		Plot(camera,i->m_State,0,i->m_Weight*20);
+		PlotPoint(camera,i->m_State,2,i->m_Weight*100);
 	}
+	
+	// Feed the observation in and return the estimated state
+	ParticleFilter::State Estimate = m_PF.Update(Obs);
+	
+	PlotRadar(camera,Estimate,4);
+	
+	// Plot what is being sent to the filter
+	PlotXHairs(camera,ToPF,3);
+	
+	// Plot the real state we are trying to find
+	PlotXHairs(camera,RealState,1);
+
+	float blend=0.9;
+	avnoise=(avnoise*blend)+(Distance(ToPF.x, ToPF.y, RealState.x, RealState.y)*(1-blend));
+	averror=(averror*blend)+(Distance(Estimate.x, Estimate.y, RealState.x, RealState.y)*(1-blend));
+	cerr<<"performance: "<<avnoise-averror<<endl;
+	
 }

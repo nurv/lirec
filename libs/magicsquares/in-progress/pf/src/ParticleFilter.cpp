@@ -58,6 +58,21 @@ float GetAngle(float x, float y)
 	} 
 }
 
+// the inverse of above
+void GetPos(float a, float d, float &x, float &y)
+{
+	a/=180/M_PI;
+	x = cos(a)*d;
+	y = sin(a)*d;
+}
+
+float Distance(float ax, float ay, float bx, float by)
+{
+	float x=ax-bx;
+	float y=ay-by;
+	return sqrt(x*x+y*y);
+}
+
 ////////////////////////////////////////////////////////////////
 // The particle filter
 
@@ -105,6 +120,8 @@ void ParticleFilter::Predict()
 	
 ParticleFilter::State ParticleFilter::Update(const Observation &Obs)
 {
+	Resample();
+	
 	float TotalWeight = 0;
 
 	for (vector<Particle>::iterator i=m_Particles.begin(); 
@@ -123,11 +140,10 @@ ParticleFilter::State ParticleFilter::Update(const Observation &Obs)
 		// different readings. We'll make it so the angle observation is less 'trustworthy'
 		// than the distance readings. This has the effect of making the pdf into a cresent 
 		// shape.
-		i->m_Weight = 1/(AngErr*AngErr*0.1 + DistErr*DistErr);
+		i->m_Weight = 1/(fabs(AngErr)+fabs(DistErr));
 		TotalWeight+=i->m_Weight;
 	}
 	
-	// Normalise the weights
 	for (vector<Particle>::iterator i=m_Particles.begin(); 
 		i!=m_Particles.end(); ++i)
 	{	
@@ -144,8 +160,6 @@ ParticleFilter::State ParticleFilter::Update(const Observation &Obs)
 		ret.x += i->m_State.x * i->m_Weight;
 		ret.y += i->m_State.y * i->m_Weight;
 	}
-	
-	Resample();
 	
 	return ret;
 }
@@ -169,28 +183,31 @@ ParticleFilter::Particle* ParticleFilter::GetMostLikely()
 void ParticleFilter::Resample()
 {
 	Particle *Highest = GetMostLikely();
-
-	for (vector<Particle>::iterator i=m_Particles.begin(); 
-		i!=m_Particles.end(); ++i)
+	
+	if (Highest!=NULL)
 	{
-		// If this particle has a low weight
-		if (i->m_Weight<m_ResampleWeight)
+		for (vector<Particle>::iterator i=m_Particles.begin(); 
+			i!=m_Particles.end(); ++i)
 		{
-			// Randomly choose between either...
-			if (rand()%2==0)
+			// If this particle has a low weight
+			if (i->m_Weight<m_ResampleWeight)
 			{
-				// Cast to a new completely random position/velocity
-				i->m_State.Randomise();
-			}
-			else
-			{
-				// Copy settings from the 'best' current particle
-				i->m_State=Highest->m_State;
-				// And jitter them a little - this stops the particles 
-				// converging too much on one state
-				i->m_State.Jitter();
-			}
-		}	
+				// Randomly choose between either...
+				if (rand()%2==0)
+				{
+					// Cast to a new completely random position/velocity
+					i->m_State.Randomise();
+				}
+				else
+				{
+					// Copy settings from the 'best' current particle
+					i->m_State=Highest->m_State;
+					// And jitter them a little - this stops the particles 
+					// converging too much on one state
+					i->m_State.Jitter();
+				}
+			}	
+		}
 	}
 }
 
