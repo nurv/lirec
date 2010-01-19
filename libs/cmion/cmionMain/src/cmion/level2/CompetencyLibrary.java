@@ -60,6 +60,11 @@ public class CompetencyLibrary extends CmionComponent {
 	 *  up when the architecture is started */
 	private ArrayList<Competency> backgroundCompetencies;
 
+	/** a list of Samgar competency info objects for all Samgar competencies 
+	 *  available in this scenario. */
+	private ArrayList<SamgarCompetencyInfo> samgarCompetencyInfos;
+	
+	
 	/** Create a new competency library */
 	public CompetencyLibrary(IArchitecture architecture, String competencyLibraryFile) throws Exception 
 	{
@@ -116,8 +121,13 @@ public class CompetencyLibrary extends CmionComponent {
 		for (int i=0; i<allChildren.getLength(); i++)
 		{
 			Node node = allChildren.item(i);
-			if (node.getNodeName().equals("Competency"))
+			if (node.getNodeName().equals("Competency") || node.getNodeName().equals("SamgarCompetency"))
 			{
+				// check whether this is a samgar competency or a regular competency
+				boolean samgarCompetency = false;
+				if (node.getNodeName().equals("SamgarCompetency"))
+					samgarCompetency = true;
+				
 				NamedNodeMap attribs = node.getAttributes();
 				
 				// read attribute ClassName
@@ -133,6 +143,13 @@ public class CompetencyLibrary extends CmionComponent {
 				Node atrConstrPars = attribs.getNamedItem("ConstructorParameters");
 				if (atrConstrPars!=null)
 					constructorParametersStr= atrConstrPars.getNodeValue();
+				
+				// if this is a samgar competency also read attributes category and sub category
+				if (samgarCompetency)
+				{
+					
+					
+				}
 				
 				// create array to store values of constructor parameters
 				ArrayList<Object> constructorParameters = new ArrayList<Object>();

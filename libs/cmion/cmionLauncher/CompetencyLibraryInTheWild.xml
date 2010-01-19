@@ -4,7 +4,7 @@
 <CompetencyLibrary>
 
 <Competency ClassName="cmion.inTheWild.competencies.GretaBMLCreator" />
-<Competency ClassName="cmion.inTheWild.competencies.GretaBMLSender" ConstructorParameters="137.195.27.128" /> <!--"137.195.27.128"-->  
+<Competency ClassName="cmion.inTheWild.competencies.GretaBMLSender" ConstructorParameters="137.195.27.65" />   
 <Competency ClassName="cmion.inTheWild.competencies.SMSReceiver" ConstructorParameters="modem.com7,COM7,115200,WAVECOM MODEM,MULTIBAND 900E 1800"/> 
 <Competency ClassName="cmion.inTheWild.competencies.SMSSender" ConstructorParameters="modem.com7,COM7,115200,WAVECOM MODEM,MULTIBAND 900E 1800" /> 			
 

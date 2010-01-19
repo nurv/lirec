@@ -5,5 +5,6 @@
 	<classpathentry kind="src" path="/cmionMain"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/ION.Meta"/>
 	<classpathentry exported="true" kind="lib" path="JavaOpenAIR.jar"/>
+	<classpathentry kind="lib" path="jyarp-win.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
