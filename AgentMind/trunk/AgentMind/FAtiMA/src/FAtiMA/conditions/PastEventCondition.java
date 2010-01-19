@@ -43,6 +43,8 @@ import FAtiMA.memory.episodicMemory.ActionDetail;
 import FAtiMA.memory.episodicMemory.SearchKey;
 import FAtiMA.sensorEffector.Event;
 import FAtiMA.sensorEffector.Parameter;
+import FAtiMA.util.enumerables.ActionEvent;
+import FAtiMA.util.enumerables.EventType;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
 import FAtiMA.wellFormedNames.SubstitutionSet;
@@ -93,7 +95,7 @@ public class PastEventCondition extends PredicateCondition {
 			}
 		}
 			
-		return new PastEventCondition(occurred,subject,action,target,parameters);
+		return new PastEventCondition(occurred,EventType.ACTION,ActionEvent.SUCCESS,subject,action,target,parameters);
 	}
 
 	/**
@@ -106,14 +108,19 @@ public class PastEventCondition extends PredicateCondition {
 	protected Symbol _target;
 	protected ArrayList<Symbol> _parameters;
 	
-	
+	//Meiyii - 12/01/10
+	protected short _type = -1;
+	protected short _status = -1;
 	
 	protected PastEventCondition()
 	{
 	}
 	
-	public PastEventCondition(boolean occurred, Symbol subject, Symbol action, Symbol target, ArrayList<Symbol> parameters)
+	public PastEventCondition(boolean occurred, short type, short status, Symbol subject, Symbol action, Symbol target, ArrayList<Symbol> parameters)
 	{
+		this._type = type;
+		this._status = status;
+		
 		this._positive = occurred;
 		this._subject = subject;
 		this._action = action;
@@ -144,6 +151,10 @@ public class PastEventCondition extends PredicateCondition {
 		this._target = new Symbol(e.GetTarget());
 		this._parameters = new ArrayList<Symbol>(e.GetParameters().size());
 		
+		//Meiyii - 12/01/10
+		this._type = e.GetType();
+		this._status = e.GetStatus();
+		
 		String aux = this._subject + "," + this._action;
 		if(this._target != null)
 		{
@@ -162,7 +173,8 @@ public class PastEventCondition extends PredicateCondition {
 		this._name = Name.ParseName("EVENT(" + aux + ")");
 	}
 	
-	public PastEventCondition(boolean occurred, Name event)
+	// Meiyii - 12/01/10 added type and status
+	public PastEventCondition(boolean occurred, short type, short status, Name event)
 	{
 		super(occurred, event);
 		
@@ -178,13 +190,20 @@ public class PastEventCondition extends PredicateCondition {
 		while(li.hasNext())
 		{
 			this._parameters.add(li.next());
-		}
+		}		
+		
+		this._type = type;
+		this._status = status;
 	}
 	
 	public Object clone() {
 		PastEventCondition newEvent = new PastEventCondition();
 		
 		newEvent._positive = this._positive;
+		
+		// Meiyii
+		newEvent._type = this._type;
+		newEvent._status = this._status;
 		
 		newEvent._name = (Name) this._name.clone();
 		newEvent._subject = (Symbol) this._subject.clone();
@@ -280,10 +299,22 @@ public class PastEventCondition extends PredicateCondition {
 				sub = new Substitution(this._subject,new Symbol(detail.getSubject()));
 				subSet.AddSubstitution(sub);
 			}
-			if(!this._action.isGrounded())
+			// Meiyii 19/01/10
+			if(this._type == EventType.GOAL)
 			{
-				sub = new Substitution(this._action,new Symbol(detail.getAction()));
-				subSet.AddSubstitution(sub);
+				if(!this._action.isGrounded())
+				{
+					sub = new Substitution(this._action,new Symbol(detail.getIntention()));
+					subSet.AddSubstitution(sub);
+				}
+			}
+			else 
+			{
+				if(!this._action.isGrounded())
+				{
+					sub = new Substitution(this._action,new Symbol(detail.getAction()));
+					subSet.AddSubstitution(sub);
+				}
 			}
 			if(this._target != null && !this._target.isGrounded())
 			{
@@ -326,10 +357,25 @@ public class PastEventCondition extends PredicateCondition {
 		{
 			keys.add(new SearchKey(SearchKey.SUBJECT,this._subject.toString()));
 		}
+		
+		//Meiyii 19/01/10
 		if(this._action.isGrounded())
 		{
-			keys.add(new SearchKey(SearchKey.ACTION,this._action.toString()));
+			if(this._type == EventType.GOAL)
+			{
+				keys.add(new SearchKey(SearchKey.INTENTION,this._action.toString()));
+			}
+			else
+			{
+				keys.add(new SearchKey(SearchKey.ACTION,this._action.toString()));
+			}
 		}
+		if(this._status >= 0)
+		{
+			keys.add(new SearchKey(SearchKey.STATUS, this._status));
+		}
+		
+	
 		if(this._target != null && this._target.isGrounded())
 		{
 			keys.add(new SearchKey(SearchKey.TARGET, this._target.toString()));
@@ -350,7 +396,7 @@ public class PastEventCondition extends PredicateCondition {
 				}
 			}
 			keys.add(new SearchKey(SearchKey.PARAMETERS, params));
-		}
+		}		
 		
 		return keys;
 	}

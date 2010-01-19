@@ -14,8 +14,8 @@ package FAtiMA.util.enumerables;
 
 public class ActionEvent {
 
-	public static final short SUCCESS = 0;
-	public static final short FAILURE = 1;
+	public static final short SUCCESS = 3;
+	public static final short FAILURE = 4;
 	
 	private static final String[] _actionEventTypes = {"succeed",
 													   "fail"};

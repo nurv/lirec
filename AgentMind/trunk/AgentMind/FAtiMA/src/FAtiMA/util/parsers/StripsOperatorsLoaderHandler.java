@@ -61,6 +61,8 @@ import FAtiMA.deliberativeLayer.plan.EffectOnDrive;
 import FAtiMA.deliberativeLayer.plan.Step;
 import FAtiMA.exceptions.InvalidEmotionTypeException;
 import FAtiMA.util.Constants;
+import FAtiMA.util.enumerables.ActionEvent;
+import FAtiMA.util.enumerables.EventType;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
 import FAtiMA.wellFormedNames.Symbol;
@@ -123,7 +125,7 @@ public class StripsOperatorsLoaderHandler extends ReflectXMLHandler {
 			    event = event + "," + li.next();
 			}
 			event = event + ")";
-			RecentEventCondition eventCondition = new RecentEventCondition(true,Name.ParseName(event));
+			RecentEventCondition eventCondition = new RecentEventCondition(true,EventType.ACTION,ActionEvent.SUCCESS,Name.ParseName(event));
 			_currentOperator.AddEffect(new Effect(_am, firstName,1.0f,eventCondition));
 		}
 	}

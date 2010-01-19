@@ -44,12 +44,16 @@ public class NewEventCondition extends RecentEventCondition {
 			newEvent._parameters.add((Symbol)li.next().clone());
 		}
 		
+		// Meiyii
+		newEvent._type = this._type;
+		newEvent._status = this._status;
+		
 		return newEvent;
 	}
 	
-	public NewEventCondition(boolean occurred, Name event)
+	public NewEventCondition(boolean occurred, short type, short status, Name event)
 	{
-		super(occurred, event);	
+		super(occurred, type, status, event);	
 	}
 	
 	
@@ -62,6 +66,9 @@ public class NewEventCondition extends RecentEventCondition {
 		this._name = cond._name;
 		this._positive = cond._positive;
 		this._parameters = cond._parameters;
+		
+		this._type = cond._type;
+		this._status = cond._status;
 	}
 	
 

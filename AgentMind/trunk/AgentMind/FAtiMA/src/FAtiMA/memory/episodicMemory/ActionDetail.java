@@ -486,6 +486,16 @@ public class ActionDetail implements Serializable {
 			}
 			return false;
 		}
+		// Meiyii - additional search keys
+		else if(key.getField() == SearchKey.INTENTION)
+		{
+			return key.getKey().equals(this._intention);
+		}
+		else if(key.getField() == SearchKey.STATUS)
+		{
+			return key.getKey().equals(this._status);
+		}
+			
 		else return false;
 	}
 	

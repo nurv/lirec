@@ -43,8 +43,13 @@ public class SearchKey {
 	public static short PARAMETERS = 7;
 	public static short MAXELAPSEDTIME = 8;
 	public static short CONTAINSPARAMETER = 9;
+	//Meiyii 12/01/10
+	public static short INTENTION = 10; 
+	public static short STATUS = 11;
+	public static short SPEECHACTMEANING = 12;
+	public static short MULTIMEDIAPATH = 13;
 	
-	//Meiyii 07/01/10
+	
 	
 	private short _field;
 	private Object _key;

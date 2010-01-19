@@ -71,18 +71,25 @@ public class RecentEventCondition extends PastEventCondition {
 		this._name = cond._name;
 		this._positive = cond._positive;
 		this._parameters = cond._parameters;
+		
+		// Meiyii
+		this._type = cond._type;
+		this._status = cond._status;
 	}
 	
-	public RecentEventCondition(boolean occurred, Name event)
+	//Meiyii - 12/01/12 added type and status 
+	public RecentEventCondition(boolean occurred, short type, short status, Name event)
 	{
-		super(occurred, event);	
+		super(occurred, type, status, event);	
 	}
 	
-	public RecentEventCondition(boolean occurred, Symbol subject, Symbol action, Symbol target, ArrayList<Symbol> parameters)
+	// not currently called
+	public RecentEventCondition(boolean occurred, short type, short status, Symbol subject, Symbol action, Symbol target, ArrayList<Symbol> parameters)
 	{
-		super(occurred, subject, action, target, parameters);
+		super(occurred, type, status, subject, action, target, parameters);
 	}
 	
+	// not currently called
 	public RecentEventCondition(boolean occurred, Event e)
 	{
 		super(occurred, e);
@@ -109,6 +116,10 @@ public class RecentEventCondition extends PastEventCondition {
 		{
 			newEvent._parameters.add((Symbol)li.next().clone());
 		}
+		
+		// Meiyii
+		newEvent._type = this._type;
+		newEvent._status = this._status;
 		
 		return newEvent;
 	}

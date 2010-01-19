@@ -32,8 +32,8 @@ import FAtiMA.wellFormedNames.Unifier;
  */
 public class RemoteAgent extends SocketListener {
 
-	final static int MIN_ACTION_DELAY_MS = 2000;
-	final static int MAX_ACTION_DELAY_MS = 4000;
+	final static int MIN_ACTION_DELAY_MS = 500;
+	final static int MAX_ACTION_DELAY_MS = 500;
 	protected Random _generator; 
 	private ArrayList _properties;
 	private String _name;
@@ -138,12 +138,44 @@ public class RemoteAgent extends SocketListener {
 	public void processMessage(String msg) {
 		//System.out.println(msg);
 		
-		int randomDelayTime = _generator.nextInt(MAX_ACTION_DELAY_MS - MIN_ACTION_DELAY_MS + 1) + MIN_ACTION_DELAY_MS;
-		//the +1 is just for the MAX = MIN situation
-		
-		ActionSimulator as = new ActionSimulator(_world,_name,msg,randomDelayTime,this);
-		as.start();
+		StringTokenizer st = new StringTokenizer(msg," ");
+
+		String type = st.nextToken();
+
+		if(type.startsWith("<EmotionalState")) {
+
+		}
+		else if (type.startsWith("<Relations"))
+		{
+
+		}
+		else if (type.startsWith("PROPERTY-CHANGED"))
+		{
+
+		}
+		else if (type.equals("look-at")) {
+			String target = st.nextToken();
+
+			_world.GetUserInterface().WriteLine(_name + " looks at " + target);
+			String properties = _world.GetPropertiesList(target);
+
+			synchronized(this){
+				this.Send("LOOK-AT " + target + " " + properties);
+			}
+
+			synchronized(_world){
+				_world.SendPerceptionToAll("ACTION-FINISHED " + _name + " " + new String(msg));
+			}
+		}
+		else
+		{
+			int randomDelayTime = _generator.nextInt(MAX_ACTION_DELAY_MS - MIN_ACTION_DELAY_MS + 1) + MIN_ACTION_DELAY_MS;
+			//the +1 is just for the MAX = MIN situation
 			
+			ActionSimulator as = new ActionSimulator(_world,_name,msg,randomDelayTime,this);
+			as.start();
+			
+		}	
 	}
 
 	protected Name ConvertToActionName(String action)
@@ -235,125 +267,96 @@ class ActionSimulator extends Thread{
 	}
 
 	public void run(){
+		
 		StringTokenizer st = new StringTokenizer(_msg," ");
 
 		String type = st.nextToken();
-
-		if(type.startsWith("<EmotionalState")) {
-
-		}
-		else if (type.startsWith("<Relations"))
-		{
-
-		}
-		else if (type.startsWith("PROPERTY-CHANGED"))
-		{
-
-		}
-		else if (type.equals("look-at")) {
-			String target = st.nextToken();
-
-			_world.GetUserInterface().WriteLine(_agentName + " looks at " + target);
-			String properties = _world.GetPropertiesList(target);
-
-			synchronized(_ra){
-				_ra.Send("LOOK-AT " + target + " " + properties);
-			}
-
-			synchronized(_world){
-				_world.SendPerceptionToAll("ACTION-FINISHED " + _agentName + " " + new String(_msg));
-			}
-		}
-		else{
 			
-			//Simulate the time to complete the action
-			try {
-				Thread.sleep(_delay);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			if (type.equals("say")) {
+		//Simulate the time to complete the action
+		try {
+			Thread.sleep(_delay);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		if (type.equals("say")) {
 
-				String aux = _msg.substring(3);
-				SpeechAct say = (SpeechAct) SpeechAct.ParseFromXml(aux);
-				if(say != null)
-				{
-					String actionName = say.getActionType() + "(";
-					actionName += say.getReceiver() + ",";
-					actionName += say.getMeaning();
-					for(ListIterator li = say.GetParameters().listIterator(); li.hasNext();)
-					{
-						actionName += "," + li.next();
-					}
-					actionName += ")";
-
-					synchronized(_ra){
-						_ra.UpdateActionEffects(Name.ParseName(actionName));
-					}
-
-					String utterance = null;
-					synchronized(_world){
-						utterance = _world.Say(say.toLanguageEngine());
-					}
-
-					String receiver = say.getReceiver();
-					String perception = "ACTION-FINISHED " + _agentName + " " + _msg;
-					if (utterance != null)
-					{
-						_world.GetUserInterface().WriteLine(_agentName + " says to " + receiver + ": " + utterance);
-						if (_world.GetGreta() != null)
-							_world.GetGreta().Send(utterance);
-					}
-					else
-					{
-						_world.GetUserInterface().WriteLine(_agentName + " says to " + receiver + ": " + say.getMeaning());
-					}
-
-					synchronized(_world){
-						_world.SendPerceptionToAll(perception);
-					}
-				}
-			}
-			else if (type.equals("UserSpeech"))
+			String aux = _msg.substring(3);
+			SpeechAct say = (SpeechAct) SpeechAct.ParseFromXml(aux);
+			if(say != null)
 			{
-				String perception = "ACTION-FINISHED " + _agentName + " " + _msg;
-				synchronized(_world){
-					_world.GetUserInterface().WriteLine(_agentName + " " + _msg);
-					_world.SendPerceptionToAll(perception);
-				}
-			}
-			else {
-				//Corresponds to an action
-				String aux = _agentName + " " + type;
-				String target = null;
-				String aux2 = type;
-				if(st.hasMoreTokens()) {
-					target = st.nextToken();
-					aux = aux + " " + target;
-					aux2 = type + " " + target;
-				}
-
-				while(st.hasMoreTokens())
+				String actionName = say.getActionType() + "(";
+				actionName += say.getReceiver() + ",";
+				actionName += say.getMeaning();
+				for(ListIterator li = say.GetParameters().listIterator(); li.hasNext();)
 				{
-					String x = st.nextToken();
-					aux = aux + " " + x;
-					aux2= aux2 + " " + x;
+					actionName += "," + li.next();
 				}
+				actionName += ")";
 
 				synchronized(_ra){
-					_ra.UpdateActionEffects(_ra.ConvertToActionName(new String (aux2)));
+					_ra.UpdateActionEffects(Name.ParseName(actionName));
 				}
 
-				String perception = "ACTION-FINISHED " + aux;
+				String utterance = null;
 				synchronized(_world){
-					_world.GetUserInterface().WriteLine(aux);
+					utterance = _world.Say(say.toLanguageEngine());
+				}
+
+				String receiver = say.getReceiver();
+				String perception = "ACTION-FINISHED " + _agentName + " " + _msg;
+				if (utterance != null)
+				{
+					_world.GetUserInterface().WriteLine(_agentName + " says to " + receiver + ": " + utterance);
+					if (_world.GetGreta() != null)
+						_world.GetGreta().Send(utterance);
+				}
+				else
+				{
+					_world.GetUserInterface().WriteLine(_agentName + " says to " + receiver + ": " + say.getMeaning());
+				}
+
+				synchronized(_world){
 					_world.SendPerceptionToAll(perception);
-				}	
+				}
 			}
 		}
+		else if (type.equals("UserSpeech"))
+		{
+			String perception = "ACTION-FINISHED " + _agentName + " " + _msg;
+			synchronized(_world){
+				_world.GetUserInterface().WriteLine(_agentName + " " + _msg);
+				_world.SendPerceptionToAll(perception);
+			}
+		}
+		else {
+			//Corresponds to an action
+			String aux = _agentName + " " + type;
+			String target = null;
+			String aux2 = type;
+			if(st.hasMoreTokens()) {
+				target = st.nextToken();
+				aux = aux + " " + target;
+				aux2 = type + " " + target;
+			}
+
+			while(st.hasMoreTokens())
+			{
+				String x = st.nextToken();
+				aux = aux + " " + x;
+				aux2= aux2 + " " + x;
+			}
+
+			synchronized(_ra){
+				_ra.UpdateActionEffects(_ra.ConvertToActionName(new String (aux2)));
+			}
+
+			String perception = "ACTION-FINISHED " + aux;
+			synchronized(_world){
+				_world.GetUserInterface().WriteLine(aux);
+				_world.SendPerceptionToAll(perception);
+			}	
+		}
 	}
-
-
 }
