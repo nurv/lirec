@@ -133,20 +133,20 @@ public class AgentLoaderHandler extends ReflectXMLHandler {
     }
 
     public void EmotionalReaction(Attributes attributes) {
-    	Integer desirability=null;
-    	Integer desirabilityForOther=null;
-    	Integer praiseworthiness=null;
+    	Float desirability=null;
+    	Float desirabilityForOther=null;
+    	Float praiseworthiness=null;
     	Symbol other = null;
     	String aux;
     	
     	aux = attributes.getValue("desirability");
-    	if(aux!=null) desirability = new Integer(aux);
+    	if(aux!=null) desirability = new Float(aux);
     	
     	aux = attributes.getValue("desirabilityForOther");
-    	if(aux!=null) desirabilityForOther = new Integer(aux);
+    	if(aux!=null) desirabilityForOther = new Float(aux);
     	
     	aux = attributes.getValue("praiseworthiness");
-    	if(aux!=null) praiseworthiness = new Integer(aux);
+    	if(aux!=null) praiseworthiness = new Float(aux);
     	
     	aux = attributes.getValue("other");
     	if(aux!=null) other = new Symbol(aux);

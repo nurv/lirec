@@ -64,10 +64,10 @@ public class Reaction implements Serializable, IGroundable, IReactionNode {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	protected Integer _desirability;
-	protected Integer _desirabilityForOther;
-	protected Integer _praiseworthiness;
-	protected Integer _like;
+	protected Float _desirability;
+	protected Float _desirabilityForOther;
+	protected Float _praiseworthiness;
+	protected Float _like;
 	
 	protected Symbol _other;
 	
@@ -106,7 +106,7 @@ public class Reaction implements Serializable, IGroundable, IReactionNode {
 	 * @param praiseworthiness - the paiseworthiness of the event
 	 * @param other - which character does the desirabilityForOther variable reference
 	 */
-	public Reaction(Integer desirability, Integer desirabilityForOther, Integer praiseworthiness, Symbol other) {
+	public Reaction(Float desirability, Float desirabilityForOther, Float praiseworthiness, Symbol other) {
 		_desirability = desirability;
 		_desirabilityForOther = desirabilityForOther;
 		_praiseworthiness = praiseworthiness;
@@ -134,7 +134,7 @@ public class Reaction implements Serializable, IGroundable, IReactionNode {
 	 * Gets the appraisal variable: Desirability of the event
 	 * @return - the event's desirability
 	 */
-	public Integer getDesirability() {
+	public Float getDesirability() {
 		return _desirability;
 	}
 
@@ -142,11 +142,11 @@ public class Reaction implements Serializable, IGroundable, IReactionNode {
 	 * Gets the appraisal variable: DesirabilityForOther of the event
 	 * @return - the event's desirability for other agent
 	 */
-	public Integer getDesirabilityForOther() {
+	public Float getDesirabilityForOther() {
 		return _desirabilityForOther;
 	}
 	
-	public Integer getLike()
+	public Float getLike()
 	{
 		return _like;
 	}
@@ -163,7 +163,7 @@ public class Reaction implements Serializable, IGroundable, IReactionNode {
 	 * Gets the appraisal variable: Praiseworthiness of the event
 	 * @return - the event's praiseworthiness for the agent
 	 */
-	public Integer getPraiseworthiness() {
+	public Float getPraiseworthiness() {
 		return _praiseworthiness;
 	}
 	
@@ -190,21 +190,21 @@ public class Reaction implements Serializable, IGroundable, IReactionNode {
 	 * Sets the appraisal variable: Desirability
 	 * @param integer - the new value of Desirability for the reaction
 	 */
-	public void setDesirability(Integer integer) {
-		_desirability = integer;
+	public void setDesirability(Float f) {
+		_desirability = f;
 	}
 
 	/**
 	 * Sets the appraisal variable: DesirabilityForOther
 	 * @param integer - the new value of DesirabilityForOther for the reaction
 	 */
-	public void setDesirabilityForOther(Integer integer) {
-		_desirabilityForOther = integer;
+	public void setDesirabilityForOther(Float f) {
+		_desirabilityForOther = f;
 	}
 	
-	public void setLike(Integer integer)
+	public void setLike(Float f)
 	{
-		_like = integer;
+		_like = f;
 	}
 
 	/**
@@ -219,8 +219,8 @@ public class Reaction implements Serializable, IGroundable, IReactionNode {
 	 * Sets the appraisal variable: Praiseworhtiness
 	 * @param integer - the new value of Praiseworthiness for the reaction
 	 */
-	public void setPraiseworthiness(Integer integer) {
-		_praiseworthiness = integer;
+	public void setPraiseworthiness(Float f) {
+		_praiseworthiness = f;
 	}
 	
 	 /**

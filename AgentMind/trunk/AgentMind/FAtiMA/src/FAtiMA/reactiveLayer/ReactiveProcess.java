@@ -330,7 +330,7 @@ public class ReactiveProcess extends AgentProcess {
 		{
 			int relationShip = Math.round(LikeRelation.getRelation(Constants.SELF, event.GetTarget()).getValue(am.getMemory()));
 			emotionalReaction = new Reaction(event);
-			emotionalReaction.setLike(new Integer(relationShip));
+			emotionalReaction.setLike(new Float(relationShip));
 		}
 		else
 		{

@@ -133,10 +133,10 @@ public class CultureLoaderHandler extends ReflectXMLHandler {
 		Event event = Event.ParseEvent(subject, action, target, parameters);
 
 		//Create the reaction
-		Integer desirability = new Integer(0);
-		Integer desirabilityForOther = new Integer(0);
+		Float desirability = new Float(0);
+		Float desirabilityForOther = new Float(0);
 		Symbol other = null;
-		Integer praiseworthiness = new Integer(attributes.getValue("value"));
+		Float praiseworthiness = new Float(attributes.getValue("value"));
 		Reaction _eventReaction = new Reaction(desirability, desirabilityForOther, praiseworthiness, other);
 		_eventReaction.setEvent(event);
 

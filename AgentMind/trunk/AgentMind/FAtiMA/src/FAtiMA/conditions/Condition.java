@@ -114,6 +114,12 @@ public abstract class Condition implements IGroundable, Cloneable, Serializable 
 		ArrayList<SubstitutionSet> validSubstitutionsSet = new ArrayList<SubstitutionSet>();
 		ArrayList<SubstitutionSet> newValidSubstitutionsSet;
 		
+		if(preconditions.size() == 0) 
+		{
+			validSubstitutionsSet.add(new SubstitutionSet());
+			return validSubstitutionsSet;
+		}
+		
 		for(Condition cond : preconditions)
 		{
 			//For each condition we need to verify if it is valid

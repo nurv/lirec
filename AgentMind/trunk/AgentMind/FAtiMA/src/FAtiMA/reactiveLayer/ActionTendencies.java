@@ -47,7 +47,6 @@ import FAtiMA.conditions.Condition;
 import FAtiMA.emotionalState.BaseEmotion;
 import FAtiMA.emotionalState.EmotionalState;
 import FAtiMA.exceptions.UnknownSpeechActException;
-import FAtiMA.sensorEffector.Event;
 import FAtiMA.util.AgentLogger;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
@@ -161,7 +160,7 @@ public class ActionTendencies implements Serializable, Cloneable {
 		return bestAction;
 	}
 	
-	public BaseEmotion RecognizeEmotion(AgentModel am, Event e, Name action)
+	public BaseEmotion RecognizeEmotion(AgentModel am, Name action)
 	{
 		Iterator<Action> it;
 		Action a;
