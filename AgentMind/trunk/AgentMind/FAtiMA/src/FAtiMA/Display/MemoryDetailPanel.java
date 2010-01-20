@@ -73,8 +73,8 @@ public class MemoryDetailPanel extends JPanel {
 		super();
 		this.setBorder(BorderFactory.createRaisedBevelBorder());
         this.setLayout(new BoxLayout(this,BoxLayout.X_AXIS));
-        this.setMinimumSize(new Dimension(550,30));
-        this.setMaximumSize(new Dimension(550,30));
+        this.setMinimumSize(new Dimension(750,30));
+        this.setMaximumSize(new Dimension(750,30));
         
         _id = new JTextField(new Integer(detail.getID()).toString());
         _id.setMinimumSize(new Dimension(30,30));

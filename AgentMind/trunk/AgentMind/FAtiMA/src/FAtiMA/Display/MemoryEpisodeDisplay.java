@@ -65,8 +65,8 @@ public class MemoryEpisodeDisplay {
     	_panel = new JPanel();
         _panel.setBorder(BorderFactory.createEtchedBorder());
         _panel.setLayout(new BoxLayout(_panel,BoxLayout.Y_AXIS));
-        _panel.setMaximumSize(new Dimension(550,250));
-        _panel.setMinimumSize(new Dimension(550,250));
+        _panel.setMaximumSize(new Dimension(750,250));
+        _panel.setMinimumSize(new Dimension(750,250));
         
         Dimension d1 = new Dimension(100,20);
         Dimension d2 = new Dimension(100,100);
@@ -74,7 +74,7 @@ public class MemoryEpisodeDisplay {
 
         JPanel pnl = new JPanel();
         pnl.setLayout(new BoxLayout(pnl,BoxLayout.X_AXIS));
-        pnl.setMaximumSize(new Dimension(550,100));
+        pnl.setMaximumSize(new Dimension(750,100));
         
         //ABSTRACT 
         /*JPanel aux = new JPanel();
@@ -174,8 +174,8 @@ public class MemoryEpisodeDisplay {
         
         aux = new JPanel();
         aux.setLayout(new BoxLayout(aux,BoxLayout.X_AXIS));
-        aux.setMinimumSize(new Dimension(550,30));
-        aux.setMaximumSize(new Dimension(550,30));
+        aux.setMinimumSize(new Dimension(750,30));
+        aux.setMaximumSize(new Dimension(750,30));
         
         lbl = new JLabel("ID");
         lbl.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
@@ -271,8 +271,8 @@ public class MemoryEpisodeDisplay {
         
         JPanel prop = new JPanel();
 		prop.setLayout(new BoxLayout(prop,BoxLayout.Y_AXIS));
-		prop.setMaximumSize(new Dimension(550,150));
-		prop.setMinimumSize(new Dimension(550,150));
+		prop.setMaximumSize(new Dimension(750,150));
+		prop.setMinimumSize(new Dimension(750,150));
 		
 		JScrollPane propertiesScroll = new JScrollPane(prop);
 		

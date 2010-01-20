@@ -9,6 +9,7 @@ import FAtiMA.memory.Memory;
 import FAtiMA.sensorEffector.Event;
 import FAtiMA.sensorEffector.Parameter;
 import FAtiMA.util.Constants;
+import FAtiMA.util.enumerables.ActionEvent;
 import FAtiMA.util.enumerables.EmotionType;
 import FAtiMA.util.enumerables.EventType;
 import FAtiMA.util.enumerables.GoalEvent;
@@ -28,12 +29,13 @@ public class EpisodicMemory {
 		if (e.GetType() == EventType.ACTION)
 		{
 			keys.add(new SearchKey(SearchKey.ACTION,e.GetAction()));
+			keys.add(new SearchKey(SearchKey.STATUS,ActionEvent.GetName(e.GetStatus())));
 		}
 		else
 		{
 			keys.add(new SearchKey(SearchKey.INTENTION,e.GetAction()));
+			keys.add(new SearchKey(SearchKey.STATUS,GoalEvent.GetName(e.GetStatus())));
 		}
-		keys.add(new SearchKey(SearchKey.STATUS,e.GetStatus()));
 		
 		if(e.GetTarget() != null)
 		{

@@ -45,6 +45,7 @@ import FAtiMA.sensorEffector.Event;
 import FAtiMA.sensorEffector.Parameter;
 import FAtiMA.util.enumerables.ActionEvent;
 import FAtiMA.util.enumerables.EventType;
+import FAtiMA.util.enumerables.GoalEvent;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
 import FAtiMA.wellFormedNames.SubstitutionSet;
@@ -372,9 +373,15 @@ public class PastEventCondition extends PredicateCondition {
 		}
 		if(this._status >= 0)
 		{
-			keys.add(new SearchKey(SearchKey.STATUS, this._status));
+			if(this._type == EventType.GOAL)
+			{
+				keys.add(new SearchKey(SearchKey.STATUS, GoalEvent.GetName(this._status)));
+			}
+			else
+			{
+				keys.add(new SearchKey(SearchKey.STATUS, ActionEvent.GetName(this._status)));
+			}
 		}
-		
 	
 		if(this._target != null && this._target.isGrounded())
 		{

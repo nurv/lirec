@@ -510,7 +510,10 @@ public class ActionDetail implements Serializable {
 		}
 		else if(key.getField() == SearchKey.STATUS)
 		{
-			return key.getKey().equals(this._status);
+			if (this._intention != null)
+				return key.getKey().equals(this._status);
+			else 
+				return key.getKey().equals(this._status);
 		}
 			
 		else return false;
