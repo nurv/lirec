@@ -162,7 +162,10 @@ public class EpisodicMemory {
 		return _stm.getDetails();
 	}
 	
-	
+	public ActionDetail getNewestRecord()
+	{
+		return _stm.GetNewestRecord();
+	}
 	
 	public ArrayList<ActionDetail> GetNewRecords()
 	{

@@ -290,43 +290,60 @@ public class ActionDetail implements Serializable {
 		{
 			case EmotionType.ADMIRATION:
 			{
-				String aux = LikeRelation.getRelation(Constants.SELF,em.GetDirection().toString()).increment(m,em.GetIntensity());
-				RespectRelation.getRelation(Constants.SELF,em.GetDirection().toString()).increment(m, em.GetIntensity());
-				this._evaluation.add(aux);
-				break;
+				if(em.GetDirection() != null)
+				{
+					String aux = LikeRelation.getRelation(Constants.SELF,em.GetDirection().toString()).increment(m,em.GetIntensity());
+					RespectRelation.getRelation(Constants.SELF,em.GetDirection().toString()).increment(m, em.GetIntensity());
+					this._evaluation.add(aux);
+					break;		
+				}
 			}
 			case EmotionType.REPROACH:
 			{
-				String aux = LikeRelation.getRelation(Constants.SELF,em.GetDirection().toString()).decrement(m, em.GetIntensity());
-				RespectRelation.getRelation(Constants.SELF,em.GetDirection().toString()).decrement(m, em.GetIntensity());
-				this._evaluation.add(aux);
-				break;
+				if(em.GetDirection() != null)
+				{
+					String aux = LikeRelation.getRelation(Constants.SELF,em.GetDirection().toString()).decrement(m, em.GetIntensity());
+					RespectRelation.getRelation(Constants.SELF,em.GetDirection().toString()).decrement(m, em.GetIntensity());
+					this._evaluation.add(aux);
+					break;
+				}
 			}
 			case EmotionType.HAPPYFOR:
 			{
-				String aux = LikeRelation.getRelation(Constants.SELF,em.GetDirection().toString()).increment(m, em.GetIntensity());
-				this._evaluation.add(aux);
-				break;
+				if(em.GetDirection() != null)
+				{
+					String aux = LikeRelation.getRelation(Constants.SELF,em.GetDirection().toString()).increment(m, em.GetIntensity());
+					this._evaluation.add(aux);
+					break;
+				}
 			}
 			case EmotionType.GLOATING:
 			{
-				String aux = LikeRelation.getRelation(Constants.SELF,em.GetDirection().toString()).decrement(m, em.GetIntensity());
-				this._evaluation.add(aux);
-				break;
+				if(em.GetDirection() != null)
+				{
+					String aux = LikeRelation.getRelation(Constants.SELF,em.GetDirection().toString()).decrement(m, em.GetIntensity());
+					this._evaluation.add(aux);
+					break;
+				}
 			}
 			case EmotionType.PITTY:
 			{
-				String aux = LikeRelation.getRelation(Constants.SELF,em.GetDirection().toString()).increment(m, em.GetIntensity());
-				this._evaluation.add(aux);
-				break;
+				if(em.GetDirection() != null)
+				{
+					String aux = LikeRelation.getRelation(Constants.SELF,em.GetDirection().toString()).increment(m, em.GetIntensity());
+					this._evaluation.add(aux);
+					break;
+				}
 			}
 			case EmotionType.RESENTMENT:
 			{
-				String aux = LikeRelation.getRelation(Constants.SELF,em.GetDirection().toString()).decrement(m, em.GetIntensity());
-				this._evaluation.add(aux);
-				break;
-			}
-			
+				if(em.GetDirection() != null)
+				{
+					String aux = LikeRelation.getRelation(Constants.SELF,em.GetDirection().toString()).decrement(m, em.GetIntensity());
+					this._evaluation.add(aux);
+					break;
+				}
+			}			
 			case EmotionType.JOY:
 			{
 				if(_target != null && _target.equals(Constants.SELF))
