@@ -2,6 +2,8 @@ package cmion.addOns.samgar;
 
 import java.util.ArrayList;
 
+import cmion.level2.SamgarModuleInfo;
+
 import yarp.Bottle;
 import yarp.BottleCallback;
 import yarp.BufferedPortBottle;
@@ -21,7 +23,7 @@ public class MainCmionPort extends BufferedPortBottle
 		useCallback(myBottleCallback); // set the callback for reading data on this port
 		while (Network.getNameServerName().toString().equals("/global"))
 		{}   // a loop to wait until the network is on the local and not global server
-		open("/Main_"+parent.MODULE_NAME); // open the port, this will be the main module port you'll get updates on
+		open("/Main_"+SamgarConnector.MODULE_NAME); // open the port, this will be the main module port you'll get updates on
 		while(getInputCount()<1){Thread.yield();} // you might want a line like this to know that the samgar gui 
 								   // has actually connected to the maim module port
 	}
@@ -30,14 +32,18 @@ public class MainCmionPort extends BufferedPortBottle
 	private BottleCallback myBottleCallback = new BottleCallback()
 	{
 		
+		/** in here we read received bottles */
 		@Override
 		public void onRead(Bottle datum) 
 		{
+			// every bottle starts with an int to identify whats inside (samgar convention)
 			int msgType = datum.get(0).asInt();
 			// 105 signifies information about connected modules
 			if (msgType == 105)
 			{
-				ArrayList<ModuleInfo> modules = new ArrayList<ModuleInfo>();
+				// modules are list by name , category and subcategory behind each other 
+				// in the bottle
+				ArrayList<SamgarModuleInfo> modules = new ArrayList<SamgarModuleInfo>();
 				int counter = 1;
 				while (counter < datum.size())
 				{
@@ -48,15 +54,13 @@ public class MainCmionPort extends BufferedPortBottle
 					String subcategory = datum.get(counter).asString().toString();
 					counter++;
 					
-					if (!name.equals(parent.MODULE_NAME)) 
-						modules.add(new ModuleInfo(name,category,subcategory));
+					if (!name.equals(SamgarConnector.MODULE_NAME)) 
+						modules.add(new SamgarModuleInfo(name,category,subcategory));
 				}
-				
-				parent.updateModules(modules);
-				
+				// now that we have read the whole bottle update the Samgar connector,
+				// about what we have found
+				parent.updateModules(modules);			
 			}
-			
-			
 		}	
 	};
 
@@ -66,7 +70,7 @@ public class MainCmionPort extends BufferedPortBottle
 	{
 		Bottle b = prepare();
 		b.addInt(10);
-		b.addString(parent.MODULE_NAME);
+		b.addString(SamgarConnector.MODULE_NAME);
 		b.addString("Control");
 		b.addString("Control");
 		System.out.println(b);

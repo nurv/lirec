@@ -11,25 +11,28 @@ import yarp.Network;
 import cmion.architecture.CmionComponent;
 import cmion.architecture.EventCmionReady;
 import cmion.architecture.IArchitecture;
+import cmion.level2.EventSamgarModuleAdded;
+import cmion.level2.EventSamgarModuleRemoved;
+import cmion.level2.SamgarModuleInfo;
 
 /** this class provides a connector to SAMGAR. It handles the dynamic
  *  construction of SAMGAR competencies */
 public class SamgarConnector extends CmionComponent implements Runnable {
 
 	/** the name of the cmion module within Samgar */
-	public final String MODULE_NAME = "CMion"; 
+	public static final String MODULE_NAME = "CMion"; 
 	
 	/** the main yarp port needed in order to represent Cmion as a Samgar module */
 	private MainCmionPort mainPort;
 	
 	/** storing the list of avilable Samgar modules*/
-	ArrayList<ModuleInfo> availableModules;
+	ArrayList<SamgarModuleInfo> availableModules;
 	
 	
 	public SamgarConnector(IArchitecture architecture) 
 	{
 		super(architecture);
-		availableModules = new ArrayList<ModuleInfo>();
+		availableModules = new ArrayList<SamgarModuleInfo>();
 	}
 
 	@Override
@@ -76,15 +79,25 @@ public class SamgarConnector extends CmionComponent implements Runnable {
 	}
 
 	/** update the list of available Samgar modules*/
-	public void updateModules(ArrayList<ModuleInfo> modules) 
+	public synchronized void updateModules(ArrayList<SamgarModuleInfo> modules) 
 	{
+		// the modules that were found but are not yet in available modules are new
+		// (we ignore already existing ones)
+		for (SamgarModuleInfo modInfo:modules)
+			if (!availableModules.contains(modInfo))
+				this.raise(new EventSamgarModuleAdded(modInfo));				
+				
+		// the modules that are in available modules that were not found anymore 
+		// have to be removed 
+		for (SamgarModuleInfo modInfo:availableModules)
+			if (!modules.contains(modInfo))
+				this.raise(new EventSamgarModuleRemoved(modInfo));				
+
+		// now that we have raised the events, update the list for next call of this
+		// method
+		availableModules = modules;
 		
-		//for (ModuleInfo modInfo:modules)
-		//{
-		//
-		//
-		//			
-		//}
-		//
 	}
 }
+
+	

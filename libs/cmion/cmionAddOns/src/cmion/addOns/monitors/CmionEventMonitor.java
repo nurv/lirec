@@ -44,6 +44,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JToggleButton;
 
+import cmion.addOns.samgar.SamgarConnector;
 import cmion.architecture.IArchitecture;
 import cmion.architecture.CmionComponent;
 import cmion.architecture.CmionEvent;
@@ -147,6 +148,7 @@ public class CmionEventMonitor extends CmionComponent {
 	    protected JToggleButton btnWorldModel;
 	    protected JToggleButton btnBlackBoard;
 	    protected JToggleButton btnCompetencies;
+	    protected JToggleButton btnSamgar;
 	    protected JToggleButton btnOther;
 
 	    public MonitorWindow() {
@@ -180,6 +182,10 @@ public class CmionEventMonitor extends CmionComponent {
 	        btnCompetencies = new JToggleButton("Comp");
 	        btnCompetencies.setToolTipText("Filter Competencies events");
 	        btnCompetencies.addActionListener(this);
+
+	        btnSamgar = new JToggleButton("Samgar");
+	        btnSamgar.setToolTipText("Filter Samgar Connector events");
+	        btnSamgar.addActionListener(this);
 	        
 	        btnOther = new JToggleButton("Other");
 	        btnOther.setToolTipText("Filter any other events");
@@ -193,6 +199,7 @@ public class CmionEventMonitor extends CmionComponent {
 	        toolBar.add(btnWorldModel);
 	        toolBar.add(btnBlackBoard);
 	        toolBar.add(btnCompetencies);
+	        toolBar.add(btnSamgar);
 	        toolBar.add(btnOther);
 	        
 	        //Add components to this panel.
@@ -226,6 +233,8 @@ public class CmionEventMonitor extends CmionComponent {
 				return btnBlackBoard.isSelected();	  
 			else if (evt.getOriginator() instanceof Competency)
 				return btnCompetencies.isSelected();
+			else if (evt.getOriginator() instanceof SamgarConnector)
+				return btnSamgar.isSelected();
 			else return btnOther.isSelected();
 	    }
 	    

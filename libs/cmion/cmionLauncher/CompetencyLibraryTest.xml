@@ -18,5 +18,8 @@ construction (assumed parameter type is String, parameters are seperated by comm
 <Competency ClassName="cmion.level2.competencies.test.TestCompetency5"
 			ConstructorParameters="Pizza,Pasta" /> 
 <Competency ClassName="cmion.level2.competencies.test.TestCompetency6" />
+<SamgarCompetency ClassName="cmion.addOns.samgar.competencies.test.TestSamgarCompetency"
+				  Category="EmergencyStop" SubCategory="Wheels" />
+
 			
 </CompetencyLibrary>
