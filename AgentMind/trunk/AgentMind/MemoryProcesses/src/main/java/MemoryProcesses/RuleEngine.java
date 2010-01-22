@@ -68,7 +68,7 @@ public class RuleEngine implements Serializable {
 			CandidateEvent cad; 
 			
 			_ksession = _kbase.newStatefulKnowledgeSession();
-			
+		
 			ArrayList<MemoryEpisode> episodes = episodicMemory.GetAllEpisodes(); 
 			for (int i = 0; i < episodes.size(); i++)
 			{
@@ -77,18 +77,19 @@ public class RuleEngine implements Serializable {
 				for (int j = 0; j < details.size(); j++)
 				{
 					actionDetail = (ActionDetail) details.get(j);
-					cad = new CandidateEvent(actionDetail);
-					_ksession.insert(cad);	
-				}
-				
+					_ksession.insert(actionDetail);
+					//cad = new CandidateEvent(actionDetail);
+					//_ksession.insert(cad);	
+				}				
 			}
 			
 			ArrayList<ActionDetail> records = episodicMemory.getDetails();
 			for (int j = 0; j < records.size(); j++)
 			{
 				actionDetail = (ActionDetail) records.get(j);
-				cad = new CandidateEvent(actionDetail);
-				_ksession.insert(cad);	
+				_ksession.insert(actionDetail);
+				//cad = new CandidateEvent(actionDetail);
+				//_ksession.insert(cad);	
 			}	
 		} catch (Throwable t) {
 			t.printStackTrace();

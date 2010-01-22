@@ -46,6 +46,7 @@ import org.drools.event.rule.DebugAgendaEventListener;
 import org.drools.event.rule.DebugWorkingMemoryEventListener;
 import org.drools.io.ResourceFactory;
 import org.drools.runtime.StatefulKnowledgeSession;
+import org.drools.runtime.rule.*;
 
 import FAtiMA.memory.ICompoundCue;
 import FAtiMA.memory.episodicMemory.ActionDetail;
@@ -84,9 +85,11 @@ public class CompoundCue extends RuleEngine implements ICompoundCue {
 			// set and assert the query
 			_ccQuery.setQuery(queryEvent);
 			_ksession.insert(_ccQuery);
+			//FactHandle queryHandle = _ksession.insert(_ccQuery);
 			
 			// fire all CC rules
-			_ksession.fireAllRules();			
+			_ksession.fireAllRules();	
+			//_ksession.retract(queryHandle);
 			
 		} catch (Throwable t) {
 			t.printStackTrace();

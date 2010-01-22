@@ -42,6 +42,12 @@ public class SAQuery {
 	private String _target;
 	private String _action;
 	private String _location;
+	private String _intention;
+	private String _status;
+	private String _speechActMeaning;
+	private String _multimediaPath;
+	private float _desirability;
+	private float _praiseworthiness;
 	
 	private int _numKnownVar;
 	private Hashtable<String, Integer> _results;
@@ -54,6 +60,12 @@ public class SAQuery {
 		this._target = "";
 		this._action = "";
 		this._location = "";
+		this._intention = "";
+		this._status = "";
+		this._speechActMeaning = "";
+		this._multimediaPath = "";
+		this._desirability = 0;
+		this._praiseworthiness = 0;
 		this._numKnownVar = 0;
 		
 		this._results = new Hashtable<String, Integer>();
@@ -102,8 +114,61 @@ public class SAQuery {
 				}
 				this._numKnownVar++;
 			}
+			if (queryType.equals("intention"))
+			{
+				while(query.hasMoreTokens())
+				{
+					this._intention = query.nextToken();
+				}
+				this._numKnownVar++;
+			}
+			if (queryType.equals("status"))
+			{
+				while(query.hasMoreTokens())
+				{
+					this._status = query.nextToken();
+				}
+				this._numKnownVar++;
+			}
+			if (queryType.equals("speeachActMeaning"))
+			{
+				while(query.hasMoreTokens())
+				{
+					this._speechActMeaning = query.nextToken();
+				}
+				this._numKnownVar++;
+			}
+			if (queryType.equals("multimediaPath"))
+			{
+				while(query.hasMoreTokens())
+				{
+					this._multimediaPath = query.nextToken();
+				}
+				this._numKnownVar++;
+			}
+			if (queryType.equals("desirability"))
+			{
+				while(query.hasMoreTokens())
+				{
+					this._desirability = Float.parseFloat(query.nextToken());
+				}
+				this._numKnownVar++;
+			}
+			if (queryType.equals("praiseworthiness"))
+			{
+				while(query.hasMoreTokens())
+				{
+					this._praiseworthiness = Float.parseFloat(query.nextToken());
+				}
+				this._numKnownVar++;
+			}
 		}
-		System.out.println("subject " + _subject + " target " + _target + " action " + _action + " location " + _location);
+		System.out.println("subject " + this._subject + " target " + this._target 
+				+ " action " + this._action + " location " + _location 
+				+ "intention " + this._intention + "status " + this._status	
+				+ "speechActMeaning " + this._speechActMeaning + "multimediaPath " 
+				+ this._multimediaPath + "desirability " + this._desirability
+				+ "praiseworthiness " + this._praiseworthiness);
 		_question = question;		
 	}
 	 	
@@ -113,6 +178,12 @@ public class SAQuery {
 		this._target = "";
 		this._action = "";
 		this._location = "";
+		this._intention = "";
+		this._status = "";
+		this._speechActMeaning = "";
+		this._multimediaPath = "";
+		this._desirability = 0;
+		this._praiseworthiness = 0;
 		this._numKnownVar = 0;		
 		this._results.clear();
 	}
@@ -131,6 +202,30 @@ public class SAQuery {
     
     public String getLocation(){
     	return this._location;
+    }
+    
+    public String getIntention(){
+    	return this._intention;
+    }
+    
+    public String getStatus(){
+    	return this._status;
+    }
+    
+    public String getSpeechActMeaning(){
+    	return this._speechActMeaning;
+    }
+    
+    public String getMultimediaPath(){
+    	return this._multimediaPath;
+    }
+    
+    public float getDesirability(){
+    	return this._desirability;
+    }
+    
+    public float getPraiseworthiness(){
+    	return this._praiseworthiness;
     }
     
     public int getNumKnownVar(){
@@ -166,17 +261,44 @@ public class SAQuery {
     	this._question = question;
     }
 	
+    public void setIntention(String intention){
+    	this._intention = intention;
+    }
+    
+    public void setStatus(String status){
+    	this._status = status;
+    }
+    
+    public void setSpeechActMeaning(String speechActMeaning){
+    	this._speechActMeaning = speechActMeaning;
+    }
+    
+    public void setMultimediaPath(String multimediaPath){
+    	this._multimediaPath = multimediaPath;
+    }
+    
+    public void setDesirability(float desirability){
+    	this._desirability = desirability;
+    }
+    
+    public void setPraiseworthiness(float praiseworthiness){
+    	this._praiseworthiness = praiseworthiness;
+    }
+    
     public void setResults(String result)
 	{
-	  	if (this._results == null || !this._results.containsKey(result))
-	  	{
-	  		this._results.put(result, new Integer(1));
-	  	}
-	  	else
-	  	{
-	  		Integer val = (Integer) _results.get(result);
-	  		this._results.put(result, ++val);
-	  	}
+    	if (result != null)
+    	{
+		  	if (this._results == null || !this._results.containsKey(result))
+		  	{
+		  		this._results.put(result, new Integer(1));
+		  	}
+		  	else
+		  	{
+		  		Integer val = (Integer) _results.get(result);
+		  		this._results.put(result, ++val);
+		  	}
+    	}
 	}
     
     public void addPropertyChangeListener(final PropertyChangeListener l) {

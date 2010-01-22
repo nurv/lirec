@@ -45,7 +45,7 @@ public class CCQuery {
 	 
 	public CCQuery(){
 		this._results = new Hashtable<Integer, Float>();
-		this._numField = 5;
+		this._numField = 9;
 	}
 	
 	public ActionDetail getActionDetail(){

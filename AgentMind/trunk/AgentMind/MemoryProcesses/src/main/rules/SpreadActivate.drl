@@ -10,7 +10,352 @@ import FAtiMA.memory.episodicMemory.ActionDetail;
 
 #declare any global variables here
 
+rule "subject-subject phase1"
+	no-loop true
+	salience 50
+	when
+		$q: SAQuery($s1: subject)
+		$ad: ActionDetail(subject == $s1)	
+	then		
+		insert (new CandidateEvent($ad, "subject", 1.0f));
+		retract ($ad);
+		System.out.println("Subject " + $s1);
+		System.out.println("subject-subject " + $ad.getID());
+end
+
+rule "target-target phase1"
+	no-loop true
+	salience 50
+	when
+		$q: SAQuery($t1: target)
+		$ad: ActionDetail(target == $t1) 	
+	then
+		insert (new CandidateEvent($ad, "target", 1.0f));
+		retract ($ad);
+		System.out.println("Target " + $t1);
+		System.out.println("target-target " + $ad.getID());
+end
+
+rule "action-action phase1"
+	no-loop true
+	salience 50
+	when
+		$q: SAQuery($a1: action)
+		$ad: ActionDetail(action == $a1) 
+	then
+		insert (new CandidateEvent($ad, "action", 1.0f));
+		retract ($ad);
+		System.out.println("Action " + $a1);
+		System.out.println("action-action " + $ad.getID());
+end
+
+rule "location-location phase1"
+	no-loop true
+	salience 50
+	when
+		$q: SAQuery($l1: location)
+		$ad: ActionDetail(location == $l1) 			
+	then
+		insert (new CandidateEvent($ad, "location", 1.0f));
+		retract ($ad);
+		System.out.println("Location " + $l1);
+		System.out.println("location-location " + $ad.getID());
+end
+
+rule "intention-intention phase1"
+	no-loop true
+	salience 50
+	when
+		$q: SAQuery($i1: intention)
+		$ad: ActionDetail(intention == $i1) 
+	then
+		insert (new CandidateEvent($ad, "action", 1.0f));
+		retract ($ad);
+		System.out.println("Intention " + $i1);
+		System.out.println("intention-intention " + $ad.getID());
+end
+
+rule "status-status phase1"
+	no-loop true
+	salience 50
+	when
+		$q: SAQuery($st1: status)
+		$ad: ActionDetail(status == $st1) 
+	then
+		insert (new CandidateEvent($ad, "status", 1.0f));
+		retract ($ad);
+		System.out.println("Status " + $st1);
+		System.out.println("status-status " + $ad.getID());
+end
+
+rule "speechAct-speechAct phase1"
+	no-loop true
+	salience 50
+	when
+		$q: SAQuery($sa1: speechActMeaning)
+		$ad: ActionDetail(speechActMeaning == $sa1) 
+	then
+		insert (new CandidateEvent($ad, "speechActMeaning", 1.0f));
+		retract ($ad);
+		System.out.println("SpeechActMeaning " + $sa1);
+		System.out.println("speechAct-speechAct " + $ad.getID());
+end
+
+rule "multimedia-multimedia phase1"
+	no-loop true
+	salience 50
+	when
+		$q: SAQuery($m1: multimediaPath)
+		$ad: ActionDetail(multimediaPath == $m1) 			
+	then
+		insert (new CandidateEvent($ad, "multimediaPath", 1.0f));
+		retract ($ad);
+		System.out.println("MultimediaPath " + $m1);
+		System.out.println("multimedia-multimedia " + $ad.getID());
+end
+
 rule "subject-subject"
+	no-loop true
+	when
+		$q: SAQuery($s1: subject)
+		$cad: CandidateEvent(extension not contains "subject")
+		$ad: ActionDetail(subject == $s1) from $cad.actionDetail		
+	then		
+		modify ($cad)
+		{
+			increasePhase(), 
+			setExtension("subject")
+		}
+		System.out.println("Subject " + $s1);
+		System.out.println("subject-subject " + $ad.getID());
+end
+
+rule "target-target"
+	no-loop true
+	when
+		$q: SAQuery($t1: target)
+		$cad: CandidateEvent(extension not contains "target")
+		$ad: ActionDetail(target == $t1) from $cad.actionDetail		
+	then
+		modify ($cad) {
+			increasePhase(), 
+			setExtension("target")
+		}
+		System.out.println("Target " + $t1);
+		System.out.println("target-target " + $ad.getID());
+end
+
+rule "action-action"
+	no-loop true
+	when
+		$q: SAQuery($a1: action)
+		$cad: CandidateEvent(extension not contains "action") 
+		$ad: ActionDetail(action == $a1) from $cad.actionDetail		
+	then
+		modify ($cad) {
+			increasePhase(), 
+			setExtension("action")
+		}
+		System.out.println("Action " + $a1);
+		System.out.println("action-action " + $ad.getID());
+end
+
+rule "location-location"
+	no-loop true
+	when
+		$q: SAQuery($l1: location)
+		$cad: CandidateEvent(extension not contains "location")
+		$ad: ActionDetail(location == $l1) from $cad.actionDetail		
+	then
+		modify ($cad) {
+			increasePhase(), 
+			setExtension("location")
+		}
+		System.out.println("Location " + $l1);
+		System.out.println("location-location " + $ad.getID());
+end
+
+rule "intention-intention"
+	no-loop true
+	when
+		$q: SAQuery($i1: intention)
+		$cad: CandidateEvent(extension not contains "intention")
+		$ad: ActionDetail(intention == $i1) from $cad.actionDetail		
+	then
+		modify ($cad) {
+			increasePhase(), 
+			setExtension("intention")
+		}
+		System.out.println("Intention " + $i1);
+		System.out.println("intention-intention " + $ad.getID());
+end
+
+rule "status-status"
+	no-loop true
+	when
+		$q: SAQuery($st1: status)
+		$cad: CandidateEvent(extension not contains "status")
+		$ad: ActionDetail(status == $st1) from $cad.actionDetail		
+	then
+		modify ($cad) {
+			increasePhase(), 
+			setExtension("status")
+		}
+		System.out.println("Status " + $st1);
+		System.out.println("status-status " + $ad.getID());
+end
+
+rule "speechAct-speechAct"
+	no-loop true
+	when
+		$q: SAQuery($sa1: speechActMeaning)
+		$cad: CandidateEvent(extension not contains "speechActMeaning")
+		$ad: ActionDetail(speechActMeaning == $sa1) from $cad.actionDetail		
+	then
+		modify ($cad) {
+			increasePhase(), 
+			setExtension("speechActMeaning")
+		}
+		System.out.println("SpeechActMeaning " + $sa1);
+		System.out.println("speechAct-speechAct " + $ad.getID());
+end
+
+rule "multimedia-multimedia"
+	no-loop true
+	when
+		$q: SAQuery($m1: multimediaPath)
+		$cad: CandidateEvent(extension not contains "multimediaPath")
+		$ad: ActionDetail(multimediaPath == $m1) from $cad.actionDetail		
+	then
+		modify ($cad) {
+			increasePhase(), 
+			setExtension("multimediaPath")
+		}
+		System.out.println("MultimediaPath " + $m1);
+		System.out.println("multimedia-multimedia " + $ad.getID());
+end
+
+rule "subject"
+	no-loop true
+	when
+		$q: SAQuery(question == "subject")
+		$cad: CandidateEvent( phase == $q.numKnownVar )
+		$ad: ActionDetail($s: subject) from $cad.actionDetail		
+	then			
+		modify ($q) {
+			setResults($s)
+		}
+		System.out.println("Subject " + $s);
+		System.out.println("Retracted " + $ad.getID() + "\n");
+		retract ($cad);			
+end
+
+rule "target"
+	no-loop true
+	when
+		$q: SAQuery(question == "target")
+		$cad: CandidateEvent( phase == $q.numKnownVar )
+		$ad: ActionDetail($t: target) from $cad.actionDetail		
+	then			
+		modify ($q) {
+			setResults($t)
+		}
+		System.out.println("Target " + $t);
+		System.out.println("Retracted " + $ad.getID() + "\n");
+		retract ($cad);			
+end
+
+rule "action"
+	no-loop true
+	when
+		$q: SAQuery(question == "action")
+		$cad: CandidateEvent( phase == $q.numKnownVar )
+		$ad: ActionDetail ($a: action) from $cad.actionDetail	
+	then			
+		modify ($q) {
+			setResults($a)
+		}
+		System.out.println("Action " + $a);
+		System.out.println("Retracted " + $ad.getID() + "\n");
+		retract ($cad);			
+end
+
+rule "location"
+	no-loop true
+	when
+		$q: SAQuery(question == "location")
+		$cad: CandidateEvent( phase == $q.numKnownVar )
+		$ad: ActionDetail($l: location) from $cad.actionDetail		
+	then			
+		modify ($q) {
+			setResults($l)
+		}
+		System.out.println("Location " + $l);
+		System.out.println("Retracted " + $ad.getID());
+		retract ($cad);			
+end
+
+rule "intention"
+	no-loop true
+	when
+		$q: SAQuery(question == "intention")
+		$cad: CandidateEvent( phase == $q.numKnownVar )
+		$ad: ActionDetail($i: intention) from $cad.actionDetail		
+	then			
+		modify ($q) {
+			setResults($i)
+		}
+		System.out.println("Intention " + $i);
+		System.out.println("Retracted " + $ad.getID());
+		retract ($cad);			
+end
+
+rule "status"
+	no-loop true
+	when
+		$q: SAQuery(question == "status")
+		$cad: CandidateEvent( phase == $q.numKnownVar )
+		$ad: ActionDetail($st: status) from $cad.actionDetail		
+	then			
+		modify ($q) {
+			setResults($st)
+		}
+		System.out.println("Status " + $st);
+		System.out.println("Retracted " + $ad.getID());
+		retract ($cad);			
+end
+
+rule "speechActMeaning"
+	no-loop true
+	when
+		$q: SAQuery(question == "speechActMeaning")
+		$cad: CandidateEvent( phase == $q.numKnownVar )
+		$ad: ActionDetail($sa: speechActMeaning) from $cad.actionDetail		
+	then			
+		modify ($q) {
+			setResults($sa)
+		}
+		System.out.println("SpeechActMeaning " + $sa);
+		System.out.println("Retracted " + $ad.getID());
+		retract ($cad);			
+end
+
+rule "multimediaPath"
+	no-loop true
+	when
+		$q: SAQuery(question == "multimediaPath")
+		$cad: CandidateEvent( phase == $q.numKnownVar )
+		$ad: ActionDetail($m: multimediaPath) from $cad.actionDetail		
+	then			
+		modify ($q) {
+			setResults($m)
+		}
+		System.out.println("Location " + $m);
+		System.out.println("Retracted " + $ad.getID());
+		retract ($cad);			
+end
+
+/*rule "subject-subject"
 	no-loop true
 	when
 		$q: SAQuery($s1: subject)
@@ -112,7 +457,7 @@ rule "action"
 	when
 		$q: SAQuery(question == "action")
 		$cad: CandidateEvent( phase == $q.numKnownVar )
-		$ad: ActionDetail($a: action) from $cad.actionDetail		
+		$ad: ActionDetail ($a: action) from $cad.actionDetail	
 	then			
 		modify ($q) {
 			setResults($a)
@@ -134,133 +479,6 @@ rule "location"
 		}
 		System.out.println("Location " + $l);
 		System.out.println("Retracted " + $ad.getID());
-		retract ($cad);			
-end
-
-/*rule "subject-subject"
-	no-loop true
-	when
-		$q: SAQuery($s1: subject)
-		$cad: CandidateEvent(subject == $s1)
-		//$ad: ActionDetail(subject == $s1) from $cad.actionDetail		
-	then		
-		//insert (new CandidateEvent($ad, "p1", "s-s"));
-		//retract ($ad);
-		modify ($cad)
-		{
-			increasePhase(), 
-			setExtension("subject"),
-			setSubject("fired")		
-		}
-		System.out.println("Subject " + $s1);
-		System.out.println("subject-subject " + $cad.getID());
-end
-
-rule "target-target"
-	no-loop true
-	when
-		$q: SAQuery($t1: target)
-		$cad: CandidateEvent(target == $t1)
-		//$ad: ActionDetail(target == $t1) from $cad.actionDetail		
-	then
-		modify ($cad) {
-			increasePhase(), 
-			setExtension("target"),
-			setTarget("fired")
-		}
-		System.out.println("Target " + $t1);
-		System.out.println("target-target " + $cad.getID());
-end
-
-rule "action-action"
-	no-loop true
-	when
-		$q: SAQuery($a1: action)
-		$cad: CandidateEvent(action == $a1)
-		//$ad: ActionDetail(target == $t1) from $cad.actionDetail		
-	then
-		modify ($cad) {
-			increasePhase(), 
-			setExtension("action"),
-			setAction("fired")
-		}
-		System.out.println("Action " + $a1);
-		System.out.println("action-action " + $cad.getID());
-end
-
-rule "location-location"
-	no-loop true
-	when
-		$q: SAQuery($l1: location)
-		$cad: CandidateEvent(location == $l1)
-		//$ad: ActionDetail(target == $t1) from $cad.actionDetail		
-	then
-		modify ($cad) {
-			increasePhase(), 
-			setExtension("location"),
-			setLocation("fired")
-		}
-		System.out.println("Location " + $l1);
-		System.out.println("location-location " + $cad.getID());
-end
-
-rule "subject"
-	no-loop true
-	when
-		$q: SAQuery(question == "subject")
-		$cad: CandidateEvent( $s: subject, phase == $q.numKnownVar )
-		//$ad: ActionDetail($a: action) from $cad.actionDetail		
-	then			
-		modify ($q) {
-			setAnswers($s)
-		}
-		System.out.println("Subject " + $s);
-		System.out.println("Retracted " + $cad.getID() + "\n");
-		retract ($cad);			
-end
-
-rule "target"
-	no-loop true
-	when
-		$q: SAQuery(question == "target")
-		$cad: CandidateEvent( $t: target, phase == $q.numKnownVar )
-		//$ad: ActionDetail($a: action) from $cad.actionDetail		
-	then			
-		modify ($q) {
-			setAnswers($t)
-		}
-		System.out.println("Target " + $t);
-		System.out.println("Retracted " + $cad.getID() + "\n");
-		retract ($cad);			
-end
-
-rule "action"
-	no-loop true
-	when
-		$q: SAQuery(question == "action")
-		$cad: CandidateEvent( $a: action, phase == $q.numKnownVar )
-		//$ad: ActionDetail($a: action) from $cad.actionDetail		
-	then			
-		modify ($q) {
-			setAnswers($a)
-		}
-		System.out.println("Action " + $a);
-		System.out.println("Retracted " + $cad.getID() + "\n");
-		retract ($cad);			
-end
-
-rule "location"
-	no-loop true
-	when
-		$q: SAQuery(question == "location")
-		$cad: CandidateEvent( $l: location, phase == $q.numKnownVar )
-		//$ad: ActionDetail($a: action) from $cad.actionDetail		
-	then			
-		modify ($q) {
-			setAnswers($l)
-		}
-		System.out.println("Location " + $l);
-		System.out.println("Retracted " + $cad.getID());
 		retract ($cad);			
 end*/
 

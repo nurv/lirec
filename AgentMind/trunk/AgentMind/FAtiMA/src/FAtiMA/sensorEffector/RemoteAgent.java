@@ -351,7 +351,7 @@ public abstract class RemoteAgent extends SocketListener {
 			}
 			else if(msgType.equals(CC_MEMORY))
 			{
-				int index = (int) (Math.random()*10);
+				int index = Math.min(8, (int) (Math.random()*10));
 				ActionDetail event = _agent.getMemory().getEpisodicMemory().getDetails().get(index);
 				_agent.getCompoundCue().Match(event, _agent.getMemory().getEpisodicMemory());
 				System.out.println("\nEvent ID to match on " + event.getID());
