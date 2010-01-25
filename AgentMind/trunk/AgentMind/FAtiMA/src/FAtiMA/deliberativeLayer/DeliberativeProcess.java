@@ -598,6 +598,14 @@ public class DeliberativeProcess extends AgentProcess {
 	 * initial Hope/Fear emotions for each activated goal.
 	 * @throws InvalidMotivatorTypeException 
 	 */
+	
+	public void AppraiseForOthers(Event event, AgentModel am)
+	{
+		Event event2 = event.ApplyPerspective(am.getName());
+		am.getMotivationalState().UpdateMotivators(am, event2, _planner.GetOperators());
+	}
+	
+	
 	public void Appraisal(AgentModel am) {
 		ListIterator<Event> li;
 		Event event;
@@ -629,26 +637,18 @@ public class DeliberativeProcess extends AgentProcess {
 					event = li.next();
 					
 					//updating selfMotivators
-					am.getMotivationalState().UpdateMotivators(am, event, _planner.GetOperators());
+					Event event2 = event.ApplyPerspective(am.getName());
+					am.getMotivationalState().UpdateMotivators(am, event2, _planner.GetOperators());
 					
-					Event event2 = event.RemovePerspective(am.getName());
-					//TODO this should not be done here but at the agent level, by calling the deliberative
-					//appraisal process to all models of others
-					for(String other : am.getNearByAgents())
-					{
-						Event event3 = event2.ApplyPerspective(other);
-						ModelOfOther m = am.getToM().get(other);
-						m.getMotivationalState().UpdateMotivators(m, event3, _planner.GetOperators());
-					}
-						
-					if(_actionMonitor != null && _actionMonitor.MatchEvent(event)) {
+					
+					if(_actionMonitor != null && _actionMonitor.MatchEvent(event2)) {
 					    if(_actionMonitor.GetStep().getAgent().isGrounded() &&  
 					    		!_actionMonitor.GetStep().getAgent().toString().equals("SELF"))
 					    {
 					    	//the agent was waiting for an action of other agent to be complete
 					    	//since the step of another agent may contain unbound variables,
 					    	//we cannot just compare the names, we need to try to unify them
-					    	if(Unifier.Unify(event.toStepName(), 
+					    	if(Unifier.Unify(event2.toStepName(), 
 					    			_actionMonitor.GetStep().getName()) != null)
 					    	{
 					    		_actionMonitor.GetStep().IncreaseProbability(am);

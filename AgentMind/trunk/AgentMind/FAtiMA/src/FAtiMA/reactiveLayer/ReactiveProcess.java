@@ -163,12 +163,16 @@ public class ReactiveProcess extends AgentProcess {
 		_actionTendencies.ReinforceActionTendency(coping);
 	}
 	
+	public void Appraisal(AgentModel am)
+	{
+	}
+	
 	
 	/**
 	 * Reactive appraisal. Appraises received events according to the emotional
 	 * reaction rules
 	 */
-	public void Appraisal(AgentModel ag) {
+	public void Appraisal(Event event, AgentModel ag) {
 		Event event2;
 		Event event3;
 		ArrayList<BaseEmotion> emotions;
@@ -177,65 +181,56 @@ public class ReactiveProcess extends AgentProcess {
 		Reaction otherEvaluation;
 		AppraisalVector v;
 		
-		
-		synchronized (ag.getEvents()) {
-			for(Event event : ag.getEvents())
-			{
 			
-				//self evaluation
-				selfEvaluation = Evaluate(ag, event);
+		//self evaluation
+		event2 = event.ApplyPerspective(ag.getName());
+		selfEvaluation = Evaluate(ag, event2);
+		
+		if(selfEvaluation != null)
+		{
+			emotions = FAtiMA.emotionalState.Appraisal.GenerateSelfEmotions(
+					ag, 
+					event2, 
+					translateEmotionalReaction(selfEvaluation));
 				
-				if(selfEvaluation != null)
+			ListIterator<BaseEmotion> li2 = emotions.listIterator();
+			while(li2.hasNext())
+			{
+				ag.getEmotionalState().AddEmotion(li2.next(), ag);
+			}			
+		}
+		
+		if(ag.getToM() != null)
+		{
+			
+			// generating fortune of others emotions
+			for(String other : ag.getNearByAgents())
+			{
+				event3 = event.ApplyPerspective(other);
+				ModelOfOther m = ag.getToM().get(other);
+				otherEvaluation = Evaluate(m, event3);
+				v = new AppraisalVector();
+				if(selfEvaluation != null && selfEvaluation.getDesirability() != null)
 				{
-					
-					emotions = FAtiMA.emotionalState.Appraisal.GenerateSelfEmotions(
-							ag, 
-							event, 
-							translateEmotionalReaction(selfEvaluation));
-						
-					ListIterator<BaseEmotion> li2 = emotions.listIterator();
-					while(li2.hasNext())
-					{
-						ag.getEmotionalState().AddEmotion(li2.next(), ag);
-					}			
+					v.setAppraisalVariable(AppraisalVector.DESIRABILITY, selfEvaluation.getDesirability());
 				}
 				
-				if(ag.getToM() != null)
+				if(otherEvaluation != null && otherEvaluation.getDesirability() != null)
 				{
+					v.setAppraisalVariable(AppraisalVector.DESIRABILITY_FOR_OTHER, otherEvaluation.getDesirability());
+				}
 				
-					event2 = event.RemovePerspective(ag.getName());
-					
-					// generating fortune of others emotions
-					for(String other : ag.getNearByAgents())
-					{
-						event3 = event2.ApplyPerspective(other);
-						ModelOfOther m = ag.getToM().get(other);
-						otherEvaluation = Evaluate(m, event3);
-						v = new AppraisalVector();
-						if(selfEvaluation != null && selfEvaluation.getDesirability() != null)
-						{
-							v.setAppraisalVariable(AppraisalVector.DESIRABILITY, selfEvaluation.getDesirability());
-						}
-						
-						if(otherEvaluation != null && otherEvaluation.getDesirability() != null)
-						{
-							v.setAppraisalVariable(AppraisalVector.DESIRABILITY_FOR_OTHER, otherEvaluation.getDesirability());
-						}
-						
-						
-						emotionForOther = FAtiMA.emotionalState.Appraisal.GenerateEmotionForOther(
-								ag,
-								event, 
-								v,
-								other);
-						if(emotionForOther != null)
-						{
-							ag.getEmotionalState().AddEmotion(emotionForOther, ag);
-						}
-					}
+				
+				emotionForOther = FAtiMA.emotionalState.Appraisal.GenerateEmotionForOther(
+						ag,
+						event2, 
+						v,
+						other);
+				if(emotionForOther != null)
+				{
+					ag.getEmotionalState().AddEmotion(emotionForOther, ag);
 				}
 			}
-			ag.clearEvents();
 		}
 	}
 	

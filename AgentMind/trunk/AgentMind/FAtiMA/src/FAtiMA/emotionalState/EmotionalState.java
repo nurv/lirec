@@ -170,6 +170,32 @@ public class EmotionalState implements Serializable {
 		return auxEmotion;
 	}
 	
+	public void UpdateEmotionalState(BaseEmotion em, AgentModel am)
+	{
+		ActiveEmotion auxEmotion;
+		int decay;
+		EmotionDisposition disposition;
+	
+
+		disposition = _emotionDispositions[em._type];
+		decay = disposition.GetDecay();
+		
+		if (_emotionPool.containsKey(em.GetHashKey())) {
+			auxEmotion = (ActiveEmotion) _emotionPool.get(em.GetHashKey());
+			auxEmotion.ReforceEmotion(em.GetPotential());				
+		}
+		else {
+			auxEmotion = new ActiveEmotion(em, em.GetPotential(), 0, decay);
+			_emotionPool.put(em.GetHashKey(), auxEmotion);
+			am.getMemory().getEpisodicMemory().AssociateEmotionToAction(am.getMemory(), 
+					auxEmotion,
+					auxEmotion.GetCause());
+			this.GenerateCompoundEmotions(em, am);
+		}
+		this._mood.UpdateMood(auxEmotion);
+	}
+	
+	
 	/**
 	 * Creates a new ActiveEmotion based on a received BaseEmotion. However,
 	 * the ActiveEmotion will be created only if the final intensity for 

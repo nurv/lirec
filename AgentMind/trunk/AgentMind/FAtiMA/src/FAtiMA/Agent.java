@@ -55,7 +55,6 @@ import FAtiMA.util.enumerables.EmotionType;
 import FAtiMA.util.enumerables.EventType;
 import FAtiMA.util.parsers.AgentLoaderHandler;
 import FAtiMA.util.parsers.CultureLoaderHandler;
-import FAtiMA.util.parsers.ScenarioLoaderHandler;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Symbol;
 
@@ -199,26 +198,14 @@ public class Agent implements AgentModel {
 		}
 	}
 	
-	/**
-	 * Starting the agent
-	 * added by Meiyii 19/11/09
-	 */
-	public void StartAgent()
+	public void AddNearByAgent(String agent)
 	{
-		try{
-			_remoteAgent.start();
-	        
-			if(_showStateWindow){
-				_agentDisplay = new AgentDisplay(this);
-			}
-			
-			this.Run();
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-			this.terminateExecution();
+		if(!agent.equals(this._name))
+		{
+			this._nearbyAgents.add(agent);
 		}
 	}
+	
 	
 	/**
 	 * Specifies that the agent must give an answer to a received
@@ -229,13 +216,35 @@ public class Agent implements AgentModel {
 	    _speechAct = speechAct;
 	}
 	
+	private Name applyPerspective(Name n, String agentName)
+	{
+		Name newName = (Name) n.clone();
+		ArrayList<Symbol> symbols = newName.GetLiteralList();
+		
+		//I'm changing directly the received name; not a good thing to do
+		for(int i = 0; i < symbols.size(); i++)
+		{
+			if(symbols.get(i).getName().equals(agentName))
+			{
+				symbols.set(i, new Symbol(Constants.SELF));
+			}
+		}
+		
+		return newName;
+	}
+	
+	
+
 	public void AppraiseSelfActionFailed(Event e)
 	{
 		_deliberativeLayer.AppraiseSelfActionFailed(e);
 	}
 	
+	@Override
+	public void clearEvents() {
+		_reactiveLayer.clearEvents();	
+	}
 	
-
 	/**
 	 * Gets the agent's name that is displayed externally
 	 * @return the agent's external name
@@ -243,7 +252,7 @@ public class Agent implements AgentModel {
 	public String displayName() {
 	    return _displayName;
 	}
-	
+
 	public void EnforceCopingStrategy(String coping)
 	{
 		_deliberativeLayer.EnforceCopingStrategy(this, coping);
@@ -265,7 +274,21 @@ public class Agent implements AgentModel {
 		
 		return aux;
 	}
-
+	
+	@Override
+	public ActionTendencies getActionTendencies() {
+		return _reactiveLayer.getActionTendencies();
+	}
+	
+	/** 
+	 * Gets the compound cue mechanism of the agent
+	 * @return the compound cue mechanism
+	 * added by Meiyii 19/11/09
+	 */	
+	public ICompoundCue getCompoundCue() {
+		return _compoundCue;
+	}
+	
 	/**
 	 * Gets the agent's Deliberative Layer that you can use
 	 * to get access to Deliberative structures such as 
@@ -277,9 +300,19 @@ public class Agent implements AgentModel {
 		return this._deliberativeLayer;
 	}
 	
+	public EmotionalReactionTreeNode getEmotionalReactions()
+	{
+		return _reactiveLayer.getEmotionalReactions();
+	}
+	
 	public EmotionalState getEmotionalState()
 	{
 		return _emotionalState;
+	}
+	
+	@Override
+	public Collection<Event> getEvents() {
+		return _reactiveLayer.getEvents();
 	}
 	
 	public Memory getMemory()
@@ -300,22 +333,9 @@ public class Agent implements AgentModel {
 		return _name;
 	}
 	
-	/** 
-	 * Gets the compound cue mechanism of the agent
-	 * @return the compound cue mechanism
-	 * added by Meiyii 19/11/09
-	 */	
-	public ICompoundCue getCompoundCue() {
-		return _compoundCue;
-	}
-	
-	/** 
-	 * Gets the spread activate mechanism of the agent
-	 * @return the spread activate mechanism
-	 *  added by Meiyii 19/11/09
-	 */	
-	public ISpreadActivate getSpreadActivate() {
-		return _spreadActivate;
+	public Collection<String> getNearByAgents()
+	{
+		return this._nearbyAgents;
 	}
 	
 	/**
@@ -329,27 +349,19 @@ public class Agent implements AgentModel {
 		return this._reactiveLayer;
 	}
 	
+	
+	/** 
+	 * Gets the spread activate mechanism of the agent
+	 * @return the spread activate mechanism
+	 *  added by Meiyii 19/11/09
+	 */	
+	public ISpreadActivate getSpreadActivate() {
+		return _spreadActivate;
+	}
+	
 	public HashMap<String,ModelOfOther> getToM()
 	{
 		return this._ToM;
-	}
-	
-	public Collection<String> getNearByAgents()
-	{
-		return this._nearbyAgents;
-	}
-	
-	public void AddNearByAgent(String agent)
-	{
-		if(!agent.equals(this._name))
-		{
-			this._nearbyAgents.add(agent);
-		}
-	}
-	
-	public void RemoveNearByAgent(String entity)
-	{
-		this._nearbyAgents.remove(entity);
 	}
 	
 	public void initializeModelOfOther(String name)
@@ -359,25 +371,6 @@ public class Agent implements AgentModel {
 			ModelOfOther model = new ModelOfOther(name, this);
 			_ToM.put(name, model);
 		}
-	}
-	
-	
-	/** 
-	 * Set the compound cue mechanism object of the agent
-	 * @param compoundCue
-	 *  added by Meiyii 19/11/09
-	 */	
-	public void setCompoundCue(ICompoundCue compoundCue) {
-		this._compoundCue = compoundCue;
-	}
-	
-	/** 
-	 * Set the spread activate mechanism object of the agent
-	 * @param spreadActivate
-	 *  added by Meiyii 19/11/09
-	 */	
-	public void setSpreadActivate(ISpreadActivate spreadActivate) {
-		this._spreadActivate = spreadActivate;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -473,6 +466,60 @@ public class Agent implements AgentModel {
 		}
 	}
 	
+	private void UpdateModelOfOthers(Event e)
+	{
+		ModelOfOther m;
+		String subject;
+		BaseEmotion perceivedEmotion;
+		BaseEmotion predictedEmotion;
+		AppraisalVector v;
+		Reaction r;
+		
+		
+		subject = e.GetSubject();
+		if(!subject.equals(_name))
+		{
+			m = _ToM.get(subject);
+			if(m != null)
+			{
+				//if the perceived action corresponds to an emotion expression of other, we 
+				//should update its action tendencies accordingly
+				perceivedEmotion = m.getActionTendencies().RecognizeEmotion(m, e.toStepName());
+				if(perceivedEmotion != null)
+				{
+					predictedEmotion = m.getEmotionalState().GetEmotion(perceivedEmotion.GetHashKey());
+					if(predictedEmotion == null)
+					{
+						v = Appraisal.InverseOCCAppraisal(perceivedEmotion, m.getEmotionalState());
+						//updating other's emotional state
+						m.getEmotionalState().UpdateEmotionalState(perceivedEmotion, m);
+						//upating other's emotional reactions
+						if(v.getAppraisalVariable(AppraisalVector.LIKE) != 0)
+						{
+							LikeRelation.getRelation(subject, e.GetTarget()).setValue(m.getMemory(), 
+									v.getAppraisalVariable(AppraisalVector.LIKE));
+						}
+						if(v.getAppraisalVariable(AppraisalVector.DESIRABILITY) != 0 ||
+								v.getAppraisalVariable(AppraisalVector.PRAISEWORTHINESS) != 0)
+						{
+							r = new Reaction(perceivedEmotion.GetCause());
+							r.setDesirability(v.getAppraisalVariable(AppraisalVector.DESIRABILITY));
+							r.setPraiseworthiness(v.getAppraisalVariable(AppraisalVector.PRAISEWORTHINESS));
+							m.getEmotionalReactions().AddEmotionalReaction(r);
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	private void UpdateMemory(AgentModel am, Event e)
+	{
+		Event e2 = e.ApplyPerspective(am.getName());
+		am.getMemory().getEpisodicMemory().StoreAction(am.getMemory(), e2);
+		am.getMemory().getSemanticMemory().Tell(ACTION_CONTEXT, e2.toName().toString());
+	}
+	
 	/**
 	 * Perceives a given event from the virtual world
 	 * @param e - the Event to perceive
@@ -480,7 +527,7 @@ public class Agent implements AgentModel {
 	public void PerceiveEvent(Event e) 
 	{   
 		synchronized (this)
-		{
+		{	
 			_perceivedEvents.add(e);
 		}
 	}
@@ -495,23 +542,6 @@ public class Agent implements AgentModel {
 			ModelOfOther m = _ToM.get(other);
 			m.getMemory().getSemanticMemory().Tell(applyPerspective(propertyName,other), value);
 		}
-	}
-	
-	private Name applyPerspective(Name n, String agentName)
-	{
-		Name newName = (Name) n.clone();
-		ArrayList<Symbol> symbols = newName.GetLiteralList();
-		
-		//I'm changing directly the received name; not a good thing to do
-		for(int i = 0; i < symbols.size(); i++)
-		{
-			if(symbols.get(i).getName().equals(agentName))
-			{
-				symbols.set(i, new Symbol(Constants.SELF));
-			}
-		}
-		
-		return newName;
 	}
 
 	public void PerceivePropertyChanged(String subject, String property, String value)
@@ -556,6 +586,11 @@ public class Agent implements AgentModel {
 	}
 	
 	
+	
+	public void RemoveNearByAgent(String entity)
+	{
+		this._nearbyAgents.remove(entity);
+	}
 	
 	/**
 	 * Resets the agent's reasoning layers (deliberative + cognitive)
@@ -613,7 +648,7 @@ public class Agent implements AgentModel {
 						m.getMotivationalState().Decay();
 					}
 					
-					//perceives and appraises new events
+					//perceives new events
 					synchronized (this)
 					{
 						for(ListIterator<Event> li = this._perceivedEvents.listIterator(); li.hasNext();)
@@ -622,24 +657,17 @@ public class Agent implements AgentModel {
 							AgentLogger.GetInstance().log("Perceiving event: " + e.toName());
 							
 							
-							//ToM of others
+							UpdateModelOfOthers(e);
+							
+							//updating the memory of all agents that perceived the event
+							//self 
+							UpdateMemory(this,e);
+							//ToM of Others
 							for(String other : _nearbyAgents)
 							{
-								Event e2 = e.ApplyPerspective(other);
 								ModelOfOther m = _ToM.get(other);
-								m.getMemory().getEpisodicMemory().StoreAction(m.getMemory(), e2);
-								m.getMemory().getSemanticMemory().Tell(ACTION_CONTEXT,e2.toName().toString());
-								m.AddEvent(e2);								
+								UpdateMemory(m, e);
 							}
-							
-							//SELF
-							e = e.ApplyPerspective(_name);
-							
-							//inserting the event in AM
-							
-							_memory.getEpisodicMemory().StoreAction(_memory, e);
-						    //registering an Action Context property in the KB
-							_memory.getSemanticMemory().Tell(ACTION_CONTEXT,e.toName().toString());
 							
 							if(SpeechAct.isSpeechAct(e.GetAction()))
 							{
@@ -681,15 +709,30 @@ public class Agent implements AgentModel {
 					}
 					
 					//Appraise the events and changes in data
-					_reactiveLayer.Appraisal(this);
-					
-					for(ModelOfOther m : _ToM.values())
+					for(Event e : _reactiveLayer._eventPool)
 					{
-						_reactiveLayer.Appraisal(m);
+						_reactiveLayer.Appraisal(e,this);
+						
+						for(ModelOfOther m : _ToM.values())
+						{
+							_reactiveLayer.Appraisal(e,m);
+						}
 					}
 					
-				    _deliberativeLayer.Appraisal(this);	
-				    
+					_reactiveLayer._eventPool.clear();
+					
+					for(Event e : _deliberativeLayer._eventPool)
+					{	
+						for(ModelOfOther m : _ToM.values())
+						{
+							_deliberativeLayer.AppraiseForOthers(e,m);
+						}
+						
+					}
+					
+					_deliberativeLayer.Appraisal(this);
+					
+					
 					
 				    _reactiveLayer.Coping(this);
 					_deliberativeLayer.Coping(this);
@@ -756,6 +799,7 @@ public class Agent implements AgentModel {
 		}
 	}
 	
+	
 	public void SaveAgentState(String agentName)
 	{
 		String fileName = _saveDirectory + agentName;
@@ -797,7 +841,6 @@ public class Agent implements AgentModel {
 		}
 	}
 	
-	
 	protected ValuedAction SelectBestAction() {
 		
 		ValuedAction bestAction = null;
@@ -821,6 +864,26 @@ public class Agent implements AgentModel {
 		return bestAction;
 	}
 	
+	/** 
+	 * Set the compound cue mechanism object of the agent
+	 * @param compoundCue
+	 *  added by Meiyii 19/11/09
+	 */	
+	public void setCompoundCue(ICompoundCue compoundCue) {
+		this._compoundCue = compoundCue;
+	}
+	
+	/** 
+	 * Set the spread activate mechanism object of the agent
+	 * @param spreadActivate
+	 *  added by Meiyii 19/11/09
+	 */	
+	public void setSpreadActivate(ISpreadActivate spreadActivate) {
+		this._spreadActivate = spreadActivate;
+	}
+	
+	
+	
 	/**
 	 * Gets the gender of the agent
 	 * @return the agent's sex
@@ -829,7 +892,7 @@ public class Agent implements AgentModel {
 	{
 		return _sex;
 	}
-	
+
 	public ActiveEmotion simulateAppraisal(String action, String name, ArrayList<String> parameters)
 	{
 		ArrayList<BaseEmotion> emotions;
@@ -885,34 +948,33 @@ public class Agent implements AgentModel {
 	{
 		_dialogManager.SpeechStarted();
 	}
-	
-	
-	
+
+	/**
+	 * Starting the agent
+	 * added by Meiyii 19/11/09
+	 */
+	public void StartAgent()
+	{
+		try{
+			_remoteAgent.start();
+	        
+			if(_showStateWindow){
+				_agentDisplay = new AgentDisplay(this);
+			}
+			
+			this.Run();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			this.terminateExecution();
+		}
+	}
+
 	private void terminateExecution(){
 		_deliberativeLayer.ShutDown();
 		_reactiveLayer.ShutDown();
 		_remoteAgent.ShutDown();
 		if(_showStateWindow && _agentDisplay != null) _agentDisplay.dispose();
-	}
-
-	@Override
-	public ActionTendencies getActionTendencies() {
-		return _reactiveLayer.getActionTendencies();
-	}
-	
-	public EmotionalReactionTreeNode getEmotionalReactions()
-	{
-		return _reactiveLayer.getEmotionalReactions();
-	}
-
-	@Override
-	public void clearEvents() {
-		_reactiveLayer.clearEvents();	
-	}
-
-	@Override
-	public Collection<Event> getEvents() {
-		return _reactiveLayer.getEvents();
 	}
 
 
