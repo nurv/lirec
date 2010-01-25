@@ -28,7 +28,7 @@ currentmode=running;
 useCallback();
 
 while(getInputCount()<1){;}
-yarp::os::Time::delay(3);
+yarp::os::Time::delay(1);
 // upon innit give its data to the gui
 Bottle& MyBottle =prepare();
 MyBottle.addInt(10); // code for gui
@@ -36,7 +36,7 @@ MyBottle.addString(MyName.c_str());
 MyBottle.addString(MyCatagory.c_str());
 MyBottle.addString(MySubCatagory.c_str());
 write();
-
+yarp::os::Time::delay(1);
 //setstrict
 //this
 }
@@ -105,6 +105,7 @@ if(b.get(0).asInt()==105)
 
 if(DoIWantModules==true)
 {
+	printf("got new modules \n");
 	ModuleStruct TempStruct;
 	ListOfKnownModules.clear();
 	int FF;
@@ -123,6 +124,7 @@ if(b.get(0).asInt()==50 && DoIWantModules==true)
 {
 	ListOfKnownPlatforms.clear();
 
+	printf("got new platforms \n");
 	for(int hh =1;hh<b.size();hh++)
 	{
 		ListOfKnownPlatforms.push_front(b.get(hh).asString().c_str());
@@ -290,7 +292,7 @@ void SamgarModule::AddPortS(string outputname)
 
 
 
-void SamgarModule::SendBottleData(string port,Bottle data){SendData(TypeBottle,port,0,0,0,0,data);}
+void SamgarModule::SendBottleData(string port,Bottle data){SendData(TypeBottle,port," ",0,0,0,data);}
 /*! simpler function calls to the bigger functions !*/
 void SamgarModule::SendIntData(string port,int data){SendData(TypeInt,port," ",data,0,0,0);}
 /*! simpler function calls to the bigger functions !*/
