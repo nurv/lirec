@@ -18,27 +18,26 @@
 #define FOAM_PARTICLE_FILTER
 
 #include <vector>
-#include <iostream>
-#include <assert.h>
 
 using namespace std;
 
-/////////////////////////////////////////////////////////
-// A general purpose abstract base class particle filter
+float FloatNoise();
+float GaussianNoise();
+float GetAngle(float x, float y);
+void GetPos(float a, float d, float &x, float &y);
+float Distance(float ax, float ay, float bx, float by);
+
 class ParticleFilter
 {
 public:
 	ParticleFilter(unsigned int NumParticles);
-	virtual ~ParticleFilter();
-
-    // Needs an initialise as we have to call virtual funcs
-    void Initialise();
+	~ParticleFilter() {}
 
 	// An observation of the state
 	class Observation
 	{
 	public:
-        virtual float Weight(const Observation *Target)=0;
+		float Angle,Dist;
 	};
 
 	// The hidden state we want to estimate
@@ -46,15 +45,28 @@ public:
 	{
 	public:
 		// Gets the observation we would expect from this state
-		virtual Observation *Observe()=0;
+		Observation Observe();
+		
 		// Put the state into a random position and velocity
-		virtual void Randomise()=0;
+		void Randomise()
+		{
+			x = FloatNoise()*100;
+			y = FloatNoise()*100;
+			dx = GaussianNoise();
+			dy = GaussianNoise();
+		}
+		
 		// Add a small random amount to the position and velocity
-		virtual void Jitter()=0;
-        // Run the internal prediction for this state, given the state noise level
-        virtual void Predict(float Noise)=0;
-        // Assign from given state
-        virtual State &operator=(const State &other)=0;
+		void Jitter()
+		{
+			x += GaussianNoise()*5;
+			y += GaussianNoise()*5;
+			dx += GaussianNoise()*0.05;
+			dy += GaussianNoise()*0.05;
+		}
+		
+		float x,y;
+		float dx,dy;
 	};
 
 	class Particle
@@ -62,26 +74,21 @@ public:
 	public:
 		// A particle is a state with a cooresponding probabilistic 
 		// weighting
-		State *m_State;
+		State m_State;
 		float m_Weight;
+		
 	};
-
-    // Needs to be done by the derived classes,
-    // finds a weighted average of the states given the 
-    // particle weights.
-    virtual State *WeightedAverage()=0;
-    virtual State *NewState()=0;
-       
+	
 	// Use the model to predict the next state of each particle, 
 	// not forgetting to add some prediction noise. This should 'spread'
 	// the particles out. 
 	void Predict();
-
+	
 	// Set the particle weights according to the current real observation,
 	// and resample particles with low weights, which 'tightens' the particles in.
-	State *Update(const Observation *Obs);
+	State Update(const Observation &Obs);
 
-	void SetNoiseLevels(float Prediction);
+	void SetNoiseLevels(float Prediction, float ObsAngle, float ObsDist);
 	void SetResampleWeight(float Weight) { m_ResampleWeight=Weight; }
 
 	// For debug rendering
@@ -90,13 +97,15 @@ public:
 	// Returns the particle with the highest weight
 	Particle* GetMostLikely();
 	
-protected:
+private:
 
 	
 	// Reset particles with low weight
 	void Resample();
 	
 	float m_PredictionNoiseLevel;
+	float m_ObsAngleNoiseLevel;
+	float m_ObsDistNoiseLevel;
 	float m_ResampleWeight;
 	
 	vector<Particle> m_Particles;
