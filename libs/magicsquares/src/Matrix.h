@@ -293,12 +293,11 @@ Matrix<T> Matrix<T>::operator*(const Matrix &other) const
 	assert(m_Cols==other.m_Rows);
 	
 	Matrix<T> ret(m_Rows,other.m_Cols);
-	
 	for (unsigned int i=0; i<m_Rows; i++)
 	{
 		for (unsigned int j=0; j<other.m_Cols; j++)
 		{
-			ret[i][j]=0;
+            ret[i][j]=0;
 			for (unsigned int k=0; k<m_Cols; k++)
 			{
 				ret[i][j]+=(*this)[i][k]*other[k][j];
@@ -573,6 +572,8 @@ template<class T>
 void Matrix<T>::RunTests()
 {
 	Vector<T>::RunTests();
+
+    std::cerr<<"running matrix tests"<<std::endl;
 
 	Matrix<T> m(10,10);
 	m.SetAll(0);

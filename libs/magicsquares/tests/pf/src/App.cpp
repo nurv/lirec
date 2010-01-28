@@ -17,7 +17,7 @@
 #include <assert.h>
 #include <iostream>
 #include "App.h"
-#include "ParticleFilter.h"
+#include <RadarParticleFilter.h>
 
 //#define SAVE_FRAMES
 

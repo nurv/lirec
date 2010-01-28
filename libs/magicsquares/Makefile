@@ -12,6 +12,7 @@ SRCS    := src/Image.cpp\
 	src/FaceFinder.cpp\
 	src/Geometry.cpp\
 	src/ParticleFilter.cpp\
+	src/RadarParticleFilter.cpp\
 	src/tinyxml.cpp\
 	src/tinyxmlerror.cpp\
 	src/tinyxmlparser.cpp

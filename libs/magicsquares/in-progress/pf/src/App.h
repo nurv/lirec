@@ -17,7 +17,7 @@
 #include "cv.h"
 #include "highgui.h"
 
-#include "ParticleFilter.h"
+#include "RadarParticleFilter.h"
 
 using namespace std;
 
@@ -34,7 +34,7 @@ private:
 	
 	CvCapture* m_Capture;
 	
-	ParticleFilter m_PF;
+	RadarParticleFilter m_PF;
 	
 	CvFont m_Font; 
 	CvFont m_LargeFont; 

@@ -1,9 +1,7 @@
 TARGET  := pf
 
 SRCS    := src/main.cpp \
-	src/App.cpp \
-	src/RadarParticleFilter.cpp \
-	src/ParticleFilter.cpp
+	src/App.cpp 
 
 # for the minute, go out and up to link to the vision lib
 CCFLAGS = -I../../src `pkg-config --cflags opencv` -ggdb -Wall -O3 -ffast-math -Wno-unused -DTIXML_USE_STL 
