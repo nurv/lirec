@@ -1,0 +1,20 @@
+Instructions for building yarp for Java
+Authors: dave@fo.am from instructions by Michael Kriegel
+
+This was documented from linux, but it should be similar on windows.
+
+You need ace, yarp and cmake installed.
+
+* Go to yarp/examples/swig and run cmake . 
+
+On linux I had to run ccmake . and enter the JAVA_INCLUDE_PATH by hand, it should be something like:
+/usr/lib/gcc/i486-linux-gnu/4.2/include/
+
+* Run make to build the swig binding this should give you libjyarp.so
+* Run the following commands to build the java yarp api
+
+$ cd generated_src/
+$ javac *.java
+$ echo Main-Class: yarpJNI > manetfest.txt
+$ jar cvfm jyarp-linux.jar manefest.txt *.class
+
