@@ -20,7 +20,8 @@
       or additional storage containers, competency loading is specified in the competency
       library xml file -->
  
- <ArchitectureComponent ClassName="cmion.level3.fatima.FAtiMAConnector" ConstructorParameters="" /><ArchitectureComponent
- 	ClassName="cmion.addOns.monitors.CmionEventMonitor" />
+ <ArchitectureComponent ClassName="cmion.level3.fatima.FAtiMAConnector" ConstructorParameters="" />
+ <ArchitectureComponent ClassName="cmion.addOns.monitors.CmionEventMonitor" />
+ <ArchitectureComponent ClassName="cmion.addOns.samgar.SamgarConnector" />
 
 </ArchitectureConfiguration>

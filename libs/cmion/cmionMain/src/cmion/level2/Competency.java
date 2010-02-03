@@ -32,6 +32,7 @@ package cmion.level2;
 import ion.Meta.IReadOnlyQueueSet;
 import ion.Meta.Request;
 import ion.Meta.RequestHandler;
+import ion.Meta.Simulation;
 import ion.Meta.TypeSet;
 
 import java.util.HashMap;

@@ -73,7 +73,6 @@ public class MainCmionPort extends BufferedPortBottle
 		b.addString(SamgarConnector.MODULE_NAME);
 		b.addString("Control");
 		b.addString("Control");
-		System.out.println(b);
 		write();
 	}
 	

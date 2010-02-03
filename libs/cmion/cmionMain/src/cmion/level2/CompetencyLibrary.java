@@ -32,6 +32,7 @@ package cmion.level2;
 import ion.Meta.EventHandler;
 import ion.Meta.IEvent;
 import ion.Meta.Simulation;
+import ion.Meta.Events.IAdded;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
@@ -66,6 +67,11 @@ public class CompetencyLibrary extends CmionComponent {
 	 *  available in this scenario. */
 	private ArrayList<SamgarCompetencyInfo> samgarCompetencyInfos;
 	
+	/** list of competencies that have to be started when we receive a message that 
+		they have been created */
+	private ArrayList<Competency> competenciesToStart;
+	
+	
 	/** a map of all constructed Samgar competencies indexed by the info object
 	 *  from which they were constructed (i.e. this is initially always empty and
 	 *  remembers which samgar competencies we have already constructed at runtime
@@ -90,6 +96,9 @@ public class CompetencyLibrary extends CmionComponent {
 		
 		// create samgar competencies list
 		samgarCompetencies = new HashMap<SamgarCompetencyInfo,Competency>();
+		
+		// create to start list
+		competenciesToStart = new ArrayList<Competency>();
 		
 		// load competency library file (in this function competencies that are 
 		// specified in the file, will be built
@@ -241,6 +250,7 @@ public class CompetencyLibrary extends CmionComponent {
 	{
 		Simulation.instance.getEventHandlers().add(new HandleSamgarModuleAdded());
 		Simulation.instance.getEventHandlers().add(new HandleSamgarModuleRemoved());
+		Simulation.instance.getEventHandlers().add(new HandleAddedElement());
 	}
 	
 	/** in this function all competencies that are continuously running in the background are started */
@@ -346,9 +356,11 @@ public class CompetencyLibrary extends CmionComponent {
 	    				// construct competency
 	    				comp = samgarCompInfo.construct();
 	    				// add to ION
-	    				Simulation.instance.getElements().add(comp);
+	    				Simulation.instance.getElements().add(comp);	    				
 	    				// initialise
 	    				comp.initialize();
+	    				// register handlers
+	    				comp.registerHandlers();
 	    				// add it to the samgar competencies list
 	    				samgarCompetencies.put(samgarCompInfo, comp);
 
@@ -357,8 +369,10 @@ public class CompetencyLibrary extends CmionComponent {
 	    				{
 	    					// add it to background competencies
 	    					backgroundCompetencies.add(comp);
-	    					// and request a start
-	    					comp.requestStartCompetency(new HashMap<String,String>());
+	    					
+	    					// and add it to the to-start competencies
+	    					competenciesToStart.add(comp);
+	    				
 	    				}
 	    				else
 	    				{
@@ -395,6 +409,33 @@ public class CompetencyLibrary extends CmionComponent {
 	    		Competency comp = samgarCompetencies.get(samgarCompInfo);
 	    		if (comp!=null) // if yes, disable it by setting available false
 	    			comp.available = false;
+	    	}
+	    }
+	}	
+
+	/** internal event handler class for listening to ion element added events,
+	 * 	we want to react to them if the element added was a competency that we need
+	 *  to start */
+	private class HandleAddedElement extends EventHandler {
+
+	    public HandleAddedElement() {
+	        super(IAdded.class);
+	    }
+
+	    @Override
+	    public void invoke(IEvent evt) {
+	        // since this is an event handler only for type IAdded,
+	    	// the following casts always work
+	    	Object whatAdded = ((IAdded<?, ?>)evt).getItem();
+	    	// check if the object that was added is one that we are trying to start
+	    	if (competenciesToStart.contains(whatAdded))
+	    	{
+		    	// safe cast because competencies to start only contains competency objects
+	    		Competency comp = (Competency) whatAdded;
+	    		// request start now
+	    		comp.requestStartCompetency(new HashMap<String,String>());
+	    		// remove object from list
+	    		competenciesToStart.remove(whatAdded);
 	    	}
 	    }
 	}	

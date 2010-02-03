@@ -1,6 +1,7 @@
 package cmion.addOns.samgar;
 
 import yarp.Bottle;
+import yarp.Network;
 
 import cmion.architecture.IArchitecture;
 import cmion.level2.Competency;
@@ -10,22 +11,20 @@ import cmion.level2.Competency;
  *  inherit from this class */
 public abstract class SamgarCompetency extends Competency {
 	
-	/** the out port for this competency */
-	private CmionPort outPort;
+	/** the yarp communication port for this competency */
+	private CmionPort port;
 	
 	public SamgarCompetency(IArchitecture architecture) 
 	{
 		super(architecture);
 	}
 
-	/** in here we initialize the ports */
+	/** in here we initialize the yarp port */
 	@Override
 	public final void initialize() 
 	{
-		// create the in port
-		new CmionPort(CmionPort.PortType.In,this);
-		// create the out port
-		outPort = new CmionPort(CmionPort.PortType.Out,this);		
+		Network.init();
+		port = new CmionPort(this);		
 		// after the ports have been created we are ready
 		this.available = true;
 	}
@@ -35,7 +34,9 @@ public abstract class SamgarCompetency extends Competency {
 	 *  upon calling sendBottle() */
 	protected final Bottle prepareBottle()
 	{
-		return outPort.prepare();
+		Bottle b = port.prepare();
+		b.clear();
+		return b;
 	}
 	
 	
@@ -44,7 +45,7 @@ public abstract class SamgarCompetency extends Competency {
 	 *  previously through a call of prepareBottle() to the connected Samgar module */
 	protected final void sendBottle()
 	{
-		outPort.write();
+		port.write();
 	}
 	
 	/** every samgar competency has to implement this function in which it will 
