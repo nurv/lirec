@@ -129,9 +129,6 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
 	protected ArrayList<Effect> _effects;
 
 	
-	
-	
-	
 	/**
 	 * Creates a new ActivePursuitGoal
 	 * @param description - the goal's name or description
@@ -368,7 +365,8 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
 	
 	public void SetProbability(Float p)
 	{
-		_probability = p; 
+		_probability = p;
+		_probabilityDetermined = true;
 	}
 	
 	public float getUncertainty(AgentModel am)
@@ -551,8 +549,6 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
 		AgentLogger.GetInstance().intermittentLog("Goal: " + this.getName() + " CulturalUtilitity: " + culturalGoalUtility + " Competence: " + this.getCompetence(am) +
 				" Urgency: "+ this.GetGoalUrgency() + " Total: " + EU);
 		return EU;
-		
-		
 	}
 	
 	

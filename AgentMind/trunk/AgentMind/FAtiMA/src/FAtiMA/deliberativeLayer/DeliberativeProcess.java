@@ -446,7 +446,6 @@ public class DeliberativeProcess extends AgentProcess {
 		}
 		
 		mainIntention.AddSubIntention(subIntention);
-		
 	}
 	
 	/**
@@ -781,9 +780,9 @@ public class DeliberativeProcess extends AgentProcess {
 							desire.MakeGround(subSet.GetSubstitutions());
 							
 							//In addition to testing the preconditions, we only add a goal
-							// as a desire if it's successconditions are not satisfied
+							// as a desire if it's success and failure conditions are not satisfied
 							
-							if(!desire.CheckSucess(am))
+							if(!desire.CheckSucess(am) && !desire.CheckFailure(am))
 							{
 
 								//the last thing we need to check is if the agent is included in the Goal
@@ -934,23 +933,51 @@ public class DeliberativeProcess extends AgentProcess {
 		if(_currentIntention != null) {
 			i = _currentIntention.GetSubIntention();
 			
-			//TODO adicionar e remover intenções de memória.
+			//TODO adding and removing intentions from memory.
+			// ok, this needs some explaining. If you play close attention to the following
+			// code u'll see that if an intention has no available plans (i.e. failed), I will not
+			// remove the intention unless it has been strongly commited. This is intended. 
+			// If not strongly commited the intention needs to stay in the list of current intentions.
+			// This is because if we would remove it, the agent would immediately select the intention
+			// again not knowing that he would fail to create a plan for it. So he needs to remember that 
+			// the intention is not feasible. What we should do latter is to remove the intention from memory
+			// after some significant time has passed, or if a maximum number of stored intentions is reached
 			
-			if(i.IsStrongCommitment() && i.getGoal().CheckFailure(am))
+			if(i.getGoal().CheckSucess(am))
+			{
+				if(i.IsStrongCommitment())
+				{
+					RemoveIntention(i);
+					_actionMonitor = null;
+					i.ProcessIntentionSuccess(am);
+				}
+			}
+			else if(!i.getGoal().checkPreconditions(am))
 			{
 				RemoveIntention(i);
-				i.ProcessIntentionFailure(am);
+				if(i.IsStrongCommitment())
+				{
+					_actionMonitor = null;
+					i.ProcessIntentionCancel(am);
+				}
 			}
-			else if(i.IsStrongCommitment() && i.NumberOfAlternativePlans() == 0)
+			else if(i.getGoal().CheckFailure(am))
 			{
-				
 				RemoveIntention(i);
-				i.ProcessIntentionFailure(am);
+				if(i.IsStrongCommitment())
+				{
+					_actionMonitor = null;
+					 i.ProcessIntentionFailure(am);
+				}
 			}
-			else if(i.IsStrongCommitment() && i.getGoal().CheckSucess(am))
-			{	
-				RemoveIntention(i);
-				i.ProcessIntentionSuccess(am);
+			else if(i.NumberOfAlternativePlans() == 0)
+			{
+				if(i.IsStrongCommitment())
+				{
+					RemoveIntention(i);
+					_actionMonitor = null;
+					i.ProcessIntentionFailure(am);
+				}
 			}
 			else
 			{

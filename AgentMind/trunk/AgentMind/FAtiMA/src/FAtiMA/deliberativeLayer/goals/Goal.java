@@ -316,6 +316,12 @@ public abstract class Goal implements IGroundable, Cloneable, Serializable {
 		
 	}
 	
+	public Event GetCancelEvent()
+	{
+		// Meiyii - using GoalEvent enum
+		return generateEventDescription(GoalEvent.CANCEL);	
+	}
+	
 	/* 06/01/10 - Meiyii
 	 * Modify the description so that the goal action (activation, success, failure)
 	 * is stored in the field status instead of action, added a GOAL eventType 

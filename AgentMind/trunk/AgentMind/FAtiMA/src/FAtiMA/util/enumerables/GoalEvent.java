@@ -15,10 +15,11 @@ public class GoalEvent {
 	public static final short ACTIVATION = 0;
 	public static final short SUCCESS = 1;
 	public static final short FAILURE = 2;
+	public static final short CANCEL = 3;
 	
 	private static final String[] _goalEventTypes = {"activate",
 		   											   "succeed",
-													   "fail"};
+													   "fail", "cancel"};
 	
 	
 	/**

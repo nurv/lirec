@@ -136,7 +136,7 @@ public class Motivator {
 		
 		_t0 = AgentSimulationTime.GetInstance().Time();
 		//_intensity = Math.max(0, Math.min(10, _intensity + (_weight*K*effect)));
-		_intensity = Math.max(0, Math.min(10, _intensity + (_weight*effect)));
+		_intensity = Math.max(0, Math.min(10, _intensity + effect));
 		_intensityATt0 = _intensity;
 		
 		float gain =  _intensity - oldIntensity;

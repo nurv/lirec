@@ -29,6 +29,7 @@
 
 package FAtiMA.conditions;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -54,7 +55,7 @@ public class EmotionCondition extends PredicateCondition {
 	private static final long serialVersionUID = 1L;
 	
 	protected short _emotionType;
-	protected float _minintensity;
+	protected Symbol _intensity;
 	protected Symbol _direction;
 	
 	/**
@@ -65,7 +66,7 @@ public class EmotionCondition extends PredicateCondition {
 	public static EmotionCondition ParseEmotionCondition(Attributes attributes) throws InvalidEmotionTypeException {
 		boolean active;
 		String emotionType;
-		float minIntensity=0;
+		Symbol intensity= new Symbol("0");
 		
 		String aux;
 		aux = attributes.getValue("active");
@@ -89,11 +90,17 @@ public class EmotionCondition extends PredicateCondition {
 		aux = attributes.getValue("min-intensity");
 		if(aux != null)
 		{
-			minIntensity = Float.parseFloat(aux);
+			intensity = new Symbol(aux);
 		}
-		ec.SetMinimumIntensity(minIntensity);
+		ec.SetIntensity(intensity);
 			
 		return ec;
+	}
+	
+	private static Symbol FloatToSymbol(float f)
+	{
+		DecimalFormat oneDForm = new DecimalFormat("#.#");
+		return new Symbol(Double.valueOf(oneDForm.format(f)).toString()); 
 	}
 	
 	private EmotionCondition()
@@ -105,14 +112,19 @@ public class EmotionCondition extends PredicateCondition {
 		this._positive = active;
 		this._emotionType = emotion;	
 		this._direction = null;
-		this._minintensity = 0;
+		this._intensity = new Symbol("0");
 		
 		UpdateName();
 	}
 	
-	public void SetMinimumIntensity(float intensity)
+	public void SetIntensity(Symbol intensity)
 	{
-		this._minintensity = intensity;
+		this._intensity = intensity;
+	}
+	
+	public void SetIntensity(float intensity)
+	{
+		this._intensity = FloatToSymbol(intensity);
 	}
 	
 	public void SetDirection(Symbol direction)
@@ -139,7 +151,7 @@ public class EmotionCondition extends PredicateCondition {
 	 */
 	 public Name GetValue()
 	 {
-		return new Symbol(Float.toString(this._minintensity));
+		return this._intensity;
 	 }
 	
 	/**
@@ -149,7 +161,7 @@ public class EmotionCondition extends PredicateCondition {
 	 */
 	public boolean CheckCondition(AgentModel am) {
 		boolean result;
-		if(!_name.isGrounded()) return false;
+		if(!_name.isGrounded() || !_intensity.isGrounded()) return false;
 		
 		result = SearchEmotion(am.getEmotionalState()).size() > 0; 
 		return _positive == result;
@@ -165,7 +177,7 @@ public class EmotionCondition extends PredicateCondition {
 		ArrayList<SubstitutionSet> bindingSets = new ArrayList<SubstitutionSet>();
 		ArrayList<SubstitutionSet> subSets;
 		
-		if (_name.isGrounded()) {
+		if (_name.isGrounded() && _intensity.isGrounded()) {
 			if(CheckCondition(am))
 			{
 				bindingSets.add(new SubstitutionSet());
@@ -193,22 +205,47 @@ public class EmotionCondition extends PredicateCondition {
 			aem = (ActiveEmotion) it.next();
 			if(aem.GetType() == this._emotionType)
 			{
-				if(aem.GetIntensity() >= this._minintensity)
+				if(this._intensity.isGrounded())
 				{
+					if(aem.GetIntensity() >= Float.parseFloat(this._intensity.toString()))
+					{
+						if(this._direction != null)
+						{
+							bindings = Unifier.Unify(this._direction,aem.GetDirection());
+							if(bindings != null)
+							{
+								substitutionSets.add(new SubstitutionSet(bindings));
+							}
+						}
+						else
+						{
+							substitutionSets.add(new SubstitutionSet());
+						}
+					}	
+				}
+				else
+				{
+					SubstitutionSet sset1;
+					Symbol intensityValue = FloatToSymbol(aem.GetIntensity());
+					Substitution s = new Substitution(this._intensity,intensityValue);
 					if(this._direction != null)
 					{
 						bindings = Unifier.Unify(this._direction,aem.GetDirection());
 						if(bindings != null)
 						{
-							substitutionSets.add(new SubstitutionSet(bindings));
+							sset1 = new SubstitutionSet(bindings);
+							sset1.AddSubstitution(s);
+							substitutionSets.add(sset1);
 						}
 					}
 					else
 					{
-						substitutionSets.add(new SubstitutionSet());
-						return substitutionSets;
+						sset1 = new SubstitutionSet();
+						sset1.AddSubstitution(s);
+						substitutionSets.add(sset1);
 					}
 				}
+				
 			}
 		}
 		
@@ -239,6 +276,7 @@ public class EmotionCondition extends PredicateCondition {
     public void ReplaceUnboundVariables(int variableID)
     {
     	this._name.ReplaceUnboundVariables(variableID);
+    	this._intensity.ReplaceUnboundVariables(variableID);
     	if(this._direction != null)
     	{
     		this._direction.ReplaceUnboundVariables(variableID);
@@ -271,6 +309,7 @@ public class EmotionCondition extends PredicateCondition {
     public void MakeGround(ArrayList<Substitution> bindings)
     {
     	this._name.MakeGround(bindings);
+    	this._intensity.MakeGround(bindings);
     	if(this._direction != null)
     	{
     		this._direction.MakeGround(bindings);
@@ -320,7 +359,7 @@ public class EmotionCondition extends PredicateCondition {
 		ec._positive = this._positive;
 		ec._emotionType = this._emotionType;
 		ec._name = (Name) this._name.clone();
-		ec._minintensity = this._minintensity;
+		ec._intensity = (Symbol) this._intensity.clone();
 		
 		if(this._direction != null)
 		{

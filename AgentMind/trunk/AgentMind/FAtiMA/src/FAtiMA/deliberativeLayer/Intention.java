@@ -416,6 +416,16 @@ public class Intention implements Serializable {
 	     AgentLogger.GetInstance().logAndPrint("Goal FAILED - " + _goal.getName().toString());	    
 	}
 	
+	public void ProcessIntentionCancel(AgentModel am)
+	{
+		Event e = _goal.GetCancelEvent();
+		am.getMemory().getEpisodicMemory().StoreAction(am.getMemory(), e);
+		if(!isRootIntention())
+	    {
+	    	getParentIntention().CheckLinks(am);
+	    }
+	}
+	
 	/**
 	 * Registers and appraises the success of the intention
 	 */
