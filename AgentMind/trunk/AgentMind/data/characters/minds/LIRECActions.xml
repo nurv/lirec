@@ -303,5 +303,57 @@
 			<Motivator drive="Affiliation" target="[target]" value="+1"/>
 		</EffectsOnDrives>
 	</Action>
+
+	<Action name="Give([object),[target])">
+		<PreCondition>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+			<Property name="[object](eatable)" operator="=" value="True" />
+			<Property name="has([AGENT],[object])" operator="=" value="True" />
+		</PreCondition>
+		<EffectsOnDrives>
+			<Motivator drive="Energy" target="[target]" value="+3"/>
+		</EffectsOnDrives>
+	</Action>
+	<Action name="Slap([target])">
+		<PreCondition>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+		</PreCondition>
+		<EffectsOnDrives>
+			<Motivator drive="Integrity" target="[target]" value="-2"/>
+			<Motivator drive="Affiliation" target="[target]" value="-3"/>
+		</EffectsOnDrives>
+	</Action>
+	<Action name="Insult([target])">
+		<PreCondition>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+		</PreCondition>
+		<EffectsOnDrives>
+			<Motivator drive="Affiliation" target="[target]" value="-2"/>
+		</EffectsOnDrives>
+	</Action>
+	<Action name="Hug([target])">
+		<PreCondition>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+		</PreCondition>
+		<EffectsOnDrives>
+			<Motivator drive="Affiliation" target="[target]" value="4"/>
+		</EffectsOnDrives>
+	</Action>
+	<Action name="Praise([target])">
+		<PreCondition>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+		</PreCondition>
+		<EffectsOnDrives>
+			<Motivator drive="Affiliation" target="[target]" value="2"/>
+		</EffectsOnDrives>
+	</Action>
+	<Action name="Massage([target])">
+		<PreCondition>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+		</PreCondition>
+		<EffectsOnDrives>
+			<Motivator drive="Energy" target="[target]" value="4"/>
+		</EffectsOnDrives>
+	</Action>
 	
 </DomainActions>
