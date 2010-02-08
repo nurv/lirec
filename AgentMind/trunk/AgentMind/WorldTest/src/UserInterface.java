@@ -197,6 +197,8 @@ public class UserInterface implements ActionListener {
         _infoOptions.addItem("location LivingRoom");
         _infoOptions.addItem("action Greet");
         _infoOptions.addItem("action SpeechAct");
+        _infoOptions.addItem("desirability positive");
+        _infoOptions.addItem("desirability negative");
 		_infoOptions.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0) {
 				_world.AddKnownInfo(_infoOptions.getSelectedItem().toString());
@@ -209,10 +211,13 @@ public class UserInterface implements ActionListener {
         infoBox.add(_infoOptions );
         
         _queryOptions = new JComboBox();
+        _queryOptions.addItem("ID");
         _queryOptions.addItem("subject");
         _queryOptions.addItem("target");
         _queryOptions.addItem("location");
         _queryOptions.addItem("action");
+        _queryOptions.addItem("intention");
+        _queryOptions.addItem("status");
 		_queryOptions.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0) {
 		    	WriteLine("=> Change the SA query: " + _queryOptions.getSelectedItem().toString());

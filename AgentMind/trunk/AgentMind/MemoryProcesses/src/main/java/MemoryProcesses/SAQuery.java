@@ -37,6 +37,7 @@ import java.util.StringTokenizer;
 
 public class SAQuery {
 
+	private String _id;
 	private String _question;
 	private String _subject;
 	private String _target;
@@ -46,7 +47,7 @@ public class SAQuery {
 	private String _status;
 	private String _speechActMeaning;
 	private String _multimediaPath;
-	private float _desirability;
+	private String _desirability;
 	private float _praiseworthiness;
 	
 	private int _numKnownVar;
@@ -55,6 +56,7 @@ public class SAQuery {
 	private final PropertyChangeSupport changes  = new PropertyChangeSupport( this );
 	 
 	public SAQuery(){
+		this._id = "";
 		this._question = "";
 		this._subject = "";
 		this._target = "";
@@ -64,7 +66,7 @@ public class SAQuery {
 		this._status = "";
 		this._speechActMeaning = "";
 		this._multimediaPath = "";
-		this._desirability = 0;
+		this._desirability = "";
 		this._praiseworthiness = 0;
 		this._numKnownVar = 0;
 		
@@ -82,6 +84,14 @@ public class SAQuery {
 			known = (String) info.get(i);
 			query = new StringTokenizer(known," ");
 			queryType = query.nextToken();
+			if (queryType.equals("ID"))
+			{
+				while(query.hasMoreTokens())
+				{
+					this._id = query.nextToken();
+				}				
+				this._numKnownVar++;
+			}
 			if (queryType.equals("subject"))
 			{
 				while(query.hasMoreTokens())
@@ -150,7 +160,7 @@ public class SAQuery {
 			{
 				while(query.hasMoreTokens())
 				{
-					this._desirability = Float.parseFloat(query.nextToken());
+					this._desirability = query.nextToken(); //Float.parseFloat(query.nextToken());
 				}
 				this._numKnownVar++;
 			}
@@ -163,7 +173,7 @@ public class SAQuery {
 				this._numKnownVar++;
 			}
 		}
-		System.out.println("subject " + this._subject + " target " + this._target 
+		System.out.println("ID" + this._id + "subject " + this._subject + " target " + this._target 
 				+ " action " + this._action + " location " + _location 
 				+ "intention " + this._intention + "status " + this._status	
 				+ "speechActMeaning " + this._speechActMeaning + "multimediaPath " 
@@ -173,7 +183,9 @@ public class SAQuery {
 	}
 	 	
 	private void resetQuery(){
+		
 		this._question = "";
+		this._id = "";
 		this._subject = "";
 		this._target = "";
 		this._action = "";
@@ -182,12 +194,16 @@ public class SAQuery {
 		this._status = "";
 		this._speechActMeaning = "";
 		this._multimediaPath = "";
-		this._desirability = 0;
+		this._desirability = "";
 		this._praiseworthiness = 0;
 		this._numKnownVar = 0;		
 		this._results.clear();
 	}
 	
+	public String getID(){
+	    	return this._id;
+	}
+	    
     public String getSubject(){
     	return this._subject;
     }
@@ -220,7 +236,7 @@ public class SAQuery {
     	return this._multimediaPath;
     }
     
-    public float getDesirability(){
+    public String getDesirability(){
     	return this._desirability;
     }
     
@@ -240,6 +256,10 @@ public class SAQuery {
 	{
     	return this._results;
 	}
+    
+    public void setID(String id){
+    	this._id = id;
+    }
     
     public void setSubject(String subject){
     	this._subject = subject;
@@ -277,7 +297,7 @@ public class SAQuery {
     	this._multimediaPath = multimediaPath;
     }
     
-    public void setDesirability(float desirability){
+    public void setDesirability(String desirability){
     	this._desirability = desirability;
     }
     
@@ -297,6 +317,22 @@ public class SAQuery {
 		  	{
 		  		Integer val = (Integer) _results.get(result);
 		  		this._results.put(result, ++val);
+		  	}
+    	}
+	}
+    
+    public void setResultIDs(int result)
+	{
+    	if (result != -1)
+    	{
+		  	if (this._results == null || !this._results.containsKey(Integer.toString(result)))
+		  	{
+		  		this._results.put(Integer.toString(result), new Integer(1));
+		  	}
+		  	else
+		  	{
+		  		Integer val = (Integer) _results.get(Integer.toString(result));
+		  		this._results.put(Integer.toString(result), ++val);
 		  	}
     	}
 	}
