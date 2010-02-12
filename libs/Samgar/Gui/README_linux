@@ -23,4 +23,5 @@ Add the following libs to the target link:
 
 target_link_libraries	(SamgarKey SamgarLIB X11 asound freetype GL Xinerama)
 
+
 -- dave@fo.am

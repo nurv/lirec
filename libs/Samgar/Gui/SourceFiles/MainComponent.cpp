@@ -569,13 +569,13 @@ void MainComponent::ConnectionAutoUpdate(void)
 		{
 			connections mytempconnect;
 			mytempconnect = *it2;
-			string tempstring10 = mytempconnect.firstport;
-			string tempstring20 = mytempconnect.secoundport;
+			string tempstring10(mytempconnect.firstport);
+            string tempstring20(mytempconnect.secoundport);
 			tempstring10=tempstring10.substr(1,tempstring10.length()-1);
 			tempstring20=tempstring20.substr(1,tempstring20.length()-1);
 
-			string firststring = "/Port_"   + mytempconnect.Daddyfirstport + "_"  + tempstring10.c_str();
-			string secoundstring = "/Port_" + mytempconnect.Daddysecoundport + "_" + tempstring20.c_str();
+			string firststring = "/Port_"   + string(mytempconnect.Daddyfirstport) + "_"  + tempstring10.c_str();
+			string secoundstring = "/Port_" + string(mytempconnect.Daddysecoundport) + "_" + tempstring20.c_str();
 
 			// only connect with UDP or TCP for time being
 			bool true1,true2;
@@ -637,7 +637,7 @@ void MainComponent::CheckConnectionRight()
 			//if (TempModuleButton66->
 			if(Colours::red!=TempModuleButton66->findColour(0x1000102,false))
 			{
-				string mystring = TempModuleButton66->getButtonText();
+				string mystring(TempModuleButton66->getButtonText());
 				mystring = "/Main_" + mystring;
 				MyCont=Network::queryName(mystring.c_str());
 
@@ -1496,8 +1496,8 @@ int x =0;
 	mytempconnect = *it2;
 	x=0;
 
-	string tempstring10 = mytempconnect.firstport;
-	string tempstring20 = mytempconnect.secoundport;
+	string tempstring10(mytempconnect.firstport);
+	string tempstring20(mytempconnect.secoundport);
 	tempstring10=tempstring10.substr(1,tempstring10.length()-1);
 	tempstring20=tempstring20.substr(1,tempstring20.length()-1);
 
@@ -1514,21 +1514,21 @@ int x =0;
 	}
 	if(killcon == true)
 	{
-	SavedIt = AllConnections.erase (SavedIt); 
+        SavedIt = AllConnections.erase (SavedIt); 
 
-		string tempstring10 = mytempconnect.firstport;
-		string tempstring20 = mytempconnect.secoundport;
+        string tempstring10(mytempconnect.firstport);
+		string tempstring20(mytempconnect.secoundport);
 		tempstring10=tempstring10.substr(1,tempstring10.length()-1);
 		tempstring20=tempstring20.substr(1,tempstring20.length()-1);
 
-		string firststring = "/Port_"   + mytempconnect.Daddyfirstport + "_"  + tempstring10.c_str();
-		string secoundstring = "/Port_" + mytempconnect.Daddysecoundport + "_" + tempstring20.c_str();
+		string firststring = "/Port_"   + string(mytempconnect.Daddyfirstport) + "_"  + tempstring10.c_str();
+        string secoundstring = "/Port_" + string(mytempconnect.Daddysecoundport) + "_" + tempstring20.c_str();
 
-	 Network::disconnect(firststring.c_str(),secoundstring.c_str());
-	 Network::disconnect(secoundstring.c_str(),firststring.c_str());
-RefreashConnections();
+        Network::disconnect(firststring.c_str(),secoundstring.c_str());
+        Network::disconnect(secoundstring.c_str(),firststring.c_str());
+        RefreashConnections();
 
-	AddToLog("erased connection \n",1);
+        AddToLog("erased connection \n",1);
 	}
 }
 
