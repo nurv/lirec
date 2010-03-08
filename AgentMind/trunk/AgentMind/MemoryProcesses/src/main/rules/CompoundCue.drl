@@ -575,7 +575,7 @@ rule "end match"
 	then
 		modify ($q)
 		{
-			setResults($ad.getID(), $cad.getEvaluation())
+			setResults($ad, $cad.getEvaluation())
 		}
 		System.out.println("Evaluation " + $cad.getEvaluation());
 		System.out.println("end match " + $ad.getID());

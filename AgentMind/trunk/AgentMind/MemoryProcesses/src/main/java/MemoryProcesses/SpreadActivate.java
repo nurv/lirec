@@ -72,7 +72,7 @@ public class SpreadActivate extends RuleEngine implements ISpreadActivate {
 			_ksession.insert(_saQuery);
 			
 			// fire all SA rule
-			_ksession.fireAllRules();
+			_ksession.fireAllRules(); 
 			
 		} catch (Throwable t) {
 			t.printStackTrace();
@@ -87,5 +87,10 @@ public class SpreadActivate extends RuleEngine implements ISpreadActivate {
 	public Hashtable<String, Integer> getSAResult()
 	{
 		return _saQuery.getResults();
+	}
+	
+	public ArrayList<ActionDetail> getDetails()
+	{
+		return _saQuery.getDetails();
 	}
 }

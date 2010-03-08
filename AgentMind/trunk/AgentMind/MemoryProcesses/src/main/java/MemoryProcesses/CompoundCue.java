@@ -101,9 +101,19 @@ public class CompoundCue extends RuleEngine implements ICompoundCue {
 	 * currently take into consideration the frequency of appearance
 	 * @return a list of answer to the query
 	 */
-	public Hashtable<Integer, Float> getCCResults()
+	/*public Hashtable<Integer, Float> getCCResults()
 	{
 		return _ccQuery.getCCResults();
+	}*/
+	
+	public ActionDetail getStrongestResult()
+	{
+		return _ccQuery.getStrongestResult();
+	}
+	
+	public float getEvaluation()
+	{
+		return _ccQuery.getEvaluation();
 	}
 
 }

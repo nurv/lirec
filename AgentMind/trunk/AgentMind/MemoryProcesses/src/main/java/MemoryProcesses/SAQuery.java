@@ -35,6 +35,8 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
 
+import FAtiMA.memory.episodicMemory.ActionDetail;
+
 public class SAQuery {
 
 	private String _id;
@@ -47,11 +49,12 @@ public class SAQuery {
 	private String _status;
 	private String _speechActMeaning;
 	private String _multimediaPath;
-	private String _desirability;
+	private float _desirability;
 	private float _praiseworthiness;
 	
 	private int _numKnownVar;
 	private Hashtable<String, Integer> _results;
+	private ArrayList<ActionDetail> _details;
 	
 	private final PropertyChangeSupport changes  = new PropertyChangeSupport( this );
 	 
@@ -66,11 +69,12 @@ public class SAQuery {
 		this._status = "";
 		this._speechActMeaning = "";
 		this._multimediaPath = "";
-		this._desirability = "";
+		this._desirability = 0;
 		this._praiseworthiness = 0;
 		this._numKnownVar = 0;
 		
 		this._results = new Hashtable<String, Integer>();
+		this._details = new ArrayList<ActionDetail>();
 	}
 	    
 	public void setQuery( ArrayList<String> info, String question ) {
@@ -160,7 +164,7 @@ public class SAQuery {
 			{
 				while(query.hasMoreTokens())
 				{
-					this._desirability = query.nextToken(); //Float.parseFloat(query.nextToken());
+					this._desirability =  Float.parseFloat(query.nextToken());
 				}
 				this._numKnownVar++;
 			}
@@ -194,10 +198,11 @@ public class SAQuery {
 		this._status = "";
 		this._speechActMeaning = "";
 		this._multimediaPath = "";
-		this._desirability = "";
+		this._desirability = 0;
 		this._praiseworthiness = 0;
 		this._numKnownVar = 0;		
 		this._results.clear();
+		this._details.clear();
 	}
 	
 	public String getID(){
@@ -214,6 +219,11 @@ public class SAQuery {
     
     public String getAction(){
     	return this._action;
+    }
+    
+    public ArrayList<ActionDetail> getDetails()
+    {
+    	return this._details;
     }
     
     public String getLocation(){
@@ -236,7 +246,7 @@ public class SAQuery {
     	return this._multimediaPath;
     }
     
-    public String getDesirability(){
+    public float getDesirability(){
     	return this._desirability;
     }
     
@@ -297,12 +307,18 @@ public class SAQuery {
     	this._multimediaPath = multimediaPath;
     }
     
-    public void setDesirability(String desirability){
+    public void setDesirability(float desirability){
     	this._desirability = desirability;
     }
     
     public void setPraiseworthiness(float praiseworthiness){
     	this._praiseworthiness = praiseworthiness;
+    }
+    
+    public void setDetails(ActionDetail ad, String result)
+    {
+    	this._details.add(ad);
+    	setResults(result);
     }
     
     public void setResults(String result)

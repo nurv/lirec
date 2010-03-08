@@ -31,20 +31,26 @@ package MemoryProcesses;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.ArrayList;
 import java.util.Hashtable;
 
 import FAtiMA.memory.episodicMemory.ActionDetail;
 
 public class CCQuery {
 	
-	private Hashtable<Integer, Float> _results;
+	private ActionDetail _result;
+	private float _eval;
+	private ArrayList<ActionDetail> _results;
+	private Hashtable<Integer, Float> _evaluations;
 	private ActionDetail _actionDetail;
 	private int _numField;
 	
 	private final PropertyChangeSupport changes  = new PropertyChangeSupport( this );
 	 
 	public CCQuery(){
-		this._results = new Hashtable<Integer, Float>();
+		this._eval = 0;
+		this._results = new ArrayList<ActionDetail>();
+		this._evaluations = new Hashtable<Integer, Float>();
 		this._numField = 9;
 	}
 	
@@ -56,22 +62,49 @@ public class CCQuery {
 		return this._numField;
 	}
 	
-    public Hashtable<Integer, Float> getCCResults()
+    public Hashtable<Integer, Float> getCCEvaluations()
 	{
-    	return this._results;
+    	return this._evaluations;
 	}
     
+    public ArrayList<ActionDetail> getCCResults()
+    {
+    	return this._results;
+    }
+    
 	public void setQuery(ActionDetail actionDetail){
+		this._result = null;
+		this._eval = 0;
 		this._results.clear();
+		this._evaluations.clear();
 		this._actionDetail = actionDetail;
 	}
 	
-    public void setResults(int id, float evaluation){
+	public void setResults(ActionDetail ad, float evaluation)
+	{
+		if(_result == null || (_result.getID() != ad.getID() && evaluation > _eval))
+		{
+			_result = ad;
+			_eval = evaluation;
+		}
+	}
+	
+	public ActionDetail getStrongestResult()
+	{
+		return _result;
+	}
+	
+	public float getEvaluation()
+	{
+		return _eval/210;
+	}
+	
+    /*public void setResults(int id, float evaluation){
     	if (this._results == null || !this._results.containsKey(id))
 	  	{
 	  		this._results.put(id, evaluation);
 	  	}
-    }
+    }*/
     
 	public void addPropertyChangeListener(final PropertyChangeListener l) {
         this.changes.addPropertyChangeListener( l );

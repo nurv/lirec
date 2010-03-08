@@ -13,8 +13,8 @@ rule "positive desirability phase1"
 	no-loop true
 	salience 50
 	when
-		$q: SAQuery($d1: desirability == "positive")
-		$ad: ActionDetail(desirability > 0)	
+		$q: SAQuery($d1: desirability > 0)
+		$ad: ActionDetail(desirability >= $d1)	
 	then		
 		insert (new CandidateEvent($ad, "desirability", 1.0f));
 		retract ($ad);
@@ -26,8 +26,8 @@ rule "negative desirability phase1"
 	no-loop true
 	salience 50
 	when
-		$q: SAQuery($d1: desirability == "negative")
-		$ad: ActionDetail(desirability < 0)	
+		$q: SAQuery($d1: desirability < 0)
+		$ad: ActionDetail(desirability <= $d1)	
 	then		
 		insert (new CandidateEvent($ad, "desirability", 1.0f));
 		retract ($ad);
@@ -74,18 +74,18 @@ rule "action-action phase1"
 		System.out.println("action-action " + $ad.getID());
 end
 
-rule "location-location phase1"
-	no-loop true
-	salience 50
-	when
-		$q: SAQuery($l1: location)
-		$ad: ActionDetail(location == $l1) 			
-	then
-		insert (new CandidateEvent($ad, "location", 1.0f));
-		retract ($ad);
-		System.out.println("Location " + $l1);
-		System.out.println("location-location " + $ad.getID());
-end
+#rule "location-location phase1"
+#	no-loop true
+#	salience 50
+#	when
+#		$q: SAQuery($l1: location)
+#		$ad: ActionDetail(location == $l1) 			
+#	then
+#		insert (new CandidateEvent($ad, "location", 1.0f));
+#		retract ($ad);
+#		System.out.println("Location " + $l1);
+#		System.out.println("location-location " + $ad.getID());
+#end
 
 rule "intention-intention phase1"
 	no-loop true
@@ -263,9 +263,9 @@ end
 rule "positive desirability"
 	no-loop true
 	when
-		$q: SAQuery($d1: desirability == "positive")
+		$q: SAQuery($d1: desirability > 0)
 		$cad: CandidateEvent(extension not contains "desirability")
-		$ad: ActionDetail(desirability > 0) from $cad.actionDetail		
+		$ad: ActionDetail(desirability >= $d1) from $cad.actionDetail		
 	then		
 		modify ($cad)
 		{
@@ -279,9 +279,9 @@ end
 rule "negative desirability"
 	no-loop true
 	when
-		$q: SAQuery($d1: desirability == "negative")
+		$q: SAQuery($d1: desirability < 0)
 		$cad: CandidateEvent(extension not contains "desirability")
-		$ad: ActionDetail(desirability < 0) from $cad.actionDetail		
+		$ad: ActionDetail(desirability <= $d1) from $cad.actionDetail		
 	then		
 		modify ($cad)
 		{
@@ -345,7 +345,7 @@ rule "action"
 		$ad: ActionDetail ($a: action) from $cad.actionDetail	
 	then			
 		modify ($q) {
-			setResults($a)
+			setDetails($ad, $a)
 		}
 		System.out.println("Action " + $a);
 		System.out.println("Retracted " + $ad.getID() + "\n");
