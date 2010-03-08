@@ -1,9 +1,14 @@
 package FAtiMA.conditions;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.ListIterator;
+import java.util.StringTokenizer;
 
 import FAtiMA.AgentModel;
+import FAtiMA.memory.episodicMemory.ActionDetail;
+import FAtiMA.util.Constants;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
 import FAtiMA.wellFormedNames.SubstitutionSet;
@@ -66,9 +71,9 @@ public class AppraisalCondition extends PastEventCondition {
 		//newCondition._status = this._status;
 		newCondition._positive = this._positive;
 		
-		newCondition._agent = this._agent;
+		newCondition._agent = (Symbol) this._agent.clone();
 		newCondition._appraisalVariable = this._appraisalVariable;
-		newCondition._value = this._value;
+		newCondition._value = (Symbol) this._value.clone();
 		newCondition._test = this._test;
 		
 		newCondition._name = (Name) this._name.clone();
@@ -169,15 +174,75 @@ public class AppraisalCondition extends PastEventCondition {
 	}
 	
 	public boolean CheckCondition(AgentModel am) {
-		
-		if(!_name.isGrounded()) return false;
-		
-		return false;
-		
-		 
+		//TODO finish this method
+		return this._action.isGrounded();		 
 	}
 	
 	public ArrayList<SubstitutionSet> GetValidBindings(AgentModel am) {
+		
+		Symbol target;
+		ArrayList<SubstitutionSet> subs = new ArrayList<SubstitutionSet>();
+		SubstitutionSet sset;
+	
+		AgentModel modelToTest = am;
+		
+		if(!this._agent.isGrounded()) return null;
+	 	
+		if(!this._value.isGrounded()) return null;
+		
+		if(!this._agent.toString().equals(Constants.SELF))
+		{
+			modelToTest = am.getToM().get(this._agent.toString());
+		}
+		
+		ArrayList<String> knownInfo = new ArrayList<String>();
+		knownInfo.add("desirability " + this._value.toString());
+		//float desirability = Float.parseFloat(this._value.toString());
+		/*if(desirability >= 0)
+		{
+			knownInfo.add("positive");
+		}
+		else
+		{
+			knownInfo.add("negative");
+		}*/
+		
+		String question = "action";
+		
+		 
+		am.getSpreadActivate().Spread(question, knownInfo, modelToTest.getMemory().getEpisodicMemory());
+		
+		ArrayList<ActionDetail> details = am.getSpreadActivate().getDetails();
+		
+		if(details.size() > 0)
+		{
+			for(ActionDetail ad : details)
+			{
+				if(ad.getTarget().equals(Constants.SELF))
+				{
+					target = this._agent;
+				}
+				else
+				{
+					target = new Symbol(ad.getTarget()); 
+				}
+				sset = new SubstitutionSet();
+				sset.AddSubstitution(new Substitution(this._action,new Symbol(ad.getAction())));
+				sset.AddSubstitution(new Substitution(this._target,target));
+				subs.add(sset);
+			}
+			
+			return subs;
+		}
+		
+		//Hashtable<String, Integer> saResult = am.getSpreadActivate().getSAResult();
+		/*Iterator it = saResult.keySet().iterator();
+		while (it.hasNext())
+		{
+			//talk to Mei Yii, preciso de mais informação aqui, isto deve retornar o action detail completo se possivel
+			String result = (String) it.next();
+			System.out.println(question + " " + result + " frequency " + saResult.get(result));
+		}*/
 	
 		return null;
 	}

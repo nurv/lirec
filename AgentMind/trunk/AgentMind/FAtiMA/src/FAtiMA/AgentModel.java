@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.HashMap;
 
 import FAtiMA.emotionalState.EmotionalState;
+import FAtiMA.memory.ICompoundCue;
+import FAtiMA.memory.ISpreadActivate;
 import FAtiMA.memory.Memory;
 import FAtiMA.motivationalSystem.MotivationalState;
 import FAtiMA.reactiveLayer.ActionTendencies;
@@ -25,6 +27,10 @@ public interface AgentModel {
 	public EmotionalReactionTreeNode getEmotionalReactions();
 	
 	public HashMap<String,ModelOfOther> getToM();
+	
+	public ISpreadActivate getSpreadActivate();
+	
+	public ICompoundCue getCompoundCue(); 
 	
 	public Collection<String> getNearByAgents();
 	

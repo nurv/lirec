@@ -48,6 +48,25 @@ public class MotivationalState implements Serializable, Cloneable {
 	protected int _goalTried;
 	protected int _goalSucceeded;
 
+	public static double determineQuadraticNeedVariation(float currentLevel, float deviation){
+		final float MAX_INTENSITY = 10;
+		final float MIN_INTENSITY = 0;
+		double result = 0;
+		float finalLevel;
+		double currentLevelStr;
+		double finalLevelStr;
+		
+		finalLevel = currentLevel + deviation;
+		finalLevel = Math.min(finalLevel, MAX_INTENSITY);
+		finalLevel = Math.max(finalLevel, MIN_INTENSITY);
+		
+		currentLevelStr = Math.pow(MAX_INTENSITY - currentLevel,2); 
+		finalLevelStr = Math.pow(MAX_INTENSITY - finalLevel,2);
+
+		
+		result = - (finalLevelStr - currentLevelStr); 
+		return result;
+	}
 
 
 	/**
@@ -95,7 +114,8 @@ public class MotivationalState implements Serializable, Cloneable {
 		MotivatorCondition motCondition;
 		String eventSubject = e.GetSubject();
 		String eventTarget = e.GetTarget();
-		float contributionToNeed = 0;
+		float deviation = 0;
+		double contributionToNeed =0f;
 		float contributionToSubjectNeeds=0f;
 		float contributionToTargetNeeds=0f;
 	    float contributionToSelfNeeds = 0f;  //used for events performed by the agent
@@ -149,7 +169,9 @@ public class MotivationalState implements Serializable, Cloneable {
 							AgentLogger.GetInstance().log("Updating self motivator " + motCondition.GetDrive());
 							try {
 								short driveType = MotivatorType.ParseType(motCondition.GetDrive());
-								contributionToNeed = _motivators[driveType].UpdateIntensity(motCondition.GetEffect());
+								float oldLevel = _motivators[driveType].GetIntensity();
+								deviation = _motivators[driveType].UpdateIntensity(motCondition.GetEffect());
+								contributionToNeed = determineQuadraticNeedVariation(oldLevel, deviation)*0.1f;
 								contributionToSelfNeeds += contributionToNeed;
 							} catch (InvalidMotivatorTypeException e1) {
 								e1.printStackTrace();

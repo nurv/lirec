@@ -129,7 +129,7 @@ public class Motivator {
 	
 	/**
 	 * Update the motivator's intensity 
-	 * @return a float value corresponding to the motivator's intensity
+	 * @return a float value corresponding to the difference between the current and the old value
 	 */
 	public float UpdateIntensity(float effect) {
 		float oldIntensity = _intensity;

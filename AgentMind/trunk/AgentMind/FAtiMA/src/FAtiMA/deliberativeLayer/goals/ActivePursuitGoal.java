@@ -89,6 +89,7 @@ import FAtiMA.deliberativeLayer.plan.IPlanningOperator;
 import FAtiMA.deliberativeLayer.plan.Plan;
 import FAtiMA.exceptions.InvalidMotivatorTypeException;
 import FAtiMA.exceptions.UnreachableGoalException;
+import FAtiMA.motivationalSystem.MotivationalState;
 import FAtiMA.util.AgentLogger;
 import FAtiMA.util.Constants;
 import FAtiMA.util.enumerables.MotivatorType;
@@ -403,27 +404,6 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
 		return this.getContributionToNeeds(am, "SELF");
 	}
 	
-	private double determineQuadraticNeedVariation(float currentIntensity, float expectedContribution){
-		final float MAX_INTENSITY = 10;
-		final float MIN_INTENSITY = 0;
-		double result = 0;
-		float finalIntensity;
-		double currentIntensityNecessity;
-		double finalIntensityNecessity;
-		
-		finalIntensity = currentIntensity + expectedContribution;
-		finalIntensity = Math.min(finalIntensity, MAX_INTENSITY);
-		finalIntensity = Math.max(finalIntensity, MIN_INTENSITY);
-		
-		currentIntensityNecessity = Math.pow(MAX_INTENSITY - currentIntensity,2); 
-		finalIntensityNecessity = Math.pow(MAX_INTENSITY - finalIntensity,2);
-
-		
-		result = - (finalIntensityNecessity - currentIntensityNecessity); 
-		return result;
-	}
-	
-	
 	private float getContributionToNeeds(AgentModel am, String target){
 		float result = 0;
 		String[] effectTypes = {"OnSelect","OnIgnore"};
@@ -444,7 +424,7 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
 					for(int i = 0; i < nonCognitiveDrives.length; i++){
 						expectedContribution = this.GetExpectedEffectOnDrive(effectTypes[c], nonCognitiveDrives[i], "[SELF]").floatValue();
 						currentIntensity =  am.getMotivationalState().GetIntensity(MotivatorType.ParseType(nonCognitiveDrives[i]));
-						result +=  auxMultiplier * this.determineQuadraticNeedVariation(currentIntensity, expectedContribution); 
+						result +=  auxMultiplier * MotivationalState.determineQuadraticNeedVariation(currentIntensity, expectedContribution); 
 					}
 					auxMultiplier = -1;
 
@@ -452,14 +432,14 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
 				
 				float currentCompetenceIntensity = am.getMotivationalState().GetIntensity(MotivatorType.COMPETENCE);
 				float expectedCompetenceContribution = am.getMotivationalState().PredictCompetenceChange(true);
-				result += this.determineQuadraticNeedVariation(currentCompetenceIntensity, expectedCompetenceContribution);
+				result += MotivationalState.determineQuadraticNeedVariation(currentCompetenceIntensity, expectedCompetenceContribution);
 				
 				float currentUncertaintyIntensity = am.getMotivationalState().GetIntensity(MotivatorType.CERTAINTY);
 				//expected error assuming that the goal is successful
 				float expectedError = 1 - getProbability(am);
 				float currentError = getUncertainty(am);
 				float expectedUncertaintyContribution = 10*(currentError - expectedError); 
-				result += this.determineQuadraticNeedVariation(currentUncertaintyIntensity,expectedUncertaintyContribution);	
+				result += MotivationalState.determineQuadraticNeedVariation(currentUncertaintyIntensity,expectedUncertaintyContribution);	
 								
 			}
 			else{
@@ -476,7 +456,7 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
 						for(int i = 0; i < nonCognitiveDrives.length; i++){
 							expectedContribution = this.GetExpectedEffectOnDrive(effectTypes[c], nonCognitiveDrives[i], "[target]").floatValue();
 							currentIntensity =  m.getMotivationalState().GetIntensity(MotivatorType.ParseType(nonCognitiveDrives[i]));
-							result += auxMultiplier * this.determineQuadraticNeedVariation(currentIntensity, expectedContribution); 		
+							result += auxMultiplier * MotivationalState.determineQuadraticNeedVariation(currentIntensity, expectedContribution); 		
 						}
 						auxMultiplier = -1;
 					}		

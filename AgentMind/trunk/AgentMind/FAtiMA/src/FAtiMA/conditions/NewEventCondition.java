@@ -99,7 +99,7 @@ public class NewEventCondition extends RecentEventCondition {
 		ArrayList<SearchKey> keys = super.GetSearchKeys();
 		
 		//we only want to search for events that happened at most 1 second before
-		keys.add(new SearchKey(SearchKey.MAXELAPSEDTIME, new Long(4000)));
+		keys.add(new SearchKey(SearchKey.MAXELAPSEDTIME, new Long(1000)));
 		
 		return keys;
 	}

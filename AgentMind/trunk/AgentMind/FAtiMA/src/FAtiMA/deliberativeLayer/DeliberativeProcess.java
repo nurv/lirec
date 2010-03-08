@@ -125,7 +125,6 @@ import java.util.Set;
 
 import FAtiMA.AgentModel;
 import FAtiMA.AgentProcess;
-import FAtiMA.ModelOfOther;
 import FAtiMA.ValuedAction;
 import FAtiMA.conditions.Condition;
 import FAtiMA.culture.Ritual;
@@ -785,12 +784,7 @@ public class DeliberativeProcess extends AgentProcess {
 							if(!desire.CheckSucess(am) && !desire.CheckFailure(am))
 							{
 
-								//the last thing we need to check is if the agent is included in the Goal
-								//because if not there is no sense in including the ritual as a goal
-								if(desire.mayContainSelf())
-								{
-									_options.add(desire);
-								}	
+									_options.add(desire);	
 							}
 						}
 					}
@@ -990,12 +984,13 @@ public class DeliberativeProcess extends AgentProcess {
 			
 			if(copingAction != null) {
 				i.SetStrongCommitment(am);
+				String actionName = copingAction.getName().GetFirstLiteral().toString();
 				
 				if(copingAction instanceof ActivePursuitGoal)
 				{
 					AddSubIntention(am, _currentIntention, (ActivePursuitGoal) copingAction);	
 				}
-				else if(!copingAction.getName().GetFirstLiteral().toString().startsWith("Inference"))
+				else if(!actionName.startsWith("Inference") && !actionName.endsWith("Appraisal"))
 				{
 					fear = i.GetFear(am.getEmotionalState());
 					hope = i.GetHope(am.getEmotionalState());
@@ -1016,7 +1011,7 @@ public class DeliberativeProcess extends AgentProcess {
 						{
 							_selectedActionEmotion = hope;
 						}
-					}
+					} 
 					else
 					{
 						_selectedActionEmotion = fear;

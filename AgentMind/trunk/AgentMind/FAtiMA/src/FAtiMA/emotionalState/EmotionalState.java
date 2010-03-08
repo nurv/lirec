@@ -154,7 +154,10 @@ public class EmotionalState implements Serializable {
 		if (potential > threshold) {
 			if (_emotionPool.containsKey(potEm.GetHashKey())) {
 				auxEmotion = (ActiveEmotion) _emotionPool.get(potEm.GetHashKey());
-				auxEmotion.ReforceEmotion(potential);				
+				auxEmotion.ReforceEmotion(potential);
+				am.getMemory().getEpisodicMemory().AssociateEmotionToAction(am.getMemory(), 
+						auxEmotion,
+						auxEmotion.GetCause());
 			}
 			else {
 				auxEmotion = new ActiveEmotion(potEm, potential, threshold, decay);

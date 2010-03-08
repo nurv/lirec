@@ -11,6 +11,10 @@ public interface ICompoundCue {
 	
 	public void Match(ActionDetail queryEvent, EpisodicMemory episodicMemory);
 	
-	public Hashtable<Integer, Float> getCCResults();
+	//public Hashtable<Integer, Float> getCCResults();
+	
+	public ActionDetail getStrongestResult();
+	
+	public float getEvaluation();
 
 }

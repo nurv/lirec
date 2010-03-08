@@ -54,6 +54,7 @@ import FAtiMA.socialRelations.RespectRelation;
 import FAtiMA.util.Constants;
 import FAtiMA.util.enumerables.ActionEvent;
 import FAtiMA.util.enumerables.EmotionType;
+import FAtiMA.util.enumerables.EmotionValence;
 import FAtiMA.util.enumerables.EventType;
 import FAtiMA.util.enumerables.GoalEvent;
 
@@ -283,6 +284,15 @@ public class ActionDetail implements Serializable {
 		if(em.GetIntensity() > this._emotion.GetPotential())
 		{
 			this._emotion = new BaseEmotion(em.GetType(),em.GetIntensity(),em.GetCause(),em.GetDirection());
+			if(this._emotion.GetValence() == EmotionValence.POSITIVE)
+			{
+				this._desirability = (float) Math.floor(em.GetPotential());
+			}
+			else
+			{
+				this._desirability = (float) Math.floor(- em.GetPotential());
+			}
+			
 			updated = true;
 		}
 		

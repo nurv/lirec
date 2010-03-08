@@ -62,14 +62,18 @@ package FAtiMA.reactiveLayer;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.ListIterator;
 
 import FAtiMA.AgentModel;
 import FAtiMA.AgentProcess;
 import FAtiMA.ModelOfOther;
 import FAtiMA.ValuedAction;
+import FAtiMA.emotionalState.Appraisal;
 import FAtiMA.emotionalState.AppraisalVector;
 import FAtiMA.emotionalState.BaseEmotion;
+import FAtiMA.memory.episodicMemory.ActionDetail;
 import FAtiMA.sensorEffector.Event;
 import FAtiMA.socialRelations.LikeRelation;
 import FAtiMA.util.Constants;
@@ -188,7 +192,7 @@ public class ReactiveProcess extends AgentProcess {
 		
 		if(selfEvaluation != null)
 		{
-			emotions = FAtiMA.emotionalState.Appraisal.GenerateSelfEmotions(
+			emotions = Appraisal.GenerateSelfEmotions(
 					ag, 
 					event2, 
 					translateEmotionalReaction(selfEvaluation));
@@ -199,6 +203,35 @@ public class ReactiveProcess extends AgentProcess {
 				ag.getEmotionalState().AddEmotion(li2.next(), ag);
 			}			
 		}
+		
+		if(ag.getCompoundCue() != null)
+		{
+			//appraisal from memory
+			ActionDetail ad = new ActionDetail(0,event2.GetSubject(),
+					event2.GetAction(), 
+					event2.GetTarget(),
+					event2.GetParameters(),null,null,null,null);
+			
+			ag.getCompoundCue().Match(ad,ag.getMemory().getEpisodicMemory());
+			
+			ActionDetail result = ag.getCompoundCue().getStrongestResult();
+			float eval = ag.getCompoundCue().getEvaluation();
+			if(result != null)
+			{
+				float desirability = result.getDesirability();
+				if(desirability != 0)
+				{
+					v = new AppraisalVector();
+					v.setAppraisalVariable(AppraisalVector.DESIRABILITY, desirability*eval);
+					emotions = Appraisal.GenerateSelfEmotions(ag, event2, v);
+					for(BaseEmotion em : emotions)
+					{
+						ag.getEmotionalState().AddEmotion(em, ag);
+					}
+				}
+			}	
+		}
+		
 		
 		if(ag.getToM() != null)
 		{

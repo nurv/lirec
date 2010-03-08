@@ -325,7 +325,6 @@ public abstract class RemoteAgent extends SocketListener {
 			}
 			else if(msgType.equals(SA_MEMORY))
 			{
-				
 				st = new StringTokenizer(perception, "$");
 				String question = st.nextToken();
 				String known = "";
@@ -351,7 +350,7 @@ public abstract class RemoteAgent extends SocketListener {
 			}
 			else if(msgType.equals(CC_MEMORY))
 			{
-				int index = Math.min(8, (int) (Math.random()*10));
+				/*int index = Math.min(8, (int) (Math.random()*10));
 				ActionDetail event = _agent.getMemory().getEpisodicMemory().getDetails().get(index);
 				_agent.getCompoundCue().Match(event, _agent.getMemory().getEpisodicMemory());
 				System.out.println("\nEvent ID to match on " + event.getID());
@@ -363,7 +362,7 @@ public abstract class RemoteAgent extends SocketListener {
 					int id = (Integer) it.next();
 					System.out.println("ID " + id + " evaluation " + results.get(id));
 				}
-				System.out.println("\n\n");
+				System.out.println("\n\n");*/
 			}
 			
 			while(_lookAtList.size() > 0)

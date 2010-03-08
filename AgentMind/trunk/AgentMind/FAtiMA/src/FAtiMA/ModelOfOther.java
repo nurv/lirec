@@ -6,6 +6,8 @@ import java.util.HashMap;
 
 import FAtiMA.emotionalState.EmotionDisposition;
 import FAtiMA.emotionalState.EmotionalState;
+import FAtiMA.memory.ICompoundCue;
+import FAtiMA.memory.ISpreadActivate;
 import FAtiMA.memory.Memory;
 import FAtiMA.motivationalSystem.MotivationalState;
 import FAtiMA.motivationalSystem.Motivator;
@@ -99,6 +101,16 @@ public class ModelOfOther implements AgentModel {
 
 	@Override
 	public HashMap<String, ModelOfOther> getToM() {
+		return null;
+	}
+
+	@Override
+	public ISpreadActivate getSpreadActivate() {
+		return null;
+	}
+
+	@Override
+	public ICompoundCue getCompoundCue() {
 		return null;
 	}
 

@@ -27,6 +27,9 @@ import FAtiMA.culture.Ritual;
 import FAtiMA.deliberativeLayer.DeliberativeProcess;
 import FAtiMA.deliberativeLayer.EmotionalPlanner;
 import FAtiMA.deliberativeLayer.goals.GoalLibrary;
+import FAtiMA.deliberativeLayer.plan.Step;
+import FAtiMA.emotionalIntelligence.ActionTendencyOperatorFactory;
+import FAtiMA.emotionalIntelligence.OCCAppraisalRules;
 import FAtiMA.emotionalState.ActiveEmotion;
 import FAtiMA.emotionalState.Appraisal;
 import FAtiMA.emotionalState.AppraisalVector;
@@ -36,6 +39,7 @@ import FAtiMA.exceptions.UnknownGoalException;
 import FAtiMA.memory.Memory;
 import FAtiMA.memory.semanticMemory.KnowledgeSlot;
 import FAtiMA.motivationalSystem.MotivationalState;
+import FAtiMA.reactiveLayer.Action;
 import FAtiMA.reactiveLayer.ActionTendencies;
 import FAtiMA.reactiveLayer.EmotionalReactionTreeNode;
 import FAtiMA.reactiveLayer.Reaction;
@@ -138,6 +142,14 @@ public class Agent implements AgentModel {
 			// Load Plan Operators
 			ActionLibrary.GetInstance().LoadActionsFile("" + MIND_PATH + actionsFile + ".xml", this);
 			EmotionalPlanner planner = new EmotionalPlanner(ActionLibrary.GetInstance().GetActions());
+			ArrayList<Step> occRules = OCCAppraisalRules.GenerateOCCAppraisalRules(this);
+			for(Step s : occRules)
+			{
+				planner.AddOperator(s);
+			}
+			
+			
+			
 
 			// Load GoalLibrary
 			GoalLibrary goalLibrary = new GoalLibrary(MIND_PATH + goalsFile + ".xml");
@@ -145,11 +157,18 @@ public class Agent implements AgentModel {
 
 			//For efficiency reasons these two are not real processes
 			_reactiveLayer = new ReactiveProcess(_name);
+			
 
 			_deliberativeLayer = new DeliberativeProcess(_name,goalLibrary,planner);
 	
 			String personalityFile = MIND_PATH + "roles/" + role + "/" + role + ".xml";
 			loadPersonality(personalityFile,agentPlatform, goalList);
+			
+			
+			for(Action at: _reactiveLayer.getActionTendencies().getActions())
+			{
+				planner.AddOperator(ActionTendencyOperatorFactory.CreateATOperator(this, at));
+			}
 			
 			
 			loadCulture(cultureName);
