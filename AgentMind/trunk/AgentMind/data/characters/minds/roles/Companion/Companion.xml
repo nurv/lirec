@@ -34,20 +34,11 @@
 	</MotivationalParameters>
 
 	<Goals>
+		<Goal name="MakeFriendHappy([target])" importanceOfSuccess="4" importanceOfFailure="3"/>
 	</Goals>
 	
 	<InterpersonalRelations>
 		
-		<Relation target="Luke" like="1" respect="0"/>
-		<Relation target="book" like="6"/>
-		<Relation target="Paul" like="-1" respect="-1"/>
-		<Relation target="Ollie" like="1" respect="1"/>
-		<Relation target="Rob" like="2" respect="1"/>
-		<Relation target="Janet" like="1" respect="-1"/>
-		<Relation target="Sarah" like="0" />
-		<Relation target="Nita" like="0" />
-		<Relation target="Martina" like="2" respect="1"/>
-		<Relation target="Elinor" like="4" respect="1"/>
 	</InterpersonalRelations>
 	
 	<EventReactions>	

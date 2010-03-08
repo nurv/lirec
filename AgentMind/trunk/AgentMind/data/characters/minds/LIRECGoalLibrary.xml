@@ -1,5 +1,22 @@
 <GoalLibrary>	
 	<!-- Greeting -->
+	<ActivePursuitGoal name="MakeFriendHappy([target])">
+		<PreConditions>
+			<Property name="[target](isPerson)" operator="=" value="True" />
+			<Property name="[target]" operator="!=" value="[SELF]" />
+			<EmotionCondition emotion="Distress" agent="[target]" min-intensity="2" />
+		</PreConditions>
+		<SucessConditions>
+			<EmotionCondition emotion="Joy" agent="[target]" min-intensity="1" />
+			<!--<NewEvent occurred="True" subject="[target]" action="smile"/>-->
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>
+		<ExpectedEffects>
+			<OnSelect drive="Affiliation" target="[SELF]" value="+3"/>
+		</ExpectedEffects>	
+	</ActivePursuitGoal>
+
 	<ActivePursuitGoal name="Greet([target])">
 		<PreConditions>
 			<Property name="[target](isPerson)" operator="=" value="True" />
