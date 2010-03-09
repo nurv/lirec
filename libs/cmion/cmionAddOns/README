@@ -8,7 +8,8 @@ You need ace, yarp and cmake installed.
 * Go to yarp/examples/swig and run cmake . 
 
 On linux I had to run ccmake . and enter the JAVA_INCLUDE_PATH by hand, it should be something like:
-/usr/lib/gcc/i486-linux-gnu/4.2/include/
+PATH /usr/lib/jvm/java-6-sun-1.6.0.17/include/
+PATH2 /usr/lib/jvm/java-6-sun-1.6.0.17/include/linux
 
 * Run make to build the swig binding this should give you libjyarp.so
 * Run the following commands to build the java yarp api
@@ -16,5 +17,6 @@ On linux I had to run ccmake . and enter the JAVA_INCLUDE_PATH by hand, it shoul
 $ cd generated_src/
 $ javac *.java
 $ echo Main-Class: yarpJNI > manetfest.txt
-$ jar cvfm jyarp-linux.jar manefest.txt *.class
+$ mv generated_src yarp
+$ jar cvfm jyarp-linux.jar manefest.txt yarp
 
