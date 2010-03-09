@@ -37,7 +37,7 @@ public class RequestNewMindAction extends Request
 {
 
 	/** creates a new request */
-	RequestNewMindAction(MindAction mindAction)
+	public RequestNewMindAction(MindAction mindAction)
 	{
 		super();
 		this.mindAction = mindAction;

@@ -36,7 +36,7 @@ import cmion.architecture.CmionEvent;
 public class EventMindActionSucceeded extends CmionEvent 
 {
 
-	EventMindActionSucceeded(MindAction mindAction)
+	public EventMindActionSucceeded(MindAction mindAction)
 	{
 		super();
 		this.mindAction = mindAction;

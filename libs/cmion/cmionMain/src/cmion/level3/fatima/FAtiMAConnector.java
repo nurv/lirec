@@ -57,14 +57,18 @@ public class FAtiMAConnector extends AgentMindConnector {
 		super(architecture);
 		fatimaConnected = false;
 		sleeping = false;
+		mindThread = null;
 		new ListenForConnectionThread().start();
 	}
 
 	/** send a message to FAtiMA telling the mind to resume from a paused state */	
 	@Override
 	public void awakeMind() {
-		mindThread.send("CMD Start");
-		sleeping = false;
+		if (mindThread!=null)
+		{
+			mindThread.send("CMD Start");
+			sleeping = false;
+		}
 	}
 
 	/** returns whether FAtiMA is sleeping/paused or not, this function
@@ -81,7 +85,7 @@ public class FAtiMAConnector extends AgentMindConnector {
 	{
 		String msg = "ACTION-FAILED " + a.getSubject() + " "
         +  FAtiMAutils.mindActiontoFatimaMessage(a);	
-		mindThread.send(msg);	
+		if (mindThread!=null) mindThread.send(msg);	
 	}
 
     /** report the success of an action to FAtiMA */	
@@ -89,43 +93,46 @@ public class FAtiMAConnector extends AgentMindConnector {
 	protected void processActionSuccess(MindAction a) {
 		String msg = "ACTION-FINISHED " + a.getSubject() + " "
         +  FAtiMAutils.mindActiontoFatimaMessage(a);	
-		mindThread.send(msg);	
+		if (mindThread!=null) mindThread.send(msg);	
 	}
 
 	@Override
 	protected void processRemoteAction(MindAction remoteAction) {
 		String msg = "ACTION-FINISHED " + remoteAction.getSubject() + " "
         +  FAtiMAutils.mindActiontoFatimaMessage(remoteAction);	
-		mindThread.send(msg);	
+		if (mindThread!=null) mindThread.send(msg);	
 	}
 
 	/** send a message to FAtiMA telling the mind to pause */
 	@Override
 	public void sendMindToSleep() {
-		mindThread.send("CMD Stop");
-		sleeping = true;
+		if (mindThread!=null) 
+		{
+			mindThread.send("CMD Stop");
+			sleeping = true;
+		}
 	}
 
 	@Override
 	protected void processEntityAdded(String entityName) {
-		mindThread.send("ENTITY-ADDED "+entityName);
+		if (mindThread!=null) mindThread.send("ENTITY-ADDED "+entityName);
 		
 	}
 
 	@Override
 	protected void processEntityRemoved(String entityName) {
-		mindThread.send("ENTITY-REMOVED "+entityName);	
+		if (mindThread!=null) mindThread.send("ENTITY-REMOVED "+entityName);	
 	}
 
 	@Override
 	protected void processPropertyChanged(String entityName,
 			String propertyName, String propertyValue) {
-		mindThread.send("PROPERTY-CHANGED "+entityName+ "(" + propertyName+ ") " + propertyValue);		
+		if (mindThread!=null) mindThread.send("PROPERTY-CHANGED "+entityName+ "(" + propertyName+ ") " + propertyValue);		
 	}
 
 	@Override
 	protected void processPropertyRemoved(String entityName, String propertyName) {
-		mindThread.send("PROPERTY-REMOVED "+entityName+ " " + propertyName);		
+		if (mindThread!=null) mindThread.send("PROPERTY-REMOVED "+entityName+ " " + propertyName);		
 	}
 	
 	
