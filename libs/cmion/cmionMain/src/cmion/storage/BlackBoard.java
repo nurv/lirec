@@ -27,17 +27,52 @@
 
 package cmion.storage;
 
+import java.util.HashMap;
+
 import cmion.architecture.IArchitecture;
 
 /** The BlackBoard  is a storage container for competencies to share information
- *  with each other */
+ *  with each other. For time critical applications, it has some additional 
+ *  functions to store "real-time" properties, those are properties that are not written
+ *  and read through ION requests and events but directly. The advantage of this is faster
+ *  reaction times (not tied to the ION simulation loop), the disadvantage, is that there
+ *  are no event listeners for changes to those properties available and access is less 
+ *  controlled */
 public class BlackBoard extends CmionStorageContainer 
 {
-
+	
+	/** this is where real time properties are stored */
+	private HashMap<String,Object> rtproperties;
+	
 	/** create a new black board with the specified name */
 	public BlackBoard(IArchitecture architecture, String name) {
-		// this container is of the type "WorldModel"
+		// this container is of the type "BlackBoard"
 		super(architecture,name, "BlackBoard", null);
+		rtproperties = new HashMap<String,Object>();
 	}	
+
+	/** returns the value of the real time property with the given name */
+	public synchronized Object getRTPropertyValue(String propertyName)
+	{
+		return rtproperties.get(propertyName);
+	}
 	
+	/** sets the value of the real time property with the given name */
+	public synchronized void setRTProperty(String propertyName, Object propertyValue)
+	{
+		rtproperties.put(propertyName,propertyValue);
+	}
+	
+	/** sets the value of the real time property with the given name */
+	public synchronized void removeRTProperty(String propertyName)
+	{
+		rtproperties.remove(propertyName);
+	}
+
+	/** sets the value of the real time property with the given name */
+	public synchronized boolean hasRTProperty(String propertyName)
+	{
+		return rtproperties.containsKey(propertyName);
+	}
+
 }
