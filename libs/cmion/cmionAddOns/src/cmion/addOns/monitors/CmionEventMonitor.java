@@ -52,6 +52,7 @@ import cmion.level2.Competency;
 import cmion.level2.CompetencyExecution;
 import cmion.level3.CompetencyManager;
 import cmion.storage.BlackBoard;
+import cmion.storage.CmionStorageContainer;
 import cmion.storage.WorldModel;
 
 
@@ -220,8 +221,8 @@ public class CmionEventMonitor extends CmionComponent {
 	    /** determines wether a certain event should be filtered or displayed 
 	     *  by looking at the state of the GUI filter buttons */
 	    private synchronized boolean isFiltered(CmionEvent evt)
-	    {
-			if (evt.getOriginator()==null) 
+	    {	
+	    	if (evt.getOriginator()==null) 
 				return btnOther.isSelected();		
 			else if (evt.getOriginator() instanceof CompetencyManager)
 				return btnCompetencyManager.isSelected();
@@ -235,6 +236,15 @@ public class CmionEventMonitor extends CmionComponent {
 				return btnCompetencies.isSelected();
 			else if (evt.getOriginator() instanceof SamgarConnector)
 				return btnSamgar.isSelected();
+			else if (evt.getOriginator() instanceof CmionStorageContainer)
+			{
+				CmionStorageContainer originator = (CmionStorageContainer) evt.getOriginator();
+				if (originator.getTopContainer() instanceof WorldModel)
+					return btnWorldModel.isSelected();
+				else if (originator.getTopContainer() instanceof BlackBoard)
+					return btnBlackBoard.isSelected();
+				else return btnOther.isSelected();
+			}
 			else return btnOther.isSelected();
 	    }
 	    

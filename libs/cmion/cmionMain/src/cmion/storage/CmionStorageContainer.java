@@ -311,7 +311,7 @@ public class CmionStorageContainer extends CmionComponent {
 				container.registerEventHandlerWithSubContainers(handler);
 			}
 
-			// finally raise an event that we have added a new sub container
+			// finally raise an event that we have added a new sub container			
 			this.raise(new EventSubContainerAdded(this, container));				
 			
 			// and request setting the initial properties
@@ -322,6 +322,17 @@ public class CmionStorageContainer extends CmionComponent {
 		}	
 	}
 
+	/** returns the top container of the storage hierarchy that this container is part of, 
+	 *  so typically this should return either the blackboard or the world model object */
+	public CmionStorageContainer getTopContainer()
+	{
+		CmionStorageContainer result = this;
+		while (result.getParentContainer()!=null)
+			result = result.getParentContainer();
+		return result;
+	}
+	
+	
 	/** clean up and destroy this container */
 	private synchronized void removeAndDestroy()
 	{
