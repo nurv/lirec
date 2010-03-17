@@ -39,6 +39,9 @@ public class GretaBMLCreator extends Competency {
 
 	// remembers the emotion currently set
 	private String emotion;
+
+	// remembers the gaze direction currently set
+	private String gaze;
 	
 	
 	/** create a new Greta BML Creator */
@@ -54,6 +57,8 @@ public class GretaBMLCreator extends Competency {
 	public void initialize() {
 		// default emotion is neutral
 		emotion = "neutral";
+		// default gaze is straight "look_at"
+		gaze = "look_at";
 		// initialisation finished
 		this.available = true;
 	}
@@ -114,6 +119,20 @@ public class GretaBMLCreator extends Competency {
 		
 		return emotionBML;
 	}	
+	
+	/** returns bml representing a gaze */
+	private String getGazeBML()
+	{
+		String gazeBML = 		
+		"<gaze id='gaze-1'  start='0.00' >\n"+
+		"<description level='1' type='gretabml'>\n"+
+		"<reference>gaze="+gaze+"</reference>\n"+
+		getSignalModifier()+"\n"+    
+		"</description>"+
+		"</gaze>";
+		
+		return gazeBML;
+	}	
 
 	/** returns bml representing speech */
 	private String getSpeechBML(String text)
@@ -147,7 +166,8 @@ public class GretaBMLCreator extends Competency {
 		if (parameters.get("Type").equals("talk"))
 		{
 			if (!parameters.containsKey("Text")) return false;
-			bmlCenter = getSpeechBML(parameters.get("Text")) + getEmotionBML();
+			if (parameters.containsKey("Emotion")) emotion = parameters.get("Emotion");
+			bmlCenter = getSpeechBML(parameters.get("Text")) + getEmotionBML() + getGazeBML();
 		} 
 		else if (parameters.get("Type").equals("gesture"))
 		{
@@ -157,13 +177,19 @@ public class GretaBMLCreator extends Competency {
 			bmlCenter = getGestureBML(parameters.get("GestureName"),
 						parameters.get("GestureClass"),
 						parameters.get("GestureType")) 
-						+ getEmotionBML();
+						+ getEmotionBML() + getGazeBML();
 		}
 		else if (parameters.get("Type").equals("emotion"))
 		{	
 			if (!parameters.containsKey("Emotion")) return false;
 			emotion = parameters.get("Emotion");
-			bmlCenter = getEmotionBML();
+			bmlCenter = getEmotionBML() + getGazeBML();
+		}
+		else if (parameters.get("Type").equals("gaze"))
+		{	
+			if (!parameters.containsKey("Direction")) return false;
+			gaze = parameters.get("Direction");
+			bmlCenter = getEmotionBML() + getGazeBML();
 		}
 		else return false; 
 		  

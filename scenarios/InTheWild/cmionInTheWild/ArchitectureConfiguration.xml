@@ -18,9 +18,11 @@
       The agent mind connector(s) have to be specified here however as well as additional 
       components (for example for monitoring architecture state, remote controlling 
       or additional storage containers, competency loading is specified in the competency
-      library xml file -->
+      library xml file 
  
- <ArchitectureComponent ClassName="cmion.inTheWild.woz.InTheWildWoz" />
+ <ArchitectureComponent ClassName="cmion.level3.fatima.FAtiMAConnector" ConstructorParameters="" /> -->
  <ArchitectureComponent ClassName="cmion.addOns.monitors.CmionEventMonitor" />
-
+ <ArchitectureComponent ClassName="cmion.inTheWild.woz.InTheWildWoz" />
+ <!--  <ArchitectureComponent ClassName="cmion.inTheWild.ai.SimpleAutonomousAgent" />
+ <ArchitectureComponent ClassName="cmion.addOns.samgar.SamgarConnector" /> -->
 </ArchitectureConfiguration>

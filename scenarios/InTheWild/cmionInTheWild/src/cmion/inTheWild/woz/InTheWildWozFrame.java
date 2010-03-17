@@ -391,7 +391,7 @@ public class InTheWildWozFrame extends javax.swing.JFrame implements ActionListe
 					ComboBoxModel comboBoxEmotionModel = 
 						new DefaultComboBoxModel(
 								new String[] { "neutral", "tensed", "anger", "disgust", "joy",
-										"distress", "fear", "sadness", "surprise"});
+										"distress", "fear", "sadness", "surprise", "sleeping"});
 					comboBoxEmotion = new JComboBox();
 					jPanel1.add(comboBoxEmotion);
 					comboBoxEmotion.setModel(comboBoxEmotionModel);
