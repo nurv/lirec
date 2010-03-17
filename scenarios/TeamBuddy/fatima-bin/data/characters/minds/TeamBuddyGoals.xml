@@ -1,0 +1,19 @@
+<GoalLibrary>
+
+	<!-- Interest Goals -->
+	
+	<ActivePursuitGoal name="Greet([user])">
+		<PreConditions>
+			<Property name="[user](isPresent)" operator="=" value="True" />
+			<RecentEvent occurred="False" subject="[SELF]" action="greet" target="[user]" />
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="greet" target="[user]" />
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>
+		<ExpectedEffects>
+		</ExpectedEffects>		
+	</ActivePursuitGoal>
+		
+</GoalLibrary>

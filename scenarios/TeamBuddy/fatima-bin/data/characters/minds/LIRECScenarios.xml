@@ -1,0 +1,41 @@
+<Scenarios>	
+	
+	
+	<Scenario name="ArchitectureTest">
+			<WorldSimulator port="46874" scenery="TestLocation" actionsFile="data/characters/minds/TestActions.xml" 
+							agentLanguageFile="data/characters/minds/language/agent/en/language-set-1" 
+							userOptionsFile="TestOptions">		
+				<Objects>
+				</Objects>
+		
+			</WorldSimulator>	
+			<Agent name="SpiritOfTheBuilding" displayName="Spirit" role="TestAgent" platform="worldsim" host="localhost" 
+				   port="46874" displayMode="True" sex="F" actionsFile="TestActions" 
+				   goalsFile="TestGoals" cultureName="NoCultureTest">
+				<Properties>				
+					<Property name="isTestMind" value="True"/>
+					<Property name="location" value="TestLocation"/>					
+				</Properties>	
+			</Agent>
+	</Scenario>	
+	
+	<Scenario name="TeamBuddy">
+			<WorldSimulator port="46874" scenery="Office" actionsFile="data/characters/minds/TeamBuddyActions.xml" 
+							agentLanguageFile="data/characters/minds/language/agent/en/language-set-1" 
+							userOptionsFile="TestOptions">		
+				<Objects>
+				</Objects>
+		
+			</WorldSimulator>	
+			<Agent name="Sarah" displayName="Sarah" role="TeamBuddyAgent" platform="worldsim" host="localhost" 
+				   port="46874" displayMode="True" sex="F" actionsFile="TeamBuddyActions" 
+				   goalsFile="TeamBuddyGoals" cultureName="NoCultureTeamBuddy">
+				<Properties>				
+					<Property name="isRobot" value="True"/>
+					<Property name="location" value="Office"/>					
+				</Properties>	
+			</Agent>
+	</Scenario>	
+	
+
+</Scenarios>

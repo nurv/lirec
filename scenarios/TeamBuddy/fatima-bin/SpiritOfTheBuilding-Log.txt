@@ -1,0 +1,22 @@
+
+LOAD: data/characters/minds/TestActions.xml
+
+LOAD: data/characters/minds/TestGoals.xml
+
+LOADING Personality: data/characters/minds/roles/TestAgent/TestAgent.xml
+
+Motivator found: 0
+
+Motivator found: 1
+
+Motivator found: 2
+
+Motivator found: 3
+
+Motivator found: 4
+
+LOADING Culture: NoCultureTest
+
+Connecting to localhost:46874
+
+Exception: java.net.SocketException: Connection reset

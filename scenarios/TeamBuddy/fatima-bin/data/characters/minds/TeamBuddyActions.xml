@@ -1,0 +1,12 @@
+<DomainActions>
+
+	<Action name="greet([user])">
+		<PreConditions>
+		</PreConditions>
+		<Effects>
+		</Effects>
+		<EffectsOnDrives>
+		</EffectsOnDrives>
+	</Action>
+
+</DomainActions>

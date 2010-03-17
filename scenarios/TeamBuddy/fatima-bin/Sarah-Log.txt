@@ -1,0 +1,94 @@
+
+LOAD: data/characters/minds/TeamBuddyActions.xml
+
+LOAD: data/characters/minds/TeamBuddyGoals.xml
+
+LOADING Personality: data/characters/minds/roles/TeamBuddyAgent/TeamBuddyAgent.xml
+
+Motivator found: 0
+
+Motivator found: 1
+
+Motivator found: 2
+
+Motivator found: 3
+
+Motivator found: 4
+
+LOADING Culture: NoCultureTeamBuddy
+
+Connecting to localhost:46874
+
+Sarah: Processing message: PROPERTY-CHANGED Sarah(sex) F
+
+Sarah: Processing message: PROPERTY-CHANGED Sarah(isRobot) True
+
+Sarah: Processing message: PROPERTY-CHANGED Sarah(location) Office
+
+Sarah: Processing message: PROPERTY-CHANGED Sarah(name) Sarah
+
+Sarah: Processing message: PROPERTY-CHANGED Sarah(role) TeamBuddyAgent
+
+Sarah: Processing message: ENTITY-ADDED Sarah
+
+Sending Look-AT: Sarah
+
+Sarah: Processing message: LOOK-AT Sarah sex:F isRobot:True location:Office name:Sarah role:TeamBuddyAgent
+
+Look-At:Sarah(sex)
+
+Look-At:Sarah(isRobot)
+
+Look-At:Sarah(location)
+
+Look-At:Sarah(name)
+
+Look-At:Sarah(role)
+
+Sarah: Processing message: PROPERTY-CHANGED User(isPresent) False
+
+Sarah: Processing message: PROPERTY-CHANGED User(isPresent) False
+
+Sarah: Processing message: PROPERTY-CHANGED User(isPresent) False
+
+Sarah: Processing message: PROPERTY-CHANGED User(isPresent) True
+
+Goal: Greet(User) CulturalUtilitity: 8.6806345 Competence: 0.7772813 Urgency: 1.0 Total: 8.747295
+
+Adding 1st level intention: Greet(User)
+
+OpenPrecondition: EVENT(Sarah,greet,User)
+
+Adding a new Strong Intention: Greet(User)
+
+Sending action for execution: greet User
+
+Cannot act now!
+
+Goal: Greet(User) CulturalUtilitity: 9.168189 Competence: 0.77111214 Urgency: 1.0 Total: 9.069702
+
+Sarah: Processing message: PROPERTY-CHANGED User(isPresent) True
+
+Goal: Greet(User) CulturalUtilitity: 9.657777 Competence: 0.7650802 Urgency: 1.0 Total: 9.388974
+
+Sarah: Processing message: PROPERTY-CHANGED User(isPresent) True
+
+Goal: Greet(User) CulturalUtilitity: 10.148786 Competence: 0.7591825 Urgency: 1.0 Total: 9.704781
+
+Sarah: Processing message: PROPERTY-CHANGED User(isPresent) True
+
+Goal: Greet(User) CulturalUtilitity: 10.558629 Competence: 0.7543681 Urgency: 1.0 Total: 9.965094
+
+Sarah: Processing message: PROPERTY-CHANGED User(isPresent) True
+
+Goal: Greet(User) CulturalUtilitity: 11.050777 Competence: 0.7487087 Urgency: 1.0 Total: 10.273813
+
+Sarah: Processing message: PROPERTY-CHANGED User(isPresent) True
+
+Goal: Greet(User) CulturalUtilitity: 11.542813 Competence: 0.74317527 Urgency: 1.0 Total: 10.578333
+
+Sarah: Processing message: PROPERTY-CHANGED User(isPresent) True
+
+Goal: Greet(User) CulturalUtilitity: 12.0342655 Competence: 0.73776495 Urgency: 1.0 Total: 10.878459
+
+Sarah: Processing message: PROPERTY-CHANGED User(isPresent) True

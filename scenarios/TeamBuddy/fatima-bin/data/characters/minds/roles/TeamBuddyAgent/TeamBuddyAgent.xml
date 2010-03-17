@@ -1,0 +1,41 @@
+<Character role="Sarah">
+	<EmotionalThresholds>
+		<EmotionalThreshold emotion="Love" threshold="3" decay="5"/>
+		<EmotionalThreshold emotion="Hate" threshold="3" decay="5"/>
+		<EmotionalThreshold emotion="Hope" threshold="4" decay="8"/>
+		<EmotionalThreshold emotion="Fear" threshold="1" decay="2"/>
+		<EmotionalThreshold emotion="Satisfaction" threshold="5" decay="8"/>
+		<EmotionalThreshold emotion="Relief" threshold="3" decay="5"/>
+		<EmotionalThreshold emotion="Fears-Confirmed" threshold="1" decay="2"/>
+		<EmotionalThreshold emotion="Disappointment" threshold="2" decay="5"/>
+		<EmotionalThreshold emotion="Joy" threshold="3" decay="2"/>
+		<EmotionalThreshold emotion="Distress" threshold="1" decay="2"/>
+		<EmotionalThreshold emotion="Happy-For" threshold="2" decay="5"/>
+		<EmotionalThreshold emotion="Pitty" threshold="2" decay="2"/>
+		<EmotionalThreshold emotion="Resentment" threshold="3" decay="2"/>
+		<EmotionalThreshold emotion="Gloating" threshold="5" decay="8"/>
+		<EmotionalThreshold emotion="Pride" threshold="5" decay="5"/>
+		<EmotionalThreshold emotion="Shame" threshold="1" decay="2"/>
+		<EmotionalThreshold emotion="Gratification" threshold="5" decay="8"/>
+		<EmotionalThreshold emotion="Remorse" threshold="1" decay="2"/>
+		<EmotionalThreshold emotion="Admiration" threshold="3" decay="5"/>
+		<EmotionalThreshold emotion="Reproach" threshold="2" decay="8"/>
+		<EmotionalThreshold emotion="Gratitude" threshold="3" decay="5"/>
+		<EmotionalThreshold emotion="Anger" threshold="3" decay="5"/>
+	</EmotionalThresholds>
+	
+	<MotivationalParameters>
+			<MotivationalParameter motivator="Affiliation" decayFactor="12.5" weight="0.4" intensity="7"/>
+			<MotivationalParameter motivator="Integrity" decayFactor="0.5" weight="0.7" intensity="3"/>
+			<MotivationalParameter motivator="Energy" decayFactor="2" weight="0.2" intensity="6"/>
+			<MotivationalParameter motivator="Certainty" decayFactor="1.5" weight="0.25" intensity="5"/>
+			<MotivationalParameter motivator="Competence" decayFactor="1.5" weight="0.775" intensity="6"/>
+	</MotivationalParameters>
+	
+	<Goals>
+		<Goal name="Greet([user])" importanceOfSuccess="8" importanceOfFailure="6"/>
+	</Goals>
+	
+	<InterpersonalRelations>
+	</InterpersonalRelations>
+</Character>
