@@ -1,0 +1,206 @@
+<?xml version="1.0" ?>
+<!DOCTYPE CompetencyManagerRules SYSTEM "CompetencyManagerRules.dtd">
+
+<CompetencyManagerRules>
+	
+
+	<!-- this is a set of rules for testing the competency execution system,
+	 uses the competencies in package cmionTeamBuddy\src\cmion.TeamBuddy.competencies.* -->
+
+
+	<!-- Rule 1: In this plan, the robot should approach the user and greet the user when it is close
+				enough to the user. The plan is initiated when the robot finds a face and a mind action
+				"greet" is passed from FAtiMA -->
+		 
+	<Rule>
+		
+		<MindAction Name="greet">
+				<Parameter No="1" Value="*" />
+		</MindAction>		
+		
+		<!-- Plan 1: geared towards a robot embodiment -->
+		<CompetencyExecutionPlan>
+			
+			<Competency ID="1" Type="MoveToUser">
+			</Competency>
+			
+			<!-- Speak is active only when MoveToUser is finished, so Dependency="1" -->
+			<Competency ID="2" Type="Speak" Dependency="1">
+			</Competency>
+			
+		</CompetencyExecutionPlan>
+		
+	</Rule>
+	
+	
+	
+	<Rule>
+		
+		
+		<MindAction Name="greetwithBML">
+				<Parameter No="1" Value="*" />
+		</MindAction>		
+		
+		<!-- Plan 1: geared towards a robot embodiment -->
+		<CompetencyExecutionPlan>
+			<Competency ID="1" Type="MoveToUser">
+			</Competency>
+			<Competency ID="2" Type="GretaBMLCreator">
+			 <CompetencyParameter Name="Type" Value="emotion" />
+			 <CompetencyParameter Name="Emotion" Value="joy" />			 
+			 <CompetencyParameter Name="BmlOutName" Value="bmlVar" />
+			</Competency>
+			<Competency ID="3" Type="GretaBMLSender" Dependency="2">
+			 <CompetencyParameter Name="BmlInName" Value="bmlVar" />
+			</Competency>
+			<Competency ID="4" Type="GretaBMLCreator" Dependency="3">
+			 <CompetencyParameter Name="Type" Value="talk" />
+			 <CompetencyParameter Name="Text" Value="Hello my name is Sarah" />			 
+			 <CompetencyParameter Name="BmlOutName" Value="bmlVar" />
+			</Competency>
+
+			<Competency ID="5" Type="GretaBMLSender" Dependency="1,4">
+			 <CompetencyParameter Name="BmlInName" Value="bmlVar" />
+			</Competency>
+		</CompetencyExecutionPlan>
+
+		
+	</Rule>
+	
+	
+	<Rule>
+		
+		<MindAction Name="TestAction">
+				<Parameter No="1" Value="test" />
+		</MindAction>		
+		
+		<CompetencyExecutionPlan>
+			<Competency ID="1" Type="TestType1">
+			</Competency>
+		</CompetencyExecutionPlan>
+		
+	</Rule>
+
+	<!-- Rule 2: this plan should not be tried by competency manager, because although
+		it is more specific than plan 3, in our test case the parameter will not match -->
+
+	<Rule>
+		
+		<MindAction Name="TestAction">
+				<Parameter No="1" Value="someValueThatWillNotMatch" />
+		</MindAction>		
+		
+		<CompetencyExecutionPlan>
+			<Competency ID="1" Type="TestType4">
+			</Competency>
+		</CompetencyExecutionPlan>
+		
+	</Rule>
+
+
+	<!-- Rule 3: this plan should be tried by competency manager after above fails -->
+
+	<Rule>
+			
+		<MindAction Name="TestAction">
+				<Parameter No="1" Value="*" />
+		</MindAction>		
+		
+		<CompetencyExecutionPlan>
+			<Competency ID="1" Type="TestType2">
+			     <CompetencyParameter Name="RandomOutName" Value="$parameter1" />
+			</Competency>
+
+			<Competency ID="2" Type="TestType3" Dependency="1">
+			     <CompetencyParameter Name="RandomInName" Value="$parameter1" />
+			</Competency>
+		</CompetencyExecutionPlan>
+		
+	</Rule>
+	
+	<!-- Rule 4: this is the rule for testing the second mind action,  -->
+
+	<Rule>
+			
+		<MindAction Name="TestAction2">
+		</MindAction>		
+		
+		<CompetencyExecutionPlan>
+			<Competency ID="1" Type="TestType4">
+			</Competency>
+		</CompetencyExecutionPlan>
+		
+	</Rule>
+	
+	
+	<Rule>
+		
+		<MindAction Name="talk">
+				<Parameter No="1" Value="*" />
+				<Parameter No="2" Value="*" />
+		</MindAction>		
+		
+		<CompetencyExecutionPlan>
+			<Competency ID="1" Type="GretaBMLCreator">
+			 <CompetencyParameter Name="Type" Value="talk" />
+			 <CompetencyParameter Name="Text" Value="$parameter1" />			 
+			 <CompetencyParameter Name="Emotion" Value="$parameter2" />			 
+			 <CompetencyParameter Name="BmlOutName" Value="bmlVar" />
+			</Competency>
+
+			<Competency ID="2" Type="GretaBMLSender" Dependency="1">
+			 <CompetencyParameter Name="BmlInName" Value="bmlVar" />
+			</Competency>
+		</CompetencyExecutionPlan>
+		
+	</Rule>
+
+	<Rule>
+		
+		<MindAction Name="gesture">
+				<Parameter No="1" Value="*" />
+				<Parameter No="2" Value="*" />
+				<Parameter No="3" Value="*" />
+		</MindAction>		
+		
+		<CompetencyExecutionPlan>
+			<Competency ID="1" Type="GretaBMLCreator">
+			 <CompetencyParameter Name="Type" Value="gesture" />
+			 <CompetencyParameter Name="GestureName" Value="$parameter1" />			 
+			 <CompetencyParameter Name="GestureClass" Value="$parameter2" />			 
+			 <CompetencyParameter Name="GestureType" Value="$parameter3" />			 
+			 <CompetencyParameter Name="BmlOutName" Value="bmlVar" />
+			</Competency>
+
+			<Competency ID="2" Type="GretaBMLSender" Dependency="1">
+			 <CompetencyParameter Name="BmlInName" Value="bmlVar" />
+			</Competency>
+		</CompetencyExecutionPlan>
+		
+	</Rule>
+	
+	<Rule>
+		
+		<MindAction Name="emotion">
+				<Parameter No="1" Value="*" />
+		</MindAction>		
+		
+		<CompetencyExecutionPlan>
+			<Competency ID="1" Type="GretaBMLCreator">
+			 <CompetencyParameter Name="Type" Value="emotion" />
+			 <CompetencyParameter Name="Emotion" Value="$parameter1" />			 
+			 <CompetencyParameter Name="BmlOutName" Value="bmlVar" />
+			</Competency>
+
+			<Competency ID="2" Type="GretaBMLSender" Dependency="1">
+			 <CompetencyParameter Name="BmlInName" Value="bmlVar" />
+			</Competency>
+		</CompetencyExecutionPlan>
+		
+	</Rule>
+	
+
+	
+
+
+</CompetencyManagerRules>

@@ -1,0 +1,38 @@
+<?xml version="1.0" ?>
+<!DOCTYPE CompetencyLibrary SYSTEM "CompetencyLibrary.dtd">
+
+<CompetencyLibrary>
+
+<!-- Competency library for the test scenario. Following all competencies
+have to be listed. You need to specify 
+a) the class name, 
+b) optional parameters that should be passed to the competency during 
+construction (assumed parameter type is String, parameters are seperated by comma).
+" -->
+
+<Competency ClassName="cmion.TeamBuddy.competencies.Speak"></Competency>
+
+<Competency ClassName="cmion.TeamBuddy.competencies.MoveToUser" />
+				  
+<SamgarCompetency ClassName="cmion.TeamBuddy.competencies.FaceDetect"
+				  Category="FaceDetect" SubCategory="FaceDetect" />
+				  
+<SamgarCompetency ClassName="cmion.TeamBuddy.competencies.Motion"
+				  Category="MoveRobot" SubCategory="Motion" />
+		
+</CompetencyLibrary>
+
+
+
+
+
+
+
+
+
+
+
+
+<!--  <Competency ClassName="cmion.inTheWild.competencies.GretaBMLCreator" />
+<Competency ClassName="cmion.inTheWild.competencies.GretaBMLSender" ConstructorParameters="192.168.0.1" /> 
+ -->
