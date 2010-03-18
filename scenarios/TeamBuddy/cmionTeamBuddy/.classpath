@@ -7,6 +7,5 @@
 	<classpathentry kind="lib" path="jyarp-win.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/ION.Meta"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
-	<classpathentry kind="lib" path="C:/Program Files/Java/jre1.6.0_06/lib/rt.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
