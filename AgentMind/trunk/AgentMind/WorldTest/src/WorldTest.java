@@ -366,7 +366,7 @@ public class WorldTest {
 	}
 	
 	public void CCMemory(){
-		SendPerceptionToAll( "CC-MEMORY");
+		SendPerceptionToAll("CC-MEMORY");
 	}
 	
 	public void SAMemory(String question){

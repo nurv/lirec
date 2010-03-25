@@ -18,7 +18,7 @@ rule "same subject phase1"
 	then		
 		insert (new CandidateEvent($ad, "subject", 1.0f));
 		retract ($ad);
-		System.out.println("same subject " + $ad.getID());
+		#System.out.println("same subject " + $ad.getID());
 end
 
 rule "different subject phase1"
@@ -31,7 +31,7 @@ rule "different subject phase1"
 	then		
 		insert (new CandidateEvent($ad, "subject", 0.8f));
 		retract ($ad);
-		System.out.println("different subject " + $ad.getID());
+		#System.out.println("different subject " + $ad.getID());
 end
 
 rule "same target phase1"
@@ -44,7 +44,7 @@ rule "same target phase1"
 	then
 		insert (new CandidateEvent($ad, "target", 1.0f));
 		retract ($ad);
-		System.out.println("same target " + $ad.getID());
+		#System.out.println("same target " + $ad.getID());
 end
 
 rule "different target phase1"
@@ -57,7 +57,7 @@ rule "different target phase1"
 	then
 		insert (new CandidateEvent($ad, "target", 0.8f));
 		retract ($ad);
-		System.out.println("different target " + $ad.getID());
+		#System.out.println("different target " + $ad.getID());
 end
 
 rule "same action phase1"
@@ -70,7 +70,7 @@ rule "same action phase1"
 	then
 		insert (new CandidateEvent($ad, "action", 1.0f));
 		retract ($ad);
-		System.out.println("same action " + $ad.getID());
+		#System.out.println("same action " + $ad.getID());
 end
 
 rule "different action phase1"
@@ -83,7 +83,7 @@ rule "different action phase1"
 	then
 		insert (new CandidateEvent($ad, "action", 0.8f));
 		retract ($ad);
-		System.out.println("different action " + $ad.getID());
+		#System.out.println("different action " + $ad.getID());
 end
 
 rule "same location phase1"
@@ -96,7 +96,7 @@ rule "same location phase1"
 	then
 		insert (new CandidateEvent($ad, "location", 1.0f));
 		retract ($ad);
-		System.out.println("same location " + $ad.getID());
+		#System.out.println("same location " + $ad.getID());
 end
 
 rule "different location phase1"
@@ -109,7 +109,7 @@ rule "different location phase1"
 	then
 		insert (new CandidateEvent($ad, "location", 0.8f));
 		retract ($ad);
-		System.out.println("different location " + $ad.getID());
+		#System.out.println("different location " + $ad.getID());
 end
 
 rule "same emotion phase1"
@@ -122,7 +122,7 @@ rule "same emotion phase1"
 	then
 		insert (new CandidateEvent($ad, "emotion", 1.0f));
 		retract ($ad);
-		System.out.println("same emotion " + $ad.getID());
+		#System.out.println("same emotion " + $ad.getID());
 end
 
 rule "different emotion phase1"
@@ -135,7 +135,7 @@ rule "different emotion phase1"
 	then
 		insert (new CandidateEvent($ad, "emotion", 0.8f));
 		retract ($ad);
-		System.out.println("different emotion " + $ad.getID());
+		#System.out.println("different emotion " + $ad.getID());
 end
 
 rule "same intention phase1"
@@ -148,7 +148,7 @@ rule "same intention phase1"
 	then
 		insert (new CandidateEvent($ad, "intention", 1.0f));
 		retract ($ad);
-		System.out.println("same intention " + $ad.getID());
+		#System.out.println("same intention " + $ad.getID());
 end
 
 rule "different intention phase1"
@@ -161,7 +161,7 @@ rule "different intention phase1"
 	then
 		insert (new CandidateEvent($ad, "intention", 0.8f));
 		retract ($ad);
-		System.out.println("different intention " + $ad.getID());
+		#System.out.println("different intention " + $ad.getID());
 end
 
 rule "same status phase1"
@@ -174,7 +174,7 @@ rule "same status phase1"
 	then
 		insert (new CandidateEvent($ad, "status", 1.0f));
 		retract ($ad);
-		System.out.println("same status " + $ad.getID());
+		#System.out.println("same status " + $ad.getID());
 end
 
 rule "different status phase1"
@@ -187,7 +187,7 @@ rule "different status phase1"
 	then
 		insert (new CandidateEvent($ad, "status", 0.8f));
 		retract ($ad);
-		System.out.println("different status " + $ad.getID());
+		#System.out.println("different status " + $ad.getID());
 end
 
 rule "same speechActMeaning phase1"
@@ -200,7 +200,7 @@ rule "same speechActMeaning phase1"
 	then
 		insert (new CandidateEvent($ad, "speechActMeaning", 1.0f));
 		retract ($ad);
-		System.out.println("same speechActMeaning " + $ad.getID());
+		#System.out.println("same speechActMeaning " + $ad.getID());
 end
 
 rule "different speechActMeaning phase1"
@@ -213,7 +213,7 @@ rule "different speechActMeaning phase1"
 	then
 		insert (new CandidateEvent($ad, "speechActMeaning", 0.8f));
 		retract ($ad);
-		System.out.println("different speechActMeaning " + $ad.getID());
+		#System.out.println("different speechActMeaning " + $ad.getID());
 end
 
 rule "same multimediaPath phase1"
@@ -226,7 +226,7 @@ rule "same multimediaPath phase1"
 	then
 		insert (new CandidateEvent($ad, "multimediaPath", 1.0f));
 		retract ($ad);
-		System.out.println("same multimediaPath " + $ad.getID());
+		#System.out.println("same multimediaPath " + $ad.getID());
 end
 
 rule "different multimediaPath phase1"
@@ -239,7 +239,7 @@ rule "different multimediaPath phase1"
 	then
 		insert (new CandidateEvent($ad, "multimediaPath", 0.8f));
 		retract ($ad);
-		System.out.println("different multimediaPath " + $ad.getID());
+		#System.out.println("different multimediaPath " + $ad.getID());
 end
 
 rule "same subject"
@@ -256,8 +256,8 @@ rule "same subject"
 			setExtension("subject"),
 			updateEvaluation(1.0f)		
 		}
-		System.out.println("Evaluation " + $cad.getEvaluation());
-		System.out.println("same subject " + $ad.getID());
+		#System.out.println("Evaluation " + $cad.getEvaluation());
+		#System.out.println("same subject " + $ad.getID());
 end
 
 rule "different subject"
@@ -274,8 +274,8 @@ rule "different subject"
 			setExtension("subject"),	
 			updateEvaluation(0.8f)		
 		}
-		System.out.println("Evaluation " + $cad.getEvaluation());
-		System.out.println("different subject " + $ad.getID());
+		#System.out.println("Evaluation " + $cad.getEvaluation());
+		#System.out.println("different subject " + $ad.getID());
 end
 
 rule "same target"
@@ -292,8 +292,8 @@ rule "same target"
 			setExtension("target"),
 			updateEvaluation(1.0f)			
 		}
-		System.out.println("Evaluation " + $cad.getEvaluation());
-		System.out.println("same target " + $ad.getID());
+		#System.out.println("Evaluation " + $cad.getEvaluation());
+		#System.out.println("same target " + $ad.getID());
 end
 
 rule "different target"
@@ -310,8 +310,8 @@ rule "different target"
 			setExtension("target"),
 			updateEvaluation(0.8f)			
 		}
-		System.out.println("Evaluation " + $cad.getEvaluation());
-		System.out.println("different target " + $ad.getID());
+		#System.out.println("Evaluation " + $cad.getEvaluation());
+		#System.out.println("different target " + $ad.getID());
 end
 
 rule "same action"
@@ -328,8 +328,8 @@ rule "same action"
 			setExtension("action"),
 			updateEvaluation(1.0f)		
 		}
-		System.out.println("Evaluation " + $cad.getEvaluation());
-		System.out.println("same action " + $ad.getID());
+		#System.out.println("Evaluation " + $cad.getEvaluation());
+		#System.out.println("same action " + $ad.getID());
 end
 
 rule "different action"
@@ -346,8 +346,8 @@ rule "different action"
 			setExtension("action"),
 			updateEvaluation(0.8f)		
 		}
-		System.out.println("Evaluation " + $cad.getEvaluation());
-		System.out.println("different action " + $ad.getID());
+		#System.out.println("Evaluation " + $cad.getEvaluation());
+		#System.out.println("different action " + $ad.getID());
 end
 
 rule "same location"
@@ -364,8 +364,8 @@ rule "same location"
 			setExtension("location"),
 			updateEvaluation(1.0f)		
 		}
-		System.out.println("Evaluation " + $cad.getEvaluation());
-		System.out.println("same location " + $ad.getID());
+		#System.out.println("Evaluation " + $cad.getEvaluation());
+		#System.out.println("same location " + $ad.getID());
 end
 
 rule "different location"
@@ -382,8 +382,8 @@ rule "different location"
 			setExtension("location"),
 			updateEvaluation(0.8f)		
 		}
-		System.out.println("Evaluation " + $cad.getEvaluation());
-		System.out.println("different location " + $ad.getID());
+		#System.out.println("Evaluation " + $cad.getEvaluation());
+		#System.out.println("different location " + $ad.getID());
 end
 
 rule "same emotion"
@@ -400,8 +400,8 @@ rule "same emotion"
 			setExtension("emotion"),
 			updateEvaluation(1.0f)		
 		}
-		System.out.println("Evaluation " + $cad.getEvaluation());
-		System.out.println("same emotion " + $ad.getID());
+		#System.out.println("Evaluation " + $cad.getEvaluation());
+		#System.out.println("same emotion " + $ad.getID());
 end
 
 rule "different emotion"
@@ -418,8 +418,8 @@ rule "different emotion"
 			setExtension("emotion"),
 			updateEvaluation(1.0f)		
 		}
-		System.out.println("Evaluation " + $cad.getEvaluation());
-		System.out.println("different emotion " + $ad.getID());
+		#System.out.println("Evaluation " + $cad.getEvaluation());
+		#System.out.println("different emotion " + $ad.getID());
 end
 
 rule "same intention"
@@ -436,8 +436,8 @@ rule "same intention"
 			setExtension("intention"),
 			updateEvaluation(1.0f)		
 		}
-		System.out.println("Evaluation " + $cad.getEvaluation());
-		System.out.println("same intention " + $ad.getID());
+		#System.out.println("Evaluation " + $cad.getEvaluation());
+		#System.out.println("same intention " + $ad.getID());
 end
 
 rule "different intention"
@@ -454,8 +454,8 @@ rule "different intention"
 			setExtension("intention"),
 			updateEvaluation(0.8f)		
 		}
-		System.out.println("Evaluation " + $cad.getEvaluation());
-		System.out.println("different intention " + $ad.getID());
+		#System.out.println("Evaluation " + $cad.getEvaluation());
+		#System.out.println("different intention " + $ad.getID());
 end
 
 rule "same status"
@@ -472,8 +472,8 @@ rule "same status"
 			setExtension("status"),
 			updateEvaluation(1.0f)		
 		}
-		System.out.println("Evaluation " + $cad.getEvaluation());
-		System.out.println("same status " + $ad.getID());
+		#System.out.println("Evaluation " + $cad.getEvaluation());
+		#System.out.println("same status " + $ad.getID());
 end
 
 rule "different status"
@@ -490,8 +490,8 @@ rule "different status"
 			setExtension("status"),
 			updateEvaluation(0.8f)		
 		}
-		System.out.println("Evaluation " + $cad.getEvaluation());
-		System.out.println("different status " + $ad.getID());
+		#System.out.println("Evaluation " + $cad.getEvaluation());
+		#System.out.println("different status " + $ad.getID());
 end
 
 rule "same speechActMeaning"
@@ -508,8 +508,8 @@ rule "same speechActMeaning"
 			setExtension("speechActMeaning"),
 			updateEvaluation(1.0f)		
 		}
-		System.out.println("Evaluation " + $cad.getEvaluation());
-		System.out.println("same speechActMeaning " + $ad.getID());
+		#System.out.println("Evaluation " + $cad.getEvaluation());
+		#System.out.println("same speechActMeaning " + $ad.getID());
 end
 
 rule "different speechActMeaning"
@@ -526,8 +526,8 @@ rule "different speechActMeaning"
 			setExtension("speechActMeaning"),
 			updateEvaluation(0.8f)		
 		}
-		System.out.println("Evaluation " + $cad.getEvaluation());
-		System.out.println("different speechActMeaning " + $ad.getID());
+		#System.out.println("Evaluation " + $cad.getEvaluation());
+		#System.out.println("different speechActMeaning " + $ad.getID());
 end
 
 rule "same multimediaPath"

@@ -56,6 +56,8 @@ public class SAQuery {
 	private Hashtable<String, Integer> _results;
 	private ArrayList<ActionDetail> _details;
 	
+	private String _events;
+	
 	private final PropertyChangeSupport changes  = new PropertyChangeSupport( this );
 	 
 	public SAQuery(){
@@ -75,6 +77,8 @@ public class SAQuery {
 		
 		this._results = new Hashtable<String, Integer>();
 		this._details = new ArrayList<ActionDetail>();
+		
+		this._events = "";
 	}
 	    
 	public void setQuery( ArrayList<String> info, String question ) {
@@ -175,7 +179,7 @@ public class SAQuery {
 					this._praiseworthiness = Float.parseFloat(query.nextToken());
 				}
 				this._numKnownVar++;
-			}
+			}			
 		}
 		System.out.println("ID" + this._id + "subject " + this._subject + " target " + this._target 
 				+ " action " + this._action + " location " + _location 
@@ -203,6 +207,8 @@ public class SAQuery {
 		this._numKnownVar = 0;		
 		this._results.clear();
 		this._details.clear();
+		
+		this._events = "";
 	}
 	
 	public String getID(){
@@ -315,10 +321,9 @@ public class SAQuery {
     	this._praiseworthiness = praiseworthiness;
     }
     
-    public void setDetails(ActionDetail ad, String result)
+    public void setDetails(ActionDetail ad)
     {
     	this._details.add(ad);
-    	setResults(result);
     }
     
     public void setResults(String result)

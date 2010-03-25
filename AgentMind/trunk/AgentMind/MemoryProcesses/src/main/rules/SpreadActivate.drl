@@ -74,18 +74,18 @@ rule "action-action phase1"
 		System.out.println("action-action " + $ad.getID());
 end
 
-#rule "location-location phase1"
-#	no-loop true
-#	salience 50
-#	when
-#		$q: SAQuery($l1: location)
-#		$ad: ActionDetail(location == $l1) 			
-#	then
-#		insert (new CandidateEvent($ad, "location", 1.0f));
-#		retract ($ad);
-#		System.out.println("Location " + $l1);
-#		System.out.println("location-location " + $ad.getID());
-#end
+rule "location-location phase1"
+	no-loop true
+	salience 50
+	when
+		$q: SAQuery($l1: location)
+		$ad: ActionDetail(location == $l1) 			
+	then
+		insert (new CandidateEvent($ad, "location", 1.0f));
+		retract ($ad);
+		System.out.println("Location " + $l1);
+		System.out.println("location-location " + $ad.getID());
+end
 
 rule "intention-intention phase1"
 	no-loop true
@@ -345,7 +345,7 @@ rule "action"
 		$ad: ActionDetail ($a: action) from $cad.actionDetail	
 	then			
 		modify ($q) {
-			setDetails($ad, $a)
+			setResults($a)
 		}
 		System.out.println("Action " + $a);
 		System.out.println("Retracted " + $ad.getID() + "\n");
@@ -427,3 +427,17 @@ rule "multimediaPath"
 		retract ($cad);			
 end
 
+rule "events"
+	no-loop true
+	when
+		$q: SAQuery(question == "events")
+		$cad: CandidateEvent( phase == $q.numKnownVar )
+		$ad: ActionDetail() from $cad.actionDetail	 
+	then			
+		modify ($q) {
+			setDetails($ad)
+		}
+		System.out.println("Event " + $ad.getID());
+		System.out.println("Retracted " + $ad.getID() + "\n");
+		retract ($cad);			
+end

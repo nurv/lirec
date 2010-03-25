@@ -197,8 +197,8 @@ public class UserInterface implements ActionListener {
         _infoOptions.addItem("location LivingRoom");
         _infoOptions.addItem("action Greet");
         _infoOptions.addItem("action SpeechAct");
-        _infoOptions.addItem("desirability positive");
-        _infoOptions.addItem("desirability negative");
+        _infoOptions.addItem("desirability 2");
+        _infoOptions.addItem("desirability -2");
 		_infoOptions.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0) {
 				_world.AddKnownInfo(_infoOptions.getSelectedItem().toString());
@@ -218,6 +218,7 @@ public class UserInterface implements ActionListener {
         _queryOptions.addItem("action");
         _queryOptions.addItem("intention");
         _queryOptions.addItem("status");
+        _queryOptions.addItem("events");
 		_queryOptions.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0) {
 		    	WriteLine("=> Change the SA query: " + _queryOptions.getSelectedItem().toString());

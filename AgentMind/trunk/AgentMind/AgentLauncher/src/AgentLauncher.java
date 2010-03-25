@@ -16,7 +16,7 @@ import FAtiMA.util.parsers.ScenarioLoaderHandler;
 
 import MemoryProcesses.CompoundCue;
 import MemoryProcesses.SpreadActivate;
-
+import MemoryProcesses.Generalise;
 
 public class AgentLauncher {
 		
@@ -97,6 +97,8 @@ public class AgentLauncher {
 			System.out.println("Compound cue set ");
 			agent.setSpreadActivate(new SpreadActivate());
 			System.out.println("Spread activate set ");
+			agent.setGeneralise(new Generalise());
+			System.out.println("Generalise set ");
 		}		
 		agent.StartAgent();
 	}

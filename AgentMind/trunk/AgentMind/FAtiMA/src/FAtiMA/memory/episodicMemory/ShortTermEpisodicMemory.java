@@ -126,7 +126,7 @@ public class ShortTermEpisodicMemory implements Serializable {
 				}
 			}
 	
-			action = new ActionDetail(m, eventID++,cause,location);
+			action = new ActionDetail(m,eventID++,cause,location);
 			_details.add(action);
 			action.UpdateEmotionValues(m, em);
 		}

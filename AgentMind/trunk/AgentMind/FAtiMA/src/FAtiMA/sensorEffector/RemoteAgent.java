@@ -334,8 +334,6 @@ public abstract class RemoteAgent extends SocketListener {
 				}					
 				System.out.println("question " + question);
 				ArrayList<String> knownInfo = ExtractKnownInfo(known);
-				//ArrayList<MemoryEpisode> episodes = _agent.getMemory().getEpisodicMemory().GetAllEpisodes();
-				//ArrayList<ActionDetail> records = _agent.getMemory().getEpisodicMemory().getDetails();
 				_agent.getSpreadActivate().Spread(question, knownInfo, _agent.getMemory().getEpisodicMemory());
 				
 				Hashtable<String, Integer> saResult = _agent.getSpreadActivate().getSAResult();
@@ -345,7 +343,24 @@ public abstract class RemoteAgent extends SocketListener {
 					String result = (String) it.next();
 					System.out.println(question + " " + result + " frequency " + saResult.get(result));
 				}
+				
+				_agent.getGeneralise().GeneraliseEvents(_agent.getSpreadActivate().getDetails());
+				Hashtable<ArrayList<Integer>, Hashtable<String, String>> gResult = _agent.getGeneralise().getMatch();
 			
+				it = gResult.keySet().iterator();
+				while (it.hasNext())
+				{
+					ArrayList<Integer> result = (ArrayList<Integer>) it.next();
+					System.out.println("id " + result);
+					Hashtable<String, String> match = gResult.get(result);
+					Iterator it2 = match.keySet().iterator();
+					while (it2.hasNext())
+					{
+						String matchingValues = (String) it2.next();
+						System.out.println("match in Remote Agent " + matchingValues);
+					}
+				}
+				
 				System.out.println("\n\n");
 			}
 			else if(msgType.equals(CC_MEMORY))

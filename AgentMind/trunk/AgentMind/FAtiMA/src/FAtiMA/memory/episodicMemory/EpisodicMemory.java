@@ -119,7 +119,7 @@ public class EpisodicMemory {
 		{
 			synchronized (this)
 			{
-				_stm.AssociateEmotionToDetail(m, em,cause,location);
+				_stm.AssociateEmotionToDetail(m,em,cause,location);
 			}
 		}
 	}

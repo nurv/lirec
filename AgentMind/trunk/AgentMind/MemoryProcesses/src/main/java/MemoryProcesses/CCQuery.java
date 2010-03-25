@@ -38,20 +38,20 @@ import FAtiMA.memory.episodicMemory.ActionDetail;
 
 public class CCQuery {
 	
+	private int _numField = 9;
+	
 	private ActionDetail _result;
 	private float _eval;
 	private ArrayList<ActionDetail> _results;
 	private Hashtable<Integer, Float> _evaluations;
 	private ActionDetail _actionDetail;
-	private int _numField;
-	
+
 	private final PropertyChangeSupport changes  = new PropertyChangeSupport( this );
 	 
 	public CCQuery(){
 		this._eval = 0;
 		this._results = new ArrayList<ActionDetail>();
 		this._evaluations = new Hashtable<Integer, Float>();
-		this._numField = 9;
 	}
 	
 	public ActionDetail getActionDetail(){

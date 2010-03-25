@@ -37,12 +37,12 @@ import FAtiMA.memory.episodicMemory.ActionDetail;
 
 
 public class CandidateEvent{
-
-	ActionDetail _actionDetail;
 	
-	int _phase;
-	ArrayList<String> _extension;
-	float _evaluation;
+	private ActionDetail _actionDetail;
+	
+	private int _phase;
+	private ArrayList<String> _extension;
+    private	float _evaluation;
 	
 	public CandidateEvent(ActionDetail actionDetail, String extension, float evaluation)
 	{
@@ -64,7 +64,7 @@ public class CandidateEvent{
 		return this._phase;
 	}
 	
-	public ArrayList getExtension()
+	public ArrayList<String> getExtension()
 	{
 		return this._extension;
 	}

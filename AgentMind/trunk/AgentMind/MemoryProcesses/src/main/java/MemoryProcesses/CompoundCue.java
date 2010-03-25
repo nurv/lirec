@@ -97,8 +97,7 @@ public class CompoundCue extends RuleEngine implements ICompoundCue {
 	}
 	
 	/**
-	 * Return the result of spreading activation
-	 * currently take into consideration the frequency of appearance
+	 * Return the result of matching
 	 * @return a list of answer to the query
 	 */
 	/*public Hashtable<Integer, Float> getCCResults()

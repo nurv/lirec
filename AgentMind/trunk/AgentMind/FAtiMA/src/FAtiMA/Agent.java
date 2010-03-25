@@ -64,6 +64,7 @@ import FAtiMA.wellFormedNames.Symbol;
 
 import FAtiMA.memory.ICompoundCue;
 import FAtiMA.memory.ISpreadActivate;
+import FAtiMA.memory.IGeneralise;
 
 public class Agent implements AgentModel {
 	
@@ -99,6 +100,7 @@ public class Agent implements AgentModel {
 
 	protected ICompoundCue _compoundCue;
 	protected ISpreadActivate _spreadActivate;
+	protected IGeneralise _generalise;
 	
 	private String _saveDirectory;
 	public static final String MIND_PATH = "data/characters/minds/";
@@ -376,6 +378,15 @@ public class Agent implements AgentModel {
 	 */	
 	public ISpreadActivate getSpreadActivate() {
 		return _spreadActivate;
+	}
+	
+	/** 
+	 * Gets the generalise mechanism of the agent
+	 * @return the generalise mechanism
+	 *  added by Meiyii 18/03/10
+	 */	
+	public IGeneralise getGeneralise() {
+		return _generalise;
 	}
 	
 	public HashMap<String,ModelOfOther> getToM()
@@ -900,8 +911,15 @@ public class Agent implements AgentModel {
 	public void setSpreadActivate(ISpreadActivate spreadActivate) {
 		this._spreadActivate = spreadActivate;
 	}
-	
-	
+		
+	/** 
+	 * Set the generalise mechanism object of the agent
+	 * @param generalise
+	 *  added by Meiyii 18/03/10
+	 */	
+	public void setGeneralise(IGeneralise generalise) {
+		this._generalise = generalise;
+	}
 	
 	/**
 	 * Gets the gender of the agent
