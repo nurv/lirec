@@ -10,6 +10,7 @@ import FAtiMA.conditions.RecentEventCondition;
 
 import FAtiMA.deliberativeLayer.plan.Effect;
 import FAtiMA.deliberativeLayer.plan.Step;
+import FAtiMA.emotionalState.EmotionDisposition;
 import FAtiMA.util.enumerables.ActionEvent;
 import FAtiMA.util.enumerables.EmotionType;
 import FAtiMA.util.enumerables.EventType;
@@ -27,6 +28,8 @@ public abstract class OCCAppraisalRules {
 		Step joyOperator;
 		Step distressOperator;
 		ArrayList<Step> appraisalOperators;
+		EmotionDisposition disp;
+		int threshold;
 		Effect aux;
 		EmotionCondition c;
 		AppraisalCondition appraisal;
@@ -41,12 +44,16 @@ public abstract class OCCAppraisalRules {
 		aux = new Effect(am, "JoyEmotion", 1.0f,c);
 		joyOperator.AddEffect(aux);
 		
+		disp = am.getEmotionalState().getEmotionDispositions()[EmotionType.JOY];
+		threshold = disp.GetThreshold();
 		
 		params = new ArrayList<Symbol>();
 		//params.add(new Symbol("[p1]"));
 		//params.add(new Symbol("[p2]"));
 		appraisal = new AppraisalCondition(new Symbol("[AGENT]"),
-				"desirability", new Symbol("[X]"),(short)0,
+				"desirability", new Symbol("[X]"),
+				threshold, 
+				(short)0,
 				new Symbol("[s]"),
 				new Symbol("[a]"),
 				new Symbol("[t]"), params);
@@ -67,12 +74,16 @@ public abstract class OCCAppraisalRules {
 		aux = new Effect(am, "DistressEmotion", 1.0f,c);
 		distressOperator.AddEffect(aux);
 		
+		disp = am.getEmotionalState().getEmotionDispositions()[EmotionType.DISTRESS];
+		threshold = disp.GetThreshold();
 		
 		params = new ArrayList<Symbol>();
 		params.add(new Symbol("[p1]"));
 		params.add(new Symbol("[p2]"));
 		appraisal = new AppraisalCondition(new Symbol("[AGENT]"),
-				"desirability", new Symbol("[X]"), (short)0,
+				"desirability", new Symbol("[X]"),
+				threshold,
+				(short)0,
 				new Symbol("[s]"),
 				new Symbol("[a]"),
 				new Symbol("[t]"), params);
@@ -86,6 +97,7 @@ public abstract class OCCAppraisalRules {
 		return appraisalOperators;
 		
 	}
+
 	
 	/*public Step getJoyOperator()
 	{

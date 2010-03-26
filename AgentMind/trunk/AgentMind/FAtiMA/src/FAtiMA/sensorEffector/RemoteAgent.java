@@ -834,14 +834,13 @@ public abstract class RemoteAgent extends SocketListener {
 		String subject = st.nextToken();
 		String[] properties;
 		
+		
+		
 		//the following ones correspond to ":" separated property value pairs
 		while(st.hasMoreTokens()) {
 			properties = st.nextToken().split(":");
 			//property[0] corresponds to the property name, [1] to the property value
 			//constructs something like Luke(Strength)
-			
-			_agent.PerceivePropertyChanged(subject, properties[0], properties[1]);
-			AgentLogger.GetInstance().log("Look-At:" + subject + " " + properties[0] + " " + properties[1]);
 			
 			//If the agent looks at another agent it initializes it's needs
 			if(!subject.equalsIgnoreCase(_agent.getName()) && 
@@ -852,6 +851,9 @@ public abstract class RemoteAgent extends SocketListener {
 				_agent.AddNearByAgent(subject);
 				
 			}
+			
+			_agent.PerceivePropertyChanged(subject, properties[0], properties[1]);
+			AgentLogger.GetInstance().log("Look-At:" + subject + " " + properties[0] + " " + properties[1]);
 		}
 		//Signals a lookat event to the Agent
 		//Event event = new Event(_agent.name(), "look-at", subject);

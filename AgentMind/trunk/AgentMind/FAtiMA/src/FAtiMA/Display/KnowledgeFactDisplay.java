@@ -50,6 +50,11 @@ public class KnowledgeFactDisplay {
         _panel.add(_label);
     }
     
+    public void SetName(String name)
+    {
+    	_panel.setBorder(BorderFactory.createTitledBorder(name));
+    }
+    
     public void SetValue(String value) {
         _label.setText(value);
     }

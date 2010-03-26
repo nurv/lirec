@@ -122,9 +122,14 @@ public class WorkingMemory implements Serializable {
 		}
 	}
 	
-    public void ClearChangeList() {
+   public void ClearChangeList() {
 	    _changeList.clear();
 	}
+   
+   public int Count()
+   {
+	   return _wM.CountElements();
+   }
     
     public ArrayList<KnowledgeSlot> GetChangeList() {
 	    return _changeList;
@@ -166,8 +171,8 @@ public class WorkingMemory implements Serializable {
 				{
 					_factList.remove(ks);
 					_factList.add(ks);
-					//if(!_changeList.contains(ks))
-					//	_changeList.add(ks);
+					if(!_changeList.contains(ks))
+						_changeList.add(ks);
 					return;
 				}
 			}
@@ -242,26 +247,31 @@ public class WorkingMemory implements Serializable {
 		Symbol l = null;		
 
 		synchronized (this) {
-			while (li.hasNext()) {
+			while (li.hasNext()) 
+			{
 				currentSlot = aux;
 				l = li.next();
-				if (currentSlot.containsKey(l.toString())) {
+				if (currentSlot.containsKey(l.toString())) 
+				{
 					aux = currentSlot.get(l.toString());
-				} else {
+				} 
+				else 
+				{
 					newProperty = true;
 					_newKnowledge = true;
 					aux = new KnowledgeSlot(l.toString());
 					currentSlot.put(l.toString(), aux);
 				} 
 			}
+			
 			if(aux.getValue() == null || 
 					!aux.getValue().equals(value))
 			{
 				aux.setValue(value);
 				_newKnowledge = true;
-				KnowledgeSlot ksAux = new KnowledgeSlot(property.toString());
-				ksAux.setValue(value);
-				_newFacts.add(ksAux);
+				//KnowledgeSlot ksAux = new KnowledgeSlot(property.toString());
+				//ksAux.setValue(value);
+				_newFacts.add(aux);
 				
 				//System.out.println("New facts: " + ksAux.toString());
 			}
@@ -277,25 +287,13 @@ public class WorkingMemory implements Serializable {
 			}
 			else
 			{
-				KnowledgeSlot ks;
-				ListIterator<KnowledgeSlot> li2 =  _factList.listIterator();
-				while(li2.hasNext())
-				{
-					ks = li2.next();
-					if(ks.getName().equals(property.toString()))
-					{
-						ks.setValue(value);
-						//if(!_changeList.contains(ks))
-						//	_changeList.add(ks);
-						//System.out.println("New property value: " + ks.toString());
-					} 
-				}
 				this.RearrangeWorkingMemory(property);
 			}
 			
 			if(_factList.size() > WorkingMemory.MAXENTRY)
 			{
 				KnowledgeSlot temp = (KnowledgeSlot) _factList.get(0);
+				_factList.remove(0);
 				
 				Name tempName = Name.ParseName(temp.getName());
 				ArrayList<Symbol> literals = tempName.GetLiteralList();
@@ -305,10 +303,11 @@ public class WorkingMemory implements Serializable {
 				while (li.hasNext()) {
 					currentSlot =  aux;
 					l = (Symbol) li.next();
-					if (currentSlot.containsKey(l.toString())) {
+					if (currentSlot.containsKey(l.toString())) 
+					{
 						aux = currentSlot.get(l.toString());
-					} else
-						return;
+					} 
+					else return;
 				}
 			
 				/*if (aux.CountElements() > 0)
@@ -323,9 +322,8 @@ public class WorkingMemory implements Serializable {
 	            }*/
 				currentSlot.remove(l.toString());
 				
-				kb.Tell(tempName, temp.getValue());
-				_factList.remove(temp);		
-				_changeList.remove(temp);
+				kb.Tell(tempName, temp.getValue());		
+				//_changeList.remove(temp);
 			}
 		}
 	}

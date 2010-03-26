@@ -265,7 +265,7 @@ public class KnowledgeBase implements Serializable {
 			}
 			else
 			{
-				KnowledgeSlot ks;
+				/*KnowledgeSlot ks;
 				ListIterator<KnowledgeSlot> li2 = _factList.listIterator();
 				while(li2.hasNext())
 				{
@@ -275,7 +275,7 @@ public class KnowledgeBase implements Serializable {
 						ks.setValue(value);
 						//System.out.println("New property value in KB: " + ks.toString());
 					}
-				}
+				}*/
 			}
 		}
 	}

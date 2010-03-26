@@ -7,6 +7,7 @@ import java.util.ListIterator;
 import java.util.StringTokenizer;
 
 import FAtiMA.AgentModel;
+import FAtiMA.emotionalState.EmotionalPameters;
 import FAtiMA.memory.episodicMemory.ActionDetail;
 import FAtiMA.util.Constants;
 import FAtiMA.wellFormedNames.Name;
@@ -25,12 +26,14 @@ public class AppraisalCondition extends PastEventCondition {
 	private String _appraisalVariable;
 	private Symbol _value;
 	private short _test;
+	private int _threshold;
+	
 	
 	private AppraisalCondition()
 	{
 	}
 	
-	public AppraisalCondition(Symbol agent, String appraisalVariable, Symbol value, short test, Symbol subject, Symbol action, Symbol target, ArrayList<Symbol> parameters)
+	public AppraisalCondition(Symbol agent, String appraisalVariable, Symbol value, int threshold, short test, Symbol subject, Symbol action, Symbol target, ArrayList<Symbol> parameters)
 	{
 		//this._type = type;
 		//this._status = status;
@@ -39,6 +42,7 @@ public class AppraisalCondition extends PastEventCondition {
 		this._agent = agent;
 		this._appraisalVariable = appraisalVariable;
 		this._value = value;
+		this._threshold = threshold;
 		this._test = test;
 		
 		this._subject = subject;
@@ -74,6 +78,7 @@ public class AppraisalCondition extends PastEventCondition {
 		newCondition._agent = (Symbol) this._agent.clone();
 		newCondition._appraisalVariable = this._appraisalVariable;
 		newCondition._value = (Symbol) this._value.clone();
+		newCondition._threshold = this._threshold;
 		newCondition._test = this._test;
 		
 		newCondition._name = (Name) this._name.clone();
@@ -174,15 +179,16 @@ public class AppraisalCondition extends PastEventCondition {
 	}
 	
 	public boolean CheckCondition(AgentModel am) {
-		//TODO finish this method
 		return this._action.isGrounded();		 
 	}
 	
 	public ArrayList<SubstitutionSet> GetValidBindings(AgentModel am) {
 		
 		Symbol target;
+		float finalvalue;
 		ArrayList<SubstitutionSet> subs = new ArrayList<SubstitutionSet>();
 		SubstitutionSet sset;
+		float mood;
 	
 		AgentModel modelToTest = am;
 		
@@ -195,8 +201,22 @@ public class AppraisalCondition extends PastEventCondition {
 			modelToTest = am.getToM().get(this._agent.toString());
 		}
 		
+		mood = modelToTest.getEmotionalState().GetMood();
+		
+		if(_test == 0)
+		{
+			finalvalue = Float.parseFloat(this._value.toString()) + _threshold;
+			finalvalue = finalvalue - (mood * EmotionalPameters.MoodInfluenceOnEmotion);
+			
+		}
+		else
+		{
+			finalvalue = Float.parseFloat(this._value.toString()) - _threshold;
+			finalvalue = finalvalue - (mood * EmotionalPameters.MoodInfluenceOnEmotion);
+		}
+		
 		ArrayList<String> knownInfo = new ArrayList<String>();
-		knownInfo.add("desirability " + this._value.toString());
+		knownInfo.add("desirability " + finalvalue);
 		//float desirability = Float.parseFloat(this._value.toString());
 		/*if(desirability >= 0)
 		{
@@ -234,15 +254,6 @@ public class AppraisalCondition extends PastEventCondition {
 			
 			return subs;
 		}
-		
-		//Hashtable<String, Integer> saResult = am.getSpreadActivate().getSAResult();
-		/*Iterator it = saResult.keySet().iterator();
-		while (it.hasNext())
-		{
-			//talk to Mei Yii, preciso de mais informação aqui, isto deve retornar o action detail completo se possivel
-			String result = (String) it.next();
-			System.out.println(question + " " + result + " frequency " + saResult.get(result));
-		}*/
 	
 		return null;
 	}

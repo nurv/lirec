@@ -145,7 +145,7 @@ public class ShortTermMemoryPanel extends AgentDisplayPanel {
         KnowledgeFactDisplay kDisplay;
         int index;         
         
-        if (sm.Count() >= _knowledgeSize)
+        /*if (sm.Count() >= _knowledgeSize)
         {
         	 _knowledgeFactsPanel.removeAll();
         	 _knowledgeSize = sm.Count();
@@ -160,7 +160,7 @@ public class ShortTermMemoryPanel extends AgentDisplayPanel {
                 _knowledgeFactList.add(kDisplay);
                 _knowledgeFactsPanel.add(kDisplay.GetPanel());
             }
-        }
+        }*/
         
         li = sm.GetFactList();
         ArrayList<KnowledgeSlot> changeList = sm.GetChangeList();

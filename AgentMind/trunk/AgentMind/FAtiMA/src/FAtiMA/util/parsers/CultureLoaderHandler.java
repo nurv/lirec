@@ -390,6 +390,6 @@ public class CultureLoaderHandler extends ReflectXMLHandler {
 		if( _contextBeingParsed == null )
 			throw new ContextParsingException("Trying to parse a SocialCondition outside of a Context");
 
-		_contextBeingParsed.AddSocialCondition( SocialCondition.Parse(attributes) );
+		//_contextBeingParsed.AddSocialCondition( SocialCondition.Parse(attributes) );
 	}
 }

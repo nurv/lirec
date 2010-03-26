@@ -1,12 +1,19 @@
 package FAtiMA.conditions;
 
+import java.util.ArrayList;
+
 import org.xml.sax.Attributes;
 
 
 import FAtiMA.AgentModel;
 import FAtiMA.exceptions.ContextParsingException;
+import FAtiMA.memory.semanticMemory.KnowledgeBase;
+import FAtiMA.socialRelations.LikeRelation;
 import FAtiMA.util.AgentLogger;
+import FAtiMA.util.Constants;
 import FAtiMA.wellFormedNames.Name;
+import FAtiMA.wellFormedNames.Substitution;
+import FAtiMA.wellFormedNames.Symbol;
 
 /**
  * Represents a Social Relation that needs to be fullfiled in order to trigger
@@ -20,16 +27,11 @@ import FAtiMA.wellFormedNames.Name;
  * @see Context
  * @see Ritual
  */
-public class SocialCondition extends PropertyCondition {
+public class SocialCondition extends Condition {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
-	private static String RELATION_NAME_STR = "name";
-	private static String TARGET_STR = "target";
-	private static String OPERATOR_STR = "operator";
-	private static String VALUE_STR = "value";
 	
 	private static Operator LESS_THAN = new LessThan();
 	private static Operator LESS_THAN_OR_EQUAL = new LessThanOrEqual();
@@ -38,111 +40,63 @@ public class SocialCondition extends PropertyCondition {
 	private static Operator MORE_THAN = new MoreThan();
 	private static Operator NOT_EQUAL = new NotEqual();
 	
+	private Symbol _subject;
 	private Operator _operator;
+	private Symbol _target;
+	private float _value;
 	
-	public static SocialCondition Parse( Attributes attributes ) throws ContextParsingException{
-		SocialCondition socialRel = new SocialCondition();
-		if( attributes.getLength() != 4 )
-			throw createException("There should be exactly 4 attributes in the xml ("+RELATION_NAME_STR+";"+TARGET_STR+";"+OPERATOR_STR+";"+VALUE_STR+")");
+	/**
+	 * Checks if the Predicate is verified in the agent's KnowledgeBase
+	 * @return true if the Predicate is verified, false otherwise
+	 * @see KnowledgeBase
+	 */
+	
+	private SocialCondition()
+	{
 		
-		String nameStr = attributes.getValue(RELATION_NAME_STR);
-		if( nameStr == null )
-			throw createException("Missing attribute '"+RELATION_NAME_STR+"'");
-		
-		String targetStr = attributes.getValue(TARGET_STR);
-		if( nameStr == null )
-			throw createException("Missing attribute '"+TARGET_STR+"'");
-		
-		socialRel._operator = parseOperator( attributes.getValue(OPERATOR_STR) );
-		
-		String valueStr = attributes.getValue(VALUE_STR);
-		
-		
-		try{
-			int relationValue = 0;
-			relationValue = Integer.parseInt( valueStr );
-			
-			if( relationValue < -10 || relationValue > 10 )
-				throw createException("The '"+VALUE_STR+"' attribute should be an integer between -10 and 10");
-		}
-		catch(NumberFormatException e){
-			
-			
-			// Its not a number, lets see if it's a bool
-			if( !valueStr.equalsIgnoreCase("true") && !valueStr.equalsIgnoreCase("false") ){
-				// isn't a boolean, then we assume it is as character!
-				valueStr += "("+nameStr+")";
-			}
-			else{
-				// if it is a bool, check if the operator is equal or not equal
-				if( !(socialRel._operator instanceof SocialCondition.Equal) && !(socialRel._operator instanceof SocialCondition.NotEqual)){
-					AgentLogger.GetInstance().logAndPrint("Received a bool in a SocialCondition but the operator is not '=' nor '!='");
-				}
-			}
-		}
-
-		/// TODO Check if target is a character
-		//if( target is not character )
-		//	throw createException("The '"+_targetStr+"' attribute should be a character");
-		
-		socialRel._name = Name.ParseName(targetStr+"("+nameStr+")");
-		socialRel._value = Name.ParseName( valueStr );
-		
-		return socialRel;
 	}
 
-	protected SocialCondition(){
-		super(null,null);
+	protected SocialCondition(Symbol subject, Symbol target, float value, Operator op){
+		this._name = subject;
+		this._target = target;
+		this._value = value;
+		this._operator = op;
 	}
 	
-	public Object clone() {
-		SocialCondition aux = new SocialCondition();
-		aux._name = (Name)_name.clone();
-		aux._value = (Name)_value.clone();
-		aux._operator = _operator;
-		return aux;
+	public Object clone()
+	{
+		SocialCondition cond = new SocialCondition();
+		cond._name = (Symbol) this._name.clone();
+		cond._value = this._value;
+		cond._target = (Symbol) this._target.clone();
+		cond._operator = this._operator;
+		return cond;
 	}
 	
-	public boolean CheckCondition(AgentModel am){
-		boolean result = false;
-		
-		if( !super.CheckCondition(am) )
-			return result;
-		
-		Object actualRelationValueStr = _name.evaluate(am.getMemory()); 
-		if( actualRelationValueStr == null )
-			return result;
-		
-		Object relationValueStr = _value.evaluate(am.getMemory());
-		if( relationValueStr == null ) // i.e. is a constant
-			relationValueStr = _value;
-		
-		
-		int actualRelationValue = -1;
-		
-		if( actualRelationValueStr.toString().equalsIgnoreCase("true") )
-			actualRelationValue = 1;
-		else if( actualRelationValueStr.toString().equalsIgnoreCase("false") )
-			actualRelationValue = 0;
+	
+	public boolean CheckCondition(AgentModel am) {
+		AgentModel modelToTest;
+		float existingValue;
+		if(!_subject.isGrounded() && !_target.isGrounded()) return false;
+
+		if(_subject.equals(Constants.SELF))
+		{
+			modelToTest = am;
+		}
 		else
-			actualRelationValue = Integer.parseInt(actualRelationValueStr.toString());
+		{
+			modelToTest = am.getToM().get(_subject);
+		}
 		
-		int relationValue = -1;
-		if( relationValueStr.toString().equalsIgnoreCase("true") )
-			relationValue = 1;
-		else if( relationValueStr.toString().equalsIgnoreCase("false") )
-			relationValue = 0;
-		else
-			relationValue = Integer.parseInt(relationValueStr.toString());
+		existingValue = LikeRelation.getRelation(_subject.toString(), _target.toString()).getValue(modelToTest.getMemory());
 		
-		result = _operator.process( actualRelationValue, relationValue );
-		
-		return result;
+		return _operator.process(existingValue, _value);
 	}
+	
 	
 	public String toString()
 	{
-		return _name + " " + _operator + " " + _value;
+		return _subject + " like" + _operator + " " + _target + " " + _value;
 	}
 	
 	private static ContextParsingException createException( String msg ){
@@ -171,11 +125,11 @@ public class SocialCondition extends PropertyCondition {
 	}
 	
 	private interface Operator{
-		public abstract boolean process( int val1, int val2 );
+		public abstract boolean process( float val1, float val2 );
 	}
 	
 	private static class LessThan implements Operator{
-		public boolean process( int val1, int val2 ){
+		public boolean process( float val1, float val2 ){
 			return val1 < val2;
 		}
 		
@@ -186,7 +140,7 @@ public class SocialCondition extends PropertyCondition {
 	}
 	
 	private static class LessThanOrEqual implements Operator{
-		public boolean process( int val1, int val2 ){
+		public boolean process( float val1, float val2 ){
 			return val1 <= val2;
 		}
 		
@@ -197,7 +151,7 @@ public class SocialCondition extends PropertyCondition {
 	}
 	
 	private static class Equal implements Operator{
-		public boolean process( int val1, int val2 ){
+		public boolean process( float val1, float val2 ){
 			return val1 == val2;
 		}
 		
@@ -208,7 +162,7 @@ public class SocialCondition extends PropertyCondition {
 	}
 	
 	private static class MoreThanOrEqual implements Operator{
-		public boolean process( int val1, int val2 ){
+		public boolean process( float val1, float val2 ){
 			return val1 >= val2;
 		}
 		
@@ -219,7 +173,7 @@ public class SocialCondition extends PropertyCondition {
 	}
 	
 	private static class MoreThan implements Operator{
-		public boolean process( int val1, int val2 ){
+		public boolean process( float val1, float val2 ){
 			return val1 > val2;
 		}
 		
@@ -230,7 +184,7 @@ public class SocialCondition extends PropertyCondition {
 	}
 	
 	private static class NotEqual implements Operator{
-		public boolean process( int val1, int val2 ){
+		public boolean process( float val1, float val2 ){
 			return val1 != val2;
 		}
 		
@@ -238,5 +192,61 @@ public class SocialCondition extends PropertyCondition {
 		{
 			return "!=";
 		}
+	}
+
+	@Override
+	public Name GetValue() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	protected ArrayList<Substitution> GetValueBindings(AgentModel am) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Object GenerateName(int id) {
+		SocialCondition cond = (SocialCondition) this.clone();
+		cond.ReplaceUnboundVariables(id);
+		return cond;
+	}
+
+	@Override
+	public Object Ground(ArrayList<Substitution> bindingConstraints) {
+		SocialCondition cond = (SocialCondition) this.clone();
+		cond.MakeGround(bindingConstraints);
+		return cond;
+	}
+
+	@Override
+	public Object Ground(Substitution subst) {
+		SocialCondition cond = (SocialCondition) this.clone();
+		cond.MakeGround(subst);
+		return cond;
+	}
+
+	@Override
+	public void MakeGround(ArrayList<Substitution> bindings) {
+		this._subject.MakeGround(bindings);
+		this._target.MakeGround(bindings);	
+	}
+
+	@Override
+	public void MakeGround(Substitution subst) {
+		this._subject.MakeGround(subst);
+		this._target.MakeGround(subst);	
+	}
+
+	@Override
+	public void ReplaceUnboundVariables(int variableID) {
+		this._subject.ReplaceUnboundVariables(variableID);
+		this._target.ReplaceUnboundVariables(variableID);
+	}
+
+	@Override
+	public boolean isGrounded() {
+		return this._subject.isGrounded() && this._target.isGrounded();
 	}
 }

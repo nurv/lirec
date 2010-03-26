@@ -220,6 +220,13 @@ public class WorldSimulatorRemoteAgent extends RemoteAgent {
 
 		}
 		else {
+			if(action.equals("look-at"))
+			{
+				if(!subject.equals(this._agent.getName()))
+				{
+					_agent.PerceiveLookAt(subject, target);	
+				}
+			}
 			/*event = new Event(subject,actionName,target);
 			Iterator it = action.GetLiteralList().iterator();
 			it.next();

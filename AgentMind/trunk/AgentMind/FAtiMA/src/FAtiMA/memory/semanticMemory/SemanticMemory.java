@@ -105,7 +105,7 @@ public class SemanticMemory {
 	
 	public int Count()
 	{
-		return _kb.Count();
+		return _stm.Count();
 	}
 
 	
@@ -115,6 +115,11 @@ public class SemanticMemory {
 	
 	public ListIterator<KnowledgeSlot> GetFactList() {
 	    return _stm.GetFactList();
+	}
+	
+	public ListIterator<KnowledgeSlot> GetKnowledgeBaseFacts()
+	{
+		return _kb.GetFactList();
 	}
 	
 	public ArrayList<KnowledgeSlot> getNewFacts()

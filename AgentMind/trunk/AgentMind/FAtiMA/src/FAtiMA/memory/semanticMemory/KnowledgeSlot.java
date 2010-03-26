@@ -37,6 +37,7 @@ package FAtiMA.memory.semanticMemory;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Set;
 
 
 /**
@@ -96,6 +97,12 @@ public class KnowledgeSlot implements Serializable {
 	 */
 	public KnowledgeSlot get(String key) {
 	    return (KnowledgeSlot) _children.get(key);
+	}
+
+	
+	public Set<String> getKeys()
+	{
+		return _children.keySet();
 	}
 	
 	/**

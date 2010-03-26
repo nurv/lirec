@@ -55,10 +55,10 @@ public class Context extends Condition{
 	public boolean CheckCondition(AgentModel am) {
 		if( !_timeCondition.CheckCondition(am) || !_placeCondition.CheckCondition(am) )
 			return false;
-		for( int i = 0, limit = _socialConditions.size(); i != limit; ++i ){
+		/*for( int i = 0, limit = _socialConditions.size(); i != limit; ++i ){
 			if( !((PropertyCondition)_socialConditions.get(i)).CheckCondition(am) )
 				return false;
-		}
+		}*/
 		return true;
 	}
 

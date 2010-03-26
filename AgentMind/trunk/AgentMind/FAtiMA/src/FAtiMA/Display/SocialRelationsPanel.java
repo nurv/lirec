@@ -22,13 +22,13 @@ public class SocialRelationsPanel extends AgentDisplayPanel {
 
 	JPanel _relationsPanel;
 
-	protected Hashtable<String, RelationDisplay> _realationsDisplay;
+	protected Hashtable<String, RelationDisplay> _relationsDisplay;
 
 	public SocialRelationsPanel() {
 		super();
 		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
-		_realationsDisplay = new Hashtable<String, RelationDisplay>();
+		_relationsDisplay = new Hashtable<String, RelationDisplay>();
 
 		_relationsPanel = new JPanel();
 		_relationsPanel.setLayout(new BoxLayout(_relationsPanel,
@@ -43,29 +43,26 @@ public class SocialRelationsPanel extends AgentDisplayPanel {
 	
 	public boolean Update(AgentModel am)
 	{
-		return false;
-	}
-
-	public boolean Update(Agent ag) {
+		
 		ArrayList<Relation> relations = new ArrayList<Relation>();
-		relations.addAll(LikeRelation.getAllRelations(ag.getMemory(),Constants.SELF));
-		relations.addAll(RespectRelation.getAllRelations(ag.getMemory(), Constants.SELF)); 
+		relations.addAll(LikeRelation.getAllRelations(am.getMemory(),Constants.SELF));
+		relations.addAll(RespectRelation.getAllRelations(am.getMemory(), Constants.SELF)); 
 		
 		boolean updated = false;
 
 		// in this case, there's a new relation added (it is not usual for
 		// relations to disappear)
 		// so we have to clear all relations and start displaying them all again
-		if (_realationsDisplay.size() != relations.size()) {
+		if (_relationsDisplay.size() != relations.size()) {
 			_relationsPanel.removeAll(); // removes all displayed emotions
 											// from the panel
-			_realationsDisplay.clear();
+			_relationsDisplay.clear();
 			Iterator<Relation> it = relations.iterator();
 			while (it.hasNext()) {
 				Relation r = (Relation) it.next();
-				RelationDisplay display = new RelationDisplay(ag.getMemory(), r);
+				RelationDisplay display = new RelationDisplay(am.getMemory(), r);
 				_relationsPanel.add(display.getPanel());
-				_realationsDisplay.put(r.getHashKey(), display);
+				_relationsDisplay.put(r.getHashKey(), display);
 			}
 			updated = true;
 		}
@@ -73,11 +70,16 @@ public class SocialRelationsPanel extends AgentDisplayPanel {
 		Iterator<Relation> it = relations.iterator();
 		while (it.hasNext()) {
 			Relation r = (Relation) it.next();
-			RelationDisplay display = (RelationDisplay) _realationsDisplay
+			RelationDisplay display = (RelationDisplay) _relationsDisplay
 					.get(r.getHashKey());
-			display.setValue(r.getValue(ag.getMemory()));
+			display.setValue(r.getValue(am.getMemory()));
 		}
 
 		return updated;
+	}
+
+	public boolean Update(Agent ag) 
+	{
+		return Update((AgentModel) ag);
 	}
 }
