@@ -16,9 +16,9 @@
 			   port="46874" displayMode="True" sex="M" actionsFile="LIRECActions" 
 			   goalsFile="LIRECGoalLibrary" cultureName="NoCulture">
 			<Properties>				
+				<Property name="location" value="LivingRoom"/>
 				<Property name="time" value="Morning"/>
 				<Property name="isPerson" value="True"/>
-				<Property name="location" value="LivingRoom"/>
 			</Properties>	
 
 		</Agent>
@@ -27,8 +27,8 @@
 			   goalsFile="LIRECGoalLibrary" cultureName="NoCulture">
 			<Properties>				
 				<Property name="time" value="Morning"/>
-				<Property name="isPerson" value="True"/>
 				<Property name="location" value="LivingRoom"/>
+				<Property name="isPerson" value="True"/>
 			</Properties>	
 
 		</Agent>
