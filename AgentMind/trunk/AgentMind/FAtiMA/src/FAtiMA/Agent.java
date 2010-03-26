@@ -10,6 +10,7 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.StringTokenizer;
 import java.util.logging.Logger;
@@ -144,12 +145,6 @@ public class Agent implements AgentModel {
 			// Load Plan Operators
 			ActionLibrary.GetInstance().LoadActionsFile("" + MIND_PATH + actionsFile + ".xml", this);
 			EmotionalPlanner planner = new EmotionalPlanner(ActionLibrary.GetInstance().GetActions());
-			ArrayList<Step> occRules = OCCAppraisalRules.GenerateOCCAppraisalRules(this);
-			for(Step s : occRules)
-			{
-				planner.AddOperator(s);
-			}
-			
 			
 			
 
@@ -165,6 +160,12 @@ public class Agent implements AgentModel {
 	
 			String personalityFile = MIND_PATH + "roles/" + role + "/" + role + ".xml";
 			loadPersonality(personalityFile,agentPlatform, goalList);
+			
+			ArrayList<Step> occRules = OCCAppraisalRules.GenerateOCCAppraisalRules(this);
+			for(Step s : occRules)
+			{
+				planner.AddOperator(s);
+			}
 			
 			
 			for(Action at: _reactiveLayer.getActionTendencies().getActions())
@@ -254,8 +255,6 @@ public class Agent implements AgentModel {
 		return newName;
 	}
 	
-	
-
 	public void AppraiseSelfActionFailed(Event e)
 	{
 		_deliberativeLayer.AppraiseSelfActionFailed(e);
@@ -559,6 +558,41 @@ public class Agent implements AgentModel {
 		synchronized (this)
 		{	
 			_perceivedEvents.add(e);
+		}
+	}
+	
+	public void PerceiveLookAt(String subject, String target)
+	{
+		KnowledgeSlot knownInfo;
+		KnowledgeSlot property;
+		Name propertyName;
+		String auxTarget;
+		
+		if(target.equals(_name))
+		{
+			auxTarget = Constants.SELF;
+		}
+		else
+		{
+			auxTarget = target;
+		}
+		
+		for(String other : _nearbyAgents)
+		{
+			if(other.equals(subject))
+			{
+				ModelOfOther m = _ToM.get(other);
+				knownInfo = _memory.getSemanticMemory().GetObjectDetails(auxTarget);
+				if(knownInfo!= null)
+				{
+					for(String s : knownInfo.getKeys())
+					{	
+						property = knownInfo.get(s);
+						propertyName = Name.ParseName(target + "(" + property.getName() + ")");
+						m.getMemory().getSemanticMemory().Tell(applyPerspective(propertyName,other), property.getValue());
+					}
+				}		
+			}	
 		}
 	}
 	
