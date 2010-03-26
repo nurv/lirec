@@ -1,4 +1,5 @@
 #created on: 18-Mar-2010
+#author : Mei Yii Lim
 package MemoryProcesses
 
 #list any import classes here.
@@ -24,7 +25,7 @@ rule "match subject"
 	salience 75
 	when
 		$ep: EventPair($id2 : ID2, extension not contains "subject")
-		$ad1: ActionDetail($s1 : subject) from $ep.actionDetail
+		$ad1: ActionDetail($s1 : subject != null) from $ep.actionDetail
 		$ad2: ActionDetail(ID == $id2, subject == $s1)
 	then			
 		modify ($ep)
@@ -40,7 +41,7 @@ rule "match target"
 	salience 75
 	when
 		$ep: EventPair($id2 : ID2, extension not contains "target")
-		$ad1: ActionDetail($t1 : target) from $ep.actionDetail
+		$ad1: ActionDetail($t1 : target != null) from $ep.actionDetail
 		$ad2: ActionDetail(ID == $id2, target == $t1)
 	then			
 		modify ($ep)
@@ -56,7 +57,7 @@ rule "match action"
 	salience 75
 	when
 		$ep: EventPair($id2 : ID2, extension not contains "action")
-		$ad1: ActionDetail($a1 : action) from $ep.actionDetail
+		$ad1: ActionDetail($a1 : action != null) from $ep.actionDetail
 		$ad2: ActionDetail(ID == $id2, action == $a1)
 	then			
 		modify ($ep)
@@ -72,7 +73,7 @@ rule "match intention"
 	salience 75
 	when
 		$ep: EventPair($id2 : ID2, extension not contains "intention")
-		$ad1: ActionDetail($i1 : intention) from $ep.actionDetail
+		$ad1: ActionDetail($i1 : intention != null) from $ep.actionDetail
 		$ad2: ActionDetail(ID == $id2, intention == $i1)
 	then			
 		modify ($ep)
@@ -88,7 +89,7 @@ rule "match status"
 	salience 75
 	when
 		$ep: EventPair($id2 : ID2, extension not contains "status")
-		$ad1: ActionDetail($st1 : status) from $ep.actionDetail
+		$ad1: ActionDetail($st1 : status != null) from $ep.actionDetail
 		$ad2: ActionDetail(ID == $id2, status == $st1)
 	then			
 		modify ($ep)
@@ -97,6 +98,70 @@ rule "match status"
 			setMatchingValues("status", $st1)
 		}
 		System.out.println("match status " + $ad1.getID() + " " + $id2);		
+end
+
+rule "match speechActMeaning"
+	no-loop true
+	salience 75
+	when
+		$ep: EventPair($id2 : ID2, extension not contains "speechActMeaning")
+		$ad1: ActionDetail($sa1 : speechActMeaning != null) from $ep.actionDetail
+		$ad2: ActionDetail(ID == $id2, speechActMeaning == $sa1)
+	then			
+		modify ($ep)
+		{
+			setExtension("speechActMeaning"),
+			setMatchingValues("speechActMeaning", $sa1)
+		}
+		System.out.println("match speechActMeaning " + $ad1.getID() + " " + $id2);		
+end
+
+rule "match multimediaPath"
+	no-loop true
+	salience 75
+	when
+		$ep: EventPair($id2 : ID2, extension not contains "multimediaPath")
+		$ad1: ActionDetail($m1 : multimediaPath != null) from $ep.actionDetail
+		$ad2: ActionDetail(ID == $id2, multimediaPath == $m1)
+	then			
+		modify ($ep)
+		{
+			setExtension("multimediaPath"),
+			setMatchingValues("multimediaPath", $m1)
+		}
+		System.out.println("match multimediaPath " + $ad1.getID() + " " + $id2);		
+end
+
+rule "match object"
+	no-loop true
+	salience 75
+	when
+		$ep: EventPair($id2 : ID2, extension not contains "object")
+		$ad1: ActionDetail($o1 : object != null) from $ep.actionDetail
+		$ad2: ActionDetail(ID == $id2, object == $o1)
+	then			
+		modify ($ep)
+		{
+			setExtension("object"),
+			setMatchingValues("object", $o1)
+		}
+		System.out.println("match object " + $ad1.getID() + " " + $id2);		
+end
+
+rule "match location"
+	no-loop true
+	salience 75
+	when
+		$ep: EventPair($id2 : ID2, extension not contains "location")
+		$ad1: ActionDetail($l1 : location != null) from $ep.actionDetail
+		$ad2: ActionDetail(ID == $id2, location == $l1)
+	then			
+		modify ($ep)
+		{
+			setExtension("location"),
+			setMatchingValues("location", $l1)
+		}
+		System.out.println("match location " + $ad1.getID() + " " + $id2);		
 end
 
 rule "retract actionDetail"

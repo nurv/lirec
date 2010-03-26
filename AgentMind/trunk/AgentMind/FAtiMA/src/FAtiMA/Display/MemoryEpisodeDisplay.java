@@ -237,6 +237,12 @@ public class MemoryEpisodeDisplay {
         lbl.setMaximumSize(new Dimension(80,30));
         aux.add(lbl);
         
+        lbl = new JLabel("Object"); // object/third person
+        lbl.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
+        lbl.setMinimumSize(new Dimension(80,30));
+        lbl.setMaximumSize(new Dimension(80,30));
+        aux.add(lbl);
+        
         lbl = new JLabel("Desirability"); // Desirable?
         lbl.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
         lbl.setMinimumSize(new Dimension(80,30));

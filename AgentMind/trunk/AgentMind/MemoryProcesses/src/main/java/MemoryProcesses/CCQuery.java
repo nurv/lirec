@@ -38,7 +38,7 @@ import FAtiMA.memory.episodicMemory.ActionDetail;
 
 public class CCQuery {
 	
-	private int _numField = 9;
+	private int _numField = 10;
 	
 	private ActionDetail _result;
 	private float _eval;

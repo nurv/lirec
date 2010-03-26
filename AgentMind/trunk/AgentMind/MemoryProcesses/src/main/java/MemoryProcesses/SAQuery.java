@@ -49,6 +49,7 @@ public class SAQuery {
 	private String _status;
 	private String _speechActMeaning;
 	private String _multimediaPath;
+	private String _object;
 	private float _desirability;
 	private float _praiseworthiness;
 	
@@ -71,6 +72,7 @@ public class SAQuery {
 		this._status = "";
 		this._speechActMeaning = "";
 		this._multimediaPath = "";
+		this._object = "";
 		this._desirability = 0;
 		this._praiseworthiness = 0;
 		this._numKnownVar = 0;
@@ -164,6 +166,14 @@ public class SAQuery {
 				}
 				this._numKnownVar++;
 			}
+			if (queryType.equals("object"))
+			{
+				while(query.hasMoreTokens())
+				{
+					this._object = query.nextToken();
+				}
+				this._numKnownVar++;
+			}
 			if (queryType.equals("desirability"))
 			{
 				while(query.hasMoreTokens())
@@ -182,10 +192,10 @@ public class SAQuery {
 			}			
 		}
 		System.out.println("ID" + this._id + "subject " + this._subject + " target " + this._target 
-				+ " action " + this._action + " location " + _location 
+				+ " action " + this._action + " location " + this._location 
 				+ "intention " + this._intention + "status " + this._status	
 				+ "speechActMeaning " + this._speechActMeaning + "multimediaPath " 
-				+ this._multimediaPath + "desirability " + this._desirability
+				+ this._multimediaPath + "object " + this._object + "desirability " + this._desirability
 				+ "praiseworthiness " + this._praiseworthiness);
 		_question = question;		
 	}
@@ -202,6 +212,7 @@ public class SAQuery {
 		this._status = "";
 		this._speechActMeaning = "";
 		this._multimediaPath = "";
+		this._object = "";
 		this._desirability = 0;
 		this._praiseworthiness = 0;
 		this._numKnownVar = 0;		
@@ -250,6 +261,10 @@ public class SAQuery {
     
     public String getMultimediaPath(){
     	return this._multimediaPath;
+    }
+    
+    public String getObject(){
+    	return this._object;
     }
     
     public float getDesirability(){
@@ -311,6 +326,10 @@ public class SAQuery {
     
     public void setMultimediaPath(String multimediaPath){
     	this._multimediaPath = multimediaPath;
+    }
+    
+    public void setObject(String object){
+    	this._object = object;
     }
     
     public void setDesirability(float desirability){

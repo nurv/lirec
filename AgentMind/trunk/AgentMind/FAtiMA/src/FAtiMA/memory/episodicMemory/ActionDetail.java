@@ -92,6 +92,7 @@ public class ActionDetail implements Serializable {
 	private String _status;
 	private String _speechActMeaning;
 	private String _multimediaPath;
+	private String _object;
 	
 	private float _desirability;
 	private float _praiseworthiness;
@@ -146,6 +147,10 @@ public class ActionDetail implements Serializable {
 				else if(p.GetName().equals("link"))
 				{
 					this._multimediaPath = p.GetValue().toString();
+				}
+				else if(p.GetName().equals("param"))
+				{
+					this._object = p.GetValue().toString();
 				}
 			}
 		}
@@ -265,6 +270,11 @@ public class ActionDetail implements Serializable {
 	public String getMultimediaPath()
 	{
 		return this._multimediaPath;
+	}
+	
+	public String getObject()
+	{
+		return this._object;
 	}
 	
 	public float getDesirability()
@@ -605,6 +615,7 @@ public class ActionDetail implements Serializable {
 		action += "<Parameters>" + this.getParameters() + "</Parameters>";
 		action += "<SpeechActMeaning>" + this.getSpeechActMeaning() + "</SpeechActMeaning>";
 		action += "<MultimediaPath>" + this.getMultimediaPath() + "</MultimediaPath>";
+		action += "<Object>" + this.getObject() + "</Object>";
 		action += "<Desirability>" + this.getDesirability() + "</Desirability>";
 		action += "<Praiseworthiness>" + this.getPraiseworthiness() + "</Praiseworthiness>";
 		//action += "<Evaluation>" + this.getEvaluation() + "</Evaluation>";

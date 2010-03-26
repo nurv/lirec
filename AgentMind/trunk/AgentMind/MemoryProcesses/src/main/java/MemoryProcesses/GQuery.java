@@ -11,7 +11,6 @@ import FAtiMA.memory.episodicMemory.ActionDetail;
 
 public class GQuery {
 	
-	private int _numField = 5;
 	private int _maxNumMatch;
 	private Hashtable<ArrayList<Integer>, Hashtable<String, String>> _match;
 
@@ -36,10 +35,6 @@ public class GQuery {
     {
     	return this._match;
     }
-    
-    public int getNumField(){
-		return this._numField;
-	}
     
     public void setMatch(ArrayList<Integer> ids, Hashtable<String, String> match)
     {	

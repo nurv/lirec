@@ -13,7 +13,7 @@ rule "same subject phase1"
 	salience 50
 	when
 		$q: CCQuery()
-		$qad: ActionDetail($s1 : subject) from $q.actionDetail
+		$qad: ActionDetail($s1 : subject != null) from $q.actionDetail
 		$ad: ActionDetail(subject == $s1) 
 	then		
 		insert (new CandidateEvent($ad, "subject", 1.0f));
@@ -27,11 +27,11 @@ rule "different subject phase1"
 	when
 		$q: CCQuery()
 		$qad: ActionDetail($s1 : subject) from $q.actionDetail
-		$ad: ActionDetail(subject != $s1) 
+		$ad: ActionDetail((subject != $s1) || ((subject == $s1) && (subject == null))) 
 	then		
 		insert (new CandidateEvent($ad, "subject", 0.8f));
 		retract ($ad);
-		#System.out.println("different subject " + $ad.getID());
+		#System.out.println("different/empty subject " + $ad.getID());
 end
 
 rule "same target phase1"
@@ -39,7 +39,7 @@ rule "same target phase1"
 	salience 50
 	when
 		$q: CCQuery()
-		$qad: ActionDetail($t1 : target) from $q.actionDetail
+		$qad: ActionDetail($t1 : target != null) from $q.actionDetail
 		$ad: ActionDetail(target == $t1)
 	then
 		insert (new CandidateEvent($ad, "target", 1.0f));
@@ -53,11 +53,11 @@ rule "different target phase1"
 	when
 		$q: CCQuery()
 		$qad: ActionDetail($t1 : target) from $q.actionDetail
-		$ad: ActionDetail(target != $t1)
+		$ad: ActionDetail((target != $t1) || ((target == $t1) && (target == null)))
 	then
 		insert (new CandidateEvent($ad, "target", 0.8f));
 		retract ($ad);
-		#System.out.println("different target " + $ad.getID());
+		#System.out.println("different/empty target " + $ad.getID());
 end
 
 rule "same action phase1"
@@ -65,7 +65,7 @@ rule "same action phase1"
 	salience 50
 	when
 		$q: CCQuery()
-		$qad: ActionDetail($a1 : action) from $q.actionDetail
+		$qad: ActionDetail($a1 : action != null) from $q.actionDetail
 		$ad: ActionDetail(action == $a1) 
 	then
 		insert (new CandidateEvent($ad, "action", 1.0f));
@@ -79,11 +79,11 @@ rule "different action phase1"
 	when
 		$q: CCQuery()
 		$qad: ActionDetail($a1 : action) from $q.actionDetail
-		$ad: ActionDetail(action != $a1) 
+		$ad: ActionDetail((action != $a1) || ((action == $a1) && (action == null))) 
 	then
 		insert (new CandidateEvent($ad, "action", 0.8f));
 		retract ($ad);
-		#System.out.println("different action " + $ad.getID());
+		#System.out.println("different/empty action " + $ad.getID());
 end
 
 rule "same location phase1"
@@ -91,7 +91,7 @@ rule "same location phase1"
 	salience 50
 	when
 		$q: CCQuery()
-		$qad: ActionDetail($l1 : location) from $q.actionDetail
+		$qad: ActionDetail($l1 : location != null) from $q.actionDetail
 		$ad: ActionDetail(location == $l1) 
 	then
 		insert (new CandidateEvent($ad, "location", 1.0f));
@@ -105,11 +105,11 @@ rule "different location phase1"
 	when
 		$q: CCQuery()
 		$qad: ActionDetail($l1 : location) from $q.actionDetail
-		$ad: ActionDetail(location != $l1) 
+		$ad: ActionDetail((location != $l1) || ((location == $l1) && (location == null))) 
 	then
 		insert (new CandidateEvent($ad, "location", 0.8f));
 		retract ($ad);
-		#System.out.println("different location " + $ad.getID());
+		#System.out.println("different/empty location " + $ad.getID());
 end
 
 rule "same emotion phase1"
@@ -117,7 +117,7 @@ rule "same emotion phase1"
 	salience 50
 	when
 		$q: CCQuery()
-		$qad: ActionDetail($e1 : emotion) from $q.actionDetail
+		$qad: ActionDetail($e1 : emotion != null) from $q.actionDetail
 		$ad: ActionDetail(emotion == $e1) 
 	then
 		insert (new CandidateEvent($ad, "emotion", 1.0f));
@@ -131,11 +131,11 @@ rule "different emotion phase1"
 	when
 		$q: CCQuery()
 		$qad: ActionDetail($e1 : emotion) from $q.actionDetail
-		$ad: ActionDetail(emotion != $e1) 
+		$ad: ActionDetail((emotion != $e1) || ((emotion == $e1) && (emotion == null))) 
 	then
 		insert (new CandidateEvent($ad, "emotion", 0.8f));
 		retract ($ad);
-		#System.out.println("different emotion " + $ad.getID());
+		#System.out.println("different/empty emotion " + $ad.getID());
 end
 
 rule "same intention phase1"
@@ -143,12 +143,12 @@ rule "same intention phase1"
 	salience 50
 	when
 		$q: CCQuery()
-		$qad: ActionDetail($i1 : intention) from $q.actionDetail
+		$qad: ActionDetail($i1 : intention != null) from $q.actionDetail
 		$ad: ActionDetail(intention == $i1) 
 	then
 		insert (new CandidateEvent($ad, "intention", 1.0f));
 		retract ($ad);
-		#System.out.println("same intention " + $ad.getID());
+		System.out.println("same intention " + $ad.getID());
 end
 
 rule "different intention phase1"
@@ -157,11 +157,11 @@ rule "different intention phase1"
 	when
 		$q: CCQuery()
 		$qad: ActionDetail($i1 : intention) from $q.actionDetail
-		$ad: ActionDetail(intention != $i1) 
+		$ad: ActionDetail((intention != $i1) || ((intention == $i1) && (intention == null))) 
 	then
 		insert (new CandidateEvent($ad, "intention", 0.8f));
 		retract ($ad);
-		#System.out.println("different intention " + $ad.getID());
+		System.out.println("different/empty intention " + $ad.getID());
 end
 
 rule "same status phase1"
@@ -169,7 +169,7 @@ rule "same status phase1"
 	salience 50
 	when
 		$q: CCQuery()
-		$qad: ActionDetail($st1 : status) from $q.actionDetail
+		$qad: ActionDetail($st1 : status != null) from $q.actionDetail
 		$ad: ActionDetail(status == $st1) 
 	then
 		insert (new CandidateEvent($ad, "status", 1.0f));
@@ -183,11 +183,11 @@ rule "different status phase1"
 	when
 		$q: CCQuery()
 		$qad: ActionDetail($st1 : status) from $q.actionDetail
-		$ad: ActionDetail(status != $st1) 
+		$ad: ActionDetail((status != $st1) || ((status == $st1) && (status == null))) 
 	then
 		insert (new CandidateEvent($ad, "status", 0.8f));
 		retract ($ad);
-		#System.out.println("different status " + $ad.getID());
+		#System.out.println("different/empty status " + $ad.getID());
 end
 
 rule "same speechActMeaning phase1"
@@ -195,7 +195,7 @@ rule "same speechActMeaning phase1"
 	salience 50
 	when
 		$q: CCQuery()
-		$qad: ActionDetail($sa1 : speechActMeaning) from $q.actionDetail
+		$qad: ActionDetail($sa1 : speechActMeaning != null) from $q.actionDetail
 		$ad: ActionDetail(speechActMeaning == $sa1) 
 	then
 		insert (new CandidateEvent($ad, "speechActMeaning", 1.0f));
@@ -209,11 +209,11 @@ rule "different speechActMeaning phase1"
 	when
 		$q: CCQuery()
 		$qad: ActionDetail($sa1 : speechActMeaning) from $q.actionDetail
-		$ad: ActionDetail(speechActMeaning != $sa1) 
+		$ad: ActionDetail((speechActMeaning != $sa1) || ((speechActMeaning == $sa1) && (speechActMeaning == null))) 
 	then
 		insert (new CandidateEvent($ad, "speechActMeaning", 0.8f));
 		retract ($ad);
-		#System.out.println("different speechActMeaning " + $ad.getID());
+		#System.out.println("different/empty speechActMeaning " + $ad.getID());
 end
 
 rule "same multimediaPath phase1"
@@ -221,7 +221,7 @@ rule "same multimediaPath phase1"
 	salience 50
 	when
 		$q: CCQuery()
-		$qad: ActionDetail($m1 : multimediaPath) from $q.actionDetail
+		$qad: ActionDetail($m1 : multimediaPath != null) from $q.actionDetail
 		$ad: ActionDetail(multimediaPath == $m1) 
 	then
 		insert (new CandidateEvent($ad, "multimediaPath", 1.0f));
@@ -235,18 +235,44 @@ rule "different multimediaPath phase1"
 	when
 		$q: CCQuery()
 		$qad: ActionDetail($m1 : multimediaPath) from $q.actionDetail
-		$ad: ActionDetail(multimediaPath != $m1) 
+		$ad: ActionDetail((multimediaPath != $m1) || ((multimediaPath == $m1) && (multimediaPath == null))) 
 	then
 		insert (new CandidateEvent($ad, "multimediaPath", 0.8f));
 		retract ($ad);
-		#System.out.println("different multimediaPath " + $ad.getID());
+		#System.out.println("different/empty multimediaPath " + $ad.getID());
+end
+
+rule "same object phase1"
+	no-loop true
+	salience 50
+	when
+		$q: CCQuery()
+		$qad: ActionDetail($o1 : object != null) from $q.actionDetail
+		$ad: ActionDetail(object == $o1) 
+	then
+		insert (new CandidateEvent($ad, "object", 1.0f));
+		retract ($ad);
+		#System.out.println("same object " + $ad.getID());
+end
+
+rule "different object phase1"
+	no-loop true
+	salience 50
+	when
+		$q: CCQuery()
+		$qad: ActionDetail($o1 : object) from $q.actionDetail
+		$ad: ActionDetail((object != $o1) || ((object == $o1) && (object == null))) 
+	then
+		insert (new CandidateEvent($ad, "object", 0.8f));
+		retract ($ad);
+		#System.out.println("different/empty object " + $ad.getID());
 end
 
 rule "same subject"
 	no-loop true
 	when
 		$q: CCQuery()
-		$qad: ActionDetail($s1 : subject) from $q.actionDetail
+		$qad: ActionDetail($s1 : subject != null) from $q.actionDetail
 		$cad: CandidateEvent(extension not contains "subject", phase != $q.numField)
 		$ad: ActionDetail(subject == $s1) from $cad.actionDetail	
 	then		
@@ -266,7 +292,7 @@ rule "different subject"
 		$q: CCQuery()
 		$qad: ActionDetail($s1 : subject) from $q.actionDetail
 		$cad: CandidateEvent(extension not contains "subject", phase != $q.numField)
-		$ad: ActionDetail(subject != $s1) from $cad.actionDetail	
+		$ad: ActionDetail((subject != $s1)  || ((subject == $s1) && (subject == null))) from $cad.actionDetail	
 	then		
 		modify ($cad)
 		{
@@ -275,14 +301,14 @@ rule "different subject"
 			updateEvaluation(0.8f)		
 		}
 		#System.out.println("Evaluation " + $cad.getEvaluation());
-		#System.out.println("different subject " + $ad.getID());
+		#System.out.println("different/empty subject " + $ad.getID());
 end
 
 rule "same target"
 	no-loop true
 	when
 		$q: CCQuery()
-		$qad: ActionDetail($t1 : target) from $q.actionDetail
+		$qad: ActionDetail($t1 : target != null) from $q.actionDetail
 		$cad: CandidateEvent(extension not contains "target", phase != $q.numField)
 		$ad: ActionDetail(target == $t1) from $cad.actionDetail	
 	then
@@ -302,7 +328,7 @@ rule "different target"
 		$q: CCQuery()
 		$qad: ActionDetail($t1 : target) from $q.actionDetail
 		$cad: CandidateEvent(extension not contains "target", phase != $q.numField)
-		$ad: ActionDetail(target != $t1) from $cad.actionDetail	
+		$ad: ActionDetail((target != $t1)  || ((target == $t1) && (target == null))) from $cad.actionDetail	
 	then
 		modify ($cad)
 		{
@@ -311,14 +337,14 @@ rule "different target"
 			updateEvaluation(0.8f)			
 		}
 		#System.out.println("Evaluation " + $cad.getEvaluation());
-		#System.out.println("different target " + $ad.getID());
+		#System.out.println("different/empty target " + $ad.getID());
 end
 
 rule "same action"
 	no-loop true
 	when
 		$q: CCQuery()
-		$qad: ActionDetail($a1 : action) from $q.actionDetail
+		$qad: ActionDetail($a1 : action != null) from $q.actionDetail
 		$cad: CandidateEvent(extension not contains "action", phase != $q.numField)
 		$ad: ActionDetail(action == $a1) from $cad.actionDetail	
 	then
@@ -338,7 +364,7 @@ rule "different action"
 		$q: CCQuery()
 		$qad: ActionDetail($a1 : action) from $q.actionDetail
 		$cad: CandidateEvent(extension not contains "action", phase != $q.numField)
-		$ad: ActionDetail(action != $a1) from $cad.actionDetail	
+		$ad: ActionDetail((action != $a1)  || ((action == $a1) && (action == null))) from $cad.actionDetail	
 	then
 		modify ($cad)
 		{
@@ -347,14 +373,14 @@ rule "different action"
 			updateEvaluation(0.8f)		
 		}
 		#System.out.println("Evaluation " + $cad.getEvaluation());
-		#System.out.println("different action " + $ad.getID());
+		#System.out.println("different/empty action " + $ad.getID());
 end
 
 rule "same location"
 	no-loop true
 	when
 		$q: CCQuery()
-		$qad: ActionDetail($l1 : location) from $q.actionDetail
+		$qad: ActionDetail($l1 : location != null) from $q.actionDetail
 		$cad: CandidateEvent(extension not contains "location", phase != $q.numField)
 		$ad: ActionDetail(location == $l1) from $cad.actionDetail	
 	then
@@ -374,7 +400,7 @@ rule "different location"
 		$q: CCQuery()
 		$qad: ActionDetail($l1 : location) from $q.actionDetail
 		$cad: CandidateEvent(extension not contains "location", phase != $q.numField)
-		$ad: ActionDetail(location != $l1) from $cad.actionDetail	
+		$ad: ActionDetail((location != $l1)  || ((location == $l1) && (location == null))) from $cad.actionDetail	
 	then
 		modify ($cad)
 		{
@@ -383,14 +409,14 @@ rule "different location"
 			updateEvaluation(0.8f)		
 		}
 		#System.out.println("Evaluation " + $cad.getEvaluation());
-		#System.out.println("different location " + $ad.getID());
+		#System.out.println("different/empty location " + $ad.getID());
 end
 
 rule "same emotion"
 	no-loop true
 	when
 		$q: CCQuery()
-		$qad: ActionDetail($e1 : emotion) from $q.actionDetail
+		$qad: ActionDetail($e1 : emotion != null) from $q.actionDetail
 		$cad: CandidateEvent(extension not contains "emotion", phase != $q.numField)
 		$ad: ActionDetail(emotion == $e1) from $cad.actionDetail	
 	then
@@ -410,7 +436,7 @@ rule "different emotion"
 		$q: CCQuery()
 		$qad: ActionDetail($e1 : emotion) from $q.actionDetail
 		$cad: CandidateEvent(extension not contains "emotion", phase != $q.numField)
-		$ad: ActionDetail(emotion != $e1) from $cad.actionDetail	
+		$ad: ActionDetail((emotion != $e1)  || ((emotion == $e1) && (emotion == null))) from $cad.actionDetail	
 	then
 		modify ($cad)
 		{
@@ -419,14 +445,14 @@ rule "different emotion"
 			updateEvaluation(1.0f)		
 		}
 		#System.out.println("Evaluation " + $cad.getEvaluation());
-		#System.out.println("different emotion " + $ad.getID());
+		#System.out.println("different/empty emotion " + $ad.getID());
 end
 
 rule "same intention"
 	no-loop true
 	when
 		$q: CCQuery()
-		$qad: ActionDetail($i1 : intention) from $q.actionDetail
+		$qad: ActionDetail($i1 : intention != null) from $q.actionDetail
 		$cad: CandidateEvent(extension not contains "intention", phase != $q.numField)
 		$ad: ActionDetail(intention == $i1) from $cad.actionDetail	
 	then
@@ -446,7 +472,7 @@ rule "different intention"
 		$q: CCQuery()
 		$qad: ActionDetail($i1 : intention) from $q.actionDetail
 		$cad: CandidateEvent(extension not contains "intention", phase != $q.numField)
-		$ad: ActionDetail(intention != $i1) from $cad.actionDetail	
+		$ad: ActionDetail((intention != $i1) || ((intention == $i1) && (intention == null))) from $cad.actionDetail	
 	then
 		modify ($cad)
 		{
@@ -455,14 +481,14 @@ rule "different intention"
 			updateEvaluation(0.8f)		
 		}
 		#System.out.println("Evaluation " + $cad.getEvaluation());
-		#System.out.println("different intention " + $ad.getID());
+		#System.out.println("different/empty intention " + $ad.getID());
 end
 
 rule "same status"
 	no-loop true
 	when
 		$q: CCQuery()
-		$qad: ActionDetail($st1 : status) from $q.actionDetail
+		$qad: ActionDetail($st1 : status != null) from $q.actionDetail
 		$cad: CandidateEvent(extension not contains "status", phase != $q.numField)
 		$ad: ActionDetail(status == $st1) from $cad.actionDetail	
 	then
@@ -482,7 +508,7 @@ rule "different status"
 		$q: CCQuery()
 		$qad: ActionDetail($st1 : status) from $q.actionDetail
 		$cad: CandidateEvent(extension not contains "status", phase != $q.numField)
-		$ad: ActionDetail(status != $st1) from $cad.actionDetail	
+		$ad: ActionDetail((status != $st1)  || ((status == $st1) && (status == null))) from $cad.actionDetail	
 	then
 		modify ($cad)
 		{
@@ -491,14 +517,14 @@ rule "different status"
 			updateEvaluation(0.8f)		
 		}
 		#System.out.println("Evaluation " + $cad.getEvaluation());
-		#System.out.println("different status " + $ad.getID());
+		#System.out.println("different/empty status " + $ad.getID());
 end
 
 rule "same speechActMeaning"
 	no-loop true
 	when
 		$q: CCQuery()
-		$qad: ActionDetail($sa1 : speechActMeaning) from $q.actionDetail
+		$qad: ActionDetail($sa1 : speechActMeaning != null) from $q.actionDetail
 		$cad: CandidateEvent(extension not contains "speechActMeaning", phase != $q.numField)
 		$ad: ActionDetail(speechActMeaning == $sa1) from $cad.actionDetail	
 	then
@@ -518,7 +544,7 @@ rule "different speechActMeaning"
 		$q: CCQuery()
 		$qad: ActionDetail($sa1 : speechActMeaning) from $q.actionDetail
 		$cad: CandidateEvent(extension not contains "speechActMeaning", phase != $q.numField)
-		$ad: ActionDetail(speechActMeaning != $sa1) from $cad.actionDetail	
+		$ad: ActionDetail((speechActMeaning != $sa1)  || ((speechActMeaning == $sa1) && (speechActMeaning == null))) from $cad.actionDetail	
 	then
 		modify ($cad)
 		{
@@ -527,14 +553,14 @@ rule "different speechActMeaning"
 			updateEvaluation(0.8f)		
 		}
 		#System.out.println("Evaluation " + $cad.getEvaluation());
-		#System.out.println("different speechActMeaning " + $ad.getID());
+		#System.out.println("different/empty speechActMeaning " + $ad.getID());
 end
 
 rule "same multimediaPath"
 	no-loop true
 	when
 		$q: CCQuery()
-		$qad: ActionDetail($m1 : multimediaPath) from $q.actionDetail
+		$qad: ActionDetail($m1 : multimediaPath != null) from $q.actionDetail
 		$cad: CandidateEvent(extension not contains "multimediaPath", phase != $q.numField)
 		$ad: ActionDetail(multimediaPath == $m1) from $cad.actionDetail	
 	then
@@ -544,8 +570,8 @@ rule "same multimediaPath"
 			setExtension("multimediaPath"),
 			updateEvaluation(1.0f)		
 		}
-		System.out.println("Evaluation " + $cad.getEvaluation());
-		System.out.println("same multimediaPath " + $ad.getID());
+		#System.out.println("Evaluation " + $cad.getEvaluation());
+		#System.out.println("same multimediaPath " + $ad.getID());
 end
 
 rule "different multimediaPath"
@@ -554,7 +580,7 @@ rule "different multimediaPath"
 		$q: CCQuery()
 		$qad: ActionDetail($m1 : multimediaPath) from $q.actionDetail
 		$cad: CandidateEvent(extension not contains "multimediaPath", phase != $q.numField)
-		$ad: ActionDetail(multimediaPath != $m1) from $cad.actionDetail	
+		$ad: ActionDetail((multimediaPath != $m1) || ((multimediaPath == $m1) && (multimediaPath == null))) from $cad.actionDetail	
 	then
 		modify ($cad)
 		{
@@ -562,8 +588,44 @@ rule "different multimediaPath"
 			setExtension("multimediaPath"),
 			updateEvaluation(0.8f)		
 		}
-		System.out.println("Evaluation " + $cad.getEvaluation());
-		System.out.println("different multimediaPath " + $ad.getID());
+		#System.out.println("Evaluation " + $cad.getEvaluation());
+		#System.out.println("different/empty multimediaPath " + $ad.getID());
+end
+
+rule "same object"
+	no-loop true
+	when
+		$q: CCQuery()
+		$qad: ActionDetail($o1 : object != null) from $q.actionDetail
+		$cad: CandidateEvent(extension not contains "object", phase != $q.numField)
+		$ad: ActionDetail(object == $o1) from $cad.actionDetail	
+	then
+		modify ($cad)
+		{
+			increasePhase(), 
+			setExtension("object"),
+			updateEvaluation(1.0f)		
+		}
+		#System.out.println("Evaluation " + $cad.getEvaluation());
+		#System.out.println("same object " + $ad.getID());
+end
+
+rule "different object"
+	no-loop true
+	when
+		$q: CCQuery()
+		$qad: ActionDetail($o1 : object) from $q.actionDetail
+		$cad: CandidateEvent(extension not contains "object", phase != $q.numField)
+		$ad: ActionDetail((object != $o1) || ((object == $o1) && (object == null))) from $cad.actionDetail	
+	then
+		modify ($cad)
+		{
+			increasePhase(), 
+			setExtension("object"),
+			updateEvaluation(0.8f)		
+		}
+		#System.out.println("Evaluation " + $cad.getEvaluation());
+		#System.out.println("different/empty object " + $ad.getID());
 end
 
 rule "end match" 
@@ -581,248 +643,3 @@ rule "end match"
 		System.out.println("end match " + $ad.getID());
 		retract ($cad);
 end
-
-/*rule "same id"
-	no-loop true
-	when
-		$q: CCQuery()
-		$qad: ActionDetail($i1 : ID) from $q.actionDetail
-		$cad: CandidateEvent(ID != true)
-		$ad: ActionDetail(ID == $i1) from $cad.actionDetail	
-	then		
-		modify ($cad)
-		{
-			increasePhase(), 
-			setExtension("id"),
-			setID(true),	
-			updateEvaluation(1.0)	
-		}
-		System.out.println("ID " + $i1);
-		System.out.println("same id " + $ad.getID());
-end
-
-rule "different id"
-	no-loop true
-	when
-		$q: CCQuery()
-		$qad: ActionDetail($i1 : ID) from $q.actionDetail
-		$cad: CandidateEvent(ID != true)
-		$ad: ActionDetail(ID != $i1) from $cad.actionDetail	
-	then		
-		modify ($cad)
-		{
-			increasePhase(), 
-			setExtension("id"),
-			setID(true),	
-			updateEvaluation(0.9)	
-		}
-		System.out.println("ID " + $i1);
-		System.out.println("different id " + $ad.getID());
-end*/
-
-/*rule "same subject"
-	no-loop true
-	when
-		$q: CCQuery()
-		$qad: ActionDetail($s1 : subject) from $q.actionDetail
-		$cad: CandidateEvent(subject != true, phase != $q.numField)
-		$ad: ActionDetail(subject == $s1) from $cad.actionDetail	
-	then		
-		modify ($cad)
-		{
-			increasePhase(), 
-			setExtension("subject"),
-			setSubject(true),	
-			updateEvaluation(1.0f)		
-		}
-		System.out.println("Evaluation " + $cad.getEvaluation());
-		System.out.println("same subject " + $ad.getID());
-end
-
-rule "different subject"
-	no-loop true
-	when
-		$q: CCQuery()
-		$qad: ActionDetail($s1 : subject) from $q.actionDetail
-		$cad: CandidateEvent(subject != true, phase != $q.numField)
-		$ad: ActionDetail(subject != $s1) from $cad.actionDetail	
-	then		
-		modify ($cad)
-		{
-			increasePhase(), 
-			setExtension("subject"),
-			setSubject(true),	
-			updateEvaluation(0.8f)		
-		}
-		System.out.println("Evaluation " + $cad.getEvaluation());
-		System.out.println("different subject " + $ad.getID());
-end
-
-rule "same target"
-	no-loop true
-	when
-		$q: CCQuery()
-		$qad: ActionDetail($t1 : target) from $q.actionDetail
-		$cad: CandidateEvent(target != true, phase != $q.numField)
-		$ad: ActionDetail(target == $t1) from $cad.actionDetail	
-	then
-		modify ($cad)
-		{
-			increasePhase(), 
-			setExtension("target"),
-			setTarget(true),
-			updateEvaluation(1.0f)			
-		}
-		System.out.println("Evaluation " + $cad.getEvaluation());
-		System.out.println("same target " + $ad.getID());
-end
-
-rule "different target"
-	no-loop true
-	when
-		$q: CCQuery()
-		$qad: ActionDetail($t1 : target) from $q.actionDetail
-		$cad: CandidateEvent(target != true, phase != $q.numField)
-		$ad: ActionDetail(target != $t1) from $cad.actionDetail	
-	then
-		modify ($cad)
-		{
-			increasePhase(), 
-			setExtension("target"),
-			setTarget(true),
-			updateEvaluation(0.8f)			
-		}
-		System.out.println("Evaluation " + $cad.getEvaluation());
-		System.out.println("different target " + $ad.getID());
-end
-
-rule "same action"
-	no-loop true
-	when
-		$q: CCQuery()
-		$qad: ActionDetail($a1 : action) from $q.actionDetail
-		$cad: CandidateEvent(action != true, phase != $q.numField)
-		$ad: ActionDetail(action == $a1) from $cad.actionDetail	
-	then
-		modify ($cad)
-		{
-			increasePhase(), 
-			setExtension("action"),
-			setAction(true),
-			updateEvaluation(1.0f)		
-		}
-		System.out.println("Evaluation " + $cad.getEvaluation());
-		System.out.println("same action " + $ad.getID());
-end
-
-rule "different action"
-	no-loop true
-	when
-		$q: CCQuery()
-		$qad: ActionDetail($a1 : action) from $q.actionDetail
-		$cad: CandidateEvent(action != true, phase != $q.numField)
-		$ad: ActionDetail(action != $a1) from $cad.actionDetail	
-	then
-		modify ($cad)
-		{
-			increasePhase(), 
-			setExtension("action"),
-			setAction(true),
-			updateEvaluation(0.8f)		
-		}
-		System.out.println("Evaluation " + $cad.getEvaluation());
-		System.out.println("different action " + $ad.getID());
-end
-
-rule "same location"
-	no-loop true
-	when
-		$q: CCQuery()
-		$qad: ActionDetail($l1 : location) from $q.actionDetail
-		$cad: CandidateEvent(location != true, phase != $q.numField)
-		$ad: ActionDetail(location == $l1) from $cad.actionDetail	
-	then
-		modify ($cad)
-		{
-			increasePhase(), 
-			setExtension("location"),
-			setLocation(true),
-			updateEvaluation(1.0f)		
-		}
-		System.out.println("Evaluation " + $cad.getEvaluation());
-		System.out.println("same location " + $ad.getID());
-end
-
-rule "different location"
-	no-loop true
-	when
-		$q: CCQuery()
-		$qad: ActionDetail($l1 : location) from $q.actionDetail
-		$cad: CandidateEvent(location != true, phase != $q.numField)
-		$ad: ActionDetail(location != $l1) from $cad.actionDetail	
-	then
-		modify ($cad)
-		{
-			increasePhase(), 
-			setExtension("location"),
-			setLocation(true),
-			updateEvaluation(0.8f)		
-		}
-		System.out.println("Evaluation " + $cad.getEvaluation());
-		System.out.println("different location " + $ad.getID());
-end
-
-rule "same emotion"
-	no-loop true
-	when
-		$q: CCQuery()
-		$qad: ActionDetail($e1 : emotion) from $q.actionDetail
-		$cad: CandidateEvent(emotion != true, phase != $q.numField)
-		$ad: ActionDetail(emotion == $e1) from $cad.actionDetail	
-	then
-		modify ($cad)
-		{
-			increasePhase(), 
-			setExtension("emotion"),
-			setEmotion(true),
-			updateEvaluation(1.0f)		
-		}
-		System.out.println("Evaluation " + $cad.getEvaluation());
-		System.out.println("same emotion " + $ad.getID());
-end
-
-rule "different emotion"
-	no-loop true
-	when
-		$q: CCQuery()
-		$qad: ActionDetail($e1 : emotion) from $q.actionDetail
-		$cad: CandidateEvent(emotion != true, phase != $q.numField)
-		$ad: ActionDetail(emotion != $e1) from $cad.actionDetail	
-	then
-		modify ($cad)
-		{
-			increasePhase(), 
-			setExtension("emotion"),
-			setEmotion(true),
-			updateEvaluation(1.0f)		
-		}
-		System.out.println("Evaluation " + $cad.getEvaluation());
-		System.out.println("different emotion " + $ad.getID());
-end
-
-rule "end match" 
-	no-loop true
-	when 
-		$q: CCQuery()
-		$cad: CandidateEvent(phase == $q.numField)
-		$ad: ActionDetail() from $cad.actionDetail	
-	then
-		modify ($q)
-		{
-			setResults($ad.getID(), $cad.getEvaluation())
-		}
-		System.out.println("Evaluation " + $cad.getEvaluation());
-		System.out.println("end match " + $ad.getID());
-		retract ($cad);
-end*/
-

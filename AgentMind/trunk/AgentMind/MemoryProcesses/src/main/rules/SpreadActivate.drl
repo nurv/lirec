@@ -139,6 +139,19 @@ rule "multimedia-multimedia phase1"
 		System.out.println("multimedia-multimedia " + $ad.getID());
 end
 
+rule "object-object phase1"
+	no-loop true
+	salience 50
+	when
+		$q: SAQuery($o1: object)
+		$ad: ActionDetail(object == $o1) 			
+	then
+		insert (new CandidateEvent($ad, "object", 1.0f));
+		retract ($ad);
+		System.out.println("Object " + $o1);
+		System.out.println("object-object " + $ad.getID());
+end
+
 rule "subject-subject"
 	no-loop true
 	when
@@ -258,6 +271,21 @@ rule "multimedia-multimedia"
 		}
 		System.out.println("MultimediaPath " + $m1);
 		System.out.println("multimedia-multimedia " + $ad.getID());
+end
+
+rule "object-object"
+	no-loop true
+	when
+		$q: SAQuery($o1: object)
+		$cad: CandidateEvent(extension not contains "object")
+		$ad: ActionDetail(object == $o1) from $cad.actionDetail		
+	then
+		modify ($cad) {
+			increasePhase(), 
+			setExtension("object")
+		}
+		System.out.println("Object " + $o1);
+		System.out.println("object-object " + $ad.getID());
 end
 
 rule "positive desirability"
@@ -422,7 +450,22 @@ rule "multimediaPath"
 		modify ($q) {
 			setResults($m)
 		}
-		System.out.println("Location " + $m);
+		System.out.println("MultimediaPath " + $m);
+		System.out.println("Retracted " + $ad.getID());
+		retract ($cad);			
+end
+
+rule "object"
+	no-loop true
+	when
+		$q: SAQuery(question == "object")
+		$cad: CandidateEvent( phase == $q.numKnownVar )
+		$ad: ActionDetail($o: object) from $cad.actionDetail		
+	then			
+		modify ($q) {
+			setResults($o)
+		}
+		System.out.println("Object " + $o);
 		System.out.println("Retracted " + $ad.getID());
 		retract ($cad);			
 end

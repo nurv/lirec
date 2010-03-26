@@ -37,6 +37,7 @@ public class RecordDetailPanel extends JPanel {
 	JTextField _praiseworthiness;
 	JTextField _speechActMeaning;
 	JTextField _multimediaPath;
+	JTextField _object;
 	
 	public RecordDetailPanel(ActionDetail detail)
 	{
@@ -93,6 +94,12 @@ public class RecordDetailPanel extends JPanel {
         _multimediaPath.setMaximumSize(new Dimension(80,30));
         _multimediaPath.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
         this.add(_multimediaPath);
+        
+        _object = new JTextField(detail.getObject());
+        _object.setMinimumSize(new Dimension(80,30));
+        _object.setMaximumSize(new Dimension(80,30));
+        _object.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
+        this.add(_object);
         
         _desirability = new JTextField(Float.toString(detail.getDesirability()));
         _desirability.setMinimumSize(new Dimension(80,30));
