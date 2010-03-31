@@ -2,6 +2,7 @@
 
 #include "MainComponent.h"
 
+
 #define definedsizeofball 50
 #define Pi  3.14159265
 #define SetupMode 0
@@ -13,6 +14,7 @@ static	Port MyConnectionTesterPort;
 string NameOfServer = "/local"; 
 using namespace std;
 
+
 #define local 1
 #define global  2
 
@@ -21,20 +23,44 @@ bool IgnoreTimer =false;
 list<string> MigSites;
 string NameofMigrate;
 
-BufferedPort<Bottle> ThePortForModules;
+float LineThick = 1.2;
 
+// static BufferedPort<Bottle> ThePortForModules;
+string RememberName;
+ Port SendAdminCommands;
 
+ list<connections> AllConnectionsCOPY;
 
+double OriginalXsize =1200;
+double OriginalYsize =600;
+
+double TimeBetween = 10;
+double TimeOverall = 100;
+
+bool turnoff = false;
+
+	 BufferedPort<Bottle> ThePortForModules;
+ BufferedPort<Bottle> MigrationPort;
 
 /*! main window constructor !*/
 MainComponent::MainComponent (): 
-helloWorldLabel (0), quitButton (0),  MytextEditor(0), MytextEditor2(0),	ModParent1(0),	    ModChild1(0),  ModChild2(0),
+quitButton (0),  MytextEditor(0), MytextEditor2(0),	ModParent1(0),	    ModChild1(0),  ModChild2(0),
 ModParent2(0),		 LossBox(0),	  Connect(0),	   NetworkBox(0),		ConnectionStuff(0), ClearLog(0),   RefreshConnect(0),
 StopButton(0),		 MigrateButton(0),StartButton(0),  OpenLogButton(0),	SaveLog(0),			SaveMod(0),    LoadCon(0),
-LoadMod(0),			 SaveCon(0),	  DebugButton1(0), DebugButton2(0),     DebugButton3(0),    DebugButton4(0)
+LoadMod(0),			 SaveCon(0),	  DebugButton1(0), DebugButton2(0),     DebugButton3(0),    DebugButton4(0),TimeBetweenChecks(0)
 {
 
-	Network yarp;
+	//companion MyCompanion();
+	//tooltipWindow.setColour(0x1001b00 ,Colour (0xffbdc5f7));
+//	tooltipWindow.setColour(0x1001c10 ,Colour (0xff5f74f1));
+
+	TimeBetweenChecks = new Slider ("TimeBetweenChecks");
+	addAndMakeVisible(TimeBetweenChecks);
+	TimeBetweenChecks->setBounds(740,550,100,30);
+	TimeBetweenChecks->setTextBoxStyle (TimeBetweenChecks->TextBoxAbove ,false, 60, 20);
+	TimeBetweenChecks->setValue(5.0,true,true);	 
+	TimeBetweenChecks->setRange (0.1,10,0.01);
+
 
 	WhatShownDebug[0]=1;
 	WhatShownDebug[1]=1;
@@ -44,36 +70,36 @@ LoadMod(0),			 SaveCon(0),	  DebugButton1(0), DebugButton2(0),     DebugButton3(
 
 	DebugButton1 = new TextButton (String::empty);
 	addAndMakeVisible (DebugButton1);
-	DebugButton1->setBounds(740,20,100,30);
+	DebugButton1->setBounds(740,20,100,25);
 	DebugButton1->setButtonText (T("debug priority 1 on"));
     DebugButton1->addButtonListener (this);
 	DebugButton1->setConnectedEdges(Button::ConnectedOnBottom);	
 
 	DebugButton2 = new TextButton (String::empty);
 	addAndMakeVisible (DebugButton2);
-	DebugButton2->setBounds(740,50,100,30);
+	DebugButton2->setBounds(740,50,100,25);
 	DebugButton2->setButtonText (T("debug priority 2 on"));
     DebugButton2->addButtonListener (this);
 	DebugButton2->setConnectedEdges(Button::ConnectedOnTop | Button::ConnectedOnBottom);	
 
 	DebugButton3 = new TextButton (String::empty);
 	addAndMakeVisible (DebugButton3);
-	DebugButton3->setBounds(740,80,100,30);
+	DebugButton3->setBounds(740,80,100,25);
 	DebugButton3->setButtonText (T("debug priority 3 on"));
     DebugButton3->addButtonListener (this);
 	DebugButton3->setConnectedEdges(Button::ConnectedOnTop | Button::ConnectedOnBottom);	
 
 	DebugButton4 = new TextButton (String::empty);
 	addAndMakeVisible (DebugButton4);
-	DebugButton4->setBounds(740,110,100,30);
+	DebugButton4->setBounds(740,110,100,25);
 	DebugButton4->setButtonText (T("debug priority 4 on"));
     DebugButton4->addButtonListener (this);
 	DebugButton4->setConnectedEdges(Button::ConnectedOnTop);	
-    setSize (1200, 600);
+    
 
 	SaveLog = new TextButton (String::empty);
 	addAndMakeVisible (SaveLog);
-	SaveLog->setBounds(740,150,100,30);
+	SaveLog->setBounds(740,150,100,25);
 	SaveLog->setButtonText (T("Save log"));
     SaveLog->addButtonListener (this);
 
@@ -97,7 +123,7 @@ LoadMod(0),			 SaveCon(0),	  DebugButton1(0), DebugButton2(0),     DebugButton3(
 
 	StopButton = new TextButton (String::empty);
 	addAndMakeVisible (StopButton);
-	StopButton->setBounds(740,310,100,30);
+	StopButton->setBounds(740,310-5,100,30);
 	StopButton->setButtonText (T("Stop Modules"));
     StopButton->addButtonListener (this);
 
@@ -141,7 +167,8 @@ LoadMod(0),			 SaveCon(0),	  DebugButton1(0), DebugButton2(0),     DebugButton3(
 
 	/********************************************************************/
 
-//	startTimer (5000);
+	startTimer (5000); // was 5000
+	/*
 	helloWorldLabel = new Label (String::empty,T("SAMGAR Network Profile"));
     addAndMakeVisible (helloWorldLabel);
     helloWorldLabel->setFont (Font (10.0000f, Font::bold));
@@ -151,7 +178,7 @@ LoadMod(0),			 SaveCon(0),	  DebugButton1(0), DebugButton2(0),     DebugButton3(
     helloWorldLabel->setColour (Label::textColourId, Colours::black);
     helloWorldLabel->setColour (TextEditor::textColourId, Colours::black);
     helloWorldLabel->setColour (TextEditor::backgroundColourId, Colour (0x0));
-
+*/
 	addAndMakeVisible(MytextEditor = new TextEditor());
     MytextEditor->setBounds (890, 20, 290, 300);
     MytextEditor->setText (T("Debug Log Init \n"));
@@ -171,9 +198,11 @@ LoadMod(0),			 SaveCon(0),	  DebugButton1(0), DebugButton2(0),     DebugButton3(
     ModParent1->setBounds (890,480, 140, 22);
 	ModParent1->setText(T("Parent 1"));
 
+
 	addAndMakeVisible(ModParent2 = new ComboBox("N/A"));
     ModParent2->setBounds (1040,480, 140, 22);
 	ModParent2->setText(T("Parent 2"));
+//////	ModParent2->addListener(comboBoxChanged);
 
 	addAndMakeVisible(ModChild1 = new ComboBox("N/A"));
     ModChild1->setBounds (890,505, 140, 22);
@@ -230,42 +259,144 @@ LoadMod(0),			 SaveCon(0),	  DebugButton1(0), DebugButton2(0),     DebugButton3(
 	DebugButton4->setColour(0x1000101,Colours::red);
 
 	GetCurrentServerName();
-	RegisterMigrationPort();
+//	RegisterMigrationPort();
 
-	ThePortForModules.open("/PortForModules");
-	ThePortForModules.setStrict(true);
+	static bool opened2 = ThePortForModules.open("/PortForModules");
 
-MySizeX=getWidth();
-MySizeY=getHeight();
+
+	ChangeServer(local);
+
 PropSizeChangeX=0;
 PropSizeChangeY=0;
+setSize (1200, 600);
 
+//RegisterMigrationPort();
+/*
 
+TESTER
+
+*/
+/*
+AddModule("ModTest1");
+AddPort("ModTest1","PorTest1");
+AddModule("ModTest2");
+AddPort("ModTest2","PorTest2");
+AddPort("ModTest2","PorTest21");
+AddPort("ModTest2","PorTest22");
+AddModule("ModTest3");
+AddPort("ModTest3","PorTest3");
+AddModule("ModTest4");
+AddPort("ModTest4","PorTest4");
+AddModule("ModTest5");
+AddPort("ModTest5","PorTest5");
+AddModule("ModTest6");
+AddPort("ModTest6","PorTest6");
+AddModule("ModTest7");
+AddPort("ModTest7","PorTest7");
+AddModule("ModTest8");
+AddPort("ModTest8","PorTest8");
+AddModule("ModTest9");
+AddPort("ModTest9","PorTest9");
+AddModule("ModTest10");
+AddPort("ModTest10","PorTest10");
+AddModule("ModTest11");
+AddPort("ModTest11","PorTest11");
+AddModule("ModTest12");
+AddPort("ModTest12","PorTest12");
+*/
+
+//AddConnection("000000","000000","000000","000000","000000","000000"); // dont like a empty list
+/*
+AddConnection("ModTest5","PorTest5","ModTest4","PorTest4","lossy","network");
+AddConnection("ModTest12","PorTest12","ModTest2","PorTest2","lossy","network");
+AddConnection("ModTest2","PorTest21","ModTest11","PorTest11","lossy","network");
+AddConnection("ModTest1","PorTest1","ModTest10","PorTest10","lossy","network");
+
+AddConnection("ModTest2","PorTest2","ModTest3","PorTest3","lossy","network");
+AddConnection("ModTest2","PorTest21","ModTest4","PorTest4","lossy","network");
+AddConnection("ModTest2","PorTest22","ModTest5","PorTest5","lossy","network");
+*/
+compare_Buttons();
 }
+
 
 /*! main window de-structor !*/
 MainComponent::~MainComponent()
 {
+	/*
 	// save the mod log;
-//	stopTimer();
-//	MyTime.getCurrentTime();
-//	String datePlus = MyTime.toString(true,true,true,true);
-//	datePlus = datePlus + ".SamModLog";
-//	myFileforModReport = datePlus;
-//	myFileforModReport.create ();
-//	myFileforModReport.appendText (MytextEditor2->getText ()); // get from the mod log editor
+	turnoff = true;
+	
+
+	MyTime.~Time();
+	stopTimer();
+
+//	 TempModuleButton->~TextButton(); // deleate before the thing
+
+//	myFileforLog.close();
+//	File myFileforModReport;
+//	File myFileforMod;
+//	File myFileforCon;
+	
 
 
-//	Network::fini();
+	internalPath1.~Path();
+	internalPath2.~Path();
+	internalPath3.~Path();
+	internalPath4.~Path();
+	internalPath5.~Path();
+	TempPath.~Path();
+	mynewpath.~Path();
+	
+	TempPath2.~DrawablePath();
 
-//	AllConnections.clear();
+
+
+	myFileforLog.~File();
+	myFileforModReport.~File();
+	myFileforMod.~File();
+	myFileforCon.~File();
+
 
 	MigrationPort.close();
 	ThePortForModules.close();
 
+	AllConnections.clear();
+	ListOfKnownModules.clear();
+//	SeenModules.clear();
+//	SeenPorts.clear();
+//	SeenLines.clear();
+//	MigrationPlatformsAvail.clear();
+
+	AllConnections.~list();
+	ListOfKnownModules.~list();
+//	SeenModules.~list();
+//	SeenPorts.~list();
+//	SeenLines.~list();
+	MigrationPlatformsAvail.~list();
+*/
+
+	
+
+//	Network::fini();
+	MigrationPort.close();
+	ThePortForModules.close();
+	
+//	yarp::os::Time::delay(2);
+//	Network::fini();
+//	MigrationPort.~BufferedPort();
+//	ThePortForModules.~BufferedPort();
 
 
-    deleteAndZero (helloWorldLabel);
+	AllConnections.clear();
+	ListOfKnownModules.clear();
+	SeenModules.clear();
+	SeenPorts.clear();
+	SeenLines.clear();
+	MigrationPlatformsAvail.clear();
+
+//	tooltipWindow.~ToolTipWindow();
+//	deleteAndZero (tooltipWindow);
     deleteAndZero (quitButton);
 	deleteAndZero (MytextEditor);
     deleteAndZero (MytextEditor2);
@@ -292,11 +423,10 @@ MainComponent::~MainComponent()
 	deleteAndZero (DebugButton2);
     deleteAndZero (DebugButton3);
 	deleteAndZero (DebugButton4);
+    deleteAndZero (TimeBetweenChecks);
 
-	//myFileforLog;
-	//File myFileforModReport;
-	//File myFileforMod;
-	//File myFileforCon;
+//	 deleteAllChildren();
+	 
 }
 
 /*! changes the current namespace , allows to com with local and global server !*/
@@ -308,80 +438,73 @@ void GetCurrentServerName(void){NameOfServer=Network::getNameServerName();}
 /*! Register the main migration port!*/
 void MainComponent::RegisterMigrationPort (void)
 {
-	IgnoreTimer=true;
-	ChangeServer(global);
-	NameofMigrate = NameOfServer + "_Migration";
-	static bool opened = MigrationPort.open(NameofMigrate.c_str());
+//	IgnoreTimer=true;
+static bool opened = false;
 
-	ChangeServer(local);
-	IgnoreTimer=false;
+	ChangeServer(global);
+
+//	Contact CV;
+//	Bottle out,in;
+//	out.addString("NAME_SERVER query /global");
+//	CV.bySocket("mcast","224.2.1.1",10001);
+
+//	Network::write(CV,out,in,false);
+
+//	if(in.size()>0)
+//	{
+//		String CVB = out.toString().c_str();
+//		AddToLog(CVB + " \n",2);
+//	}
+
+	NameofMigrate = NameOfServer + "_Migration";
+	if(opened==false)
+	{
+		
+	 opened = MigrationPort.open(NameofMigrate.c_str());
+	
+	}	
+	
+ ChangeServer(local);
 
 	if(opened==true){AddToLog("Addid myself to global server :\n",1);}
-	else			{
-					AddToLog("could not Add myself to global server :\n",1);
-					AddToLog("This program will take a long while to shut down :\n",1);
-					MigrationPort.close();
-					}
-	AddToLog(NameofMigrate.c_str(),1);
-	AddToLog("\n",1);
+	else			{AddToLog("could not Add myself to global server :\n",1);}
+
+
 }
 
+
 /*! Migrate function!*/
-bool MainComponent::Migrate (string nameofwhere)
+bool MainComponent::Migrate (string nameofwhere,Bottle Data)
 {
 	AddToLog(" Attempting to Migrate  \n",1);
 	IgnoreTimer=true;
+
+
 	ChangeServer(global);
 
 	if(MigrationPort.isClosed()==true){AddToLog("Migration port is closed \n",1);}
 
 	Bottle& MyBottle =MigrationPort.prepare();
 	MyBottle.clear();
+	MyBottle.copy(Data,0,Data.size());
 
-	nameofwhere = "/" + nameofwhere + "_Migration";
+	//nameofwhere = "/" + nameofwhere + "_Migration";
 
 	AddToLog(nameofwhere.c_str(),1);AddToLog(" to ",1);AddToLog(MigrationPort.getName().c_str(),1);AddToLog("\n",1);
 
-bool true1= MigrationPort.addOutput(nameofwhere.c_str());  
+	bool true1= MigrationPort.addOutput(nameofwhere.c_str());  
 
-
-if(true1==false){AddToLog("Could not connect to migrate, operation aborted \n",1);}
-
-
-if(true1==false){ChangeServer(local);IgnoreTimer=false; return false;}
-
-  string line;
-  ifstream myfile ("Personality.txt");
+	if(true1==false){AddToLog("Could not connect to migrate, operation aborted \n",1);ChangeServer(local);IgnoreTimer=false; return false;}
   
-  if (myfile.is_open())
-  {
-	//  AddToLog(" opened file  \n",1);
-    while (! myfile.eof() )
-    {
-     getline (myfile,line);
-	  MyBottle.addString(line.c_str());
-    }
-    myfile.close();
-//	AddToLog("   \n",1);
- }
-  else
-  {
-	  AddToLog(" could not open file \n",1);
-	  ChangeServer(local);
-	  IgnoreTimer=false;
-	  return false;
-  }
+	 MigrationPort.write();
+	AddToLog(" Migration Sucsessfull \n",1);
 
- MigrationPort.write();
- AddToLog(" Migration Sucsessfull \n",1);
-
- Network::disconnect(MigrationPort.getName(),nameofwhere.c_str());
- Network::disconnect(nameofwhere.c_str(),MigrationPort.getName());
+	Network::disconnect(MigrationPort.getName(),nameofwhere.c_str());
+	Network::disconnect(nameofwhere.c_str(),MigrationPort.getName());
 
 
- ChangeServer(local);
-IgnoreTimer=false;
-return true ;// if its sucsessfull
+	ChangeServer(local);
+	return true ;// if its sucsessfull
 }
 
 
@@ -389,54 +512,40 @@ return true ;// if its sucsessfull
 
 
 /*! update a list of available platforms we can migrate to !*/
-void MainComponent::UpdateMigrationProto(void)
+Bottle MainComponent::UpdateMigrationProto(void)
 {
-IgnoreTimer=true;
-FILE *inpipe;
-char inbuf[200];
-String hello;
-int lineno = 0;
-//int start,fin;
+	ChangeServer(global);
+	
+	Bottle msg, reply,msg2,reply2,Bplatforms;
 
-ChangeServer(global);
-RegisterMigrationPort(); // registers istelf, doesn't matter cos it cleans the server anyways
-// if its windows
-#ifdef	Rectangle
-	inpipe = _popen("yarp clean","r");
-	inpipe = _popen("yarp name list","r");
-#else
-	inpipe =  popen("yarp clean","r");
-    inpipe =  popen("yarp name list", "r");
-#endif
+    msg.addString("bot");
+    msg.addString("list");
+    AddToLog(T("Requesting list of ports from name server\n"),2);
+    Network::write("/global",msg,reply);
 
-	MigrationPlatformsAvail.clear();
-    if (!inpipe){AddToLog("Cannot access needid function to find other platforms\n",1);   }
-    else 
-	{
-		AddToLog(" List of possible migration platforms :\n",1);
+	Bplatforms.addInt(50);
 
-         while (fgets(inbuf, sizeof(inbuf), inpipe)) 
-		 {
+  for (int i=1; i<reply.size(); i++) 
+  {
+	  ConstString port = reply.get(i).asList()->check("name",Value("")).asString();
+ 
+	  if (port!="" && port!="fallback" && port!="/global" && port!=NameofMigrate.c_str()) 
+			{
+				if(Network::connect(NameofMigrate.c_str(),port))
+					{
+					AddToLog(port.c_str(),2);
+					AddToLog(" \n",2);
+					Bplatforms.addString(port);
+					}
+				else
+				{
+					Network::unregisterName(port);
+				}
+			}
+  	  }
+	  ChangeServer(local);
 
-		    String mystring = inbuf;
-			mystring=mystring +"\n";
-			if(mystring.containsChar('/')==true && mystring.contains(String("Migration"))==true)
-			 {
-				 int start = mystring.indexOf(String("/"));
-				 int fin   = mystring.indexOf(start,String(" "));
-
-				 mystring=mystring.substring(start,fin);
-				 MigrationPlatformsAvail.push_front(string(mystring));
-				 mystring = "--->"+mystring+   "\n";
-                 AddToLog(mystring,1);
-
-				 /// need to add it to the list here as well
-			 }
-		}
-    }
- ChangeServer(local);
-
- IgnoreTimer=false;
+	  return Bplatforms;
 }
 
 
@@ -446,13 +555,23 @@ RegisterMigrationPort(); // registers istelf, doesn't matter cos it cleans the s
 void MainComponent::ConnectionAutoUpdate(void)
 {
 
+/*
+	 so this goes through all connections, if the daddy button is red then skip else reconnect all the ports.
+*/
+
 		list<connections>::iterator it2;
 		list<TextButton*>::iterator itTextButton55;
 		TextButton* TempModuleButton55;
 
+//AddToLog("about to go into all connections \n",2);
+
+
+
+
 
 	for ( it2=AllConnections.begin() ; it2 != AllConnections.end(); it2++ )
 		{
+		//	AddToLog("in for loop \n",2);
 			connections mytempconnect;
 			mytempconnect = *it2;
 			string tempstring10 = mytempconnect.firstport;
@@ -468,7 +587,7 @@ void MainComponent::ConnectionAutoUpdate(void)
 			bool skip;
 			skip = false;
 
-
+		//	AddToLog("Checking for false connections \n",2);
 			for ( itTextButton55=SeenModules.begin() ; itTextButton55 != SeenModules.end(); itTextButton55++ )
 			{
 				TempModuleButton55 = *itTextButton55;
@@ -479,9 +598,13 @@ void MainComponent::ConnectionAutoUpdate(void)
 			}
 
 
-			if(skip==false)
-			{
 
+			// ok this is where it messes up if its not on the same system. I think the skip isn't working
+			// doesn't seem to slow down the system much, skipping works
+
+			if(skip==false)
+			{	
+		//		AddToLog("not skipping connections \n",2);
 				true1=Network::isConnected(firststring.c_str(),secoundstring.c_str(),true);
 				true2=Network::isConnected(secoundstring.c_str(),firststring.c_str(),true);
 
@@ -503,34 +626,52 @@ void MainComponent::ConnectionAutoUpdate(void)
 			}
 			else
 			{
+			//	AddToLog("skipping connections \n",2);
 				mytempconnect.IsConnected=false;
 			}
+			
 			*it2=mytempconnect;
 			RefreashConnections();
 		}
 
 }
-/*! checks the main port for each module can be connected to so its up and running!*/
+
+
+/*! LEGACY CODE: checks the main port for each module can be connected to so its up and running!*/
 void MainComponent::CheckConnectionRight()
 {
+
+	/* so in this i only check the maim module port, if its not running i assume all other ports are dead */
 		list<TextButton*>::iterator itTextButton66;
 		TextButton* TempModuleButton66;
+		Contact MyCont;
 
 	for ( itTextButton66=SeenModules.begin() ; itTextButton66 != SeenModules.end(); itTextButton66++ )
 		{
 			TempModuleButton66 = *itTextButton66;
+			//if (TempModuleButton66->
 			if(Colours::red!=TempModuleButton66->findColour(0x1000102,false))
 			{
 				string mystring = TempModuleButton66->getButtonText();
 				mystring = "/Main_" + mystring;
+				MyCont=Network::queryName(mystring.c_str());
+
+				if(MyCont.isValid()==false){break;}
+				
+				if(ThePortForModules.isClosed()==true){ThePortForModules.open("/PortForModules");AddToLog("Attempting to recover local port \n",2);}
 
 				//ought to be check for connection and if not connected then reconnect;
+			//	if(ThePortForModules.is
 				if(Network::isConnected(mystring.c_str(),"/PortForModules",true)==false || Network::isConnected("/PortForModules",mystring.c_str(),true)==false)
 				{
+//				Network:
 					if(Network::connect(mystring.c_str(),"/PortForModules","tcp",true)==false || Network::connect("/PortForModules",mystring.c_str(),"tcp",true)==false)
 					{
 						TempModuleButton66->setColour(0x1000102 ,Colours::red);
 						AddToLog("The module Main_"+TempModuleButton66->getButtonText()+ " is in error \n",2);
+						RememberName=TempModuleButton66->getButtonText();
+						ListOfKnownModules.remove_if(DelFromList);
+						SendOffModuleList(); // if a modules removed send off the new list
 					}
 				}
 			}
@@ -538,6 +679,29 @@ void MainComponent::CheckConnectionRight()
 
 }
 
+//bool single_digit (const int& value) { return (value<10); }
+bool DelFromList (ModuleStruct& value)
+{
+	return	!value.name.compare(RememberName);
+}
+
+
+// the idea here is that everytime a new module is found or lost it will send off the new list to 
+// all the other modules
+void MainComponent::SendOffModuleList()
+{
+
+	Bottle& RR = ThePortForModules.prepare();
+	RR.clear();
+	RR.addInt(105);
+for ( modulestructIT=ListOfKnownModules.begin() ; modulestructIT != ListOfKnownModules.end(); modulestructIT++ )
+		{
+		RR.addString(modulestructIT->name.c_str());
+		RR.addString(modulestructIT->catagory.c_str());
+		RR.addString(modulestructIT->subcatagory.c_str());
+		}
+ThePortForModules.write();
+}
 /*!
 Time callback checks modules and connections , also checks the keytomodules port which recives data from ports ie stop commands etc
 bounces a few of them back as well to enable one module to communicate with all of them
@@ -545,31 +709,83 @@ bounces a few of them back as well to enable one module to communicate with all 
 
 void MainComponent::timerCallback()
 {
-	if(IgnoreTimer==false)
-	{
-		ChangeServer(local);
-		Network yarp;
-		
-			CheckConnectionRight(); // looks like the problem is in here
-		
-			ConnectionAutoUpdate(); 
-		
-			GetModuleCommands(); 
-		
-	}
+
+		stopTimer();
+		CheckConnect();				//checks modules
+		ConnectionAutoUpdate();		// checks ports to port
+		if(AllConnections.size()>0){RefreashConnections();}
+	//	GetModuleCommands();
+	//	if(turnoff==true){
+			startTimer (TimeBetweenChecks->getValue()*1000);
+	//	}
+
 }
 
+void MainComponent::CheckConnect(void)
+{
+// go through all the main ports to see if modules are ok
+// else set there name to red
+
+
+string mystring;
+
+	for ( itTextButton2=SeenModules.begin() ; itTextButton2 != SeenModules.end(); itTextButton2++ )
+		{
+			TempModuleButton = *itTextButton2;
+			mystring="/Main_"+TempModuleButton->getButtonText();
+
+			if(Colours::red!=TempModuleButton->findColour(0x1000102,false))
+			{
+				if(Network::isConnected(mystring.c_str(),"/PortForModules",true)==false) 
+					{
+						// shouldnt need this really, when the server says its there it should connect
+					//	if(Network::connect(mystring.c_str(),"/PortForModules","tcp",true)==false || Network::connect("/PortForModules",mystring.c_str(),"tcp",true)==false)
+					//	{
+							TempModuleButton->setColour(0x1000102 ,Colours::red);
+							// just paint it so it gets refreshed real quick so the next method can see it!!
+							repaint();
+					//	}
+					}
+				else if(Network::isConnected("/PortForModules",mystring.c_str(),true)==false)
+				{
+							TempModuleButton->setColour(0x1000102 ,Colours::red);
+							// just paint it so it gets refreshed real quick so the next method can see it!!
+							repaint();
+
+				}
+			}
+		}
+
+		// balls it, just check if one of the daddys isn't online then disconnect.
+}
 
 void MainComponent::GetModuleCommands(void)
 {
 	static list<string>::iterator it;
-	Bottle *b;
+	Bottle *b,*b2;
+
+	if(MigrationPort.getPendingReads()>0)
+	{
+			b2 = ThePortForModules.read(true);
+			if(b2!=NULL && b2->isNull()==false) // if theres data on the port
+			{
+				AddToLog("Recived migration data \n",2);
+				 Bottle& cc = ThePortForModules.prepare();
+				 cc.clear();
+				 cc.addInt(3003);
+				 cc.append(*b2);
+			}
+	}
+
 		while(ThePortForModules.getPendingReads()>0)
 		{
+
+			AddToLog("Recived Data \n",2);
 		    b = ThePortForModules.read(true);
 			if(b!=NULL && b->isNull()==false) // if theres data on the port
 			{
 				 Bottle& cc = ThePortForModules.prepare();
+				 cc.clear();
 				/// if its a report on how well its done then add to a log else
 				if(b->get(0).asInt()==20)
 				{
@@ -577,6 +793,24 @@ void MainComponent::GetModuleCommands(void)
 					double ModScore = b->get(2).asInt();
 					MyNewString = MyNewString + " achived score " + String(ModScore) + " \n"; 
 					MytextEditor2->insertTextAtCursor(MyNewString);
+				}
+
+				// migrate
+				else if(b->get(0).asInt()==36)
+				{
+					Bottle MigrationData;
+					MigrationData.copy(*b,2,b->size()-1);
+					bool SucMigrate = Migrate (b->get(1).asString().c_str(),MigrationData);
+					cc.addInt(1001);
+					if(SucMigrate==true){cc.addInt(1);}
+					else				{cc.addInt(0);}
+					ThePortForModules.write();
+				}
+				// register migration
+				else if(b->get(0).asInt()==4004)
+				{
+				AddToLog("Registering migration port \n",2);
+				RegisterMigrationPort();
 				}
 				// add to log
 				else if(b->get(0).asInt()==30)
@@ -586,39 +820,43 @@ void MainComponent::GetModuleCommands(void)
 					MyNewString = MyNewString + " : " + LogScore + " \n";
 					AddToLog(MyNewString,b->get(3).asInt());
 				}
-				else if(b->get(0).asInt()==40)
+				// get migration info
+				else if(b->get(0).asInt()==40) 
 				{
-					UpdateMigrationProto();
-					cc.addInt(50); // code for platforms
-					for ( it=MigrationPlatformsAvail.begin() ; it != MigrationPlatformsAvail.end(); it++ )
-					{
-						string temppy = *it;
-						cc.addString(temppy.c_str());
-					}
+
+
+					cc=UpdateMigrationProto();
 					ThePortForModules.write();
 
 				}
+///// reply back with new data once a new module has been created
 				// just send on 
+				// when new data is got from the module giving it new data send off the module list
 				else if(b->get(0).asInt()==10)
 				{
-					cc.addInt(10);
-					cc.addString(b->get(1).asString());
-					cc.addString(b->get(2).asString());
-					cc.addString(b->get(3).asString());
-					ThePortForModules.write();
+				ModuleStruct TempStruct;
+
+				TempStruct.name        =b->get(1).asString().c_str();
+				TempStruct.catagory    =b->get(2).asString().c_str();
+				TempStruct.subcatagory =b->get(3).asString().c_str();
+
+				ListOfKnownModules.push_front(TempStruct);
+		
+			//	AddToLog("GotCatagoryData \n",1);
+				SendOffModuleList();
 				}
 
 				// send the global command on to all modules
 				else if(b->get(0).asInt()>=0 && b->get(0).asInt()<=2)
 				{
-					AddToLog("recived command to stop all modules \n",1);
+			//		AddToLog("recived global module command \n",1);
 					cc.addInt(b->get(0).asInt());
 					ThePortForModules.write();
 				}
 				// send the personal command to all modules
 				else if(b->get(0).asInt()>=3 && b->get(0).asInt()<=5)
 				{
-				AddToLog("recived command to stop a module \n",1);
+			//	AddToLog("recived Personal module command \n",1);
 					cc.addInt   (b->get(0).asInt());
 					cc.addString(b->get(1).asString());
 					ThePortForModules.write();
@@ -628,16 +866,25 @@ void MainComponent::GetModuleCommands(void)
 		}
 
 
-		if(MigrationPort.Ivebeenused==1)
-		{
-			AddToLog("Someone has tryed to acess my migration port \n",1);
-			MigrationPort.Ivebeenused=0;
-		}
+//		if(MigrationPort.Ivebeenused==1)
+//		{
+//			AddToLog("Someone has tryed to acess my migration port \n",1);
+//			MigrationPort.Ivebeenused=0;
+//		}
+}
 
 
+bool ListDeleatingFunction(ModuleStruct x,ModuleStruct y)
+{
+	if(x.name==y.name){return true;}
+	return false;
+}
 
-
-
+/*! Sorts the varibles in the known module list!*/
+bool ListSortingFunction(ModuleStruct x,ModuleStruct y)
+{
+	if(x.name>y.name){return true;}
+	return false;
 }
 
 
@@ -655,6 +902,11 @@ static int menucount = 1;
 bool IsItOnList=false;
 	// need to put a bit in here to add to the port list and give it its id
 
+	String realname = "/Main_"+name;
+	Network::connect(realname,"/PortForModules","tcp",true);
+	Network::connect("/PortForModules",realname,"tcp",true);
+
+
 for ( itTextButton2=SeenModules.begin() ; itTextButton2 != SeenModules.end(); itTextButton2++ )
 		{
 		TempModuleButton = *itTextButton2;
@@ -662,16 +914,15 @@ for ( itTextButton2=SeenModules.begin() ; itTextButton2 != SeenModules.end(); it
 			{
 			TempModuleButton->setColour(0x1000102 ,Colours::black);
 			IsItOnList=true;
-			}
 		}
+}
 
 
 	if(IsItOnList==false)
 	{
 	AddToLog("New Module called " + name +" has been found \n",1);
 	TotalModules++;
-	SeenModules.push_front (new TextButton (String::empty));
-	SeenModules.front()->setButtonText (name);
+	SeenModules.push_front (new TextButton (name,name));
 	SeenModules.front()->setRadioGroupId(TotalModules);
 	MainComponent::Updatemodules();
 	ModParent1->addItem(name,menucount);
@@ -681,7 +932,6 @@ for ( itTextButton2=SeenModules.begin() ; itTextButton2 != SeenModules.end(); it
 	else
 	{
 	AddToLog("Module called " + name +" has been reconnected \n",2);
-	
 	}
 }
 
@@ -712,12 +962,12 @@ static int menucount2=1;
 
 			if(IsItOnList==false)
 			{
-			SeenPorts.push_front (new TextButton (String::empty));
-			SeenPorts.front()->setButtonText (name);
+			SeenPorts.push_front (new TextButton (name,name));
+			//SeenPorts.front()->setButtonText (name);
 			AddToLog("Found port " + name + " child of " + Parent + " \n",1);
 			SeenPorts.front()->setRadioGroupId(TempModuleButton->getRadioGroupId());
-			ModChild1->addItem(name,menucount2);
-			ModChild2->addItem(name,menucount2);
+			//ModChild1->addItem(name,menucount2);
+			//ModChild2->addItem(name,menucount2);
 			menucount2++;
 			}
 			else
@@ -730,6 +980,9 @@ static int menucount2=1;
 MainComponent::Updatemodules();
 
 }
+
+
+
 /*!
 
 This function is used to display the modules and ports in a nice circuler pattern
@@ -806,99 +1059,261 @@ from port to port to show how there interconnected, need to change connections f
 strings to a list of objects, so they can be added easerly by other methods for starting creations
 */
 
-void MainComponent::RefreashConnections(void)
+
+void MainComponent::compare_Buttons ()
 {
-	static int HaveIDoneThisBefore=0;
-    list<connections>::iterator it2;
+list<connections>::iterator it2;
+int var[100];
+
+int numberofmyconnections =0;
+int placeinlist=0;
+bool Alphaon = true;
+// first lets assign colors to each button dependent on connections
+for ( itTextButton2=SeenModules.begin() ; itTextButton2 != SeenModules.end(); itTextButton2++ ) // secound daddy
+		{
+		placeinlist++;
+		numberofmyconnections =0;
+		TempModuleButton2 = *itTextButton2;
+		Alphaon = true;
+		for ( it2=AllConnections.begin() ; it2 != AllConnections.end(); it2++ )
+			{
+			connections mytempconect = *it2;
+			if(mytempconect.Daddyfirstport == TempModuleButton2->getButtonText() || mytempconect.Daddysecoundport==TempModuleButton2->getButtonText())
+				{
+					numberofmyconnections ++;
+					if(mytempconect.IsConnected==false){Alphaon=false;}
+				}
+			}
+		//                                         red,green,blue
+		uint8 green,blue,red;
+
+		
+		//;
+	//	Colour MyColor(float(0.5),float(0.5),float(0.5),float(0.5));
+	//	Colour MyNewColor = MyColor.withRotatedHue(float((1/360)*(80*(numberofmyconnections+placeinlist))));
+	//	Colour::Colour  	( const float    hue,	const float  saturation,	const float  brightness,	const float  alpha	) 	
 
 
-int mylittlecount=0;
-/// puts everything top left to begin with
-for ( itTextButton=SeenModules.begin() ; itTextButton != SeenModules.end(); itTextButton++ )
+		red   = (placeinlist*70)+(numberofmyconnections*85);
+		green = (placeinlist*100)+(numberofmyconnections*45);
+		blue  = (placeinlist*50)+(numberofmyconnections*65);
+		
+		while(green>255){green=green-255;}
+		while(blue>255){blue=blue-255;}
+		while(red>255){red=red-255;}
+
+
+		var[placeinlist]=numberofmyconnections;
+		TempModuleButton2->setColour(0x1000100,Colour (red, green, blue,float(1)));
+		}
+
+
+// sort them compared to number of outputs
+for(int cvb=0;cvb<SeenModules.size()*2;cvb++)
+{
+placeinlist=0;
+itTextButton2=SeenModules.begin();
+itTextButton3=SeenModules.begin();
+itTextButton3++;
+for ( itTextButton=itTextButton3 ; itTextButton != SeenModules.end(); itTextButton++ ) // first daddy
 	{
-		TempModuleButton = *itTextButton;
-		TempModuleButton->setTopLeftPosition(20,20);  
+		placeinlist++;
+		TempModuleButton  = *itTextButton;
+		TempModuleButton2 = *itTextButton2;
+		if(var[placeinlist]>var[placeinlist+1])
+		{
+			*itTextButton2=TempModuleButton;
+			*itTextButton=TempModuleButton2;
+			int tempyr = var[placeinlist];
+			var[placeinlist]=var[placeinlist+1];
+			var[placeinlist+1]=tempyr;
+		}
+		if(placeinlist+1>SeenModules.size())// wrap around for the list
+		{
+		if(var[placeinlist]>var[0])
+		{
+			*itTextButton2=TempModuleButton;
+			*itTextButton=TempModuleButton2;
+			int tempyr = var[placeinlist];
+			var[placeinlist]=var[placeinlist+1];
+			var[0]=tempyr;
+		}
+
+		}
+
+
+		itTextButton2++;
 	}
-/// puts the modules across and down, if a child is found then it goes right and down, else it just goes down and
-/// if it hits anouther module it pushes that one down
-for(int ii=0;ii<10;ii++)
-{
-for ( itTextButton=SeenModules.begin() ; itTextButton != SeenModules.end(); itTextButton++ )
+}
+
+	/// then swap them
+
+for ( itTextButton=SeenModules.begin() ; itTextButton != SeenModules.end(); itTextButton++ ) // first daddy
 	{
-	for ( itTextButton2=SeenModules.begin() ; itTextButton2 != SeenModules.end(); itTextButton2++ )
+	for ( itTextButton2=SeenModules.begin() ; itTextButton2 != SeenModules.end(); itTextButton2++ ) // secound daddy
 		{
 			TempModuleButton = *itTextButton;
 			TempModuleButton2 = *itTextButton2;
+
+		for ( it2=AllConnections.begin() ; it2 != AllConnections.end(); it2++ )
+			{
+				connections mytempconect = *it2;
+				if(mytempconect.Daddyfirstport == TempModuleButton2->getButtonText() && mytempconect.Daddysecoundport==TempModuleButton->getButtonText())
+				{
+					*itTextButton2=TempModuleButton;
+					*itTextButton=TempModuleButton2;
+				}
+			}
+	}
+}
+
+
+}
+
+
+
+
+/* New method : does the arrangement of buttons etc. */
+void MainComponent::RefreashConnections(void)
+{
+static int HaveIDoneThisBefore22=0;
+    list<connections>::iterator it2;
+static int HowManyConp[50];
+
+int mylittlecount=0;
+
+float Yspace		=	(590-20)+(getHeight()-OriginalYsize) ; // how much screen room
+float Xspace		=	(700-10)+(getWidth()-OriginalXsize) ;
+float Ytab			=	Yspace/SeenModules.size();
+float ButtonSizeY	=	(Ytab/100)*60;
+
+compare_Buttons();
+
+for ( itTextButton=SeenModules.begin() ; itTextButton != SeenModules.end(); itTextButton++ )
+	{
+		TempModuleButton = *itTextButton;
+		TempModuleButton->setSize(50,ButtonSizeY);
+		TempModuleButton->setTopLeftPosition(20,17+(Ytab*mylittlecount));  
+		mylittlecount++;
+	}
+
+MainComponent::SortPorts(); // puts the ports next to the main modules
+
+// draw the lines
+for(int nnm=0;nnm<50;nnm++)
+{
+HowManyConp[nnm]=5;
+}
+
+
+int ColorLineCount=0;
+int ColorLineShiftDown=0;
+ColorLineCount=0;
+ for ( itTextButton=SeenPorts.begin() ; itTextButton != SeenPorts.end(); itTextButton++ ) // first daddy
+	{
+		TempModuleButton = *itTextButton;
+		HowManyConp[TempModuleButton->getRadioGroupId()]=0;
+	for ( itTextButton2=SeenPorts.begin() ; itTextButton2 != SeenPorts.end(); itTextButton2++ ) // secound daddy
+		{
+			
+			TempModuleButton2 = *itTextButton2;
+			
 
 		for ( it2=AllConnections.begin() ; it2 != AllConnections.end(); it2++ )
 			{
 			connections mytempconect = *it2;
-			/// if there connected move it down and right
-			if(mytempconect.Daddyfirstport == TempModuleButton->getButtonText() && mytempconect.Daddysecoundport==TempModuleButton2->getButtonText())
-				{
-				TempModuleButton2->setTopLeftPosition(TempModuleButton->getX()+30,TempModuleButton->getY()+60);//woz 60
-				}
-			} 
-			// if not connected just move it down
-		for ( itTextButton3=SeenModules.begin() ; itTextButton3 != SeenModules.end(); itTextButton3++ )
-			{
-			TempModuleButton3 = *itTextButton3;
-			if(TempModuleButton3->getY()==TempModuleButton2->getY()&&TempModuleButton2!=TempModuleButton3)
-				{
-				TempModuleButton3->setTopLeftPosition(TempModuleButton3->getX(),TempModuleButton3->getY()+60);//woz 60
-				}
-			}
-		}
-	}
-// puts the ports next to the modules
-MainComponent::SortPorts(); 
-}
-
-/// this bit just puts in the line in from port to port
-for ( itTextButton=SeenPorts.begin() ; itTextButton != SeenPorts.end(); itTextButton++ )
-	{
-	for ( itTextButton2=SeenPorts.begin() ; itTextButton2 != SeenPorts.end(); itTextButton2++ )
-		{
-			TempModuleButton = *itTextButton;
-			TempModuleButton2 = *itTextButton2;
-		
-		for ( it2=AllConnections.begin() ; it2 != AllConnections.end(); it2++ )
-			{
-		connections mytempconect = *it2;
-
 			if(mytempconect.firstport == TempModuleButton->getButtonText() && mytempconect.secoundport==TempModuleButton2->getButtonText())
 				{
-				
-			//	if(TempModuleButton->getY()>TempModuleButton2->getY())
-			//		{
+					ColorLineCount++;
+					ColorLineShiftDown++;
+					//
+					mytempconect.MyColor=TempModuleButton2->findColour(0x1000100,false);
+					float Xstart=0;
+					float Ystart=0;
+					float Xfin=0;
+					float Yfin=0;
+					float numberofspacesawaytop = 0;
+					float numberofspacesawaybot = 0;
+					float StartDown   = 0;
+					float StartRight  = 0;
+					float SecoundDown =0;
+
+					if(TempModuleButton->getY()<TempModuleButton2->getY())
+					{
+					 Xstart	=TempModuleButton->getX()+(TempModuleButton->getWidth()/2);
+					 Ystart	=TempModuleButton->getY()+ TempModuleButton->getHeight();
+					 Xfin	=TempModuleButton2->getX()+(TempModuleButton2->getWidth()/2);
+					 Yfin	=TempModuleButton2->getY();
+
+					 numberofspacesawaytop = ((TempModuleButton->getX()-(20+TempModuleButton->getWidth()))/TempModuleButton->getWidth())+1;
+					 numberofspacesawaybot = ((TempModuleButton2->getX()-(20+TempModuleButton2->getWidth()))/TempModuleButton2->getWidth())+1;
+
+					 StartDown   = Ystart + ((Ytab-ButtonSizeY)/2)-((LineThick*2)*numberofspacesawaytop);//-(LineThick*numberofspacesaway));
+					 
+					 StartRight  = Xspace - (7*((Ystart/Ytab)));
+					 SecoundDown =  Yfin  - ((Ytab-ButtonSizeY)/2)+((LineThick*2)*numberofspacesawaybot);//-(LineThick*numberofspacesaway));//- ((Ytab-ButtonSizeY)/2) - TempModuleButton2->getHeight();
+					
+					}
+					else
+					{
+					 Xstart	=TempModuleButton2->getX()+(TempModuleButton2->getWidth()/2);
+					 Ystart	=TempModuleButton2->getY()+ TempModuleButton2->getHeight();
+					 Xfin	=TempModuleButton->getX()+(TempModuleButton->getWidth()/2);
+					 Yfin	=TempModuleButton->getY();
+
+					 numberofspacesawaytop = ((TempModuleButton2->getX()-(20+TempModuleButton2->getWidth()))/TempModuleButton2->getWidth())+1;
+					 numberofspacesawaybot = ((TempModuleButton->getX()-(20+TempModuleButton->getWidth()))/TempModuleButton->getWidth())+1;
+
+					 StartDown   = Ystart + ((Ytab-ButtonSizeY)/2)-((LineThick*2)*numberofspacesawaytop);//-(LineThick*numberofspacesaway));
+					 StartRight  = Xspace - (7*(Ystart/Ytab));
+					 SecoundDown =  Yfin  - ((Ytab-ButtonSizeY)/2)+((LineThick*2)*numberofspacesawaybot);//-(LineThick*numberofspacesaway));//- ((Ytab-ButtonSizeY)/2) - TempModuleButton2->getHeight();
+					}		
+					
+			
+
 					mytempconect.MyPath.clear();
-					mytempconect.MyPath.startNewSubPath (float(TempModuleButton->getX()+(sizeofball*0.425)),float(TempModuleButton->getY()-2+(sizeofball*0.85)));// top left
-					mytempconect.MyPath.lineTo (float(TempModuleButton2->getX()+(sizeofball*0.425)), float(TempModuleButton2->getY()+2));// bottem left
+					mytempconect.MyPath.startNewSubPath (Xstart,Ystart);//startpoint
+					// go a little down
+					mytempconect.MyPath.lineTo			(Xstart,StartDown);
+					// go right
+					mytempconect.MyPath.lineTo			(StartRight,StartDown);
+					// go down
+					mytempconect.MyPath.lineTo			(StartRight,SecoundDown);
+					// go left
+					mytempconect.MyPath.lineTo			(Xfin,SecoundDown);
+					//  go down to finnish
+					mytempconect.MyPath.lineTo			(Xfin,Yfin);
+					// go up 
+					mytempconect.MyPath.lineTo			(Xfin,SecoundDown);
+					// go right
+					mytempconect.MyPath.lineTo			(StartRight,SecoundDown);
+					// go up
+					mytempconect.MyPath.lineTo			(StartRight,StartDown);
+					// go left
+					mytempconect.MyPath.lineTo			(Xstart,StartDown);
+
+					mytempconect.MyPath.lineTo			(Xstart,Ystart);
+
 					mytempconect.MyPath.closeSubPath();
+
+				//	if
 					*it2 = mytempconect;
-			//		}
-			//	else
-			//		{
-			//		AddToLog("adding path 2 \n",1);
-			//		mytempconect.MyPath.clear();
-			//		mytempconect.MyPath.startNewSubPath (float(TempModuleButton->getX()+(sizeofball*0.425)),float(TempModuleButton->getY()-2+(sizeofball*0.85)));// top left
-			//		mytempconect.MyPath.lineTo (float(TempModuleButton2->getX()+(sizeofball*0.425)), float(TempModuleButton2->getY()+2));// bottem left
-			//		mytempconect.MyPath.closeSubPath();
-			//		}
 				}
-			}
-		}
+			} 
 	}
-// bug in the system that unless the windows forced to redraw everything then not all lines are seen
-// changed this by everytime changing the main window size a little.
-if(HaveIDoneThisBefore==0)	{centreWithSize (getWidth()+1, getHeight());HaveIDoneThisBefore=1;}
-else						{centreWithSize (getWidth()-1, getHeight());HaveIDoneThisBefore=0;}
+}
+repaint();
+
+//if(HaveIDoneThisBefore22==0)	{centreWithSize (getWidth()+1, getHeight());HaveIDoneThisBefore22=1;}
+//else							{centreWithSize (getWidth()-1, getHeight());HaveIDoneThisBefore22=0;}
 }
 /*!
 This just puts the ports in the right order next to the modules used by refreash connections
  !*/
 void MainComponent::SortPorts(void)
 {
+
+// adds children to the modules on the gui
 int counter=0;
 for ( itTextButton=SeenModules.begin() ; itTextButton != SeenModules.end(); itTextButton++ )
 	{
@@ -910,13 +1325,35 @@ for ( itTextButton=SeenModules.begin() ; itTextButton != SeenModules.end(); itTe
 		
 		TempPortButton   = *itTextButton2;
 		TempPortButton->setConnectedEdges(Button::ConnectedOnRight|Button::ConnectedOnLeft);
+
 		if(TempModuleButton->getRadioGroupId()==TempPortButton->getRadioGroupId())
 			{
-			TempPortButton->setTopLeftPosition(TempModuleButton->getX()+((sizeofball*0.85)*counter)+sizeofball,TempModuleButton->getY());
 			counter++;
+			TempPortButton->setSize(TempModuleButton->getWidth(),TempModuleButton->getHeight());
+			TempPortButton->setColour(0x1000100,TempModuleButton->findColour(0x1000100,false));
+			TempPortButton->setTopLeftPosition(TempModuleButton->getX()+(counter*TempPortButton->getWidth()),TempModuleButton->getY());
 			}
 		}	
 	}
+/*
+for ( itTextButton=SeenPorts.begin() ; itTextButton != SeenPorts.end(); itTextButton++ )
+	{
+	for ( itTextButton2=SeenPorts.begin() ; itTextButton2 != SeenPorts.end(); itTextButton2++ )
+		{
+			TempModuleButton = *itTextButton;
+			TempPortButton   = *itTextButton2;
+
+		//if(TempPortButton->getRadioGroupId()!=TempModuleButton->getRadioGroupId())
+		//{
+		if(TempPortButton->getY()>TempModuleButton->getY())
+			{
+			 *itTextButton = TempPortButton;
+			 *itTextButton2 =  TempModuleButton;
+			}
+	//	}
+		}
+	}
+*/
 }
 
 /*! 
@@ -969,6 +1406,10 @@ void MainComponent::paint (Graphics& g)
 	g.setColour (Colour (0xff5f74f1)); // line color
     g.strokePath (internalPath5, PathStrokeType (5.2000f));
 
+	float AddonX = getWidth()-OriginalXsize;
+	g.setColour (Colours::black);
+	g.drawSingleLineText (T("NC Timer Control"),730+AddonX+8+4,550-20-5+30+35-50-20);
+
 
 //Path internalPath5;
 
@@ -979,9 +1420,10 @@ void MainComponent::paint (Graphics& g)
 for ( it2=AllConnections.begin() ; it2 != AllConnections.end(); it2++ )
 	{
     temmp=*it2;
-	if(temmp.IsConnected==true)	{g.setColour (Colours::blue);}
+	
+	if(temmp.IsConnected==true)	{g.setColour (temmp.MyColor);}
 	else						{g.setColour (Colours::grey);}
-	g.strokePath (temmp.MyPath, PathStrokeType (5.2000f));
+	g.strokePath (temmp.MyPath, PathStrokeType (LineThick));
 	}
 
 }
@@ -1002,58 +1444,139 @@ void MainComponent::resized()
 	PropSizeChangeX=1;//MySizeX/getWidth();
 	PropSizeChangeY=1;//MySizeY/getHeight();
 
-//	PropSizeChangeX=getWidth()/MySizeX;
-//	PropSizeChangeY=getHeight()/MySizeY;
+	float AddonX = getWidth()-OriginalXsize;
+	float AddonY = getHeight()-OriginalYsize;
+
+	char mychars[30];
+
+	TimeBetweenChecks->setBounds(730+AddonX+8,550-55-20-5+30+30,120,30);
+//	TimeForChecks->setBounds(730+AddonX+8,550-55-20-5+30+35,120,30);
 
 
-	// little connection box on right
+	if(AllConnections.size()>0){RefreashConnections();}
+
+	DebugButton1->setBounds(740+AddonX,20 -5,100,25);
+	DebugButton2->setBounds(740+AddonX,50 -10,100,25);
+	DebugButton3->setBounds(740+AddonX,80 -15,100,25);
+	DebugButton4->setBounds(740+AddonX,110-20,100,25);
+
+
+	SaveLog->setBounds			(740+AddonX,150-5-20-5,100,25);
+	ClearLog->setBounds			(740+AddonX,190-10-20-5,100,25);
+	OpenLogButton->setBounds	(740+AddonX,230-15-20-5,100,25); // 390
+	StartButton->setBounds		(740+AddonX,270-20-20-5,100,25);
+	StopButton->setBounds		(740+AddonX,310-25-20-5,100,25);
+	MigrateButton->setBounds	(740+AddonX,350-30-20-5,100,25);
+	RefreshConnect->setBounds	(740+AddonX,390-35-20-5,100,25); // 230
+	SaveMod->setBounds			(740+AddonX,430-40-20-5,100,25);
+	LoadMod->setBounds			(740+AddonX,470-45-20-5,100,25);
+	SaveCon->setBounds			(740+AddonX,510-50-20-5,100,25);
+	LoadCon->setBounds			(740+AddonX,550-55-20-5,100,25);
+
+    MytextEditor->setBounds   (890+AddonX, 20, 290, 300+AddonY);
+    MytextEditor2->setBounds  (890+AddonX, 340+AddonY, 290, 100);
+    ModParent1->setBounds     (890+AddonX, 480+AddonY, 140, 22);
+    ModParent2->setBounds    (1040+AddonX, 480+AddonY, 140, 22);
+    ModChild1->setBounds      (890+AddonX, 505+AddonY, 140, 22);
+    ModChild2->setBounds     (1040+AddonX, 505+AddonY, 140, 22);
+
+
+    LossBox->setBounds (890+AddonX,530+AddonY, 140, 22);
+    Connect->setBounds (890+AddonX,555+AddonY, 140, 22);
+    NetworkBox->setBounds (1040+AddonX,530+AddonY, 140, 22);
+	ConnectionStuff->setBounds (1040+AddonX,555+AddonY, 140, 22);
+
+	// box for connections
     internalPath4.clear();
-    internalPath4.startNewSubPath (880.0f  *PropSizeChangeX,  470.0f *PropSizeChangeY);
-    internalPath4.lineTo		  (1190.0f *PropSizeChangeX , 470.0f *PropSizeChangeY);
-	internalPath4.lineTo		  (1190.0f *PropSizeChangeX , 590.0f *PropSizeChangeY );
-	internalPath4.lineTo		  (880.0f  *PropSizeChangeX , 590.0f *PropSizeChangeY);
-	internalPath4.lineTo		  (880.0f  *PropSizeChangeX , 470.0f *PropSizeChangeY);
+    internalPath4.startNewSubPath (880.0f  +AddonX,  470.0f +AddonY );
+    internalPath4.lineTo		  (1190.0f +AddonX , 470.0f +AddonY);
+	internalPath4.lineTo		  (1190.0f  +AddonX, 590.0f +AddonY);
+	internalPath4.lineTo		  (880.0f  +AddonX, 590.0f +AddonY);
+	internalPath4.lineTo		  (880.0f  +AddonX, 470.0f +AddonY);
 	internalPath4.closeSubPath();
+
 
 	// main box on left	
     internalPath1.clear();
     internalPath1.startNewSubPath (10.0f, 10.0f);
-    internalPath1.lineTo (700.0f, 10.0f);
-    internalPath1.lineTo (700.0f, 590.0f);
-	internalPath1.lineTo (10.0f, 590.0f);
-    internalPath1.lineTo (10.0f, 10.0f);
+    internalPath1.lineTo (700.0f+AddonX,  10.0f);
+    internalPath1.lineTo (700.0f+AddonX,  590.0f +AddonY);
+	internalPath1.lineTo (10.0f,		  590.0f +AddonY);
+    internalPath1.lineTo (10.0f,		  10.0f);
     internalPath1.closeSubPath();
 
 	// this shuold be box for buttons
 	internalPath2.clear();
-    internalPath2.startNewSubPath (720.0f, 10.0f);// top left
-    internalPath2.lineTo (860.0f, 10.0f);// top right
-    internalPath2.lineTo (860.0f, 590.0f); // bottem right
-	internalPath2.lineTo (720.0f, 590.0f); //
-    internalPath2.lineTo (720.0f, 10.0f);
+    internalPath2.startNewSubPath (720.0f+AddonX, 10.0f);// top left
+    internalPath2.lineTo (860.0f+AddonX, 10.0f);// top right
+    internalPath2.lineTo (860.0f+AddonX, 590.0f+AddonY); // bottem right
+	internalPath2.lineTo (720.0f+AddonX, 590.0f+AddonY); //
+    internalPath2.lineTo (720.0f+AddonX, 10.0f);
     internalPath2.closeSubPath();
 
 
 	// to surround the text boxes
 	internalPath5.clear();
-    internalPath5.startNewSubPath (880.0f,    10.0f);// top left
-    internalPath5.lineTo		  (880.0f+310, 10.0f);// top right
-    internalPath5.lineTo		  (880.0f+310, 450.0f); // bottem right
-	internalPath5.lineTo		  (880.0f,	  450.0f); //
-    internalPath5.lineTo		  (880.0f,    10.0f);
+    internalPath5.startNewSubPath (880.0f+AddonX,     10.0f);// top left
+    internalPath5.lineTo		  (1190.0f+AddonX,    10.0f);// top right
+    internalPath5.lineTo		  (1190.0f+AddonX,    450.0f+AddonY); // bottem right
+	internalPath5.lineTo		  (880.0f+AddonX,	  450.0f+AddonY); //
+    internalPath5.lineTo		  (880.0f+AddonX,     10.0f);
     internalPath5.closeSubPath();
+
+}
+
+
+
+
+///// putting in some stuff so when the parent box is clicked the child box changes
+/*
+
+*/
+void MainComponent::comboBoxChanged(ComboBox* comboBoxThatHasChanged)
+{
+ if(comboBoxThatHasChanged == ModChild1)
+  {
+	MainComponent::AddToLog("child has been selected \n", 1);
+
+ }
+
 
 }
 
 /*! 
 Interupt when any button is clicked
 !*/
-
 void MainComponent::buttonClicked (Button* buttonThatWasClicked)
 {
+	static int presentchoice	=0;
+	static int oldpresentchoice =0;
 String tempnames[10];
   Bottle& cc = ThePortForModules.prepare();
   cc.clear();
+
+	// mehod to allow direct connections from the gui
+///// doesn't work at the moment but i'll mess around with it later, so you can choose ports by clicking directly
+  for ( itTextButton2=SeenPorts.begin() ; itTextButton2 != SeenPorts.end(); itTextButton2++ )
+		{
+			TempModuleButton = *itTextButton2;
+			if (buttonThatWasClicked == TempModuleButton)
+			{
+				if(presentchoice==0&&oldpresentchoice!=presentchoice)
+				{
+					ModChild1->clear();
+					ModChild1->addItem(TempPortButton->getButtonText(),1);
+					oldpresentchoice=presentchoice;
+					presentchoice++;
+				}
+				TempModuleButton->setToggleState(true,false);	  	
+			}
+		}
+
+  
+
+
+
 
   if (buttonThatWasClicked == StopButton)
   {
@@ -1069,9 +1592,10 @@ String tempnames[10];
   
   if (buttonThatWasClicked == MigrateButton)
   {
-	if(NameOfServer == "/Red"){Migrate("Blue");}
-	if(NameOfServer == "/Blue"){Migrate("Red");}
+	//  RegisterMigrationPort();
+	//  UpdateMigrationProto();
   }
+
 
 
 
@@ -1154,6 +1678,7 @@ if (buttonThatWasClicked == ClearLog)
 
 if (buttonThatWasClicked == LoadCon)
     {
+//		int trysbeforebreak=0;
 		connections mytempconnect;
 	FileChooser chooser6 ("Please select log you wish to load...",File::getSpecialLocation (File::userHomeDirectory),"*.SamCon");
 	if (chooser6.browseForFileToOpen ())
@@ -1165,30 +1690,46 @@ if (buttonThatWasClicked == LoadCon)
 
 		while(Tempy.length()>0)
 		{
-		Tempy=hello->readNextLine();
-		mytempconnect.Daddyfirstport = Tempy;
-		mytempconnect.firstport=hello->readNextLine();
-		mytempconnect.Daddysecoundport=hello->readNextLine();
-		mytempconnect.secoundport=hello->readNextLine();
-		mytempconnect.Lossy=hello->readNextLine();
-		mytempconnect.Network=hello->readNextLine();
-		AllConnections.push_front(mytempconnect);
+			Tempy=hello->readNextLine();
+		String Dad1 = Tempy;
+		String Port1 = hello->readNextLine();
+		String Dad2 = hello->readNextLine();
+		String Port2 = hello->readNextLine();
+		String Loss = hello->readNextLine();
+		String Net = hello->readNextLine();
+		AddConnection(Dad1,Port1,Dad2,Port2,Loss,Net);
+		
 		}
 		}
+	//chooser6.~FileChooser();
+	RefreashConnections();
+	RefreashConnections();
 	}
 
 if (buttonThatWasClicked == SaveCon)
     {
+		String nameofFile;
 		list<connections>::iterator itter;
 		connections mytempconnect;
 
     FileChooser chooser5 ("Please select the save name...",File::getSpecialLocation (File::userHomeDirectory),"*.SamCon");
-	if (chooser5.browseForFileToSave (true))
+	if (chooser5.browseForFileToSave (false))
 		{
 		myFileforCon = chooser5.getResult ();
+		nameofFile = myFileforCon.getFileName();
+		
 		if (myFileforCon.existsAsFile ()){myFileforCon.deleteFile ();}
 
 			myFileforCon.create ();
+			
+			for ( itter=AllConnections.begin() ; itter != AllConnections.end(); itter++ )
+			{
+			mytempconnect = *itter;
+			if(mytempconnect.Daddyfirstport.length()==0)
+				{
+				 itter = AllConnections.erase (itter);
+				}
+			}
 
 		for ( itter=AllConnections.begin() ; itter != AllConnections.end(); itter++ )
 			{
@@ -1201,6 +1742,7 @@ if (buttonThatWasClicked == SaveCon)
 			myFileforCon.appendText(mytempconnect.Network + "\n");
 			}
 		}
+//chooser5.~FileChooser();
 	}
 
 if (buttonThatWasClicked == SaveMod)
@@ -1219,6 +1761,7 @@ if (buttonThatWasClicked == SaveMod)
 			myFileforMod.appendText(SaveName);
 			}
 		}
+//	chooser3.~FileChooser();
 	}
 if (buttonThatWasClicked == LoadMod)
     {
@@ -1236,6 +1779,7 @@ if (buttonThatWasClicked == LoadMod)
 			if(Tempy.length()>0){AddModule(Tempy);}
 		}
 		}
+//	chooser4.~FileChooser();
 	}
 
 if (buttonThatWasClicked == SaveLog)
@@ -1249,6 +1793,7 @@ if (buttonThatWasClicked == SaveLog)
 			myFileforLog.create ();
 			myFileforLog.appendText (MytextEditor->getText ());
 		}
+//	chooser2.~FileChooser();
 	}
 if (buttonThatWasClicked == OpenLogButton)
     {
@@ -1258,20 +1803,54 @@ if (buttonThatWasClicked == OpenLogButton)
 		myFileforLog = chooser.getResult ();
 		MytextEditor->setText (myFileforLog.loadFileAsString());
 		}
+//	chooser.~FileChooser();
 	}
 
-
+// this works now
 if (buttonThatWasClicked == ConnectionStuff)
     {
 		int abort = 0;
-		if( ModParent1->getText() == String("Parent 1"))		 {abort = 1;}
-		if( ModParent2->getText() == String("Parent 2"))		 {abort = 1;}
-		if( ModChild1->getText()  == String("Child 1"))			 {abort = 1;}
-		if( ModChild2->getText()  == String("Child 2"))			 {abort = 1;}
-		if( Connect->getText()    == String("Connect/Disconnect"))	 {abort = 1;}
-		if( NetworkBox->getText() == String("Network Type"))	 {abort = 1;}
+		int abort2=0;
+		if( ModParent1->getText() == String("Parent 1"))			 {abort = 1;}
+		if( ModParent2->getText() == String("Parent 2"))			 {abort = 1;}
+		if( ModChild1->getText()  == String("Child 1"))				 {abort2 = 1;}
+		if( ModChild2->getText()  == String("Child 2"))				 {abort2 = 1;}
+		if( Connect->getText()    == String("Connect/Disconnect"))	 {abort2 = 1;}
+		if( NetworkBox->getText() == String("Network Type"))		 {abort2 = 1;}
 
-		if(abort==1){AddToLog("not all choices have been selected for connection", 1);}
+		int myverylittlecount1;
+		int myverylittlecount2;
+
+
+		if		(abort==1) {AddToLog(" choices have not been selected for connection", 1);} // if the parents haven't be done
+		else if	(abort2==1)
+			{
+				ModChild1->clear();
+				ModChild2->clear();
+				myverylittlecount1=0;
+				myverylittlecount2=0;
+			for ( itTextButton=SeenModules.begin() ; itTextButton != SeenModules.end(); itTextButton++ ) // get modules
+				{
+				TempModuleButton = *itTextButton;
+				for ( itTextButton2=SeenPorts.begin() ; itTextButton2 != SeenPorts.end(); itTextButton2++ ) // get ports
+					{
+					TempPortButton   = *itTextButton2;
+					if(TempModuleButton->getRadioGroupId()==TempPortButton->getRadioGroupId()) // if port belongs to module
+						{
+							if(TempModuleButton->getButtonText()==ModParent1->getText())	// if module name is in the choice
+							{
+								myverylittlecount1++;
+								ModChild1->addItem(TempPortButton->getButtonText(),myverylittlecount1); // add the port to the list
+							}
+							if(TempModuleButton->getButtonText()==ModParent2->getText())
+							{
+								myverylittlecount2++;
+								ModChild2->addItem(TempPortButton->getButtonText(),myverylittlecount2);
+							}
+						}
+					}	
+				}
+		}
 		else
 		{
 			if(Connect->getText() == String("Connect"))
@@ -1309,6 +1888,24 @@ temp.secoundport=child2;
 temp.Lossy=Lossyornot;
 temp.Network=Network;
 AllConnections.push_front(temp);
+
+
+child1=child1.substring(1);
+child2=child2.substring(1);
+
+String Port1 = "/Port_"+parent1+"_"+child1;
+String Port2 = "/Port_"+parent2+"_"+child2;
+String conntype;
+
+if(Lossyornot==T("Lossy")){conntype="udp";}
+else				   {conntype="tcp";}
+
+Network::connect(Port1,Port2,conntype,true);
+Network::connect(Port2,Port1,conntype,true);
+//AddToLog(Port1,2);
+//AddToLog(Port2,2);
+
+// connect it here
 }
 
 /*!
@@ -1325,43 +1922,43 @@ int x =0;
 	killcon = false;
 	for ( it2=AllConnections.begin() ; it2 != AllConnections.end(); it2++ )
 	{
-	mytempconnect = *it2;
-	x=0;
+		killcon = false;
+		mytempconnect = *it2;
+		x=0;
 
-	string tempstring10 = mytempconnect.firstport;
-	string tempstring20 = mytempconnect.secoundport;
-	tempstring10=tempstring10.substr(1,tempstring10.length()-1);
-	tempstring20=tempstring20.substr(1,tempstring20.length()-1);
-
-	if(mytempconnect.Daddyfirstport == parent1){x++;}
-	if(mytempconnect.Daddysecoundport == parent2){x++;}
-	if(mytempconnect.firstport == child1){x++;}
-	if(mytempconnect.secoundport == child2){x++;}
-	if(x>=4)
-	{ 
-		SavedIt = it2;
-		killcon = true;
-	//	it2 = AllConnections.erase (it2);   AddToLog("erased connection \n",1); }
-	}
+	if((mytempconnect.Daddyfirstport == parent1) && (mytempconnect.Daddysecoundport == parent2) && (mytempconnect.firstport == child1) && (mytempconnect.secoundport == child2))
+		{ 
+		AddToLog(T("found something to del \n"),2);
+			SavedIt = it2;
+			killcon = true;
+		}
+		else if(mytempconnect.Daddyfirstport == parent2 && mytempconnect.Daddysecoundport == parent1 && mytempconnect.firstport == child2 && mytempconnect.secoundport == child1)
+		{ 
+			SavedIt = it2;
+			killcon = true;
+		}
+		
 	}
 	if(killcon == true)
-	{
-	SavedIt = AllConnections.erase (SavedIt); 
+		{
+			if(AllConnections.size()<=1){AllConnections.clear();}
+			else						{SavedIt = AllConnections.erase (SavedIt);} 
 
-		string tempstring10 = mytempconnect.firstport;
-		string tempstring20 = mytempconnect.secoundport;
-		tempstring10=tempstring10.substr(1,tempstring10.length()-1);
-		tempstring20=tempstring20.substr(1,tempstring20.length()-1);
+			String child1=mytempconnect.firstport.substring(1);
+			String child2=mytempconnect.secoundport.substring(1);
 
-		string firststring = "/Port_"   + mytempconnect.Daddyfirstport + "_"  + tempstring10.c_str();
-		string secoundstring = "/Port_" + mytempconnect.Daddysecoundport + "_" + tempstring20.c_str();
+			String Port1 = "/Port_"+parent1+"_"+child1;
+			String Port2 = "/Port_"+parent2+"_"+child2;
 
-	 Network::disconnect(firststring.c_str(),secoundstring.c_str());
-	 Network::disconnect(secoundstring.c_str(),firststring.c_str());
-RefreashConnections();
+				Network::disconnect(Port1,Port2);
 
-	AddToLog("erased connection \n",1);
-	}
+				Network::disconnect(Port2,Port1);
+
+		RefreashConnections();
+
+		AddToLog("erased connection \n",1);
+		}
+	
 }
 
 

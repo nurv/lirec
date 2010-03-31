@@ -5,8 +5,29 @@
 #include <fstream>
 #include <string>
 
+/*
+#ifndef __wtypes_h__
+#include <wtypes.h>
+#endif
+
+#ifndef __WINDEF_
+#include <windef.h>
+#endif
+
+#ifndef _WINUSER_
+#include <winuser.h>
+#endif
+
+#ifndef __RPC_H__
+#include <rpc.h>
+#endif
+*/
+
+
 #include <yarp/sig/all.h>
 #include <yarp/os/all.h>
+//#include <yarp/os/impl/Companion.h>
+//#include <yarp/impl/all.h>
 //#include <ace/OS.h>
 
 
@@ -14,12 +35,24 @@
 
 using namespace std;
 using namespace yarp::os;
-using namespace yarp::sig;// image stuff
+using namespace yarp::sig;
+using namespace yarp::os::impl;
+
+//yarp::os::impl::Companion->
+//using namespace yarp::os::
+
+//yarp::os::impl::Companion compy;
 
 
 #ifndef __JUCER_HEADER_MAINCOMPONENT_MAINCOMPONENT_D0F6CD31__
 #define __JUCER_HEADER_MAINCOMPONENT_MAINCOMPONENT_D0F6CD31__
 
+struct ModuleStruct
+{
+string name;
+string catagory;
+string subcatagory;
+};
 
 struct connections
 {
@@ -29,10 +62,11 @@ String Daddysecoundport;
 String secoundport;
 String Lossy;
 String Network;
+Colour MyColor;
 bool IsConnected;
 Path MyPath;
 };
-
+/*
  class MigrationPortClass : public BufferedPort<Bottle> 
 {
 public:
@@ -41,11 +75,13 @@ public:
 
 	MigrationPortClass()
 	{
+	//Network::connect(Network::getNameServerName(),"/KeyToLocalServer","tcp");
     useCallback();
 	}
 	  virtual void onRead(Bottle& b) 
 	 {
 		 Ivebeenused = 1;
+		 
 		int length = b.size();
 		ofstream myfile;
 		myfile.open ("Personality.txt");
@@ -57,6 +93,7 @@ public:
 		myfile.close();
      }
 };
+*/
 
 
 
@@ -69,6 +106,16 @@ void  ChangeServer(int change);
 //void UpdateMigrationProto(void);
 void GetCurrentServerName(void);
 string GetServerName(void);
+bool ListDeleatingFunction(ModuleStruct x,ModuleStruct y);
+bool DelFromList (ModuleStruct& value);
+
+/*! Sorts the varibles in the known module list!*/
+bool ListSortingFunction(ModuleStruct x,ModuleStruct y);
+
+
+
+
+
 
 
  class MainComponent  : public Component,
@@ -79,12 +126,16 @@ string GetServerName(void);
 public:
 
 	//  
-    MigrationPortClass MigrationPort;
+   //  MigrationPortClass MigrationPort;
+//	 BufferedPort<Bottle> ThePortForModules;
+// BufferedPort<Bottle> MigrationPort;
+	// ConnectionPortClass ThePortForModules;
     MainComponent ();
     ~MainComponent();
     void paint (Graphics& g);
     void resized();
     void buttonClicked (Button* buttonThatWasClicked);
+	void MainComponent::comboBoxChanged(ComboBox* comboBoxThatHasChanged);
 	void AddToLog(const String,int);
 	void AddModule(String name);
 	void Updatemodules(void);
@@ -95,15 +146,25 @@ public:
 	void RemoveModuleOrPort(String name);
     juce_UseDebuggingNewOperator
 	void timerCallback();
-	void UpdateMigrationProto(void);
+	Bottle UpdateMigrationProto(void);
 	void RegisterMigrationPort (void);
-	bool Migrate (string nameofwhere);
+	bool Migrate (string nameofwhere,Bottle Data);
 	void DelConnection(String parent1,String child1,String parent2, String child2,String Lossyornot,String Network);
 	void ConnectionAutoUpdate(void);
 	void CheckConnectionRight(void);
 	void GetModuleCommands(void);
+	void SendOffModuleList(void);
+	void compare_Buttons (void);
+	void CheckConnect(void);
+	int CleanGlobalServer(void);
+
 
 private:
+
+	TooltipWindow tooltipWindow;
+	
+	list<ModuleStruct> ListOfKnownModules;
+	list<ModuleStruct>::iterator modulestructIT;
 	int MySizeX,MySizeY;
 	int MyCurrentSizeX,MyCurrentSizeY;
 	float PropSizeChangeX,PropSizeChangeY;
@@ -124,11 +185,13 @@ private:
 	ComboBox* LossBox;
 	ComboBox* NetworkBox;
 	ComboBox* Connect;
-    Label* helloWorldLabel;
+ //   Label* helloWorldLabel;
 	TextButton* SaveMod;
     TextButton* LoadMod;
 	TextButton* SaveCon;
     TextButton* LoadCon;
+
+	Slider*		TimeBetweenChecks;
 
 	TextButton* ConnectionStuff;
     TextButton* quitButton;
@@ -159,14 +222,12 @@ private:
 	list<TextButton*>::iterator itTextButton3;
 	list<Path>::iterator itPath;
 	list<String*>::iterator itString;
+	
 	TextButton* TempModuleButton;
 	TextButton* TempModuleButton2;
 	TextButton* TempModuleButton3;
 	TextButton* TempPortButton;
-	TextButton* Blackboard;
-	TextButton* IonInterface;
 	TextButton* RefreshConnect;
-	TextButton* BigButton;
 	list<TextButton*> SeenModules;
 	list<TextButton*> SeenPorts;
 	list<Path> SeenLines;

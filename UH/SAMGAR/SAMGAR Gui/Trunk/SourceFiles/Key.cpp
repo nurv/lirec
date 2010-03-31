@@ -54,6 +54,8 @@ int hasitworked;
 			MyComponent->AddModule(TempVar);
 			Network::connect(string(TempVar).c_str(),"/PortForModules");
 			Network::connect("/PortForModules",string(TempVar).c_str());
+			yarp::os::Time::delay(0.25);
+
 			}
 			else if(myvar.indexOfWholeWord(String("/Port"))==7)
 			{
@@ -64,7 +66,7 @@ int hasitworked;
 			MyComponent->AddPort(parent,Child);
 			}
 		}
-	//	MyComponent->startTimer(5000);
+
      }
 
 };
@@ -84,19 +86,18 @@ public:
 		static DataPort PortForLocalServer(contentComponent); // make sure the port is static and pass it the pointer to the gui
     }
 
-    ~HelloWorldWindow()   { /* (the content component will be deleted automatically, so no need to do it here) */    }
+    ~HelloWorldWindow()   { /*deleteAllChildren();*//* (the content component will be deleted automatically, so no need to do it here) */    }
 
     void closeButtonPressed()   
 	{
-	Network::fini();
-		JUCEApplication::quit();
+		JUCEApplication::quit();   
 	
 	} // little cross top right
 };
 
 class JUCEHelloWorldApplication : public JUCEApplication
 {
-    
+    Network yarp;
     HelloWorldWindow* helloWorldWindow;
 
 public:
@@ -109,7 +110,7 @@ public:
     void shutdown()
     {
         if (helloWorldWindow != 0)
-            delete helloWorldWindow;
+            delete helloWorldWindow; //2
     }
 
     //==============================================================================
