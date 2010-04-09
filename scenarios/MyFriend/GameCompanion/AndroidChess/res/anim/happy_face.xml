@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<animation-list xmlns:android="http://schemas.android.com/apk/res/android"
+	android:oneshot="true">
+	<item android:drawable="@drawable/happy_face_000" android:duration="200" />
+	<item android:drawable="@drawable/happy_face_002" android:duration="200" />
+	<item android:drawable="@drawable/happy_face_004" android:duration="200" />
+	<item android:drawable="@drawable/happy_face_006" android:duration="200" />
+	<item android:drawable="@drawable/happy_face_008" android:duration="200" />
+	<item android:drawable="@drawable/happy_face_010" android:duration="200" />
+	<item android:drawable="@drawable/happy_face_012" android:duration="200" />
+	<item android:drawable="@drawable/happy_face_014" android:duration="200" />
+	<item android:drawable="@drawable/happy_face_016" android:duration="200" />
+	<item android:drawable="@drawable/happy_face_018" android:duration="200" />
+	<item android:drawable="@drawable/happy_face_020" android:duration="200" />
+	<item android:drawable="@drawable/happy_face_022" android:duration="200" />
+	<item android:drawable="@drawable/happy_face_024" android:duration="200" />
+	<item android:drawable="@drawable/happy_face_026" android:duration="200" />
+	<item android:drawable="@drawable/happy_face_028" android:duration="200" />
+	<item android:drawable="@drawable/happy_face_030" android:duration="200" />
+	<item android:drawable="@drawable/happy_face_032" android:duration="200" />
+	<item android:drawable="@drawable/happy_face_034" android:duration="200" />
+	<item android:drawable="@drawable/happy_face_036" android:duration="200" />
+	<item android:drawable="@drawable/happy_face_038" android:duration="200" />
+	<item android:drawable="@drawable/happy_face_040" android:duration="200" />
+	<item android:drawable="@drawable/happy_face_042" android:duration="200" />
+</animation-list>

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<agents>
+	<agent name="[default]"
+		animations="animations"
+		voice="soundmappings_female"
+		sentences="sentences"
+		mood="dynamic"
+		memory="false" />
+		
+	<agent name="A"
+		animations="animations"
+		voice="soundmappings_mike"
+		sentences="sentences_motivate"
+		mood="happy"
+		memory="true" />
+		
+	<agent name="A-A"
+		animations="animations"
+		voice="soundmappings_male"
+		sentences="sentences_gloat"
+		mood="sad"
+		memory="false" />
+		
+	<agent name="A-V"
+		animations="animations_human"
+		voice="soundmappings_mike"
+		sentences="sentences_gloat"
+		mood="sad"
+		memory="false" />
+		
+	<agent name="A-P"
+		animations="animations_human"
+		voice="soundmappings_male"
+		sentences="sentences_motivate"
+		mood="happy"
+		memory="false" />
+		
+	<agent name="A-M"
+		animations="animations_human"
+		voice="soundmappings_male"
+		sentences="sentences_gloat"
+		mood="sad"
+		memory="true" />
+		
+	<agent name="A-C"
+		animations="animations_human"
+		voice="soundmappings_male"
+		sentences="sentences_gloat"
+		mood="sad"
+		memory="false" />
+		
+	<agent name="B"
+		animations="animations"
+		voice="soundmappings_mike"
+		sentences="sentences_gloat"
+		mood="sad"
+		memory="true" />
+		
+	<agent name="B-A"
+		animations="animations"
+		voice="soundmappings_male"
+		sentences="sentences_motivate"
+		mood="happy"
+		memory="false" />
+		
+	<agent name="B-V"
+		animations="animations_human"
+		voice="soundmappings_mike"
+		sentences="sentences_motivate"
+		mood="happy"
+		memory="false" />
+		
+	<agent name="B-P"
+		animations="animations_human"
+		voice="soundmappings_male"
+		sentences="sentences_gloat"
+		mood="sad"
+		memory="false" />
+		
+	<agent name="B-M"
+		animations="animations_human"
+		voice="soundmappings_male"
+		sentences="sentences_motivate"
+		mood="happy"
+		memory="true" />
+		
+	<agent name="B-C"
+		animations="animations_human"
+		voice="soundmappings_male"
+		sentences="sentences_motivate"
+		mood="happy"
+		memory="false" />
+		
+</agents>

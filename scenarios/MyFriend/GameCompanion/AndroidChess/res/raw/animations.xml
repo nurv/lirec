@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<animations>
+
+	<talk lips="talk" />
+
+	<!-- Mood Levels -->
+	<moodstates number="5">
+		<moodstate level="1" facein="moodhappy_face_in_0" faceout="moodhappy_face_out_0" 
+			lipsin="moodhappy_lips_in_0" lipsout="moodhappy_lips_out_0" />
+		<moodstate level="2" facein="moodhappy_face_in_1" faceout="moodhappy_face_out_1" 
+			lipsin="moodhappy_lips_in_1" lipsout="moodhappy_lips_out_1" />
+		<moodstate level="3" facein="moodhappy_face_in_2" faceout="moodhappy_face_out_2" 
+			lipsin="moodhappy_lips_in_2" lipsout="moodhappy_lips_out_2" />
+		<moodstate level="4" facein="moodhappy_face_in_3" faceout="moodhappy_face_out_3" 
+			lipsin="moodhappy_lips_in_3" lipsout="moodhappy_lips_out_3" />
+		<moodstate level="5" facein="moodhappy_face_in_4" faceout="moodhappy_face_out_4" 
+			lipsin="moodhappy_lips_in_4" lipsout="moodhappy_lips_out_4" />
+
+		<moodstate level="-1" facein="moodsad_face_in_0" faceout="moodsad_face_out_0" 
+			lipsin="moodsad_lips_in_0" lipsout="moodsad_lips_out_0" />
+		<moodstate level="-2" facein="moodsad_face_in_1" faceout="moodsad_face_out_1" 
+			lipsin="moodsad_lips_in_1" lipsout="moodsad_lips_out_1" />
+		<moodstate level="-3" facein="moodsad_face_in_2" faceout="moodsad_face_out_2" 
+			lipsin="moodsad_lips_in_2" lipsout="moodsad_lips_out_2" />
+		<moodstate level="-4" facein="moodsad_face_in_3" faceout="moodsad_face_out_3" 
+			lipsin="moodsad_lips_in_3" lipsout="moodsad_lips_out_3" />
+		<moodstate level="-5" facein="moodsad_face_in_4" faceout="moodsad_face_out_4" 
+			lipsin="moodsad_lips_in_4" lipsout="moodsad_lips_out_4" />
+	</moodstates>
+
+	<!-- Event Reactions -->	
+	<illegalmove>
+		<animation face="alert_face" lips="alert_lips"/>
+		<animation face="deny_face" lips="deny_lips"/>
+		<animation face="notunderstand_face" lips="notunderstand_lips"/>
+	</illegalmove>
+	<wrongturn>
+		<animation face="alert_face" lips="alert_lips"/>
+		<animation face="deny_face" lips="deny_lips"/>
+		<animation face="notunderstand_face" lips="notunderstand_lips"/>
+	</wrongturn>
+	<winning>
+		<animation face="winning_face" lips="winning_lips"/>
+	</winning>
+	<losing>
+		<animation face="losing_face" lips="losing_lips"/>
+	</losing>
+	<draw>
+		<animation face="empate_face" lips="empate_lips"/>
+	</draw>
+	
+	<!-- Emotivector -->
+	<more-excited>
+		<animation face="excited_face" lips="excited_lips"/>
+	</more-excited>
+	<excited>
+		<animation face="expectedr_face" lips="expectedr_lips"/>
+	</excited>
+	<less-excited>
+		<animation face="happy_face" lips="happy_lips"/>
+	</less-excited>
+	<good-surprise>
+		<animation face="arrogant_face" lips="arrogant_lips"/>
+	</good-surprise>
+	<think>
+		<animation face="think_face" lips="think_lips"/>
+	</think>
+	<bad-surprise>
+		<animation face="unexpectedp_face" lips="unexpectedp_lips"/>
+	</bad-surprise>
+	<less-unhappy>
+		<animation face="weakerp_face" lips="weakerp_lips"/>
+	</less-unhappy>
+	<unhappy>
+		<animation face="angry_face" lips="angry_lips"/>
+	</unhappy>
+	<more-unhappy>
+		<animation face="scared_face" lips="scared_lips"/>
+	</more-unhappy>
+</animations>

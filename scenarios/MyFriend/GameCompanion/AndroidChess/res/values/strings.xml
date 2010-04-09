@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hello">Hello World, MainScreen</string>
+    <string name="app_name">MyFriend Chess Player</string>
+	<string name="newgame_button">New Game</string>
+	<string name="forfeit_button">Forfeit</string>
+<string name="welcome">Hello, do you want to play some chess?</string>
+<string name="illegal_move_0">That move is not allowed. Try again.</string>
+<string name="confirm">Confirm</string>
+<string name="gameover">Game Ended</string>
+<string name="undo_button">Undo</string>
+</resources>

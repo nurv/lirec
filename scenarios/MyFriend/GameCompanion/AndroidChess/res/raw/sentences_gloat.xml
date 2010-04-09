@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sentences>
+	<greet>
+		<sentence text="I dare you for a chess match." />
+		<!-- <sentence text="Are you up for a challenge?" /> -->
+	</greet>
+	<illegalmove>
+		<sentence text="Are you making up new rules?" />
+		<sentence text="Is cheating how you win?" />
+		<!-- <sentence text="Come on, you won't fool me." /> -->
+		<!-- <sentence text="You should learn the rules." /> -->
+		<sentence text="Don't you know the rules?" />
+		<sentence text="You can't do that..." />
+	</illegalmove>
+	<wrongturn>
+		<sentence text="Let me think." />
+		<sentence text="Calm down." />
+		<sentence text="You're in a hurry." />
+	</wrongturn>
+	<lostpiece>
+		<sentence text="Pure luck." />
+		<sentence text="Beginner's luck." />
+		<sentence text="" />
+		<sentence text="" />
+		<sentence text="" />
+	</lostpiece>
+	<atepiece>
+		<sentence text="Another one gone." />
+		<sentence text="One by one..." />
+		<sentence text="" />
+		<sentence text="" />
+		<sentence text="" />
+		<sentence text="" />
+	</atepiece>
+	<playagain>
+		<sentence text="I shouldn't allow that, but go on."/>
+		<sentence text="Ok, you do need some advantage."/>
+	</playagain>
+	<check>
+		<sentence text="Check."/>
+		<sentence text="Check. Feeling under pressure?"/>
+	</check>
+	<acceptmigration>
+		<sentence text="Ok, I'll move out of here." />
+		<sentence text="Meet me at the other end." />
+	</acceptmigration>
+	<recall-won>
+		<sentence text="I won the last match we played." />
+	</recall-won>
+	<recall-lost>
+		<sentence text="I lost our last match." />
+	</recall-lost>
+	<recall-draw>
+		<sentence text="The last match ended in a draw." />
+	</recall-draw>
+	<won-game>
+		<sentence text="Checkmate! Obviously I'm a better player." />
+	</won-game>
+	<lost-game>
+		<sentence text="I bet you can't win again." />
+	</lost-game>
+</sentences>

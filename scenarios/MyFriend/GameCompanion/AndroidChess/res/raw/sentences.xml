@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sentences>
+	<greet>
+		<sentence text="Let's play chess." />
+	</greet>
+	<illegalmove>
+		<sentence text="Illegal move!" />
+		<sentence text="That move is not allowed." />
+		<sentence text="Please, play correctly!" />
+		<!-- <sentence text="Don't you know the rules?" /> -->
+		<sentence text="You cannot play that!" /> 
+		<sentence text="That's an illegal move!" />
+		<!-- <sentence text="You can't do that..." /> -->
+		<sentence text="No!" />
+	</illegalmove>
+	<wrongturn>
+		<sentence text="It's not your turn." />
+		<sentence text="I haven't played yet." />
+		<sentence text="You have to wait." />
+	</wrongturn>
+	<lostpiece>
+		<sentence text="I lost a piece." />
+		<sentence text="" />
+		<sentence text="" />
+	</lostpiece>
+	<atepiece>
+		<sentence text="I ate one of your pieces." />
+		<sentence text="" />
+		<sentence text="" />
+	</atepiece>
+	<playagain>
+		<sentence text="Ok, you can play again."/>
+		<sentence text="Ok, you can change your last move."/>
+	</playagain>
+	<check>
+		<sentence text="Check."/>
+	</check>
+	<acceptmigration>
+		<sentence text="Ok, I'll move out of here." />
+	</acceptmigration>
+	<recall-won>
+		<sentence text="I won the last match we played." />
+	</recall-won>
+	<recall-lost>
+		<sentence text="I lost our last match." />
+	</recall-lost>
+	<recall-draw>
+		<sentence text="The last match ended in a draw." />
+	</recall-draw>
+	<won-game>
+		<sentence text="Don't worry, all you need is practice." />
+	</won-game>
+	<lost-game>
+		<sentence text="Congratulations! You won the game." />
+	</lost-game>
+</sentences>

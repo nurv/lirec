@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soundmappings>
+	<mapping text="Let's play chess." file="lets_play_chess_male" />
+	<mapping text="Do you want to play chess with me?" file="do_you_want_to_play_chess_with_me_male" />
+	<mapping text="Illegal move!" file="illegal_move_male" />
+	<mapping text="That move is not allowed." file="that_move_is_not_allowed_male" />
+	<mapping text="Please, play correctly!" file="please_play_correctly_male" />
+	<mapping text="Don't you know the rules?" file="dont_you_know_the_rules_male" />
+	<mapping text="You cannot play that!" file="you_cannot_play_that_male" />
+	<mapping text="That's an illegal move!" file="thats_an_illegal_move_male" />
+	<mapping text="You can't do that..." file="you_cant_do_that_male" />
+	<mapping text="No!" file="no_male" />
+	<mapping text="It's not your turn." file="its_not_your_turn_male" />
+	<mapping text="I haven't played yet." file="i_havent_played_yet_male" />
+	<mapping text="You have to wait." file="you_have_to_wait_male" />
+	<mapping text="I lost a piece." file="i_lost_a_piece_male" />
+	<mapping text="You ate one of my pieces." file="you_ate_one_of_my_pieces_male" />
+	<mapping text="I ate one of your pieces." file="i_ate_one_of_your_pieces_male" />
+	<mapping text="You are losing your pieces." file="you_are_losing_your_pieces_male" />
+	<mapping text="Ok, you can play again." file="ok_you_can_play_again_male" />
+	<mapping text="Ok, you can change your last move." file="ok_you_can_change_your_last_move_male" />
+	<mapping text="Check." file="check_male" />
+	<mapping text="Ok, I'll move out of here." file="ok_ill_move_out_of_here_male" />
+	<mapping text="Meet me at the other end." file="meet_me_at_the_other_end_male" />
+	
+	<mapping text="I dare you for a chess match." file="i_dare_you_for_a_chess_match_male" />
+	<mapping text="Are you up for a challenge?" file="are_you_up_for_a_challenge_male" />
+	<mapping text="Are you making up new rules?" file="are_you_making_up_new_rules_male" />
+	<mapping text="Is cheating how you win?" file="is_cheating_how_you_win_male" />
+	<mapping text="Come on, you won't fool me." file="come_on_you_wont_fool_me_male" />
+	<mapping text="You should learn the rules." file="you_should_learn_the_rules_male" />
+	<mapping text="Let me think." file="let_me_think_male" />
+	<mapping text="Calm down." file="calm_down_male" />
+	<mapping text="You're in a hurry." file="youre_in_a_hurry_male" />
+	<mapping text="Pure luck." file="pure_luck_male" />
+	<mapping text="Beginner's luck." file="beginners_luck_male" />
+	<mapping text="Another one gone." file="another_one_gone_male" />
+	<mapping text="One by one..." file="one_by_one_male" />
+	<mapping text="Yeah... alright." file="yeah_alright_male" />
+	<mapping text="I shouldn't allow that, but go on." file="i_shouldnt_allow_that_but_go_on_male" />
+	<mapping text="Ok, you do need a handicap." file="ok_you_do_need_a_handicap_male" />
+	<mapping text="Check. Feeling under pressure?" file="check_feeling_under_pressure_male" />
+	<mapping text="Checkmate! Obviously I'm a better player." file="checkmate_obviously_im_a_better_player_male" />
+	<mapping text="I bet you can't win again." file="i_bet_you_cant_win_again_male" />
+	
+	<mapping text="Let's practice some chess." file="lets_practice_some_chess_male" />
+	<mapping text="What about a game of chess with me?" file="what_about_a_game_of_chess_with_me_male" />
+	<mapping text="You have to play a different move." file="you_have_to_play_a_different_move_male" />
+	<mapping text="The rules don't allow for that move." file="the_rules_dont_allow_for_that_move_male" />
+	<mapping text="Check your possible moves again please." file="check_your_possible_moves_again_male" />
+	<mapping text="You should think more carefully about your move." file="you_should_think_more_carefully_about_your_move_male" />
+	<mapping text="Oh... sorry." file="oh_sorry_male" />
+	<mapping text="I'm afraid that's illegal." file="im_afraid_thats_illegal_male" />
+	<mapping text="Please wait, it's still my turn." file="please_wait_its_still_my_turn_male" />
+	<mapping text="Just a moment." file="just_a_moment_male" />
+	<mapping text="Sorry, sometimes I take a while to think." file="sorry_sometimes_i_take_a_while_to_think_male" />
+	<mapping text="Well done." file="well_done_male" />
+	<mapping text="Nice move." file="nice_move_male" />
+	<mapping text="You have to watch out for your pieces." file="you_have_to_watch_out_for_your_pieces_male" />
+	<mapping text="Don't let this get you down." file="dont_let_this_get_you_down_male" />
+	<mapping text="Sure, take your turn again." file="sure_take_your_turn_again_male" />
+	<mapping text="Ok, you can change your last move." file="ok_you_can_change_your_last_move_male" />
+	<mapping text="Be careful, you are in check." file="be_careful_you_are_in_check_male" />
+	<mapping text="Checkmate. Don't worry, all you need is practice." file="dont_worry_all_you_need_is_practice_male" />
+	<mapping text="Congratulations! You won the game." file="congratulations_you_won_the_game_male" />
+	
+	<mapping text="I won the last match we played." file="i_won_the_last_match_we_played_male" />
+	<mapping text="I lost our last match." file="i_lost_our_last_match_male" />
+	<mapping text="The last match ended in a draw." file="the_last_match_ended_in_a_draw_male" />
+</soundmappings>

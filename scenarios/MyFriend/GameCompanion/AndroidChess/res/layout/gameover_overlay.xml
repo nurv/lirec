@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:textSize="30sp"
+    android:textColor="#99FFFFFF"
+    android:background="#BB000000"
+    android:padding="10dip"
+    android:gravity="center"
+android:text="@string/gameover" android:id="@+id/gameover_overlay" android:visibility="invisible"/>

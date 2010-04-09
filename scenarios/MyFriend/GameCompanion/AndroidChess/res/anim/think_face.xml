@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<animation-list xmlns:android="http://schemas.android.com/apk/res/android"
+	android:oneshot="true">
+	<item android:drawable="@drawable/think_face_000" android:duration="200" />
+	<item android:drawable="@drawable/think_face_002" android:duration="200" />
+	<item android:drawable="@drawable/think_face_004" android:duration="200" />
+	<item android:drawable="@drawable/think_face_006" android:duration="200" />
+	<item android:drawable="@drawable/think_face_008" android:duration="200" />
+	<item android:drawable="@drawable/think_face_010" android:duration="200" />
+	<item android:drawable="@drawable/think_face_012" android:duration="200" />
+	<item android:drawable="@drawable/think_face_014" android:duration="200" />
+	<item android:drawable="@drawable/think_face_016" android:duration="200" />
+	<item android:drawable="@drawable/think_face_018" android:duration="200" />
+	<item android:drawable="@drawable/think_face_020" android:duration="200" />
+	<item android:drawable="@drawable/think_face_022" android:duration="200" />
+	<item android:drawable="@drawable/think_face_024" android:duration="200" />
+	<item android:drawable="@drawable/think_face_026" android:duration="200" />
+	<item android:drawable="@drawable/think_face_028" android:duration="200" />
+	<item android:drawable="@drawable/think_face_030" android:duration="200" />
+	<item android:drawable="@drawable/think_face_032" android:duration="200" />
+	<item android:drawable="@drawable/think_face_034" android:duration="200" />
+	<item android:drawable="@drawable/think_face_036" android:duration="200" />
+	<item android:drawable="@drawable/think_face_038" android:duration="200" />
+	<item android:drawable="@drawable/think_face_040" android:duration="200" />
+	<item android:drawable="@drawable/think_face_042" android:duration="200" />
+	<item android:drawable="@drawable/think_face_044" android:duration="200" />
+	<item android:drawable="@drawable/think_face_046" android:duration="200" />
+	<item android:drawable="@drawable/think_face_048" android:duration="200" />
+	<item android:drawable="@drawable/think_face_050" android:duration="200" />
+	<item android:drawable="@drawable/think_face_052" android:duration="200" />
+	<item android:drawable="@drawable/think_face_054" android:duration="200" />
+	<item android:drawable="@drawable/think_face_056" android:duration="200" />
+	<item android:drawable="@drawable/think_face_058" android:duration="200" />
+	<item android:drawable="@drawable/think_face_060" android:duration="200" />
+	<item android:drawable="@drawable/think_face_062" android:duration="200" />
+	<item android:drawable="@drawable/think_face_064" android:duration="200" />
+	<item android:drawable="@drawable/think_face_066" android:duration="200" />
+	<item android:drawable="@drawable/think_face_068" android:duration="200" />
+	<item android:drawable="@drawable/think_face_070" android:duration="200" />
+	<item android:drawable="@drawable/think_face_072" android:duration="200" />
+	<item android:drawable="@drawable/think_face_074" android:duration="200" />
+	<item android:drawable="@drawable/think_face_076" android:duration="200" />
+	<item android:drawable="@drawable/think_face_078" android:duration="200" />
+	<item android:drawable="@drawable/think_face_080" android:duration="200" />
+</animation-list>

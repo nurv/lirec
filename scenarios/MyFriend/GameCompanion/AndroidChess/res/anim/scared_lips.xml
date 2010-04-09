@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<animation-list xmlns:android="http://schemas.android.com/apk/res/android"
+	android:oneshot="true">
+	<item android:drawable="@drawable/scared_lips_000" android:duration="200" />
+	<item android:drawable="@drawable/scared_lips_002" android:duration="200" />
+	<item android:drawable="@drawable/scared_lips_004" android:duration="200" />
+	<item android:drawable="@drawable/scared_lips_006" android:duration="200" />
+	<item android:drawable="@drawable/scared_lips_008" android:duration="200" />
+	<item android:drawable="@drawable/scared_lips_010" android:duration="200" />
+	<item android:drawable="@drawable/scared_lips_012" android:duration="200" />
+	<item android:drawable="@drawable/scared_lips_014" android:duration="200" />
+	<item android:drawable="@drawable/scared_lips_016" android:duration="200" />
+	<item android:drawable="@drawable/scared_lips_018" android:duration="200" />
+	<item android:drawable="@drawable/scared_lips_020" android:duration="200" />
+	<item android:drawable="@drawable/scared_lips_022" android:duration="200" />
+	<item android:drawable="@drawable/scared_lips_024" android:duration="200" />
+	<item android:drawable="@drawable/scared_lips_026" android:duration="200" />
+	<item android:drawable="@drawable/scared_lips_028" android:duration="200" />
+	<item android:drawable="@drawable/scared_lips_030" android:duration="200" />
+	<item android:drawable="@drawable/scared_lips_032" android:duration="200" />
+	<item android:drawable="@drawable/scared_lips_034" android:duration="200" />
+	<item android:drawable="@drawable/scared_lips_036" android:duration="200" />
+	<item android:drawable="@drawable/scared_lips_038" android:duration="200" />
+	<item android:drawable="@drawable/scared_lips_040" android:duration="200" />
+	<item android:drawable="@drawable/scared_lips_042" android:duration="200" />
+	<item android:drawable="@drawable/scared_lips_044" android:duration="200" />
+	<item android:drawable="@drawable/scared_lips_046" android:duration="200" />
+	<item android:drawable="@drawable/scared_lips_048" android:duration="200" />
+	<item android:drawable="@drawable/scared_lips_050" android:duration="200" />
+	<item android:drawable="@drawable/scared_lips_052" android:duration="200" />
+</animation-list>

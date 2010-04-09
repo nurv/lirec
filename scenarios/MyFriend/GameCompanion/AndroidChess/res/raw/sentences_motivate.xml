@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sentences>
+	<greet>
+		<sentence text="Let's practice some chess." />
+		<!-- <sentence text="What about a game of chess with me?" /> -->
+	</greet>
+	<illegalmove>
+		<sentence text="You have to play a different move." />
+		<!-- <sentence text="The rules don't allow for that move." /> -->
+		<sentence text="Check your possible moves again please." />
+		<sentence text="You should think more carefully about your move." />
+		<!-- <sentence text="Oh... sorry." /> -->
+		<sentence text="I'm afraid that's illegal." />
+	</illegalmove>
+	<wrongturn>
+		<sentence text="Please wait, it's still my turn." />
+		<sentence text="Just a moment." />
+		<sentence text="Sorry, sometimes I take a while to think." />
+		<!-- <sentence text="Be patient."/> -->
+	</wrongturn>
+	<lostpiece>
+		<sentence text="Well done." />
+		<sentence text="Nice move." />
+		<sentence text="" />
+		<sentence text="" />
+		<sentence text="" />
+	</lostpiece>
+	<atepiece>
+		<sentence text="You have to watch out for your pieces." />
+		<sentence text="Don't let this get you down." />
+		<sentence text="" />
+		<sentence text="" />
+		<sentence text="" />
+		<sentence text="" />
+	</atepiece>
+	<playagain>
+		<sentence text="Sure, take your turn again."/>
+		<sentence text="Ok, you can change your last move."/>
+	</playagain>
+	<check>
+		<sentence text="Check."/>
+		<sentence text="Be careful, you are in check."/>
+	</check>
+	<acceptmigration>
+		<sentence text="Ok, I'll move out of here." />
+		<sentence text="Meet me at the other end." />
+	</acceptmigration>
+	<recall-won>
+		<sentence text="I won the last match we played." />
+	</recall-won>
+	<recall-lost>
+		<sentence text="I lost our last match." />
+	</recall-lost>
+	<recall-draw>
+		<sentence text="The last match ended in a draw." />
+	</recall-draw>
+	<won-game>
+		<sentence text="Checkmate. Don't worry, all you need is practice." />
+	</won-game>
+	<lost-game>
+		<sentence text="Congratulations! You won the game." />
+	</lost-game>
+</sentences>

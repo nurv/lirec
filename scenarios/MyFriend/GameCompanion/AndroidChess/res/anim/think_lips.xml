@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<animation-list xmlns:android="http://schemas.android.com/apk/res/android"
+	android:oneshot="true">
+	<item android:drawable="@drawable/think_lips_000" android:duration="200" />
+	<item android:drawable="@drawable/think_lips_002" android:duration="200" />
+	<item android:drawable="@drawable/think_lips_004" android:duration="200" />
+	<item android:drawable="@drawable/think_lips_006" android:duration="200" />
+	<item android:drawable="@drawable/think_lips_008" android:duration="200" />
+	<item android:drawable="@drawable/think_lips_010" android:duration="200" />
+	<item android:drawable="@drawable/think_lips_012" android:duration="200" />
+	<item android:drawable="@drawable/think_lips_014" android:duration="200" />
+	<item android:drawable="@drawable/think_lips_016" android:duration="200" />
+	<item android:drawable="@drawable/think_lips_018" android:duration="200" />
+	<item android:drawable="@drawable/think_lips_020" android:duration="200" />
+	<item android:drawable="@drawable/think_lips_022" android:duration="200" />
+	<item android:drawable="@drawable/think_lips_024" android:duration="200" />
+	<item android:drawable="@drawable/think_lips_026" android:duration="200" />
+	<item android:drawable="@drawable/think_lips_028" android:duration="200" />
+	<item android:drawable="@drawable/think_lips_030" android:duration="200" />
+	<item android:drawable="@drawable/think_lips_032" android:duration="200" />
+	<item android:drawable="@drawable/think_lips_034" android:duration="200" />
+	<item android:drawable="@drawable/think_lips_036" android:duration="200" />
+	<item android:drawable="@drawable/think_lips_038" android:duration="200" />
+	<item android:drawable="@drawable/think_lips_040" android:duration="200" />
+	<item android:drawable="@drawable/think_lips_042" android:duration="200" />
+	<item android:drawable="@drawable/think_lips_044" android:duration="200" />
+	<item android:drawable="@drawable/think_lips_046" android:duration="200" />
+	<item android:drawable="@drawable/think_lips_048" android:duration="200" />
+	<item android:drawable="@drawable/think_lips_050" android:duration="200" />
+	<item android:drawable="@drawable/think_lips_052" android:duration="200" />
+	<item android:drawable="@drawable/think_lips_054" android:duration="200" />
+	<item android:drawable="@drawable/think_lips_056" android:duration="200" />
+	<item android:drawable="@drawable/think_lips_058" android:duration="200" />
+	<item android:drawable="@drawable/think_lips_060" android:duration="200" />
+	<item android:drawable="@drawable/think_lips_062" android:duration="200" />
+	<item android:drawable="@drawable/think_lips_064" android:duration="200" />
+	<item android:drawable="@drawable/think_lips_066" android:duration="200" />
+	<item android:drawable="@drawable/think_lips_068" android:duration="200" />
+	<item android:drawable="@drawable/think_lips_070" android:duration="200" />
+	<item android:drawable="@drawable/think_lips_072" android:duration="200" />
+	<item android:drawable="@drawable/think_lips_074" android:duration="200" />
+	<item android:drawable="@drawable/think_lips_076" android:duration="200" />
+	<item android:drawable="@drawable/think_lips_078" android:duration="200" />
+	<item android:drawable="@drawable/think_lips_080" android:duration="200" />
+</animation-list>

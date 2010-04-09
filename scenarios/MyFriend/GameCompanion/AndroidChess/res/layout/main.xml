@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical" android:layout_width="fill_parent"
+	android:layout_height="fill_parent">
+
+
+	
+
+	<TableLayout android:id="@+id/TableLayout01"
+		android:layout_height="wrap_content" android:layout_width="fill_parent">
+
+		<TableRow android:id="@+id/TableRow01" android:layout_width="wrap_content"
+			android:layout_height="wrap_content">
+			<LinearLayout android:id="@+id/LinearLayout01"
+				android:layout_height="wrap_content"
+				android:orientation="vertical" android:layout_width="wrap_content" android:layout_gravity="center_horizontal">
+				<Button android:layout_height="wrap_content" android:id="@+id/NewGameButton" android:text="@string/newgame_button" android:layout_width="wrap_content"></Button>
+				<Button android:layout_width="wrap_content"
+					android:layout_height="wrap_content" android:text="@string/forfeit_button" android:id="@+id/ForfeitButton" android:visibility="gone"></Button>
+			<Button android:layout_height="wrap_content" android:id="@+id/UndoButton" android:text="@string/undo_button" android:layout_width="fill_parent" android:enabled="false"></Button>
+</LinearLayout>
+			<TextSwitcher android:layout_height="wrap_content" android:layout_width="fill_parent" android:layout_weight="1" android:id="@+id/MessageBox">
+</TextSwitcher>
+			<FrameLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/iCat" android:visibility="visible"><ImageView android:layout_height="wrap_content" android:layout_width="wrap_content" android:id="@+id/iCatFace" android:background="@drawable/moodhappy_face_000"></ImageView><ImageView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/iCatLips" android:background="@anim/moodhappy_lips_in_0"></ImageView>
+</FrameLayout>
+			
+
+		
+
+</TableRow>
+	</TableLayout>
+
+</LinearLayout>
