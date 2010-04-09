@@ -1,0 +1,56 @@
+<?xml version='1.0' encoding='ISO-8859-1'?>
+
+<spinTypeSystem>
+
+  <class name="Entity" />
+
+  <class name="Type" extends="Entity">
+    <slot name="value" type="String" />
+  </class>
+
+  <class name="Utterance" extends="Entity,_Result">
+    <slot name="value" type="String,Synonym,Internal,Lex" />
+  </class>
+
+  <class name="Variable" extends="Entity">
+    <slot name="value" type="String" />
+  </class>
+
+  <class name="Context" extends="Variable"/>
+  <class name="localContext" extends="Context"/>
+  <class name="globalContext" extends="Context"/>
+
+  <class name="user" extends="localContext"/>
+  <class name="days" extends="localContext"/>
+  <class name="number" extends="localContext"/>
+  <class name="agr_number" extends="localContext"/>
+  <class name="move" extends="localContext"/>
+  <class name="phase" extends="localContext"/>
+  <class name="total" extends="localContext"/>  
+  <class name="reaction" extends="localContext"/>
+
+  <class name="Synonym" extends="Variable">
+    <slot name="semCat" type="String" />
+    <slot name="topic" type="String" />
+    <slot name="number" type="String" />
+    <slot name="gender" type="String" />
+    <slot name="case" type="String" />
+    <slot name="type" type="String" />
+    <slot name="det" type="String" />
+    <slot name="adj" type="String" />
+  </class>
+  
+  <class name="Lex" extends="Entity">
+    <slot name="number" type="String" />
+    <slot name="gender" type="String" />
+    <slot name="case" type="String" />
+    <slot name="stem" type="String" />
+    <slot name="semCat" type="String" />
+    <slot name="det" type="String,Lex"/>
+    <slot name="adj" type="String,Lex,Synonym"/>
+  </class>
+
+  <class name="Internal" extends="Entity"/>  
+  
+</spinTypeSystem>
+  

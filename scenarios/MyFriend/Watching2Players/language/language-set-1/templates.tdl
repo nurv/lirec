@@ -1,0 +1,233 @@
+#EMPATHY_EMOTIVECTOR
+#UNEXPECTED_R
+Type(value:unexpected_r_comp) user(value:$V)
+-> Utterance(value:"Boa jogada! Nem eu vi essa!")
+
+Type(value:unexpected_r_comp) user(value:$V)
+-> Utterance(value:("Boa jogada ",$V,"! Nem eu vi essa!"))
+
+Type(value:unexpected_r_comp) user(value:$V)
+-> Utterance(value:"Boa! Jogaste muito bem!")
+
+Type(value:unexpected_r_comp) user(value:$V)
+-> Utterance(value:("Boa ",$V,"! Jogaste muito bem!"))
+
+#Type(value:unexpected_r_comp) user(value:$V)
+#-> Utterance(value:"uáuu! boa jogada!")
+
+Type(value:unexpected_r_comp) user(value:$V)
+-> Utterance(value:("uáuu ",$V,"! boa jogada!"))
+
+
+#UNEXPECTED_P
+
+Type(value:unexpected_p_comp) user(value:$V)
+-> Utterance(value:($V,", estou triste, não estava à espera dessa jogada..."))
+
+#Type(value:unexpected_p_comp) user(value:$V)
+#-> Utterance(value:"ui, estou triste, não estava à espera desta jogada")
+
+#Type(value:unexpected_p_comp) user(value:$V)
+#-> Utterance(value:("upesse, não estava à espera dessa jogada ",$V,"!"))
+
+#NOVA
+Type(value:unexpected_p_comp) user(value:$V)
+-> Utterance(value:"Que pena, não estava à espera dessa jogada.")  
+
+Type(value:unexpected_p_comp) user(value:$V)
+-> Utterance(value:($V,", estou triste, queria que tivesses jogado melhor!"))
+
+Type(value:unexpected_p_comp) user(value:$V)
+-> Utterance(value:"estou triste, queria que tivesses jogado melhor!")
+
+
+#EXPECTED_R
+Type(value:expected_r_comp) user(value:$V)
+-> Utterance(value:("boa ", $V,"! Jogaste o que eu jogaria!"))
+
+Type(value:expected_r_comp) user(value:$V)
+-> Utterance(value:"boa! Jogaste o que eu jogaria!")
+
+Type(value:expected_r_comp) user(value:$V)
+-> Utterance(value:("gostei dessa jogada ", $V))
+
+Type(value:expected_r_comp) user(value:$V)
+-> Utterance(value:"gostei dessa jogada !")
+
+Type(value:expected_r_comp) user(value:$V)
+-> Utterance(value:("Bem jogado! Já esperava isso de ti ", $V))
+
+Type(value:expected_r_comp) user(value:$V)
+-> Utterance(value:"Bem jogado! Já esperava isso de ti...")
+
+
+#EXPECTED_P
+Type(value:expected_p_comp) user(value:$V)
+-> Utterance(value:"Não foi muito bom, mas não tinhas jogada melhor!")
+
+Type(value:expected_p_comp) user(value:$V)
+-> Utterance(value:($V,", Não foi muito bom, mas não tinhas jogada melhor!"))
+
+Type(value:expected_p_comp) user(value:$V)
+-> Utterance(value:("Não fiques triste... não tinhas opções melhores, ",$V," !"))
+
+Type(value:expected_p_comp) user(value:$V)
+-> Utterance(value:"Não fiques triste... não tinhas opções melhores...")
+
+Type(value:expected_p_comp) user(value:$V)
+-> Utterance(value:($V, " Não te chateis... não havia alternativa melhor!"))
+
+Type(value:expected_p_comp) user(value:$V)
+-> Utterance(value:"Não te chateis... não havia alternativa melhor!")
+
+
+#STRONGER_R
+Type(value:stronger_r_comp) user(value:$V)
+-> Utterance(value:($V, "Essa foi melhor do que eu estava à espera!"))
+
+Type(value:stronger_r_comp) user(value:$V)
+-> Utterance(value:"Essa foi melhor do que eu estava à espera!")
+
+Type(value:stronger_r_comp) user(value:$V)
+-> Utterance(value:"Óptima jogada!")
+
+Type(value:stronger_r_comp) user(value:$V)
+-> Utterance(value:("Óptima jogada ",$V,"!"))
+
+Type(value:stronger_r_comp) user(value:$V)
+-> Utterance(value:"Excelente jogada!")
+
+Type(value:stronger_r_comp) user(value:$V)
+-> Utterance(value:("Excelente jogada ",$V,"!"))
+
+
+#STRONGER_P
+Type(value:stronger_p_comp) user(value:$V)
+-> Utterance(value:("Estou triste! Podias ter jogado um pouco melhor..."))
+
+Type(value:stronger_p_comp) user(value:$V)
+-> Utterance(value:("Estou triste ",$V, "! Podias ter jogado um pouco melhor..."))
+
+Type(value:stronger_p_comp) user(value:$V)
+-> Utterance(value:("Estou triste! Tinhas jogadas melhores..."))
+
+Type(value:stronger_p_comp) user(value:$V)
+-> Utterance(value:($V,", Estou triste! Tinhas jogadas melhores..."))
+
+Type(value:stronger_p_comp) user(value:$V)
+-> Utterance(value:"Que pena! Não foi muito bem jogado...")
+
+Type(value:stronger_p_comp) user(value:$V)
+-> Utterance(value:("Que pena... ",$V, "!  Não foi muito bem jogado..."))
+
+#WEAKER_P
+#Type(value:weaker_p_comp) user(value:$V)
+#-> Utterance(value:("Melhoraste um pouco ",$V))
+#NOVA
+Type(value:weaker_p_comp) user(value:$V)
+-> Utterance(value:($V, ", boa! Melhoraste!"))
+
+Type(value:weaker_p_comp) user(value:$V)
+-> Utterance(value:("Com essa jogada recuperaste um pouco, ",$V))
+
+Type(value:weaker_p_comp) user(value:$V)
+-> Utterance(value:"Gostei. Com essa jogada recuperaste alguma vantagem...")
+
+Type(value:weaker_p_comp) user(value:$V)
+-> Utterance(value:"Com essa jogada melhoraste um pouco...")
+
+Type(value:weaker_p_comp) user(value:$V)
+-> Utterance(value:($V, " Com essa jogada melhoraste um pouco..."))
+
+#WEAKER_R
+
+Type(value:weaker_r_comp) user(value:$V)
+-> Utterance(value:("Que pena... pioraste um pouco, ",$V))
+
+Type(value:weaker_r_comp) user(value:$V)
+-> Utterance(value:("Fiquei triste... Tinhas uma jogada melhor, ", $V))
+
+Type(value:weaker_r_comp) user(value:$V)
+-> Utterance(value:"Agora fiquei triste... Tinhas uma jogada melhor ")
+
+Type(value:weaker_r_comp) user(value:$V)
+-> Utterance(value:($V, ", Acredito que podias ter jogado melhor..."))
+
+#COMPANIONS FEELS REWARDING SENSATION WITH OPPONENT'S MOVE
+
+Type(value:reward_opp) user(value:$V)
+-> Utterance(value:($V, ", má jogada!"))
+
+Type(value:reward_opp) user(value:$V)
+-> Utterance(value:("foi uma má jogada, ", $V))
+
+Type(value:reward_opp) user(value:$V)
+-> Utterance(value:"má jogada!")
+
+Type(value:reward_opp) user(value:$V)
+-> Utterance(value:"Essa jogada não foi muito boa...")
+
+Type(value:reward_opp) user(value:$V)
+-> Utterance(value:"Mal jogado...")
+
+#COMPANIONS FEELS PUNISHMENT SENSATION WITH OPPONENT'S MOVE
+
+Type(value:punishment_opp) user(value:$V)
+-> Utterance(value:($V, ", boa jogada!"))
+
+Type(value:punishment_opp) user(value:$V)
+-> Utterance(value:("boa jogada, ", $V))
+
+Type(value:punishment_opp) user(value:$V)
+-> Utterance(value:"Jogaste bem!")
+
+Type(value:punishment_opp) user(value:$V)
+-> Utterance(value:"não foi uma má jogada...")
+
+Type(value:punishment_opp) user(value:$V)
+-> Utterance(value:"Foi uma boa jogada!")
+
+#ENCOURAGEMENT WHEN COMPANION IS WINNING
+Type(value:encouragement_winning) user(value:$V)
+-> Utterance(value:($V, ", estás no bom caminho!"))
+
+Type(value:encouragement_winning) user(value:$V)
+-> Utterance(value:("estás no bom caminho ", $V))
+
+Type(value:encouragement_winning_alot) user(value:$V)
+-> Utterance(value:("Boa ",$V, "! já estás com uma grande vantagem. Continua assim!"))
+
+Type(value:encouragement_winning_alot) user(value:$V)
+-> Utterance(value:("Já estás com uma grande vantagem, continua assim ", $V))
+
+#ENCOURAGEMENT WHEN COMPANION IS LOOSING
+
+Type(value:encouragement_loosing) user(value:$V)
+-> Utterance(value:("Vamos lá, ",$V, ", ainda podes recuperar a desvantagem!"))
+
+Type(value:encouragement_loosing) user(value:$V)
+-> Utterance(value:("Força, ainda podes recuperar ", $V))
+
+Type(value:encouragement_loosing_alot) user(value:$V)
+-> Utterance(value:("Estás com uma grande desvantagem ",$V, "... mas eu ainda acredito em ti!"))
+
+Type(value:encouragement_loosing_alot) user(value:$V)
+-> Utterance(value:("Força ", $V, ", ainda acredito em ti!"))
+
+
+#ENCOURAGEMENT WHEN COMPANION CAPTURES A PIECE
+
+Type(value:captured_piece) user(value:$V)
+-> Utterance(value:("Boa ", $V, "! Capturaste uma peça!"))
+
+Type(value:captured_piece) user(value:$V)
+-> Utterance(value:"Boa! Capturaste uma peça.")
+
+Type(value:captured_piece) user(value:$V)
+-> Utterance(value:("Capturaste uma peça... parabéns ", $V))
+
+Type(value:captured_piece) user(value:$V)
+-> Utterance(value:("parabéns ", $V, ", capturaste uma peça!"))
+
+Type(value:captured_piece) user(value:$V)
+-> Utterance(value:("boa ", $V, ", menos uma peça no tabuleiro!"))
