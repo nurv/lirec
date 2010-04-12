@@ -32,7 +32,9 @@ package FAtiMA.conditions;
 
 import FAtiMA.AgentModel;
 import FAtiMA.util.AgentLogger;
+import FAtiMA.util.Constants;
 import FAtiMA.wellFormedNames.Name;
+import FAtiMA.wellFormedNames.Symbol;
 
 
 /**
@@ -57,8 +59,8 @@ public class PropertyGreaterEqual extends PropertyCondition {
      * @param value -
      *            the PropertyTest's value
      */
-	public PropertyGreaterEqual(Name name, Name value) {
-		super(name, value);
+	public PropertyGreaterEqual(Name name, Name value, Symbol ToM) {
+		super(name, value, ToM);
 	}
 	
 	/**
@@ -71,11 +73,21 @@ public class PropertyGreaterEqual extends PropertyCondition {
 		Float aux;
 		Float aux2;
 
-		if (!super.CheckCondition(am))
-			return false;
-		
-		propertyValue = this._name.evaluate(am.getMemory());
-		value = this._value.evaluate(am.getMemory());
+        AgentModel perspective = am;
+
+        if (!super.CheckCondition(am))
+            return false;
+        
+        if(_ToM.isGrounded() && !_ToM.toString().equals(Constants.SELF))
+		{
+			if(am.getToM().containsKey(_ToM.toString()))
+			{
+				perspective = am.getToM().get(_ToM.toString());
+			}
+		}
+        
+        propertyValue = this._name.evaluate(perspective.getMemory());
+        value = this._value.evaluate(perspective.getMemory());
 
 		if (propertyValue == null || value == null)
 			return false;
@@ -91,7 +103,7 @@ public class PropertyGreaterEqual extends PropertyCondition {
 	 */
 	public Object clone()
 	{
-	    return new PropertyGreaterEqual((Name) this._name.clone(), (Name) this._value.clone());
+	    return new PropertyGreaterEqual((Name) this._name.clone(), (Name) this._value.clone(), (Symbol) this._ToM.clone());
 	}
 
 	/**

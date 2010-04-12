@@ -50,6 +50,7 @@ import org.xml.sax.Attributes;
 
 import FAtiMA.AgentModel;
 import FAtiMA.conditions.EmotionCondition;
+import FAtiMA.conditions.NewEventCondition;
 import FAtiMA.conditions.PastEventCondition;
 import FAtiMA.conditions.RecentEventCondition;
 import FAtiMA.conditions.MoodCondition;
@@ -150,18 +151,11 @@ public class StripsOperatorsLoaderHandler extends ReflectXMLHandler {
 	}
     
 	public void Predicate(Attributes attributes) {
-		String aux;
-		Name name;
-		boolean positive = true;
-		aux = attributes.getValue("name");
-		if(aux.charAt(0) == '!') {
-			aux = aux.substring(1);
-			positive = false;
-		}
-		name = Name.ParseName(aux);
-		name.MakeGround(this._self);
+		PredicateCondition p;
+		
+		p = PredicateCondition.ParsePredicate(attributes);
 	
-		PredicateCondition p = new PredicateCondition(positive,name);
+		p.MakeGround(this._self);
 		
 		if(_precondition) 
 			_currentOperator.AddPrecondition(p);

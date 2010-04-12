@@ -76,10 +76,12 @@ import java.util.ListIterator;
 
 import FAtiMA.AgentModel;
 import FAtiMA.util.AgentLogger;
+import FAtiMA.util.Constants;
 import FAtiMA.wellFormedNames.Inequality;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
 import FAtiMA.wellFormedNames.SubstitutionSet;
+import FAtiMA.wellFormedNames.Symbol;
 
 
 /**
@@ -102,8 +104,8 @@ public class PropertyNotEqual extends PropertyCondition {
      * @param value -
      *            the PropertyTest's value
      */
-    public PropertyNotEqual(Name name, Name value) {
-		super(name, value);
+    public PropertyNotEqual(Name name, Name value, Symbol ToM) {
+		super(name, value, ToM);
 	}
 	
 	/**
@@ -113,12 +115,22 @@ public class PropertyNotEqual extends PropertyCondition {
 	public boolean CheckCondition(AgentModel am) {
 		Object propertyValue;
 		Object value;
-
-		if (!super.CheckCondition(am))
-			return false;
 		
-		propertyValue = this._name.evaluate(am.getMemory());
-		value = this._value.evaluate(am.getMemory());
+        AgentModel perspective = am;
+
+        if (!super.CheckCondition(am))
+            return false;
+        
+        if(_ToM.isGrounded() && !_ToM.toString().equals(Constants.SELF))
+		{
+			if(am.getToM().containsKey(_ToM.toString()))
+			{
+				perspective = am.getToM().get(_ToM.toString());
+			}
+		}
+        
+        propertyValue = this._name.evaluate(perspective.getMemory());
+        value = this._value.evaluate(perspective.getMemory());
 
 		if (propertyValue == null || value == null) 
 		{
@@ -159,8 +171,18 @@ public class PropertyNotEqual extends PropertyCondition {
 			else return null;
 		}
 		
+		AgentModel perspective = am;
+		
+		if(_ToM.isGrounded() && !_ToM.toString().equals(Constants.SELF))
+		{
+			if(am.getToM().containsKey(_ToM.toString()))
+			{
+				perspective = am.getToM().get(_ToM.toString());
+			}
+		}
+		
 		//if the name is not grounded we try to get all possible bindings for it
-		bindingSets = am.getMemory().getSemanticMemory().GetPossibleBindings(_name);
+		bindingSets = perspective.getMemory().getSemanticMemory().GetPossibleBindings(_name);
 		if (bindingSets == null)
 			return null;
 
@@ -201,12 +223,12 @@ public class PropertyNotEqual extends PropertyCondition {
 		//must be grounded. i.e, we cannot determine inequalities between
 		// [X] != [Y]
 		if (_name.isGrounded()) {
-			bindings = this.GetBindings(am,_name,_value);
+			bindings = this.GetBindings(am,_name,_value,_ToM);
 			if (bindings == null)
 				return null;
 		}
 		else if(_value.isGrounded()) {
-			bindings = this.GetBindings(am,_value,_name);
+			bindings = this.GetBindings(am,_value,_name,_ToM);
 			if (bindings == null)
 				return null;
 		}
@@ -236,7 +258,7 @@ public class PropertyNotEqual extends PropertyCondition {
 	 */
 	public Object clone()
 	{
-	    return new PropertyNotEqual((Name) this._name.clone(), (Name) this._value.clone());
+	    return new PropertyNotEqual((Name) this._name.clone(), (Name) this._value.clone(), (Symbol) this._ToM.clone());
 	}
 
 	/**

@@ -65,10 +65,12 @@ import java.util.ListIterator;
 
 import FAtiMA.AgentModel;
 import FAtiMA.memory.semanticMemory.KnowledgeBase;
+import FAtiMA.util.Constants;
 import FAtiMA.wellFormedNames.IGroundable;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
 import FAtiMA.wellFormedNames.SubstitutionSet;
+import FAtiMA.wellFormedNames.Symbol;
 
 
 /** 
@@ -189,6 +191,7 @@ public abstract class Condition implements IGroundable, Cloneable, Serializable 
 	
 	
 	protected Name _name;
+	protected Symbol _ToM;
 	
 	/**
 	 * Creates a new Condition - not used directly because its an abstract class
@@ -204,6 +207,13 @@ public abstract class Condition implements IGroundable, Cloneable, Serializable 
 	 */
 	public Condition(Name name) {
 		_name = name;
+		_ToM = new Symbol(Constants.SELF);
+	}
+	
+	public Condition(Name name, Symbol ToM)
+	{
+		_name = name;
+		_ToM = ToM;
 	}
 	
 	/**
@@ -220,6 +230,11 @@ public abstract class Condition implements IGroundable, Cloneable, Serializable 
 	 */
 	public Name getName() {
 		return _name;
+	}
+	
+	public Symbol getPerspective()
+	{
+		return _ToM;
 	}
 	
 	/**
@@ -285,11 +300,12 @@ public abstract class Condition implements IGroundable, Cloneable, Serializable 
 	/**
 	 * Checks if a given condition is threatened by this condition 
 	 * @param cond - the Condition to test
-	 * @return true if the both conditions refer to the same property/predicate
+	 * @return true if the both conditions refer to the same ToM and to the same property/predicate
 	 *         but with distinct values
 	 */
 	public boolean ThreatensCondition(Condition cond) {
-	    if (_name.equals(cond._name)) {
+		if(_ToM.equals(cond._ToM) && _name.equals(cond._name)) 
+		{
 	        return !this.GetValue().equals(cond.GetValue());
 	    }
 	    return false;

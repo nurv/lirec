@@ -43,6 +43,7 @@ import FAtiMA.memory.episodicMemory.ActionDetail;
 import FAtiMA.memory.episodicMemory.SearchKey;
 import FAtiMA.sensorEffector.Event;
 import FAtiMA.sensorEffector.Parameter;
+import FAtiMA.util.Constants;
 import FAtiMA.util.enumerables.ActionEvent;
 import FAtiMA.util.enumerables.EventType;
 import FAtiMA.util.enumerables.GoalEvent;
@@ -119,6 +120,7 @@ public class PastEventCondition extends PredicateCondition {
 	
 	public PastEventCondition(boolean occurred, short type, short status, Symbol subject, Symbol action, Symbol target, ArrayList<Symbol> parameters)
 	{
+		this._ToM = new Symbol(Constants.SELF);
 		this._type = type;
 		this._status = status;
 		
@@ -146,6 +148,7 @@ public class PastEventCondition extends PredicateCondition {
 	
 	public PastEventCondition(boolean occurred, Event e)
 	{
+		this._ToM = new Symbol(Constants.SELF);
 		this._positive = occurred;
 		this._subject = new Symbol(e.GetSubject());
 		this._action = new Symbol(e.GetAction());
@@ -177,7 +180,7 @@ public class PastEventCondition extends PredicateCondition {
 	// Meiyii - 12/01/10 added type and status
 	public PastEventCondition(boolean occurred, short type, short status, Name event)
 	{
-		super(occurred, event);
+		super(occurred, event,new Symbol(Constants.SELF));
 		
 		ListIterator<Symbol> li = event.GetLiteralList().listIterator();
 		li.next();
@@ -201,6 +204,7 @@ public class PastEventCondition extends PredicateCondition {
 		PastEventCondition newEvent = new PastEventCondition();
 		
 		newEvent._positive = this._positive;
+		newEvent._ToM = (Symbol) this._ToM.clone();
 		
 		// Meiyii
 		newEvent._type = this._type;

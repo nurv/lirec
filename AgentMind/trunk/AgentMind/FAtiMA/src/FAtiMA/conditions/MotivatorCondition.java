@@ -6,6 +6,7 @@ import org.xml.sax.Attributes;
 
 import FAtiMA.AgentModel;
 import FAtiMA.util.AgentLogger;
+import FAtiMA.util.enumerables.MotivatorType;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
 import FAtiMA.wellFormedNames.SubstitutionSet;
@@ -61,6 +62,7 @@ public class MotivatorCondition extends Condition {
 	 * @return true if the condition is verified, false otherwise
 	 */
 	public boolean CheckCondition(AgentModel am) {
+		//am.getMotivationalState().GetMotivator(MotivatorType.CERTAINTY).
 		//TODO: implment this based on the motivational system
 		return true;
 		

@@ -22,7 +22,6 @@ public class AppraisalCondition extends PastEventCondition {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private Symbol _agent;
 	private String _appraisalVariable;
 	private Symbol _value;
 	private short _test;
@@ -37,9 +36,9 @@ public class AppraisalCondition extends PastEventCondition {
 	{
 		//this._type = type;
 		//this._status = status;
+		this._ToM = agent;
 		
 		this._positive = true;
-		this._agent = agent;
 		this._appraisalVariable = appraisalVariable;
 		this._value = value;
 		this._threshold = threshold;
@@ -51,7 +50,7 @@ public class AppraisalCondition extends PastEventCondition {
 		
 		this._parameters = parameters;
 		
-		String aux = this._appraisalVariable + "," + this._agent + "," + this._subject + "," + this._action;
+		String aux = this._appraisalVariable + "," + this._ToM + "," + this._subject + "," + this._action;
 		if(this._target != null)
 		{
 			aux = aux + "," + this._target;
@@ -75,9 +74,9 @@ public class AppraisalCondition extends PastEventCondition {
 		//newCondition._status = this._status;
 		newCondition._positive = this._positive;
 		
-		newCondition._agent = (Symbol) this._agent.clone();
 		newCondition._appraisalVariable = this._appraisalVariable;
 		newCondition._value = (Symbol) this._value.clone();
+		newCondition._ToM = (Symbol) this._value.clone();
 		newCondition._threshold = this._threshold;
 		newCondition._test = this._test;
 		
@@ -108,8 +107,8 @@ public class AppraisalCondition extends PastEventCondition {
 	}
 
 	public void ReplaceUnboundVariables(int variableID) {
-		this._agent.ReplaceUnboundVariables(variableID);
 		this._value.ReplaceUnboundVariables(variableID);
+		this._ToM.ReplaceUnboundVariables(variableID);
 		
 		this._name.ReplaceUnboundVariables(variableID);
 		this._subject.ReplaceUnboundVariables(variableID);
@@ -135,10 +134,10 @@ public class AppraisalCondition extends PastEventCondition {
 	}
 
 	public void MakeGround(ArrayList<Substitution> bindings) {
-		this._agent.MakeGround(bindings);
 		this._value.MakeGround(bindings);
 		
 		this._name.MakeGround(bindings);
+		this._ToM.MakeGround(bindings);
 		this._subject.MakeGround(bindings);
 		this._action.MakeGround(bindings);
 		if(this._target != null)
@@ -160,10 +159,10 @@ public class AppraisalCondition extends PastEventCondition {
 	}
 
 	public void MakeGround(Substitution subst) {
-		this._agent.MakeGround(subst);
 		this._value.MakeGround(subst);
 		
 		this._name.MakeGround(subst);
+		this._ToM.MakeGround(subst);
 		this._subject.MakeGround(subst);
 		this._action.MakeGround(subst);
 		if(this._target != null)
@@ -192,13 +191,13 @@ public class AppraisalCondition extends PastEventCondition {
 	
 		AgentModel modelToTest = am;
 		
-		if(!this._agent.isGrounded()) return null;
+		if(!this._ToM.isGrounded()) return null;
 	 	
 		if(!this._value.isGrounded()) return null;
 		
-		if(!this._agent.toString().equals(Constants.SELF))
+		if(!this._ToM.toString().equals(Constants.SELF))
 		{
-			modelToTest = am.getToM().get(this._agent.toString());
+			modelToTest = am.getToM().get(this._ToM.toString());
 		}
 		
 		mood = modelToTest.getEmotionalState().GetMood();
@@ -240,7 +239,7 @@ public class AppraisalCondition extends PastEventCondition {
 			{
 				if(ad.getTarget().equals(Constants.SELF))
 				{
-					target = this._agent;
+					target = this._ToM;
 				}
 				else
 				{

@@ -43,7 +43,7 @@ public class TimeCondition extends PropertyCondition {
 	}
 
 	protected TimeCondition(){
-		super(null,null);
+		super(null,null,null);
 	}
 	
 	public boolean CheckCondition(AgentModel am) {

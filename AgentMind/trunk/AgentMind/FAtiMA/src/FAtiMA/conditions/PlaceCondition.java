@@ -42,7 +42,7 @@ public class PlaceCondition extends PropertyCondition {
 	}
 	
 	protected PlaceCondition(){
-		super(null,null);
+		super(null,null,null);
 	}
 	
 	public Object clone() {

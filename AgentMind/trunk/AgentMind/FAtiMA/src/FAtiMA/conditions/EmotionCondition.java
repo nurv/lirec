@@ -58,7 +58,6 @@ public class EmotionCondition extends PredicateCondition {
 	protected short _emotionType;
 	protected Symbol _intensity;
 	protected Symbol _direction;
-	protected Symbol _ToM;
 	
 	/**
 	 * Parses a EmotionCondition given a XML attribute list
@@ -159,11 +158,11 @@ public class EmotionCondition extends PredicateCondition {
 	
 	private void UpdateName()
 	{
-		String aux = this._ToM + "(" + EmotionType.GetName(this._emotionType); 
+		String aux = EmotionType.GetName(this._emotionType) + "("; 
 		
 		if(this._direction != null)
 		{
-			aux += "," + this._direction;
+			aux += this._direction;
 		}
 		aux+=")";
 		this._name = Name.ParseName(aux);
@@ -185,7 +184,6 @@ public class EmotionCondition extends PredicateCondition {
 	 */
 	public boolean CheckCondition(AgentModel am) {
 		boolean result;
-		AgentModel modelToTest;
 		if(!_ToM.isGrounded()) return false;
 		
 		

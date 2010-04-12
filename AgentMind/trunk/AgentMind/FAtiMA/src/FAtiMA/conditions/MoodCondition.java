@@ -36,6 +36,7 @@ import FAtiMA.AgentModel;
 import FAtiMA.emotionalState.EmotionalState;
 import FAtiMA.exceptions.InvalidMoodOperatorException;
 import FAtiMA.exceptions.NoMoodOperatorDefinedException;
+import FAtiMA.util.Constants;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
 import FAtiMA.wellFormedNames.SubstitutionSet;
@@ -124,6 +125,7 @@ public class MoodCondition extends Condition {
 	
 	public MoodCondition(short operator, float value)
 	{
+		this._ToM = new Symbol(Constants.SELF);
 		this._operator = operator;
 		
 		if(value > 10) {
@@ -242,6 +244,7 @@ public class MoodCondition extends Condition {
 	 */
     public void ReplaceUnboundVariables(int variableID)
     {
+    	this._ToM.ReplaceUnboundVariables(variableID);
     }
 	
     /**
@@ -269,6 +272,7 @@ public class MoodCondition extends Condition {
 	 */
     public void MakeGround(ArrayList<Substitution> bindings)
     {
+    	this._ToM.MakeGround(bindings);
     }
 	
     /**
@@ -296,6 +300,7 @@ public class MoodCondition extends Condition {
 	 */
     public void MakeGround(Substitution subst)
     {
+    	this.MakeGround(subst);
     }
 	
 	/**
@@ -306,6 +311,7 @@ public class MoodCondition extends Condition {
 	public Object clone()
 	{
 		MoodCondition mc = new MoodCondition();
+		mc._ToM = (Symbol) this._ToM.clone();
 		mc._operator = this._operator;
 		mc._value = this._value;
 		mc._name = (Name) this._name.clone();

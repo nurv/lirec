@@ -5,6 +5,7 @@ import java.util.ListIterator;
 
 import FAtiMA.AgentModel;
 import FAtiMA.memory.episodicMemory.SearchKey;
+import FAtiMA.util.Constants;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Symbol;
 
@@ -25,6 +26,7 @@ public class NewEventCondition extends RecentEventCondition {
 	public Object clone() {
 		NewEventCondition newEvent = new NewEventCondition();
 		
+		newEvent._ToM = (Symbol) this._ToM.clone();
 		newEvent._positive = this._positive;
 		newEvent._conditionAlreadyVerified = this._conditionAlreadyVerified;
 		newEvent._name = (Name) this._name.clone();
@@ -60,6 +62,7 @@ public class NewEventCondition extends RecentEventCondition {
 	
 	public NewEventCondition(PastEventCondition cond)
 	{
+		this._ToM = new Symbol(Constants.SELF);
 		this._subject = cond._subject;
 		this._action = cond._action;
 		this._target = cond._target;

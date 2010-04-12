@@ -276,7 +276,9 @@ public class EmotionalPlanner implements Serializable {
 					effect = (Effect) op.getEffects().get(i);
 					effectCond = effect.GetEffect();
 					substs = new ArrayList<Substitution>();
-					if (Unifier.Unify(cond.getName(), effectCond.getName(), substs)) {
+					if(Unifier.Unify(cond.getPerspective(), effectCond.getPerspective(), substs) 
+							&& Unifier.Unify(cond.getName(), effectCond.getName(), substs)) 
+					{
 						condValue = cond.GetValue();
 						effectValue = effectCond.GetValue();
 						unifyResult = Unifier.Unify(condValue, effectValue, substs);
@@ -421,7 +423,6 @@ public class EmotionalPlanner implements Serializable {
 
 		if (p == null) {
 			//There's no possible plan to achieve the goal, the goal fails
-			//ProcessIntentionFailure(intention);
 			return null;
 		}
 		else if (p.getOpenPreconditions().size() == 0 && p.getSteps().size() == 0) {

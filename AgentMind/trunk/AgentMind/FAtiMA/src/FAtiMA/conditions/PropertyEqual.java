@@ -51,7 +51,9 @@ package FAtiMA.conditions;
 
 import FAtiMA.AgentModel;
 import FAtiMA.util.AgentLogger;
+import FAtiMA.util.Constants;
 import FAtiMA.wellFormedNames.Name;
+import FAtiMA.wellFormedNames.Symbol;
 
 /**
  * Test that compares if a property is equal to a given value
@@ -75,9 +77,9 @@ public class PropertyEqual extends PropertyCondition
      * @param value -
      *            the PropertyTest's value
      */
-    public PropertyEqual(Name name, Name value)
+    public PropertyEqual(Name name, Name value, Symbol ToM)
     {
-        super(name, value);
+        super(name, value,ToM);
     }
 
     /**
@@ -88,11 +90,21 @@ public class PropertyEqual extends PropertyCondition
     {
         Object propertyValue;
         Object value;
+        AgentModel perspective = am;
 
         if (!super.CheckCondition(am))
             return false;
-        propertyValue = this._name.evaluate(am.getMemory());
-        value = this._value.evaluate(am.getMemory());
+        
+        if(_ToM.isGrounded() && !_ToM.toString().equals(Constants.SELF))
+		{
+			if(am.getToM().containsKey(_ToM.toString()))
+			{
+				perspective = am.getToM().get(_ToM.toString());
+			}
+		}
+        
+        propertyValue = this._name.evaluate(perspective.getMemory());
+        value = this._value.evaluate(perspective.getMemory());
 
         if (propertyValue == null || value == null)
             return false;
@@ -108,7 +120,7 @@ public class PropertyEqual extends PropertyCondition
     public Object clone()
     {
         return new PropertyEqual((Name) this._name
-                .clone(), (Name) this._value.clone());
+                .clone(), (Name) this._value.clone(), (Symbol) this._ToM.clone());
     }
 
     /**

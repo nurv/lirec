@@ -41,6 +41,7 @@ import FAtiMA.AgentModel;
 import FAtiMA.memory.episodicMemory.ActionDetail;
 import FAtiMA.memory.episodicMemory.SearchKey;
 import FAtiMA.sensorEffector.Event;
+import FAtiMA.util.Constants;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
 import FAtiMA.wellFormedNames.Symbol;
@@ -65,6 +66,7 @@ public class RecentEventCondition extends PastEventCondition {
 	
 	public RecentEventCondition(PastEventCondition cond)
 	{
+		this._ToM = new Symbol(Constants.SELF);
 		this._subject = cond._subject;
 		this._action = cond._action;
 		this._target = cond._target;
@@ -98,6 +100,7 @@ public class RecentEventCondition extends PastEventCondition {
 	public Object clone() {
 		RecentEventCondition newEvent = new RecentEventCondition();
 		
+		newEvent._ToM = (Symbol) this._ToM.clone();
 		newEvent._positive = this._positive;
 		
 		newEvent._name = (Name) this._name.clone();
@@ -131,6 +134,7 @@ public class RecentEventCondition extends PastEventCondition {
 	}
 
 	public void ReplaceUnboundVariables(int variableID) {
+		this._ToM.ReplaceUnboundVariables(variableID);
 		this._name.ReplaceUnboundVariables(variableID);
 		this._subject.ReplaceUnboundVariables(variableID);
 		this._action.ReplaceUnboundVariables(variableID);
@@ -154,6 +158,7 @@ public class RecentEventCondition extends PastEventCondition {
 	}
 
 	public void MakeGround(ArrayList<Substitution> bindings) {
+		this._ToM.MakeGround(bindings);
 		this._name.MakeGround(bindings);
 		this._subject.MakeGround(bindings);
 		this._action.MakeGround(bindings);
@@ -176,6 +181,7 @@ public class RecentEventCondition extends PastEventCondition {
 	}
 
 	public void MakeGround(Substitution subst) {
+		this._ToM.MakeGround(subst);
 		this._name.MakeGround(subst);
 		this._subject.MakeGround(subst);
 		this._action.MakeGround(subst);

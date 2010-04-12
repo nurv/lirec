@@ -59,8 +59,10 @@ import org.xml.sax.Attributes;
 
 import FAtiMA.AgentModel;
 import FAtiMA.util.AgentLogger;
+import FAtiMA.util.Constants;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
+import FAtiMA.wellFormedNames.Symbol;
 import FAtiMA.wellFormedNames.Unifier;
 
 
@@ -89,27 +91,40 @@ public abstract class PropertyCondition extends Condition {
 		PropertyCondition cond = null;
 		Name name;
 		Name value;
-		if( attributes.getValue("name") != null ){ // if were reading a 'normal' property condition
+		Symbol ToM;
+		String aux;
+		if( attributes.getValue("name") != null ){ // if we're reading a 'normal' property condition
 			String op;
 			
 			name = Name.ParseName(attributes.getValue("name"));
 			op = attributes.getValue("operator");
 			value = Name.ParseName(attributes.getValue("value"));
-	
-			if (op == null || op.equals("="))
-				cond = new PropertyEqual(name, value);
-			else if (op.equals("!="))
-				cond = new PropertyNotEqual(name, value);
-			else if (op.equals("GreaterThan"))
-				cond = new PropertyGreater(name, value);
-			else if (op.equals("LesserThan"))
-				cond = new PropertyLesser(name, value);
-			else if (op.equals("GreaterEqual"))
-				cond = new PropertyGreaterEqual(name, value);
-			else if (op.equals("LesserEqual"))
-				cond = new PropertyLesserEqual(name,value);
+			
+			aux = attributes.getValue("ToM");
+			if(aux == null)
+			{
+				ToM = new Symbol(Constants.SELF);
+			}
 			else
-				cond = new PropertyEqual(name, value);
+			{
+				ToM = new Symbol(aux);
+			}
+			
+		
+			if (op == null || op.equals("="))
+				cond = new PropertyEqual(name, value,ToM);
+			else if (op.equals("!="))
+				cond = new PropertyNotEqual(name, value,ToM);
+			else if (op.equals("GreaterThan"))
+				cond = new PropertyGreater(name, value,ToM);
+			else if (op.equals("LesserThan"))
+				cond = new PropertyLesser(name, value,ToM);
+			else if (op.equals("GreaterEqual"))
+				cond = new PropertyGreaterEqual(name, value,ToM);
+			else if (op.equals("LesserEqual"))
+				cond = new PropertyLesserEqual(name,value,ToM);
+			else
+				cond = new PropertyEqual(name, value,ToM);
 		}
 		else{
 			
@@ -118,7 +133,7 @@ public abstract class PropertyCondition extends Condition {
 		return cond;
 	}
 	
-	public static PropertyCondition ParseProperty(String name, String op, String value){
+	/*public static PropertyCondition ParseProperty(String name, String op, String value){
 		PropertyCondition cond = null;
 		Name nameParsed;
 		Name valueParsed;
@@ -142,7 +157,7 @@ public abstract class PropertyCondition extends Condition {
 			cond = new PropertyEqual(nameParsed, valueParsed);
 
 		return cond;
-	}
+	}*/
 
 
 
@@ -153,8 +168,8 @@ public abstract class PropertyCondition extends Condition {
 	 * @param name - the property's name
 	 * @param value - the property's value
 	 */
-	public PropertyCondition(Name name, Name value) {
-		super(name);
+	public PropertyCondition(Name name, Name value,Symbol ToM) {
+		super(name,ToM);
 		_value = value;
 	}
 
@@ -203,6 +218,7 @@ public abstract class PropertyCondition extends Condition {
     {
     	this._name.ReplaceUnboundVariables(variableID);
     	this._value.ReplaceUnboundVariables(variableID);
+    	this._ToM.ReplaceUnboundVariables(variableID);
     }
     
     /**
@@ -233,6 +249,7 @@ public abstract class PropertyCondition extends Condition {
     {
     	this._name.MakeGround(bindings);
     	this._value.MakeGround(bindings);
+    	this._ToM.MakeGround(bindings);
     }
     
    
@@ -264,6 +281,7 @@ public abstract class PropertyCondition extends Condition {
     {
     	this._name.MakeGround(subst);
     	this._value.MakeGround(subst);
+    	this._ToM.MakeGround(subst);
     }
 
 	/**
@@ -272,7 +290,7 @@ public abstract class PropertyCondition extends Condition {
 	 * @return true if the condition is grounded, false otherwise
 	 */
 	public boolean isGrounded() {
-		return (_name.isGrounded() && _value.isGrounded());
+		return (_name.isGrounded() && _value.isGrounded() && _ToM.isGrounded());
 	}
 
 	/**
@@ -282,13 +300,24 @@ public abstract class PropertyCondition extends Condition {
 		AgentLogger.GetInstance().logAndPrint("    Property= " + _name + " value= " + _value);
 	}
 	
-	protected ArrayList<Substitution> GetBindings(AgentModel am, Name groundValue, Name value) {
+	protected ArrayList<Substitution> GetBindings(AgentModel am, Name groundValue, Name value, Symbol ToM) {
+		
 		Object val;
 		ArrayList<Substitution> bindings;
+		AgentModel perspective = am;
+		
+		if(ToM.isGrounded() && !ToM.toString().equals(Constants.SELF))
+		{
+			if(am.getToM().containsKey(ToM.toString()))
+			{
+				perspective = am.getToM().get(_ToM.toString());
+			}
+		}
+		
 		if (!groundValue.isGrounded())
 			return null;
 		if (!value.isGrounded()) {
-			val = groundValue.evaluate(am.getMemory());
+			val = groundValue.evaluate(perspective.getMemory());
 			if (val != null) {
 				bindings = new ArrayList<Substitution>();
 				if(Unifier.Unify(value, Name.ParseName((String) val), bindings))
@@ -313,6 +342,6 @@ public abstract class PropertyCondition extends Condition {
      * @return returns all set of Substitutions that make the condition valid.
      */
 	protected ArrayList<Substitution> GetValueBindings(AgentModel am) {
-		return GetBindings(am, _name, _value);
+		return GetBindings(am, _name, _value, _ToM);
 	}
 }

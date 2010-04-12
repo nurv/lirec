@@ -58,6 +58,7 @@ import org.xml.sax.Attributes;
 
 import FAtiMA.AgentModel;
 import FAtiMA.memory.semanticMemory.KnowledgeBase;
+import FAtiMA.util.Constants;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
 import FAtiMA.wellFormedNames.Symbol;
@@ -84,6 +85,7 @@ public class PredicateCondition extends Condition {
 	 */
     public static PredicateCondition ParsePredicate(Attributes attributes) {
 		String aux;
+		Symbol ToM;
 		Name name;
 		boolean positive = true;
 		aux = attributes.getValue("name");
@@ -93,7 +95,18 @@ public class PredicateCondition extends Condition {
 		}
 		name = Name.ParseName(aux);
 		
-		return new PredicateCondition(positive,name);
+		aux = attributes.getValue("ToM");
+		if(aux == null) 
+		{
+			ToM = new Symbol(Constants.SELF);
+		}
+		else
+		{
+			ToM = new Symbol(aux);
+		}
+		
+		
+		return new PredicateCondition(positive,name,ToM);
 	}
 			
 	protected boolean _positive;
@@ -108,8 +121,8 @@ public class PredicateCondition extends Condition {
 	 * @param positive - Indicates if the Predicate is positive or negative
 	 * @param name - the predicate's name
 	 */
-	public PredicateCondition(boolean positive, Name name) {
-		super(name);
+	public PredicateCondition(boolean positive, Name name, Symbol ToM) {
+		super(name,ToM);
 		_positive = positive;
 	}
 	
@@ -120,8 +133,18 @@ public class PredicateCondition extends Condition {
 	 */
 	public boolean CheckCondition(AgentModel am) {
 		boolean result;
+		AgentModel perspective = am;
 		if(!_name.isGrounded()) return false;
-		result = am.getMemory().getSemanticMemory().AskPredicate(_name); 
+		
+		if(_ToM.isGrounded() && !_ToM.toString().equals(Constants.SELF))
+		{
+			if(am.getToM().containsKey(_ToM.toString()))
+			{
+				perspective = am.getToM().get(_ToM.toString());
+			}
+		}
+		
+		result = perspective.getMemory().getSemanticMemory().AskPredicate(_name); 
 		return _positive == result;
 	}
 	
@@ -158,6 +181,7 @@ public class PredicateCondition extends Condition {
     public void ReplaceUnboundVariables(int variableID)
     {
     	this._name.ReplaceUnboundVariables(variableID);
+    	this._ToM.ReplaceUnboundVariables(variableID);
     }
 	
     /**
@@ -186,6 +210,7 @@ public class PredicateCondition extends Condition {
     public void MakeGround(ArrayList<Substitution> bindings)
     {
     	this._name.MakeGround(bindings);
+    	this._ToM.MakeGround(bindings);
     }
 	
     /**
@@ -214,6 +239,7 @@ public class PredicateCondition extends Condition {
     public void MakeGround(Substitution subst)
     {
     	this._name.MakeGround(subst);
+    	this._ToM.MakeGround(subst);
     }
 	
 	/**
@@ -222,7 +248,7 @@ public class PredicateCondition extends Condition {
 	 * @return true if the Predicate is grounded, false otherwise
 	 */
 	public boolean isGrounded() {
-		return _name.isGrounded();
+		return _name.isGrounded() && _ToM.isGrounded();
 	}
 	
 	/**
@@ -239,8 +265,8 @@ public class PredicateCondition extends Condition {
 	 * @return the converted String
 	 */
 	public String toString() {
-		if (_positive) return _name.toString();
-		else return "!" + _name;
+		if (_positive) return _ToM + ":" + _name;
+		else return   _ToM + ":!" + _name;
 	}
 	
 	/**
@@ -250,7 +276,7 @@ public class PredicateCondition extends Condition {
 	 */
 	public Object clone()
 	{
-	    return new PredicateCondition(this._positive,(Name) this._name.clone());
+	    return new PredicateCondition(this._positive,(Name) this._name.clone(), (Symbol) this._ToM.clone());
 	}
 	
 	/**
