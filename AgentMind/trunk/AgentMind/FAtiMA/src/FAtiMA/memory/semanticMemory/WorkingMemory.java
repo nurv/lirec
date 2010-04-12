@@ -141,7 +141,9 @@ public class WorkingMemory implements Serializable {
 
 	public ArrayList<KnowledgeSlot> GetNewFacts()
     {
-    	return this._newFacts;
+		ArrayList<KnowledgeSlot> aux = this._newFacts;
+		this._newFacts = new ArrayList<KnowledgeSlot>();
+    	return aux;
     }
 
 
@@ -158,7 +160,7 @@ public class WorkingMemory implements Serializable {
 	/**
 	 * Rearrange the working memory entries so that the most current accessed entry comes last
 	 */
-	public void RearrangeWorkingMemory(Name predicate)
+	public void RearrangeWorkingMemory(Name predicate, KnowledgeSlot newKs)
 	{
 		KnowledgeSlot ks;
 		ArrayList<KnowledgeSlot> tempFactList = new ArrayList<KnowledgeSlot>(_factList); 
@@ -170,9 +172,9 @@ public class WorkingMemory implements Serializable {
 				if(ks.getName().equals(predicate.toString()))
 				{
 					_factList.remove(ks);
-					_factList.add(ks);
-					if(!_changeList.contains(ks))
-						_changeList.add(ks);
+					_factList.add(newKs);
+					if(!_changeList.contains(newKs))
+						_changeList.add(newKs);
 					return;
 				}
 			}
@@ -287,7 +289,8 @@ public class WorkingMemory implements Serializable {
 			}
 			else
 			{
-				this.RearrangeWorkingMemory(property);
+				
+				this.RearrangeWorkingMemory(property,aux);
 			}
 			
 			if(_factList.size() > WorkingMemory.MAXENTRY)

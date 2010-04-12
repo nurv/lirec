@@ -79,7 +79,7 @@ public class SemanticMemory {
 			}
 			else
 			{
-				_stm.RearrangeWorkingMemory(property);
+				_stm.RearrangeWorkingMemory(property,prop);
 			}
 			return prop.getValue();
 		}
