@@ -43,7 +43,7 @@ public class SemanticMemory {
 			KnowledgeSlot ks = (KnowledgeSlot) _stm.Ask(predicate);
 	        if (ks != null && ks.getValue() != null && ks.getValue().toString().equals("True"))
 	        {
-	        	_stm.RearrangeWorkingMemory(predicate);
+	        	_stm.RearrangeWorkingMemory(predicate,ks.getValue());
 	            return true;
 	        }
 	        else
@@ -79,7 +79,7 @@ public class SemanticMemory {
 			}
 			else
 			{
-				_stm.RearrangeWorkingMemory(property,prop);
+				_stm.RearrangeWorkingMemory(property,prop.getValue());
 			}
 			return prop.getValue();
 		}
