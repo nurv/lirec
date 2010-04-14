@@ -46,6 +46,7 @@ import cmion.architecture.EventCmionReady;
 import cmion.architecture.IArchitecture;
 import cmion.level2.CompetencyExecution;
 import cmion.level2.CompetencyLibrary;
+import cmion.level2.migration.MigrationUtils;
 import cmion.level3.CompetencyManager;
 import cmion.storage.BlackBoard;
 import cmion.storage.WorldModel;
@@ -127,6 +128,9 @@ public class Architecture extends Element implements IArchitecture {
 		for (Element element : Simulation.instance.getElements())
 			if (element instanceof CmionComponent)
 				((CmionComponent)element).registerHandlers();
+		
+		// registering all migration related handlers for all migrating components
+		MigrationUtils.registerAllComponents(Simulation.instance);
 		
 		System.out.println("CMION initialised");
 	}
@@ -308,8 +312,14 @@ public class Architecture extends Element implements IArchitecture {
 	{
 		try
 		{
+			Architecture architecture;
+			
 			// initialisation
-			Architecture architecture = new Architecture("ArchitectureConfiguration.xml");
+			if(args.length > 0){
+				architecture = new Architecture(args[0]);
+			} else {
+				architecture = new Architecture("ArchitectureConfiguration.xml");
+			}
 
 			// run
 			architecture.runSimulation();	
@@ -328,5 +338,10 @@ public class Architecture extends Element implements IArchitecture {
 	
 	@Override
 	public void onDestroy() {}
+	
+	@Override
+	public Object getSystemContext() {
+		return null;
+	}	
 
 }

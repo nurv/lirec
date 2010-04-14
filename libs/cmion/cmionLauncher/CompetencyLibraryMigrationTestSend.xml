@@ -1,0 +1,17 @@
+<?xml version="1.0" ?>
+<!DOCTYPE CompetencyLibrary SYSTEM "CompetencyLibrary.dtd">
+
+<CompetencyLibrary>
+
+<!-- Competency library for the test scenario. Following all competencies
+have to be listed. You need to specify 
+a) the class name, 
+b) optional parameters that should be passed to the competency during 
+construction (assumed parameter type is String, parameters are seperated by comma).
+-->
+
+<Competency ClassName="cmion.level2.competencies.Migration" 
+			ConstructorParameters="MigrationConfigSend.xml" />
+
+			
+</CompetencyLibrary>
