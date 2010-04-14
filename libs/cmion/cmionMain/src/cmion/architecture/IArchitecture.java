@@ -54,4 +54,7 @@ public interface IArchitecture {
 	/** in this method the architecture must return a reference to the competency library component */			
 	public CompetencyLibrary getCompetencyLibrary();
 	
+	/** in this method the architecture must return a reference to an object with system specific information or resources.
+	 * when there is system specific information or resources it returns null. */
+	public Object getSystemContext();
 }
