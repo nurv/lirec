@@ -34,12 +34,18 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.Text;
+
 import cmion.architecture.IArchitecture;
+import cmion.level2.migration.Migrating;
 import cmion.level3.AgentMindConnector;
 import cmion.level3.MindAction;
 
 
-public class FAtiMAConnector extends AgentMindConnector {
+public class FAtiMAConnector extends AgentMindConnector implements Migrating {
 
 	/** the thread that runs the agent mind */
 	private FAtiMAListenerThread mindThread;
@@ -51,16 +57,44 @@ public class FAtiMAConnector extends AgentMindConnector {
 	/** keeps track of whether the connected mind is currently active or not*/
 	private boolean sleeping;
 	
-	/** create a new FAtiMA connector */
+	/** is the connected FAtiMA capable of migrating, i.e. can it send and receive
+	 *  its agent state through the socket connection with this connector 
+	 *  (this feature was added to FAtiMA on 15/04/10)*/
+	private boolean canMigrate;
+	
+	/** the current state that was received from fatima */
+	private String currentFatimaState;
+	
+	/** remembers whether we have received a state from fatima or not*/
+	private boolean hasCurrentFatimaState;
+	
+	/** create a new FAtiMA connector that connects to an old version of 
+	 *  FAtiMA that cannot migrate (kept for backwards compatibility) */
 	public FAtiMAConnector(IArchitecture architecture) 
 	{
 		super(architecture);
 		fatimaConnected = false;
 		sleeping = false;
 		mindThread = null;
+		canMigrate = false;
 		new ListenForConnectionThread().start();
 	}
 
+	/** create a new FAtiMA connector */
+	public FAtiMAConnector(IArchitecture architecture, String migrating) 
+	{
+		super(architecture);
+		fatimaConnected = false;
+		sleeping = false;
+		mindThread = null;
+		if (migrating.toLowerCase().trim().equals("true"))
+			canMigrate = true;
+		else
+			canMigrate = false;
+		new ListenForConnectionThread().start();
+	}
+
+	
 	/** send a message to FAtiMA telling the mind to resume from a paused state */	
 	@Override
 	public void awakeMind() {
@@ -176,6 +210,87 @@ public class FAtiMAConnector extends AgentMindConnector {
 	protected void architectureReady() {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public String getMessageTag() 
+	{
+		return "fatimaconnector";
+	}
+
+	@Override
+	public void onMigrationFailure() {
+		System.out.println("MIND-Migration Failed.");	
+	}
+
+	@Override
+	public void onMigrationIn() {
+		System.out.println("MIND-Receiving a migration.");	
+	}
+
+	@Override
+	public void onMigrationOut() {
+		System.out.println("MIND-Going to migrate.");
+	}
+
+	@Override
+	public void onMigrationSuccess() {
+		System.out.println("MIND-Migration Success.");
+	}
+
+	@Override
+	public void restoreState(Element message) 
+	{
+		if (canMigrate)
+		{
+			if (message.hasChildNodes())
+			{
+				String state = message.getChildNodes().item(0).getNodeValue();
+				System.out.println("fatima state: " + state);
+			}
+			
+		} 
+		else	
+			System.out.println("this version of fatima cannot load the incoming state");
+	}
+
+	@Override
+	public Element saveState(Document doc) 
+	{
+		Element parent = doc.createElement(getMessageTag());
+		if (canMigrate)
+		{			
+			currentFatimaState = null;
+			hasCurrentFatimaState = false;
+			
+			// obtain state from fatima
+			mindThread.send("CMD GET-STATE");
+			
+			// now wait until the mind thread has received the state
+			while (!this.hasCurrentFatimaState)
+			{
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {}
+			}
+
+			System.out.println("fatima state: " + currentFatimaState);
+			Node state = doc.createTextNode(currentFatimaState);
+			parent.appendChild(state);
+		} 
+		else
+		{
+			System.out.println("this version of fatima cannot save its state");
+		}
+		return parent;
+	}
+
+	/** this message is called by the connected fatima listener, when it receives 
+	 *  a state from fatima */
+	public void notifyState(String state) 
+	{
+		currentFatimaState = state;
+		hasCurrentFatimaState = true;
 	}
 
 
