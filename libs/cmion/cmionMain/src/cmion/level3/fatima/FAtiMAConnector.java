@@ -41,11 +41,12 @@ import org.w3c.dom.Text;
 
 import cmion.architecture.IArchitecture;
 import cmion.level2.migration.Migrating;
+import cmion.level2.migration.MigrationAware;
 import cmion.level3.AgentMindConnector;
 import cmion.level3.MindAction;
 
 
-public class FAtiMAConnector extends AgentMindConnector implements Migrating {
+public class FAtiMAConnector extends AgentMindConnector implements Migrating, MigrationAware {
 
 	/** the thread that runs the agent mind */
 	private FAtiMAListenerThread mindThread;
