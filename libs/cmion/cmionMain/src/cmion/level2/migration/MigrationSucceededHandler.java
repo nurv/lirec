@@ -7,9 +7,9 @@ import ion.Meta.IEvent;
 public class MigrationSucceededHandler extends EventHandler {
 
 	private Migration competency;
-	private Migrating component;
+	private MigrationAware component;
 	
-	public MigrationSucceededHandler(Migration competency, Migrating component){
+	public MigrationSucceededHandler(Migration competency, MigrationAware component){
 		super(MigrationComplete.class);
 		this.competency = competency;
 		this.component = component;
@@ -24,7 +24,7 @@ public class MigrationSucceededHandler extends EventHandler {
 		return this.competency;
 	}
 	
-	public Migrating getComponent(){
+	public MigrationAware getComponent(){
 		return this.component;
 	}
 

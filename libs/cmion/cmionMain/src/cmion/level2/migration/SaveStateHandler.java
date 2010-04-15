@@ -19,11 +19,12 @@ public class SaveStateHandler extends EventHandler {
 	
 	@Override
 	public void invoke(IEvent evt) {
-		component.onMigrationOut();
-		
 		MigrationStart migrationStart = (MigrationStart) evt;
 		Element state = component.saveState(migrationStart.document);
-		competency.addMigrationData(state);
+		
+		if(state != null){
+			competency.addMigrationData(state);
+		}
 	}
 
 	public Migration getCompetency(){

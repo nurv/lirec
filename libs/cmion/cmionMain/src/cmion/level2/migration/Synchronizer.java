@@ -254,7 +254,6 @@ public class Synchronizer extends Element {
 		public void invoke(IReadOnlyQueueSet<Request> requests) {
 			
 			for (Synchronize request : requests.get(Synchronize.class)) {
-				System.out.println("Synchronization Manager");
 				fullMessage = docBuilder.newDocument();
 				org.w3c.dom.Element root = fullMessage.createElement(SYNC_TAG);
 				fullMessage.appendChild(root);
@@ -322,8 +321,6 @@ public class Synchronizer extends Element {
 				
 				Node messageNode = doc.adoptNode(request.message.getDocumentElement());
 				root.appendChild(messageNode);
-				
-				writeXML(doc, System.out);
 				
 				try {
 					sendXMLMessage(doc, receivedConnection);

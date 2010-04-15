@@ -34,11 +34,13 @@ import org.w3c.dom.Element;
 
 import cmion.architecture.IArchitecture;
 import cmion.level2.migration.Migrating;
+import cmion.level2.migration.MigrationAware;
+import cmion.level2.migration.MigrationUtils;
 import cmion.level3.AgentMindConnector;
 import cmion.level3.MindAction;
 
 /** The connector to a SuperSimpleMind (example implementation of a simple mind interface) */
-public class SuperSimpleMigratingMindConnector extends AgentMindConnector implements Migrating {
+public class SuperSimpleMigratingMindConnector extends AgentMindConnector implements Migrating, MigrationAware {
 
 	
 	/** the mind itself */
@@ -137,6 +139,9 @@ public class SuperSimpleMigratingMindConnector extends AgentMindConnector implem
 
 	@Override
 	public Element saveState(Document doc) {
+		
+		//This is the regular case of  migration, where the component can
+		//save it's state immediately.
 		Element state = doc.createElement(getMessageTag());
 		
 		Element goal = doc.createElement("goal");
@@ -144,6 +149,15 @@ public class SuperSimpleMigratingMindConnector extends AgentMindConnector implem
 		state.appendChild(goal);
 		
 		return state;
+		
+		//This simulates a case where you need for information before migrating
+		/*
+		System.out.println("MIND-Halting migration.");
+		MigrationUtils.haltMigration(this);
+		DelayedMigration delayedMigration = new DelayedMigration(doc);
+		new Thread(delayedMigration).start();
+		return null;
+		*/
 	}
 
 
@@ -170,4 +184,34 @@ public class SuperSimpleMigratingMindConnector extends AgentMindConnector implem
 		System.out.println("MIND-Migration Success.");
 	}
 
+	private class DelayedMigration implements Runnable{
+		
+		private Document doc;
+		
+		public DelayedMigration(Document doc){
+			this.doc = doc;
+		}
+		
+		@Override
+		public void run() {
+			
+			try {
+				Thread.sleep(5000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			Element state = doc.createElement(getMessageTag());
+			
+			Element goal = doc.createElement("goal");
+			goal.setAttribute("value", "Migrate Mind with delay");
+			state.appendChild(goal);
+			
+			MigrationUtils.addMigrationData(state);
+			MigrationUtils.resumeMigration(SuperSimpleMigratingMindConnector.this);
+			
+			System.out.println("MIND-Migration resumed.");
+		}
+	}
 }

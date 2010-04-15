@@ -32,6 +32,7 @@ import org.xml.sax.SAXException;
 
 import cmion.architecture.IArchitecture;
 import cmion.level2.Competency;
+import cmion.level2.migration.HaltMigration;
 import cmion.level2.migration.IncomingMigration;
 import cmion.level2.migration.MessageDelivered;
 import cmion.level2.migration.MessageReceived;
@@ -39,6 +40,7 @@ import cmion.level2.migration.MigrationComplete;
 import cmion.level2.migration.MigrationFailed;
 import cmion.level2.migration.MigrationStart;
 import cmion.level2.migration.Reply;
+import cmion.level2.migration.ResumeMigration;
 import cmion.level2.migration.SynchronizationFailed;
 import cmion.level2.migration.SynchronizationStart;
 import cmion.level2.migration.Synchronize;
@@ -58,6 +60,8 @@ public class Migration extends Competency {
 	private boolean migrationSucceeded;
 	private String configFile;
 	private DocumentBuilder docBuilder; 
+	private Set<Object> lockingObjects;
+	private boolean migrationOnHalt;
 	
 	/* This class represents a Device to which the agent is able
 	 * to migrate to.
@@ -96,9 +100,12 @@ public class Migration extends Competency {
 	public Migration(IArchitecture architecture, String configFile) {
 
 		super(architecture);
-		competencyName = "MigrationCompetency";
-		competencyType = "Migration";
+		this.competencyName = "MigrationCompetency";
+		this.competencyType = "Migration";
+		
 		this.configFile = configFile;
+		this.lockingObjects = new HashSet<Object>();
+		this.migrationOnHalt = false;
 		
 		try {
 			this.docBuilder = createDocumentBuilder();
@@ -140,6 +147,7 @@ public class Migration extends Competency {
 		this.getEventHandlers().add(new SimulationRemovedHandler());
 		
 		this.getRequestHandlers().add(new MigrationExecuter());
+		this.getEventHandlers().add(new MigrationStartHandler());
 		
 		//Get and parse the initialization file
 		
@@ -195,7 +203,6 @@ public class Migration extends Competency {
 		destination = deviceList.get(parameters.get("DeviceName"));
 		migrationDocument = docBuilder.newDocument();
 		raise(new MigrationStart(destination, migrationDocument));
-		schedule(new ExecuteMigration());
 		
 		while(!finishedMigration){
 			try {
@@ -226,7 +233,6 @@ public class Migration extends Competency {
 	}
 	
 	public void addMigrationData(Element xmlElement){
-		System.out.println("Adding Migration Data");
 		migrationElements.add(xmlElement);
 	}
 	
@@ -391,7 +397,6 @@ public class Migration extends Competency {
 		
 		@Override
 		public void invoke(IEvent evt) {
-			System.out.println("Synchronization Start");
 			SynchronizationStart synchStart = (SynchronizationStart) evt;
 			
 			Element migration = migrationDocument.createElement("migration");
@@ -407,12 +412,41 @@ public class Migration extends Competency {
 	private class MigrationExecuter extends RequestHandler{
 		
 		public MigrationExecuter() {
-			super(new TypeSet(ExecuteMigration.class));
+			super(new TypeSet(ExecuteMigration.class, HaltMigration.class, ResumeMigration.class));
 		}
 		
 		@Override
 		public void invoke(IReadOnlyQueueSet<Request> requests) {
-			sync.schedule(new Synchronize(destination.getHost(), destination.getPort()));
+			
+			for(HaltMigration request : requests.get(HaltMigration.class)){
+				lockingObjects.add(request.lockingObject);
+			}
+			
+			for(ResumeMigration request : requests.get(ResumeMigration.class)){
+				lockingObjects.remove(request.lockingObject);
+			}
+			
+			if(!requests.get(ExecuteMigration.class).isEmpty() || migrationOnHalt){
+				
+				if(lockingObjects.isEmpty()){
+					migrationOnHalt = false;
+					sync.schedule(new Synchronize(destination.getHost(), destination.getPort()));
+				} else {
+					migrationOnHalt = true;
+				}
+			}
+		}
+	}
+	
+	private class MigrationStartHandler extends EventHandler{
+		
+		public MigrationStartHandler(){
+			super(MigrationStart.class);
+		}
+		
+		@Override
+		public void invoke(IEvent evt) {
+			schedule(new ExecuteMigration());
 		}
 	}
 	

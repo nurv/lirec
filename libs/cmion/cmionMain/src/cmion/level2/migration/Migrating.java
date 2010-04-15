@@ -30,12 +30,4 @@ public interface Migrating {
 	 */
 	public Element saveState(Document document);
 	
-	public void onMigrationIn();
-	
-	public void onMigrationOut();
-	
-	public void onMigrationSuccess();
-	
-	public void onMigrationFailure();
-	
 }

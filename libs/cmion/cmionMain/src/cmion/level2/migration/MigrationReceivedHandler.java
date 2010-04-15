@@ -7,9 +7,9 @@ import cmion.level2.competencies.Migration;
 public class MigrationReceivedHandler extends EventHandler {
 
 	private Migration competency;
-	private Migrating component;
+	private MigrationAware component;
 	
-	public MigrationReceivedHandler(Migration competency, Migrating component){
+	public MigrationReceivedHandler(Migration competency, MigrationAware component){
 		super(IncomingMigration.class);
 		this.competency = competency;
 		this.component = component;
@@ -24,7 +24,7 @@ public class MigrationReceivedHandler extends EventHandler {
 		return this.competency;
 	}
 	
-	public Migrating getComponent(){
+	public MigrationAware getComponent(){
 		return this.component;
 	}
 
