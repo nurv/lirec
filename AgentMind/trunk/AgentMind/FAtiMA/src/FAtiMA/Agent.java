@@ -2,6 +2,8 @@ package FAtiMA;
 
 import java.io.File;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -14,6 +16,7 @@ import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.StringTokenizer;
 import java.util.logging.Logger;
+
 
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -59,6 +62,7 @@ import FAtiMA.util.enumerables.AgentPlatform;
 import FAtiMA.util.enumerables.EmotionType;
 import FAtiMA.util.enumerables.EventType;
 import FAtiMA.util.parsers.AgentLoaderHandler;
+import FAtiMA.util.parsers.BinaryStringConverter;
 import FAtiMA.util.parsers.CultureLoaderHandler;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Symbol;
@@ -1046,6 +1050,80 @@ public class Agent implements AgentModel {
 		_reactiveLayer.ShutDown();
 		_remoteAgent.ShutDown();
 		if(_showStateWindow && _agentDisplay != null) _agentDisplay.dispose();
+	}
+
+	/** returns a String that contains the serialized internal state of the agent
+	 *  in a String format*/
+	public String getSerializedState() 
+	{
+		try
+		{
+		
+			ByteArrayOutputStream b = new ByteArrayOutputStream();		
+			ObjectOutputStream s = new ObjectOutputStream(b);
+
+			s.writeObject(_ToM);
+			//s.writeObject(_nearbyAgents);
+			s.writeObject(_deliberativeLayer);
+			s.writeObject(_reactiveLayer);
+			s.writeObject(_emotionalState);
+			s.writeObject(_memory);
+			s.writeObject(_motivationalState);
+			s.writeObject(_dialogManager);
+			//s.writeObject(_role);
+			//s.writeObject(_name);
+			//s.writeObject(_sex);
+			s.writeObject(_speechAct);
+			s.writeObject(new Short(_currentEmotion));
+			s.writeObject(_displayName);
+			//s.writeObject(new Boolean(_showStateWindow));
+			s.writeObject(_actionsForExecution);
+			s.writeObject(_perceivedEvents);
+			//s.writeObject(_saveDirectory);
+			s.flush();
+			s.close();
+			return BinaryStringConverter.encodeBinaryToString(b.toByteArray());
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	/** sets the internal state of the agent to the state which is contained
+	 *  in the passed string */
+	public void setSerializedState(String state) 
+	{
+		try
+		{
+			ByteArrayInputStream in = new ByteArrayInputStream(
+				BinaryStringConverter.decodeStringToBinary(state));
+		
+			ObjectInputStream s = new ObjectInputStream(in);
+			this._ToM = (HashMap<String, ModelOfOther>) s.readObject();
+			//this._nearbyAgents = (ArrayList<String>) s.readObject();
+			this._deliberativeLayer = (DeliberativeProcess) s.readObject();
+			this._reactiveLayer = (ReactiveProcess) s.readObject();
+			this._emotionalState = (EmotionalState) s.readObject();
+			this._memory = (Memory) s.readObject();
+			this._motivationalState = (MotivationalState) s.readObject();
+			this._dialogManager = (DialogManager) s.readObject();
+			//this._role = (String) s.readObject();
+			//this._name = (String) s.readObject();
+			//this._sex = (String) s.readObject();
+			this._speechAct = (SpeechAct) s.readObject();
+			this._currentEmotion = ((Short) s.readObject()).shortValue();
+			this._displayName = (String) s.readObject();
+			//this._showStateWindow = ((Boolean) s.readObject()).booleanValue();
+			this._actionsForExecution = (ArrayList<ValuedAction>) s.readObject();
+			this._perceivedEvents = (ArrayList<Event>) s.readObject();
+			//this._saveDirectory = (String) s.readObject();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 

@@ -133,6 +133,8 @@ public abstract class RemoteAgent extends SocketListener {
 	protected static final String RESUME_TIME = "RESUME-TIME";
 	protected static final String SA_MEMORY = "SA-MEMORY";
 	protected static final String CC_MEMORY = "CC-MEMORY";
+	protected static final String GET_STATE = "GET-STATE";
+	protected static final String SET_STATE = "SET-STATE";
 	
 	protected ArrayList<ValuedAction> _actions;
 	
@@ -780,7 +782,22 @@ public abstract class RemoteAgent extends SocketListener {
 			String output = "DAQueryResponse|" + actionRepresentation + ":" + triggerID + ":" + intensity;
 			this.Send(output);
 		}
-	}
+		else if(action.startsWith(GET_STATE))
+		{
+			// the connected world simulation has requested for the agent to serialize its current
+			// state and send it over
+			String output = "STATE " +_agent.getSerializedState();
+			this.Send(output);
+		}
+		else if(action.startsWith(SET_STATE))
+		{
+			// parse state from message
+			StringTokenizer st = new StringTokenizer(perc, " ");
+			st.nextToken();
+			String state = st.nextToken();			
+			_agent.setSerializedState(state);			
+		}
+}
 	
 	protected void AddGoalsPerception(String perc)
 	{
