@@ -261,12 +261,128 @@ public class WorldSimulatorRemoteAgent extends RemoteAgent {
 	}
 
 	protected void ActionFailedPerception(String perc) {
+		String subject;
+		String symbol;
+		String action;
+		String target=null;
+		SpeechAct speechAct;
+		Event event;
 		StringTokenizer st = new StringTokenizer(perc," ");
-		String subject = st.nextToken();
-		//TODO o agente tb tem de perceber quando a acção falhou..
-		//the agent last action failed
+
+/*
+		subject = st.nextToken();
+		symbol = new String(st.nextToken());
+		if(st.hasMoreTokens()) {
+			target = st.nextToken();
+		}
+		if(st.hasMoreTokens()){
+			symbol += "(";
+			while(st.hasMoreTokens()){
+				symbol += st.nextToken();
+				if(st.hasMoreTokens()){
+					symbol += ",";
+				}
+			}
+			
+			symbol += ")";
+		}*/
+
+		
+		subject = st.nextToken();
+		symbol = st.nextToken();
+
+		action = SymbolTranslator.GetInstance().translateSymbolToAction(symbol);
+
+		if(st.hasMoreTokens()) {
+			target = st.nextToken();
+		}
+		if(action.equals("UserSpeech")) {
+			try {
+				String aux="";
+				_userName = subject;
+				while(st.hasMoreTokens()) {
+					aux = aux + " " + st.nextToken();
+				}
+
+				speechAct = (SpeechAct) SpeechAct.ParseFromXml(aux);
+				speechAct.setSender("User");
+				speechAct.setActionType(SpeechAct.UserSpeech);
+				if(speechAct.getMeaning().equals("suggestcopingstrategy") || 
+						speechAct.getMeaning().equals("yes"))
+				{
+					ArrayList<Parameter> context = speechAct.getContextVariables();
+					Parameter p;
+					for(ListIterator<Parameter> li = context.listIterator();li.hasNext();)
+					{
+						p = li.next();
+						if(p.GetName().equals("copingstrategy"))
+						{
+							speechAct.AddParameter(p.GetValue().toString());
+						}
+					}
+
+
+				}
+				event = speechAct.toEvent(ActionEvent.FAILURE);
+			}
+			catch (Exception e) {
+				AgentLogger.GetInstance().log("Error converting a speechAct");
+				e.printStackTrace();
+				return;
+			}
+		}
+		else if(action.equals("say")) {
+			while(st.hasMoreTokens()) {
+				target = target + " " + st.nextToken();
+			}
+			speechAct = (SpeechAct) SpeechAct.ParseFromXml(target);
+			//_agent.UpdateDialogState(speechAct);
+
+			event = speechAct.toEvent(ActionEvent.FAILURE);
+
+			//TODO change this test
+			if(speechAct.getSender().equals(_agent.getName()) &&
+					speechAct.getMeaning().equals("acceptreason"))
+			{
+				//the agent accepts the coping strategy
+				Object coping = _agent.getMemory().getSemanticMemory().AskProperty(
+						Name.ParseName(_agent.getName()+"(copingStrategy)"));
+				if(coping != null)
+				{
+					_agent.EnforceCopingStrategy(coping.toString());
+				}
+			}
+
+		}
+		else {
+			/*event = new Event(subject,actionName,target);
+			Iterator it = action.GetLiteralList().iterator();
+			it.next();
+			while(it.hasNext()) {
+				Name param = (Name) it.next();
+				event.AddParameter(new Parameter("param",param.toString()));
+			}*/
+			event = new Event(subject,action,target,EventType.ACTION,ActionEvent.FAILURE);
+			String aux;
+			while(st.hasMoreTokens()) {
+				aux = st.nextToken();
+				event.AddParameter(new Parameter("param",aux));
+			}
+		}
+
+		/*try {
+	    _fileWriter.write(event.toString() + "\n");
+	    _fileWriter.flush();
+		}
+		catch(Exception e) {
+	    	e.printStackTrace();
+		}*/
+		
 		if(subject.equals(_agent.getName()))
 		{
+			// we need to change the event subject to SELF, before we can appraise it
+			event.SetSubject(Constants.SELF);
+			_agent.AppraiseSelfActionFailed(event);
 			_canAct = true;
 		}	
 	}
