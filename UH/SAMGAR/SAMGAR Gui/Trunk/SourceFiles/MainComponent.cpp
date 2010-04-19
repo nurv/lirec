@@ -500,10 +500,13 @@ void MainComponent::ConnectionAutoUpdate(void)
 					if(true1==true && true2==true){mytempconnect.IsConnected=true; }
 					else						  {mytempconnect.IsConnected=false; }
 				}
+				else
+				{
+				mytempconnect.IsConnected=true;
+				}
 			}
 			else
 			{
-			//	AddToLog("skipping connections \n",2);
 				mytempconnect.IsConnected=false;
 			}
 			
@@ -1572,6 +1575,8 @@ if (buttonThatWasClicked == LoadCon)
 	//chooser6.~FileChooser();
 	RefreashConnections();
 	RefreashConnections();
+	repaint();
+	
 	}
 
 if (buttonThatWasClicked == SaveCon)
@@ -1757,6 +1762,7 @@ temp.Daddysecoundport=parent2;
 temp.secoundport=child2;
 temp.Lossy=Lossyornot;
 temp.Network=Network;
+temp.IsConnected=true;
 AllConnections.push_front(temp);
 
 
@@ -1773,8 +1779,8 @@ else				   {conntype="tcp";}
 Network::connect(Port1,Port2,conntype,true);
 Network::connect(Port2,Port1,conntype,true);
 
-AddToLog(Port1, 1);AddToLog(" \n", 1);
-AddToLog(Port2, 1);AddToLog(" \n", 1);
+//AddToLog(Port1, 1);AddToLog(" \n", 1);
+//AddToLog(Port2, 1);AddToLog(" \n", 1);
 
 }
 
