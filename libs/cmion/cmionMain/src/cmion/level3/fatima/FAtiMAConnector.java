@@ -73,6 +73,10 @@ public class FAtiMAConnector extends AgentMindConnector implements Migrating, Mi
 	 * (because of incoming migration) */
 	private boolean fatimaStateSet;
 	
+	/** remembers the last action that was sent for execution */
+	private MindAction lastAction;
+	
+	
 	/** create a new FAtiMA connector that connects to an old version of 
 	 *  FAtiMA that cannot migrate (kept for backwards compatibility) */
 	public FAtiMAConnector(IArchitecture architecture) 
@@ -148,7 +152,8 @@ public class FAtiMAConnector extends AgentMindConnector implements Migrating, Mi
         +  FAtiMAutils.mindActiontoFatimaMessage(a);	
 		if (mindThread!=null) mindThread.send(msg);	
 	}
-
+	
+	
 	@Override
 	protected void processRemoteAction(MindAction remoteAction) {
 		String msg = "ACTION-FINISHED " + remoteAction.getSubject() + " "
@@ -266,7 +271,13 @@ public class FAtiMAConnector extends AgentMindConnector implements Migrating, Mi
 			{
 				fatimaStateSet = false;
 				
-				String state = message.getChildNodes().item(0).getNodeValue();
+				// read state
+				String state = message.getElementsByTagName("state").item(0).getChildNodes().item(0).getNodeValue();
+				
+				// read success msg
+				String successMsg = null;
+				if (message.getElementsByTagName("successMsg").getLength()==1) 
+					successMsg = message.getElementsByTagName("successMsg").item(0).getChildNodes().item(0).getNodeValue();
 				
 				// send state to the mind
 				mindThread.send("CMD SET-STATE "+state);
@@ -281,6 +292,9 @@ public class FAtiMAConnector extends AgentMindConnector implements Migrating, Mi
 				
 				// now that the state is set awake the mind
 				awakeMind();
+				
+				// finally, send the received success message to the mind
+				mindThread.send(successMsg);
 			}
 			
 		} 
@@ -292,6 +306,7 @@ public class FAtiMAConnector extends AgentMindConnector implements Migrating, Mi
 	public Element saveState(Document doc) 
 	{
 		Element parent = doc.createElement(getMessageTag());
+		
 		if (canMigrate &&  (mindThread!=null))
 		{			
 			currentFatimaState = null;
@@ -319,8 +334,22 @@ public class FAtiMAConnector extends AgentMindConnector implements Migrating, Mi
 				} catch (InterruptedException e) {}
 			}
 
+			Element stateElement = doc.createElement("state");
 			Node state = doc.createTextNode(currentFatimaState);
-			parent.appendChild(state);
+			stateElement.appendChild(state);
+			parent.appendChild(stateElement);
+			
+			// also add information about the current fatima mind action (which initiated
+			// this migration, so that a success message can be sent on the receiving end)
+			if (lastAction!=null)
+			{
+				Element successMsgElement = doc.createElement("successMsg");
+				String msg = "ACTION-FINISHED " + lastAction.getSubject() + " "
+				+  FAtiMAutils.mindActiontoFatimaMessage(lastAction);	
+				Node msgNode = doc.createTextNode(msg);
+				successMsgElement.appendChild(msgNode);
+				parent.appendChild(successMsgElement);
+			}
 		} 
 		else
 		{
@@ -342,6 +371,15 @@ public class FAtiMAConnector extends AgentMindConnector implements Migrating, Mi
 	public void notifySetState() 
 	{
 		fatimaStateSet = true;
+	}
+
+	/** executes a new action sent by the mind */
+	public void execute(MindAction mindAction) 
+	{
+		// remember this action
+		this.lastAction=mindAction;
+		// and send it for execution
+		this.newAction(mindAction);
 	}
 
 
