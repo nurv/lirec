@@ -69,6 +69,10 @@ public class FAtiMAConnector extends AgentMindConnector implements Migrating, Mi
 	/** remembers whether we have received a state from fatima or not*/
 	private boolean hasCurrentFatimaState;
 	
+	/** indicates whether fatima has finished setting/loading a state that we sent to it 
+	 * (because of incoming migration) */
+	private boolean fatimaStateSet;
+	
 	/** create a new FAtiMA connector that connects to an old version of 
 	 *  FAtiMA that cannot migrate (kept for backwards compatibility) */
 	public FAtiMAConnector(IArchitecture architecture) 
@@ -81,17 +85,31 @@ public class FAtiMAConnector extends AgentMindConnector implements Migrating, Mi
 		new ListenForConnectionThread().start();
 	}
 
-	/** create a new FAtiMA connector */
-	public FAtiMAConnector(IArchitecture architecture, String migrating) 
+	/** create a new FAtiMA connector, with an additional options parameter
+	 *  this can at the moment contain any of the following substrings in any order
+	 *   - "migrating" : indicates that the fatima connecting here supports migration
+	 *    				 (see boolean canMigrate) 
+	 *   - "sleeping"  : immediately send this mind to sleep once it is connected, this
+	 *   				 is useful, if this platform is awaiting incoming migration and 
+	 *   				 currently inactive
+	 *    */
+	public FAtiMAConnector(IArchitecture architecture, String options) 
 	{
 		super(architecture);
 		fatimaConnected = false;
-		sleeping = false;
 		mindThread = null;
-		if (migrating.toLowerCase().trim().equals("true"))
+		String optionsStr = options.toLowerCase().trim();
+		
+		if (optionsStr.contains("migrating"))
 			canMigrate = true;
 		else
 			canMigrate = false;
+		
+		if (optionsStr.contains("sleeping"))
+			sleeping = true;
+		else
+			sleeping = false;
+	
 		new ListenForConnectionThread().start();
 	}
 
@@ -242,12 +260,27 @@ public class FAtiMAConnector extends AgentMindConnector implements Migrating, Mi
 	@Override
 	public void restoreState(Element message) 
 	{
-		if (canMigrate)
+		if (canMigrate  &&  (mindThread!=null))
 		{
 			if (message.hasChildNodes())
 			{
+				fatimaStateSet = false;
+				
 				String state = message.getChildNodes().item(0).getNodeValue();
-				System.out.println("fatima state: " + state);
+				
+				// send state to the mind
+				mindThread.send("CMD SET-STATE "+state);
+			
+				// wait until the mind has finished processing this state
+				while (!fatimaStateSet)
+				{
+					try {
+						Thread.sleep(100);
+					} catch (InterruptedException e) {}
+				}
+				
+				// now that the state is set awake the mind
+				awakeMind();
 			}
 			
 		} 
@@ -259,10 +292,21 @@ public class FAtiMAConnector extends AgentMindConnector implements Migrating, Mi
 	public Element saveState(Document doc) 
 	{
 		Element parent = doc.createElement(getMessageTag());
-		if (canMigrate)
+		if (canMigrate &&  (mindThread!=null))
 		{			
 			currentFatimaState = null;
 			hasCurrentFatimaState = false;
+			
+			// in order for the mind to serialize the state, it needs to be paused besides 
+			// now that we are migrating away from here, the mind should be paused anyway
+			
+			// send the pause command
+			this.sendMindToSleep();
+			
+			// wait a while to make sure current fatima cycle is complete
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e1) {}
 			
 			// obtain state from fatima
 			mindThread.send("CMD GET-STATE");
@@ -275,7 +319,6 @@ public class FAtiMAConnector extends AgentMindConnector implements Migrating, Mi
 				} catch (InterruptedException e) {}
 			}
 
-			System.out.println("fatima state: " + currentFatimaState);
 			Node state = doc.createTextNode(currentFatimaState);
 			parent.appendChild(state);
 		} 
@@ -288,12 +331,18 @@ public class FAtiMAConnector extends AgentMindConnector implements Migrating, Mi
 
 	/** this message is called by the connected fatima listener, when it receives 
 	 *  a state from fatima */
-	public void notifyState(String state) 
+	public void notifyGetState(String state) 
 	{
 		currentFatimaState = state;
 		hasCurrentFatimaState = true;
 	}
 
+	/** this message is called by the connected fatima listener, when it receives 
+	 *  a state from fatima */
+	public void notifySetState() 
+	{
+		fatimaStateSet = true;
+	}
 
 
 

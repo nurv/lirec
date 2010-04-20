@@ -99,6 +99,11 @@ public class FAtiMAListenerThread extends SocketListener {
 			
 			this.send("OK");
 			
+			// if agent should be sleeping, tell it to pause
+			if (connector.isMindSleeping())
+				this.send("CMD Stop");
+			
+			
 		}
 		else if(type.startsWith("<EmotionalState")) 
 		{
@@ -132,6 +137,15 @@ public class FAtiMAListenerThread extends SocketListener {
 				response += FAtiMAutils.getPropertiesString(worldModel.getObject(target));
 									
 			this.send(response);
+		}
+		else if (type.equals("STATE"))
+		{
+			String state = st.nextToken();
+			connector.notifyGetState(state);
+		}
+		else if (type.equals("STATE-SET"))
+		{
+			connector.notifySetState();
 		}
 		else {
 			//Corresponds to an action
