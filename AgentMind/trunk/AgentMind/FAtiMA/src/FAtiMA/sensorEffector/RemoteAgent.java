@@ -795,7 +795,8 @@ public abstract class RemoteAgent extends SocketListener {
 			StringTokenizer st = new StringTokenizer(perc, " ");
 			st.nextToken();
 			String state = st.nextToken();			
-			_agent.setSerializedState(state);			
+			_agent.setSerializedState(state);
+			this.Send("STATE-SET");
 		}
 }
 	

@@ -32,6 +32,8 @@
 package FAtiMA.memory;
 
 
+import java.io.Serializable;
+
 import FAtiMA.memory.episodicMemory.EpisodicMemory;
 import FAtiMA.memory.semanticMemory.SemanticMemory;
 
@@ -45,7 +47,7 @@ import FAtiMA.memory.semanticMemory.SemanticMemory;
  * @author Meiyii Lim
  */
 
-public class Memory {
+public class Memory implements Serializable {
 
 	/**
 	 * for serialization purposes

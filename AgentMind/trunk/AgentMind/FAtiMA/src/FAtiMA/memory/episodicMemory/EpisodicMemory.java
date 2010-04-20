@@ -1,5 +1,6 @@
 package FAtiMA.memory.episodicMemory;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
@@ -15,8 +16,13 @@ import FAtiMA.util.enumerables.EventType;
 import FAtiMA.util.enumerables.GoalEvent;
 import FAtiMA.wellFormedNames.Name;
 
-public class EpisodicMemory {
+public class EpisodicMemory implements Serializable {
 	
+	/**
+	 * for serialization purposes
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public static ArrayList<SearchKey> GenerateSearchKeys(Event e)
 	{	
 		ArrayList<SearchKey> keys = new ArrayList<SearchKey>();

@@ -1,5 +1,6 @@
 package FAtiMA.memory.semanticMemory;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
@@ -11,7 +12,12 @@ import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.SubstitutionSet;
 import FAtiMA.wellFormedNames.Symbol;
 
-public class SemanticMemory {
+public class SemanticMemory implements Serializable {
+	
+	/**
+	 * for serialization purposes
+	 */
+	private static final long serialVersionUID = 1L;
 	
 	private KnowledgeBase _kb;
 	private WorkingMemory _stm;

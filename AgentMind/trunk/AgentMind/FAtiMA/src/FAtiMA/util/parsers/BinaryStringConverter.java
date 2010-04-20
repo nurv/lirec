@@ -54,11 +54,13 @@ public class BinaryStringConverter
 	public static String encodeBinaryToString(byte[] input)
 	{
 		int readBytes = input.length;
+		System.out.println("encoding binary data to string. " + input.length + " bytes " );
 		StringBuffer hexData = new StringBuffer();
 		for (int i=0; i < readBytes; i++) 
 		{
 			hexData.append(_hexLookupTable[0xff & input[i]]);
 		}
+		System.out.println("final string length " + hexData.length() + " characters " );
 		return hexData.toString();
 	}
 	

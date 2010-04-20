@@ -5,6 +5,8 @@
 
 package FAtiMA.motivationalSystem;
 
+import java.io.Serializable;
+
 import FAtiMA.AgentSimulationTime;
 import FAtiMA.util.enumerables.MotivatorType;
 
@@ -14,7 +16,7 @@ import FAtiMA.util.enumerables.MotivatorType;
  *  @author Meiyii Lim
  */
 
-public class Motivator {
+public class Motivator implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	/**
