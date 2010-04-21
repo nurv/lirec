@@ -489,6 +489,11 @@ public class CmionStorageContainer extends CmionComponent {
 	    }
 	    
 	}
-
+	
+	@Override
+	public String toString()
+	{
+		return this.containerName;
+	}
 	
 }
