@@ -196,9 +196,13 @@ public class SpeechAct extends RemoteAction {
 			_parameters.add(it);
 		}
 		
+		int counter = 1;
 		while(li.hasNext())
 		{
-			_parameters.add(li.next().toString());
+			counter++;
+			String it = li.next().toString();
+			_parameters.add(it);
+			_contextVariables.add(new Parameter("it"+counter,it));
 		}
 		
 		_emotion = speechAction.getEmotion(am.getEmotionalState());

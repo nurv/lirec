@@ -31,6 +31,9 @@
 package FAtiMA.memory.episodicMemory;
 
 import java.io.Serializable;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 import FAtiMA.AgentSimulationTime;
 
@@ -51,7 +54,8 @@ public class Time implements Serializable {
 	public Time()
 	{
 		this._narrativeTime = AgentSimulationTime.GetInstance().Time();
-		this._realTime = System.currentTimeMillis();
+		GregorianCalendar gcal = new GregorianCalendar();
+		this._realTime = gcal.get(Calendar.HOUR_OF_DAY);
 		this._eventSequence = _eventCounter;
 		_eventCounter++;
 	}

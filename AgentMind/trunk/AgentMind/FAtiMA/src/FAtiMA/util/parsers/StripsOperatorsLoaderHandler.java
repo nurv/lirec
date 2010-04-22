@@ -57,6 +57,7 @@ import FAtiMA.conditions.MoodCondition;
 import FAtiMA.conditions.MotivatorCondition;
 import FAtiMA.conditions.PredicateCondition;
 import FAtiMA.conditions.PropertyCondition;
+import FAtiMA.conditions.SACondition;
 import FAtiMA.deliberativeLayer.plan.Effect;
 import FAtiMA.deliberativeLayer.plan.EffectOnDrive;
 import FAtiMA.deliberativeLayer.plan.Step;
@@ -80,6 +81,7 @@ public class StripsOperatorsLoaderHandler extends ReflectXMLHandler {
 	private float _probability;
 	private Substitution _self;
 	private AgentModel _am;
+	private SACondition _sac;	
 	
 	public StripsOperatorsLoaderHandler(AgentModel am) {
 		_operators = new ArrayList<Step>();
@@ -248,4 +250,41 @@ public class StripsOperatorsLoaderHandler extends ReflectXMLHandler {
     		e.printStackTrace();
     	}
     }
+	
+	public void SACondition(Attributes attributes) {
+				
+		try
+    	{
+    		_sac = SACondition.ParseSA(attributes);
+    		_sac.MakeGround(_self);
+    	}
+    	catch(Exception e)
+    	{
+    		e.printStackTrace();
+    	}
+	}
+	
+	public void SAKnown(Attributes attributes) {
+		String name;
+		Symbol value;
+
+		try
+    	{
+    		name = attributes.getValue("name");		
+    		value = new Symbol(attributes.getValue("value"));
+    		System.out.println("known " + name + " " + value);
+    		_sac.AddKnownVariables(name, value);
+    		_sac.MakeGround(_self);
+    		if(_precondition) 
+    		  	_currentOperator.AddPrecondition(_sac);
+    		else {
+    		  	String operatorName = _currentOperator.getName().GetFirstLiteral().toString();
+    		  	_currentOperator.AddEffect(new Effect(_am, operatorName,_probability, _sac));	
+    		}
+    	}
+    	catch(Exception e)
+    	{
+    		e.printStackTrace();
+    	}		
+	}
 }

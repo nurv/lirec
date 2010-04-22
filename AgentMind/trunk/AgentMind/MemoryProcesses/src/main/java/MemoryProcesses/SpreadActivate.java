@@ -84,13 +84,18 @@ public class SpreadActivate extends RuleEngine implements ISpreadActivate {
 	 * currently take into consideration the frequency of appearance
 	 * @return a list of answer to the query
 	 */
-	public Hashtable<String, Integer> getSAResult()
+	public Hashtable<String, Integer> getSAResults()
 	{
-		return _saQuery.getResults();
+		return this._saQuery.getResults();
+	}
+	
+	public String getSABestResult()
+	{
+		return this._saQuery.getBestResult();
 	}
 	
 	public ArrayList<ActionDetail> getDetails()
 	{
-		return _saQuery.getDetails();
+		return this._saQuery.getDetails();
 	}
 }

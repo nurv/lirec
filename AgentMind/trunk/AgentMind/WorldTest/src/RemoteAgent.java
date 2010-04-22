@@ -150,8 +150,8 @@ public class RemoteAgent extends SocketListener {
 
 		}
 		else if (type.startsWith("PROPERTY-CHANGED"))
-		{
-
+		{			
+			
 		}
 		else if (type.equals("look-at")) {
 			String target = st.nextToken();

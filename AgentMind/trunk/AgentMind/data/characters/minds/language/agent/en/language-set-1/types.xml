@@ -31,6 +31,7 @@
   <class name="yourole" extends="localContext"/>
 
   <class name="it" extends="globalContext"/>
+  <class name="it2" extends="globalContext"/>
   <class name="topic" extends="globalContext"/>
   <class name="episode" extends="globalContext"/>
   <class name="copingstrategy" extends="globalContext"/>

@@ -1,3 +1,4 @@
 isPerson True
 isPresent True
 has none
+location StudyRoom

@@ -33,9 +33,11 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.StringTokenizer;
 
 import FAtiMA.memory.episodicMemory.ActionDetail;
+import FAtiMA.wellFormedNames.Symbol;
 
 public class SAQuery {
 
@@ -58,6 +60,7 @@ public class SAQuery {
 	private ArrayList<ActionDetail> _details;
 	
 	private String _events;
+	private int _maxFrequency;
 	
 	private final PropertyChangeSupport changes  = new PropertyChangeSupport( this );
 	 
@@ -81,6 +84,7 @@ public class SAQuery {
 		this._details = new ArrayList<ActionDetail>();
 		
 		this._events = "";
+		this._maxFrequency = 0;
 	}
 	    
 	public void setQuery( ArrayList<String> info, String question ) {
@@ -220,6 +224,7 @@ public class SAQuery {
 		this._details.clear();
 		
 		this._events = "";
+		this._maxFrequency = 0;
 	}
 	
 	public String getID(){
@@ -282,6 +287,20 @@ public class SAQuery {
     public String getQuestion(){
     	return this._question;
     }
+    
+    public String getBestResult()
+	{
+    	Iterator<String> it = this._results.keySet().iterator();
+		while (it.hasNext())
+		{
+			String result = it.next();
+			Integer val = (Integer) _results.get(result);
+			if(val == this._maxFrequency)
+				return result;
+		}
+			
+		return null;
+	}
     
     public Hashtable<String, Integer> getResults()
 	{
@@ -357,6 +376,8 @@ public class SAQuery {
 		  	{
 		  		Integer val = (Integer) _results.get(result);
 		  		this._results.put(result, ++val);
+		  		if (this._maxFrequency < val)
+		  			this._maxFrequency = val;
 		  	}
     	}
 	}
@@ -373,6 +394,8 @@ public class SAQuery {
 		  	{
 		  		Integer val = (Integer) _results.get(Integer.toString(result));
 		  		this._results.put(Integer.toString(result), ++val);
+		  		if (this._maxFrequency < val)
+		  			this._maxFrequency = val;
 		  	}
     	}
 	}

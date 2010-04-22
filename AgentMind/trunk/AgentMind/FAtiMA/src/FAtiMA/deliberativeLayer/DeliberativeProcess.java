@@ -990,7 +990,7 @@ public class DeliberativeProcess extends AgentProcess {
 				{
 					AddSubIntention(am, _currentIntention, (ActivePursuitGoal) copingAction);	
 				}
-				 else if(!actionName.startsWith("Inference") && !actionName.endsWith("Appraisal"))
+				 else if(!actionName.startsWith("Inference") && !actionName.endsWith("Appraisal") && !actionName.startsWith("SA"))
 				{
 					fear = i.GetFear(am.getEmotionalState());
 					hope = i.GetHope(am.getEmotionalState());

@@ -211,7 +211,6 @@ public abstract class RemoteAgent extends SocketListener {
 		if(_actions.size() > 0) {
 			action = (ValuedAction) _actions.remove(0);
 			this.StartAction(am, action);
-			
 		}
 	}
 	
@@ -338,7 +337,7 @@ public abstract class RemoteAgent extends SocketListener {
 				ArrayList<String> knownInfo = ExtractKnownInfo(known);
 				_agent.getSpreadActivate().Spread(question, knownInfo, _agent.getMemory().getEpisodicMemory());
 				
-				Hashtable<String, Integer> saResult = _agent.getSpreadActivate().getSAResult();
+				Hashtable<String, Integer> saResult = _agent.getSpreadActivate().getSAResults();
 				Iterator it = saResult.keySet().iterator();
 				while (it.hasNext())
 				{

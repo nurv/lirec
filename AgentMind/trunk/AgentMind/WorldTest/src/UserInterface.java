@@ -1,6 +1,8 @@
 
 import java.io.FileInputStream;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.ListIterator;
 import java.util.Random;
 import java.util.StringTokenizer;
@@ -120,8 +122,12 @@ public class UserInterface implements ActionListener {
         
 	    // Meiyii 06/03/09
         _timeOptions = new JComboBox();
+        GregorianCalendar gcal = new GregorianCalendar();
+		int time = gcal.get(Calendar.HOUR_OF_DAY);
+		_timeOptions.addItem(time);
         _timeOptions.addItem(UserInterface.MORNING);
         _timeOptions.addItem(UserInterface.AFTERNOON);
+        
 		_timeOptions.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0) {
 				_world.ChangeTime(_timeOptions.getSelectedItem().toString());
@@ -278,13 +284,12 @@ public class UserInterface implements ActionListener {
 		//_frame.getContentPane().add(okButton);
 		//_frame.getContentPane().add(stepButton);
 		_frame.setVisible(true);
-		
+		 
 		String userOptionsFile = _world.GetUserOptionsFile() + _userOptions.getSelectedItem().toString() + ".txt";
 		_previousUser = _userOptions.getSelectedItem().toString();
 		
 		// Read user input options from a text file
 		ParseFile(userOptionsFile);
-		
     }
     
     public void WriteLine(String text)

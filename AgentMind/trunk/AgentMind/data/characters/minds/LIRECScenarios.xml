@@ -122,4 +122,29 @@
 			</Properties>	
 		</Agent>
 	</Scenario>	
+	
+	<Scenario name="Review">	
+		<WorldSimulator port="46874" scenery="HWU" actionsFile="data/characters/minds/LIRECYr2Actions.xml" 
+						agentLanguageFile="data/characters/minds/language/agent/en/language-set-1" 
+						userOptionsFile="LIRECOptions">		
+			
+			<Objects>				
+				<Object name="User"/>	
+				<Object name="Amy"/>				
+			</Objects>
+			
+		</WorldSimulator>
+
+		<Agent name="SarahReview" displayName="SarahReview" role="SarahReview" platform="worldsim" host="localhost" 
+			   port="46874" displayMode="True" sex="M" actionsFile="LIRECYr2Actions" 
+			   goalsFile="LIRECYr2GoalLibrary" cultureName="NoCulture">
+			
+			<Properties>
+				<Property name="time" value="Morning"/>
+				<Property name="isPerson" value="True"/>
+				<Property name="location" value="LivingRoom"/>	
+			</Properties>	
+		</Agent>
+		
+	</Scenario>	
 </Scenarios>
