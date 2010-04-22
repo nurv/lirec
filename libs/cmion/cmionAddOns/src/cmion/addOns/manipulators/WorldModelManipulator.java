@@ -25,19 +25,16 @@ First version.
 ---  
 */
 
-package cmion.addOns.simulators;
+package cmion.addOns.manipulators;
 
 
 import ion.Meta.EventHandler;
 import ion.Meta.IEvent;
-import ion.Meta.Simulation;
-
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.swing.JButton;
@@ -45,9 +42,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.JToggleButton;
 import javax.swing.JTree;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
@@ -57,31 +52,25 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
-import cmion.addOns.samgar.SamgarConnector;
 import cmion.architecture.IArchitecture;
 import cmion.architecture.CmionComponent;
 import cmion.architecture.CmionEvent;
-import cmion.level2.Competency;
-import cmion.level2.CompetencyExecution;
-import cmion.level3.CompetencyManager;
-import cmion.storage.BlackBoard;
 import cmion.storage.CmionStorageContainer;
 import cmion.storage.EventPropertyChanged;
 import cmion.storage.EventPropertyRemoved;
 import cmion.storage.EventSubContainerAdded;
 import cmion.storage.EventSubContainerRemoved;
-import cmion.storage.WorldModel;
 
 
 /** this class can be used to directly manipulate and change the world model */
-public class WorldModelSimulator extends CmionComponent {
+public class WorldModelManipulator extends CmionComponent {
 
 	
 /** the gui for the simulator */
 SimulatorWindow window;
 
 /** create a new simulator */
-public WorldModelSimulator(IArchitecture architecture) 
+public WorldModelManipulator(IArchitecture architecture) 
 {
 	super(architecture);
     
@@ -101,7 +90,7 @@ public WorldModelSimulator(IArchitecture architecture)
  */
 private void createAndShowGUI() {
     //Create and set up the window.
-    JFrame frame = new JFrame("World Model Simulator");
+    JFrame frame = new JFrame("World Model Manipulator");
     frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 
     //Add contents to the window.
