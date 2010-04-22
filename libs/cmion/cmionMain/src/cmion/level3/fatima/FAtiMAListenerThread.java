@@ -110,7 +110,15 @@ public class FAtiMAListenerThread extends SocketListener {
 		{
 			// FAtiMA agent updates us about its current emotional state
 
-			// for now we don't process this
+			// for now all we process here is the mood variable
+			
+			// extract mood
+			int start = msg.indexOf("<Mood>");
+			int end = msg.indexOf("</Mood>");
+			String mood = msg.substring(start+6, end);
+			
+			// and write it to blackboard
+			connector.getArchitecture().getBlackBoard().requestSetProperty("FatimaMood", mood);
 		}
 		else if (type.startsWith("<Relations"))
 		{

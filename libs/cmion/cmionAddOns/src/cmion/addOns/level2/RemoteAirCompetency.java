@@ -89,7 +89,7 @@ public abstract class RemoteAirCompetency extends RemoteCompetency
 	 *  the startExecution method or from an event handler
 	 *  Note: you should use this if this competency is only registered for one type of send messages, if
 	 *  it is registered for more, you should use sendMessage(String message, String msgType) to specify
-	 *  the type of the message. If the no sendMsgTypes are registered, nothing will be sent*/	
+	 *  the type of the message. If no sendMsgTypes are registered, nothing will be sent*/	
 	@Override
 	protected void sendMessage(String message) 
 	{
