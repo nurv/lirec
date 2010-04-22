@@ -5,6 +5,7 @@ import ion.Meta.IEvent;
 import ion.Meta.IReadOnlyQueueSet;
 import ion.Meta.Request;
 import ion.Meta.RequestHandler;
+import ion.Meta.Simulation;
 import ion.Meta.TypeSet;
 import ion.Meta.Events.IAdded;
 import ion.Meta.Events.IRemoved;
@@ -39,6 +40,7 @@ import cmion.level2.migration.MessageReceived;
 import cmion.level2.migration.MigrationComplete;
 import cmion.level2.migration.MigrationFailed;
 import cmion.level2.migration.MigrationStart;
+import cmion.level2.migration.MigrationUtils;
 import cmion.level2.migration.Reply;
 import cmion.level2.migration.ResumeMigration;
 import cmion.level2.migration.SynchronizationFailed;
@@ -139,16 +141,7 @@ public class Migration extends Competency {
 		this.deviceList = new HashMap<String, Device>();
 		this.occupied = false;
 		this.finishedMigration = false;
-		
-		// These handlers detect when the MigrationCompetency is added or
-		// removed from the simulation and add/remove Synchronization
-		// element accordingly.
-		this.getEventHandlers().add(new SimulationAddedHandler());
-		this.getEventHandlers().add(new SimulationRemovedHandler());
-		
-		this.getRequestHandlers().add(new MigrationExecuter());
-		this.getEventHandlers().add(new MigrationStartHandler());
-		
+				
 		//Get and parse the initialization file
 		
 		Document doc = null;
@@ -177,14 +170,32 @@ public class Migration extends Competency {
 			e.printStackTrace();
 			return;
 		}
-		this.sync.getEventHandlers().add(new ReceiveMessages());
-		this.sync.getEventHandlers().add(new MessageDelivery());
-		this.sync.getEventHandlers().add(new MessageFailure());
-		this.sync.getEventHandlers().add(new SynchronizationStartRelay());
 		
 		available = true;
 	}
 
+	@Override
+	public final void registerHandlers() 
+	{
+		super.registerHandlers();
+		// registering all migration related handlers for all migrating and migration aware components
+		MigrationUtils.registerAllComponents(Simulation.instance);
+		
+		// These handlers detect when the MigrationCompetency is added or
+		// removed from the simulation and add/remove Synchronization
+		// element accordingly.
+		this.getEventHandlers().add(new SimulationAddedHandler());
+		this.getEventHandlers().add(new SimulationRemovedHandler());
+		
+		this.getRequestHandlers().add(new MigrationExecuter());
+		this.getEventHandlers().add(new MigrationStartHandler());
+		
+		this.sync.getEventHandlers().add(new ReceiveMessages());
+		this.sync.getEventHandlers().add(new MessageDelivery());
+		this.sync.getEventHandlers().add(new MessageFailure());
+		this.sync.getEventHandlers().add(new SynchronizationStartRelay());		
+	}
+	
 	@Override
 	public boolean runsInBackground() {
 		return false;

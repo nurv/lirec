@@ -53,6 +53,8 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import cmion.addOns.samgar.SamgarConnector;
@@ -161,7 +163,12 @@ public void removeProperty(final String propertyName, final CmionStorageContaine
 @Override
 public void registerHandlers() 
 {
-	architecture.getWorldModel().registerEventHandlerWithSubContainers(new HandleAnyCmionEvent());
+	// create a new handler
+	HandleAnyCmionEvent handler = new HandleAnyCmionEvent();
+	// listen to any world model events
+	architecture.getWorldModel().getEventHandlers().add(handler);
+	// and any sub container events of the world model	
+	architecture.getWorldModel().registerEventHandlerWithSubContainers(handler);
 }
 
 /** internal event handler class for listening to any event */
@@ -332,7 +339,7 @@ private class SimulatorWindow extends JPanel implements ActionListener, TreeSele
     		DefaultMutableTreeNode node = new DefaultMutableTreeNode(entityContainer);
     		containers.put(entityContainer.getContainerName(), node);
     		rootNode.add(node);
-    		treeModel.reload(rootNode);
+    		updateTree(rootNode);
     		return node;
     	}
     	else return null;
@@ -344,7 +351,8 @@ private class SimulatorWindow extends JPanel implements ActionListener, TreeSele
     	if (node!=null)
     	{
     		rootNode.remove(node);
-    		treeModel.reload(rootNode);
+    		containers.remove(entityName);
+    		updateTree(rootNode);
     	}
 	}
 
@@ -374,7 +382,7 @@ private class SimulatorWindow extends JPanel implements ActionListener, TreeSele
     		propNode = new DefaultMutableTreeNode(new Property(propertyName,propertyValue,parentContainer));
     		node.add(propNode); 
     	}	
-		treeModel.reload(node);
+		updateTree(node);
 	}
     
     public void removeProperty(String propertyName,
@@ -395,13 +403,20 @@ private class SimulatorWindow extends JPanel implements ActionListener, TreeSele
         			{
         				propNode = childNode;
         				node.remove(propNode);
-        				treeModel.reload(node);
+        				updateTree(node);
         				break;
         			}
         		}
         	}		
     	}	
 	}
+
+    private void updateTree(TreeNode manipulated)
+    {
+		TreePath path = tree.getSelectionPath();
+		treeModel.reload(manipulated);
+		tree.setSelectionPath(path);
+    }
     
     private synchronized void updateGui()
     {
@@ -429,7 +444,42 @@ private class SimulatorWindow extends JPanel implements ActionListener, TreeSele
 	@Override
 	public void actionPerformed(ActionEvent arg0) 
 	{
-		//updateList();
+		if (arg0.getSource() == this.btnAddEntity)
+		{
+			String entityName = this.txtEntity.getText().trim();
+			if ((entityName.length()>0) && (!architecture.getWorldModel().hasSubContainer(entityName)))
+				architecture.getWorldModel().requestAddAgent(entityName);
+		}
+		else if (arg0.getSource() == this.btnRemoveEntity)
+		{
+			String entityName = this.txtEntity.getText().trim();
+			if ((entityName.length()>0) && (architecture.getWorldModel().hasSubContainer(entityName)))
+				architecture.getWorldModel().requestRemoveSubContainer(entityName);
+		}
+		else if (arg0.getSource() == this.btnSetProperty)
+		{
+			String entityName = this.txtEntity.getText().trim();
+			if ((entityName.length()>0) && (architecture.getWorldModel().hasSubContainer(entityName)))
+			{	
+				String propertyName = this.txtPropertyName.getText().trim();
+				String propertyValue = this.txtPropertyValue.getText().trim();
+				if ((propertyName.length()>0))
+					architecture.getWorldModel().getSubContainer(entityName).
+					             requestSetProperty(propertyName, propertyValue);
+			}	
+		}
+		else if (arg0.getSource() == this.btnRemoveProperty)
+		{
+			String entityName = this.txtEntity.getText().trim();
+			if ((entityName.length()>0) && (architecture.getWorldModel().hasSubContainer(entityName)))
+			{	
+				CmionStorageContainer entity = architecture.getWorldModel().getSubContainer(entityName);
+				String propertyName = this.txtPropertyName.getText().trim();
+				if ((propertyName.length()>0) && (entity.hasProperty(propertyName)))
+					entity.requestRemoveProperty(propertyName);
+			}	
+		}
+
 	}
 
 	@Override

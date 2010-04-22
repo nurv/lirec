@@ -128,10 +128,7 @@ public class Architecture extends Element implements IArchitecture {
 		for (Element element : Simulation.instance.getElements())
 			if (element instanceof CmionComponent)
 				((CmionComponent)element).registerHandlers();
-		
-		// registering all migration related handlers for all migrating and migration aware components
-		MigrationUtils.registerAllComponents(Simulation.instance);
-		
+				
 		System.out.println("CMION initialised");
 	}
 	
