@@ -1,0 +1,39 @@
+<!--Top Element of the competency library file -->
+<!ELEMENT CompetencyLibrary (Competency*,SamgarCompetency*)>
+
+<!--A competency to load dynamically when the architecture is started up-->
+<!ELEMENT Competency EMPTY>
+
+<!--The full name of the java class (subclass of cmion.level2.Competency) in which the competency
+ is implemented-->
+<!ATTLIST Competency ClassName CDATA #REQUIRED>
+
+<!--An (optional) comma separated list of values to construct the competency with. The competency needs
+ a public constructor to match those values. The type of the values is assumed to be String. The first 
+ parameter of each competency constructor is a reference to the architecture object and must not be 
+ listed here. -->
+<!ATTLIST Competency ConstructorParameters CDATA #IMPLIED>
+
+<!--A competency that can communicate with a Samgar Module. It will only be built and used if
+a) Samgar is used (by using the samgarConnector component (cmion.addOns.level2.samgar.samgarConnector)) 
+b) The Samgar connector at runtime finds a running Samgar module with identical category and sub category
+-->
+<!ELEMENT SamgarCompetency EMPTY>
+
+<!--The full name of the java class (subclass of cmion.addOns.level2.samgar.SamgarCompetency) in which 
+ the Samgar competency is implemented-->
+<!ATTLIST SamgarCompetency ClassName CDATA #REQUIRED>
+
+<!--An (optional) comma separated list of values to construct the competency with. The competency needs
+ a public constructor to match those values. The type of the values is assumed to be String. The first 
+ parameter of each competency constructor is a reference to the architecture object and must not be 
+ listed here. -->
+<!ATTLIST SamgarCompetency ConstructorParameters CDATA #IMPLIED>
+
+<!--The category for this competency. Has to match the category of a SAMGAR module in order
+to talk to it -->
+<!ATTLIST SamgarCompetency Category CDATA #REQUIRED>
+
+<!--The sub category for this competency. Has to match the sub category of a SAMGAR module in order
+to talk to it -->
+<!ATTLIST SamgarCompetency SubCategory CDATA #REQUIRED>

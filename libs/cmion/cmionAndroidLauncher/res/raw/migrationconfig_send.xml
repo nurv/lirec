@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<migrationconfig>
+	<configuration>
+		<listenport value="34872" />
+		<agent active="true" />
+	</configuration>
+	<devices>
+		<device name="B" host="10.0.2.2" port="34871" />
+	</devices>
+</migrationconfig>
+
