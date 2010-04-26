@@ -119,10 +119,8 @@ public abstract class Synchronizer extends Element {
 				receiveMessage(receivedConnection.getInputStream());
 
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (SAXException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -231,7 +229,6 @@ public abstract class Synchronizer extends Element {
 				org.w3c.dom.Element root = fullMessage.createElement(SYNC_TAG);
 				fullMessage.appendChild(root);
 				
-				//TODO Check why the order of next lines matters. In ION it shouldn't matter.
 				raise(new SynchronizationStart(request.host, request.port, fullMessage));
 				schedule(new SendMessage(request.host, request.port));
 			}

@@ -187,10 +187,16 @@ public class Migration extends Competency {
 		MigrationUtils.registerAllComponents(Simulation.instance);
 		
 		// These handlers detect when the MigrationCompetency is added or
-		// removed from the simulation and add/remove Synchronization
+		// removed from the simulation and add/remove Synchronizer
 		// element accordingly.
 		this.getEventHandlers().add(new SimulationAddedHandler());
 		this.getEventHandlers().add(new SimulationRemovedHandler());
+		
+		// Check if the Migration was added before the handlers were set
+		// and add the Synchronizer if necessary.
+		if(getSimulation() != null){
+			getSimulation().getElements().add(sync);
+		}
 		
 		this.getRequestHandlers().add(new MigrationExecuter());
 		this.getEventHandlers().add(new MigrationStartHandler());
