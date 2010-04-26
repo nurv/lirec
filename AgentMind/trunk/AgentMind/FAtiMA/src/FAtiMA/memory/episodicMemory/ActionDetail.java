@@ -305,7 +305,7 @@ public class ActionDetail implements Serializable {
 			
 			updated = true;
 		}
-		
+	
 		switch(em.GetType())
 		{
 			case EmotionType.ADMIRATION:

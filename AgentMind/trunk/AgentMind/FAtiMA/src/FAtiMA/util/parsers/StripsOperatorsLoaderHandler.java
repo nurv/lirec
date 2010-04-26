@@ -257,6 +257,12 @@ public class StripsOperatorsLoaderHandler extends ReflectXMLHandler {
     	{
     		_sac = SACondition.ParseSA(attributes);
     		_sac.MakeGround(_self);
+    		if(_precondition) 
+    		  	_currentOperator.AddPrecondition(_sac);
+    		else {
+    		  	String operatorName = _currentOperator.getName().GetFirstLiteral().toString();
+    		  	_currentOperator.AddEffect(new Effect(_am, operatorName,_probability, _sac));	
+    		}
     	}
     	catch(Exception e)
     	{
@@ -274,13 +280,6 @@ public class StripsOperatorsLoaderHandler extends ReflectXMLHandler {
     		value = new Symbol(attributes.getValue("value"));
     		System.out.println("known " + name + " " + value);
     		_sac.AddKnownVariables(name, value);
-    		_sac.MakeGround(_self);
-    		if(_precondition) 
-    		  	_currentOperator.AddPrecondition(_sac);
-    		else {
-    		  	String operatorName = _currentOperator.getName().GetFirstLiteral().toString();
-    		  	_currentOperator.AddEffect(new Effect(_am, operatorName,_probability, _sac));	
-    		}
     	}
     	catch(Exception e)
     	{

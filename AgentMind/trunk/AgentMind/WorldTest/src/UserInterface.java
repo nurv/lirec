@@ -200,6 +200,7 @@ public class UserInterface implements ActionListener {
         _infoOptions.addItem("subject Amy");
         _infoOptions.addItem("target SELF");
         _infoOptions.addItem("target Amy");
+        _infoOptions.addItem("time 17");
         _infoOptions.addItem("location LivingRoom");
         _infoOptions.addItem("action Greet");
         _infoOptions.addItem("action SpeechAct");

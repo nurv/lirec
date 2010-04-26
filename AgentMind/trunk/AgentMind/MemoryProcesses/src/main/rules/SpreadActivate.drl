@@ -6,6 +6,7 @@ package MemoryProcesses
 #list any import classes here.
 
 import FAtiMA.memory.episodicMemory.ActionDetail;
+import FAtiMA.memory.episodicMemory.Time;
 
 
 #declare any global variables here
@@ -111,6 +112,19 @@ rule "status-status phase1"
 		retract ($ad);
 		System.out.println("Status " + $st1);
 		System.out.println("status-status " + $ad.getID());
+end
+
+rule "time-time phase1"
+	no-loop true
+	salience 50
+	when
+		$q: SAQuery($t1: time)
+		$ad: ActionDetail(time.strRealTime == $t1)	
+	then
+		insert (new CandidateEvent($ad, "time", 1.0f));
+		retract ($ad);
+		System.out.println("Time " + $t1);
+		System.out.println("time-time " + $ad.getID());
 end
 
 rule "speechAct-speechAct phase1"
@@ -241,6 +255,21 @@ rule "status-status"
 		}
 		System.out.println("Status " + $st1);
 		System.out.println("status-status " + $ad.getID());
+end
+
+rule "time-time"
+	no-loop true
+	when
+		$q: SAQuery($t1: time)
+		$cad: CandidateEvent(extension not contains "time")
+		$ad: ActionDetail(time.strRealTime == $t1) from $cad.actionDetail	
+	then
+		modify ($cad) {
+			increasePhase(), 
+			setExtension("time")
+		}
+		System.out.println("Time " + $t1);
+		System.out.println("time-time " + $ad.getID());
 end
 
 rule "speechAct-speechAct"
@@ -422,6 +451,22 @@ rule "status"
 		}
 		System.out.println("Status " + $st);
 		System.out.println("Retracted " + $ad.getID());
+		retract ($cad);			
+end
+
+rule "time"
+	no-loop true
+	when
+		$q: SAQuery(question == "time")
+		$cad: CandidateEvent( phase == $q.numKnownVar )
+		$ad: ActionDetail() from $cad.actionDetail		
+		Time($t: strRealTime) from $ad	
+	then			
+		modify ($q) {
+			setResults($t)
+		}
+		System.out.println("Time " + $t);
+		System.out.println("Retracted " +$ad.getID());
 		retract ($cad);			
 end
 

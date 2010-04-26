@@ -109,7 +109,7 @@ public class SACondition extends Condition{
 		String result = am.getSpreadActivate().getSABestResult();
 		System.out.println("Result " + result);
 		sset = new SubstitutionSet();
-		sset.AddSubstitution(new Substitution(this._value,new Symbol(result)));
+		sset.AddSubstitution(new Substitution(this._value, new Symbol(result)));
 		subs.add(sset);
 		
 		return subs;
@@ -120,7 +120,15 @@ public class SACondition extends Condition{
 		SACondition sac = new SACondition();
 		sac._query = this._query;
 		sac._value = (Symbol) this._value.clone();
-		sac._knownVariables = (Hashtable<String, Symbol>) this._knownVariables.clone();
+		
+		sac._knownVariables = new Hashtable<String, Symbol>();
+		Iterator<String> it = this._knownVariables.keySet().iterator();
+		while (it.hasNext())
+		{
+			String key = it.next();
+			sac._knownVariables.put(key, (Symbol) this._knownVariables.get(key).clone());
+		}
+		
 		return sac;
 	}
 
@@ -145,44 +153,40 @@ public class SACondition extends Condition{
 
 	public void MakeGround(ArrayList<Substitution> bindings) {
 		this._value.MakeGround(bindings);
-		Iterator<String> it = this._knownVariables.keySet().iterator();
+		Iterator<Symbol> it = this._knownVariables.values().iterator();
 		while (it.hasNext())
 		{
-			String key = it.next();
-			this._knownVariables.get(key).MakeGround(bindings);
+			it.next().MakeGround(bindings);
 		}
 	}
 
 	@Override
 	public void MakeGround(Substitution subst) {
 		this._value.MakeGround(subst);
-		Iterator<String> it = this._knownVariables.keySet().iterator();
+		Iterator<Symbol> it = this._knownVariables.values().iterator();
 		while (it.hasNext())
 		{
-			String key = it.next();
-			this._knownVariables.get(key).MakeGround(subst);
+			it.next().MakeGround(subst);
 		}
 	}
 
 	@Override
 	public void ReplaceUnboundVariables(int variableID) {
 		this._value.ReplaceUnboundVariables(variableID);
-		Iterator<String> it = this._knownVariables.keySet().iterator();
+		Iterator<Symbol> it = this._knownVariables.values().iterator();
 		while (it.hasNext())
 		{
-			String key = it.next();
-			this._knownVariables.get(key).ReplaceUnboundVariables(variableID);
+			it.next().ReplaceUnboundVariables(variableID);
 		}
 	}
 
 	@Override
 	public boolean isGrounded() {
 		if(!this._value.isGrounded()) return false;
-		Iterator<String> it = this._knownVariables.keySet().iterator();
+		Iterator<Symbol> it = this._knownVariables.values().iterator();
 		while (it.hasNext())
 		{
-			String key = it.next();
-			if(!this._knownVariables.get(key).isGrounded()) return false;
+			if(!it.next().isGrounded()) return false;
 		}
 		return true;
 	}

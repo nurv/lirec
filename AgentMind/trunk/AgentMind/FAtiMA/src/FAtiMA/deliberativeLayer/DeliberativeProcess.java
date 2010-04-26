@@ -132,6 +132,7 @@ import FAtiMA.deliberativeLayer.goals.ActivePursuitGoal;
 import FAtiMA.deliberativeLayer.goals.Goal;
 import FAtiMA.deliberativeLayer.goals.GoalLibrary;
 import FAtiMA.deliberativeLayer.goals.InterestGoal;
+import FAtiMA.deliberativeLayer.plan.Effect;
 import FAtiMA.deliberativeLayer.plan.IPlanningOperator;
 import FAtiMA.deliberativeLayer.plan.Plan;
 import FAtiMA.deliberativeLayer.plan.ProtectedCondition;
@@ -990,7 +991,7 @@ public class DeliberativeProcess extends AgentProcess {
 				{
 					AddSubIntention(am, _currentIntention, (ActivePursuitGoal) copingAction);	
 				}
-				 else if(!actionName.startsWith("Inference") && !actionName.endsWith("Appraisal") && !actionName.startsWith("SA"))
+				else if(!actionName.startsWith("Inference") && !actionName.endsWith("Appraisal") && !actionName.startsWith("SA"))
 				{
 					fear = i.GetFear(am.getEmotionalState());
 					hope = i.GetHope(am.getEmotionalState());
@@ -1018,6 +1019,17 @@ public class DeliberativeProcess extends AgentProcess {
 					}
 						
 					_selectedAction = (Step) copingAction;
+				}
+				else if(actionName.startsWith("SA"))
+				{
+					Effect eff;
+				
+				    for(ListIterator<Effect> li =  copingAction.getEffects().listIterator(); li.hasNext();)
+				    {
+				      eff = (Effect) li.next();
+				      if(eff.isGrounded())
+				    	  am.getMemory().getSemanticMemory().Tell(eff.GetEffect().getName(), eff.GetEffect().GetValue().toString());
+				    }
 				}
 				else
 				{

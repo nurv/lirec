@@ -1,4 +1,5 @@
 isPerson True
 isPresent True
 has none
-location StudyRoom
+possibleLocation,Afternoon unknown
+knowPossibleLocation,Afternoon False

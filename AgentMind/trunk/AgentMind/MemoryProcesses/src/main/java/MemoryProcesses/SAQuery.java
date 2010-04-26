@@ -49,6 +49,7 @@ public class SAQuery {
 	private String _location;
 	private String _intention;
 	private String _status;
+	private String _time;
 	private String _speechActMeaning;
 	private String _multimediaPath;
 	private String _object;
@@ -73,6 +74,7 @@ public class SAQuery {
 		this._location = "";
 		this._intention = "";
 		this._status = "";
+		this._time = "";
 		this._speechActMeaning = "";
 		this._multimediaPath = "";
 		this._object = "";
@@ -154,6 +156,14 @@ public class SAQuery {
 				}
 				this._numKnownVar++;
 			}
+			if (queryType.equals("time"))
+			{
+				while(query.hasMoreTokens())
+				{
+					this._time = query.nextToken();
+				}
+				this._numKnownVar++;
+			}
 			if (queryType.equals("speeachActMeaning"))
 			{
 				while(query.hasMoreTokens())
@@ -197,7 +207,7 @@ public class SAQuery {
 		}
 		System.out.println("ID" + this._id + "subject " + this._subject + " target " + this._target 
 				+ " action " + this._action + " location " + this._location 
-				+ "intention " + this._intention + "status " + this._status	
+				+ "intention " + this._intention + "status " + this._status	+ "time " + this._time	
 				+ "speechActMeaning " + this._speechActMeaning + "multimediaPath " 
 				+ this._multimediaPath + "object " + this._object + "desirability " + this._desirability
 				+ "praiseworthiness " + this._praiseworthiness);
@@ -214,6 +224,7 @@ public class SAQuery {
 		this._location = "";
 		this._intention = "";
 		this._status = "";
+		this._time = "";
 		this._speechActMeaning = "";
 		this._multimediaPath = "";
 		this._object = "";
@@ -258,6 +269,10 @@ public class SAQuery {
     
     public String getStatus(){
     	return this._status;
+    }
+    
+    public String getTime(){
+    	return this._time;
     }
     
     public String getSpeechActMeaning(){
@@ -339,6 +354,10 @@ public class SAQuery {
     	this._status = status;
     }
     
+    public void setTime(String time){
+    	this._time = time;
+    }
+    
     public void setSpeechActMeaning(String speechActMeaning){
     	this._speechActMeaning = speechActMeaning;
     }
@@ -366,24 +385,28 @@ public class SAQuery {
     
     public void setResults(String result)
 	{
+    	Integer val = new Integer(1); 
+    	
     	if (result != null)
     	{
 		  	if (this._results == null || !this._results.containsKey(result))
 		  	{
-		  		this._results.put(result, new Integer(1));
+		  		this._results.put(result, val);
 		  	}
 		  	else
 		  	{
-		  		Integer val = (Integer) _results.get(result);
+		  		val = (Integer) _results.get(result);
 		  		this._results.put(result, ++val);
-		  		if (this._maxFrequency < val)
-		  			this._maxFrequency = val;
 		  	}
+		  	if (this._maxFrequency < val)
+	  			this._maxFrequency = val;
     	}
 	}
     
     public void setResultIDs(int result)
 	{
+    	Integer val = new Integer(1);
+    	
     	if (result != -1)
     	{
 		  	if (this._results == null || !this._results.containsKey(Integer.toString(result)))
@@ -392,11 +415,12 @@ public class SAQuery {
 		  	}
 		  	else
 		  	{
-		  		Integer val = (Integer) _results.get(Integer.toString(result));
+		  		val = (Integer) _results.get(Integer.toString(result));
 		  		this._results.put(Integer.toString(result), ++val);
-		  		if (this._maxFrequency < val)
-		  			this._maxFrequency = val;
+		  		
 		  	}
+		  	if (this._maxFrequency < val)
+	  			this._maxFrequency = val;
     	}
 	}
     

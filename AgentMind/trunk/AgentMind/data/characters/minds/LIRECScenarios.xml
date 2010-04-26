@@ -140,7 +140,7 @@
 			   goalsFile="LIRECYr2GoalLibrary" cultureName="NoCulture">
 			
 			<Properties>
-				<Property name="time" value="Morning"/>
+				<Property name="time" value="Afternoon"/>
 				<Property name="isPerson" value="True"/>
 				<Property name="location" value="LivingRoom"/>	
 			</Properties>	
