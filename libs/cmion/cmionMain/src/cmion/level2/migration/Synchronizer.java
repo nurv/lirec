@@ -11,16 +11,7 @@ import java.net.UnknownHostException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.TransformerFactoryConfigurationError;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
-import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -36,7 +27,7 @@ import ion.Meta.Request;
 import ion.Meta.RequestHandler;
 import ion.Meta.TypeSet;
 
-public class Synchronizer extends Element {
+public abstract class Synchronizer extends Element {
 	
 	public final static String SYNC_TAG = "synchronize";
 	
@@ -70,12 +61,12 @@ public class Synchronizer extends Element {
 	}
 	
 	public void packMessage(org.w3c.dom.Element message){
-		try {
-			fullMessage.adoptNode(message);
-			fullMessage.getElementsByTagName(SYNC_TAG).item(0).appendChild(message);
-		} catch (DOMException e) {
-			fullMessage.importNode(message, true);
-		}
+		Node importedNode = fullMessage.importNode(message, true);
+		fullMessage.getElementsByTagName(SYNC_TAG).item(0).appendChild(importedNode);
+	}
+	
+	public void replaceMessage(Document doc){
+		fullMessage = doc;
 	}
 	
 	public void synchronize(String host, int port){
@@ -107,25 +98,7 @@ public class Synchronizer extends Element {
 		return builder;
 	}
 	
-	private void writeXML(Document doc, OutputStream stream){
-		Transformer transformer = null;
-		try {
-			transformer = TransformerFactory.newInstance().newTransformer();
-		} catch (TransformerConfigurationException e) {
-			e.printStackTrace();
-		} catch (TransformerFactoryConfigurationError e) {
-			e.printStackTrace();
-		}
-		
-		transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-		transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-		
-		try {
-			transformer.transform(new DOMSource(doc), new StreamResult(stream));
-		} catch (TransformerException e) {
-			e.printStackTrace();
-		}
-	}
+	protected abstract void writeXML(Document doc, OutputStream stream);
 	
 	private void sendXMLMessage(Document message, Socket socket) throws IOException{
 
@@ -257,8 +230,10 @@ public class Synchronizer extends Element {
 				fullMessage = docBuilder.newDocument();
 				org.w3c.dom.Element root = fullMessage.createElement(SYNC_TAG);
 				fullMessage.appendChild(root);
-				schedule(new SendMessage(request.host, request.port));
+				
+				//TODO Check why the order of next lines matters. In ION it shouldn't matter.
 				raise(new SynchronizationStart(request.host, request.port, fullMessage));
+				schedule(new SendMessage(request.host, request.port));
 			}
 		}
 	}
@@ -284,6 +259,7 @@ public class Synchronizer extends Element {
 				
 				try {
 					System.out.println("Sending Message");
+					
 					sendXMLMessage(fullMessage, socket);
 				} catch (IOException e) {
 					System.out.println("Message sending failed.");
@@ -319,7 +295,7 @@ public class Synchronizer extends Element {
 				org.w3c.dom.Element root = doc.createElement(SYNC_TAG);
 				doc.appendChild(root);
 				
-				Node messageNode = doc.adoptNode(request.message.getDocumentElement());
+				Node messageNode = doc.importNode(request.message.getDocumentElement(), true);
 				root.appendChild(messageNode);
 				
 				try {

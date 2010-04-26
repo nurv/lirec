@@ -35,6 +35,8 @@ import ion.Meta.Simulation;
 import ion.Meta.Events.IAdded;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -118,18 +120,23 @@ public class CompetencyLibrary extends CmionComponent {
 			competency.initialize();
 		}	
 	}
+	
+	protected InputStream openConfigurationFile(String competencyLibraryFile) throws Exception{
+		File configFile = new File(competencyLibraryFile);
+		if (!configFile.exists()) 
+			throw new Exception("Could not locate competency library configuration file " + competencyLibraryFile);
+		return new FileInputStream(configFile);
+	}
 
 	/** load the competency library configuration file that specifies which competencies to load*/
 	private void loadConfigurationFile(String competencyLibraryFile) throws Exception
 	{
-		File configFile = new File(competencyLibraryFile);
-		if (!configFile.exists()) 
-			throw new Exception("Could not locate competency library configuration file " + competencyLibraryFile);
+		InputStream inStream = openConfigurationFile(competencyLibraryFile);
 		
 		// parse the file to a dom document
 		DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
-		Document doc = docBuilder.parse (configFile);
+		Document doc = docBuilder.parse (inStream);
 
 		// normalize text representation
 		doc.getDocumentElement().normalize();

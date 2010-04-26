@@ -47,6 +47,7 @@ import cmion.level2.migration.SynchronizationFailed;
 import cmion.level2.migration.SynchronizationStart;
 import cmion.level2.migration.Synchronize;
 import cmion.level2.migration.Synchronizer;
+import cmion.level2.migration.SynchronizerImpl;
 
 
 public class Migration extends Competency {
@@ -121,7 +122,7 @@ public class Migration extends Competency {
 	 * It should be different depending on the platform and the way it provides
 	 * access to resources. 
 	 * 
-	 * @return InputStream for the conifguration file of the migration competency.
+	 * @return InputStream for the configuration file of the migration competency.
 	 */
 	protected InputStream openConfigFile(String configFile) {
 		InputStream inStream = null;
@@ -160,7 +161,7 @@ public class Migration extends Competency {
 
 		//Set up the synchronization element
 		try {
-			this.sync = new Synchronizer(listenPort);
+			this.sync = getNewSynchronizer(listenPort);
 		} catch (IOException e) {
 			System.out.println("Could not create migration listening socket.");
 			e.printStackTrace();
@@ -172,6 +173,10 @@ public class Migration extends Competency {
 		}
 		
 		available = true;
+	}
+	
+	protected Synchronizer getNewSynchronizer(int listenPort) throws IOException, ParserConfigurationException{
+		return new SynchronizerImpl(listenPort);
 	}
 
 	@Override
@@ -410,13 +415,17 @@ public class Migration extends Competency {
 		public void invoke(IEvent evt) {
 			SynchronizationStart synchStart = (SynchronizationStart) evt;
 			
+			Element syncElement = migrationDocument.createElement(Synchronizer.SYNC_TAG);
 			Element migration = migrationDocument.createElement("migration");
+			migrationDocument.appendChild(syncElement);
+			syncElement.appendChild(migration);
+
 			for (Element element : migrationElements) {
-				Node adoptedNode = migrationDocument.adoptNode(element);
-				migration.appendChild(adoptedNode);
+				migration.appendChild(element);
 			}
-			
-			sync.packMessage(migration);
+
+			sync.replaceMessage(migrationDocument);
+
 		}
 	}
 	
@@ -472,9 +481,6 @@ public class Migration extends Competency {
 			IAdded added = (IAdded)evt;
 			
 			if (added.getItem().equals(Migration.this)){
-				System.out.println("Adding Synchronizer to Simulation.\n"+sync);
-				System.out.println(added.getItem() +" - "+ added.getElement());
-				
 				getSimulation().getElements().add(sync);
 			}
 		}
@@ -491,8 +497,6 @@ public class Migration extends Competency {
 			IRemoved removed = (IRemoved) evt;
 			
 			if (removed.getItem().equals(Migration.this)){
-				System.out.println("Removing Synchronizer of Simulation.");
-				
 				getSimulation().getElements().remove(sync);
 			}
 		}

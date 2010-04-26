@@ -37,18 +37,19 @@ import ion.Meta.RequestHandler;
 import ion.Meta.TypeSet;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
-import cmion.architecture.IArchitecture;
 import cmion.architecture.CmionComponent;
+import cmion.architecture.IArchitecture;
 import cmion.level2.CompetencyExecutionPlan;
 import cmion.level2.EventCompetencyExecutionPlanFailed;
 import cmion.level2.EventCompetencyExecutionPlanSucceeded;
@@ -162,18 +163,24 @@ public class CompetencyManager extends CmionComponent
 		
 	}
 	
-	/** parse the xml file that contains the competency manager rules */
-	private synchronized void loadRules(String competencyManagerRulesFileName) throws Exception
-	{
+	protected InputStream openRulesFile(String competencyManagerRulesFileName) throws Exception{
 		File compManagerRulesFile = new File(competencyManagerRulesFileName);
 
 		// check if file exists
 		if (! compManagerRulesFile.exists()) throw new Exception("cannot locate competency manager rules file " + competencyManagerRulesFileName );
+		
+		return new FileInputStream(compManagerRulesFile);
+	}
+	
+	/** parse the xml file that contains the competency manager rules */
+	private synchronized void loadRules(String competencyManagerRulesFileName) throws Exception
+	{
+		InputStream inStream = openRulesFile(competencyManagerRulesFileName);
 			
 		// parse the file to a dom document
 		DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
-		Document doc = docBuilder.parse (compManagerRulesFile);
+		Document doc = docBuilder.parse (inStream);
 
 		// normalize text representation
 		doc.getDocumentElement().normalize();
