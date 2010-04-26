@@ -138,9 +138,6 @@ public class AndroidArchitecture extends Element implements IArchitecture {
 			if (element instanceof CmionComponent)
 				((CmionComponent)element).registerHandlers();
 		
-		// registering all migration related handlers for all migrating and migration aware components
-		MigrationUtils.registerAllComponents(Simulation.instance);
-		
 		System.out.println("CMION initialised");
 	}
 	
@@ -319,7 +316,7 @@ public class AndroidArchitecture extends Element implements IArchitecture {
 		return competencyLibrary;
 	}
 	
-	/** main method */
+	/** This is the equivalent to the main method in Architecture */
 	public static AndroidArchitecture startup(String configFile, Context androidCtx)
 	{
 		try
