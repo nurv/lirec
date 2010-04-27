@@ -1,4 +1,21 @@
-<GoalLibrary>	
+<GoalLibrary>
+	<ActivePursuitGoal name="HideCoin([target],[box])">
+		<PreConditions>
+			<Property name="[target](isPerson)" operator="=" value="True" />
+			<Property name="[target]" operator="!=" value="[SELF]" />
+			<Property name="[box](type)" operator="=" value="Box"/>
+			<RecentEvent occurred="True" subject="[target]" action="SpeechAct" target="[SELF]" parameters="startgame"/>
+		</PreConditions>
+		<SucessConditions>
+			<Predicate ToM="[SELF]" name="[box](Contains,coin)"/>
+			<Predicate ToM="[target]" name="![box](Contains,coin)"/>
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>
+		<ExpectedEffects>
+			<OnSelect drive="Affiliation" target="[SELF]" value="+3"/>
+		</ExpectedEffects>	
+	</ActivePursuitGoal>	
 	<!-- Greeting -->
 	<ActivePursuitGoal name="MakeFriendHappy([target])">
 		<PreConditions>
@@ -9,6 +26,20 @@
 		<SucessConditions>
 			<EmotionCondition emotion="Joy" agent="[target]" min-intensity="1" />
 			<!--<NewEvent occurred="True" subject="[target]" action="smile"/>-->
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>
+		<ExpectedEffects>
+			<OnSelect drive="Affiliation" target="[SELF]" value="+3"/>
+		</ExpectedEffects>	
+	</ActivePursuitGoal>
+	<ActivePursuitGoal name="PlayHideCandyWith([target])">
+		<PreConditions>
+			<Property name="[target](isPerson)" operator="=" value="True" />
+			<Property name="[target]" operator="!=" value="[SELF]" />
+		</PreConditions>
+		<SucessConditions>
+			<Property name="has([SELF],candy)" operator="=" value="True" />
 		</SucessConditions>
 		<FailureConditions>
 		</FailureConditions>
