@@ -83,7 +83,7 @@ public class AgentLauncher {
 				}else if(args2.length >= 11){
 					HashMap<String,String> properties = new HashMap<String,String>();
 					ArrayList<String> goals = new ArrayList<String>();
-					readPropertiesAndGoals(args, properties, goals);
+					readPropertiesAndGoals(args2, properties, goals);
 					agent = new Agent(agentPlatform,args2[1], Integer.parseInt(args2[2]),saveDirectory,Boolean.parseBoolean(args2[3]),args2[4], args2[5], args2[6], args2[7],args2[8],args2[9],args2[10], properties, goals);		
 				}else{
 					System.err.println("Wrong number of arguments!");
