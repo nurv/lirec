@@ -27,7 +27,7 @@ public abstract class OCCAppraisalRules {
 	{	
 		Step joyOperator;
 		Step distressOperator;
-		ArrayList<Step> appraisalOperators;
+		ArrayList<Step> appraisalOperators;	
 		EmotionDisposition disp;
 		int threshold;
 		Effect aux;
