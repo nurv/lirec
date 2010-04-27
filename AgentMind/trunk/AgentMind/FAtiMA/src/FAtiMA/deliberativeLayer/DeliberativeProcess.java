@@ -1030,6 +1030,7 @@ public class DeliberativeProcess extends AgentProcess {
 				      if(eff.isGrounded())
 				    	  am.getMemory().getSemanticMemory().Tell(eff.GetEffect().getName(), eff.GetEffect().GetValue().toString());
 				    }
+				    this.CheckLinks(am);
 				}
 				else
 				{
