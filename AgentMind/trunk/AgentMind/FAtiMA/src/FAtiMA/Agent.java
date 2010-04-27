@@ -111,8 +111,8 @@ public class Agent implements AgentModel {
 	public static final String MIND_PATH = "data/characters/minds/";
 	private static final Name ACTION_CONTEXT = Name.ParseName("ActionContext()");
 
-	public Agent(short agentPlatform, String host, int port, String saveDirectory, boolean displayMode, String name,String lActDatabase, 
-			String userLActDatabase, String sex, String role, 
+	public Agent(short agentPlatform, String host, int port, String saveDirectory, boolean displayMode, String name, 
+			String sex, String role, 
 			String displayName, String actionsFile, 
 			String goalsFile, String cultureName, HashMap<String,String> properties, ArrayList<String> goalList) {
 
@@ -475,9 +475,9 @@ public class Agent implements AgentModel {
 
 		//The ION Agent does not load the goals initially from the personality file, therefore we
 		//must clear all the goals loaded.
-		if(agentPlatform == AgentPlatform.ION){
-			_deliberativeLayer.RemoveAllGoals();
-		}
+		//if(agentPlatform == AgentPlatform.ION){
+		//	_deliberativeLayer.RemoveAllGoals();
+		//}
 
 		//The WorldSimulator Agent loads additional goals provided in the starting goal list
 		if(agentPlatform == AgentPlatform.WORLDSIM){
