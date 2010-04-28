@@ -191,7 +191,7 @@ private class HandleAnyCmionEvent extends EventHandler {
     		EventPropertyChanged evt1 = (EventPropertyChanged) evt;
     		if (evt1.getParentContainer().getParentContainer() == architecture.getWorldModel())
     		{
-    			setProperty(evt1.getPropertyName(),(String)evt1.getPropertyValue(),evt1.getParentContainer());
+    			setProperty(evt1.getPropertyName(),evt1.getPropertyValue().toString(),evt1.getParentContainer());
     		}
     	}
     	else if (evt instanceof EventPropertyRemoved)
