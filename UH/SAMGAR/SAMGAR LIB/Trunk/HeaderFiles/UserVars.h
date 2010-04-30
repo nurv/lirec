@@ -16,7 +16,7 @@
 using namespace std;
 using namespace yarp::os; // network stuff
 using namespace yarp::sig;// image stuff
-//using namespace yarp::os;
+using namespace yarp::os;
 
 #define TypeInt 0
 #define TypeFloat 1
@@ -25,8 +25,8 @@ using namespace yarp::sig;// image stuff
 #define TypeBottle 4
 
 // types of module
-#define interupt 0
-#define run      1
+//#define interupt 0
+//#define run      1
 // current mode
 #define running 0
 #define paused 1

@@ -18,43 +18,24 @@ class DataPort : public BufferedPort<Bottle>
 {
 private:
 	 int *Status;
-	 
+	
      
 public:
 
-	 Bottle SavedBottle0,SavedBottle1,SavedBottle2;
+	 Bottle SavedBottle;
+	 list<Bottle> SavedBottles;
 	 int istherebottle;
-	 bool InRead;
-	 int bottlenum;
+	int InRead;
 
 	virtual void onRead(Bottle& b)
 	{
-	//	this->
-	//	puts("in onread");
-		InRead=true;
-		*Status = running;
-
-	
-		switch(bottlenum)
-		{
-		case 2:
-		SavedBottle2=b;
-		bottlenum=0;
-		break;
-		case 1:
-		SavedBottle1=b;
-		bottlenum=2;
-		break;
-		case 0:
-		SavedBottle0=b;
-		bottlenum=1;
-		break;
-		}
+	//	InRead=1;
+		Status = running;   // if interupt this changes the status to running
+		SavedBottle=b;
 		istherebottle=1;
-		InRead=false;
-	//	puts("out of onread");
+	//	InRead=0;
 	}
-	 DataPort(int *lala) {Status = lala; bottlenum =0;}
+	 DataPort(int lala) {*Status = *lala; }
 };
 
 // My main class
@@ -78,19 +59,12 @@ private :
 	 /* a special image holder */
 	 ImageOf<PixelBgr> yarpImage;
 	 /* only for internal use , use acessor methods to retrive data */
-	 bool GetDataFromPort(string NameOfPort,int TypeOfData, int *I = 0,float *F =0,double *D =0 , string *S= 0,Bottle *B =0 ,int mode = 0);
+	 bool GetDataFromPort(string NameOfPort,int TypeOfData, int *I = 0,float *F =0,double *D =0 , string *S= 0,Bottle *B =0);
 	 /* Only for internal use , user acessor methods to send data */
 	 void SendData(int type,string port,string S ,int I ,double D,float F,Bottle B);
 	
 
 public :
-
-	static const int interupt = 0;
-	static const int run      = 1;
-	static const int NoStep   = 0;
-	static const int Step     = 1;
-//	int 
-
 
 	void GetAvailPlatforms(void);
 
@@ -103,7 +77,7 @@ public :
 
 	BufferedPort<Bottle> TempPort;
 	
-	void SendAllModulesCommand(int cm);
+	void SendAllModulesCommand(int cm,string comm);
 
 	void SendModuleCommand(string name,int cm);
 	/* A interupt module method, takes the core data ie respond with type, pause stop etc */
@@ -116,26 +90,16 @@ public :
 	void AddPortS(string outputname);
 	/* give a name and setup the image port */
 	void SetupImagePort(string outputname);
-	/* get the int data of port named, also give it the memory locatoin of interger to be chaned, returns true if new data avail
-	   mode nostep = low volume data, mode step = high volume data
-	*/
-	bool GetIntData(string NameOfPort,int *I, int mode);
-	/* get the float data of port named, also give it the memory locatoin of float to be chaned, returns true if new data avail 
-	   mode nostep = low volume data, mode step = high volume data
-	*/
-	bool GetFloatData(string NameOfPort,float *I, int mode);
-	/* get the double data of port named, also give it the memory locatoin of double to be chaned, returns true if new data avail 
-	   mode nostep = low volume data, mode step = high volume data
-	*/
-	bool GetDoubleData(string NameOfPort,double *I, int mode);
-	/* get the string data of port named, also give it the memory locatoin of string to be chaned, returns true if new data avail 
-	   mode nostep = low volume data, mode step = high volume data
-	*/
-	bool GetStringData(string NameOfPort,string *I, int mode);
-	/* get the Bottle data of port named, also give it the memory locatoin of string to be chaned, returns true if new data avail 
-	   mode nostep = low volume data, mode step = high volume data
-	*/
-	bool GetBottleData(string NameOfPort,Bottle *B, int mode);
+	/* get the int data of port named, also give it the memory locatoin of interger to be chaned, returns true if new data avail */
+	bool GetIntData(string NameOfPort,int *I);
+	/* get the float data of port named, also give it the memory locatoin of float to be chaned, returns true if new data avail */
+	bool GetFloatData(string NameOfPort,float *I);
+	/* get the double data of port named, also give it the memory locatoin of double to be chaned, returns true if new data avail */
+	bool GetDoubleData(string NameOfPort,double *I);
+	/* get the string data of port named, also give it the memory locatoin of string to be chaned, returns true if new data avail */
+	bool GetStringData(string NameOfPort,string *I);
+	/* get the Bottle data of port named, also give it the memory locatoin of string to be chaned, returns true if new data avail */
+	bool GetBottleData(string NameOfPort,Bottle *B);
 
 	/* send data to port */
 	void SendIntData(string port,int data);
