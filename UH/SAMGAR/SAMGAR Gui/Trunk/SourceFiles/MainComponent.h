@@ -157,6 +157,7 @@ public:
 	void compare_Buttons (void);
 	void CheckConnect(void);
 	int CleanGlobalServer(void);
+	void GetAdminData(void);
 
 
 private:

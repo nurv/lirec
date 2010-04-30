@@ -574,12 +574,14 @@ void MainComponent::SendOffModuleList()
 	Bottle& RR = ThePortForModules.prepare();
 	RR.clear();
 	RR.addInt(105);
+
 for ( modulestructIT=ListOfKnownModules.begin() ; modulestructIT != ListOfKnownModules.end(); modulestructIT++ )
 		{
 		RR.addString(modulestructIT->name.c_str());
 		RR.addString(modulestructIT->catagory.c_str());
 		RR.addString(modulestructIT->subcatagory.c_str());
 		}
+
 ThePortForModules.write();
 }
 /*!
@@ -593,9 +595,46 @@ void MainComponent::timerCallback()
 		stopTimer();
 		CheckConnect();				//checks modules
 		ConnectionAutoUpdate();		// checks ports to port
+		GetModuleCommands();
+
+		//GetAdminData();
+		/* new readded */
+		//	GetModuleCommands();
+		/* should fix problem with cmion not working */
+
 		if(AllConnections.size()>0){RefreashConnections();}
 		startTimer (TimeBetweenChecks->getValue()*1000);
 
+
+}
+
+void MainComponent::GetAdminData(void)
+{
+	/*
+static list<ModuleStruct> listofknownmodules;
+static Bottle ModuleList;
+
+	while(ThePortForModules.getPendingReads()>0)
+		{
+		    Bottle b = ThePortForModules.read(true);
+			if(b!=NULL && b->isNull()==false) // if theres data on the port
+			{
+				int FirstData = b.get(0).asInt();
+				Bottle& cc = ThePortForModules.prepare();
+				switch(FirstData)
+				{
+				case 10:
+					ModuleStruct TempMod;
+					TempMod.name		= b.get(1).asString();
+					TempMod.catagory	= b.get(2).asString();
+					TempMod.subcatagory = b.get(3).asString();
+					listofknownmodules.push_front();
+				break;
+
+				}
+			}
+		}
+*/
 
 }
 
@@ -614,11 +653,13 @@ string mystring;
 					{
 							TempModuleButton->setColour(0x1000102 ,Colours::red);
 							repaint();
+							SendOffModuleList();
 					}
 				else if(Network::isConnected("/PortForModules",mystring.c_str(),true)==false)
 				{
 							TempModuleButton->setColour(0x1000102 ,Colours::red);
 							repaint();
+							SendOffModuleList();
 				}
 			}
 		}

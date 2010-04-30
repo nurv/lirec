@@ -54,6 +54,7 @@ int hasitworked;
 			MyComponent->AddModule(TempVar);
 			Network::connect(string(TempVar).c_str(),"/PortForModules");
 			Network::connect("/PortForModules",string(TempVar).c_str());
+			MyComponent->SendOffModuleList();
 			yarp::os::Time::delay(0.25);
 
 			}
@@ -64,6 +65,8 @@ int hasitworked;
 			String Child =TempVar.replaceSection(0,TempVar.indexOf(String("_"))+1,String(" "));
 			Child = Child.dropLastCharacters(1);
 			MyComponent->AddPort(parent,Child);
+			
+			//SendOffModuleList();
 			}
 		}
 
