@@ -340,22 +340,23 @@ if(FoundPort==true)
 //These are just window dressing to make it easer for the user, instead of using GetDataFromPort
 
 /*! Gets int data from port, you give it the int you want changed and it changes it, it also replys with weather the port has been updated True/False !*/
-bool SamgarModule::GetIntData   (string NameOfPort,int    *I){return GetDataFromPort(NameOfPort,TypeInt     ,I,0,0,0,0);}
+bool SamgarModule::GetIntData   (string NameOfPort,int    *I, int mode){return GetDataFromPort(NameOfPort,TypeInt     ,I,0,0,0,0,mode);}
 /*! Gets float data from port, you give it the int you want changed and it changes it, it also replys with weather the port has been updated True/False !*/
-bool SamgarModule::GetFloatData (string NameOfPort,float  *I){return GetDataFromPort(NameOfPort,TypeFloat   ,0,I,0,0,0);}
+bool SamgarModule::GetFloatData (string NameOfPort,float  *I, int mode){return GetDataFromPort(NameOfPort,TypeFloat   ,0,I,0,0,0,mode);}
 /*! Gets double data from port, you give it the int you want changed and it changes it, it also replys with weather the port has been updated True/False !*/
-bool SamgarModule::GetDoubleData(string NameOfPort,double *I){return GetDataFromPort(NameOfPort,TypeDouble  ,0,0,I,0,0);}
+bool SamgarModule::GetDoubleData(string NameOfPort,double *I, int mode){return GetDataFromPort(NameOfPort,TypeDouble  ,0,0,I,0,0,mode);}
 /*! Gets string data from port, you give it the int you want changed and it changes it, it also replys with weather the port has been updated True/False !*/
-bool SamgarModule::GetStringData(string NameOfPort,string *I){return GetDataFromPort(NameOfPort,TypeString  ,0,0,0,I,0);}
+bool SamgarModule::GetStringData(string NameOfPort,string *I, int mode){return GetDataFromPort(NameOfPort,TypeString  ,0,0,0,I,0,mode);}
 /*! Gets Bottle data from port, you give it the int you want changed and it changes it, it also replys with weather the port has been updated True/False !*/
-bool SamgarModule::GetBottleData(string NameOfPort,Bottle *I){return GetDataFromPort(NameOfPort,TypeBottle  ,0,0,0,0,I);}
+bool SamgarModule::GetBottleData(string NameOfPort,Bottle *I, int mode){return GetDataFromPort(NameOfPort,TypeBottle  ,0,0,0,0,I,mode);}
 
 
 /*! DO NOT CALL DIRECTLY !*/
-bool SamgarModule::GetDataFromPort(string NameOfPort,int TypeOfData, int *I ,float *F ,double *D, string *S ,Bottle *B)
+bool SamgarModule::GetDataFromPort(string NameOfPort,int TypeOfData, int *I ,float *F ,double *D, string *S ,Bottle *B, int mode)
 {
 
 //BufferedPort<Bottle> *MyTempPort;
+static int oo=0;
 
 DataPort *MyTempPort;
 
@@ -378,10 +379,24 @@ if(MyTempPort->getInputCount()==0){return false;} // if nothings connected to it
 Bottle MyBottle;
 
 //Bottle *MyBottle = MyTempPort->read();
-if(MyTempPort->istherebottle==1)
+if(MyTempPort->istherebottle==1 && MyTempPort->InRead==false)
 {
- MyBottle = MyTempPort->SavedBottle;
-MyTempPort->istherebottle=0;
+//puts("getting bottle data");
+
+	if(mode == SamgarModule::NoStep)
+	{
+	if	   (MyTempPort->bottlenum==1){MyBottle = MyTempPort->SavedBottle0;}
+	else if(MyTempPort->bottlenum==2){MyBottle = MyTempPort->SavedBottle1;}
+	else if(MyTempPort->bottlenum==0){MyBottle = MyTempPort->SavedBottle2;}
+	}
+	else // therefore this is step
+	{
+	if	   (MyTempPort->bottlenum==0){MyBottle = MyTempPort->SavedBottle0;}
+	else if(MyTempPort->bottlenum==1){MyBottle = MyTempPort->SavedBottle1;}
+	else if(MyTempPort->bottlenum==2){MyBottle = MyTempPort->SavedBottle2;}
+	}
+	//puts("finnished getting bottle data");
+    MyTempPort->istherebottle=0;
 }
 else
 {
