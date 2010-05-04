@@ -1,5 +1,6 @@
 package FAtiMA;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -15,7 +16,9 @@ import FAtiMA.reactiveLayer.ActionTendencies;
 import FAtiMA.reactiveLayer.EmotionalReactionTreeNode;
 import FAtiMA.sensorEffector.Event;
 
-public class ModelOfOther implements AgentModel {
+public class ModelOfOther implements AgentModel, Serializable {
+	
+	private static final long serialVersionUID = 1L;
 	
 	private ArrayList<Event> _perceivedEvents;
 	private String _name;
@@ -25,7 +28,7 @@ public class ModelOfOther implements AgentModel {
 	private EmotionalReactionTreeNode _emotionalReactions;
 	private ActionTendencies _actionTendencies;
 	
-	public ModelOfOther(String name, AgentModel am)
+	public ModelOfOther(String name, AgentModel am) 
 	{
 		_name = name;
 		_es = new EmotionalState();
