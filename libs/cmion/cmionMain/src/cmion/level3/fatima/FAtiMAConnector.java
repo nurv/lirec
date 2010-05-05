@@ -295,6 +295,18 @@ public class FAtiMAConnector extends AgentMindConnector implements Migrating, Mi
 				
 				// finally, send the received success message to the mind
 				mindThread.send(successMsg);
+				
+				// and force the mind to look at all the agents and objects in the new world model
+				// that we have migrated to
+				
+				// first agents
+				for (String agentName: architecture.getWorldModel().getAgentNames())
+					mindThread.sendLookAtPerception(agentName);
+				
+				// and now objects
+				for (String objectName: architecture.getWorldModel().getObjectNames())
+					mindThread.sendLookAtPerception(objectName);
+				
 			}
 			
 		} 

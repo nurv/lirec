@@ -133,19 +133,8 @@ public class FAtiMAListenerThread extends SocketListener {
 		} 
 		// FAtiMA agent wants to look at something, i.e. requests information about the properties of a certain object or another agent
 		else if (type.equals("look-at")) {
-			String target = st.nextToken();
-			
-			//System.out.println(_name + " looks at " + target);
-			String response = "LOOK-AT " + target;
-			
-			WorldModel worldModel = connector.getArchitecture().getWorldModel();
-			
-			if (worldModel.hasAgent(target))
-				response += FAtiMAutils.getPropertiesString(worldModel.getAgent(target));
-			else if (worldModel.hasObject(target))
-				response += FAtiMAutils.getPropertiesString(worldModel.getObject(target));
-									
-			this.send(response);
+			String target = st.nextToken();		
+			sendLookAtPerception(target);
 		}
 		else if (type.equals("STATE"))
 		{
@@ -161,6 +150,20 @@ public class FAtiMAListenerThread extends SocketListener {
 			connector.execute(FAtiMAutils.fatimaMessageToMindAction(agentName,msg));
 		}
 		
+	}
+	
+	public void sendLookAtPerception(String target)
+	{
+		String response = "LOOK-AT " + target;
+		
+		WorldModel worldModel = connector.getArchitecture().getWorldModel();
+		
+		if (worldModel.hasAgent(target))
+			response += FAtiMAutils.getPropertiesString(worldModel.getAgent(target));
+		else if (worldModel.hasObject(target))
+			response += FAtiMAutils.getPropertiesString(worldModel.getObject(target));
+	
+		send(response);
 	}
 	
 	/** returns the name of the FAtiMA agent that is connected to this thread */
