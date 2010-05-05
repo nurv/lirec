@@ -226,7 +226,7 @@ public class Agent implements AgentModel {
 	
 	public void AddNearByAgent(String agent)
 	{
-		if(!agent.equals(this._name))
+		if(!agent.equals(this._name) && !_nearbyAgents.contains(agent))
 		{
 			this._nearbyAgents.add(agent);
 		}
