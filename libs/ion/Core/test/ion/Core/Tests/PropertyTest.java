@@ -26,6 +26,9 @@
   22/05/2009      Pedro Cuba <pedro.cuba@tagus.ist.utl.pt>
   Added new test to verify if the ChangedValue Event is not raised when the value of a property is set to the value that the property has. 
   ---
+  05/05/2010      Pedro Cuba <pedro.cuba@tagus.ist.utl.pt>
+  Fixed some problems with ambiguous use of assert methods.
+  ---
 */
 package ion.Core.Tests;
 
@@ -96,7 +99,7 @@ public class PropertyTest {
 
         simulation.update();
 
-        int expected = property.getValue();
+        Integer expected = property.getValue();
         property.setValue(expected + 1);
         assertEquals(property.getValue(), expected); //Value is not supposed to change before update
 
@@ -130,13 +133,13 @@ public class PropertyTest {
 	public void multipleValueSetTest() {
 		Simulation simulation = Simulation.instance;
 
-		final int initialValue = 1;
+		final Integer initialValue = 1;
 
 		Property<Integer> property = new Property<Integer>(initialValue);
 		simulation.getElements().add(property);
 		simulation.update();
 
-		final int expectedValue = initialValue + 1;
+		final Integer expectedValue = initialValue + 1;
 
 		property.setValue(expectedValue);
 		property.setValue(expectedValue + 1);
@@ -205,7 +208,7 @@ public class PropertyTest {
     @Test
     public void propertyConstructorTest() {
         Property<Integer> property = new Property<Integer>(3);
-        assertEquals(property.getValue(), 3);
+        assertEquals(property.getValue(), new Integer(3));
     }
     
     //</editor-fold>

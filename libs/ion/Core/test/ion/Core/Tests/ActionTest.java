@@ -22,6 +22,9 @@
   ---
   09/04/2009      Pedro Cuba <pedro.cuba@tagus.ist.utl.pt>
   First version.
+  ---
+  05/05/2010      Pedro Cuba <pedro.cuba@tagus.ist.utl.pt>
+  Fixed some problems with ambiguous use of assert methods.
   ---  
 */
 package ion.Core.Tests;
@@ -132,7 +135,7 @@ public class ActionTest {
     public void idleStartArgumentsTest() {
         Simulation simulation = Simulation.instance;
         Action<Integer> action = new Action<Integer>();
-        final int expected = 3 + 1;
+        final Integer expected = 3 + 1;
 
         simulation.getElements().add(action);
         simulation.update();
@@ -478,7 +481,7 @@ public class ActionTest {
     public void idleStartArgumentsStopPauseResumeRequestsTest() {
         Simulation simulation = Simulation.instance;
         Action<Integer> action = new Action<Integer>();
-        final int expectedStartArguments = 3 + 5;
+        final Integer expectedStartArguments = 3 + 5;
         simulation.getElements().add(action);
         simulation.update();
 
