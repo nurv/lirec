@@ -287,13 +287,13 @@ public abstract class Synchronizer extends Element {
 		public void invoke(IReadOnlyQueueSet<Request> requests) {
 			
 			for (Reply request : requests.get(Reply.class)) {
-				
-				Document doc = docBuilder.newDocument();
-				org.w3c.dom.Element root = doc.createElement(SYNC_TAG);
-				doc.appendChild(root);
-				
-				Node messageNode = doc.importNode(request.message.getDocumentElement(), true);
-				root.appendChild(messageNode);
+							
+				//Adding the synchronization element as root and putting prior root as an inner element
+				Document doc = request.message;
+				org.w3c.dom.Element message = doc.getDocumentElement();
+				org.w3c.dom.Element syncElement = doc.createElement(SYNC_TAG);
+				syncElement.appendChild(message);
+				doc.appendChild(syncElement);
 				
 				try {
 					sendXMLMessage(doc, receivedConnection);
