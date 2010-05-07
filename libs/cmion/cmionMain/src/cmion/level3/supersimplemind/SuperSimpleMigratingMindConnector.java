@@ -134,8 +134,23 @@ public class SuperSimpleMigratingMindConnector extends AgentMindConnector implem
 		} else {
 			System.out.println("MIND-Received mind without goal.");
 		}
+		new WaitAndMigrateBack().start();
 	}
 
+	private class WaitAndMigrateBack extends Thread
+	{
+		@Override
+		public void run()
+		{
+			// wait 5 seconds
+			try {
+				Thread.sleep(5000);
+			} catch (InterruptedException e) {}
+			
+			// migrate back
+			mind.executeMigrationBackAction();
+		}
+	}
 
 	@Override
 	public Element saveState(Document doc) {

@@ -128,6 +128,18 @@ private void executeMigrationAction()
 	executing = true;
 }
 
+/** creates a Migrating action to a specific device and attempts to execute it */
+public void executeMigrationBackAction()
+{
+	ArrayList<String> parameters = new ArrayList<String>();
+	parameters.add("A");
+	
+	// modify this for test purposes
+	MindAction ma = new MindAction(agentName,"Migration",parameters);
+	this.connector.newAction(ma);
+	executing = true;
+}
+
 /** the mind processes added entities in this function */
 public void sendEntityAdded(String entityName) {
 	//this super simple mind doesn't do anything with perceptions
