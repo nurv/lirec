@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<migrationconfig>
+	<configuration>
+		<listenport value="34873" />
+		<agent active="false" />
+	</configuration>
+	<devices>
+		<device name="Android" host="192.168.1.8" port="34872" />
+	</devices>
+</migrationconfig>
+

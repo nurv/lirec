@@ -1,0 +1,13 @@
+<?xml version="1.0" ?>
+<!DOCTYPE CompetencyLibrary SYSTEM "CompetencyLibrary.dtd">
+
+<CompetencyLibrary>
+
+<Competency ClassName="cmion.inTheWild.competencies.GretaBMLCreator" />
+<Competency ClassName="cmion.inTheWild.competencies.GretaBMLSender" ConstructorParameters="192.168.1.7" />   
+<Competency ClassName="cmion.inTheWild.competencies.SMSReceiver" ConstructorParameters="modem.com9,COM9,115200,WAVECOM MODEM,MULTIBAND 900E 1800"/> 
+<Competency ClassName="cmion.inTheWild.competencies.SMSSender" ConstructorParameters="modem.com9,COM9,115200,WAVECOM MODEM,MULTIBAND 900E 1800" /> 			
+<Competency ClassName="cmion.level2.competencies.Migration" 
+			ConstructorParameters="MigrationConfigReview2.xml" />
+			
+</CompetencyLibrary>
