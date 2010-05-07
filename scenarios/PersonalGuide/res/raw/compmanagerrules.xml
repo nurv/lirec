@@ -1,0 +1,48 @@
+<?xml version="1.0" ?>
+<!DOCTYPE CompetencyManagerRules SYSTEM "competencymanagerrules.dtd">
+
+<CompetencyManagerRules>
+	
+	<Rule>
+		
+		<MindAction Name="Migration">
+				<Parameter No="1" Value="*" />
+		</MindAction>		
+		
+		<CompetencyExecutionPlan>
+			<Competency ID="1" Type="Migration">
+				<CompetencyParameter Name="DeviceName" Value="$parameter1" />
+			</Competency>
+		</CompetencyExecutionPlan>
+		
+	</Rule>
+
+	<Rule>
+	
+		<MindAction Name="Emotion">
+				<Parameter No="1" Value="*" />
+		</MindAction>		
+		
+		<CompetencyExecutionPlan>
+			<Competency ID="1" Type="FaceAnimator">
+				<CompetencyParameter Name="emotion" Value="$parameter1" />
+			</Competency>
+		</CompetencyExecutionPlan>
+		
+	</Rule>
+		
+	<Rule>
+
+		<MindAction Name="Talk">
+				<Parameter No="1" Value="*" />
+		</MindAction>		
+		
+		<CompetencyExecutionPlan>
+			<Competency ID="1" Type="TalkCompetency">
+				<CompetencyParameter Name="utterance" Value="$parameter1" />
+			</Competency>
+		</CompetencyExecutionPlan>
+		
+	</Rule>
+
+</CompetencyManagerRules>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    >
+
+
+
+<LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center_horizontal"><TextView android:layout_width="wrap_content" android:id="@+id/TextViewTalk" android:layout_height="50px" android:layout_margin="3px" android:textSize="20px" android:textStyle="bold"></TextView></LinearLayout>
+
+<FrameLayout android:layout_height="wrap_content" android:id="@+id/PersonalGuideFrame" android:layout_width="wrap_content"><ImageView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/PersonalGuideFace"></ImageView><ImageView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/PersonalGuideLips"></ImageView></FrameLayout>
+
+
+
+
+<LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="right"><Spinner android:id="@+id/Spinner01" android:layout_height="wrap_content" android:layout_width="250px"></Spinner>
+<Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/btnSubmit" android:text="submit"></Button>
+</LinearLayout>
+
+</LinearLayout>

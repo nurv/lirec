@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<animation-list xmlns:android="http://schemas.android.com/apk/res/android"
+	android:oneshot="true">
+	<item android:drawable="@drawable/moodhappy_face_sarah_001" android:duration="50" />
+	<item android:drawable="@drawable/moodhappy_face_sarah_000" android:duration="50" />
+</animation-list>

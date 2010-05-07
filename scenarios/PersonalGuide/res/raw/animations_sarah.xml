@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<animations>
+
+	<talk lips="talk_sarah" />
+
+	<!-- Mood Levels -->
+	<moodstates number="5">
+		<moodstate level="1" facein="moodhappy_face_in_human_0" faceout="moodhappy_face_out_human_0" />
+		
+		<moodstate level="-1" facein="moodsad_face_in_human_0" faceout="moodsad_face_out_human_0" />
+	</moodstates>
+	
+	<!-- Event Reactions -->	
+	<disgust>
+		<animation face="disgust_face_sarah" lips="disgust_lips_sarah"/>
+	</disgust>
+	<fear>
+		<animation face="fear_face_sarah" lips="fear_lips_sarah"/>
+	</fear>
+	<happy>
+		<animation face="happy_face_sarah" lips="happy_lips_sarah"/>
+	</happy>
+	<neutral>
+		<animation face="neutral_face_sarah" lips="fear_lips_sarah"/>
+	</neutral>
+	<sadness>
+		<animation face="sadness_face_sarah" lips="fear_lips_sarah"/>
+	</sadness>
+		<sadness>
+		<animation face="sadness_face_sarah" lips="fear_lips_sarah"/>
+	</sadness>
+</animations>
