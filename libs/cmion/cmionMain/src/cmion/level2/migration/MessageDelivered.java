@@ -1,14 +1,14 @@
 package cmion.level2.migration;
 
-import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import ion.Meta.Event;
 
 public class MessageDelivered extends Event {
 
-	public final Document message;
+	public final Element message;
 	
-	public MessageDelivered(Document message) {
+	public MessageDelivered(Element message) {
 		this.message = message;
 	}
 }

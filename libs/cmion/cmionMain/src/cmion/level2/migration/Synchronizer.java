@@ -185,7 +185,7 @@ public abstract class Synchronizer extends Element {
 			for (int i=0 ; i<nodes.getLength() ; i++){
 				Node node = nodes.item(i);
 				if(node.getNodeType() == Node.ELEMENT_NODE){
-					raise(new MessageReceived((org.w3c.dom.Element)node));
+					raise(new MessageDelivered((org.w3c.dom.Element)node));
 					return;
 				}
 			}

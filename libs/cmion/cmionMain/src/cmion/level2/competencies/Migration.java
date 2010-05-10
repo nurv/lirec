@@ -51,6 +51,8 @@ import cmion.level2.migration.SynchronizerImpl;
 
 
 public class Migration extends Competency {
+	
+	public static final String SUCCESS_TAG = "success";
 
 	private HashMap<String, Device> deviceList;
 	private Synchronizer sync;
@@ -223,6 +225,13 @@ public class Migration extends Competency {
 		
 		migrationElements = new ArrayList<Element>();
 		destination = deviceList.get(parameters.get("DeviceName"));
+		
+		if(destination == null){
+			System.out.println("Unknown Destination: "+parameters.get("DeviceName"));
+			raise(new SynchronizationFailed());
+			return false;
+		}
+		
 		migrationDocument = docBuilder.newDocument();
 		raise(new MigrationStart(destination, migrationDocument));
 		
@@ -325,14 +334,6 @@ public class Migration extends Competency {
 				//TODO send back message indicating if device is occupied by another agent.
 			}
 			
-			if(messageReceived.type.equals("success")){
-				raise(new MigrationComplete());
-			}
-			
-			if(messageReceived.type.equals("failure")){
-				raise(new MigrationFailed());
-			}
-			
 			if(messageReceived.type.equals("migration")){
 				if(!occupied){
 					raise(new IncomingMigration(messageReceived.message));
@@ -340,6 +341,7 @@ public class Migration extends Competency {
 					occupied = true;
 					sync.schedule(new Reply(replySuccess()));
 				} else {
+					System.out.println("Refusing agent because device is occupied.");
 					sync.schedule(new Reply(replyFailure()));
 				}
 			}
@@ -386,14 +388,14 @@ public class Migration extends Competency {
 		@Override
 		public void invoke(IEvent evt) {
 			MessageDelivered delivered = (MessageDelivered) evt;
+			Element success = (Element) delivered.message;
 			
-			Element root = (Element) delivered.message.getElementsByTagName("success").item(0);
-			
-			if(root != null){
-				raise(new MessageDelivered(delivered.message));
+			if(success.getTagName().equals(SUCCESS_TAG)){
+				raise(new MigrationComplete());
 				occupied = false;
 				migrationSucceeded();
 			} else {
+				raise(new MigrationFailed());
 				migrationFailed();
 			}
 		}
