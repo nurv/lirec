@@ -25,7 +25,7 @@ import android.widget.ImageView;
 
 public class FaceAnimation {
 
-	public static enum AnimationIntent { Neutral, Happy, Sad, Fear, Disgust }
+	public static enum AnimationIntent { Neutral, Happy, Sad, Fear, Disgust, Sleep }
 	
 	
 	private Context context;
@@ -91,6 +91,8 @@ public class FaceAnimation {
 					animationList = animations.get(AnimationIntent.Fear);
 				} else if (group.getName().equals("disgust")){
 					animationList = animations.get(AnimationIntent.Disgust);
+				} else if (group.getName().equals("sleep")){
+					animationList = animations.get(AnimationIntent.Sleep);	
 				} else {
 					System.err.println("Unused animation group: "+group.getName());
 					continue;

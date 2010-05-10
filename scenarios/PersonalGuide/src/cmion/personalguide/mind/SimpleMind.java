@@ -34,8 +34,8 @@ public class SimpleMind extends AgentMindConnector implements Migrating, Migrati
 	@Override
 	protected void architectureReady() 
 	{
-		executeAction(getEmotionAction(emotionalState));
-		executeAction(getTalkAction("Hello!"));
+		executeAction(getEmotionAction("sleep"));
+		//executeAction(getTalkAction("Hello!"));
 	}
 
 	@Override
@@ -73,8 +73,10 @@ public class SimpleMind extends AgentMindConnector implements Migrating, Migrati
 			else if (utterance.toLowerCase().contains("thank you"))
 				executeAction(getTalkAction("Migrating back, have a nice day."));
 			else if (utterance.toLowerCase().contains("migrating"))
+			{
+				executeAction(getEmotionAction("sleep"));
 				executeAction(getMigrationAction("Screen"));
-
+			}
 		}
 	}
 

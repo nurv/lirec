@@ -200,6 +200,8 @@ public class PersonalGuide extends Activity implements OnClickListener{
     			animator.animateFace(AnimationIntent.Happy);
 			else if (emotion.equals("sadness"))
     			animator.animateFace(AnimationIntent.Sad);
+			else if (emotion.equals("sleep"))
+    			animator.animateFace(AnimationIntent.Sleep);
     	}
     	
     };
