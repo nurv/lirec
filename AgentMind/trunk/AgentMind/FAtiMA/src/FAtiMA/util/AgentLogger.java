@@ -36,7 +36,11 @@ public class AgentLogger {
 	
 	public void initialize(String logName) throws IOException{	
 		
-		outFile = new BufferedWriter(new FileWriter(logName+"-Log.txt"));
+		if (VersionChecker.runningOnAndroid())
+			outFile = new BufferedWriter(new FileWriter("/sdcard/"+logName+"-Log.txt"));		
+		else
+			outFile = new BufferedWriter(new FileWriter(logName+"-Log.txt"));
+		
 		System.out.println("Log Initialized");
 		
 		this._initialized = true;

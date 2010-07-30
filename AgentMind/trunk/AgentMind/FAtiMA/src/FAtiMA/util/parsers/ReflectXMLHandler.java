@@ -21,6 +21,8 @@ import org.xml.sax.Locator;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import FAtiMA.util.VersionChecker;
+
 public abstract class ReflectXMLHandler extends DefaultHandler {
     // used for reflect
     Class<?>[] argTypes = {Attributes.class};
@@ -103,7 +105,10 @@ public abstract class ReflectXMLHandler extends DefaultHandler {
     
     public void endElement(String namespaceURI, String localName, String qName)
     {
-    	callEndMethod(qName + "End");
+    	if (VersionChecker.runningOnAndroid())
+    		callEndMethod(localName + "End");
+    	else
+    		callEndMethod(qName + "End");
     }
 
     /* Dealing with errors */
@@ -138,8 +143,16 @@ public abstract class ReflectXMLHandler extends DefaultHandler {
     }
     
     public void startElement(String uri, String localName, String qName, Attributes attributes) {
-    	callTagMethod(qName, attributes);
-    	lastTag = qName;
+    	if (VersionChecker.runningOnAndroid())
+    	{
+    		callTagMethod(localName, attributes);
+    		lastTag = localName;
+    	}
+    	else
+    	{
+    		callTagMethod(qName, attributes);
+    		lastTag = qName;    		
+    	}
     }
 
     public void unparsedEntityDecl(java.lang.String name, java.lang.String publicId, java.lang.String systemId, java.lang.String notationName) {

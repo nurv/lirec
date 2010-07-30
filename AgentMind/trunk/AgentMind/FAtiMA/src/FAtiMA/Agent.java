@@ -57,6 +57,7 @@ import FAtiMA.sensorEffector.WorldSimulatorRemoteAgent;
 import FAtiMA.socialRelations.LikeRelation;
 import FAtiMA.util.AgentLogger;
 import FAtiMA.util.Constants;
+import FAtiMA.util.VersionChecker;
 import FAtiMA.util.enumerables.ActionEvent;
 import FAtiMA.util.enumerables.AgentPlatform;
 import FAtiMA.util.enumerables.EmotionType;
@@ -109,6 +110,7 @@ public class Agent implements AgentModel {
 	
 	private String _saveDirectory;
 	public static final String MIND_PATH = "data/characters/minds/";
+	public static final String MIND_PATH_ANDROID = "sdcard/data/characters/minds/";	
 	private static final Name ACTION_CONTEXT = Name.ParseName("ActionContext()");
 
 	public Agent(short agentPlatform, String host, int port, String saveDirectory, boolean displayMode, String name, 
@@ -146,14 +148,17 @@ public class Agent implements AgentModel {
 		try{
 			AgentLogger.GetInstance().initialize(name);
 
+			String mind_path = MIND_PATH;
+			if (VersionChecker.runningOnAndroid()) mind_path = MIND_PATH_ANDROID;
+			
 			// Load Plan Operators
-			ActionLibrary.GetInstance().LoadActionsFile("" + MIND_PATH + actionsFile + ".xml", this);
+			ActionLibrary.GetInstance().LoadActionsFile("" + mind_path + actionsFile + ".xml", this);
 			EmotionalPlanner planner = new EmotionalPlanner(ActionLibrary.GetInstance().GetActions());
 			
 			
 
 			// Load GoalLibrary
-			GoalLibrary goalLibrary = new GoalLibrary(MIND_PATH + goalsFile + ".xml");
+			GoalLibrary goalLibrary = new GoalLibrary(mind_path + goalsFile + ".xml");
 
 
 			//For efficiency reasons these two are not real processes
@@ -162,7 +167,7 @@ public class Agent implements AgentModel {
 
 			_deliberativeLayer = new DeliberativeProcess(_name,goalLibrary,planner);
 	
-			String personalityFile = MIND_PATH + "roles/" + role + "/" + role + ".xml";
+			String personalityFile = mind_path + "roles/" + role + "/" + role + ".xml";
 			loadPersonality(personalityFile,agentPlatform, goalList);
 			
 			ArrayList<Step> occRules = OCCAppraisalRules.GenerateOCCAppraisalRules(this);
@@ -448,7 +453,10 @@ public class Agent implements AgentModel {
 		CultureLoaderHandler culture = new CultureLoaderHandler(this, _reactiveLayer,_deliberativeLayer);
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		SAXParser parser = factory.newSAXParser();
-		parser.parse(new File(MIND_PATH + cultureName + ".xml"), culture);
+		if (VersionChecker.runningOnAndroid())
+			parser.parse(new File(MIND_PATH_ANDROID + cultureName + ".xml"), culture);		
+		else	
+			parser.parse(new File(MIND_PATH + cultureName + ".xml"), culture);
 		
 		Ritual r;
 		ListIterator<Ritual> li = culture.GetRituals(this).listIterator();
@@ -1033,7 +1041,7 @@ public class Agent implements AgentModel {
 		try{
 			_remoteAgent.start();
 	        
-			if(_showStateWindow){
+			if(_showStateWindow && !VersionChecker.runningOnAndroid()){
 				_agentDisplay = new AgentDisplay(this);
 			}
 			
