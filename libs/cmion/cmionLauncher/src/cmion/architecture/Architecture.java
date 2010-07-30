@@ -128,7 +128,9 @@ public class Architecture extends Element implements IArchitecture {
 		for (Element element : Simulation.instance.getElements())
 			if (element instanceof CmionComponent)
 				((CmionComponent)element).registerHandlers();
-				
+		
+		Simulation.instance.update();
+		
 		System.out.println("CMION initialised");
 	}
 	
