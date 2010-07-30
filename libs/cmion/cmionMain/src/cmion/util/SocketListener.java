@@ -53,6 +53,7 @@ public abstract class SocketListener extends Thread {
     
     /** Creates new SocketListener */
     public SocketListener(Socket socket) {
+    	super("SocketListener");
         this.socket = socket;
     }
     

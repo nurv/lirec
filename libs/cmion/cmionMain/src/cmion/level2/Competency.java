@@ -164,7 +164,7 @@ public abstract class Competency extends CmionComponent implements Runnable
 			this.parameters = parameters;
 			
 			// run competency in a new thread			
-			new Thread(this).start();
+			new Thread(this,getCompetencyName()).start();
 		}		
 	}
 	

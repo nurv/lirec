@@ -211,6 +211,11 @@ public class FAtiMAConnector extends AgentMindConnector implements Migrating, Mi
 	/** thread that waits for a FAtiMA connecting */
 	private class ListenForConnectionThread extends Thread
 	{
+		public ListenForConnectionThread()
+		{
+			super("ListenForFatimaConnection");
+		}
+		
 		
 		/** thread main method */
 		@Override

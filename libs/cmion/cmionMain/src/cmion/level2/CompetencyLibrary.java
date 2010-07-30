@@ -287,9 +287,15 @@ public class CompetencyLibrary extends CmionComponent {
 	 *  have to keep trying */
 	private class BackgroundCompetencyStarter extends Thread
 	{
+		public BackgroundCompetencyStarter()
+		{
+			super("BackgroundCompetencyStarter");
+		}
+		
+		
 		@Override
 		public void run()
-		{
+		{			
 			// create list for storing the competencies that we have already 
 			// started, initially empty
 			ArrayList<Competency> alreadyStartedCompetencies = new ArrayList<Competency>();

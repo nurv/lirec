@@ -45,7 +45,7 @@ public class TestCompetency6 extends Competency {
 	public TestCompetency6(IArchitecture architecture) {
 		super(architecture);
 
-		competencyName = "TestCompetency4";
+		competencyName = "TestCompetency6";
 		
 		competencyType = "TestType6";
 	}
