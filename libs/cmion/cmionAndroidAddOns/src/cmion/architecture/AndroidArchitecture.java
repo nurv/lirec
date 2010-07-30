@@ -42,6 +42,7 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import android.app.Application;
 import android.content.Context;
 import android.content.res.Resources;
 
@@ -90,10 +91,11 @@ public class AndroidArchitecture extends Element implements IArchitecture {
 	 *  architecture configuration, i.e. the scenario*/
 	private ArrayList<CmionComponent> customComponents;
 	
+	/** a reference to the android context*/
 	private Context androidCtx;
 	
 	/** create a new architecture */
-	public AndroidArchitecture(String architectureConfigurationFile, Context androidCtx) throws Exception
+	public AndroidArchitecture(String architectureConfigurationFile, Context androidCtx, Application andriodApp) throws Exception
 	{	
 		this.androidCtx = androidCtx;
 		
@@ -137,6 +139,8 @@ public class AndroidArchitecture extends Element implements IArchitecture {
 		for (Element element : Simulation.instance.getElements())
 			if (element instanceof CmionComponent)
 				((CmionComponent)element).registerHandlers();
+		
+		Simulation.instance.update();
 		
 		System.out.println("CMION initialised");
 	}
@@ -317,7 +321,7 @@ public class AndroidArchitecture extends Element implements IArchitecture {
 	}
 	
 	/** This is the equivalent to the main method in Architecture */
-	public static AndroidArchitecture startup(String configFile, Context androidCtx)
+	public static AndroidArchitecture startup(String configFile, Context androidCtx, Application androidApp)
 	{
 		try
 		{
@@ -325,13 +329,13 @@ public class AndroidArchitecture extends Element implements IArchitecture {
 			
 			// initialisation
 			if(configFile != null){
-				architecture = new AndroidArchitecture(configFile, androidCtx);
+				architecture = new AndroidArchitecture(configFile, androidCtx, androidApp);
 			} else {
-				architecture = new AndroidArchitecture("ArchitectureConfiguration", androidCtx);
+				architecture = new AndroidArchitecture("ArchitectureConfiguration", androidCtx, androidApp);
 			}
 
 			// run
-			new Thread(architecture.new SimulationRunner()).start();
+			new Thread(architecture.new SimulationRunner(),"CmionMainThread").start();
 			
 			return architecture;
 
