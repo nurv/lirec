@@ -1,4 +1,5 @@
-<GoalLibrary>
+<GoalLibrary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:noNamespaceSchemaLocation="./schemas/GoalLibrary.xsd">
 	<!-- Attend to user -->
 	<ActivePursuitGoal name="AttendTo([target])">
 		<PreConditions>
@@ -299,9 +300,9 @@
 			<Property name="[target](angryWith,[SELF])" operator="=" value="True" />
 			<RecentEvent occurred="False" subject="[SELF]" action="Apologise" target="[target]"/>
 		</PreConditions>
-		<SuccessConditions>
+		<SucessConditions>
 			<RecentEvent occurred="True" subject="[SELF]" action="Apologise" target="[target]"/>
-		</SuccessConditions>
+		</SucessConditions>
 		<FailureConditions>
 		</FailureConditions>			
 		<ExpectedEffects>

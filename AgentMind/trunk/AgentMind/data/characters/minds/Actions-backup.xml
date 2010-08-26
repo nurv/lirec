@@ -1,4 +1,6 @@
-<DomainActions>
+<DomainActions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:noNamespaceSchemaLocation="./schemas/Actions.xsd">
+
 	<!-- physical actions -->
 	<Action name="pick-from-floor([target])">
 		<PreConditions>
@@ -375,7 +377,7 @@
 			</Effect>
 		</Effects>
 	</Action>
-    -->
+  
     
     <!-- Join Group Speech Acts -->
 	<Action name="SpeechAct([target],joingroupquestionthreatleave,[group])" probability="0.5">

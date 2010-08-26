@@ -1,4 +1,5 @@
-<Character role="Abbuk">
+<Character role="Abbuk" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:noNamespaceSchemaLocation="../../schemas/Character.xsd">
 	<EmotionalThresholds>
 		<EmotionalThreshold emotion="Love" threshold="6" decay="5"/>
 		<EmotionalThreshold emotion="Hate" threshold="2" decay="5"/>

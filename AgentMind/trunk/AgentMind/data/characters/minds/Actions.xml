@@ -1,4 +1,5 @@
-<DomainActions>
+<DomainActions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:noNamespaceSchemaLocation="./schemas/Actions.xsd">
 
 	<!-- physical actions -->
 	<!-- Surprise on seeing the user --> 
@@ -49,7 +50,9 @@
 			<RecentEvent occurred="True" subject="[AGENT]" action="SpeechAct" target="user" parameters="askToFollow"/>
 		</PreConditions>
 		<Effects>		
-			<Property name="[AGENT](place)" operator="=" value="[place]" />
+			<Effect probability="1.0">
+				<Property name="[AGENT](place)" operator="=" value="[place]" />
+			</Effect>
 		</Effects>
 		<EffectsOnDrives>
 		</EffectsOnDrives>

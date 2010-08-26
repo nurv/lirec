@@ -1,4 +1,5 @@
-<DomainActions>
+<DomainActions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:noNamespaceSchemaLocation="./schemas/Actions.xsd">
 	
 	<Action name="respect-greeting-gesture([target])">
 		<PreConditions>
@@ -66,10 +67,10 @@
 				<Property name="[target](hasMoney)" operator="=" value="True"/>
 			</Effect>
 		</Effects>
-		<ExpectedEffects>
+		<EffectsOnDrives>
 			<Motivator drive="Energy" target="[target]" value="+5"/>
 			<Motivator drive="Energy" target="[AGENT]" value="-5"/>
-		</ExpectedEffects>	
+		</EffectsOnDrives>	
 	</Action>	
 			
 	<Action name="walk-to-place([place])">
@@ -158,8 +159,6 @@
 	      </Effect>
 	    </Effects>
 	    <EffectsOnDrives>
-	      <EffectsOnDrives>
-	      </EffectsOnDrives>
 	    </EffectsOnDrives>
   	</Action>  
 	
@@ -174,9 +173,7 @@
 			</Effect>
 		</Effects>
 		<EffectsOnDrives>
-			<EffectsOnDrives>
-				<Motivator drive="Affiliation" target="[target]" value="+2"/>
-			</EffectsOnDrives>
+			<Motivator drive="Affiliation" target="[target]" value="+2"/>
 		</EffectsOnDrives>
 	</Action>
 	
@@ -191,9 +188,7 @@
 			</Effect>
 		</Effects>
 		<EffectsOnDrives>
-			<EffectsOnDrives>
-				<Motivator drive="Affiliation" target="[target]" value="+2"/>
-			</EffectsOnDrives>
+			<Motivator drive="Affiliation" target="[target]" value="+2"/>
 		</EffectsOnDrives>
 	</Action>
 	
@@ -208,10 +203,8 @@
 			</Effect>
 		</Effects>
 		<EffectsOnDrives>
-			<EffectsOnDrives>
-				<Motivator drive="Affiliation" target="[SELF]" value="+2"/>
-				<Motivator drive="Affiliation" target="[target]" value="-3"/>
-			</EffectsOnDrives>
+			<Motivator drive="Affiliation" target="[SELF]" value="+2"/>
+			<Motivator drive="Affiliation" target="[target]" value="-3"/>
 		</EffectsOnDrives>
 	</Action>	
 	
@@ -225,9 +218,7 @@
 			</Effect>
 		</Effects>
 		<EffectsOnDrives>
-			<EffectsOnDrives>
-				<Motivator drive="Affiliation" target="[target]" value="-3"/>
-			</EffectsOnDrives>
+			<Motivator drive="Affiliation" target="[target]" value="-3"/>
 		</EffectsOnDrives>
 	</Action>
 
@@ -241,10 +232,8 @@
 			</Effect>
 		</Effects>
 		<EffectsOnDrives>
-			<EffectsOnDrives>
-				<Motivator drive="Affiliation" target="[target]" value="+4"/>
-				<Motivator drive="Integrity" target="[target]" value="+4"/>
-			</EffectsOnDrives>
+			<Motivator drive="Affiliation" target="[target]" value="+4"/>
+			<Motivator drive="Integrity" target="[target]" value="+4"/>
 		</EffectsOnDrives>
 	</Action>	
 	

@@ -1,4 +1,5 @@
-<GoalLibrary>
+<GoalLibrary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:noNamespaceSchemaLocation="./schemas/GoalLibrary.xsd">
 
 	<!-- Interest Goals -->
 	
@@ -373,7 +374,7 @@
 		<PreConditions>
 			<Property name="[victim](role)" operator="=" value="Victim"/>
 			<Property name="[target](role)" operator="=" value="Bully"/>
-			<EmotionCondition emotion="Pitty" min-intensity="0" target="[Victim]" />-->    <!--only respond this way if you feel pitty for the victim -->
+			<EmotionCondition emotion="Pitty" min-intensity="0" target="[Victim]" />  <!--only respond this way if you feel pitty for the victim -->
 			<EmotionCondition emotion="Anger" min-intensity="1" target="[target]" /> <!-- and you'r angry at the bully -->
 			<Property name="[SELF](helper,[victim])" operator="=" value="True" />
 			<RecentEvent occurred="False" subject="[SELF]" action="SpeechAct" target="[target]" parameters="confrontationhelper"/>
@@ -494,15 +495,15 @@
 			<Property name="[group](isGroup)" operator="=" value="True" /> 
 			<Property name="[SELF](inGroup,[group])"  operator="=" value="True" />
 			 <Property name="[joiner](inGroup,[group])"  operator="=" value="Pending" />
-			<RecentEvent occurred="true" subject="[joiner]" target="[SELF]" action="Question" parameters="joingroupconvince,[group]" />
-			<RecentEvent occurred="false" subject="[SELF]" target="[joiner]" action="Reply" parameters="joingroupconvince,*,[group]"/> 
+			<RecentEvent occurred="True" subject="[joiner]" target="[SELF]" action="Question" parameters="joingroupconvince,[group]" />
+			<RecentEvent occurred="False" subject="[SELF]" target="[joiner]" action="Reply" parameters="joingroupconvince,*,[group]"/> 
 			<Property name="Like([SELF],[joiner])" operator="GreaterEqual" value="-2" /> <!-- choose pos unless I strongly hate joiner -->				
 		</PreConditions>
 		<SucessConditions>
-			<RecentEvent occurred="true" subject="[SELF]" target="[joiner]" action="[Reply]" parameters="joingroupconvince,positiveanswer,[group]"/> 
+			<RecentEvent occurred="True" subject="[SELF]" target="[joiner]" action="[Reply]" parameters="joingroupconvince,positiveanswer,[group]"/> 
 		</SucessConditions>
 		<FailureConditions>
-			<RecentEvent occurred="true" subject="[SELF]" target="[joiner]" action="[Reply]" parameters="joingroupconvince,negativeanswer,[group]"/> 
+			<RecentEvent occurred="True" subject="[SELF]" target="[joiner]" action="[Reply]" parameters="joingroupconvince,negativeanswer,[group]"/> 
 			</FailureConditions>
 	</ActivePursuitGoal>
 
@@ -511,15 +512,15 @@
 			<Property name="[group](isGroup)" operator="=" value="True" /> 
 			<Property name="[SELF](inGroup,[group])"  operator="=" value="True" />
 			 <Property name="[joiner](inGroup,[group])"  operator="=" value="Pending" />
-			<RecentEvent occurred="true" subject="[joiner]" target="[SELF]" action="Question" parameters="joingroupconvince,[group]" />
-			<RecentEvent occurred="false" subject="[SELF]" target="[joiner]" action="Reply" parameters="joingroupconvince,*,[group]"/> 
+			<RecentEvent occurred="True" subject="[joiner]" target="[SELF]" action="Question" parameters="joingroupconvince,[group]" />
+			<RecentEvent occurred="False" subject="[SELF]" target="[joiner]" action="Reply" parameters="joingroupconvince,*,[group]"/> 
 			<Property name="Like([SELF],[joiner])" operator="LesserThan" value="-2" /> <!-- choose neg if I strongly dislike joiner -->
 		</PreConditions>
 		<SucessConditions>
-			<RecentEvent occurred="true" subject="[SELF]" target="[joiner]" action="[Reply]" parameters="joingroupconvince,negativeanswer,[group]"/> 
+			<RecentEvent occurred="True" subject="[SELF]" target="[joiner]" action="[Reply]" parameters="joingroupconvince,negativeanswer,[group]"/> 
 		</SucessConditions>
 		<FailureConditions>
-			<RecentEvent occurred="true" subject="[SELF]" target="[joiner]" action="[Reply]" parameters="joingroupconvince,positiveanswer,[group]"/> 
+			<RecentEvent occurred="True" subject="[SELF]" target="[joiner]" action="[Reply]" parameters="joingroupconvince,positiveanswer,[group]"/> 
 		</FailureConditions>
 	</ActivePursuitGoal>	
 	
@@ -607,7 +608,7 @@
 		<FailureConditions>
 			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[other]" parameters="joingroupquestionthreatleavenegativeanswer,[group]" /> 
 		</FailureConditions>
-	</ActivePursuitGoal>-->
+	</ActivePursuitGoal>
 
 	<!-- Join group threat leave - letting bully leave -->
 	<ActivePursuitGoal name="JoinGroupThreatLeaveRefuse([other],[joiner],[group])"> 
@@ -681,7 +682,7 @@
 			<Property name="[SELF](copingStrategy)" operator="=" value="makenewfriend" />
 			<RecentEvent occurred="True" subject="[SELF]" action="look-at" target="[friend]" />
 			<Property name="Like([SELF],[friend])" operator="GreaterThan" value="1"/>
-			<RecentEvent occured="True" subject="[SELF]" action="look-at" target="[friend]" />
+			<RecentEvent occurred="True" subject="[SELF]" action="look-at" target="[friend]" />
 			<!--<Property name="[bully](role)" operator="=" value="Bully" />
 			<RecentEvent occured="False" subject="[SELF]" action="look-at" target="[bully]" />-->
 			<Property name="[SELF](friend,[friend])" operator="!=" value="True" />
@@ -1106,7 +1107,7 @@
 		</PreConditions>
 		<SucessConditions>
 				<!--<Property name="[SELF](hasItem,[item])" operator="=" value="True" />-->
-				<RecentEvent occurred="true" subject="[SELF]" target="[owner]" action="steal"  parameters="[item]" />
+				<RecentEvent occurred="True" subject="[SELF]" target="[owner]" action="steal"  parameters="[item]" />
 		</SucessConditions>
 		<FailureConditions> 
 		</FailureConditions>	
@@ -1198,7 +1199,7 @@
 			<Property name="Like([SELF],[target])" operator="LesserThan" value="0" />	
 			<!-- PR 061124 next prec. avoids that bully attacks more than once -->
 			<RecentEvent occurred="False" subject="[SELF]" target="[target]" action="attack" />
--->		</PreConditions>
+		</PreConditions>
 		<SucessConditions>
 		<!-- PR 061109 changed "push" into "kick" -->
 		<!-- João Dias changed the "kick" into a more general "attack" -->
@@ -1251,7 +1252,7 @@
 			<RecentEvent occurred="True" subject="[SELF]" target="[victim]" action="SpeechAct" parameters="gloatvictory" /> <!--PR 061123 bully goes away after he's gloated victory against bully -->
 		</PreConditions>
 		<SucessConditions>
-			<RecentEvent ocurred="True" subject="[SELF]" action="walkAwayVictim" target="[victim]"  />
+			<RecentEvent occurred="True" subject="[SELF]" action="walkAwayVictim" target="[victim]"  />
 		</SucessConditions>
 		<FailureConditions>
 		</FailureConditions>
@@ -1263,7 +1264,7 @@
 		<PreConditions>
 			<RecentEvent occurred="True" subject="[target]" target="[SELF]" action="Reply" parameters="confrontationorder,positiveanswer" />
 			<RecentEvent occurred="False" subject="[SELF]" target="[target]" action="SpeechAct" parameters="gloatvictory" />
--->	</PreConditions>
+	</PreConditions>
 		<SucessConditions>
 			<RecentEvent occurred="True" subject="[SELF]" target="[target]" action="SpeechAct" parameters="gloatvictory" />
 		</SucessConditions>

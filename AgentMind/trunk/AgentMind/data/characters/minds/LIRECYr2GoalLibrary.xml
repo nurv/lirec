@@ -1,4 +1,5 @@
-<GoalLibrary>
+<GoalLibrary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:noNamespaceSchemaLocation="./schemas/GoalLibrary.xsd">
 	<!-- Getting information from database -->
 	<!--ActivePursuitGoal name="ReplyLocation([target])">
 		<PreConditions>

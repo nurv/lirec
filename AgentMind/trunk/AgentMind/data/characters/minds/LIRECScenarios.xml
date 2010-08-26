@@ -166,4 +166,21 @@
 		</Agent>
 		
 	</Scenario>	
+	
+		<Scenario name="TeamBuddy">
+		<WorldSimulator port="46874" scenery="Office" actionsFile="data/characters/minds/Actions-TeamBuddy.xml" 
+						agentLanguageFile="data/characters/minds/language/agent/en/language-set-1" 
+						userOptionsFile="TestOptions">		
+		<Objects>
+		</Objects>
+			
+		</WorldSimulator>	
+		<Agent name="TeamBuddy" displayName="TeamBuddy" role="TeamBuddy" platform="worldsim" host="localhost" 
+			   port="46874" displayMode="True" sex="F" actionsFile="Actions-TeamBuddy" 
+			   goalsFile="Goals-TeamBuddy" cultureName="NoCultureTest">
+			<Properties>				
+			</Properties>	
+		</Agent>
+	</Scenario>
+	
 </Scenarios>

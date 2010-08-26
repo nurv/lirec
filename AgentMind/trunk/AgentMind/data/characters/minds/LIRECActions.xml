@@ -1,4 +1,5 @@
-<DomainActions>
+<DomainActions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:noNamespaceSchemaLocation="./schemas/Actions.xsd">
 	
 	<!-- Speech actions -->
 	<!-- Introducing self to the user -->
@@ -305,52 +306,52 @@
 	</Action>
 
 	<Action name="Give([object),[target])">
-		<PreCondition>
+		<PreConditions>
 			<Property name="[target]" operator="!=" value="[AGENT]"/>
 			<Property name="[object](eatable)" operator="=" value="True" />
 			<Property name="has([AGENT],[object])" operator="=" value="True" />
-		</PreCondition>
+		</PreConditions>
 		<EffectsOnDrives>
 			<Motivator drive="Energy" target="[target]" value="+3"/>
 		</EffectsOnDrives>
 	</Action>
 	<Action name="Slap([target])">
-		<PreCondition>
+		<PreConditions>
 			<Property name="[target]" operator="!=" value="[AGENT]"/>
-		</PreCondition>
+		</PreConditions>
 		<EffectsOnDrives>
 			<Motivator drive="Integrity" target="[target]" value="-2"/>
 			<Motivator drive="Affiliation" target="[target]" value="-3"/>
 		</EffectsOnDrives>
 	</Action>
 	<Action name="Insult([target])">
-		<PreCondition>
+		<PreConditions>
 			<Property name="[target]" operator="!=" value="[AGENT]"/>
-		</PreCondition>
+		</PreConditions>
 		<EffectsOnDrives>
 			<Motivator drive="Affiliation" target="[target]" value="-2"/>
 		</EffectsOnDrives>
 	</Action>
 	<Action name="Hug([target])">
-		<PreCondition>
+		<PreConditions>
 			<Property name="[target]" operator="!=" value="[AGENT]"/>
-		</PreCondition>
+		</PreConditions>
 		<EffectsOnDrives>
 			<Motivator drive="Affiliation" target="[target]" value="4"/>
 		</EffectsOnDrives>
 	</Action>
 	<Action name="Praise([target])">
-		<PreCondition>
+		<PreConditions>
 			<Property name="[target]" operator="!=" value="[AGENT]"/>
-		</PreCondition>
+		</PreConditions>
 		<EffectsOnDrives>
 			<Motivator drive="Affiliation" target="[target]" value="2"/>
 		</EffectsOnDrives>
 	</Action>
 	<Action name="Massage([target])">
-		<PreCondition>
+		<PreConditions>
 			<Property name="[target]" operator="!=" value="[AGENT]"/>
-		</PreCondition>
+		</PreConditions>
 		<EffectsOnDrives>
 			<Motivator drive="Energy" target="[target]" value="4"/>
 		</EffectsOnDrives>

@@ -1,4 +1,5 @@
-<Character role="Tigrit">
+<Character role="Tigrit" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:noNamespaceSchemaLocation="../../schemas/Character.xsd">
 	<EmotionalThresholds>
 		<EmotionalThreshold emotion="Love" threshold="5" decay="5"/>
 		<EmotionalThreshold emotion="Hate" threshold="1" decay="5"/>

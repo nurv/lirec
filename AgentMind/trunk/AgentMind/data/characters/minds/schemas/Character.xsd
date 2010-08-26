@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xs:schema elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+<xs:include schemaLocation="Types.xsd" />
+<xs:include schemaLocation="Conditions.xsd" />
+
+<xs:element name="Character">
+  <xs:complexType>
+    <xs:all>
+		<xs:element name="EmotionalThresholds" type="EmotionalThresholds" minOccurs="1" maxOccurs="1"/>
+   		<xs:element name="MotivationalParameters" type="MotivationalParameters" minOccurs="1" maxOccurs="1"/>
+   		<xs:element name="Goals" type="Goals" minOccurs="1" maxOccurs="1"/>
+   		<xs:element name="InterpersonalRelations" type="InterpersonalRelations" minOccurs="0" maxOccurs="1"/>
+   		<xs:element name="EventReactions" type="EventReactions" minOccurs="0" maxOccurs="1"/>
+   		<xs:element name="ActionTendencies" type="ActionTendencies" minOccurs="0" maxOccurs="1"/>
+	</xs:all>
+	<xs:attribute name="role" type="xs:string" use="required"/>
+  </xs:complexType>
+</xs:element>
+
+<xs:complexType name="EmotionalThresholds">
+    <xs:sequence>
+    	<xs:element name="EmotionalThreshold" minOccurs="0" maxOccurs="22">
+  			<xs:complexType>
+  				<xs:attribute name="emotion" type="emotionType" use="required"/>
+ 				<xs:attribute name="threshold" type="xs:unsignedInt" use ="required" />
+				<xs:attribute name="decay" type="xs:unsignedInt" use="required"/>
+  			</xs:complexType>
+  		</xs:element>
+  	</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="MotivationalParameters">
+    <xs:sequence>
+    	<xs:element name="MotivationalParameter" minOccurs="0" maxOccurs="unbounded">
+  			<xs:complexType>
+  				<xs:attribute name="motivator" type="allMotivatorsType" use="required"/>
+				<xs:attribute name="decayFactor" type="xs:double" use="required"/>
+ 				<xs:attribute name="weight" type="xs:double" use ="required" />
+ 				<xs:attribute name="intensity" type="xs:double" use ="required" />
+  			</xs:complexType>
+  		</xs:element>
+  	</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="Goals">
+    <xs:sequence>
+    	<xs:element name="Goal" minOccurs="0" maxOccurs="unbounded">
+  			<xs:complexType>
+				<xs:attribute name="name" type="xs:string" use="required"/>
+ 				<xs:attribute name="importanceOfSuccess" type="xs:unsignedInt" use ="required" />
+ 				<xs:attribute name="importanceOfFailure" type="xs:unsignedInt" use ="required" />
+  			</xs:complexType>
+  		</xs:element>
+  	</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="InterpersonalRelations">
+    <xs:sequence>
+    	<xs:element name="Relation" minOccurs="0" maxOccurs="unbounded">
+  			<xs:complexType>
+				<xs:attribute name="target" type="xs:string" use="required"/>
+ 				<xs:attribute name="like" type="xs:integer" use ="optional" />
+ 				<xs:attribute name="respect" type="xs:integer" use ="optional" />
+  			</xs:complexType>
+  		</xs:element>
+  	</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="EventReactions">
+    <xs:sequence>
+    	<xs:element name="EmotionalReaction" minOccurs="0" maxOccurs="unbounded" type="EmotionalReaction" />
+  	</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="EmotionalReaction">
+    <xs:sequence>
+    	<xs:element name="Event" minOccurs="1" maxOccurs="1">
+    		<xs:complexType>
+  				<xs:attribute name="subject" type="xs:string" use ="optional" />
+  				<xs:attribute name="action" type="xs:string" use="optional"/>
+  				<xs:attribute name="target" type="xs:string" use="optional"/>
+  				<xs:attribute name="parameters" type="xs:string" use="optional"/>
+			</xs:complexType>
+    	</xs:element>
+   	</xs:sequence>
+  	<xs:attribute name="desirability" type="xs:integer" use="optional"/>
+  	<xs:attribute name="desirabilityForOther" type="xs:integer" use="optional"/>
+  	<xs:attribute name="praiseworthiness" type="xs:integer" use="optional"/>
+  	<xs:attribute name="other" type="xs:string" use="optional"/>
+</xs:complexType>
+
+
+<xs:complexType name="ActionTendencies">
+    <xs:sequence>
+    	<xs:element name="ActionTendency" minOccurs="0" maxOccurs="unbounded" type="ActionTendency" />
+  	</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="ActionTendency">
+    <xs:sequence>
+    	<xs:element name="Preconditions" minOccurs="1" maxOccurs="1">
+    	   <xs:complexType>
+        		    	<xs:choice minOccurs="0" maxOccurs="unbounded">
+        					<xs:element name="Property" type="PropertyCondition" />
+        					<xs:element name="RecentEvent" type="EventCondition"/>
+        					<xs:element name="NewEvent" type="EventCondition"/>
+        					<xs:element name="PastEvent" type="EventCondition"/>
+        					<xs:element name="EmotionCondition" type="EmotionCondition"/>
+        					<xs:element name="MoodCondition" type="MoodCondition"/>
+        					<xs:element name="Predicate" type="PredicateCondition" />        					
+        				</xs:choice>
+         	</xs:complexType>
+    	</xs:element>
+    	<xs:element name="ElicitingEmotion" minOccurs="1" maxOccurs="1">
+    		<xs:complexType>
+    			<xs:sequence>
+    				<xs:element name="CauseEvent" minOccurs="0" maxOccurs="1">
+    					<xs:complexType>
+  							<xs:attribute name="subject" type="xs:string" use ="optional" />
+  							<xs:attribute name="action" type="xs:string" use="optional"/>
+  							<xs:attribute name="target" type="xs:string" use="optional"/>
+  							<xs:attribute name="parameters" type="xs:string" use="optional"/>
+						</xs:complexType>
+    				</xs:element>
+    			</xs:sequence>
+    			<xs:attribute name="type" type="emotionType" use="required"/>
+    			<xs:attribute name="minIntensity" type="xs:unsignedInt" use="required"/>
+    		</xs:complexType>
+    	</xs:element>
+  	</xs:sequence>
+  	<xs:attribute name="action" type="xs:string" use="required"/>
+</xs:complexType>
+
+
+
+</xs:schema>

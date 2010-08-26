@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xs:schema elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+<xs:include schemaLocation="Types.xsd" />
+
+<xs:complexType name="PropertyCondition">
+  <xs:attribute name="name" type="xs:string" use="required"/>
+  <xs:attribute name="operator" type="operatorType" use ="required" />
+  <xs:attribute name="value" type="xs:string" use="required"/>
+</xs:complexType>
+
+<xs:complexType name="EventCondition">
+  <xs:attribute name="occurred" type="booleanType" use="optional"/>
+  <xs:attribute name="subject" type="xs:string" use ="required" />
+  <xs:attribute name="action" type="xs:string" use="required"/>
+  <xs:attribute name="target" type="xs:string" use="optional"/>
+  <xs:attribute name="parameters" type="xs:string" use="optional"/>
+</xs:complexType>
+
+<xs:complexType name="RitualCondition">
+  <xs:attribute name="name" type="xs:string" use ="required" />
+  <xs:attribute name="roles" type="xs:string" use="required"/>
+</xs:complexType>
+
+<xs:complexType name="EmotionCondition">
+ <xs:attribute name="emotion" type="emotionType" use="required"/>
+ <xs:attribute name="active" type="booleanType" use="optional"/> 
+ <xs:attribute name="min-intensity" type="xs:double" use="optional"/>
+ <xs:attribute name="target" type="xs:string" use="optional"/>
+ <xs:attribute name="agent" type="xs:string" use="optional"/>
+</xs:complexType>
+
+<xs:complexType name="MoodCondition">
+ <xs:attribute name="value" type="xs:double" use="required"/>
+ <xs:attribute name="operator" type="operatorType" use ="required" />
+</xs:complexType>
+
+<xs:complexType name="PredicateCondition">
+ <xs:attribute name="name" type="xs:string" use="required"/>
+ <xs:attribute name="ToM" type="xs:string" use="optional"/>
+</xs:complexType>
+
+<xs:complexType name="SACondition">
+  <xs:attribute name="query" type="xs:string" use="required"/>
+  <xs:attribute name="value" type="xs:string" use="required"/>
+</xs:complexType>
+
+<xs:complexType name="SAKnown">
+  <xs:attribute name="name" type="xs:string" use="required"/>
+  <xs:attribute name="value" type="xs:string" use="required"/>
+</xs:complexType>
+
+</xs:schema>
