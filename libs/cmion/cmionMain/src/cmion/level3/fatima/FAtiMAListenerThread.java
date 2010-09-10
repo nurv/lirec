@@ -103,7 +103,18 @@ public class FAtiMAListenerThread extends SocketListener {
 			// if agent should be sleeping, tell it to pause
 			if (connector.isMindSleeping())
 				this.send("CMD Stop");
-			
+			else
+			{
+				// notify agent about every agent or object on the world model
+				// first agents
+				for (String agentName: connector.getArchitecture().getWorldModel().getAgentNames())
+					this.send("ENTITY-ADDED "+agentName);
+				
+				// and now objects
+				for (String objectName: connector.getArchitecture().getWorldModel().getObjectNames())
+					this.send("ENTITY-ADDED "+objectName);
+				
+			}
 			
 		}
 		else if(type.startsWith("<EmotionalState")) 
