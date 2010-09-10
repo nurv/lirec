@@ -175,8 +175,8 @@ public class WorkingMemory implements Serializable {
 				{
 					_factList.remove(ks);
 					_factList.add(ksNew);
-					if(!_changeList.contains(ks))
-						_changeList.add(ksNew);
+					if(_changeList.contains(ks)) _changeList.remove(ks);
+					_changeList.add(ksNew);
 					return;
 				}
 			}
