@@ -345,8 +345,8 @@ public abstract class RemoteAgent extends SocketListener {
 					System.out.println(question + " " + result + " frequency " + saResult.get(result));
 				}
 				
-				_agent.getGeneralise().GeneraliseEvents(_agent.getSpreadActivate().getDetails());
-				Hashtable<ArrayList<Integer>, Hashtable<String, String>> gResult = _agent.getGeneralise().getMatch();
+				_agent.getCommonalities().eventCommonalities(_agent.getSpreadActivate().getDetails());
+				Hashtable<ArrayList<Integer>, Hashtable<String, String>> gResult = _agent.getCommonalities().getMatch();
 			
 				it = gResult.keySet().iterator();
 				while (it.hasNext())

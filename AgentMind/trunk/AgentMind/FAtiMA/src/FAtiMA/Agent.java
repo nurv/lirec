@@ -70,7 +70,7 @@ import FAtiMA.wellFormedNames.Symbol;
 
 import FAtiMA.memory.ICompoundCue;
 import FAtiMA.memory.ISpreadActivate;
-import FAtiMA.memory.IGeneralise;
+import FAtiMA.memory.ICommonalities;
 
 public class Agent implements AgentModel {
 	
@@ -106,7 +106,7 @@ public class Agent implements AgentModel {
 
 	protected ICompoundCue _compoundCue;
 	protected ISpreadActivate _spreadActivate;
-	protected IGeneralise _generalise;
+	protected ICommonalities _commonalities;
 	
 	private String _saveDirectory;
 	public static final String MIND_PATH = "data/characters/minds/";
@@ -389,12 +389,12 @@ public class Agent implements AgentModel {
 	}
 	
 	/** 
-	 * Gets the generalise mechanism of the agent
-	 * @return the generalise mechanism
+	 * Gets the commonalities mechanism of the agent
+	 * @return the commonalities mechanism
 	 *  added by Meiyii 18/03/10
 	 */	
-	public IGeneralise getGeneralise() {
-		return _generalise;
+	public ICommonalities getCommonalities() {
+		return _commonalities;
 	}
 	
 	public HashMap<String,ModelOfOther> getToM()
@@ -959,12 +959,12 @@ public class Agent implements AgentModel {
 	}
 		
 	/** 
-	 * Set the generalise mechanism object of the agent
-	 * @param generalise
+	 * Set the commonalities mechanism object of the agent
+	 * @param commonalities
 	 *  added by Meiyii 18/03/10
 	 */	
-	public void setGeneralise(IGeneralise generalise) {
-		this._generalise = generalise;
+	public void setCommonalities(ICommonalities commonalities) {
+		this._commonalities = commonalities;
 	}
 	
 	/**

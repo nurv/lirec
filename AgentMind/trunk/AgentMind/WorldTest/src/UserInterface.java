@@ -164,6 +164,8 @@ public class UserInterface implements ActionListener {
         }
         else
         {
+        	_userOptions.addItem("Judy");
+			_userOptions.addItem("David");
         	_userOptions.addItem(UserInterface.USER);
         }
 
