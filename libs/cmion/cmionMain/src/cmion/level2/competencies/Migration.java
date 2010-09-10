@@ -242,7 +242,11 @@ public class Migration extends Competency {
 			}
 		}
 		finishedMigration = false;
-
+		
+		// free memory
+		migrationElements = null;
+		migrationDocument = null;
+		
 		return migrationSucceeded;
 	}
 	

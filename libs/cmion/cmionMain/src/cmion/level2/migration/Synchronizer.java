@@ -130,6 +130,13 @@ public abstract class Synchronizer extends Element {
 			WrappedInputStream inStream = new WrappedInputStream(stream);
 			
 			Document doc = docBuilder.parse(inStream);
+			// free memory inside doc builder
+			try {
+				docBuilder = createDocumentBuilder();
+			} catch (ParserConfigurationException e) 
+			{
+				e.printStackTrace();
+			}
 			
 			NodeList nodes = doc.getElementsByTagName(SYNC_TAG);
 			org.w3c.dom.Element root = (org.w3c.dom.Element) nodes.item(0);
@@ -166,6 +173,14 @@ public abstract class Synchronizer extends Element {
 			try {
 				stream = new WrappedInputStream(socket.getInputStream());
 				doc = docBuilder.parse(stream);
+				// free memory inside doc builder
+				try {
+					docBuilder = createDocumentBuilder();
+				} catch (ParserConfigurationException e) 
+				{
+					e.printStackTrace();
+				}
+				
 			} catch (IOException e1) {
 				e1.printStackTrace();
 				return;
@@ -226,6 +241,15 @@ public abstract class Synchronizer extends Element {
 			
 			for (Synchronize request : requests.get(Synchronize.class)) {
 				fullMessage = docBuilder.newDocument();
+				
+				// free memory inside doc builder
+				try {
+					docBuilder = createDocumentBuilder();
+				} catch (ParserConfigurationException e) 
+				{
+					e.printStackTrace();
+				}
+				
 				org.w3c.dom.Element root = fullMessage.createElement(SYNC_TAG);
 				fullMessage.appendChild(root);
 				

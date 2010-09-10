@@ -356,6 +356,8 @@ public class FAtiMAConnector extends AgentMindConnector implements Migrating, Mi
 			stateElement.appendChild(state);
 			parent.appendChild(stateElement);
 			
+			currentFatimaState = null;
+			
 			// also add information about the current fatima mind action (which initiated
 			// this migration, so that a success message can be sent on the receiving end)
 			if (lastAction!=null)
