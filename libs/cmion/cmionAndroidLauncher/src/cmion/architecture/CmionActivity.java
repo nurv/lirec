@@ -11,6 +11,6 @@ public class CmionActivity extends Activity {
         setContentView(R.layout.main);
         
         AndroidArchitecture architecture;
-        architecture = AndroidArchitecture.startup("architectureconfiguration_migrationsend", this);
+        architecture = AndroidArchitecture.startup("architectureconfiguration_migrationsend", this, getApplication());
     }
 }
