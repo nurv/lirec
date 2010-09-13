@@ -60,7 +60,7 @@ public class EpisodicMemory implements Serializable {
 		
 		return keys;
 	}
-	private String _previousLocation;
+	private String _previousLocation; 
 	private ShortTermEpisodicMemory _stm;
 	private AutobiographicalMemory _am;
 	private boolean _newData;
@@ -221,6 +221,23 @@ public class EpisodicMemory implements Serializable {
 		}
 	}
 	
+	/* 
+	 * Start a new episode depending on the requirements of the different scenarios
+	 */
+	public void StartEpisode(Memory m)
+	{
+		Name locationKey = Name.ParseName(Constants.SELF + "(location)");
+		String location = (String) m.getSemanticMemory().AskProperty(locationKey);
+		
+		if(location == null)
+		{
+			location = Constants.EMPTY_LOCATION;
+		}
+		
+		// 13/09/2010 - Create a new episode 
+		_am.NewEpisode(location);
+	}
+	
 	public void StoreAction(Memory m, Event e)
 	{
 		Name locationKey = Name.ParseName(Constants.SELF + "(location)");
@@ -233,11 +250,12 @@ public class EpisodicMemory implements Serializable {
 		
 		// 31/03/2009 - Create a new episode if the location changes to allow goals reset
 		// If this if block is commented, goals decay over time and reset automatically
-		if (!location.equals(_previousLocation))
-		{
-			_am.NewEpisode(location);
-			//_stm.ResetEventID(); 06/01/10 not resetting the eventID to support CC matching that returns the ID as results
-		}
+		// commented 13/09/10
+//		if (!location.equals(_previousLocation))
+//		{
+//			_am.NewEpisode(location);
+//			//_stm.ResetEventID(); 06/01/10 not resetting the eventID to support CC matching that returns the ID as results
+//		}
 
 		synchronized (this) {
 			if(this._stm.GetCount() >= ShortTermEpisodicMemory.MAXRECORDS)
@@ -263,7 +281,7 @@ public class EpisodicMemory implements Serializable {
 			}
 			_stm.AddActionDetail(m, e, location);
 			_newRecords.add(_stm.GetNewestRecord());
-			_previousLocation = location;
+			//_previousLocation = location; Meiyii 13/09/10
 			
 			this._newData = true;
 		}

@@ -58,7 +58,7 @@ public class MemoryEpisode implements Serializable {
 	//private String _abstract;
 	private Time _time;
 	private ArrayList<String> _people;
-	private String _location;
+	private ArrayList<String> _location; // changed from String to arraylist - Meiyii 13/09/10
 	private ArrayList<String> _objects;
 	//private HashMap _detailsByKey;
 	private ArrayList<ActionDetail> _details;
@@ -68,7 +68,8 @@ public class MemoryEpisode implements Serializable {
 	
 	public MemoryEpisode(String location, Time time)
 	{
-		this._location = location;
+		this._location = new ArrayList<String>();
+		this._location.add(location);
 		this._time = time;
 		this._people = new ArrayList<String>();
 		this._objects = new ArrayList<String>();
@@ -111,14 +112,9 @@ public class MemoryEpisode implements Serializable {
 		return this._people;
 	}
 	
-	public String getLocation()
+	public ArrayList<String> getLocation()
 	{
 		return this._location;
-	}
-	
-	public void setLocation(String location)
-	{
-		this._location = location;
 	}
 	
 	public ArrayList<String> getObjects()
@@ -443,6 +439,18 @@ public class MemoryEpisode implements Serializable {
 		{
 			return (float) Math.sqrt(quadraticError / (numberOfEmotionalEvents - 1));
 		}	
+	}
+	
+	// Meiyii 13/09/10
+	public void AddLocation(String location)
+	{
+		if(location != null)
+		{
+			if(!this._location.contains(location))
+			{
+				this._location.add(location);
+			}
+		}
 	}
 	
 	public void AddPeople(String subject)

@@ -68,6 +68,7 @@ public class MemoryDetailPanel extends JPanel {
 	JTextField _speechActMeaning;
 	JTextField _multimediaPath;
 	JTextField _object;
+	JTextField _location;
 	
 	public MemoryDetailPanel(ActionDetail detail) {
 		
@@ -168,11 +169,11 @@ public class MemoryDetailPanel extends JPanel {
         _feeling.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
         this.add(_feeling);
                 
-    	/*_evaluation = new JTextField(detail.getEvaluation().toString());
+    	_evaluation = new JTextField(detail.getLocation().toString());
         _evaluation.setMinimumSize(new Dimension(100,30));
         _evaluation.setMaximumSize(new Dimension(100,30));
         _evaluation.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
-        this.add(_evaluation);*/
+        this.add(_evaluation);
 	}
 
 }

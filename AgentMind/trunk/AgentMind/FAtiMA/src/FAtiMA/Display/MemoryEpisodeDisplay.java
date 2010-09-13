@@ -141,7 +141,7 @@ public class MemoryEpisodeDisplay {
         lbl.setMaximumSize(d1);
         lbl.setMinimumSize(d1);
         aux.add(lbl);
-        _location = new JTextArea(episode.getLocation());
+        _location = new JTextArea(episode.getLocation().toString());
         _location.setLineWrap(true);
         _location.setMaximumSize(d3);
         _location.setMinimumSize(d3);
@@ -267,11 +267,11 @@ public class MemoryEpisodeDisplay {
         lbl.setMaximumSize(new Dimension(100,30));
         aux.add(lbl);
         
-        /*lbl = new JLabel("Evaluation");
+        lbl = new JLabel("Location");
         lbl.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
         lbl.setMinimumSize(new Dimension(100,30));
         lbl.setMaximumSize(new Dimension(100,30));
-        aux.add(lbl);*/
+        aux.add(lbl);
         
         _details.add(aux);
         

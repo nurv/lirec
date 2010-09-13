@@ -120,6 +120,8 @@ public class Agent implements AgentModel {
 
 		_emotionalState = new EmotionalState();
 		_memory = new Memory();
+		// creating a new episode when the agent starts 13/09/10
+		_memory.getEpisodicMemory().StartEpisode(_memory);
 		_motivationalState = new MotivationalState();
 		
 		_ToM = new HashMap<String, ModelOfOther>();
@@ -220,7 +222,9 @@ public class Agent implements AgentModel {
 				_remoteAgent = new WorldSimulatorRemoteAgent(host,port,this,new HashMap<String,String>());
 			}
 			 
-			LoadAgentState(directory + fileName);			 
+			LoadAgentState(directory + fileName);		
+			// creating a new episode when the agent loads 13/09/10
+			_memory.getEpisodicMemory().StartEpisode(_memory);
 			
 		}
 		catch (Exception e) {

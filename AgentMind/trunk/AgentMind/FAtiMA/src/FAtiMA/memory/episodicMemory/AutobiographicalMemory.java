@@ -70,7 +70,7 @@ public class AutobiographicalMemory implements Serializable {
 	public void StoreAction(ActionDetail action)
 	{
 		MemoryEpisode event;
-		boolean found = false;
+		//boolean found = false;
 		
 		synchronized (this) {
 			// this code delay the creation of episode until an event is transferred from STM
@@ -95,51 +95,85 @@ public class AutobiographicalMemory implements Serializable {
 			}
 			event.AddActionDetail(action);*/			
 			
-			// add events from STM to the relevant episode
-			for (int i = this._memoryEvents.size()-1; i >= 0 && !found; i--)
+			// add events from STM to the relevant episode - commented on 13/09/10
+//			for (int i = this._memoryEvents.size()-1; i >= 0 && !found; i--)
+//			{
+//				event = this._memoryEvents.get(i);
+//				if (event.getLocation().equals(action.getLocation()))
+//				{
+//					//if (event.getTime() == null)
+//					//	event.setTime(action.getTime());
+//					event.AddActionDetail(action);
+//					found = true;
+//				}
+//			}
+			
+			// Meiyii 13/09/10
+			int i = this._memoryEvents.size()-1;
+			if (i >= 0)
 			{
 				event = this._memoryEvents.get(i);
-				if (event.getLocation().equals(action.getLocation()))
+				event.AddActionDetail(action);		
+				if (!event.getLocation().equals(action.getLocation()))
 				{
-					//if (event.getTime() == null)
-					//	event.setTime(action.getTime());
-					event.AddActionDetail(action);
-					found = true;
+					event.AddLocation(action.getLocation());
 				}
 			}
+			
 		}
 	}
 	
 	/**
-	 * Creates a new episode when location changes
-	 * @param newLocation - the new location of the agent
+	 * Creates a new episode 
+	 * @param location - the location of the agent
 	 */
-	public void NewEpisode(String newLocation)
+	public void NewEpisode(String location)
 	{	
 		MemoryEpisode event;
-		String oldLocation;
 		
 		synchronized (this) {
 			if(this._memoryEvents.size() == 0)
 			{
-				event = new MemoryEpisode(newLocation, new Time());
-				this._memoryEvents.add(event);
+				event = new MemoryEpisode(location, new Time());
 			}
 			else 
 			{
-				event = (MemoryEpisode) this._memoryEvents.get(this._memoryEvents.size()-1);
-				oldLocation = event.getLocation();
-				if(oldLocation == null) {
-					event.setLocation(newLocation);
-				}
-				else if(!event.getLocation().equals(newLocation))
-				{
-					event = new MemoryEpisode(newLocation, new Time());
-					this._memoryEvents.add(event);
-				}
+				event = (MemoryEpisode) this._memoryEvents.get(this._memoryEvents.size()-1);		
 			}
+			this._memoryEvents.add(event);
 		}		
 	}
+	
+//	/** commented on 13/09/10
+//	 * Creates a new episode when location changes
+//	 * @param newLocation - the new location of the agent
+//	 */
+//	public void NewEpisode(String newLocation)
+//	{	
+//		MemoryEpisode event;
+//		String oldLocation;
+//		
+//		synchronized (this) {
+//			if(this._memoryEvents.size() == 0)
+//			{
+//				event = new MemoryEpisode(newLocation, new Time());
+//				this._memoryEvents.add(event);
+//			}
+//			else 
+//			{
+//				event = (MemoryEpisode) this._memoryEvents.get(this._memoryEvents.size()-1);
+//				oldLocation = event.getLocation();
+//				if(oldLocation == null) {
+//					event.setLocation(newLocation);
+//				}
+//				else if(!event.getLocation().equals(newLocation))
+//				{
+//					event = new MemoryEpisode(newLocation, new Time());
+//					this._memoryEvents.add(event);
+//				}
+//			}
+//		}		
+//	}
 	
 	public Object GetSyncRoot()
 	{
