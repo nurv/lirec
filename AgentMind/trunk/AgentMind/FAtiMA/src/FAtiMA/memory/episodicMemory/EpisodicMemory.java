@@ -223,6 +223,7 @@ public class EpisodicMemory implements Serializable {
 	
 	/* 
 	 * Start a new episode depending on the requirements of the different scenarios
+	 * Meiyii 13/09/10
 	 */
 	public void StartEpisode(Memory m)
 	{
@@ -284,6 +285,26 @@ public class EpisodicMemory implements Serializable {
 			//_previousLocation = location; Meiyii 13/09/10
 			
 			this._newData = true;
+		}
+	}
+	
+	/* 
+	 * Empty STEM into AM before the agent shut down
+	 * Meiyii 13/09/10
+	 */
+	public void MoveSTEMtoAM()
+	{
+		for (int i=0; i < _stm.GetCount(); i++)
+		{
+			ActionDetail detail = _stm.getDetails().get(i);
+			if((detail.getIntention() != null && (detail.getStatus().equals(GoalEvent.GetName(GoalEvent.ACTIVATION)) || 
+					detail.getStatus().equals(GoalEvent.GetName(GoalEvent.SUCCESS)) ||
+					detail.getStatus().equals(GoalEvent.GetName(GoalEvent.FAILURE)))) ||
+					(detail.getAction() != null && (detail.getEmotion().GetType()) != EmotionType.NEUTRAL))
+			{
+				_am.StoreAction(detail);					
+			}
+			_stm.getDetails().clear();
 		}
 	}
 	

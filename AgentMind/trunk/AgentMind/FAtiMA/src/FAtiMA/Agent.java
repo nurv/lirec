@@ -210,8 +210,13 @@ public class Agent implements AgentModel {
 	public Agent(short agentPlatform, String host, int port, String directory, String fileName)
 	{
 		try{
+			AgentLogger.GetInstance().initialize(fileName);
 			_shutdown = false;
 			_numberOfCycles = 0;
+			
+			LoadAgentState(directory + fileName);		
+			// creating a new episode when the agent loads 13/09/10
+			_memory.getEpisodicMemory().StartEpisode(_memory);
 			
 			if(agentPlatform == AgentPlatform.ION)
 			{
@@ -220,12 +225,8 @@ public class Agent implements AgentModel {
 			else if (agentPlatform == AgentPlatform.WORLDSIM)
 			{
 				_remoteAgent = new WorldSimulatorRemoteAgent(host,port,this,new HashMap<String,String>());
-			}
-			 
-			LoadAgentState(directory + fileName);		
-			// creating a new episode when the agent loads 13/09/10
-			_memory.getEpisodicMemory().StartEpisode(_memory);
-			
+			}			
+			_remoteAgent.LoadState(fileName+"-RemoteAgent.dat");
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -442,11 +443,11 @@ public class Agent implements AgentModel {
 		this._saveDirectory = (String) s.readObject();
 		s.close();
 		in.close();
-
+		
 		AgentSimulationTime.LoadState(fileName+"-Timer.dat");
 		ActionLibrary.LoadState(fileName+"-ActionLibrary.dat");
 		
-		_remoteAgent.LoadState(fileName+"-RemoteAgent.dat");
+		//_remoteAgent.LoadState(fileName+"-RemoteAgent.dat");
 	}
 	
 	private void loadCulture(String cultureName)
@@ -884,6 +885,12 @@ public class Agent implements AgentModel {
 	{
 		String fileName = _saveDirectory + agentName;
 
+		// Moving all the STEM into AM before saving because when it loads the next time
+		// a new episode will be started. This is to prevent the rest of the STEM events
+		// being stored in the wrong episode
+		// Meiyii 13/09/10
+		_memory.getEpisodicMemory().MoveSTEMtoAM();
+		
 		AgentSimulationTime.SaveState(fileName+"-Timer.dat");
 		ActionLibrary.SaveState(fileName+"-ActionLibrary.dat");
 		_remoteAgent.SaveState(fileName+"-RemoteAgent.dat");

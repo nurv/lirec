@@ -132,14 +132,7 @@ public class AutobiographicalMemory implements Serializable {
 		MemoryEpisode event;
 		
 		synchronized (this) {
-			if(this._memoryEvents.size() == 0)
-			{
-				event = new MemoryEpisode(location, new Time());
-			}
-			else 
-			{
-				event = (MemoryEpisode) this._memoryEvents.get(this._memoryEvents.size()-1);		
-			}
+			event = new MemoryEpisode(location, new Time());			
 			this._memoryEvents.add(event);
 		}		
 	}

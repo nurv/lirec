@@ -77,7 +77,7 @@ public class AgentLauncher {
 				break;
 				
 			case AgentPlatform.WORLDSIM:
-				String saveDirectory = "";
+				String saveDirectory = "data/characters/minds/state/";
 				if (args2.length == 4){
 					agent = new Agent(agentPlatform, args2[1],Integer.parseInt(args2[2]),saveDirectory,args2[3]);
 				}else if(args2.length >= 11){
