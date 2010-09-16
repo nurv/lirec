@@ -22,8 +22,7 @@ public class ScenarioLoaderHandler extends ReflectXMLHandler{
 		this._worldSimArgs = new ArrayList<String>();
 		this._agentArgs = new ArrayList<String>();
 		this._isPretendedScenario = false;	
-	}
-	
+	}	
 	
 	public ScenarioLoaderHandler(String scenarioName, String characterName){
 		this._scenarioName = scenarioName;
@@ -93,14 +92,16 @@ public class ScenarioLoaderHandler extends ReflectXMLHandler{
 				_agentArgs.add(attributes.getValue("platform"));
 				_agentArgs.add(attributes.getValue("host"));
 				_agentArgs.add(attributes.getValue("port"));
-				_agentArgs.add(attributes.getValue("displayMode"));
+				_agentArgs.add(attributes.getValue("saveDirectory"));
 				_agentArgs.add(attributes.getValue("name"));
+				_agentArgs.add(attributes.getValue("displayMode"));
 				_agentArgs.add(attributes.getValue("sex"));
 				_agentArgs.add(attributes.getValue("role"));
 				_agentArgs.add(attributes.getValue("displayName"));
 				_agentArgs.add(attributes.getValue("actionsFile"));
 				_agentArgs.add(attributes.getValue("goalsFile"));
-				_agentArgs.add(attributes.getValue("cultureName"));				
+				_agentArgs.add(attributes.getValue("cultureName"));	
+				_agentArgs.add(attributes.getValue("load"));
 			}else{
 				this._isPretendedCharacter = false;
 			}    		

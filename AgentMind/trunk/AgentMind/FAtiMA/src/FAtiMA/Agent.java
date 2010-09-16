@@ -113,7 +113,7 @@ public class Agent implements AgentModel {
 	public static final String MIND_PATH_ANDROID = "sdcard/data/characters/minds/";	
 	private static final Name ACTION_CONTEXT = Name.ParseName("ActionContext()");
 
-	public Agent(short agentPlatform, String host, int port, String saveDirectory, boolean displayMode, String name, 
+	public Agent(short agentPlatform, String host, int port, String saveDirectory, String name, boolean displayMode, 
 			String sex, String role, 
 			String displayName, String actionsFile, 
 			String goalsFile, String cultureName, HashMap<String,String> properties, ArrayList<String> goalList) {

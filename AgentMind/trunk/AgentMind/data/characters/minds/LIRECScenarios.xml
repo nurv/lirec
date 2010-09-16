@@ -68,7 +68,8 @@
 		</WorldSimulator>	
 		<Agent name="Greta" displayName="Greta" role="Greta" platform="worldsim" host="localhost" 
 			   port="46874" displayMode="True" sex="F" actionsFile="LIRECActions" 
-			   goalsFile="LIRECGoalLibrary" cultureName="NoCulture">
+			   goalsFile="LIRECGoalLibrary" cultureName="NoCulture" 
+			   saveDirectory="data/characters/minds/state/" load="True">
 			<Properties>				
 				<Property name="time" value="Morning"/>
 				<Property name="isPerson" value="True"/>

@@ -236,7 +236,11 @@ public class EpisodicMemory implements Serializable {
 		}
 		
 		// 13/09/2010 - Create a new episode 
-		_am.NewEpisode(location);
+		synchronized (this) 
+		{
+			_am.NewEpisode(location);
+		}
+		
 	}
 	
 	public void StoreAction(Memory m, Event e)
@@ -294,15 +298,17 @@ public class EpisodicMemory implements Serializable {
 	 */
 	public void MoveSTEMtoAM()
 	{
-		for (int i=0; i < _stm.GetCount(); i++)
-		{
-			ActionDetail detail = _stm.getDetails().get(i);
-			if((detail.getIntention() != null && (detail.getStatus().equals(GoalEvent.GetName(GoalEvent.ACTIVATION)) || 
-					detail.getStatus().equals(GoalEvent.GetName(GoalEvent.SUCCESS)) ||
-					detail.getStatus().equals(GoalEvent.GetName(GoalEvent.FAILURE)))) ||
-					(detail.getAction() != null && (detail.getEmotion().GetType()) != EmotionType.NEUTRAL))
+		synchronized (this) {
+			for (int i=0; i < _stm.GetCount(); i++)
 			{
-				_am.StoreAction(detail);					
+				ActionDetail detail = _stm.getDetails().get(i);
+				if((detail.getIntention() != null && (detail.getStatus().equals(GoalEvent.GetName(GoalEvent.ACTIVATION)) || 
+						detail.getStatus().equals(GoalEvent.GetName(GoalEvent.SUCCESS)) ||
+						detail.getStatus().equals(GoalEvent.GetName(GoalEvent.FAILURE)))) ||
+						(detail.getAction() != null && (detail.getEmotion().GetType()) != EmotionType.NEUTRAL))
+				{
+					_am.StoreAction(detail);					
+				}
 			}
 			_stm.getDetails().clear();
 		}
