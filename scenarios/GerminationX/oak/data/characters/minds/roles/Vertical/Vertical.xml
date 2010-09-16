@@ -1,0 +1,99 @@
+<Character role="Vertical">
+	<EmotionalThresholds>
+		<EmotionalThreshold emotion="Love" threshold="3" decay="5"/>
+		<EmotionalThreshold emotion="Hate" threshold="2" decay="5"/>
+		<EmotionalThreshold emotion="Hope" threshold="1" decay="2"/>
+		<EmotionalThreshold emotion="Fear" threshold="5" decay="8"/>
+		<EmotionalThreshold emotion="Satisfaction" threshold="3" decay="5"/>
+		<EmotionalThreshold emotion="Relief" threshold="2" decay="5"/>
+		<EmotionalThreshold emotion="Fears-Confirmed" threshold="5" decay="8"/>
+		<EmotionalThreshold emotion="Disappointment" threshold="2" decay="2"/>
+		<EmotionalThreshold emotion="Joy" threshold="3" decay="5"/>
+		<EmotionalThreshold emotion="Distress" threshold="3" decay="2"/>
+		<EmotionalThreshold emotion="Happy-For" threshold="5" decay="8"/>
+		<EmotionalThreshold emotion="Pitty" threshold="5" decay="8"/>
+		<EmotionalThreshold emotion="Resentment" threshold="2" decay="2"/>
+		<EmotionalThreshold emotion="Gloating" threshold="1" decay="8"/>
+		<EmotionalThreshold emotion="Pride" threshold="1" decay="8"/>
+		<EmotionalThreshold emotion="Shame" threshold="5" decay="2"/>
+		<EmotionalThreshold emotion="Gratification" threshold="1" decay="5"/>
+		<EmotionalThreshold emotion="Remorse" threshold="5" decay="8"/>
+		<EmotionalThreshold emotion="Admiration" threshold="5" decay="8"/>
+		<EmotionalThreshold emotion="Reproach" threshold="1" decay="8"/>
+		<EmotionalThreshold emotion="Gratitude" threshold="3" decay="5"/>
+		<EmotionalThreshold emotion="Anger" threshold="3" decay="8"/>
+	</EmotionalThresholds>
+	
+	<Goals>
+		<!-- General goals used in more than one episode -->
+		<Goal name="ReplyPositively([speaker],[question])" importanceOfSuccess="4" importanceOfFailure="3"/>
+		<Goal name="ReplyNegatively([speaker],[question])" importanceOfSuccess="4" importanceOfFailure="3"/>
+		<Goal name="ReplyPositivelyNoChoice([speaker],[question])" importanceOfSuccess="0" importanceOfFailure="4"/>
+		<Goal name="AvoidGettingHarmed" importanceOfSuccess="2" importanceOfFailure="10"/>
+		<Goal name="ConfrontVictimTellTeacher([victim])" importanceOfSuccess="2" importanceOfFailure="2"/>
+	</Goals>
+	
+	<InterpersonalRelations>
+		<Relation target="Canopy" like="5" respect="5"/>
+		<Relation target="Cover" like="2" respect="1"/>
+        <Relation target="WiltedVine" like="-10" respect="1"/>
+	</InterpersonalRelations>
+	
+	<EventReactions>
+
+		<!-- General emotional reactions used in more than one episode -->
+	
+		<EmotionalReaction desirability="6" desirabilityForOther="6" praiseworthiness="5"> 
+			<Event subject="*" action="sing"/>
+		</EmotionalReaction>
+
+		<EmotionalReaction desirability="-6" desirabilityForOther="-6" praiseworthiness="-5"> 
+			<Event subject="*" action="cry"/>
+		</EmotionalReaction>
+		
+		<EmotionalReaction desirability="-5" praiseworthiness="-5">
+			<Event subject="[SELF]" action="cry"/>
+		</EmotionalReaction>
+		
+		<!-- new emotional reaction, the character finds it undesirable to get hurt -->
+		<EmotionalReaction desirability="-6">
+			<Event subject="[SELF]" action="PROPERTY-CHANGED" target="hurt" parameters="True" />
+		</EmotionalReaction>
+
+		<!-- to see others get hurt -->
+		<EmotionalReaction desirability="06">
+			<Event action="PROPERTY-CHANGED" target="hurt" parameters="True" />
+		</EmotionalReaction>
+
+		<EmotionalReaction desirability="-5" praiseworthiness="4">
+			<Event action="SpeechAct" target="[SELF]" parameters="insult"/>
+		</EmotionalReaction>
+
+		<EmotionalReaction desirability="-5" praiseworthiness="5">
+			<Event action="SpeechAct" subject="[SELF]" parameters="insult"/>
+		</EmotionalReaction>
+		
+	</EventReactions>
+	
+	<ActionTendencies>
+		
+		<!-- Generic action tendencies -->
+		<ActionTendency action="cry">
+			<Preconditions>
+            </Preconditions>
+			<ElicitingEmotion type="Joy" minIntensity="6">
+				<CauseEvent/>
+			</ElicitingEmotion>
+		</ActionTendency>
+
+		<ActionTendency action="SpeechAct([Target],singat)">
+			<Preconditions>
+				<Property name="[Target](type)" operator="=" value="character"/>
+			</Preconditions>
+			<ElicitingEmotion type="Joy" minIntensity="3">
+				<CauseEvent subject="*" action="sing"/>
+			</ElicitingEmotion>
+		</ActionTendency>
+       
+	</ActionTendencies>
+</Character>

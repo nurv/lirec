@@ -1,0 +1,214 @@
+#below added by Adrian Gordon 16/01/2007
+dont,dont,,,no,
+doesnt,dont,,,no,
+#below added by Adrian Gordon 16/01/2007
+shouldnt,shouldnt,,,no,
+#below added by Adrian Gordon 16/01/2007
+hasnt,hasnt,,,no
+
+wouldnt,wouldnt,,,no
+wont,wont,,,no
+
+
+#below added by Adrian Gordon 16/01/2007
+"not","not",,,no,
+#below added by Adrian Gordon 16/01/2007
+"no","no",,,no,
+# below added by Adrian Gordon 15/01/2007
+"he'll",hell,,,,
+#below added by Adrian Gordon 16/01/2007
+get,,VERB
+#below added by Adrian Gordon 16/01/2007
+lost,,,,,
+#below added by Adrian Gordon 16/01/2007
+stuffed,,,,,
+someone,someone
+anyone,someone
+anybody,someone
+somebody,someone
+
+ignore,,VERB,,,
+ignores,ignore
+ignoring,ignore
+ignored,ignore
+#below added by Adrian Gordon 16/01/2007
+#for "take no notice", etc.
+notice,,VERB,,listen,
+#below added by Adrian Gordon 16/01/2007
+listen,,VERB,,listen,
+#below added by Adrian Gordon 16/01/2007
+attention,,VERB,,listen,
+
+#below added by Adrian Gordon 16/01/2007
+go,,VERB,,go,
+#below added by Adrian Gordon 16/01/2007
+leave,,VERB,,go,
+#below added by Adrian Gordon 16/01/2007
+walk,,VERB,,go,
+#below added by Adrian Gordon 16/01/2007
+run,run,VERB,,run,
+#below added by Adrian Gordon 16/01/2007
+sprint,sprint,VERB,,run,
+
+
+hit,hit,VVFIN,,punch,
+hits,hit,VVFIN,,punch,
+punches,punch,VVFIN,,punch,
+punch,punch,VVFIN,,punch,
+beat,beat VVFIN,,punch
+beats,beat,VVFIN,,punch
+# below added by A Gordon 15/01/07
+kick,kick,VVFIN,,punch,
+# below added by A Gordon 16/01/07
+push,push,VVFIN,,punch,
+# below added by A Gordon 16/01/07
+smash,smash,VVFIN,,punch,
+# below added by A Gordon 16/01/07
+bash,bash,VVFIN,,punch,
+# below added by A Gordon 16/01/07
+smack,smack,VVFIN,,punch,
+# below added by A Gordon 16/01/07
+shove,shove,VVFIN,,punch,
+# below added by A Gordon 16/01/07
+cry,cry,VERB,,cry,
+# below added by A Gordon 16/01/07
+crying,cry,VERB,,cry,
+# below added by A Gordon 16/01/07
+weep,weep,VERB,,cry,
+# below added by A Gordon 16/01/07
+weeping,weep,VERB,,cry,
+# below added by A Gordon 16/01/07
+snivel,snivel,VERB,,cry,
+# below added by A Gordon 16/01/07
+snivelling,snivel,VERB,,cry,
+
+
+
+# below added by A Gordon 16/01/07
+#for 'bog off'
+bog,,,,,
+# below added by A Gordon 16/01/07
+#for 'piss off'
+piss,,,,,
+# below added by A Gordon 16/01/07
+#for <x> off
+off,,,,,
+
+friends,friend,NN,pl,PERSON,
+#below added by Adrian Gordon 16/01/07
+parents,parent,NN,pl,parents
+#below added by Adrian Gordon 16/01/07
+father,father,NN,,parents
+#below added by Adrian Gordon 16/01/07
+mother,mother,NN,,parents
+mum,mother,NN,,parents
+
+#below added by Adrian Gordon 16/01/07
+sister,sister,NN,,siblings
+#below added by Adrian Gordon 16/01/07
+brother,brother,NN,,siblings
+sibling,siblings,NN,,siblings
+siblings,sibling,NN,,siblings
+relatives,relatives,NN,,siblings
+
+
+stronger,strong,ADJ,,PROP,strong
+helps,help,VI,,ACTION,help
+idiot,,,,idiot,
+moron,,,,idiot,
+prat,,,,idiot, 
+jerk,,,,idiot,
+fatty,,,,idiot,
+muppet,,,,idiot,
+wimp,,,,idiot,  
+gypo,,,,idiot,  
+pig-face,,,,idiot, 
+midget,,,,idiot,
+git,,,,idiot,
+geek,,,,idiot,  
+nerd,,,,idiot, 
+dog-breath,,,,idiot,
+dork,,,,idiot,
+wimp,,,,idiot, 
+loser,,,,idiot,  
+cry-baby,,,,idiot,
+freak,,,,idiot,
+an,a,,,a,
+youre,,,,you're,
+works,work,VVFIN,,,
+#below modified by Adrian Gordon 16/01/2007
+#added new semantic category for stopping
+stops,stop,VVFIN,,stop,
+#below added by Adrian Gordon 16/01/2007
+stop,stop,VVFIN,,stop,
+#below added by Adrian Gordon 16/01/2007
+#for 'pack it in'
+pack,pack,VVFIN,,stop,
+#below added by Adrian Gordon 16/01/2007
+#for 'quit it' etc
+quit,quit,VVFIN,,stop,
+
+cause,because,CONJ,,,
+cos,because
+coz,because
+cuz,because
+no,know,VVFIN
+
+u,you
+ur,your
+r,are
+em,them
+dunno,"dont know"
+gonna,"going to"
+
+tell,tell,VERB,,TELL
+telling,tell,VERB,,TELL
+tells,tell,VERB,,TELL
+told,tell,VERB,,TELL
+say,say,VERB,,TELL
+saying,say,VERB,,TELL
+says,say,VERB,,TELL
+said,say,VERB,,TELL
+speak,speak,VERB,,TELL
+speaking,speak,VERB,,TELL
+speaks,speak,VERB,,TELL
+spoke,speak,VERB,,TELL
+spoken,speak,VERB,,TELL
+talking,talk,VERB,,TELL
+talk,talk,VERB,,TELL
+talks,talk,VERB,,TELL
+talked,talk,VERB,,TELL
+explain,explain,VERB,,TELL
+explained,explain,VERB,,TELL
+explains,explain,VERB,,TELL
+explaining,explain,VERB,,TELL
+
+okay,ok
+
+bullying,bully
+bullies,bully
+
+mite,might
+
+yep,yes
+
+names,name
+
+makes,make
+making,make
+made,make
+
+finds,find
+finding,find
+found,find
+
+getting,get
+gets,get
+got,get
+
+headteacher,teacher
+headmistress,teacher
+headmaster,teacher
+prinicipal,teacher
+head,teacher
+teachers,teacher

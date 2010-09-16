@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<movie version="9">
+        <background color="#ffffff"/>
+        <frame>
+                <library>
+                      <bitmap id="BlueCubeTex" import="textures/blue-cube.png"/>                     
+                      <bitmap id="GrassCube01Tex" import="textures/grass-cube-01.png"/>                     
+                      <bitmap id="GrassCube02Tex" import="textures/grass-cube-02.png"/>                     
+                      <bitmap id="GrassCube03Tex" import="textures/grass-cube-03.png"/>                     
+                      <bitmap id="SeaCube01Tex" import="textures/sea-cube-01.png"/>                     
+                      <bitmap id="SeaCube02Tex" import="textures/sea-cube-02.png"/>                     
+                      <bitmap id="SeaCube03Tex" import="textures/sea-cube-03.png"/>                     
+                      <bitmap id="RBotNorthTex" import="textures/bbot-north.png"/>                     
+                      <bitmap id="RBotSouthTex" import="textures/bbot-south.png"/>                     
+                      <bitmap id="RBotEastTex" import="textures/bbot-east.png"/>                     
+                      <bitmap id="RBotWestTex" import="textures/bbot-west.png"/>                     
+                      <bitmap id="CanopyTex" import="textures/canopy.png"/>                     
+                      <bitmap id="LollyPopTex" import="textures/lollypop.png"/>                     
+                      <bitmap id="FlowersTex" import="textures/flowers.png"/>                     
+                      <bitmap id="ClimberTex" import="textures/climber.png"/>                     
+
+                      <bitmap id="Player" import="textures/player.png"/>                     
+
+                      <bitmap id="GhostVertical" import="textures/ghost-vertical.png"/>                     
+                      <bitmap id="GhostVerticalHappy" import="textures/ghost-vertical-happy.png"/>                     
+                      <bitmap id="GhostVerticalSad" import="textures/ghost-vertical-sad.png"/>                     
+
+                      <bitmap id="GhostCover" import="textures/ghost-cover.png"/>                     
+                      <bitmap id="GhostCoverHappy" import="textures/ghost-cover-happy.png"/>                     
+                      <bitmap id="GhostCoverSad" import="textures/ghost-cover-sad.png"/>                     
+
+                      <bitmap id="GhostCanopy" import="textures/ghost-canopy.png"/>                     
+                      <bitmap id="GhostCanopyHappy" import="textures/ghost-canopy-happy.png"/>                     
+                      <bitmap id="GhostCanopySad" import="textures/ghost-canopy-sad.png"/>                     
+                </library>
+        </frame>
+</movie>

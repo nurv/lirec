@@ -1,0 +1,559 @@
+<Character role="Victim">
+	
+	<EmotionalThresholds>
+		<EmotionalThreshold emotion="Love" threshold="3" decay="5"/>
+		<EmotionalThreshold emotion="Hate" threshold="3" decay="5"/>
+		<EmotionalThreshold emotion="Hope" threshold="4" decay="8"/>
+		<EmotionalThreshold emotion="Fear" threshold="1" decay="2"/>
+		<EmotionalThreshold emotion="Satisfaction" threshold="5" decay="8"/>
+		<EmotionalThreshold emotion="Relief" threshold="3" decay="5"/>
+		<EmotionalThreshold emotion="Fears-Confirmed" threshold="1" decay="2"/>
+		<EmotionalThreshold emotion="Disappointment" threshold="2" decay="5"/>
+		<EmotionalThreshold emotion="Joy" threshold="3" decay="2"/>
+		<EmotionalThreshold emotion="Distress" threshold="1" decay="2"/>
+		<EmotionalThreshold emotion="Happy-For" threshold="2" decay="5"/>
+		<EmotionalThreshold emotion="Pitty" threshold="2" decay="2"/>
+		<EmotionalThreshold emotion="Resentment" threshold="3" decay="2"/>
+		<EmotionalThreshold emotion="Gloating" threshold="5" decay="8"/>
+		<EmotionalThreshold emotion="Pride" threshold="5" decay="5"/>
+		<EmotionalThreshold emotion="Shame" threshold="1" decay="2"/>
+		<EmotionalThreshold emotion="Gratification" threshold="5" decay="8"/>
+		<EmotionalThreshold emotion="Remorse" threshold="1" decay="2"/>
+		<EmotionalThreshold emotion="Admiration" threshold="3" decay="5"/>
+		<EmotionalThreshold emotion="Reproach" threshold="2" decay="8"/>
+		<EmotionalThreshold emotion="Gratitude" threshold="3" decay="5"/>
+		<EmotionalThreshold emotion="Anger" threshold="3" decay="5"/>
+	</EmotionalThresholds>
+	
+	<Goals>
+		<!-- Goals that handle the user's interaction -->
+		<!--<Goal name="SummarizeLastEpisode(user)" importanceOfSuccess="2" importanceOfFailure="2" />-->
+		<Goal name="AskCopingStrategy(user)" importanceOfSuccess="6" importanceOfFailure="4" />
+		
+		<Goal name="SuggestCopingStrategy(user)" importanceOfSuccess="6" importanceOfFailure="4" />
+		<Goal name="AskForReason(user)" importanceOfSuccess="1" importanceOfFailure="2" />
+		<Goal name="AcceptReason(user)" importanceOfSuccess="1" importanceOfFailure="2" />
+		<Goal name="SayGoodbye(user)" importanceOfSuccess="1" importanceOfFailure="1" />
+		
+		<!-- Generic Interest goals -->
+		<Goal name="AvoidGettingHarmed" importanceOfSuccess="2" importanceOfFailure="10"/>
+		
+		<!-- Generic goals that are used in more than one episode -->
+		<Goal name="ReplyPositively([speaker],[question])" importanceOfSuccess="4" importanceOfFailure="3"/>
+		<Goal name="ReplyNegatively([speaker],[question])" importanceOfSuccess="4" importanceOfFailure="2"/>
+		<Goal name="ReplyPositivelyNoChoice([speaker],[question])" importanceOfSuccess="0" importanceOfFailure="5"/>
+		
+		<!-- Joing Group goals -->
+		<Goal name="JoinGroup([group])" importanceOfSuccess="7" importanceOfFailure="3"/>
+		
+		<!-- Generic goals  that correspond to coping strategies -->
+		<Goal name="TellFriend([friend])" importanceOfSuccess="4" importanceOfFailure="4" />
+		<Goal name="StandUp([bully])" importanceOfSuccess="5" importanceOfFailure="3"/>
+		<Goal name="LaughOff([bully])" importanceOfSuccess="8" importanceOfFailure="2"/>
+		<Goal name="WalkAway([bully])" importanceOfSuccess="5" importanceOfFailure="3"/>
+		<Goal name="RunAway([bully])" importanceOfSuccess="5" importanceOfFailure="3"/>
+		<Goal name="RunAway([bully])" importanceOfSuccess="5" importanceOfFailure="3"/>
+		<Goal name="Insult([target])" importanceOfSuccess="5" importanceOfFailure="3"/>
+		<Goal name="InsultBack([target])" importanceOfSuccess="5" importanceOfFailure="3"/>
+
+		<!--
+		<Goal name="fightback([target])" importanceOfSuccess="5" importanceOfFailure="5"/>
+		<Goal name="FightBully([target])" importanceOfSuccess="10" importanceOfFailure="4"/>
+		-->
+		
+		<!-- Goals that correspond to specific episodes -->
+		
+		<!-- Episode B06: Party Invitation -->
+		<Goal name="AcceptInvitation([friend])" importanceOfSuccess="5" importanceOfFailure="6"/>
+		
+		<!-- Episode B07: The Books in the Classroom -->
+		<Goal name="PickFromFloor([target])" importanceOfSuccess="4" importanceOfFailure="4"/>
+		<Goal name="TeaseDefend([target])" importanceOfSuccess="6" importanceOfFailure="5"/>
+		
+		<!-- Episode B08: Stealing a Chocolate Bar -->
+	    <Goal name="ClaimBackItem([item],[thief])" importanceOfSuccess="6" importanceOfFailure="2" />
+	    <Goal name="ItemDestroyedComplain([destroyer])" importanceOfSuccess="6" importanceOfFailure="2" />
+	    
+	    <!-- Episode B11: On the way home -->
+	    <Goal name="AskNotToThrowObject([item],[target])" importanceOfSuccess="7" importanceOfFailure="3"/>
+		<Goal name="GotHitComplain([target])" importanceOfSuccess="7" importanceOfFailure="3"/>
+		
+		<!-- Episode B13: Very Physical -->
+		<Goal name="AskPity([target])" importanceOfSuccess="3" importanceOfFailure="3"/>
+	    
+		<!-- Episode B22: Hallway - Verbal -->
+	    <!--below goal added by Adrian Gordon for episode B22 -->
+		<Goal name="respondtohumiliationpositivereply([target])" importanceOfSuccess="7" importanceOfFailure="3"/>
+		<!--below goal added by Adrian Gordon for episode B22 -->
+		<Goal name="respondtohumiliationnegativereply([target])" importanceOfSuccess="7" importanceOfFailure="3"/>
+		<!--below goal added by Adrian Gordon for episode B22 -->
+		<Goal name="respondtohumiliationthreatpositivereply([target])"  importanceOfSuccess="7" importanceOfFailure="3"/>
+		
+		<!-- Episode G23: Classroom - Verbal -->
+		<Goal name="FollowAskWhy([follower])" importanceOfSuccess="5" importanceOfFailure="3"/>
+		<Goal name="FollowDontCare([follower])" importanceOfSuccess="5" importanceOfFailure="3"/>
+		<Goal name="FollowLeave([follower])" importanceOfSuccess="5" importanceOfFailure="3"/>
+
+		
+	</Goals>
+	
+	<InterpersonalRelations>
+		
+		<Relation target="Luke" like="1" respect="0"/>
+		<Relation target="book" like="6"/>
+		<Relation target="Paul" like="-1" respect="-1"/>
+		<Relation target="Ollie" like="1" respect="1"/>
+		<Relation target="Rob" like="2" respect="1"/>
+		<Relation target="Janet" like="1" respect="-1"/>
+		<Relation target="Sarah" like="0" />
+		<Relation target="Nita" like="0" />
+		<Relation target="Martina" like="2" respect="1"/>
+		<Relation target="Elinor" like="4" respect="1"/>
+	</InterpersonalRelations>
+	
+	<EventReactions>
+		
+	    <!-- General emotional reactions used in more than one episode -->
+	    
+		<!-- Emotional reactions to seing someone crying -->
+		<EmotionalReaction desirability="-4" desirabilityForOther="-4" praiseworthiness="-4">
+			<Event action="cry"/>
+		</EmotionalReaction>
+		
+		<EmotionalReaction desirability="-4" praiseworthiness="-3">
+			<Event subject="[SELF]" action="cry"/>
+		</EmotionalReaction>
+		
+		<!-- Emotional reactions to being pushed or kicked, old values -->
+		<!--<EmotionalReaction desirability="-7" praiseworthiness="-6">
+			<Event action="attack" target="[SELF]"/>
+		</EmotionalReaction>-->
+
+		<!-- new value -->
+		<EmotionalReaction desirability="-4" praiseworthiness="-4">
+			<Event action="attack" target="[SELF]"/>
+		</EmotionalReaction>
+
+		<!-- new emotional reaction, the character finds it undesirable to get hurt -->
+		<EmotionalReaction desirability="-6">
+			<Event subject="[SELF]" action="PROPERTY-CHANGED" target="hurt" parameters="True" />
+		</EmotionalReaction>
+
+		<!-- new emotional reaction, the victim feels very happy if the bully says he will not bully him again. This might happen
+		     when the victim is successfull in fighting back -->
+		<EmotionalReaction desirability="5" praiseworthiness="3">
+			<Event action="Reply" target="[SELF]" parameters="victimfightsuccess,positiveanswer"/>
+		</EmotionalReaction>
+				
+		<EmotionalReaction desirability="3" praiseworthiness="3">
+			<Event action="SpeechAct" subject="[SELF]" parameters="threatfightback"/>
+		</EmotionalReaction>
+		
+		<!-- Emotional reaction to a negative answer to a threat -->
+		<EmotionalReaction desirability="-2" praiseworthiness="-2">
+			<Event action="SpeechAct" target="[SELF]" parameters="threatfightback,negativeanswer"/>
+		</EmotionalReaction>
+		
+		<!-- Emotional reactions to being insulted -->
+		<EmotionalReaction desirability="-3" praiseworthiness="-3">
+			<Event action="SpeechAct" target="[SELF]" parameters="insultgreeting"/>
+		</EmotionalReaction>
+		
+		<EmotionalReaction desirability="-3" desirabilityForOther="3" praiseworthiness="-3">
+            <Event action="SpeechAct" target="[SELF]" parameters="insult" />
+        </EmotionalReaction>
+		
+        <EmotionalReaction desirability="-3" desirabilityForOther="3" praiseworthiness="-2">
+            <Event action="SpeechAct" target="[SELF]" parameters="insultreinforce" />
+        </EmotionalReaction>
+        
+        <!-- the user insults the victim! -->
+        <EmotionalReaction desirability="-3" desirabilityForOther="3" praiseworthiness="-2">
+            <Event action="UserSpeech" target="[SELF]" parameters="insult" />
+        </EmotionalReaction>
+        
+        <!-- emotional reactions for join group situations -->
+
+        <EmotionalReaction desirability="5" desirabilityForOther="1" praiseworthiness="3">
+            <Event action="Reply" target="[SELF]" parameters="joingroupquestion,positiveanswer,*" />
+        </EmotionalReaction>
+
+        <EmotionalReaction desirability="-5" desirabilityForOther="1" praiseworthiness="-3">
+            <Event action="Reply" target="[SELF]" parameters="joingroupquestion,negativeanswer,*" />
+        </EmotionalReaction>
+
+        <EmotionalReaction desirability="5" desirabilityForOther="1" praiseworthiness="5">
+            <Event action="Reply" target="[SELF]" parameters="joingroupconvince,positiveanswer,*" />
+        </EmotionalReaction>
+
+        <EmotionalReaction desirability="-5" desirabilityForOther="1" praiseworthiness="-3">
+            <Event action="Reply" target="[SELF]" parameters="joingroupconvince,negativeanswer,*" />
+        </EmotionalReaction>
+
+         <EmotionalReaction desirability="-5" desirabilityForOther="-1" praiseworthiness="-3">
+            <Event action="Question" parameters="joingroupquestionpositiveanswerobject" />
+        </EmotionalReaction>
+
+        <EmotionalReaction desirability="5" desirabilityForOther="-1" praiseworthiness="4">
+            <Event action="Reply" parameters="joingroupquestionpositiveanswerobject,negativeanswer,*" />
+        </EmotionalReaction>
+
+        <EmotionalReaction desirability="-5" desirabilityForOther="1" praiseworthiness="-2">
+            <Event action="Reply" parameters="joingroupquestionpositiveanswerobject,positiveanswer,*" />
+        </EmotionalReaction>
+
+         <EmotionalReaction desirability="5" desirabilityForOther="-1" praiseworthiness="4">
+            <Event action="SpeechAct" parameters="joingroupquestionnegativeanswerobject" />
+        </EmotionalReaction>
+
+         <EmotionalReaction desirability="5" desirabilityForOther="1" praiseworthiness="2">
+            <Event action="SpeechAct" parameters="joingroupquestionnegativeanswerobjectaccept,*" />
+        </EmotionalReaction>
+
+         <EmotionalReaction desirability="-4" desirabilityForOther="-1" praiseworthiness="-4">
+            <Event action="SpeechAct" parameters="joingroupquestionthreatleave,*" />
+        </EmotionalReaction>
+
+         <EmotionalReaction desirability="-6" desirabilityForOther="-1" praiseworthiness="-1">
+            <Event action="SpeechAct" parameters="joingroupquestionthreatleavepositiveanswer,*" />
+        </EmotionalReaction>
+
+         <EmotionalReaction desirability="6" desirabilityForOther="2" praiseworthiness="5">
+            <Event action="SpeechAct" parameters="joingroupquestionthreatleavenegativeanswer,*" />
+        </EmotionalReaction>
+
+        
+        <!-- Emotional reactions to the outcome of coping strategies -->
+        
+		<!-- Emotional reaction to laughing off and corresponding outcomes -->
+        <EmotionalReaction desirability="4" desirabilityForOther="-3" praiseworthiness="5">
+            <Event action="Question" subject="[SELF]" parameters="laughoff" />
+        </EmotionalReaction>
+        <EmotionalReaction desirability="7" desirabilityForOther="2" praiseworthiness="3">
+            <Event action="Reply" target="[SELF]" parameters="laughoff,positiveanswer" />
+        </EmotionalReaction>
+        <EmotionalReaction desirability="-3" desirabilityForOther="2" praiseworthiness="-3">
+            <Event action="Reply" target="[SELF]" parameters="laughoff,negativeanswer" />
+        </EmotionalReaction>
+      
+		 <!-- Emotional reaction to be confronted to leave and corresponding outcomes -->
+        <EmotionalReaction desirability="5" desirabilityForOther="-4" praiseworthiness="5">
+            <Event action="Question" subject="[SELF]" parameters="confrontationleave" />
+        </EmotionalReaction>
+        <EmotionalReaction desirability="6" desirabilityForOther="6" praiseworthiness="3">
+            <Event action="Reply" target="[SELF]" parameters="confrontationleave,positiveanswer" />
+        </EmotionalReaction>
+        <EmotionalReaction desirability="-5" desirabilityForOther="4" praiseworthiness="-3">
+            <Event action="Reply" target="[SELF]" parameters="confrontationleave, negativeanswer" />
+        </EmotionalReaction>
+                
+         <!-- Emotional reaction to protest against the bully and corresponding outcomes -->
+        <EmotionalReaction desirability="5" desirabilityForOther="-4" praiseworthiness="5">
+            <Event action="Question" subject="[SELF]" parameters="protest" />
+        </EmotionalReaction>
+        <EmotionalReaction desirability="5" desirabilityForOther="5" praiseworthiness="3">
+            <Event action="Reply" target="[SELF]" parameters="protest,positiveanswer" />
+        </EmotionalReaction>
+        <EmotionalReaction desirability="-4" desirabilityForOther="4" praiseworthiness="-3">
+            <Event action="Reply" target="[SELF]" parameters="protest, negativeanswer" />
+        </EmotionalReaction>
+        
+        <!-- Emotional reactions to making new friends -->
+        <EmotionalReaction desirability="5" desirabilityForOther="5" praiseworthiness="5">
+            <Event action="Question" target="[SELF]" parameters="makefriend" />
+        </EmotionalReaction>
+        
+        <EmotionalReaction desirability="8" desirabilityForOther="5" praiseworthiness="5">
+            <Event action="Reply" target="[SELF]" parameters="makefriend,positiveanswer" />
+        </EmotionalReaction>
+        
+        <EmotionalReaction desirability="-2" desirabilityForOther="2" praiseworthiness="-1">
+            <Event action="Reply" target="[SELF]" parameters="makefriend,negativeanswer" />
+        </EmotionalReaction>
+        
+         <EmotionalReaction desirability="7" desirabilityForOther="3" praiseworthiness="5">
+            <Event action="Question" target="[SELF]" parameters="helpinvitation" />
+        </EmotionalReaction>
+        
+		<EmotionalReaction desirability="9" desirabilityForOther="3" praiseworthiness="7">
+            <Event action="Question" target="[SELF]" parameters="helpprotection" />
+        </EmotionalReaction>
+        
+        
+		<!-- Emotional Reactions specific to episode B04 - On the Way to School -->
+		<EmotionalReaction desirability="4" desirabilityForOther="2" praiseworthiness="3">
+            <Event action="Question" target="[SELF]" parameters="deception" />
+        </EmotionalReaction>
+        <EmotionalReaction desirability="3" desirabilityForOther="2" praiseworthiness="3">
+            <Event action="SpeechAct" target="[SELF]" parameters="deceptionreinforce" />
+        </EmotionalReaction>
+        <EmotionalReaction desirability="-4" desirabilityForOther="3" praiseworthiness="-3">
+            <Event action="SpeechAct" target="[SELF]" parameters="deceptionreveal" />
+        </EmotionalReaction>
+        <EmotionalReaction desirability="-4" desirabilityForOther="3" praiseworthiness="-3">
+            <Event action="SpeechAct" target="[SELF]" parameters="deceptionrevealreinforce" />
+        </EmotionalReaction>
+        <EmotionalReaction desirability="3" praiseworthiness="3">
+            <Event action="Reply" subject="[SELF]" parameters="deception,negativeanswer" />
+        </EmotionalReaction>
+      
+		<!-- Emotional Reactions specific to episode B06 - Party Invitation -->
+		<EmotionalReaction desirability="-7" praiseworthiness="-4">
+			<Event action="SpeechAct" parameters="partyinvitationsabotagehost,[SELF]"/>
+		</EmotionalReaction>
+		
+		<EmotionalReaction desirability="7" praiseworthiness="5">
+			<Event action="Question" target="[SELF]" parameters="partyinvitation"/>
+		</EmotionalReaction>
+		
+		<EmotionalReaction desirability="-4" praiseworthiness="-3">
+			<Event action="SpeechAct" target="[SELF]" parameters="partyinvitationwithdraw"/>
+		</EmotionalReaction>
+		
+		<!-- Emotional Reactions specific to episode B07 - The Books in the Classroom -->
+		<EmotionalReaction desirability="-3"  praiseworthiness="-3">
+			<Event action="SpeechAct" target="[SELF]" parameters="tease" />
+		</EmotionalReaction>
+		
+		<EmotionalReaction desirability="-3"  praiseworthiness="-3">
+			<Event action="SpeechAct" target="[SELF]" parameters="teasereinforce" />
+		</EmotionalReaction>
+		
+		<EmotionalReaction desirability="4"  praiseworthiness="6" >
+			<Event action="Question" subject="[SELF]" parameters="teasedefend" />
+		</EmotionalReaction>
+
+		<EmotionalReaction desirability="-4"  praiseworthiness="-4">
+			<Event action="Reply" target="[SELF]" parameters="teasedefend,negativeanswer" />
+		</EmotionalReaction>
+
+		<EmotionalReaction desirability="7"  praiseworthiness="3">
+			<Event action="Reply" target="[SELF]" parameters="teasedefend,positiveanswer" />
+		</EmotionalReaction>
+		
+		<EmotionalReaction desirability="-5"  praiseworthiness="-4">
+			<Event subject="*" action="swipe" target="book"/>
+		</EmotionalReaction>
+		
+		<!-- Emotional Reactions specific to episode B08 - The Library -->
+		 <EmotionalReaction desirability="-5" desirabilityForOther="4" praiseworthiness="-6">
+            <Event action="Question" target="[SELF]" parameters="itemclaim" />
+        </EmotionalReaction>
+
+         <EmotionalReaction desirability="-4" desirabilityForOther="4" praiseworthiness="-4">
+            <Event action="Reply" subject="[SELF]" parameters="itemclaim,negativeanswer" />
+        </EmotionalReaction>
+
+         <EmotionalReaction desirability="5" desirabilityForOther="3" praiseworthiness="2">
+            <Event action="Reply" subject="[SELF]" parameters="itemclaim,positiveanswer" />
+        </EmotionalReaction>
+
+         <EmotionalReaction desirability="-6" desirabilityForOther="4" praiseworthiness="-8">
+            <Event action="steal" target="[SELF]"  />
+        </EmotionalReaction>
+
+         <EmotionalReaction desirability="-6" desirabilityForOther="4" praiseworthiness="-8">
+            <Event action="SpeechAct" target="[SELF]" parameters="itemdestroyed"  />
+        </EmotionalReaction>
+
+         <EmotionalReaction desirability="5" desirabilityForOther="4" praiseworthiness="3">
+            <Event action="SpeechAct" target="[SELF]" parameters="itemclaimback,positiveanswer"  />
+        </EmotionalReaction>
+        
+        <!-- Emotional Reactions specific to episode B11 - On the way home -->
+        <!-- emotional reactions for waterbomb episodes start here  -->
+		
+		<EmotionalReaction desirability="-3" desirabilityForOther="0" praiseworthiness="-3">
+            <Event action="SpeechAct" subject="[SELF]" parameters="confrontationbeg" />
+        </EmotionalReaction>
+		
+		<EmotionalReaction desirability="-8" desirabilityForOther="5" praiseworthiness="-8">
+            <Event action="throw" target="[SELF]" parameters="[item]" />
+        </EmotionalReaction>
+		
+		<EmotionalReaction desirability="-5" desirabilityForOther="5" praiseworthiness="-5">
+            <Event action="SpeechAct" target="[SELF]" parameters="bullywithobject" />
+        </EmotionalReaction>
+		
+		<EmotionalReaction desirability="-8" desirabilityForOther="3" praiseworthiness="-8">
+            <Event action="SpeechAct" subject="[SELF]" parameters="bullywithobjectnegativeanswer" />
+        </EmotionalReaction>
+		
+		<EmotionalReaction desirability="3" desirabilityForOther="-3" praiseworthiness="5">
+            <Event action="SpeechAct" subject="[SELF]" parameters="bullywithobjectpositiveanswer" />
+        </EmotionalReaction>
+		
+		<EmotionalReaction desirability="5" desirabilityForOther="5" praiseworthiness="5">
+            <Event action="SpeechAct" parameters="confrontationhelper" />
+        </EmotionalReaction>
+		
+		<EmotionalReaction desirability="5" desirabilityForOther="5" praiseworthiness="3">
+            <Event action="Reply" parameters="confrontationhelper,positiveanswer" />
+        </EmotionalReaction>
+		
+		<EmotionalReaction desirability="-5" desirabilityForOther="-3" praiseworthiness="-3">
+            <Event action="Reply" parameters="confrontationhelper,negativeanswer" />
+        </EmotionalReaction>
+		
+		<EmotionalReaction desirability="-5" desirabilityForOther="5" praiseworthiness="-5">
+            <Event action="SpeechAct" target="[SELF]" parameters="mock" />
+        </EmotionalReaction>
+		
+		<EmotionalReaction desirability="-3" desirabilityForOther="3" praiseworthiness="-3">
+            <Event action="SpeechAct" target="[SELF]" parameters="mockreinforce" />
+        </EmotionalReaction>						
+		
+		<!-- emotional reactions for waterbomb episodes end here -->
+		
+		
+		<!-- Emotional reactions specific to episode B13 - Very Physical -->
+		<!-- added for B13: MK --> 
+        <EmotionalReaction desirability="-4" desirabilityForOther="3" praiseworthiness="-4">
+            <Event action="Question" target="[SELF]" parameters="confrontationorder" />
+        </EmotionalReaction>
+		
+		<!-- Emotional Reactions specific to episode B14 -The Library  -->
+		<EmotionalReaction desirability="-2" praiseworthiness="-2">
+			<Event action="SpeechAct" target="[SELF]" parameters="annoy"/>
+		</EmotionalReaction>
+		<EmotionalReaction desirability="-3" praiseworthiness="-3">
+			<Event action="jolt" target="book" />
+		</EmotionalReaction>
+		
+		<!-- Emotional Reactions specific to episode B16 - After Lunch -->
+		<!-- added for B16: MK --> 
+        <EmotionalReaction desirability="-4" desirabilityForOther="4" praiseworthiness="-5">
+            <Event action="Question" target="[SELF]" parameters="confrontationagressivequestionning" />
+        </EmotionalReaction>    
+		
+		<!-- Emotional Reactions specific to episode B22 - Hallway - Verbal -->
+		<!-- EmotionalReaction added by Adrian Gordon for Episode B22 -->
+		<!-- it is desirable and praiseworthy for the victim to refuse to accept humiliation,and it is desirable for the bully -->
+		<EmotionalReaction desirability="4" desirabilityForOther="-4" praiseworthiness="6">
+            <Event action="SpeechAct" subject="[SELF]" parameters="humiliatenegativereply" />
+        </EmotionalReaction>
+
+
+		<!-- EmotionalReaction added by Adrian Gordon for Episode B22 -->
+		<!-- it is neither desireable nor praiseworthy for the victim to accept humiliation, but it is desirable for the bully if the victim does so-->
+		<EmotionalReaction desirability="-2" desirabilityForOther="4" praiseworthiness="-6">
+            <Event action="SpeechAct" subject="[SELF]" parameters="humiliatepositivereply" />
+        </EmotionalReaction>
+
+		<!-- In the following emotional reactions, the event is very much not desirable for the victim, it is highly desirable for the bully
+			and it is not praiseworthy -->
+		<!-- EmotionalReaction added by Adrian Gordon for Episode B22 -->
+		<EmotionalReaction desirability="-3" desirabilityForOther="8" praiseworthiness="-6">
+            <Event action="SpeechAct" target="[SELF]" parameters="humiliate" />
+        </EmotionalReaction>
+
+		<!-- EmotionalReaction added by Adrian Gordon for Episode B22 -->
+		<EmotionalReaction desirability="-3" desirabilityForOther="8" praiseworthiness="-6">
+            <Event action="SpeechAct" target="[SELF]" parameters="humiliatethreat" />
+        </EmotionalReaction>
+
+		<!-- EmotionalReaction added by Adrian Gordon for Episode B22 -->
+		<EmotionalReaction desirability="-5" desirabilityForOther="8" praiseworthiness="-6">
+            <Event action="SpeechAct" target="[SELF]" parameters="humiliatevictory" />
+        </EmotionalReaction>
+        
+        <!-- EmotionalReactions for Episode B24: Make New Friend -->
+        <EmotionalReaction desirability="8" desirabilityForOther="3" praiseworthiness="5">
+            <Event action="Reply" target="[SELF]" parameters="makefriend,positiveanswer" />
+        </EmotionalReaction>
+        
+        <EmotionalReaction desirability="-2" desirabilityForOther="2" praiseworthiness="-1">
+            <Event action="Reply" target="[SELF]" parameters="makefriend,negativeanswer" />
+        </EmotionalReaction>
+        
+        <EmotionalReaction desirability="6" desirabilityForOther="3" praiseworthiness="4">
+            <Event action="Question" target="[SELF]" parameters="helpinvitation" />
+        </EmotionalReaction>
+        
+        <!-- EmotionalReactions for Episode B25: Tell a Friend -->
+        <EmotionalReaction desirability="8" desirabilityForOther="3" praiseworthiness="5">
+            <Event action="Reply" target="[SELF]" parameters="askforhelp,positiveanswer" />
+        </EmotionalReaction>
+        
+        <EmotionalReaction desirability="-2" desirabilityForOther="2" praiseworthiness="-1">
+            <Event action="Reply" target="[SELF]" parameters="askforhelp,negativeanswer" />
+        </EmotionalReaction>
+        
+	    <!-- G23 Emotional Reactions -->
+		
+		<EmotionalReaction desirability="-3" praiseworthiness="-3">
+			<Event action="SpeechAct" target="[SELF]" parameters="follow"/>
+		</EmotionalReaction>
+			
+		<EmotionalReaction desirability="-3" praiseworthiness="-3">
+			<Event action="Reply" target="[SELF]" parameters="followaskwhy,negativeanswer"/>
+		</EmotionalReaction>
+		
+		<EmotionalReaction desirability="-4" praiseworthiness="-4">
+			<Event action="SpeechAct" target="[SELF]" parameters="followleavefollow"/>
+		</EmotionalReaction>	
+		
+		<!-- Emotional Reactions for Bullt met teacher episode -->
+		<EmotionalReaction desirability="-5" praiseworthiness="-5">
+			<Event action="SpeechAct" target="[SELF]" parameters="confrontationtoldteacher"/>
+		</EmotionalReaction>
+      
+	</EventReactions>
+	
+	<ActionTendencies>
+	
+		<!-- Generic action tendencies -->
+		
+		<!-- Action tendency of insulting when the victim is angry. This also corresponds to the insult coping strategy. -->
+		<!--<ActionTendency action="SpeechAct([Subject],insult)">
+			<Preconditions>
+            </Preconditions>
+			<ElicitingEmotion type="Anger" minIntensity="5">
+				<CauseEvent/>
+			</ElicitingEmotion>
+		</ActionTendency>
+		
+		<ActionTendency action="SpeechAct([Subject],insultinsultback)">
+			<Preconditions>
+            </Preconditions>
+			<ElicitingEmotion type="Anger" minIntensity="3">
+				<CauseEvent subject="*" action="*" target="[SELF]" parameters="insult"/>
+			</ElicitingEmotion>
+		</ActionTendency>-->
+		
+		<!-- Action tendency of crying when the victim is distressed. Corresponds to the cry coping strategy. -->
+		<ActionTendency action="cry">
+			<Preconditions>
+            </Preconditions>
+			<ElicitingEmotion type="Distress" minIntensity="6">
+				<CauseEvent/>
+			</ElicitingEmotion>
+		</ActionTendency>
+		
+		<ActionTendency action="SpeechAct([Subject],cryanswer)">
+			<Preconditions>
+			</Preconditions>
+			<ElicitingEmotion type="Distress" minIntensity="6">
+				<CauseEvent subject="*" action="*" target="[SELF]" parameters="insult"/>
+			</ElicitingEmotion>
+		</ActionTendency>
+		
+		<ActionTendency action="SpeechAct([Subject],cryanswer)">
+			<Preconditions>
+			</Preconditions>
+			<ElicitingEmotion type="Distress" minIntensity="6">
+				<CauseEvent subject="*" action="*" target="[SELF]" parameters="insultreinforce" />
+			</ElicitingEmotion>
+		 </ActionTendency>
+		
+		<!-- the victim says this before trying to hit the bully -->
+		<ActionTendency action="SpeechAct([Subject],fightstart)">
+			<Preconditions>
+            </Preconditions>
+			<ElicitingEmotion type="Anger" minIntensity="1">
+				<CauseEvent action="SpeechAct" target="[SELF]" parameters="threatfightback,negativeanswer"/>
+			</ElicitingEmotion>
+		</ActionTendency>
+		
+	</ActionTendencies>
+</Character>

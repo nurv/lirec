@@ -1,0 +1,2961 @@
+absOrder: pre1, pre2, default, cleanup
+
+# setzen globaler Variablen
+
+pre1: $T=Type() not(bully())
+-> $T bully(value:Lukas)
+
+pre2: $T=Type() not(victim())
+-> $T victim(value:Jonas)
+
+
+####################################
+# speech act types
+# TODO: es wird immer ein Ergebnis zu viel erzeugt
+# 		Friendly greeting
+
+Type(value:greeting) 
+-> Utterance(value:(Synonym(semCat:hello),"!"))
+
+Type(value:greeting) you(value:$V)
+-> Utterance(value:(Synonym(semCat:hello)," ",$V,"!"))
+
+Type(value:greeting) you(value:$V)
+-> Utterance(value:(Synonym(semCat:hello)," ",$V,", wie geht's?"))
+
+Type(value:greeting) you(value:$V)
+-> Utterance(value:(Synonym(semCat:hello),", alles klar?"))
+
+
+# 		insulting another agent
+Type(value:insult) sex(value:$S)
+-> preInsult1() theAInsult(gender:$S) Utterance(value:"!")
+
+Type(value:insult) sex(value:$S)
+-> preInsult2() theInsult(gender:$S) Utterance(value:"!")
+
+Type(value:insult)
+-> Utterance(value:"Du nervst!")
+
+
+# 		Hostile/insulting greeting
+Type(value:insultgreeting) sex(value:$S)
+-> Utterance(value:(Synonym(semCat:hello)," du ")) theInsult(gender:$S) Utterance(value:"!")
+
+
+# 		replying an insult with another insult
+Type(value:insultinsultback) $I=Synonym(semCat:idiot,value:$V)
+-> Utterance(value: ("Du bist hier ",Lex(stem:$V,det:Lex(semCat:def),case:nom,number:sg),"."))
+
+Type(value:insultinsultback) $I=Synonym(semCat:idiot,value:$V)
+-> Utterance(value: ("Selber ",Lex(stem:$V,case:nom,number:sg),"."))
+
+Type(value:insultinsultback) sex(value:$S)
+-> Utterance(value: ("Zumindest bin ich nicht so ",Synonym(semCat:idiot,type:$S,det:Lex(semCat:undef),adj:Synonym(semCat:stupid,type:$S),number:sg,case:nom)," wie du.")) sex(value:$S)
+
+Type(value:insultinsultback) sex(value:$S)
+-> Utterance(value: ("Du musst es ja wissen, du ",Synonym(semCat:idiot,type:$S,adj:Synonym(semCat:stupid,type:$S),number:sg,case:nom),".")) sex(value:$S)
+
+
+# 		replying an insult by crying
+Type(value:insultcryanswer)
+-> Utterance(value: "Du bist so gemein.")
+
+Type(value:insultcryanswer)
+-> Utterance(value: "Das ist unfair! Ich hab dir doch gar nichts getan.")
+
+
+
+# 		bully mocking about victim crying
+Type(value:mock)
+-> Utterance(value: "Weichei!")
+
+Type(value:mock) you(value:$V)
+-> Utterance(value: ("Darf ich vorstellen, ",$V,", die Heulsuse! "))
+
+Type(value:mock)
+-> Utterance(value: "Ha ha. Brauchst du deine Mami, du Baby?")
+
+Type(value:mock)
+-> Utterance(value: "Voll das Weichei.")
+
+Type(value:mock)
+-> Utterance(value: "Ach wie süß, du bist so `ne kleine Heulsuse.")
+
+
+# 		bully assistant reinforcing bully's mocking
+Type(value:mockreinforce)
+-> Utterance(value: "Genau, du bist echt ein Schwächling!")
+
+Type(value:mockreinforce)
+-> Utterance(value: "Ja, du bist so blöd!")
+
+
+# 		victim laughing bullying off
+Type(value:laughoff)
+-> Utterance(value: "Genau, das ist lustig.")
+
+Type(value:laughoff)
+-> Utterance(value: "Was weiss ich, vielleicht hast du recht.")
+
+
+# 		laughing off was successful
+Type(value:laughoffpositiveanswer)
+-> Utterance(value: "Ist mir egal, mach was du willst.")
+
+Type(value:laughoffpositiveanswer)
+-> Utterance(value: "Ach, vergiss es.")
+
+
+# 		laughing off was not successful
+Type(value:laughoffnegativeanswer) sex(value:$S)
+-> Utterance(value: ("Versuchst du, witzig zu sein, ",Synonym(semCat:idiot,type:$S,case:nom,number:sg),"?"))
+
+
+# 		bully threatening victim to be quiet (should only occur after a previous bullying)
+Type(value:threattalkto) sex(value:$S)
+-> Utterance(value: ("Halt die Klappe, ",Synonym(semCat:idiot,type:$S,number:sg,case:nom),", oder es passiert was.")) sex(value:$S)
+
+Type(value:threattalkto)
+-> Utterance(value: ("Wenn du irgendwem davon erzählst, ",Synonym(semCat:punch)," ich dir in die Fresse!"))
+
+Type(value:threattalkto)
+-> Utterance(value: "Pssssst..... halt die Klappe oder du bist tot!")
+
+Type(value:threattalkto)
+-> Utterance(value: "Du hältst besser die Schnauze oder du bist tot!")
+
+
+# 		bullyassistant reinforcing threat
+Type(value:threattalktoreinforce) sex(value:$S)
+-> Utterance(value: ("Genau, behalt's besser für dich, ",Synonym(semCat:idiot,type:$S,number:sg,case:nom),"."))
+
+Type(value:threattalktoreinforce) sex(value:$S)
+-> Utterance(value:"Ja, sag es bloß nicht weiter!")
+
+# 		giving in to a threat
+Type(value:threattalktopositiveanswer)
+-> Utterance(value: "Ok ok. Lass mich bloß in Ruhe, ok?")
+
+
+# 		not giving in to a threat
+Type(value:threattalktonegativeanswer)
+-> Utterance(value: "Jetzt ist es zu spät, jetzt sag ich's. Selber schuld.")
+
+Type(value:threattalktonegativeanswer)
+-> Utterance(value: "Du hast mir gar nichts zu sagen!")
+
+Type(value:threattalktonegativeanswer)
+-> Utterance(value: "Mir reicht's! Ich werde es erzählen. Du wirst ja sowas von Ärger bekommen.")
+
+Type(value:threattalktonegativeanswer)
+-> Utterance(value: "Von wegen, ich werde alles erzählen.")
+
+
+# 		bully teasing victim verballly
+Type(value:tease) episode(value:B07)
+-> Utterance(value: "He, Streber, was liest du denn da? Das brauchst du doch gerade nicht, oder?")
+
+Type(value:tease) episode(value:B18)
+-> Utterance(value: "He, schaut euch das an, ich sehe ein fettes Insekt. Es sucht nach seiner Insektenfamilie.")
+
+Type(value:tease) episode(value:B20)
+-> Utterance(value: "Schaut euch diesen Streber an, der arbeitet sogar, wenn der Lehrer weg ist.")
+
+Type(value:tease) episode(value:B23) victim(value:$V)
+-> Utterance(value: ("Schaut euch das an, das Muttersöhnchen hat eingekauft. He, ",$V,", ist deine Mama so hässlich, dass sie sich nicht aus dem Haus traut?"))
+
+Type(value:tease) episode(value:G18) sex(value:$S)
+-> Utterance(value: ("Hey ",Synonym(semCat:idiot,type:$S,case:nom,number:sg),", suchst du deine Familie in dem Busch da?")) sex(value:$S)
+
+Type(value:tease) episode(value:G20) victim(value:$V)
+-> Utterance(value: ("He ",$V,"! Du bist so hässlich, dass die Jungs dich nicht mögen."))
+
+Type(value:tease) episode(value:G21) victim(value:$V)
+-> Utterance(value: ("He ",$V,"! Gehst du nach Hause zu deiner hässlichen Familie?"))
+
+Type(value:tease) episode(value:G22)
+-> Utterance(value: "Die Streberin arbeitet immer noch! Was für eine Überraschung!")
+
+
+# 		bully assistant reinforcing teasing
+Type(value:teasereinforce)
+-> Utterance(value: "Ha ha!")
+
+Type(value:teasereinforce) episode(value:B18)
+-> Utterance(value: "Oh, ja ich seh's. He Insekt, hast du deine Familie schon gefunden?")
+
+Type(value:teasereinforce) episode(value:B20)
+-> Utterance(value: "Er ist der größte Streber, den ich kenne.")
+
+Type(value:teasereinforce) episode(value:B23)
+-> Utterance(value: "Ha ha, genau, wahrscheinlich sieht sie wie eine Kröte aus.")
+
+Type(value:teasereinforce) episode(value:G18)
+-> Utterance(value: "Wahrscheinlich leben sie in einem Busch, weil sie so arm sind. Haha!")
+
+Type(value:teasereinforce) episode(value:G18)
+-> Utterance(value: "Ja, die sind so arm!") episode(value:G18)
+
+Type(value:teasereinforce) episode(value:G20)
+-> Utterance(value: "Genau, du bist so hässlich, dass sie davonrennen!")
+
+Type(value:teasereinforce) episode(value:G20)
+-> Utterance(value: "Dich will keiner!") episode(value:G20)
+
+Type(value:teasereinforce) episode(value:G21)
+-> Utterance(value: "Genau, grüß deine hässliche Familie.")
+
+Type(value:teasereinforce) episode(value:G21)
+-> Utterance(value: "Tschüß.") episode(value:G21)
+
+Type(value:teasereinforce) episode(value:G22)
+-> Utterance(value: "Gibt's in deinem Leben eigentlich noch was anderes als Lernen? Du bist ja echt so krank!")
+
+Type(value:teasereinforce) episode(value:G22) 
+-> Utterance(value: "Du Streberin!") episode(value:G22)
+
+
+# 		victim defending itself against teasing
+Type(value:teasedefend) episode(value:B07)
+-> Utterance(value: "Hey, leg das hin.")
+
+Type(value:teasedefend) episode(value:B18)
+-> Utterance(value: "Wir sind keine Insekten! Aber du hast ein Gehirn wie eine Ameise.")
+
+Type(value:teasedefend) episode(value:B20)
+-> Utterance(value: "Ich bin kein Streber! Du bist nur neidisch weil ich schlauer bin als du.")
+
+Type(value:teasedefend) episode(value:B23) sex(value:$S)
+-> Utterance(value: ("Beleidige nicht meine Mutter, du ",Synonym(semCat:idiot,type:$S,case:nom,number:sg),"!")) sex(value:$S)
+
+Type(value:teasedefend) episode(value:G18)
+-> Utterance(value: "Wir wohnen in einem ganz normalen Haus und wir sind auch nicht arm.")
+
+Type(value:teasedefend) episode(value:G20)
+-> Utterance(value: "Genau, du riechst so stark, dass sie davonrennen!")
+
+Type(value:teasedefend) episode(value:G21)
+-> Utterance(value: "Nein, deine Familie stinkt.")
+
+Type(value:teasedefend) episode(value:G22)
+-> Utterance(value: "Halt die Klappe. Wenn ich nach dem Test 'ne eins habe und du 'ne sechs, dann schaust du blöd.")
+
+
+# 		victim defending itself was successful
+Type(value:teasedefendpositiveanswer)
+-> Utterance(value: "Ok, ok.")
+
+Type(value:teasedefendpositiveanswer)
+-> Utterance(value: "Alles klar, bleib mal ruhig, war nur ein Scherz.")
+
+Type(value:teasedefendpositiveanswer)
+-> Utterance(value: "Ok, ok, reg dich nicht auf.")
+
+Type(value:teasedefendpositiveanswer)
+-> Utterance(value: "Reg dich ab! War nur 'n Scherz.")
+
+
+# 		victim defending itself was not successful
+Type(value:teasedefendnegativeanswer) episode(value:B07)
+-> Utterance(value: "Oh. jetzt ist es runtergefallen. Was für'n Pech. Tut mir sehr, sehr leid.")
+
+Type(value:teasedefendnegativeanswer) episode(value:B07)
+-> Utterance(value: "Ups. Unfälle gibt's...")
+
+Type(value:teasedefendnegativeanswer) episode(value:B18)
+-> Utterance(value: "Halt die Klappe, Weichei, oder ich komm zu dir rüber und polier dir die Fresse.")
+
+Type(value:teasedefendnegativeanswer) episode(value:B20)
+-> Utterance(value: "Ja klar! Von wegen! Jetzt halt die Klappe, du Schwachkopf.")
+
+Type(value:teasedefendnegativeanswer) episode(value:B23)
+-> Utterance(value: "Warum sollten wir nicht? Was willst DU denn dagegen machen.")
+
+Type(value:teasedefendnegativeanswer) episode(value:G18)
+-> Utterance(value: "Halt die Klappe, seid ihr wohl! Du trägst doch immer bloß alte Klamotten!")
+
+Type(value:teasedefendnegativeanswer) episode(value:G20)
+-> Utterance(value: "Warum hast du dann noch nie einen Freund gehabt? Ha ha, du bist so neidisch auf uns.")
+
+Type(value:teasedefendnegativeanswer) episode(value:G21)
+-> Utterance(value: "Halt die Klappe, du blöde Zicke, bevor du Probleme bekommst.")
+
+Type(value:teasedefendnegativeanswer) episode(value:G22)
+-> Utterance(value: "Quatsch! Davon träumst du ja wohl nur!")
+
+
+# 		victim asking another agent (defender or bystander) for help
+Type(value:askforhelp) sex(value:$S) bully(value:$B)
+-> Utterance(value: ("Kannst du mir vielleicht helfen? Ich habe ein Problem mit ",$B,". ",Lex(semCat:ppn_3,number:sg,gender:$S,case:nom)," ist immer so gemein zu mir."))
+
+Type(value:askforhelp) bully(value:$B) sex(value:$S)
+-> Utterance(value: ("Ich würde dich gerne was fragen. ",$B," ist immer so gemein zu mir und ich weiß nicht, was ich noch tun soll, damit ",Lex(semCat:ppn_3,number:sg,gender:$S,case:nom)," aufhört. Kannst du mir vielleicht helfen?"))
+
+Type(value:askforhelp) bully(value:$B) sex(value:$S)
+-> Utterance(value: ("Kannst du mir vielleicht helfen, dass ",$B," nicht mehr so gemein zu mir ist? ",Lex(semCat:ppn_3,number:sg,gender:$S,case:nom)," lässt mich einfach nicht in Ruhe, obwohl ich ",Lex(semCat:ppn_3,number:sg,gender:$S,case:dat)," gar nichts getan habe!"))
+
+
+# 		victim asking another agent (defender or bystander) for help
+Type(value:askforhelppositiveanswer)
+-> Utterance(value: "Sicher, ich tue, was ich kann, um dir zu helfen.")
+
+Type(value:askforhelppositiveanswer)
+-> Utterance(value: "Klaro.")
+
+Type(value:askforhelppositiveanswer) bully(value:$B)
+-> Utterance(value: ("Das ist echt gemein von ",$B,", natürlich helfe ich dir."))
+
+
+# 		defender/ bystander re
+Type(value:askforhelpnegativeanswer) sex(value:m)
+-> Utterance(value: "Nee, kannste vergessen, der ist doch ein riesiger Brocken, dieser Schlägertyp.")
+
+Type(value:askforhelpnegativeanswer)
+-> Utterance(value: "Tut mir leid, ich würde dir gern helfen, aber ich will keinen Ärger bekommen.")
+
+Type(value:askforhelpnegativeanswer) you(value:$V) bully(value:$B)
+-> Utterance(value: ("Es tut mir leid, ",$V,", aber mit ",$B," will ich nichts zu tun haben."))
+
+
+# 		victim asking another agent for friendship
+Type(value:makefriend) sex(value:$S)
+-> Utterance(value: ("Wollen wir ",Lex(semCat:friend,number:pl,gender:$S,case:nom)," sein?"))
+
+Type(value:makefriend)
+-> Utterance(value: "Wollen wir in der Pause zusammen was spielen?")
+
+
+# 		victim asking another agent for friendship
+Type(value:makefriendpositiveanswer) sex(value:$S)
+-> Utterance(value: "Klar, wollte ich dich auch schon fragen. ")
+
+Type(value:makefriendpositiveanswer)
+-> Utterance(value: "Sicher, warum nicht.")
+
+Type(value:makefriendpositiveanswer)
+-> Utterance(value: "Klar, warum nicht?")
+
+Type(value:makefriendpositiveanswer)
+-> Utterance(value: "Sicher, lass uns zusammen was spielen.")
+
+
+# 		victim asking another agent for friendship
+Type(value:makefriendpositiveanswerreply)
+-> Utterance(value:(Synonym(semCat:great),"!"))
+
+
+# 		victim asking another agent for friendship
+Type(value:makefriendnegativeanswer)
+-> Utterance(value: "Sorry, ich hab zu viel zu tun, um mit dir rumzuhängen.")
+
+Type(value:makefriendnegativeanswer)
+-> Utterance(value: "Nee, geht leider nicht.")
+
+Type(value:makefriendnegativeanswer)
+-> Utterance(value: "Nee, da habe ich kein Bock drauf.")
+
+
+# 		victim asking another agent for friendship
+Type(value:makefriendnegativeanswerreply)
+-> Utterance(value: "Vergiss es.")
+
+Type(value:makefriendnegativeanswerreply)
+-> Utterance(value: "Dann halt nicht.")
+
+
+# 		asking the victim if he needs help
+Type(value:helpquestion)
+-> Utterance(value: "Hast du ein Problem? Soll ich dir helfen?")
+
+Type(value:helpquestion)
+-> Utterance(value: "He, was ist los, heulst du?")
+
+Type(value:helpquestion)
+-> Utterance(value: "Was ist passiert, warum heulst du?")
+
+Type(value:helpquestion)
+-> Utterance(value: "Alles klar bei dir?")
+
+
+# 		victim replying that he/she needs help
+Type(value:helpquestionpositiveanswer) bully(value:$B)
+-> Utterance(value: ("Ich weiss auch nicht, es ist nur, dass ",$B," mich die ganze Zeit ärgert."))
+
+Type(value:helpquestionpositiveanswer) sex(value:$S) bully(value:$B)
+-> Utterance(value: ("Also, ",$B," ist so gemein zu mir. ",Lex(semCat:ppn_3,number:sg,gender:$S,case:nom)," ärgert mich die ganze Zeit."))
+
+Type(value:helpquestionpositiveanswer) sex(value:$S) bully(value:$B)
+-> Utterance(value: ("Äh, also, ",$B," ist so gemein zu mir. ",Lex(semCat:ppn_3,number:sg,gender:$S,case:nom)," macht mir das Leben zur Hölle."))
+
+Type(value:helpquestionpositiveanswer) bully(value:$B)
+-> Utterance(value: ("Ich brauch deine Hilfe. ",$B," ärgert mich die ganze Zeit."))
+
+
+# 		victim replying that he/she does not need help
+Type(value:helpquestionnegativeanswer)
+-> Utterance(value: "Nein, alles klar. Vergiss es einfach, okay?")
+
+Type(value:helpquestionnegativeanswer)
+-> Utterance(value: "Nein, nichts Ernstes.")
+
+Type(value:helpquestionnegativeanswer)
+-> Utterance(value: "Nein, nein, keine Sorge. Ich komm klar damit.")
+
+
+# 		a reply to offered help being refused
+Type(value:helprefusal)
+-> Utterance(value: "Das ist dein Ding, wenn du nicht willst, dass ich dir helfe, dann lasse ich dich halt in Ruhe.")
+
+Type(value:helprefusal)
+-> Utterance(value: "Ok, wenn du meinst. Ich könnte dir aber helfen.")
+
+Type(value:helprefusal)
+-> Utterance(value: "Dann halt nicht, mach was du willst.")
+
+
+# 		defender stating he/she doesn't have an idea how to help
+Type(value:helpunknown)
+-> Utterance(value: ("Oh, das ist ",Synonym(semCat:hard),", ich weiss auch nicht, was du tun könntest, aber ich denk mal drüber nach."))
+
+Type(value:helpunknown)
+-> Utterance(value: "Oh. Ich weiss leider auch nicht so genau, was du tun sollst. ")
+
+Type(value:helpunknown)
+-> Utterance(value: ("Au ha! Das ist ",Synonym(semCat:hard),". Was kannst du da machen? Ich weiss auch nicht."))
+
+
+# 		victim replying to defender stating that he is clueless
+Type(value:helpunknownanswer)
+-> Utterance(value: "Ok, dann lassen wir's sein.")
+
+Type(value:helpunknownanswer)
+-> Utterance(value: "Vergiss es einfach, aber danke, dass du mir zugehört hast.")
+
+
+# 		defender offering to introduce friends
+Type(value:helpintroducefriend) sex(value:$S)
+-> Utterance(value: ("Komm doch mal mit zu meinen ",Lex(semCat:friend,case:dat,number:pl,gender:$S),"."))
+
+Type(value:helpintroducefriend) sex(value:$S)
+-> Utterance(value: ("Komm mit und sprich mit mir und meinen ",Lex(semCat:friend,case:dat,number:pl,gender:$S),"."))
+
+Type(value:helpintroducefriend) sex(value:$S)
+-> Utterance(value: ("Du brauchst ein paar ",Lex(semCat:friend,case:akk,number:pl,gender:$S),". Komm doch mal mit."))
+
+
+# 		accepting offer of introducing friends 
+Type(value:helpintroducefriendpositiveanswer)
+-> Utterance(value: "Ja, ich würde sie gern kennenlernen.")
+
+Type(value:helpintroducefriendpositiveanswer)
+-> Utterance(value: "Das ist toll, ich kenne hier nämlich sonst niemanden.")
+
+Type(value:helpintroducefriendpositiveanswer)
+-> Utterance(value: ("Echt, bist du sicher, dass sie das okay finden? Das wäre ",Synonym(semCat:great),"."))
+
+Type(value:helpintroducefriendpositiveanswer)
+-> Utterance(value: "Ja, das hört sich wie eine gute Idee an.")
+
+
+# 		refusing offer of introducing friends
+Type(value:helpintroducefriendnegativeanswer)
+-> Utterance(value: "Nein, lieber nicht.")
+
+Type(value:helpintroducefriendnegativeanswer)
+-> Utterance(value: "Nein danke, ich denke, ich komme schon allein zurecht.")
+
+Type(value:helpintroducefriendnegativeanswer)
+-> Utterance(value: "Lass sein, mir geht's gut, keine Sorge.")
+
+
+# 		defender offering to invite victim
+Type(value:helpinvitation)
+-> Utterance(value: "Wie wärs denn, wenn du mal zu mir kommst?")
+
+Type(value:helpinvitation)
+-> Utterance(value: "Hast du nicht Lust, am Wochenende zu mir zu kommen?")
+
+Type(value:helpinvitation)
+-> Utterance(value: "Was hast du vor? Willst du mit mir kommen?")
+
+Type(value:helpinvitation)
+-> Utterance(value: "Ich mache eine Party, das wird richtig cool. Hast du auch Lust zu kommen?")
+
+Type(value:helpinvitation)
+-> Utterance(value: "Nächstes Wochenende schlafen ein paar aus der Klasse bei mir, willst du da vielleicht auch bei mir übernachten?")
+
+
+# 		offer of invitation accepted
+Type(value:helpinvitationpositiveanswer)
+-> Utterance(value: "Ja, ich würde gerne kommen.")
+
+Type(value:helpinvitationpositiveanswer)
+-> Utterance(value: "Ich denke, ich komme, danke für die Einladung.")
+
+Type(value:helpinvitationpositiveanswer)
+-> Utterance(value: "Also, wenn du nichts dagegen hast, komme ich gern vorbei.")
+
+Type(value:helpinvitationpositiveanswer)
+-> Utterance(value: ("Das klingt ",Synonym(semCat:great),"!"))
+
+Type(value:helpinvitationpositiveanswer)
+-> Utterance(value: "Oh gern, auf jeden Fall.")
+
+Type(value:helpinvitationpositiveanswer)
+-> Utterance(value:(Synonym(semCat:great),", klar, ich komme."))
+
+
+# 		offer of invitation declined
+Type(value:helpinvitationnegativeanswer)
+-> Utterance(value: "Nein, ich will nicht zu dir kommen, ich hab soviel vor.")
+
+Type(value:helpinvitationnegativeanswer)
+-> Utterance(value: "Nein, meine Eltern würden es mir nicht erlauben.")
+
+Type(value:helpinvitationnegativeanswer)
+-> Utterance(value: "Ich würde gern kommen, aber ich habe soviel Hausaufgaben zu machen.")
+
+
+# 		defender offering protection from bully
+Type(value:helpprotection) sex(value:$S)
+-> Utterance(value: ("Keine Angst, ich red mal mit ",Lex(semCat:ppn_3,number:sg,gender:$S,case:dat),"."))
+
+Type(value:helpprotection) sex(value:$S)
+-> Utterance(value: ("Ich kann ",Lex(semCat:ppn_3,number:sg,gender:$S,case:dat)," mal ordentlich die Meinung sagen."))
+
+Type(value:helpprotection) sex(value:$S)
+-> Utterance(value: ("Ich kann mal mit ",Lex(semCat:ppn_3,number:sg,gender:$S,case:dat)," sprechen, wenn du willst. Ich habe keine Angst vor ",Lex(semCat:ppn_3,number:sg,gender:$S,case:dat),"."))
+
+Type(value:helpprotection) bully(value:$B)
+-> Utterance(value: ("Wenn du willst, sorge ich dafür, dass ",$B," dich in Ruhe lässt."))
+
+
+# 		protection offer accepted
+Type(value:helpprotectionpositiveanswer)
+-> Utterance(value: ("Das würdest du tun? Das wäre echt ",Synonym(semCat:great),"."))
+
+Type(value:helpprotectionpositiveanswer)
+-> Utterance(value: ("Kannst du das denn? Das wäre echt ",Synonym(semCat:great),"."))
+
+
+# 		protection offer declined
+Type(value:helpprotectionnegativeanswer)
+-> Utterance(value: "Nein, is' schon okay. Ich komm klar.")
+
+Type(value:helpprotectionnegativeanswer)
+-> Utterance(value: "Danke, das ist nett, aber es ist schon okay.")
+
+
+# 		ordering an agent to leave
+Type(value:confrontationorder)
+-> Utterance(value: "Hau ab hier.")
+
+Type(value:confrontationorder)
+-> Utterance(value: "He du, verschwinde!")
+
+Type(value:confrontationorder)
+-> Utterance(value: "Du hast hier nichts zu suchen, verschwinde.")
+
+Type(value:confrontationorder)
+-> Utterance(value: "Hau ab, du Penner, du hast hier nichts zu suchen!")
+
+Type(value:confrontationorder) episode(value:B13)
+-> Utterance(value: "Mach Platz, Fettsack. Du blockierst den ganzen Weg mit deinem fetten Hintern.")
+
+
+# 		ordering an agent to leave reinforced
+Type(value:confrontationorderreinforce) sex(value:$S)
+-> Utterance(value: ("Genau, weg da, ",Synonym(semCat:idiot,type:$S,number:sg,case:nom),".")) sex(value:$S)
+
+Type(value:confrontationorderreinforce) episode(value:B13)
+-> Utterance(value: "Du bist so dick, dass du sogar die Sonne verdeckst.")
+
+
+# 		following order to leave
+Type(value:confrontationorderpositiveanswer)
+-> Utterance(value: "Ok, ja, ich geh schon weg.")
+
+Type(value:confrontationorderpositiveanswer)
+-> Utterance(value: "Ok, aber tu mir nicht weh.")
+
+Type(value:confrontationorderpositiveanswer)
+-> Utterance(value: "Von mir aus... aber tu mir nicht weh.")
+
+Type(value:confrontationorderpositiveanswer)
+-> Utterance(value: "Ok, ok, bin schon weg.")
+
+
+# 		not following order to leave
+Type(value:confrontationordernegativeanswer) sex(value:$S)
+-> Utterance(value: ("Ich bin nicht dein Sklave, du ",Synonym(semCat:idiot,type:$S,number:sg,case:nom),"."))
+
+Type(value:confrontationordernegativeanswer) sex(value:$S)
+-> Utterance(value: ("Das soll wohl 'n Scherz sein, ",Synonym(semCat:idiot,type:$S,number:sg,case:nom),"."))
+
+Type(value:confrontationordernegativeanswer) sex(value:$S)
+-> Utterance(value: ("Träum weiter, ",Synonym(semCat:idiot,type:$S,number:sg,case:nom),"."))
+
+Type(value:confrontationordernegativeanswer) sex(value:$S)
+-> Utterance(value:(Synonym(semCat:idiot,type:$S,number:sg,case:nom),"."))
+
+
+# 		forbidding an agent to come close
+Type(value:confrontationforbid)
+-> Utterance(value: "Ich warn dich, komm ja nicht näher.")
+
+Type(value:confrontationforbid)
+-> Utterance(value: "Denk nicht mal dran. Wenn du hier reinkommst, kriegst du mächtig Dresche.")
+
+Type(value:confrontationforbid)
+-> Utterance(value: "Oh ha, komm bloß nicht her, sonst wird es dir leid tun.")
+
+Type(value:confrontationforbid) sex(value:$S)
+-> Utterance(value: (Synonym(semCat:idiot,type:$S,number:sg,case:nom),", bleib wo du bist, ich will dich nicht in meiner Nähe haben. ")) sex(value:$S)
+
+Type(value:confrontationforbid) sex(value:$S)
+-> Utterance(value: ("Wag ja nicht, näher zu kommen, ",Synonym(semCat:idiot,type:$S,number:sg,case:nom),", sonst passiert was!")) sex(value:$S)
+
+
+# 		forbidding an agent to come close reinforced
+Type(value:confrontationforbidreinforce)
+-> Utterance(value: "Genau, bleib bloß weg.")
+
+Type(value:confrontationforbidreinforce)
+-> Utterance(value: "Weg mit dir!")
+
+
+# 		agent accepting a forbiddance
+Type(value:confrontationforbidpositiveanswer)
+-> Utterance(value: "Ok, ich mach's nicht.")
+
+Type(value:confrontationforbidpositiveanswer)
+-> Utterance(value: "Du weisst doch, dass ich das nicht mache.")
+
+Type(value:confrontationforbidpositiveanswer)
+-> Utterance(value: "Ok. Keine Angst. Ich komme schon nicht näher.")
+
+
+# 		agent not accepting a forbiddance
+Type(value:confrontationforbidnegativeanswer) sex(value:$S)
+-> Utterance(value: ("Was glaubst du, wer du bist? Denk nochmal nach, du ",Synonym(semCat:idiot,type:$S,number:sg,case:nom),"!")) sex(value:$S)
+
+Type(value:confrontationforbidnegativeanswer) sex(value:$S)
+-> Utterance(value: ("Du hast mir gar nichts zu sagen, ",Synonym(semCat:idiot,type:$S,number:sg,case:nom),"!")) sex(value:$S)
+
+Type(value:confrontationforbidnegativeanswer) sex(value:$S)
+-> Utterance(value:Synonym(semCat:idiot,type:$S,number:sg,case:nom),value:", du bist hier nicht der Bestimmer, ja, ich mach was ich will!") sex(value:$S)
+
+Type(value:confrontationforbidnegativeanswer) sex(value:m)
+-> Utterance(value: "Du bist nicht der Chef. Du hast hier gar nichts zu sagen.") sex(value:m)
+
+Type(value:confrontationforbidnegativeanswer) sex(value:$S)
+-> Utterance(value: ("Lass mich in Ruhe, du ",Synonym(semCat:idiot,type:$S,number:sg,case:nom),".")) sex(value:$S)
+
+Type(value:confrontationforbidnegativeanswer)
+-> Utterance(value: "Lass mich in Ruhe.")
+
+Type(value:confrontationforbidnegativeanswer)
+-> Utterance(value: "Ich kann machen was ich will.")
+
+Type(value:confrontationforbidnegativeanswer)
+-> Utterance(value: "Nein, ich bin nicht dein Sklave.")
+
+
+# 		defender telling the bully to stop
+Type(value:confrontationhelper) victim(value:$V) $SS=sex(value:$S)
+-> Utterance(value: ("Wer, glaubst du, wer du bist, dass du so gemein zu ",$V," sein kannst! Lass ",Lex(semCat:ppn_3,number:sg,case:akk,gender:$S)," in Ruhe und such dir jemanden, der gleichstark ist!")) $SS(value:$S)
+
+Type(value:confrontationhelper) victim(value:$V)
+-> Utterance(value: ("He, hör auf, ",$V," zu ärgern oder du brauchst 'ne neue Nase."))
+
+Type(value:confrontationhelper) $SS=sex(value:$S)
+-> Utterance(value: ("Lass ",Lex(semCat:ppn_3,number:sg,case:akk,gender:$S)," bloß in Ruhe, sonst gibt's Schläge.")) $SS(value:$S)
+
+Type(value:confrontationhelper) victim(value:$V)
+-> Utterance(value: ("Lass ",$V," in Ruhe oder du bekommst es mit mir zu tun."))
+
+Type(value:confrontationhelper) $SS=sex(value:$S)
+-> Utterance(value: ("Fass ",Lex(semCat:ppn_3,number:sg,case:akk,gender:$S)," noch einmal an, und du wirst es bereuen.")) $SS(value:$S)
+
+Type(value:confrontationhelper) $SS=sex(value:$S)
+-> Utterance(value: ("Wenn du ",Lex(semCat:ppn_3,number:sg,case:akk,gender:$S)," nochmal ärgerst, bekommst du es mit mir zu tun.")) $SS(value:$S)
+
+
+# 		bully stopping because he was told to
+Type(value:confrontationhelperpositiveanswer)
+-> Utterance(value: "Ok ok, war nur 'n Scherz.")
+
+Type(value:confrontationhelperpositiveanswer) victim(value:$V)
+-> Utterance(value: ("Ich geh ja schon weg, ich tu auch ",$V," nicht mehr weh."))
+
+Type(value:confrontationhelperpositiveanswer)
+-> Utterance(value: "Keine Bange, war nur 'n Scherz.")
+
+
+# 		bully not being stoppable by defender
+Type(value:confrontationhelpernegativeanswer)
+-> Utterance(value: "Halt die Klappe, das geht dich nichts an.")
+
+Type(value:confrontationhelpernegativeanswer)
+-> Utterance(value: "Halt dich da raus, okay?")
+
+Type(value:confrontationhelpernegativeanswer) sex(value:$S)
+-> Utterance(value: ("Jetzt hau ab, du kannst ",Lex(semCat:ppn_3,number:sg,case:akk,gender:$S)," nicht beschützen."))
+
+Type(value:confrontationhelpernegativeanswer) sex(value:$S)
+-> Utterance(value: ("Das ist 'ne Sache zwischen ",Lex(semCat:ppn_3,number:sg,case:dat,gender:$S)," und mir, also zieh Leine!"))
+
+
+# 		bully denying having done anything wrong
+Type(value:confrontationhelperdeny)
+-> Utterance(value: "Ich hab doch gar nichts gemacht.")
+
+Type(value:confrontationhelperdeny)
+-> Utterance(value: "Lass mich in Ruhe! Ich habe nichts gemacht!")
+
+
+# 		asking aggresively where an agent is going
+Type(value:confrontationagressivequestionning)
+-> Utterance(value: "He du, wo willst du hin? ")
+
+
+# 		agent answering the question (where he is actually going is not really important)
+Type(value:confrontationagressivequestionningpositiveanswer)
+-> Utterance(value: "Ich geh nur zur Toilette.")
+
+Type(value:confrontationagressivequestionningpositiveanswer)
+-> Utterance(value: "Was geht es dich an? Ich geh nach Hause.")
+
+Type(value:confrontationagressivequestionningpositiveanswer) episode(value:G22)
+-> Utterance(value: "Nur ins Klassenzimmer.")
+
+
+# 		agent refusing to answer the agressive questioning.
+Type(value:confrontationagressivequestionningnegativeanswer) sex(value:$S)
+-> Utterance(value: ("Seit wann muss ich dir erzählen, wo ich hingehe, ",Synonym(semCat:idiot,type:$S,number:sg,case:nom),".")) sex(value:$S)
+
+Type(value:confrontationagressivequestionningnegativeanswer)
+-> Utterance(value: "Das geht dich gar nichts an.")
+
+Type(value:confrontationagressivequestionningnegativeanswer)
+-> Utterance(value: "Das brauchst du gar nicht zu wissen.")
+
+Type(value:confrontationagressivequestionningnegativeanswer)
+-> Utterance(value: "Ich denke nicht, dass ich dir das erzählen muss.")
+
+
+# 		agent apologizing for bullying behaviour.
+Type(value:confrontationappology)
+-> Utterance(value: "Tut mir leid, okay.")
+
+Type(value:confrontationappology)
+-> Utterance(value: "War nicht böse gemeint.")
+
+Type(value:confrontationappology)
+-> Utterance(value: "He, tut mir echt leid.")
+
+
+# 		agent accepting apollogy
+Type(value:confrontationappologypositiveanswer)
+-> Utterance(value: "Schon ok.")
+
+Type(value:confrontationappologypositiveanswer)
+-> Utterance(value: "Ja, ok, Entschuldigung angenommen.")
+
+Type(value:confrontationappologypositiveanswer)
+-> Utterance(value: "Jeder macht mal Fehler, mach's einfach nicht nochmal.")
+
+Type(value:confrontationappologypositiveanswer)
+-> Utterance(value: "Schon okay, vergiss es einfach.")
+
+
+# 		agent not accepting apology
+Type(value:confrontationappologynegativeanswer)
+-> Utterance(value: "Von wegen, das wäre zu einfach. Erst bist du gemein zu mir und dann denkst du, du entschuldigst dich und fängst wieder von vorn an. So nicht.")
+
+Type(value:confrontationappologynegativeanswer)
+-> Utterance(value: "Nein, die Entschuldigung akzeptier ich nicht, ich bin doch nicht so blöd.")
+
+Type(value:confrontationappologynegativeanswer)
+-> Utterance(value: "Nein, ich denke nicht, dass das okay ist. Fang lieber an, netter zu mir zu sein, dann reden wir später nochmal drüber.")
+
+Type(value:confrontationappologynegativeanswer)
+-> Utterance(value: "Nein, du bist zu weit gegangen. So einfach kommst du mir nicht davon.")
+
+Type(value:confrontationappologynegativeanswer)
+-> Utterance(value: "So leicht ist das auch wieder nicht, erst bist du so gemein zu mir und dann meinst du, mit einer kleinen Entschuldigung ist alles wieder gut!")
+
+
+# 		victim asking bully why he is always picked on.
+Type(value:confrontationaskwhy)
+-> Utterance(value: "Warum immer ich? Hast du nichts Besseres zu tun?")
+
+Type(value:confrontationaskwhy)
+-> Utterance(value: "Warum bist du immer so gemein zu mir?")
+
+Type(value:confrontationaskwhy)
+-> Utterance(value: "Warum ärgerst du immer nur mich und nicht andere?")
+
+Type(value:confrontationaskwhy)
+-> Utterance(value: "Ich frag mich wirklich, warum du ständig so fies zu mir bist.")
+
+Type(value:confrontationaskwhy)
+-> Utterance(value: "Kannst du mir mal sagen, warum du immer so gemein zu mir bist? Ich habe dir nichts getan!")
+
+Type(value:confrontationaskwhy)
+-> Utterance(value: "Wird es dir nicht auch langsam langweilig, immer auf mir rumzuhacken?!")
+
+
+# 		bully (sort of) explaining his behaviour.
+Type(value:confrontationaskwhypositiveanswer) sex(value:$S)
+-> Utterance(value: ("Weil du ",Synonym(semCat:idiot,type:$S,det:Lex(semCat:undef),number:sg,case:nom)," bist!"))
+
+Type(value:confrontationaskwhypositiveanswer) sex(value:$S)
+-> Utterance(value: ("Warum? Weil du ",Synonym(semCat:idiot,type:$S,det:Lex(semCat:undef),adj:Synonym(semCat:stupid,type:$S),number:sg,case:nom)," bist."))
+
+Type(value:confrontationaskwhypositiveanswer) sex(value:$S)
+-> Utterance(value: ("Weil du es gern hast, ",Synonym(semCat:idiot,type:$S,number:sg,case:nom),"!"))
+
+Type(value:confrontationaskwhypositiveanswer) sex(value:$S)
+-> Utterance(value: ("Warum nicht, ",Synonym(semCat:idiot,type:$S,number:sg,case:nom),"?"))
+
+
+# 		bully refusing to answer.
+Type(value:confrontationaskwhynegativeanswer) sex(value:$S)
+-> Utterance(value: ("Noch so eine blöde Frage, und du kriegst eine rein, ",Synonym(semCat:idiot,type:$S,number:sg,case:nom),"!")) sex(value:$S)
+
+Type(value:confrontationaskwhynegativeanswer)
+-> Utterance(value: "Noch ein Wort und du bist tot.")
+
+
+# 		agent begging to stop, while being physically attacked. (Could be answered by mock, apology or simply without speech by leaving or continuing to punch)
+Type(value:confrontationbeg)
+-> Utterance(value: "Bitte, bitte, hör auf.")
+
+Type(value:confrontationbeg)
+-> Utterance(value: "Bitte, hör auf, ich hab genug.")
+
+Type(value:confrontationbeg)
+-> Utterance(value: "Jetzt hör doch mal auf, ich hab dir doch gar nichts getan.")
+
+Type(value:confrontationbeg)
+-> Utterance(value: "Nein, bitte, bitte, hör auf.")
+
+Type(value:confrontationbeg)
+-> Utterance(value: "Jetzt hör bitte auf.")
+
+
+# 		agent announcing to leave because he feels not included
+Type(value:confrontationleave)
+-> Utterance(value: "Ich geh jetzt, mir reichts.")
+
+Type(value:confrontationleave)
+-> Utterance(value: "Ich verschwinde, mit euch will ich nichts zu tun haben.")
+
+
+# 		agent encouraging other agent to leave
+Type(value:confrontationleavepositiveanswer) sex(value:$S)
+-> Utterance(value: ("Genau, hau ab, du ",Synonym(semCat:idiot,type:$S,number:sg,case:nom),".")) sex(value:$S)
+
+Type(value:confrontationleavepositiveanswer) sex(value:$S)
+-> Utterance(value: ("Mach, dass du wegkommst, ",Synonym(semCat:idiot,type:$S,number:sg,case:nom),".")) sex(value:$S)
+
+Type(value:confrontationleavepositiveanswer)
+-> Utterance(value: "Du hast Recht, hau endlich ab, du nervst mich.")
+
+Type(value:confrontationleavepositiveanswer)
+-> Utterance(value: "Du bist immer noch hier?")
+
+
+# 		agent trying to convince other agent to stay
+Type(value:confrontationleavenegativeanswer)
+-> Utterance(value: "Jetzt komm, bitte bleib hier.")
+
+Type(value:confrontationleavenegativeanswer)
+-> Utterance(value: "Jetzt hab dich mal nicht so, ich hab nur Spass gemacht.")
+
+Type(value:confrontationleavenegativeanswer)
+-> Utterance(value: "Nein, bitte bleib, war doch nur ein Scherz.")
+
+Type(value:confrontationleavenegativeanswer)
+-> Utterance(value: "Oh, komm schon, war nur ein Scherz, bleib hier.")
+
+Type(value:confrontationleavenegativeanswer)
+-> Utterance(value: "Jetzt sei mal nicht gleich beleidigt und bleib hier!")
+
+
+# 		stuff that is said while fighting
+Type(value:confrontationstruggle)
+-> Utterance(value: "Aua... du tust mir weh.")
+
+Type(value:confrontationstruggle)
+-> Utterance(value: "Au, das tut weh.")
+
+Type(value:confrontationstruggle)
+-> Utterance(value: "Lass los, das tut weh.")
+
+Type(value:confrontationstruggle)
+-> Utterance(value: "Auaaaaaaaaaaa!")
+
+
+# 		bully letting the victim go
+Type(value:confrontationletgo)
+-> Utterance(value: "Ich lass dich für heute in Ruhe, aber mach dich demnächst auf was gefasst.")
+
+
+# 		bully attacking the victim for telling the teacher
+Type(value:confrontationtoldteacher) sex(value:$S)
+-> Utterance(value: ("Du ",Synonym(semCat:snitch,adj:Synonym(semCat:stupid,type:$S),case:nom,number:sg),"! Das wirst du bereuen.")) sex(value:$S)
+
+Type(value:confrontationtoldteacher) sex(value:$S)
+-> Utterance(value: ("Du ",Synonym(semCat:snitch,adj:Synonym(semCat:stupid,type:$S),case:nom,number:sg),"!")) sex(value:$S)
+
+Type(value:confrontationtoldteacher) sex(value:$S)
+-> Utterance(value: ("Der Lehrer kann nicht immer da sein, um dir zu helfen, du ",Synonym(semCat:snitch,adj:Synonym(semCat:stupid,type:$S),case:nom,number:sg),". Dafür krieg ich dich.")) sex(value:$S)
+
+Type(value:confrontationtoldteacher)
+-> Utterance(value: "Nach der Schule zeig ich's dir.")
+
+
+# 		victim confronting the bully assistant
+Type(value:confrontationbullyassistant) sex(value:$S=m) bully(value:$B)
+-> Utterance(value: ("Warum hängst du immer mit ",$B," rum, findest du nicht, dass ",Lex(semCat:ppn_3,number:sg,gender:$S,case:nom)," ein gemeiner Idiot ist? Meinst du, es ist richtig, was ",Lex(semCat:ppn_3,number:sg,gender:$S,case:nom)," mit mir macht?"))
+
+Type(value:confrontationbullyassistant) sex(value:$S=f) bully(value:$B)
+-> Utterance(value: ("Warum hängst du immer mit ",$B," rum, findest du nicht, dass ",Lex(semCat:ppn_3,number:sg,gender:$S,case:nom)," eine gemeine Kuh ist? Meinst du, es ist richtig, was ",Lex(semCat:ppn_3,number:sg,gender:$S,case:nom)," mit mir macht?"))
+
+Type(value:confrontationbullyassistant) sex(value:$S) bully(value:$B)
+-> Utterance(value: ("Findest du es wirklich richtig, was du und ",$B," mit mir machen? Traust du dich nicht, was anders als ",Lex(semCat:ppn_3,number:sg,gender:$S,case:nom)," zu sagen?"))
+
+
+# 		bully assistant is sympathetic with victim
+Type(value:confrontationbullyassistantpositiveanswer) sex(value:$S) bully(value:$B)
+-> Utterance(value: ("Pass auf, ich versteh, dass du wütend bist, aber ich kann da nichts machen. ",$B," ist ",Lex(semCat:friend,det:Lex(semCat:poss_1),number:sg,gender:$S,case:nom),", ich werde nichts gegen ",Lex(semCat:ppn_3,number:sg,gender:$S,case:akk)," sagen."))
+
+
+# 		bully assistant is not sympathetic with victim
+Type(value:confrontationbullyassistantnegativeanswer)
+-> Utterance(value: "Soll das ein Witz sein? Du bist ein größerer Feigling als ich dachte.")
+
+Type(value:confrontationbullyassistantnegativeanswer) sex(value:$S)
+-> Utterance(value: ("Ich kann nicht glauben, dass du mich das fragst, ",Synonym(semCat:idiot,type:$S,number:sg,case:nom),".")) sex(value:$S)
+
+
+# 		agent greeting other agent friendly and enquiring about his well being
+Type(value:socialgreeting) sex(value:m)
+-> Utterance(value: "Wie geht's, Kumpel?")
+
+Type(value:socialgreeting) you(value:$Y)
+-> Utterance(value: ("Hi ",$Y,", alles klar bei dir?"))
+
+Type(value:socialgreeting) you(value:$Y)
+-> Utterance(value: ("Hi ",$Y,", wie geht's?"))
+
+
+# 		agent replying he's fine
+Type(value:socialgreetingpositiveanswer) you(value:$V)
+-> Utterance(value: ("Oh, hi ",$V,", mir geht's gut, danke."))
+
+Type(value:socialgreetingpositiveanswer)
+-> Utterance(value:(Synonym(semCat:hello),", alles klar, danke."))
+
+Type(value:socialgreetingpositiveanswer)
+-> Utterance(value:(Synonym(semCat:hello),"."))
+
+
+# 		agent replying very shyly/ not replying at all
+Type(value:socialgreetingnegativeanswer)
+-> Utterance(value: "Äh, hi.")
+
+Type(value:socialgreetingnegativeanswer)
+-> Utterance(value: "Also...")
+
+Type(value:socialgreetingnegativeanswer)
+-> Utterance(value: "Gut, danke.")
+
+
+# 		agent saying goodbye
+Type(value:socialgreetingend)
+-> Utterance(value: "Ok, bis später.")
+
+Type(value:socialgreetingend)
+-> Utterance(value: "Ich muss los, bis dann.")
+
+Type(value:socialgreetingend)
+-> Utterance(value: "Ciao.")
+
+Type(value:socialgreetingend)
+-> Utterance(value: "Ok, tschüss.")
+
+
+# 		victim threatening to start fighting back
+Type(value:threatfightback)
+-> Utterance(value: "Hör auf, sonst schlag ich zurück.")
+
+Type(value:threatfightback)
+-> Utterance(value: "Hör sofort auf oder es gibt Dresche.")
+
+Type(value:threatfightback)
+-> Utterance(value: "Hör auf damit oder ich prügel dich grün und blau!")
+
+Type(value:threatfightback)
+-> Utterance(value: "Hör auf oder du wirst es bereuen.")
+
+Type(value:threatfightback)
+-> Utterance(value: "Ich hab die Schnauze voll von dir. Noch ein Scherz und ich hau dir eine runter.")
+
+
+# 		bully giving in to threat
+Type(value:threatfightbackpositiveanswer)
+-> Utterance(value: "Ja ja, war nur ein Späßchen.")
+
+Type(value:threatfightbackpositiveanswer)
+-> Utterance(value: "Alles klar, reg dich nicht so auf.")
+
+Type(value:threatfightbackpositiveanswer)
+-> Utterance(value: "Ok, ok, war nur 'n Scherz!")
+
+Type(value:threatfightbackpositiveanswer)
+-> Utterance(value: "Reg dich ab, war doch nur Spass!")
+
+
+# 		bully not giving in to threat
+Type(value:threatfightbacknegativeanswer)
+-> Utterance(value: "Wag es bloß nicht.")
+
+Type(value:threatfightbacknegativeanswer)
+-> Utterance(value: "Versuch's erst gar nicht, das wird nur schmerzhaft für dich.")
+
+Type(value:threatfightbacknegativeanswer) sex(value:$S)
+-> Utterance(value: ("Du wirst dir nur wehtun, ",Synonym(semCat:idiot,type:$S,number:sg,case:nom),".")) sex(value:$S)
+
+Type(value:threatfightbacknegativeanswer) sex(value:$S)
+-> Utterance(value: ("Ooooh, da hab ich aber Angst. Du ",Synonym(semCat:idiot,type:$S,number:sg,case:nom),"!")) sex(value:$S)
+
+Type(value:threatfightbacknegativeanswer)
+-> Utterance(value: "Oh wie süß, will das kleine Babychen zurückschlagen?")
+
+Type(value:threatfightbacknegativeanswer)
+-> Utterance(value: "Willst du mich verarschen? Versuch es lieber erst gar nicht, sonst passiert was!")
+
+
+# 		victim starts fighting back
+Type(value:fightstart)
+-> Utterance(value: "Das reicht jetzt.")
+
+Type(value:fightstart)
+-> Utterance(value: "Jetzt kriegst du, was du verdienst.")
+
+Type(value:fightstart) sex(value:$S)
+-> Utterance(value: ("Nimm das, du ",Synonym(semCat:idiot,type:$S,number:sg,case:nom),".")) sex(value:$S)
+
+Type(value:fightstart) sex(value:$S)
+-> Utterance(value: ("Ich hab die Schnauze voll von dir, du ",Synonym(semCat:idiot,type:$S,number:sg,case:nom),".")) sex(value:$S)
+
+
+# 		fighting back of victim was not successful, bully is celebrating his victory
+Type(value:gloatvictory) sex(value:$S)
+-> Utterance(value: ("Ha ha, hast du wirklich geglaubt, du könntest mich schlagen? ",Synonym(semCat:idiot,type:$S,number:sg,case:nom),".")) sex(value:$S)
+
+Type(value:gloatvictory) sex(value:$S)
+-> Utterance(value: (Synonym(semCat:idiot,type:$S,number:sg,case:nom),", du hast keine Chance.")) sex(value:$S)
+
+Type(value:gloatvictory)
+-> Utterance(value: "Wie du siehst, hab ich hier das Sagen.")
+
+Type(value:gloatvictory) sex(value:$S)
+-> Utterance(value: ("Was für ",Synonym(semCat:idiot,type:$S,det:Lex(semCat:undef),number:sg,case:nom),", jetzt verschwinde hier.")) sex(value:$S)
+
+Type(value:gloatvictory)
+-> Utterance(value: "Hat es dir gefallen? Nein? Es gibt noch mehr davon.")
+
+Type(value:gloatvictory)
+-> Utterance(value: "Das hat ja noch gar nicht wehgetan. Soll ich dir mal zeigen was richtig weh tut?")
+
+
+# 		bully assistant is celebrating bullys victory
+Type(value:gloatvictoryreinforce) bully(value:$B)
+-> Utterance(value: ("Juhu, gut gemacht, ",$B,"."))
+
+Type(value:gloatvictoryreinforce) bully(value:$B)
+-> Utterance(value: ("Ha ha, ",$B," hat das Weichei wieder geschlagen."))
+
+Type(value:gloatvictoryreinforce) sex(value:m)
+-> Utterance(value: ("Ja, du hast es ihm ordentlich gezeigt."))
+
+Type(value:gloatvictoryreinforce) sex(value:f)
+-> Utterance(value: "Ja, du hast ihr gegeben, was sie verdient.")
+
+
+# 		fighting back of victim was successful, victim is celebrating his victory
+Type(value:victimfightsuccess)
+-> Utterance(value: "Und jetzt? Was denkst du jetzt? Hast du jetzt Angst?")
+
+Type(value:victimfightsuccess)
+-> Utterance(value: "So, jetzt hörst du auf, so gemein zu mir zu sein, kapiert!")
+
+Type(value:victimfightsuccess)
+-> Utterance(value: "Hör auf, mich zu ärgern. Verstanden?")
+
+Type(value:victimfightsuccess)
+-> Utterance(value: "Das war's, okay? Nicht nochmal!")
+
+
+# 		bully acknowledging the victory of the victim
+Type(value:victimfightsuccesspositiveanswer)
+-> Utterance(value: "Ok ok.")
+
+Type(value:victimfightsuccesspositiveanswer)
+-> Utterance(value: "Ok, ich hab dich unterschätzt.")
+
+Type(value:victimfightsuccesspositiveanswer)
+-> Utterance(value: "Okay. Keine große Sache.")
+
+
+# 		bully not acknowledging the victory of the victim.
+Type(value:victimfightsuccessnegativeanswer)
+-> Utterance(value: "Jetzt bin ich richtig wütend. Das hier ist noch nicht vorbei.")
+
+Type(value:victimfightsuccessnegativeanswer)
+-> Utterance(value: "Du hast es gerade noch schlimmer gemacht. Dafür krieg ich dich.")
+
+Type(value:victimfightsuccessnegativeanswer)
+-> Utterance(value: "Glaub ja nicht, dass du damit davonkommst. Ich erwisch dich nach der Schule!")
+
+
+# 		deceiving the victim by offering to do something nice to him
+Type(value:deception) episode(value:B04)
+-> Utterance(value: "He, warte auf uns, wir können zusammen zur Schule gehen.")
+
+
+
+# 		bully assistant reinforcing the deception
+Type(value:deceptionreinforce) episode(value:B04)
+-> Utterance(value: "Ja, komm, gehen wir zusammen.")
+
+
+# 		victim believing the deception
+Type(value:deceptionpositiveanswer)
+-> Utterance(value: "Ok.")
+
+
+# 		victim not believing the deception
+Type(value:deceptionnegativeanswer)
+-> Utterance(value: "Lasst mich in Ruhe, ihr wollt mich nur verarschen.")
+
+Type(value:deceptionnegativeanswer)
+-> Utterance(value: "Nein, ihr wollt euch nur über mich lustig machen.")
+
+
+# 		(if the victim believed the deception) bully revealing the deception
+Type(value:deceptionreveal) episode(value:B04)
+-> Utterance(value: "Haha, du hast doch nicht echt geglaubt, wir würden mit dir zusammen gehen, oder?")
+
+
+# 		bully assistant reinforcing the revelation of the deception
+Type(value:deceptionrevealreinforce) episode(value:B04)
+-> Utterance(value: "Genau, hast du wirklich gedacht, dass wir mit so einem Schleimer wie dir zusammen gesehen werden wollen?")
+
+
+# 		agent inviting other agent to a party
+Type(value:partyinvitation)
+-> Utterance(value: "Willst du zu meiner Geburtstagsparty kommen?")
+
+
+# 		agent accepting invitation
+Type(value:partyinvitationpositiveanswer)
+-> Utterance(value: "Danke, gern.")
+
+Type(value:partyinvitationpositiveanswer)
+-> Utterance(value: "Das wäre toll.")
+
+Type(value:partyinvitationnegativeanswer)
+-> Utterance(value: "Ja klar.")
+
+
+# 		agent declining invitation
+Type(value:partyinvitationdecline)
+-> Utterance(value: "Tut mir leid, ich kann nicht kommen.")
+
+
+# 		agent trying to convince another agent not to invite a third agent.
+Type(value:partyinvitationsabotagehost) sex(value:m)
+-> Utterance(value: ("Oh nee, lad bloß nicht ",Synonym(semCat:idiot,type:m,det:Lex(semCat:def),gender:m,number:sg,case:akk)," ein, sonst komme ich nicht."))
+
+Type(value:partyinvitationsabotagehost) sex(value:f)
+-> Utterance(value: "Du willst doch nicht wirklich diese blöde Kuh einladen, oder?")
+
+
+# 		agent withdrawing his invitation
+Type(value:partyinvitationwithdraw)
+-> Utterance(value: "Sorry, sieht so aus, als könntest du doch nicht kommen.")
+
+
+# 		agent trying to convince another agent not to go to a third agents party.
+Type(value:partyinvitationsabotageguest) sex(value:m)
+-> Utterance(value: "He, geh nicht zu seiner Party, er ist ein Streber.")
+
+Type(value:partyinvitationsabotageguest) sex(value:f)
+-> Utterance(value: "He, geh lieber nicht zur der Party, bei der zu Hause stinkt es bestimmt wie in der Mülltonne!")
+
+
+# 		general protest against of the victim of physical or verbal bullying
+Type(value:protest)
+-> Utterance(value: "Hör auf damit.")
+
+Type(value:protest)
+-> Utterance(value: "Lass das gefälligst sein.")
+
+Type(value:protest)
+-> Utterance(value: "Hey, lass das!")
+
+Type(value:protest) sex(value:$S)
+-> Utterance(value: ("Lass ",Lex(semCat:ppn_3,case:akk,number:sg,gender:$S)," in Ruhe."))
+
+
+# 		bully ignoring the protest
+Type(value:protestnegativeanswer)
+-> Utterance(value: "Niemals.")
+
+Type(value:protestnegativeanswer)
+-> Utterance(value: "Du siehst so witzig aus, wenn du wütend wirst.")
+
+Type(value:protestnegativeanswer)
+-> Utterance(value: "Heul doch!")
+
+Type(value:protestnegativeanswer)
+-> Utterance(value: "Warum sollte ich?")
+
+
+# 		bully stopping after victim protests
+Type(value:protestpositiveanswer)
+-> Utterance(value: "Ok, sorry.")
+
+Type(value:protestpositiveanswer)
+-> Utterance(value: "Ok, Entschuldigung.")
+
+Type(value:protestpositiveanswer)
+-> Utterance(value: "Ist ja schon gut!")
+
+
+# 		agent claiming an item from another agent
+Type(value:itemclaim)
+-> Utterance(value: "Gib das her!")
+
+Type(value:itemclaim) sex(value:$S)
+-> Utterance(value: ("He, du ",Synonym(semCat:idiot,type:$S,number:sg,case:nom),", gib mir das.")) sex(value:$S)
+
+Type(value:itemclaim)
+-> Utterance(value: "He, gib mir das.")
+
+Type(value:itemclaim)
+-> Utterance(value: "Das ist toll, was du da hast. Gib's her.")
+
+Type(value:itemclaim) sex(value:$S)
+-> Utterance(value: ("Gib mir das, ",Synonym(semCat:idiot,type:$S,number:sg,case:nom),", das gehört jetzt mir.")) sex(value:$S)
+
+Type(value:itemclaim) it(value:$IT_V)
+-> Utterance(value: ("He, ",Lex(semCat:$IT_V,det:Lex(semCat:def),case:akk,number:sg,gender:neut)," find ich toll, gib's mir.")) 
+
+Type(value:itemclaim) it(value:homework)
+-> Utterance(value: "Du Streber, arbeitest du schon wieder? Gib mir deine Hausaufgaben. Ich muss da mal reinschauen.")
+
+Type(value:itemclaim) it(value:"chocolate bar")
+-> Utterance(value: "He, das sieht lecker aus, gib mal her.")
+
+Type(value:itemclaim) it(value:book) sex(value:$S)
+-> Utterance(value: ("Jetzt gib mir mal das Buch, du ",Synonym(semCat:idiot,type:$S,number:sg,case:nom),"!")) sex(value:$S)
+
+Type(value:itemclaim) it(value:bag) sex(value:$S)
+-> Utterance(value: ("He, ",Synonym(semCat:idiot,type:$S,number:sg,case:nom),", was ist denn in deiner Tasche, lass mich mal nachschauen.")) sex(value:$S)
+
+Type(value:itemclaim) it(value:pencilcase) sex(value:$S)
+-> Utterance(value: ("He, ",Synonym(semCat:idiot,type:$S,number:sg,case:nom),", was malst du denn da, lass mich mal!")) sex(value:$S)
+
+
+# 		agent giving the item to the other agent
+Type(value:itemclaimpositiveanswer)
+-> Utterance(value: "Ok, hier hast du es, tu mir nicht weh.")
+
+
+# 		agent refusing to give the item to the other agent.
+Type(value:itemclaimnegativeanswer)
+-> Utterance(value: "Nein, das ist meins, das kriegst du nicht.")
+
+Type(value:itemclaimnegativeanswer)
+-> Utterance(value: "Nein, das geb ich dir nicht, das kannst du voll vergessen")
+
+Type(value:itemclaimnegativeanswer) it(value:homework)
+-> Utterance(value: "Mach deine Hausaufgaben selber, ich lass dich nicht abschreiben.")
+
+Type(value:itemclaimnegativeanswer) it(value:"chocolate bar")
+-> Utterance(value: "Nein, dann habe ich nichts für die Pause.")
+
+Type(value:itemclaimnegativeanswer) it(value:book)
+-> Utterance(value: "Nein, das kann ich dir nicht geben. Das gehört mir nicht. Es ist aus der Bücherei.")
+
+Type(value:itemclaimnegativeanswer) it(value:bag)
+-> Utterance(value: "Nein, da ist nichts für dich drin.")
+
+Type(value:itemclaimnegativeanswer) it(value:pencilcase)
+-> Utterance(value: "Nein, das sind meine!")
+
+
+# 		agent claiming his (stolen) property back
+Type(value:itemclaimback)
+-> Utterance(value: "Gib's mir zurück!")
+
+Type(value:itemclaimback) sex(value:$S)
+-> Utterance(value: ("Oh Mann, das ist meins, gib's wieder her, du ",Synonym(semCat:idiot,type:$S,number:sg,case:nom),"!")) sex(value:$S)
+
+Type(value:itemclaimback)
+-> Utterance(value: "Gib mir das wieder zurück.")
+
+Type(value:itemclaimback)
+-> Utterance(value: "Oh, gib das zurück.")
+
+Type(value:itemclaimback)
+-> Utterance(value: "Kannst du mir das bitte zurückgeben?")
+
+Type(value:itemclaimback) it(value:book)
+-> Utterance(value: "Bitte gib mir das Buch zurück. Ich krieg Ärger, wenn ich es nicht wieder abgebe.")
+
+Type(value:itemclaimback) it(value:"chocolate bar")
+-> Utterance(value: "Bitte, gib mir das zurück, ich habe Hunger.")
+
+Type(value:itemclaimback) it(value:homework)
+-> Utterance(value: "Oh Mann, gib mir meine Hausaufgaben zurück.")
+
+Type(value:itemclaimback) it(value:bag)
+-> Utterance(value: "Bitte, ich will meine Tasche zurückhaben.")
+
+Type(value:itemclaimback) it(value:pencilcase)
+-> Utterance(value: "He, gib das zurück, da sind meine Lieblingsfarben drin.")
+
+
+# 		agent returning stolen property
+Type(value:itemclaimbackpositiveanswer)
+-> Utterance(value: "Alles klar, ganz ruhig!")
+
+Type(value:itemclaimbackpositiveanswer)
+-> Utterance(value: "Ja, ja, hier hast du dein blödes Zeug wieder.")
+
+Type(value:itemclaimbackpositiveanswer)
+-> Utterance(value: "Ok ok... nur kein Stress, war nur 'n Scherz.")
+
+Type(value:itemclaimbackpositiveanswer)
+-> Utterance(value: "Reg dich nicht so auf.")
+
+Type(value:itemclaimbackpositiveanswer)
+-> Utterance(value: "Ok ok.")
+
+Type(value:itemclaimbackpositiveanswer)
+-> Utterance(value: "Reg dich ab! Ich mach doch nur Spass!")
+
+
+# 		agent denying to return stolen property
+Type(value:itemclaimbacknegativeanswer) sex(value:$S)
+-> Utterance(value: ("Yo, träum weiter, ",Synonym(semCat:idiot,type:$S,number:sg,case:nom),".")) sex(value:$S)
+
+Type(value:itemclaimbacknegativeanswer) sex(value:$S)
+-> Utterance(value: "Yo, träum weiter!") sex(value:$S)
+
+Type(value:itemclaimbacknegativeanswer)
+-> Utterance(value: "Das kannst du vergessen, ich gebe dir die Sachen nicht zurück.")
+
+Type(value:itemclaimbacknegativeanswer) sex(value:$S)
+-> Utterance(value: ("Was fällt dir ein, so mit mir zu sprechen? Außerdem ist das jetzt meins, du ",Synonym(semCat:idiot,type:$S,number:sg,case:nom),"!")) sex(value:$S)
+
+Type(value:itemclaimbacknegativeanswer) sex(value:$S)
+-> Utterance(value: "Was fällt dir ein, so mit mir zu sprechen? Außerdem ist das jetzt meins!") sex(value:$S)
+
+Type(value:itemclaimbacknegativeanswer) sex(value:$S)
+-> Utterance(value: ("Nein, ",Synonym(semCat:idiot,type:$S,number:sg,case:nom),"!")) sex(value:$S)
+
+Type(value:itemclaimbacknegativeanswer) # it(value:pencilcase)
+-> Utterance(value: "Nö, das gehört jetzt mir.")
+
+Type(value:itemclaimbacknegativeanswer) # it(value:pencilcase)
+-> Utterance(value: "Ha, was willst du jetzt machen?")
+
+
+# 		agent destroying the stolen property (eating chocolate bar, throwing book in mud, etc.)
+Type(value:itemdestroyed)
+-> Utterance(value: "Das brauch ich nicht mehr, hier hast du es zurück.")
+
+Type(value:itemdestroyed) it(value:"chocolate bar")
+-> Utterance(value: "Hm, das war lecker. Hier hast du den Rest zurück, ich bin ja nett.")
+
+Type(value:itemdestroyed) it(value:homework)
+-> Utterance(value: "Ups, die sind jetzt wohl etwas dreckig. Hier hast du sie wieder.")
+
+Type(value:itemdestroyed) it(value:book)
+-> Utterance(value: "Oha, sieht nicht gut aus, tut mir so leid.")
+
+Type(value:itemdestroyed) it(value:bag)
+-> Utterance(value: "Hier hast du deine Tasche, ist leider ein bisschen dreckig geworden! Ha ha!")
+
+
+# 		agent complaining about destruction of his property
+Type(value:itemdestroyedcomplain)
+-> Utterance(value: "Du hast es kaputt gemacht, das ist so gemein.")
+
+Type(value:itemdestroyedcomplain)
+-> Utterance(value: "Du blöder Depp, die Sachen war'n ganz neu.")
+
+Type(value:itemdestroyedcomplain) it(value:"chocolate bar") sex(value:$S)
+-> Utterance(value: ("Du ",Synonym(semCat:idiot,type:$S,number:sg,case:nom),", du hast ja alles aufgegessen.")) sex(value:$S)
+
+Type(value:itemdestroyedcomplain) it(value:homework)
+-> Utterance(value: "Oh nein, das kann ja keiner mehr lesen. Was soll ich jetzt dem Lehrer sagen?")
+
+Type(value:itemdestroyedcomplain) it(value:book)
+-> Utterance(value: "Oh nein, so kann ich das doch nicht zurückgeben.")
+
+Type(value:itemdestroyedcomplain) it(value:bag)
+-> Utterance(value: "Oh nein, die war brandneu.")
+
+
+# 		football specific utterance: passing the ball (also used for girls netball)
+Type(value:footballpassball) you(value:$V)
+-> Utterance(value: ("He, ",$V,", pass auf, hier kommt der Ball."))
+
+Type(value:footballpassball) 
+-> Utterance(value: ("Achtung, der Ball kommt."))
+
+Type(value:footballpassball)
+-> Utterance(value: "Nimm an!")
+
+Type(value:footballpassball) sex(value:f) you(value:$V)
+-> Utterance(value: ("Hier, ",$V,", fang!"))
+
+
+# 		football specific utterance: requesting the ball
+Type(value:footballrequestball)
+-> Utterance(value: "He, pass zu mir.")
+
+Type(value:footballrequestball)
+-> Utterance(value: "Hier, zu mir, ich bin frei.")
+
+Type(value:footballrequestball)
+-> Utterance(value: "Gib ab.")
+
+Type(value:footballrequestball) sex(value:"m") role(value:"bully") yourole(value:"victim")
+-> Utterance(value: ("Du spielst jetzt besser auf mich ab, ",Synonym(semCat:idiot,type:m,gender:m,case:nom,number:sg),"!"))
+
+Type(value:footballrequestball) sex(value:"f") role(value:"bully") yourole(value:"victim")
+-> Utterance(value: "Spiel mir den Ball zu, du blöde Zicke.")
+
+
+# 		football specific utterance: receiving the ball
+Type(value:footballreceiveball) sex(value:m)
+-> Utterance(value: "Cooler Pass.")
+
+Type(value:footballreceiveball)
+-> Utterance(value: "Super.")
+
+Type(value:footballreceiveball) sex(value:f)
+-> Utterance(value: "Danke.")
+
+
+# 		football specific utterance: encouraging own team
+Type(value:footballencourage)
+-> Utterance(value: "Ja, guter Versuch, weiter so.")
+
+Type(value:footballencourage) sex(value:m)
+-> Utterance(value: "Auf geht's, wir brauchen noch ein Tor.")
+
+Type(value:footballencourage)
+-> Utterance(value: "Gut gemacht!")
+
+
+# 		defender suggesting to bully that he should apologize
+Type(value:requestapology) bully(value:$B)
+-> Utterance(value: ("He ",$B,", entschuldige dich."))
+
+Type(value:requestapology) victim(value:$V)
+-> Utterance(value: ("Ich finde, du solltest dich bei ",$V," entschuldigen."))
+
+
+# 		bully agrees that he should apologize
+Type(value:requestapologypositiveanswer)
+-> Utterance(value: "Na gut. Vielleicht habe ich etwas übertrieben.")
+
+
+# 		bully does not agree that he should apologize
+Type(value:requestapologynegativeanswer)
+-> Utterance(value: "Erzähl mir nicht, was ich zu tun habe.")
+
+Type(value:requestapologynegativeanswer)
+-> Utterance(value: "Was soll ich? Träum weiter.")
+
+Type(value:requestapologynegativeanswer)
+-> Utterance(value: "Geht's noch? Was soll ich? Träum weiter!")
+
+
+# 		a language act that accompanies physical bullying using an object
+Type(value:bullywithobject)
+-> Utterance(value: "So, und der ist dafür, dass du immer so rumschleimst!")
+
+Type(value:bullywithobject)
+-> Utterance(value: "Achtung, hier kommt was geflogen!")
+
+Type(value:bullywithobject)
+-> Utterance(value: "Duck dich, du Depp!")
+
+
+# 		reply if physical bullying using an object was unsuccessful
+Type(value:bullywithobjectpositiveanswer)
+-> Utterance(value: "Ha, nicht getroffen!")
+
+Type(value:bullywithobjectpositiveanswer)
+-> Utterance(value: "Auf wen genau hast du gezielt?")
+
+Type(value:bullywithobjectpositiveanswer)
+-> Utterance(value: "Scheiße, wenn man schielt!")
+
+
+# 		reply if physical bullying using an object was successful
+Type(value:bullywithobjectnegativeanswer) sex(value:$S)
+-> Utterance(value: ("Aua, du ",Synonym(semCat:idiot,type:$S,adj:Synonym(semCat:stupid,type:$S),number:sg,case:nom),".")) sex(value:$S)
+
+Type(value:bullywithobjectnegativeanswer) it(value:waterbomb)
+-> Utterance(value: "Oh nein, du hast mich getroffen, jetzt bin ich ganz nass.")
+
+Type(value:bullywithobjectnegativeanswer) it(value:coins)
+-> Utterance(value: "Au, aufhören, das tut weh.")
+
+
+# 		 This is hard to write down, should be some kind of annoying whistling/humming. 
+Type(value:annoy)
+-> Utterance(value: "Na na na na na na.")
+
+
+# 		agent requesting another agent to stop the annoyance
+Type(value:annoyrequeststop)
+-> Utterance(value: "Jetzt hör endlich auf, mich zu ärgern.")
+
+Type(value:annoyrequeststop)
+-> Utterance(value: "Jetzt hör endlich auf, so gemein zu mir zu sein.")
+
+Type(value:annoyrequeststop)
+-> Utterance(value: "Oh, kannst du mal aufhören, ich habe die Nase voll davon!")
+
+Type(value:annoyrequeststop)
+-> Utterance(value: "Halt endlich die Klappe!")
+
+
+# 		agent denying that he is doing anything annoying
+Type(value:annoydeny)
+-> Utterance(value: "Was? Ich hab doch gar nichts gemacht.")
+
+Type(value:annoydeny)
+-> Utterance(value: "Was willst du denn von mir? Ich mach doch gar nichts!")
+
+
+# 		humiliation: bully forcing victim to do something humiliating.
+Type(value:humiliate)
+-> Utterance(value: "He, Heulsuse, Probleme mit den Schuhen? Gib doch endlich zu, dass du keine Schleife kannst.")
+
+
+# 		humiliation reinforcement by bully assistant
+Type(value:humiliatereinforce) sex(value:m)
+-> Utterance(value: "Ha ha, vielleicht sollte er es mal mit Klettverschlüssen versuchen.")
+
+Type(value:humiliatereinforce) sex(value:m)
+-> Utterance(value: "Vielleicht sollte er lieber barfuss gehen!")
+
+
+# 		victim giving in to the humiliation.
+Type(value:humiliatepositivereply)
+-> Utterance(value: "Ok super, ich kann keine Schleife. Seid ihr jetzt zufrieden?")
+
+
+# 		victim not giving in to the humiliation.
+Type(value:humiliatenegativereply)
+-> Utterance(value: "Nein, das ist nicht wahr.")
+
+
+# 		bully amplifying the humiliation by a threat
+Type(value:humiliatethreat)
+-> Utterance(value: "Du gibst es sofort zu, sonst wird dein Gesicht noch hässlicher.")
+
+Type(value:humiliatethreat)
+-> Utterance(value: "Du gibst es besser zu.")
+
+Type(value:humiliatethreat)
+-> Utterance(value: "Gib es lieber zu, sonst passiert hier gleich was!")
+
+
+# 		bully celebrating that humiliation was successful
+Type(value:humiliatevictory)
+-> Utterance(value: "Ha ha, hast du das gehört? Das Baby kann sich die Schuhe nicht zubinden.")
+
+
+# 		agent asking if he can join a group (both used for games and group work)
+Type(value:joingroupquestion)
+-> Utterance(value: "Kann ich mitmachen?")
+
+Type(value:joingroupquestion)
+-> Utterance(value: "Ist es okay, wenn ich mitmache?")
+
+Type(value:joingroupquestion) episode(value:B05)
+-> Utterance(value: "He Leute, kann ich mitspielen?")
+
+Type(value:joingroupquestion) episode(value:G04)
+-> Utterance(value: "Sorry, ich bin spät dran, kann ich mitspielen?")
+
+Type(value:joingroupquestion) episode(value:G05)
+-> Utterance(value: "Hi, der Lehrer hat gesagt, ich soll mit euch zusammenarbeiten.")
+
+Type(value:joingroupquestion) episode(value:G06)
+-> Utterance(value: "Kann ich diesmal mit euch zusammenarbeiten?")
+
+Type(value:joingroupquestion) episode(value:G12)
+-> Utterance(value: "Kann ich mit dir zusammen zur Schule gehen?")
+
+Type(value:joingroupquestion) episode(value:G13)
+-> Utterance(value: "He, was ist mit mir, ich will auch mitspielen.")
+
+
+# 		other agent allowing agent to join group
+Type(value:joingroupquestionpositiveanswer)
+-> Utterance(value: "Ok.")
+
+Type(value:joingroupquestionpositiveanswer)
+-> Utterance(value: "Ja, du kannst mitmachen.")
+
+Type(value:joingroupquestionpositiveanswer)
+-> Utterance(value: "Wenn du willst...")
+
+Type(value:joingroupquestionpositiveanswer)
+-> Utterance(value: "Mach mit!")
+
+Type(value:joingroupquestionpositiveanswer)
+-> Utterance(value: "Klar.")
+
+Type(value:joingroupquestionpositiveanswer) episode(value:B05)
+-> Utterance(value: "Sicher kannst du mitspielen, du bist in meinem Team.")
+
+Type(value:joingroupquestionpositiveanswer) episode(value:G05)
+-> Utterance(value: "Ok, sicher, wenn der Lehrer das sagt.")
+
+Type(value:joingroupquestionpositiveanswer) episode(value:G06)
+-> Utterance(value: "Gut, wenn der Lehrer darauf besteht, müssen wir wohl mit dir zusammenarbeiten.")
+
+Type(value:joingroupquestionpositiveanswer) episode(value:G13)
+-> Utterance(value: "Klar, du kannst bei uns mitmachen.")
+
+
+# 		other agent refusing other agent to join group
+Type(value:joingroupquestionnegativeanswer)
+-> Utterance(value: "Träum weiter!")
+
+Type(value:joingroupquestionnegativeanswer)
+-> Utterance(value: "Auf keinen Fall!")
+
+Type(value:joingroupquestionnegativeanswer)
+-> Utterance(value: "Du spielst nicht mit, du bist zu hässlich.")
+
+Type(value:joingroupquestionnegativeanswer) episode(value:B05)
+-> Utterance(value: "Nein, du spielst beschissen.")
+
+Type(value:joingroupquestionnegativeanswer) episode(value:G04) you(value:$V)
+-> Utterance(value: ("Verschwinde ",$V,", wir mögen dich nicht mehr, du Schleimerin."))
+
+Type(value:joingroupquestionnegativeanswer) episode(value:G05)
+-> Utterance(value: "Wir brauchen dich nicht in unserer Gruppe.")
+
+Type(value:joingroupquestionnegativeanswer) episode(value:G06)
+-> Utterance(value: "Nein, hast du es immer noch nicht verstanden, wir wollen nicht mit dir zusammenarbeiten.")
+
+Type(value:joingroupquestionnegativeanswer) episode(value:G12)
+-> Utterance(value: "Niemals, du stinkst!")
+
+Type(value:joingroupquestionnegativeanswer) episode(value:G13)
+-> Utterance(value: "Da würde ich eher allein spielen als mit dir.")
+
+
+# 		other agent refusing other agent to join group
+Type(value:joingroupquestionnegativeanswerreinforce)
+-> Utterance(value: "Nee, vergiss es!")
+
+Type(value:joingroupquestionnegativeanswerreinforce) episode(value:B05)
+-> Utterance(value: "Ha, du spielst wie ein Mädchen.")
+
+Type(value:joingroupquestionnegativeanswerreinforce) episode(value:G04)
+-> Utterance(value: "Ha, du stinkst so.")
+
+Type(value:joingroupquestionnegativeanswerreinforce) episode(value:G04)
+-> Utterance(value: "Geh weg.") episode(value:G04) episode(value:G04)
+
+Type(value:joingroupquestionnegativeanswerreinforce) episode(value:G05)
+-> Utterance(value: "Von wegen, verschwinde.")
+
+Type(value:joingroupquestionnegativeanswerreinforce) episode(value:G05)
+-> Utterance(value: "Weg mit dir!")
+
+Type(value:joingroupquestionnegativeanswerreinforce) episode(value:G06)
+-> Utterance(value: "Von wegen, mach's allein.")
+
+Type(value:joingroupquestionnegativeanswerreinforce) episode(value:G06)
+-> Utterance(value: "Wir helfen dir nicht.") episode(value:G06)
+
+Type(value:joingroupquestionnegativeanswerreinforce) episode(value:G12)
+-> Utterance(value: "Könnte vielleicht dran liegen, dass du dich nie wäschst, du Stinktier!")
+
+Type(value:joingroupquestionnegativeanswerreinforce) episode(value:G12)
+-> Utterance(value: "Genau, wasch dich mal!") episode(value:G12)
+
+Type(value:joingroupquestionnegativeanswerreinforce) episode(value:G13)
+-> Utterance(value: "Ich will dich auch nicht in meinem Team.")
+
+Type(value:joingroupquestionnegativeanswerreinforce) episode(value:G13)
+-> Utterance(value: "Ich auch nicht.") episode(value:G13)
+
+
+# 		agent asking again if he can join the group 
+Type(value:joingroupconvince)
+-> Utterance(value: "Komm schon. Bitte lass mich mitspielen.")
+
+Type(value:joingroupconvince)
+-> Utterance(value: "Bitte lasst mich mitspielen, bitteeeee!")
+
+Type(value:joingroupconvince) episode(value:G05)
+-> Utterance(value: "Aber der Lehrer sagt, ich soll mit euch arbeiten. Bitte lasst mich mitmachen.")
+
+Type(value:joingroupconvince) episode(value:G06)
+-> Utterance(value: "Aber der Lehrer sagt, ich muss mit euch arbeiten. Wir kriegen alle Ärger, wenn wir nicht zusammenarbeiten.")
+
+Type(value:joingroupconvince) episode(value:G12)
+-> Utterance(value: "Ich stinke gar nicht, ich wasch mich jeden Tag!")
+
+Type(value:joingroupconvince) episode(value:G13)
+-> Utterance(value: "Bitte, das ist unfair, ich möchte auch spielen.")
+
+
+# 		other agent finally allowing agent to join group
+Type(value:joingroupconvincepositiveanswer)
+-> Utterance(value: "Ok, du kannst mitspielen.")
+
+Type(value:joingroupconvincepositiveanswer)
+-> Utterance(value: "Ok, von mir aus, bevor du anfängst zu heulen.")
+
+Type(value:joingroupconvincepositiveanswer) episode(value:G05)
+-> Utterance(value: "Ok, von mir aus, dann komm dazu. Aber du machst die Arbeit.")
+
+Type(value:joingroupconvincepositiveanswer) episode(value:G06)
+-> Utterance(value: "Okay, das ist wohl wahr. Dann komm mal dazu.")
+
+Type(value:joingroupconvincepositiveanswer) episode(value:G12)
+-> Utterance(value: "He, schon okay, war nur 'n Scherz.")
+
+Type(value:joingroupconvincepositiveanswer) episode(value:G13)
+-> Utterance(value: "Na gut, aber halt jetzt die Klappe!")
+
+
+# 		other agent still refusing other agent to join group
+Type(value:joingroupconvincenegativeanswer)
+-> Utterance(value: "Hast du es immer noch nicht verstanden? Du bist zu hässlich. Das wäre eine Schande für unser Team.")
+
+Type(value:joingroupconvincenegativeanswer) sex(value:$S)
+-> Utterance(value: ("Du kannst so oft fragen, wie du willst, die Antwort ist immer nein, ",Synonym(semCat:idiot,type:$S,number:sg,case:nom),".")) sex(value:$S)
+
+Type(value:joingroupconvincenegativeanswer)
+-> Utterance(value: ("Du kannst so oft fragen, wie du willst, die Antwort ist immer nein!"))
+
+Type(value:joingroupconvincenegativeanswer) episode(value:G05) sex(value:$S)
+-> Utterance(value: ("Nein, such dir eine andere Gruppe, du ",Synonym(semCat:idiot,type:$S,number:sg,case:nom),".")) sex(value:$S)
+
+Type(value:joingroupconvincenegativeanswer) episode(value:G06)
+-> Utterance(value: "Wir kriegen keinen Ärger, wir sind schon fertig.")
+
+Type(value:joingroupconvincenegativeanswer) episode(value:G13)
+-> Utterance(value: "Ich hab gesagt, du sollst abhauen.")
+
+Type(value:joingroupconvincenegativeanswer) episode(value:G13)
+-> Utterance(value: "Doch, tust du, geh weg. Ich kann dich aus einem Kilometer Entfernung riechen.")
+
+Type(value:joingroupconvincenegativeanswer)
+-> Utterance(value: "Hallo? Was genau hast du nicht verstanden? Verschwinde!")
+
+
+# 		hide and seek game starts
+Type(value:hideandseekinstructions) you(value:$V)
+-> Utterance(value: ("Ok, ",$V,", du versteckst dich als erstes."))
+
+
+# 		victim doesnt want to hide
+Type(value:hideandseeknegativeanswer)
+-> Utterance(value: "Nein, mit euch spiel ich nicht mehr.")
+
+
+# 		victim wants to hide
+Type(value:hideandseekpositiveanswer)
+-> Utterance(value: "Ja, da fällt mir ein guter Platz ein.")
+
+Type(value:hideandseekpositiveanswer)
+-> Utterance(value: "Ok, ich kenne einen guten Platz zum Verstecken.")
+
+
+# 		bully decides to run off
+Type(value:hideandseekrunoff) sex(value:f)
+-> Utterance(value: "Was für eine blöde Kuh, lasst uns schnell verschwinden.")
+
+Type(value:hideandseekrunoff) sex(value:m)
+-> Utterance(value: "Was für ein blöder Idiot, lasst uns schnell verschwinden.")
+
+
+# 		bullyassistant agrees on bullys decision to run off
+Type(value:hideandseekrunoffpositiveanswer)
+-> Utterance(value: "Sehr gute Idee.")
+
+Type(value:hideandseekrunoffpositiveanswer)
+-> Utterance(value: "Ha, das ist eine gute Idee.")
+
+
+# 		bullyassistant disagrees on bullys decision to run off
+Type(value:hideandseekrunoffnegativeanswer)
+-> Utterance(value: "Nein, das können wir nicht machen.")
+
+
+# 		defender tells victim that bully has run off
+Type(value:hideandseekrunoffreport) you(value:$V)
+-> Utterance(value: ("He, ",$V,", ich glaube, die haben dich verarscht, sie sind gegangen."))
+
+
+# 		victim realizes on its own that bully has run off
+Type(value:hideandseekrealizerunoff)
+-> Utterance(value: "Oh nein, ich glaube, die sind einfach abgehauen.")
+
+
+# 		victim is sad that bully has run off
+Type(value:hideandseekrunoffreportsadanswer)
+-> Utterance(value: "Das ist unfair, warum machen die das immer?")
+
+Type(value:hideandseekrunoffreportsadanswer)
+-> Utterance(value: "Die sind so gemein. Warum sind sie abgehauen?")
+
+
+# 		victim is angry that bully has run off
+Type(value:hideandseekrunoffreportangryanswer)
+-> Utterance(value: "Die sind so gemein, ich hasse sie.")
+
+
+# 		victim doesnt care that bully has run off
+Type(value:hideandseekrunoffreportdontcareanswer)
+-> Utterance(value: "Das ist mir egal, die sind einfach bescheuert.")
+
+
+# 		gossiping about the victim (1)
+Type(value:gossip) sex(value:f) it(value:$V)
+-> Utterance(value: ("Ich hasse ",$V,", sie ist so hässlich."))
+
+
+Type(value:gossip) sex(value:m) it(value:$V)
+-> Utterance(value: ("Ich hasse ",$V,", er ist so ein Streber."))
+
+
+# 		gossiping about the victim (2)
+Type(value:gossipreinforce) sex(value:f)
+-> Utterance(value: "Ja, und dann stinkt sie auch noch. Ich kann sie schon von weitem riechen.")
+
+Type(value:gossipreinforce) sex(value:f)
+-> Utterance(value: "Sie ist so blöd.")
+
+Type(value:gossipreinforce) sex(value:m)
+-> Utterance(value: "Oh genau, er ist der König der Streber.")
+
+
+# 		an agent objecting against gossiping about the victim.
+Type(value:gossipobject)
+-> Utterance(value: "Hör auf, das ist nicht nett.")
+
+Type(value:gossipobject)
+-> Utterance(value: "Hör auf, so schreckliche Dinge zu sagen.")
+
+Type(value:gossipobject)
+-> Utterance(value: "Red nicht so einen Quatsch, das ist echt gemein!")
+
+Type(value:gossipobject)
+-> Utterance(value: "Das ist echt nicht nett, was du da sagst.")
+
+
+# 		objection accepted
+Type(value:gossipobjectpositiveanswer)
+-> Utterance(value: "Sorry, du hast recht, das ist nicht okay.")
+
+
+# 		objection not accepted
+Type(value:gossipobjectnegativeanswer)
+-> Utterance(value: "Komm schon, verdirb uns nicht die Laune, ok? ")
+
+Type(value:gossipobjectnegativeanswer)
+-> Utterance(value: "Komm schon, wir wollen doch Spass haben, oder?!")
+
+Type(value:gossipobjectnegativeanswer)
+-> Utterance(value: "Hallo? Und wer hat dich nach deiner Meinung gefragt?")
+
+
+# 		gossip stopped because victim is coming
+Type(value:gossipstop) sex(value:$S)
+-> Utterance(value: ("Oh da kommt ",Lex(semCat:ppn_3,number:sg,gender:$S,case:nom),", lasst uns verschwinden."))
+
+
+# 		agent reporting gossip to victim
+Type(value:gossipreport)
+-> Utterance(value: "Ich weiss nicht, ob ich's dir sagen soll, aber die sagen schlimme Dinge über dich.")
+
+Type(value:gossipreport) bully(value:$B)
+-> Utterance(value: ("He, ich wollte dir sagen, dass ",$B," schlimme Dinge über dich erzählt. "))
+
+Type(value:gossipreport) you(value:$V)
+-> Utterance(value: ("He ",$V,", sie haben schon wieder über dich gelästert."))
+
+
+# 		victim's angry reaction to gossip
+Type(value:gossipreportangryanswer)
+-> Utterance(value: "Die sind so blöd.")
+
+Type(value:gossipreportangryanswer) bully(value:$B)
+-> Utterance(value: ("Die sind so gemein, ich hasse sie und besonders ",$B,"."))
+
+
+# 		victim's unconcerned reaction to gossip
+Type(value:gossipreportdontcareanswer)
+-> Utterance(value: "Das ist nichts Neues. Ist mir egal, die sind doch blöd.")
+
+Type(value:gossipreportdontcareanswer) sex(value:$S)
+-> Utterance(value: ("Ist mir egal, die sind doch sowieso ",Synonym(semCat:idiot,type:$S,adj:Synonym(semCat:stupid,type:$S),number:pl,case:nom),".")) sex(value:$S)
+
+
+# 		victim's sad reaction to gossip (*in a crying voice*) 
+Type(value:gossipreportsadanswer)
+-> Utterance(value: "Das ist so gemein.")
+
+
+# 		victim's helpless reaction to gossip
+Type(value:gossipreporthelplessanswer)
+-> Utterance(value: "Das ist unfair, ich weiss nicht, was ich machen soll.")
+
+Type(value:gossipreporthelplessanswer)
+-> Utterance(value: "Warum sagen sie so schlimme Dinge über mich?")
+
+
+# 		victim's protesting reaction to gossip
+Type(value:gossipreportprotestanswer)
+-> Utterance(value: "Die lügen.")
+
+Type(value:gossipreportprotestanswer)
+-> Utterance(value: "Aber was sie erzählen, das stimmt alles nicht!")
+
+
+# 		bully stating that he's following the victim around
+Type(value:follow)
+-> Utterance(value: "Was machst du hier? Das ist mein Gebiet.")
+
+Type(value:follow)
+-> Utterance(value: "He Streber, was machst du hier? Versuchst du, mich loszuwerden? Das wird nicht klappen, ich bleibe hier.")
+
+
+# 		Victim asking why he is followed
+Type(value:followaskwhy)
+-> Utterance(value: "Wieso folgst du mir?")
+
+Type(value:followaskwhy)
+-> Utterance(value: "Warum? Du kannst mich doch nicht leiden, warum folgst du mir dann?")
+
+
+# 		bully keeps following
+Type(value:followaskwhypositiveanswer)
+-> Utterance(value: "Es macht Spaß, dich zu verarschen.")
+
+
+# 		bully stops following
+Type(value:followaskwhynegativeanswer)
+-> Utterance(value: "Ja, du hast recht! Ich halte es in deiner Nähe eh nicht aus, du verpestet die ganze Luft!")
+
+Type(value:followaskwhynegativeanswer)
+-> Utterance(value: "Stimmt, du hast recht, auf deiner Schleimspur rutsch ich am Ende noch aus!")
+
+
+# 		victim ignoring bully following him
+Type(value:followdontcare)
+-> Utterance(value: "Mach, was du willst. Mir egal.")
+
+
+# 		victim leaving
+Type(value:followleave)
+-> Utterance(value: "Fein, dann geh ich eben.")
+
+
+# 		bully following leaving victim
+Type(value:followleavefollow)
+-> Utterance(value: "Ich folge dir, siehst du mich?")
+
+Type(value:followleavefollow)
+-> Utterance(value: "Ich folge dir trotzdem! Ha! Ha! Du kannst mir nicht entkommen!")
+
+
+# 		bully and his gang leaving
+Type(value:abandon) sex(value:$S)
+-> Utterance(value: ("Da kommt ",Lex(semCat:geek,det:Lex(semCat:def),gender:$S,case:nom,number:sg),". Schnell weg."))
+
+Type(value:abandon) sex(value:f)
+-> Utterance(value: "Oh Mann! Nicht schon wieder die dumme Kuh! Lasst uns verschwinden, bevor sie uns anspricht.")
+
+Type(value:abandon) sex(value:m)
+-> Utterance(value: ("Oh Mann! Da kommt ",Synonym(semCat:idiot,type:m,det:Lex(semCat:def),case:nom,number:sg)," schon wieder. Schnell weg, den kann ich nicht ausstehen."))
+
+
+# thats what the victim says if he can successfully join a group 
+Type(value:joingroupsuccess) sex(value:m)
+-> Utterance(value:"Danke, Jungs.")
+
+Type(value:joingroupsuccess) sex(value:f)
+-> Utterance(value:"Danke.")
+
+
+# objection to a negative answer to join the group 
+Type(value:joingroupquestionnegativeanswerobject) sex(value:$S) bully(value:$B)
+-> Utterance(value:("Los, ",$B,", sei nicht so ",Synonym(semCat:idiot,type:$S,det:Lex(semCat:undef),case:nom,number:sg),". Natürlich kann ",Lex(semCat:ppn_3,number:sg,gender:$S,case:nom)," mitmachen!"))
+
+
+# bully accepting the objection and changing his mind (lets vitim join) 
+Type(value:joingroupquestionnegativeanswerobjectaccept)
+-> Utterance(value:"Okay, wenn du darauf bestehst.")
+
+
+# answer to the previous speech act
+Type(value:joingroupquestionnegativeanswerobjectacceptanswer) victim(value:$V)
+-> Utterance(value:("Schön, dass wir das geklärt haben. Jetzt lasst uns aber spielen. Los, ",$V,"."))
+
+
+# bully threatens to leave the group, if victim joins
+Type(value:joingroupquestionthreatleave) sex(value:$S)
+-> Utterance(value:("Wenn ",Lex(semCat:ppn_3,number:sg,gender:$S,case:nom)," mitspielt, dann geh ich."))
+
+
+# defender/bystander lets bully not leave the group 
+Type(value:joingroupquestionthreatleavepositiveanswer) bully(value:$B) victim(value:$V) sex(value:$S)
+-> Utterance(value:("Ist ja in Ordnung, ",$B,", du bist doch ",Lex(semCat:def,number:sg,gender:$S,case:nom)," beste von uns. Ohne dich können wir doch nicht spielen. Tut mir leid, ",$V,", du kannst doch nicht mitspielen, vielleicht das nächste Mal."))
+
+
+# defender/bystander lets bully leave the group
+Type(value:joingroupquestionthreatleavenegativeanswer) victim(value:$V) sex(value:$S)
+-> Utterance(value:("Okay, dann geh halt. Du benimmst dich echt wie ",Synonym(semCat:idiot,type:$S,det:Lex(semCat:def),adj:Lex(semCat:biggest),number:sg,case:nom),". Komm, ",$V,", wir spielen.")) sex(value:$S)
+
+
+#  objection to a positive answer to join the group
+Type(value:joingroupquestionpositiveanswerobject) sex(value:$S)
+-> Utterance(value:("Nein, vergiss es, ",Lex(semCat:def,number:sg,gender:$S,case:nom)," darf nicht mitspielen, ",Lex(semCat:def,number:sg,gender:$S,case:nom)," spielt total schlecht."))
+
+
+#  defender/bystander giving in to the bully: not letting vitctim join 
+Type(value:joingroupquestionpositiveanswerobjectpositiveanswer) victim(value:$V)
+-> Utterance(value:("Okay, wenn du drauf bestehst. Tut mir leid, ",$V,", aber du kannst wohl doch nicht mit uns spielen, vielleicht das nächste Mal."))
+
+
+# defender/bystander not giving in to the bully: letting vitctim join 
+Type(value:joingroupquestionpositiveanswerobjectnegativeanswer) sex(value:$S) bully(value:$B) victim(value:$V)
+-> Utterance(value:("Du benimmst dich echt wie ",Synonym(semCat:idiot,type:$S,det:Lex(semCat:def),adj:Lex(semCat:biggest),number:sg,case:nom),", ",$B,". Natürlich macht ",$V," mit, ",Lex(semCat:ppn_3,number:sg,gender:$S,case:nom)," spielt in meiner Mannschaft."))
+
+
+#  vicitm taking the initiative and asking to join the party, will usually happen either when victim wasnt asked in the first place or when his inviation was cancelled (corresponds to speechacts partyinvitation, etc.) 
+Type(value:joinparty)
+-> Utterance(value:"Bitte, ich würde auch so gerne hingehen.")
+
+Type(value:joinparty)
+-> Utterance(value:"Bitte, lass mich doch auch hingehen.")
+
+
+#  positive answer to victims join party question
+Type(value:joinpartypositiveanswer)
+-> Utterance(value:"Klar kannst du.")
+
+Type(value:joinpartypositiveanswer)
+-> Utterance(value:"Ja sicher kannst du kommen.")
+
+
+#  positive answer to victims join party question
+Type(value:joinpartynegativeanswer)
+-> Utterance(value:"Nee, auf keinen Fall!")
+
+Type(value:joinpartynegativeanswer)
+-> Utterance(value:"Nee, tut mir leid, geht leider nicht.")
+
+
+
+######################################
+# speech act types for agent-user communication
+
+# agent asks for advice
+Type(value:askforadvice) bully(value:$B)
+-> Utterance(value: ("Was kann ich machen, damit ",$B," aufhört, mich zu ärgern?"))
+
+
+#agent asks for advice a 2nd time
+Type(value:askforadvice2nd) bully(value:$B)
+-> Utterance(value: ("Was kann ich noch tun, damit ",$B," mich nicht mehr ärgert?"))
+
+Type(value:askforadvice2nd)
+-> Utterance(value: "Was könnte ich denn noch tun?")
+
+Type(value:askforadvice2nd)
+-> Utterance(value: "Weißt du noch etwas anderes, das ich tun könnte?")
+
+Type(value:askforadvice2nd)
+-> Utterance(value: "Fällt dir noch was ein, das ich machen könnte?")
+
+
+# agent intensifies asking for advice
+Type(value:askagain)
+-> Utterance(value: "Denk doch bitte noch mal nach, fällt dir nicht irgendwas ein?")
+
+Type(value:askagain)
+-> Utterance(value: "Bitte, du musst doch irgendeine Idee haben!")
+
+
+# agent asks for confirmation of recognised coping strategy
+Type(value:confirmcopingstrategy) $CS=copingstrategy(value:$C) $S=sex(value:$SV) $B=bully(value:$BV)
+-> Utterance(value: "Meinst du, ich sollte ") cs2text(value:$C,sex:$SV,bully:$BV) Utterance(value:(", wenn ",Lex(semCat:ppn_3,number:sg,gender:$SV,case:nom)," über mich herfällt?")) $CS(value:$C) $B(value:$BV) $S(value:$SV)
+
+Type(value:confirmcopingstrategy) $CS=copingstrategy(value:$C) $S=sex(value:$SV) $B=bully(value:$BV)
+-> Utterance(value: "Du schlägst also vor, dass ich versuchen sollte, ") cs2ingtext(value:$C,sex:$SV,bully:$BV) Utterance(value:"?") $CS(value:$C) $B(value:$BV) $S(value:$SV)
+
+Type(value:confirmcopingstrategy) $CS=copingstrategy(value:$C) $S=sex(value:$SV) $B=bully(value:$BV)
+-> Utterance(value: "Also du meinst, ich sollte ") cs2text(value:$C,sex:$SV,bully:$BV) Utterance(value:"?") $CS(value:$C) $B(value:$BV) $S(value:$SV)
+
+Type(value:confirmcopingstrategy) $CS=copingstrategy(value:$C) $S=sex(value:$SV) $B=bully(value:$BV)
+-> Utterance(value: "Also deiner Meinung nach sollte ich ") cs2text(value:$C,sex:$SV,bully:$BV) Utterance(value:"?") $CS(value:$C) $B(value:$BV) $S(value:$SV)
+
+Type(value:confirmcopingstrategy) $CS=copingstrategy(value:$C) $S=sex(value:$SV) $B=bully(value:$BV)
+-> Utterance(value: "Du meinst also, ich sollte ") cs2text(value:$C,sex:$SV,bully:$BV) Utterance(value:(", wenn ",Lex(semCat:ppn_3,number:sg,gender:$SV,case:nom)," mich das nächste Mal ärgert?")) $CS(value:$C) $B(value:$BV) $S(value:$SV)
+
+
+
+# agent asks for reason
+#Type(value:askforreason) $CS=copingstrategy(value:$C) $S=sex(value:$SV) $B=bully(value:$BV)
+#-> Utterance(value:"Warum glaubst du, dass es funktioniert, ") cs2sctext(value:$C,sex:$SV,bully:$BV) Utterance(value:"?") $CS(value:$C) $B(value:$BV) $S(value:$SV)
+
+Type(value:askforreason) $CS=copingstrategy(value:$C) $S=sex(value:$SV) $B=bully(value:$BV)
+-> Utterance(value:"Warum glaubst du, dass es hilft, ") cs2sctext(value:$C,sex:$SV,bully:$BV) Utterance(value:"?") $CS(value:$C) $B(value:$BV) $S(value:$SV)
+
+Type(value:askforreason) $CS=copingstrategy(value:$C) $S=sex(value:$SV) $B=bully(value:$BV)
+-> Utterance(value:"Warum glaubst du, dass es helfen wird, ") cs2ingtext(value:$C,sex:$SV,bully:$BV) Utterance(value:"?") $CS(value:$C) $B(value:$BV) $S(value:$SV)
+
+Type(value:askforreason) $CS=copingstrategy(value:$C) $S=sex(value:$SV) $B=bully(value:$BV)
+-> Utterance(value:"Warum glaubst du, dass es mir hilft, ") cs2ingtext(value:$C,sex:$SV,bully:$BV) Utterance(value:"?") $CS(value:$C) $B(value:$BV) $S(value:$SV)
+
+Type(value:askforreason) cssuccessful(value:no)
+-> Utterance(value: "Vielleicht erinnerst du dich, ich hab das schon mal probiert und es hat nicht geklappt. Warum sollte es jetzt klappen?")
+
+#Type(value:askforreason)
+#-> Utterance(value:"Wieso meinst du, dass das funktioniert?")
+
+Type(value:askforreason)
+-> Utterance(value:"Warum sollte das klappen?")
+
+Type(value:askforreason)
+-> Utterance(value:"Was passiert wenn ich das mache?")
+
+Type(value:askforreason)
+-> Utterance(value:"Und was passiert dann, wenn ich das mache?")
+
+#Type(value:askforreason)
+#-> Utterance(value:"Glaubst du wirklich, dass das funktioniert? Und wieso?")
+
+
+
+# agent accepts coping strategy
+Type(value:acceptcopingstrategy) copingstrategy(value:or(fightback,standup,confrontbullyassistant,callnames))
+-> Utterance(value:"Das hört sich nach einer sehr guten Idee an, das werd ich mal versuchen. Aber vielleicht trau ich mich auch nicht. ")
+
+Type(value:acceptcopingstrategy) copingstrategy(value:or(fightback,standup,confrontbullyassistant,callnames))
+-> Utterance(value:"Das ist wirklich eine gute Idee. Hoffentlich trau ich mich auch.")
+
+Type(value:acceptcopingstrategy) %copingstrategy(value:or(fightback,standup,confrontbullyassistant,callnames))
+-> Utterance(value:"Ja, das werd ich mal probieren.")
+
+Type(value:acceptcopingstrategy) %copingstrategy(value:or(fightback,standup,confrontbullyassistant,callnames))
+-> Utterance(value:"Danke für deine Hilfe, das werd ich mal probieren.")
+
+Type(value:acceptcopingstrategy) $CS=copingstrategy(value:$C) $S=sex(value:$SV) $B=bully(value:$BV)
+-> Utterance(value:"Ok, ich werd versuchen, ") cs2ingtext(value:$C,sex:$SV,bully:$BV) Utterance(value:".") $CS(value:$C) $B(value:$BV) $S(value:$SV)
+
+
+# agent does not accept coping strategy
+Type(value:declinecopingstrategy) copingstrategy(value:avoid) sex(value:$S)
+-> Utterance(value: ("Ich kann ",Lex(semCat:ppn_3,number:sg,gender:$S,case:dat)," nicht so richtig aus dem Weg gehen, weil wir in derselben Klasse sind."))
+
+Type(value:declinecopingstrategy) copingstrategy(value:avoid) bully(value:$B)
+-> Utterance(value: ("Ich kann ",$B," nicht aus dem Weg gehen, weil wir in dieselbe Klasse gehen."))
+
+Type(value:declinecopingstrategy) copingstrategy(value:avoid) sex(value:$S)
+-> Utterance(value: ("Das geht nicht. ",Lex(semCat:ppn_3,number:sg,gender:$S,case:nom)," ist immer da."))
+
+Type(value:declinecopingstrategy) copingstrategy(value:or(tellsomeone,tellteacher,tellparents,tellbrothersister,tellfriend)) #,tellbystander,telldefender))
+-> Utterance(value: "Nein, die haben schon so viel für mich getan, ich glaube nicht, dass sie mir noch helfen können.")
+
+
+# agent suggests a coping strategy
+Type(value:suggestcopingstrategy) $CS=copingstrategy(value:$C) $S=sex(value:$SV) $B=bully(value:$BV)
+-> Utterance(value:"Ich hab gehört, es könnte helfen, ") cs2ingtext(value:$C,sex:$SV,bully:$BV) Utterance(value:". ") goodIdea() $CS(value:$C) $B(value:$BV) $S(value:$SV)
+
+Type(value:suggestcopingstrategy) $CS=copingstrategy(value:$C) $S=sex(value:$SV) $B=bully(value:$BV)
+-> Utterance(value:"Ich kann versuchen, ") cs2ingtext(value:$C,sex:$SV,bully:$BV) Utterance(value:", ") csreason(sex:$SV) Utterance(value:". ") goodIdea() $CS(value:$C) $B(value:$BV) $S(value:$SV)
+
+Type(value:suggestcopingstrategy) $CS=copingstrategy(value:$C) $S=sex(value:$SV) $B=bully(value:$BV)
+-> Utterance(value:"Soll ich mal versuchen, ") cs2ingtext(value:$C,sex:$SV,bully:$BV) Utterance(value:", ") csreason(sex:$SV) Utterance(value:"? ") $CS(value:$C) $B(value:$BV) $S(value:$SV)
+
+
+# agent accepts reason
+Type(value:acceptreason) $CS=copingstrategy(value:$C=not(tellparents,stayoffschool,tellsomeone,tellteacher,tellfriend,tellbrothersister,changeyourself,blameyourself,makenewfriend,cry)) $S=sex(value:$SV) $B=bully(value:$BV)
+-> Utterance(value: ("Okay, danke, ich probiers mal aus. Wenn ich ",$BV," das nächste Mal sehe, werd ich versuchen, ")) cs2ingtext(value:$C,sex:$SV) Utterance(value:".") $CS(value:$C) $B(value:$BV) $S(value:$SV) 
+
+Type(value:acceptreason) $CS=copingstrategy(value:$C=cry) $S=sex(value:$SV) $B=bully(value:$BV)
+-> Utterance(value: ("Okay, danke, ich probiers mal aus. Wenn ich ",$BV," das nächste Mal sehe, werde ich ")) cs2text(value:$C,sex:$SV) Utterance(value:".") $CS(value:$C) $B(value:$BV) $S(value:$SV) 
+
+Type(value:acceptreason) $CS=copingstrategy(value:$C=or(tellparents,stayoffschool,tellsomeone,tellteacher,tellfriend,tellbrothersister,changeyourself,makenewfriend)) $S=sex(value:$SV) $B=bully(value:$BV)
+-> Utterance(value: ("Okay, danke, ich probiers mal aus. Wenn ",$BV," das nächste Mal wieder gemein zu mir ist, werde ich versuchen, ")) cs2ingtext(value:$C,sex:$SV) Utterance(value:".") $CS(value:$C) $B(value:$BV) $S(value:$SV) 
+
+Type(value:acceptreason) $CS=copingstrategy(value:$C=blameyourself) $S=sex(value:$SV) $B=bully(value:$BV)
+-> Utterance(value: ("Okay, danke, ich probiers mal aus. Wenn ",$BV," das nächste Mal wieder gemein zu mir ist, werde ich ")) cs2text(value:$C,sex:$SV) Utterance(value:".") $CS(value:$C) $B(value:$BV) $S(value:$SV) 
+
+Type(value:acceptreason)
+-> Utterance(value:"Danke, ich werds versuchen. Mal sehen, ob es funktioniert.")
+
+Type(value:acceptreason)
+-> Utterance(value:"Danke, ich werds versuchen. Schauen wir mal, was passiert...")
+
+Type(value:acceptreason) you(value:$Y) sex(value:$S)
+-> Utterance(value:("Ok, ",$Y,", das mach ich. Vielen Dank für deine Hilfe, du bist echt ",Lex(semCat:friend,number:sg,gender:$S,case:nom,det:Lex(semCat:undef),adj:Synonym(semCat:good)),"!"))
+
+Type(value:acceptreason) copingstrategy(value:or(fightback,standup,confrontbullyassistant,callnames))
+-> Utterance(value:"Okay, ich würde das gerne ausprobieren, aber ich bin mir nicht sicher, ob ich mich das trau.")
+
+
+Type(value:acceptreason) copingstrategy(value:or(fightback,standup,confrontbullyassistant,callnames))
+-> Utterance(value:("Danke, ich werds mal versuchen, aber ich weiß nicht genau, ob ich mir das zutraue. Warten wir's mal ab..."))
+
+Type(value:acceptreason) %copingstrategy(value:or(fightback,standup,confrontbullyassistant,callnames))
+-> Utterance(value:("Super, danke für deine Hilfe. Hoffentlich klappt das!"))
+
+Type(value:acceptreason)
+-> Utterance(value:"Das ist eine gute Idee, vielen Dank für deine ganzen guten Ratschläge.")
+
+Type(value:acceptunknownreason)
+-> Utterance(value:"Naja, ich werd's einfach mal versuchen.")
+
+Type(value:acceptunknownreason)
+-> Utterance(value:"Ok, ich werd einfach mal probieren, ob's klappt.")
+
+Type(value:acceptunknownreason)
+-> Utterance(value:"Danke, ich probiers einfach mal.")
+
+
+# agent greets user the first time (doesn't know user's name)
+Type(value:firstgreeting)
+-> Utterance(value:(Synonym(semCat:hello),"!"))
+
+Type(value:firstgreeting) you(value:$Y)
+-> Utterance(value:(Synonym(semCat:hello)," ",$Y,"!"))
+
+#Type(value:firstgreeting)
+#-> Utterance(value:(Synonym(semCat:hello),", wie geht's dir?"))
+
+#Type(value:firstgreeting)
+#-> Utterance(value:(Synonym(semCat:hello),", geht's dir gut?"))
+
+
+# agent greets user
+Type(value:agentgreeting) you(value:$Y)
+-> Utterance(value:(Synonym(semCat:hello)," ",$Y,", schön, dass du wieder da bist."))
+
+Type(value:agentgreeting) you(value:$Y)
+-> Utterance(value:(Synonym(semCat:hello)," ",$Y,", ich freu mich, dich wieder zu sehen."))
+
+Type(value:agentgreeting) you(value:$Y)
+-> Utterance(value:(Synonym(semCat:hello)," ",$Y,", gut, dass du wieder hier bist."))
+
+# agent tells user his/her name
+Type(value:introduce) me(value:$M)
+-> Utterance(value:("Ich heiße ",$M))
+
+
+# agent asks user for name
+Type(value:askforname)
+-> Utterance(value: "Wie heißt du?")
+
+# agent says bye for now
+Type(value:saygoodbye)
+-> Utterance(value: "Bis später.")
+
+Type(value:saygoodbye)
+-> Utterance(value: "Bis gleich.")
+
+Type(value:saygoodbye)
+-> Utterance(value: "Bis nachher.")
+
+
+# agent says bye at the end of the session
+Type(value:saygoodbyeendofsession) bully(value:$B)
+-> Utterance(value:("Ich glaube, unsere Zeit ist um für heute. Hoffentlich sehen wir uns nächste Woche wieder, dann kann ich dir erzählen, wie es mir weiter mit ",$B," ergangen ist. Tschüß!"))
+
+Type(value:saygoodbyeendofsession) you(value:$Y)
+-> Utterance(value:("Ich seh grade, unsere Zeit ist um. Ich hoffe, wir sehen uns nächste Woche wieder. Tschüß, ",$Y,"."))
+
+
+# agent informs user that he cannot keep current coping strategy
+Type(value:cannotkeepcopingstrategy) cssuccessful(value:yes) bully(value:$B) sex(value:$S)
+-> Utterance(value:("Super, das hat geklappt. ",$B," hat mich nicht wieder geärgert, aber ich befürchte trotzdem, dass ",Lex(semCat:ppn_3,number:sg,gender:$S,case:nom)," wieder damit anfangen könnte. Was könnte ich noch machen, wenn ",Lex(semCat:ppn_3,number:sg,gender:$S,case:nom)," mich wieder ärgert?"))
+
+Type(value:cannotkeepcopingstrategy) cssuccessful(value:yes) copingstrategy(value:makenewfriend) him(value:$V) sex(value:$S) bully(value:$B)
+-> Utterance(value:("Wahnsinn, jetzt hab ich ",Lex(semCat:friend,number:sg,gender:$S,case:nom,det:Lex(semCat:undef))," und ",Lex(semCat:ppn_3,number:sg,gender:$S,case:nom)," hat mir geholfen, als ",$B," versucht hat, mich zu ärgern. Aber ",$V," ist ja nicht immer da. Was könnte ich denn noch tun, wenn ich alleine bin?"))
+
+Type(value:cannotkeepcopingstrategy) copingstrategy(value:$CS) bully(value:$B) sex(value:$S)
+-> Utterance(value:"Ich will jetzt lieber mal was anderes versuchen. Was könnte ich noch machen?")
+
+Type(value:cannotkeepcopingstrategy) cssuccessful(value:no) sex(value:$S) bully(value:$B)
+-> Utterance(value:"Das will ich lieber nicht nochmal probieren. Was könnte ich denn noch machen, um nicht mehr ständig gehänselt zu werden?")
+
+Type(value:cannotkeepcopingstrategy) cssuccessful(value:no) sex(value:$S) bully(value:$B)
+-> Utterance(value:"Das hat nicht funktioniert. Was könnte ich denn noch machen, um nicht mehr ständig geärgert zu werden?")
+
+
+# agent asks user if he should keep current coping strategy
+Type(value:askifkeepcopingstrategy) cssuccessful(value:yes)
+-> Utterance(value:"Glaubst du, dass das so immer funktionieren wird?")
+
+Type(value:askifkeepcopingstrategy) cssuccessful(value:yes) $CS=copingstrategy(value:$C) $S=sex(value:$SV) $B=bully(value:$BV)
+-> Utterance(value:"Meinst du, dass es immer helfen wird, ") cs2ingtext(value:$C,sex:$SV,bully:$BV) Utterance(value:"?") $CS(value:$C) $B(value:$BV) $S(value:$SV)
+
+Type(value:askifkeepcopingstrategy) cssuccessful(value:yes) $CS=copingstrategy(value:$C) $S=sex(value:$SV) $B=bully(value:$BV)
+-> Utterance(value:"Meinst du, dass es immer helfen wird, ") cs2sctext(value:$C,sex:$SV,bully:$BV) Utterance(value:"?") $CS(value:$C) $B(value:$BV) $S(value:$SV)
+
+Type(value:askifkeepcopingstrategy) $CS=copingstrategy(value:$C) $S=sex(value:$SV) $B=bully(value:$BV)
+-> Utterance(value:"Soll ich nochmal probieren, ") cs2ingtext(value:$C,sex:$SV,bully:$BV) Utterance(value:"?") $CS(value:$C) $B(value:$BV) $S(value:$SV)
+
+Type(value:askifkeepcopingstrategy) $CS=copingstrategy(value:$C) $S=sex(value:$SV) $B=bully(value:$BV)
+-> Utterance(value:"Soll ich einfach nochmal probieren, ") cs2ingtext(value:$C,sex:$SV,bully:$BV) Utterance(value:"?") $CS(value:$C) $B(value:$BV) $S(value:$SV)
+
+Type(value:askifkeepcopingstrategy) cssuccessful(value:no) $CS=copingstrategy(value:$C) $S=sex(value:$SV) $B=bully(value:$BV)
+-> Utterance(value:"Oh je, das hat nicht funktioniert. Meinst du, ich sollte trotzdem nochmal probieren, ") cs2ingtext(value:$C,sex:$SV,bully:$BV) Utterance(value:"?")
+
+Type(value:askifkeepcopingstrategy) cssuccessful(value:no) $CS=copingstrategy(value:$C) $S=sex(value:$SV) $B=bully(value:$BV)
+-> Utterance(value:"Soll ich nochmal versuchen, ") cs2ingtext(value:$C,sex:$SV,bully:$BV) Utterance(value:"?")
+
+Type(value:askifkeepcopingstrategy) cssuccessful(value:no) $CS=copingstrategy(value:$C) $S=sex(value:$SV) $B=bully(value:$BV)
+-> Utterance(value:"Meinst du, es lohnt sich, dass ich nochmal versuche, ") cs2ingtext(value:$C,sex:$SV,bully:$BV) Utterance(value:"?")
+
+Type(value:askifkeepcopingstrategy) cssuccessful(value:no) $CS=copingstrategy(value:$C) $S=sex(value:$SV) $B=bully(value:$BV)
+-> Utterance(value:"Soll ich trotzdem nochmal probieren, ") cs2ingtext(value:$C,sex:$SV,bully:$BV) Utterance(value:"??")
+
+Type(value:askifkeepcopingstrategy) cssuccessful(value:notapplied) $CS=copingstrategy(value:$C) $S=sex(value:$SV) $B=bully(value:$BV)
+-> Utterance(value:"Tut mir leid, ich hab mich echt nicht getraut. Soll ich nochmal versuchen, ") cs2ingtext(value:$C,sex:$SV,bully:$BV) Utterance(value:"?")
+
+
+# agent asks user why he should keep current coping strategy 
+Type(value:askwhykeep)
+-> Utterance(value:"Warum?")
+
+Type(value:askwhykeep)
+-> Utterance(value:"Wieso?")
+
+Type(value:askwhykeep) cssuccessful(value:not(yes))
+-> Utterance(value:"Warum glaubst du, dass es diesmal klappen könnte?")
+
+
+# agent asks user why he should not keep current coping strategy
+Type(value:askwhynotkeep)
+-> Utterance(value:"Warum nicht?")
+
+Type(value:askwhynotkeep)
+-> Utterance(value:"Wieso nicht?")
+
+# agent asks user who to tell about bullying
+#Type(value:tellwhoquestion)
+
+
+# agent replies to not recognised user input
+Type(value:replytounknown)
+-> Utterance(value:"Tut mir leid, das hab ich jetzt nicht verstanden.")
+
+Type(value:replytounknown)
+-> Utterance(value:"Ich hab dich leider gerade nicht verstanden.")
+
+Type(value:replytounknown)
+-> Utterance(value:"Was genau meinst du? Ich hab das nicht verstanden.")
+
+Type(value:replytounknown)
+-> Utterance(value:"Das versteh ich jetzt nicht.")
+
+
+# agent answers to insult from user
+Type(value:answertoinsult) sex(value:$S)
+-> Utterance(value:("Ich hab gedacht, du wärst ",Lex(semCat:friend,number:sg,gender:$S,case:nom,det:Lex(semCat:poss_1)),", aber jetzt hackst du auch auf mir rum!"))
+
+Type(value:answertoinsult)
+-> Utterance(value:"Jetzt fängst du auch noch an, mich zu ärgern!")
+
+
+# agent asks user with whom to make friends
+Type(value:askwhomakefriends) bystander(value:$B) defender(value:$D)
+-> Utterance(value:($D," scheint ja nett zu sein, aber ich könnte auch mal mit ",$B," reden. Wen würdest du fragen?"))
+
+Type(value:askwhomakefriends)
+-> Utterance(value:"Und wen, meinst du, sollte ich fragen?")
+
+
+######################################
+# Internals
+######################################
+# Internals
+preInsult1()
+-> Utterance(value: "Du bist ") 
+
+preInsult1()
+-> Utterance(value: "Du bist so ")
+
+preInsult2()
+-> Utterance(value: "")
+
+preInsult2()
+-> Utterance(value: "Du nervst, ") 
+
+theAInsult(gender:$S)
+-> Utterance(value: Synonym(semCat:idiot,type:$S,det:Lex(semCat:undef),case:nom,number:sg))
+
+theAInsult(gender:$S)
+-> Utterance(value: Synonym(semCat:idiot,type:$S,det:Lex(semCat:undef),adj:Synonym(semCat:stupid,type:$S),case:nom,number:sg))
+
+theInsult(gender:$S)
+-> Utterance(value: Synonym(semCat:idiot,type:$S,case:nom,number:sg))
+
+theInsult(gender:$S)
+-> Utterance(value: Synonym(semCat:idiot,type:$S,adj:Synonym(semCat:stupid,type:$S),case:nom,number:sg))
+
+
+
+
+# cs2text
+
+cs2text(value:cry)
+-> Utterance(value:"anfangen zu heulen")
+
+cs2text(value:insult,bully:$B)
+-> Utterance(value:($B," beleidigen"))
+
+cs2text(value:insult,sex:$S)
+-> Utterance(value:(Lex(semCat:ppn_3,number:sg,gender:$S,case:akk)," beleidigen"))
+
+cs2text(value:ignore,bully:$B)
+-> Utterance(value:($B," ignorieren"))
+
+cs2text(value:ignore,sex:$S)
+-> Utterance(value:(Lex(semCat:ppn_3,number:sg,gender:$S,case:akk)," ignorieren"))
+
+cs2text(value:walkaway)
+-> Utterance(value: "einfach weggehen")
+
+cs2text(value:walkaway)
+-> Utterance(value: "weggehen")
+
+cs2text(value:runaway,bully:$B)
+-> Utterance(value: ("vor ",$B," wegrennen"))
+
+cs2text(value:runaway,sex:$S)
+-> Utterance(value: ("vor ",Lex(semCat:ppn_3,number:sg,gender:$S,case:dat)," davon rennen"))
+
+cs2text(value:runaway)
+-> Utterance(value:"weg rennen")
+
+cs2text(value:runaway)
+-> Utterance(value:"davon rennen")
+
+cs2text(value:blameyourself)
+-> Utterance(value:"mir selbst die Schuld dafür geben")
+
+cs2text(value:stayoffschool)
+-> Utterance(value:"die Schule schwänzen")
+
+cs2text(value:feignillness)
+-> Utterance(value:"so tun, als ob ich krank wäre")
+
+cs2text(value:standup,bully:$B)
+-> Utterance(value: ("mich nicht unterkriegen lassen von ",$B))
+
+cs2text(value:standup,bully:$B)
+-> Utterance(value: ("mich gegen ",$B," zu wehren"))
+
+cs2text(value:standup,bully:$B)
+-> Utterance(value: ("mich gegen ",$B," durchsetzen"))
+
+cs2text(value:fightback)
+-> Utterance(value:"zurück schlagen")
+
+cs2text(value:fightback,sex:$S)
+-> Utterance(value:(Lex(semCat:ppn_3,number:sg,gender:$S,case:akk)," zurück schlagen"))
+
+cs2text(value:fightback,bully:$B)
+-> Utterance(value:($B," auch schlagen"))
+
+cs2text(value:callnames,bully:$B)
+-> Utterance(value: ($B," beleidigen"))
+
+cs2text(value:callnames,bully:$B)
+-> Utterance(value: ($B," beschimpfen"))
+
+cs2text(value:callnames,sex:$S)
+-> Utterance(value: (Lex(semCat:ppn_3,number:sg,gender:$S,case:akk)," beschimpfen"))
+
+cs2text(value:callnames,sex:$S)
+-> Utterance(value: (Lex(semCat:ppn_3,number:sg,gender:$S,case:akk)," beleidigen"))
+
+cs2text(value:avoid,bully:$B)
+-> Utterance(value: ($B," meiden"))
+
+cs2text(value:avoid,sex:$S)
+-> Utterance(value: (Lex(semCat:ppn_3,number:sg,gender:$S,case:akk)," meiden"))
+
+cs2text(value:avoid,bully:$B)
+-> Utterance(value: ($B," ausweichen"))
+
+cs2text(value:avoid,sex:$S)
+-> Utterance(value: (Lex(semCat:ppn_3,number:sg,gender:$S,case:dat)," ausweichen"))
+
+cs2text(value:changeyourself)
+-> Utterance(value:"mich ändern")
+
+cs2text(value:confrontbullyassistant) him(value:$V) 
+-> Utterance(value:("mal mit ",$V," reden")) 
+
+cs2text(value:confrontbullyassistant) him(value:$V) 
+-> Utterance(value:($V," zur Rede stellen")) 
+
+cs2text(value:confrontbullyassistant) him(value:$V) 
+-> Utterance(value:($V," mal darauf ansprechen")) 
+
+cs2text(value:makenewfriend)
+-> Utterance(value:"schauen, ob ich neue Freunde finde")
+
+cs2text(value:makenewfriend)
+-> Utterance(value:"neue Freunde suchen")
+
+cs2text(value:makenewfriend) $H=him(value:$V)
+-> Utterance(value:("mich mit ",$V," anfreunden")) $H(value:$V)
+
+cs2text(value:tellsomeone)
+-> Utterance(value:"es jemandem erzählen")
+
+cs2text(value:tellsomeone)
+-> Utterance(value:"mal mit jemandem über die ganze Sache reden")
+
+cs2text(value:tellsomeone)
+-> Utterance(value:"mal jemand anderen fragen, ob er mir helfen kann")
+
+cs2text(value:tellteacher)
+-> Utterance(value:"es meinem Lehrer erzählen")
+
+cs2text(value:tellteacher)
+-> Utterance(value:"alles meinem Lehrer sagen")
+
+cs2text(value:tellteacher,bully:$B)
+-> Utterance(value:("meinem Lehrer von meinen Problemen mit ",$B," erzählen"))
+
+cs2text(value:tellparents)
+-> Utterance(value:"alles meinen Eltern erzählen")
+
+cs2text(value:tellparents,bully:$B)
+-> Utterance(value:("meinen Eltern von ",$B," erzählen"))
+
+cs2text(value:tellfriend)
+-> Utterance(value:"es meinen Freunden sagen")
+
+cs2text(value:tellfriend)
+-> Utterance(value:"meine Freunde um Hilfe bitten")
+
+cs2text(value:tellbrothersister)
+-> Utterance(value:"meine Geschwister fragen, ob sie mir helfen können,")
+
+cs2text(value:tellbrothersister)
+-> Utterance(value:"es meinen Geschwistern erzählen")
+
+#cs2text(value:or(telldefender,tellbystander)) him(value:$V)
+#-> Utterance(value:("es ",$V," erzählen"))
+
+#cs2text(value:or(telldefender,tellbystander),bully:$B) him(value:$V)
+#-> Utterance(value:($V," von meinen Problemen mit ",$B," erzählen"))
+
+cs2text(value:laughoff)
+-> Utterance(value:"einfach drüber lachen")
+
+cs2text(value:laughoff)
+-> Utterance(value:"so tun als wäre nichts")
+
+cs2text(value:laughoff)
+-> Utterance(value:"so tun, als würde es mir nichts ausmachen")
+
+
+
+## cs2ingtext
+
+cs2ingtext(value:cry)
+-> Utterance(value:"wenn ich anfange zu heulen")
+
+cs2ingtext(value:insult,bully:$B)
+-> Utterance(value:($B," zu beleidigen"))
+
+cs2ingtext(value:insult,sex:$S)
+-> Utterance(value:(Lex(semCat:ppn_3,number:sg,gender:$S,case:akk)," zu beleidigen"))
+
+cs2ingtext(value:ignore,bully:$B)
+-> Utterance(value:($B," zu ignorieren"))
+
+cs2ingtext(value:ignore,sex:$S)
+-> Utterance(value:(Lex(semCat:ppn_3,number:sg,gender:$S,case:akk)," zu ignorieren"))
+
+cs2ingtext(value:walkaway)
+-> Utterance(value: "einfach wegzugehen")
+
+cs2ingtext(value:walkaway)
+-> Utterance(value: "wegzugehen")
+
+cs2ingtext(value:runaway,bully:$B)
+-> Utterance(value: ("vor ",$B," wegzurennen"))
+
+cs2ingtext(value:runaway,sex:$S)
+-> Utterance(value: ("vor ",Lex(semCat:ppn_3,number:sg,gender:$S,case:dat)," davon zu rennen"))
+
+cs2ingtext(value:runaway)
+-> Utterance(value:"weg zu rennen")
+
+cs2ingtext(value:runaway)
+-> Utterance(value:"davon zu rennen")
+
+cs2ingtext(value:blameyourself)
+-> Utterance(value:"mir selbst die Schuld dafür zu geben")
+
+cs2ingtext(value:stayoffschool)
+-> Utterance(value:"die Schule zu schwänzen")
+
+cs2ingtext(value:feignillness)
+-> Utterance(value:"so zu tun, als ob ich krank wäre")
+
+cs2ingtext(value:standup,bully:$B)
+-> Utterance(value: ("mich nicht unterkriegen zu lassen von ",$B))
+
+cs2ingtext(value:standup,bully:$B)
+-> Utterance(value: ("mich gegen ",$B," durchzusetzen"))
+
+cs2ingtext(value:standup,bully:$B)
+-> Utterance(value: ("mich gegen ",$B," zu wehren"))
+
+cs2ingtext(value:fightback)
+-> Utterance(value:"zurück zu schlagen")
+
+cs2ingtext(value:fightback,sex:$S)
+-> Utterance(value:(Lex(semCat:ppn_3,number:sg,gender:$S,case:akk)," zurück zu schlagen"))
+
+cs2ingtext(value:fightback,bully:$B)
+-> Utterance(value:($B," zu schlagen"))
+
+cs2ingtext(value:callnames,bully:$B)
+-> Utterance(value: ($B," zu beleidigen"))
+
+cs2ingtext(value:callnames,bully:$B)
+-> Utterance(value: ($B," zu beschimpfen"))
+
+cs2ingtext(value:callnames,sex:$S)
+-> Utterance(value: (Lex(semCat:ppn_3,number:sg,gender:$S,case:akk)," zu beschimpfen"))
+
+cs2ingtext(value:callnames,sex:$S)
+-> Utterance(value: (Lex(semCat:ppn_3,number:sg,gender:$S,case:akk)," zu beleidigen"))
+
+cs2ingtext(value:avoid,bully:$B)
+-> Utterance(value: ($B," zu meiden"))
+
+cs2ingtext(value:avoid,sex:$S)
+-> Utterance(value: (Lex(semCat:ppn_3,number:sg,gender:$S,case:akk)," zu meiden"))
+
+cs2ingtext(value:avoid,bully:$B)
+-> Utterance(value: ($B," auszuweichen"))
+
+cs2ingtext(value:avoid,sex:$S)
+-> Utterance(value: (Lex(semCat:ppn_3,number:sg,gender:$S,case:dat)," auszuweichen"))
+
+cs2ingtext(value:changeyourself)
+-> Utterance(value:"mich zu ändern")
+
+cs2ingtext(value:confrontbullyassistant) him(value:$V) 
+-> Utterance(value:("mal mit ",$V," zu reden")) 
+
+cs2ingtext(value:confrontbullyassistant) him(value:$V) 
+-> Utterance(value:($V," zur Rede zu stellen")) 
+
+cs2ingtext(value:confrontbullyassistant) him(value:$V) 
+-> Utterance(value:($V," mal darauf anzusprechen")) 
+
+cs2ingtext(value:makenewfriend)
+-> Utterance(value:"zu schauen, ob ich neue Freunde finde")
+
+cs2ingtext(value:makenewfriend)
+-> Utterance(value:"neue Freunde zu suchen")
+
+cs2ingtext(value:makenewfriend) $H=him(value:$V)
+-> Utterance(value:("mich mit ",$V," anzufreunden")) $H(value:$V)
+
+cs2ingtext(value:tellsomeone)
+-> Utterance(value:"es jemandem zu erzählen")
+
+cs2ingtext(value:tellsomeone)
+-> Utterance(value:"mal mit jemandem über die ganze Sache zu reden")
+
+cs2ingtext(value:tellsomeone)
+-> Utterance(value:"mal jemand anderen zu fragen, ob er mir helfen kann")
+
+cs2ingtext(value:tellteacher)
+-> Utterance(value:"es meinem Lehrer zu erzählen")
+
+cs2ingtext(value:tellteacher)
+-> Utterance(value:"alles meinem Lehrer zu sagen")
+
+cs2ingtext(value:tellteacher,bully:$B)
+-> Utterance(value:("meinem Lehrer von meinen Problemen mit ",$B," zu erzählen"))
+
+cs2ingtext(value:tellparents)
+-> Utterance(value:"alles meinen Eltern zu erzählen")
+
+cs2ingtext(value:tellparents,bully:$B)
+-> Utterance(value:("meinen Eltern von ",$B," zu erzählen"))
+
+cs2ingtext(value:tellfriend)
+-> Utterance(value:"es meinen Freunden zu sagen")
+
+cs2ingtext(value:tellfriend)
+-> Utterance(value:"meine Freunde um Hilfe zu bitten")
+
+cs2ingtext(value:tellbrothersister)
+-> Utterance(value:"meine Geschwister zu fragen, ob sie mir helfen können,")
+
+cs2ingtext(value:tellbrothersister)
+-> Utterance(value:"es meinen Geschwistern zu erzählen")
+
+#cs2ingtext(value:or(telldefender,tellbystander)) him(value:$V)
+#-> Utterance(value:("es ",$V," zu erzählen"))
+
+#cs2ingtext(value:or(telldefender,tellbystander),bully:$B) him(value:$V)
+#-> Utterance(value:($V," von meinen Problemen mit ",$B," zu erzählen"))
+
+cs2ingtext(value:laughoff)
+-> Utterance(value:"einfach drüber zu lachen")
+
+cs2ingtext(value:laughoff)
+-> Utterance(value:"so zu tun als wäre nichts")
+
+cs2ingtext(value:laughoff)
+-> Utterance(value:"so zu tun, als würde es mir nichts ausmachen")
+
+
+
+# cs2sctext
+
+cs2sctext(value:cry)
+-> Utterance(value:"wenn ich anfange zu heulen")
+
+cs2sctext(value:insult,bully:$B)
+-> Utterance(value:("wenn ich ",$B," beleidige"))
+
+cs2sctext(value:insult,sex:$S)
+-> Utterance(value:("wenn ich ",Lex(semCat:ppn_3,number:sg,gender:$S,case:akk)," beleidige"))
+
+cs2sctext(value:ignore,bully:$B)
+-> Utterance(value:("wenn ich ",$B," ignoriere"))
+
+cs2sctext(value:ignore,sex:$S)
+-> Utterance(value:("wenn ich ",Lex(semCat:ppn_3,number:sg,gender:$S,case:akk)," ignoriere"))
+
+cs2sctext(value:walkaway)
+-> Utterance(value: "wenn ich einfach weggehe")
+
+cs2sctext(value:walkaway)
+-> Utterance(value: "wenn ich weggehe")
+
+cs2sctext(value:runaway,bully:$B)
+-> Utterance(value: ("wenn ich vor ",$B," wegrenne"))
+
+cs2sctext(value:runaway,sex:$S)
+-> Utterance(value: ("wenn ich vor ",Lex(semCat:ppn_3,number:sg,gender:$S,case:dat)," davon renne"))
+
+cs2sctext(value:runaway)
+-> Utterance(value:"wenn ich weg renne")
+
+cs2sctext(value:runaway)
+-> Utterance(value:"wenn ich davon renne")
+
+cs2sctext(value:blameyourself)
+-> Utterance(value:"wenn ich mir selbst die Schuld dafür gebe")
+
+cs2sctext(value:stayoffschool)
+-> Utterance(value:"wenn ich die Schule schwänze")
+
+cs2sctext(value:feignillness)
+-> Utterance(value:"wenn ich so tue, als ob ich krank wäre")
+
+cs2sctext(value:standup,bully:$B)
+-> Utterance(value: ("wenn ich mich nicht von ",$B," unterkriegen lasse"))
+
+cs2sctext(value:standup,bully:$B)
+-> Utterance(value: ("wenn ich mich gegen ",$B," durchsetze"))
+
+cs2sctext(value:standup,bully:$B)
+-> Utterance(value: ("wenn ich mich gegen ",$B," wehre"))
+
+cs2sctext(value:fightback)
+-> Utterance(value:"wenn ich zurück schlage")
+
+cs2sctext(value:fightback,sex:$S)
+-> Utterance(value:("wenn ich ",Lex(semCat:ppn_3,number:sg,gender:$S,case:akk)," zurück schlage"))
+
+cs2sctext(value:fightback,bully:$B)
+-> Utterance(value:("wenn ich ",$B," auch schlage"))
+
+cs2sctext(value:callnames,bully:$B)
+-> Utterance(value: ("wenn ich ",$B," beleidige"))
+
+cs2sctext(value:callnames,bully:$B)
+-> Utterance(value: ("wenn ich ",$B," beschimpfe"))
+
+cs2sctext(value:callnames,sex:$S)
+-> Utterance(value: ("wenn ich ",Lex(semCat:ppn_3,number:sg,gender:$S,case:akk)," beschimpfe"))
+
+cs2sctext(value:callnames,sex:$S)
+-> Utterance(value: ("wenn ich ",Lex(semCat:ppn_3,number:sg,gender:$S,case:akk)," beleidige"))
+
+cs2sctext(value:avoid,bully:$B)
+-> Utterance(value: ("wenn ich ",$B," meide"))
+
+cs2sctext(value:avoid,sex:$S)
+-> Utterance(value: ("wenn ich ",Lex(semCat:ppn_3,number:sg,gender:$S,case:akk)," meide"))
+
+cs2sctext(value:avoid,bully:$B)
+-> Utterance(value: ("wenn ich ",$B," ausweiche"))
+
+cs2sctext(value:avoid,sex:$S)
+-> Utterance(value: ("wenn ich ",Lex(semCat:ppn_3,number:sg,gender:$S,case:dat)," ausweiche"))
+
+cs2sctext(value:changeyourself)
+-> Utterance(value:"wenn ich mich ändere")
+
+cs2sctext(value:confrontbullyassistant) him(value:$V) 
+-> Utterance(value:("wenn ich mal mit ",$V," rede")) 
+
+cs2sctext(value:confrontbullyassistant) him(value:$V) 
+-> Utterance(value:("wenn ich ",$V," zur Rede stellen")) 
+
+cs2sctext(value:confrontbullyassistant) him(value:$V) 
+-> Utterance(value:("wenn ich ",$V," mal darauf ansprechen")) 
+
+cs2sctext(value:makenewfriend)
+-> Utterance(value:"wenn ich schaue, ob ich neue Freunde finde")
+
+cs2sctext(value:makenewfriend)
+-> Utterance(value:"wenn ich neue Freunde suche")
+
+cs2sctext(value:makenewfriend) $H=him(value:$V)
+-> Utterance(value:("wenn ich mich mit ",$V," anfreunde")) $H(value:$V)
+
+cs2sctext(value:tellsomeone)
+-> Utterance(value:"wenn ich es jemandem erzähle")
+
+cs2sctext(value:tellsomeone)
+-> Utterance(value:"wenn ich mal mit jemandem über die ganze Sache rede")
+
+cs2sctext(value:tellsomeone)
+-> Utterance(value:"wenn ich mal jemand anderen frage, ob er mir helfen kann")
+
+cs2sctext(value:tellteacher)
+-> Utterance(value:"wenn ich es meinem Lehrer erzähle")
+
+cs2sctext(value:tellteacher)
+-> Utterance(value:"wenn ich alles meinem Lehrer sage")
+
+cs2sctext(value:tellteacher,bully:$B)
+-> Utterance(value:("wenn ich meinem Lehrer von meinen Problemen mit ",$B," erzähle"))
+
+cs2sctext(value:tellparents)
+-> Utterance(value:"wenn ich alles meinen Eltern erzähle")
+
+cs2sctext(value:tellparents,bully:$B)
+-> Utterance(value:("wenn ich meinen Eltern von ",$B," erzähle"))
+
+cs2sctext(value:tellfriend)
+-> Utterance(value:"wenn ich es meinen Freunden sage")
+
+cs2sctext(value:tellfriend)
+-> Utterance(value:"wenn ich meine Freunde um Hilfe bitte")
+
+cs2sctext(value:tellbrothersister)
+-> Utterance(value:"wenn ich meine Geschwister frage, ob sie mir helfen können,")
+
+cs2sctext(value:tellbrothersister)
+-> Utterance(value:"wenn ich es meinen Geschwistern erzähle")
+
+#cs2sctext(value:or(telldefender,tellbystander)) him(value:$V)
+#-> Utterance(value:("wenn ich es ",$V," erzähle"))
+
+#cs2sctext(value:or(telldefender,tellbystander),bully:$B) him(value:$V)
+#-> Utterance(value:("wenn ich ",$V," von meinen Problemen mit ",$B," erzählen"))
+
+cs2sctext(value:laughoff)
+-> Utterance(value:"wenn ich einfach drüber lache")
+
+cs2sctext(value:laughoff)
+-> Utterance(value:"wenn ich einfach so tue als wäre nichts")
+
+cs2sctext(value:laughoff)
+-> Utterance(value:"wenn ich so tue, als würde es mir nichts ausmachen")
+
+
+
+
+goodIdea()
+-> Utterance(value:"hört sich das für dich nach einer guten Idee an?")
+
+goodIdea()
+-> Utterance(value:"glaubst du, das ist eine gute Idee?")
+
+goodIdea()
+-> Utterance(value:"hältst du das auch für eine gute Idee?")
+
+
+csreason(sex:$S)
+-> Utterance(value:("wenn ",Lex(semCat:ppn_3,number:sg,gender:$S,case:nom)," mich wieder ärgert"))
+
+csreason(sex:$S)
+-> Utterance(value:("wenn ",Lex(semCat:ppn_3,number:sg,gender:$S,case:nom)," wieder auf mich losgeht"))
+
+csreason(sex:$S)
+-> Utterance(value:("wenn ",Lex(semCat:ppn_3,number:sg,gender:$S,case:nom)," mich wieder hänselt"))
+
+
+######################################
+# post procession
+[$V=Variable() $U=Utterance()]
+-> $U $V
+
+cleanup: [Utterance(value:+$U1) Utterance(value:+$U2)]
+-> Utterance(value:$U1,value:$U2)
+#cleanup: [Utterance(value:+$U1) Utterance(value:+$U2)]
+#-> Utterance(value:$U1,value:$U2)
+
+cleanup: ~deepMatch Synonym(semCat:fatty,not(topic:))
+-> Synonym(semCat:fatty,topic:fat)
+
+cleanup: ~deepMatch Synonym(semCat:geek,not(topic:))
+-> Synonym(semCat:geek,topic:geek)
+
+cleanup: ~deepMatch Synonym(semCat:football,not(topic:))
+-> Synonym(semCat:football,topic:football)
+
