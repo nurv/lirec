@@ -1,1 +1,1 @@
-java -cp "FAtiMA.jar" FAtiMA.Agent TeamBuddy Sarah
+java -cp "FAtiMA.jar;drools-core-5.0.1.jar;drools-compiler-5.0.1.jar;drools-api-5.0.1.jar;antlr-runtime-3.1.1.jar;core-3.4.2.v_883_R34x.jar;mvel2-2.0.10.jar" AgentLauncher TeamBuddy Sarah
