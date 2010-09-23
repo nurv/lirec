@@ -14,9 +14,9 @@ import FAtiMA.Agent;
 import FAtiMA.util.enumerables.AgentPlatform;
 import FAtiMA.util.parsers.ScenarioLoaderHandler;
 
-import MemoryProcesses.CompoundCue;
-import MemoryProcesses.SpreadActivate;
-import MemoryProcesses.Commonalities;
+import RetrievalProcesses.Commonalities;
+import RetrievalProcesses.CompoundCue;
+import RetrievalProcesses.SpreadActivate;
 
 public class AgentLauncher {
 		
@@ -111,6 +111,8 @@ public class AgentLauncher {
 			System.out.println("Spread activate set ");
 			agent.setCommonalities(new Commonalities());
 			System.out.println("Commonalities set ");
+			//agent.setGeneralisation(new Generalisation());
+			//System.out.println("Generalisation set ");
 		}		
 		agent.StartAgent();
 	}

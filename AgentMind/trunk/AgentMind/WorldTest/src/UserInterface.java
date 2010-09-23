@@ -267,12 +267,21 @@ public class UserInterface implements ActionListener {
 			}
 		});
         
+        // Button to perform generalisation
+        JButton gButton = new JButton("Generalise");;
+        gButton.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent arg0) {
+				_world.GMemory();
+			}
+		});
+        
         JPanel buttonsPanel = new JPanel();
         buttonsPanel.setLayout(new BoxLayout(buttonsPanel,BoxLayout.X_AXIS));
         buttonsPanel.add(okButton);
         buttonsPanel.add(stepButton);
         buttonsPanel.add(saButton);
         buttonsPanel.add(ccButton);
+        buttonsPanel.add(gButton);
         
         _frame.getContentPane().add(caseBox);
         _frame.getContentPane().add(timeBox);

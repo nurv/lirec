@@ -373,6 +373,10 @@ public class WorldTest {
 		SendPerceptionToAll( "SA-MEMORY " + question + "$" + knownInfo );
 		knownInfo = "";
 	}
+	
+	public void GMemory(){
+		SendPerceptionToAll("G-MEMORY");
+	}
 		
 	public synchronized void removeAgent(RemoteAgent ra){
 		_agents.remove(ra);

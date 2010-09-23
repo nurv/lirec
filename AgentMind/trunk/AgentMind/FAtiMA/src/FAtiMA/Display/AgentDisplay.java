@@ -69,8 +69,7 @@ public class AgentDisplay {
 		_displayPane.addTab("Drives", null, panel, "displays the character's drives.");*/
 		
 		panel = new NeedsPanel();
-		_displayPane.addTab("Needs",null,panel,"displays the characters needs");
-		
+		_displayPane.addTab("Needs",null,panel,"displays the characters needs");		
 		
 		panel = new SocialRelationsPanel();
 		_displayPane.addTab("Social Relations",null,panel,"displays the character's realtions state");
@@ -86,6 +85,9 @@ public class AgentDisplay {
 	
 		panel = new ShortTermMemoryPanel();
 		_displayPane.addTab("Short Term Memory", null, panel, "displays all the records in the character's short term memory");
+		
+		panel = new GeneralMemoryPanel();
+		_displayPane.addTab("General Memory", null, panel, "displays all the records in the character's general memory");
 		
 		panel = new ToMPanel();
 		_displayPane.addTab("Theory of Mind",null, panel, "displays the ToM (memory, emotional state,etc) of the other agent's");

@@ -5,7 +5,6 @@ import java.awt.event.ActionListener;
 
 import FAtiMA.Agent;
 
-
 public class TestAction implements ActionListener {
 	
 	Agent _ag;

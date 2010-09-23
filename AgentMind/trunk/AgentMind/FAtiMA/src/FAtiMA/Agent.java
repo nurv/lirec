@@ -107,7 +107,7 @@ public class Agent implements AgentModel {
 	protected ICompoundCue _compoundCue;
 	protected ISpreadActivate _spreadActivate;
 	protected ICommonalities _commonalities;
-	
+
 	private String _saveDirectory;
 	public static final String MIND_PATH = "data/characters/minds/";
 	public static final String MIND_PATH_ANDROID = "sdcard/data/characters/minds/";	

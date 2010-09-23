@@ -133,6 +133,7 @@ public abstract class RemoteAgent extends SocketListener {
 	protected static final String RESUME_TIME = "RESUME-TIME";
 	protected static final String SA_MEMORY = "SA-MEMORY";
 	protected static final String CC_MEMORY = "CC-MEMORY";
+	protected static final String G_MEMORY = "G-MEMORY";
 	protected static final String GET_STATE = "GET-STATE";
 	protected static final String SET_STATE = "SET-STATE";
 	
@@ -379,6 +380,10 @@ public abstract class RemoteAgent extends SocketListener {
 					System.out.println("ID " + id + " evaluation " + results.get(id));
 				}
 				System.out.println("\n\n");*/
+			}
+			else if(msgType.equals(G_MEMORY))
+			{
+				_agent.getMemory().getGeneralMemory().generalise(_agent.getMemory().getEpisodicMemory());
 			}
 			
 			while(_lookAtList.size() > 0)
