@@ -1,0 +1,27 @@
+In order to build SamgarKey for linux, I needed to change the CMakeLists.txt 
+as follows:
+
+Firstly change the implicit casts from yarp strings to std::strings in 
+MainComponent.cpp (this may be a compiler version issue, not sure at present) - 
+eg:
+
+- string tempstring10 = mytempconnect.firstport;
++ string tempstring10 = (const char *)(mytempconnect.firstport);
+
+Change the location of the juce includes and libs:
+
+include_directories 	(/path/to/juce/bin)
+include_directories 	(/path/to/juce)
+link_directories 	(/path/to/juce/bin)
+
+Add the include location of freetype and lib location of samgar lib:
+
+include_directories 	(/usr/include/freetype2)
+link_directories 	(../../SAMGAR\ LIB/Trunk/)
+
+Add the following libs to the target link:
+
+target_link_libraries	(SamgarKey SamgarLIB X11 asound freetype GL Xinerama)
+
+
+-- dave@fo.am
