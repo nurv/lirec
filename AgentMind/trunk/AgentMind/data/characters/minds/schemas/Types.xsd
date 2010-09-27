@@ -33,7 +33,9 @@
 <xs:simpleType name="booleanType">
   <xs:restriction base="xs:string">
     <xs:enumeration value="True"/>
+    <xs:enumeration value="true"/>
     <xs:enumeration value="False"/>
+    <xs:enumeration value="false"/>    
   </xs:restriction>
 </xs:simpleType>
 
