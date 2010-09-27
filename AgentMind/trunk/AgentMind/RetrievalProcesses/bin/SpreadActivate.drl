@@ -1,0 +1,531 @@
+#created on: 19-Nov-2009
+#author	: Mei Yii Lim
+
+package RetrievalProcesses
+
+#list any import classes here.
+
+import FAtiMA.memory.episodicMemory.ActionDetail;
+import FAtiMA.memory.episodicMemory.Time;
+
+
+#declare any global variables here
+rule "positive desirability phase1"
+	no-loop true
+	salience 50
+	when
+		$q: SAQuery($d1: desirability > 0)
+		$ad: ActionDetail(desirability >= $d1)	
+	then		
+		insert (new CandidateEvent($ad, "desirability", 1.0f));
+		retract ($ad);
+		System.out.println("Desirability " + $d1);
+		System.out.println("positive desirability " + $ad.getID());
+end
+
+rule "negative desirability phase1"
+	no-loop true
+	salience 50
+	when
+		$q: SAQuery($d1: desirability < 0)
+		$ad: ActionDetail(desirability <= $d1)	
+	then		
+		insert (new CandidateEvent($ad, "desirability", 1.0f));
+		retract ($ad);
+		System.out.println("Desirability " + $d1);
+		System.out.println("negative desirability " + $ad.getID());
+end
+
+rule "subject-subject phase1"
+	no-loop true
+	salience 50
+	when
+		$q: SAQuery($s1: subject)
+		$ad: ActionDetail(subject == $s1)	
+	then		
+		insert (new CandidateEvent($ad, "subject", 1.0f));
+		retract ($ad);
+		System.out.println("Subject " + $s1);
+		System.out.println("subject-subject " + $ad.getID());
+end
+
+rule "target-target phase1"
+	no-loop true
+	salience 50
+	when
+		$q: SAQuery($t1: target)
+		$ad: ActionDetail(target == $t1) 	
+	then
+		insert (new CandidateEvent($ad, "target", 1.0f));
+		retract ($ad);
+		System.out.println("Target " + $t1);
+		System.out.println("target-target " + $ad.getID());
+end
+
+rule "action-action phase1"
+	no-loop true
+	salience 50
+	when
+		$q: SAQuery($a1: action)
+		$ad: ActionDetail(action == $a1) 
+	then
+		insert (new CandidateEvent($ad, "action", 1.0f));
+		retract ($ad);
+		System.out.println("Action " + $a1);
+		System.out.println("action-action " + $ad.getID());
+end
+
+rule "location-location phase1"
+	no-loop true
+	salience 50
+	when
+		$q: SAQuery($l1: location)
+		$ad: ActionDetail(location == $l1) 			
+	then
+		insert (new CandidateEvent($ad, "location", 1.0f));
+		retract ($ad);
+		System.out.println("Location " + $l1);
+		System.out.println("location-location " + $ad.getID());
+end
+
+rule "intention-intention phase1"
+	no-loop true
+	salience 50
+	when
+		$q: SAQuery($i1: intention)
+		$ad: ActionDetail(intention == $i1) 
+	then
+		insert (new CandidateEvent($ad, "action", 1.0f));
+		retract ($ad);
+		System.out.println("Intention " + $i1);
+		System.out.println("intention-intention " + $ad.getID());
+end
+
+rule "status-status phase1"
+	no-loop true
+	salience 50
+	when
+		$q: SAQuery($st1: status)
+		$ad: ActionDetail(status == $st1) 
+	then
+		insert (new CandidateEvent($ad, "status", 1.0f));
+		retract ($ad);
+		System.out.println("Status " + $st1);
+		System.out.println("status-status " + $ad.getID());
+end
+
+rule "time-time phase1"
+	no-loop true
+	salience 50
+	when
+		$q: SAQuery($t1: time)
+		$ad: ActionDetail(time.strRealTime == $t1)	
+	then
+		insert (new CandidateEvent($ad, "time", 1.0f));
+		retract ($ad);
+		System.out.println("Time " + $t1);
+		System.out.println("time-time " + $ad.getID());
+end
+
+rule "speechAct-speechAct phase1"
+	no-loop true
+	salience 50
+	when
+		$q: SAQuery($sa1: speechActMeaning)
+		$ad: ActionDetail(speechActMeaning == $sa1) 
+	then
+		insert (new CandidateEvent($ad, "speechActMeaning", 1.0f));
+		retract ($ad);
+		System.out.println("SpeechActMeaning " + $sa1);
+		System.out.println("speechAct-speechAct " + $ad.getID());
+end
+
+rule "multimedia-multimedia phase1"
+	no-loop true
+	salience 50
+	when
+		$q: SAQuery($m1: multimediaPath)
+		$ad: ActionDetail(multimediaPath == $m1) 			
+	then
+		insert (new CandidateEvent($ad, "multimediaPath", 1.0f));
+		retract ($ad);
+		System.out.println("MultimediaPath " + $m1);
+		System.out.println("multimedia-multimedia " + $ad.getID());
+end
+
+rule "object-object phase1"
+	no-loop true
+	salience 50
+	when
+		$q: SAQuery($o1: object)
+		$ad: ActionDetail(object == $o1) 			
+	then
+		insert (new CandidateEvent($ad, "object", 1.0f));
+		retract ($ad);
+		System.out.println("Object " + $o1);
+		System.out.println("object-object " + $ad.getID());
+end
+
+rule "subject-subject"
+	no-loop true
+	when
+		$q: SAQuery($s1: subject)
+		$cad: CandidateEvent(extension not contains "subject")
+		$ad: ActionDetail(subject == $s1) from $cad.actionDetail		
+	then		
+		modify ($cad)
+		{
+			increasePhase(), 
+			setExtension("subject")
+		}
+		System.out.println("Subject " + $s1);
+		System.out.println("subject-subject " + $ad.getID());
+end
+
+rule "target-target"
+	no-loop true
+	when
+		$q: SAQuery($t1: target)
+		$cad: CandidateEvent(extension not contains "target")
+		$ad: ActionDetail(target == $t1) from $cad.actionDetail		
+	then
+		modify ($cad) {
+			increasePhase(), 
+			setExtension("target")
+		}
+		System.out.println("Target " + $t1);
+		System.out.println("target-target " + $ad.getID());
+end
+
+rule "action-action"
+	no-loop true
+	when
+		$q: SAQuery($a1: action)
+		$cad: CandidateEvent(extension not contains "action") 
+		$ad: ActionDetail(action == $a1) from $cad.actionDetail		
+	then
+		modify ($cad) {
+			increasePhase(), 
+			setExtension("action")
+		}
+		System.out.println("Action " + $a1);
+		System.out.println("action-action " + $ad.getID());
+end
+
+rule "location-location"
+	no-loop true
+	when
+		$q: SAQuery($l1: location)
+		$cad: CandidateEvent(extension not contains "location")
+		$ad: ActionDetail(location == $l1) from $cad.actionDetail		
+	then
+		modify ($cad) {
+			increasePhase(), 
+			setExtension("location")
+		}
+		System.out.println("Location " + $l1);
+		System.out.println("location-location " + $ad.getID());
+end
+
+rule "intention-intention"
+	no-loop true
+	when
+		$q: SAQuery($i1: intention)
+		$cad: CandidateEvent(extension not contains "intention")
+		$ad: ActionDetail(intention == $i1) from $cad.actionDetail		
+	then
+		modify ($cad) {
+			increasePhase(), 
+			setExtension("intention")
+		}
+		System.out.println("Intention " + $i1);
+		System.out.println("intention-intention " + $ad.getID());
+end
+
+rule "status-status"
+	no-loop true
+	when
+		$q: SAQuery($st1: status)
+		$cad: CandidateEvent(extension not contains "status")
+		$ad: ActionDetail(status == $st1) from $cad.actionDetail		
+	then
+		modify ($cad) {
+			increasePhase(), 
+			setExtension("status")
+		}
+		System.out.println("Status " + $st1);
+		System.out.println("status-status " + $ad.getID());
+end
+
+rule "time-time"
+	no-loop true
+	when
+		$q: SAQuery($t1: time)
+		$cad: CandidateEvent(extension not contains "time")
+		$ad: ActionDetail(time.strRealTime == $t1) from $cad.actionDetail	
+	then
+		modify ($cad) {
+			increasePhase(), 
+			setExtension("time")
+		}
+		System.out.println("Time " + $t1);
+		System.out.println("time-time " + $ad.getID());
+end
+
+rule "speechAct-speechAct"
+	no-loop true
+	when
+		$q: SAQuery($sa1: speechActMeaning)
+		$cad: CandidateEvent(extension not contains "speechActMeaning")
+		$ad: ActionDetail(speechActMeaning == $sa1) from $cad.actionDetail		
+	then
+		modify ($cad) {
+			increasePhase(), 
+			setExtension("speechActMeaning")
+		}
+		System.out.println("SpeechActMeaning " + $sa1);
+		System.out.println("speechAct-speechAct " + $ad.getID());
+end
+
+rule "multimedia-multimedia"
+	no-loop true
+	when
+		$q: SAQuery($m1: multimediaPath)
+		$cad: CandidateEvent(extension not contains "multimediaPath")
+		$ad: ActionDetail(multimediaPath == $m1) from $cad.actionDetail		
+	then
+		modify ($cad) {
+			increasePhase(), 
+			setExtension("multimediaPath")
+		}
+		System.out.println("MultimediaPath " + $m1);
+		System.out.println("multimedia-multimedia " + $ad.getID());
+end
+
+rule "object-object"
+	no-loop true
+	when
+		$q: SAQuery($o1: object)
+		$cad: CandidateEvent(extension not contains "object")
+		$ad: ActionDetail(object == $o1) from $cad.actionDetail		
+	then
+		modify ($cad) {
+			increasePhase(), 
+			setExtension("object")
+		}
+		System.out.println("Object " + $o1);
+		System.out.println("object-object " + $ad.getID());
+end
+
+rule "positive desirability"
+	no-loop true
+	when
+		$q: SAQuery($d1: desirability > 0)
+		$cad: CandidateEvent(extension not contains "desirability")
+		$ad: ActionDetail(desirability >= $d1) from $cad.actionDetail		
+	then		
+		modify ($cad)
+		{
+			increasePhase(), 
+			setExtension("desirability")
+		}
+		System.out.println("Desirability " + $d1);
+		System.out.println("positive desirability " + $ad.getID());
+end
+
+rule "negative desirability"
+	no-loop true
+	when
+		$q: SAQuery($d1: desirability < 0)
+		$cad: CandidateEvent(extension not contains "desirability")
+		$ad: ActionDetail(desirability <= $d1) from $cad.actionDetail		
+	then		
+		modify ($cad)
+		{
+			increasePhase(), 
+			setExtension("desirability")
+		}
+		System.out.println("Desirability " + $d1);
+		System.out.println("negative desirability " + $ad.getID());
+end
+
+rule "id"
+	no-loop true
+	when
+		$q: SAQuery(question == "ID")
+		$cad: CandidateEvent( phase == $q.numKnownVar )
+		$ad: ActionDetail($id: ID) from $cad.actionDetail		
+	then			
+		modify ($q) {
+			setResultIDs($id)
+		}
+		System.out.println("Event ID " + $id);
+		System.out.println("Retracted " + $ad.getID() + "\n");
+		retract ($cad);			
+end
+
+rule "subject"
+	no-loop true
+	when
+		$q: SAQuery(question == "subject")
+		$cad: CandidateEvent( phase == $q.numKnownVar )
+		$ad: ActionDetail($s: subject) from $cad.actionDetail		
+	then			
+		modify ($q) {
+			setResults($s)
+		}
+		System.out.println("Subject " + $s);
+		System.out.println("Retracted " + $ad.getID() + "\n");
+		retract ($cad);			
+end
+
+rule "target"
+	no-loop true
+	when
+		$q: SAQuery(question == "target")
+		$cad: CandidateEvent( phase == $q.numKnownVar )
+		$ad: ActionDetail($t: target) from $cad.actionDetail		
+	then			
+		modify ($q) {
+			setResults($t)
+		}
+		System.out.println("Target " + $t);
+		System.out.println("Retracted " + $ad.getID() + "\n");
+		retract ($cad);			
+end
+
+rule "action"
+	no-loop true
+	when
+		$q: SAQuery(question == "action")
+		$cad: CandidateEvent( phase == $q.numKnownVar )
+		$ad: ActionDetail ($a: action) from $cad.actionDetail	
+	then			
+		modify ($q) {
+			setResults($a)
+		}
+		System.out.println("Action " + $a);
+		System.out.println("Retracted " + $ad.getID() + "\n");
+		retract ($cad);			
+end
+
+rule "location"
+	no-loop true
+	when
+		$q: SAQuery(question == "location")
+		$cad: CandidateEvent( phase == $q.numKnownVar )
+		$ad: ActionDetail($l: location) from $cad.actionDetail		
+	then			
+		modify ($q) {
+			setResults($l)
+		}
+		System.out.println("Location " + $l);
+		System.out.println("Retracted " + $ad.getID());
+		retract ($cad);			
+end
+
+rule "intention"
+	no-loop true
+	when
+		$q: SAQuery(question == "intention")
+		$cad: CandidateEvent( phase == $q.numKnownVar )
+		$ad: ActionDetail($i: intention) from $cad.actionDetail		
+	then			
+		modify ($q) {
+			setResults($i)
+		}
+		System.out.println("Intention " + $i);
+		System.out.println("Retracted " + $ad.getID());
+		retract ($cad);			
+end
+
+rule "status"
+	no-loop true
+	when
+		$q: SAQuery(question == "status")
+		$cad: CandidateEvent( phase == $q.numKnownVar )
+		$ad: ActionDetail($st: status) from $cad.actionDetail		
+	then			
+		modify ($q) {
+			setResults($st)
+		}
+		System.out.println("Status " + $st);
+		System.out.println("Retracted " + $ad.getID());
+		retract ($cad);			
+end
+
+rule "time"
+	no-loop true
+	when
+		$q: SAQuery(question == "time")
+		$cad: CandidateEvent( phase == $q.numKnownVar )
+		$ad: ActionDetail() from $cad.actionDetail		
+		Time($t: strRealTime) from $ad	
+	then			
+		modify ($q) {
+			setResults($t)
+		}
+		System.out.println("Time " + $t);
+		System.out.println("Retracted " +$ad.getID());
+		retract ($cad);			
+end
+
+rule "speechActMeaning"
+	no-loop true
+	when
+		$q: SAQuery(question == "speechActMeaning")
+		$cad: CandidateEvent( phase == $q.numKnownVar )
+		$ad: ActionDetail($sa: speechActMeaning) from $cad.actionDetail		
+	then			
+		modify ($q) {
+			setResults($sa)
+		}
+		System.out.println("SpeechActMeaning " + $sa);
+		System.out.println("Retracted " + $ad.getID());
+		retract ($cad);			
+end
+
+rule "multimediaPath"
+	no-loop true
+	when
+		$q: SAQuery(question == "multimediaPath")
+		$cad: CandidateEvent( phase == $q.numKnownVar )
+		$ad: ActionDetail($m: multimediaPath) from $cad.actionDetail		
+	then			
+		modify ($q) {
+			setResults($m)
+		}
+		System.out.println("MultimediaPath " + $m);
+		System.out.println("Retracted " + $ad.getID());
+		retract ($cad);			
+end
+
+rule "object"
+	no-loop true
+	when
+		$q: SAQuery(question == "object")
+		$cad: CandidateEvent( phase == $q.numKnownVar )
+		$ad: ActionDetail($o: object) from $cad.actionDetail		
+	then			
+		modify ($q) {
+			setResults($o)
+		}
+		System.out.println("Object " + $o);
+		System.out.println("Retracted " + $ad.getID());
+		retract ($cad);			
+end
+
+rule "events"
+	no-loop true
+	when
+		$q: SAQuery(question == "events")
+		$cad: CandidateEvent( phase == $q.numKnownVar )
+		$ad: ActionDetail() from $cad.actionDetail	 
+	then			
+		modify ($q) {
+			setDetails($ad)
+		}
+		System.out.println("Event " + $ad.getID());
+		System.out.println("Retracted " + $ad.getID() + "\n");
+		retract ($cad);			
+end
