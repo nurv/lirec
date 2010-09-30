@@ -112,6 +112,8 @@ public class Agent implements AgentModel {
 	public static final String MIND_PATH = "data/characters/minds/";
 	public static final String MIND_PATH_ANDROID = "sdcard/data/characters/minds/";	
 	private static final Name ACTION_CONTEXT = Name.ParseName("ActionContext()");
+	
+	private boolean _saveRequest = false;
 
 	public Agent(short agentPlatform, String host, int port, String saveDirectory, String name, boolean displayMode, 
 			String sex, String role, 
@@ -864,6 +866,12 @@ public class Agent implements AgentModel {
 						
 						updateTime = System.currentTimeMillis();
 					}
+					
+					if(_saveRequest)
+					{
+						_saveRequest = false;
+						SaveAgentState(this.getName());
+					}
 				}
 				
 				long cycleExecutionTime = System.currentTimeMillis() - startCycleTime;
@@ -880,8 +888,13 @@ public class Agent implements AgentModel {
 		}
 	}
 	
+	public void RequestAgentSave()
+	{
+		this._saveRequest = true;
+	}
 	
-	public void SaveAgentState(String agentName)
+	
+	private void SaveAgentState(String agentName)
 	{
 		String fileName = _saveDirectory + agentName;
 
@@ -889,7 +902,7 @@ public class Agent implements AgentModel {
 		// a new episode will be started. This is to prevent the rest of the STEM events
 		// being stored in the wrong episode
 		// Meiyii 13/09/10
-		_memory.getEpisodicMemory().MoveSTEMtoAM();
+		//_memory.getEpisodicMemory().MoveSTEMtoAM();
 		
 		AgentSimulationTime.SaveState(fileName+"-Timer.dat");
 		ActionLibrary.SaveState(fileName+"-ActionLibrary.dat");

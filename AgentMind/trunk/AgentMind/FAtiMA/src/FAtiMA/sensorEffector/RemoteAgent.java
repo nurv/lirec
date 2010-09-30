@@ -751,7 +751,7 @@ public abstract class RemoteAgent extends SocketListener {
 		}
 		else if(action.equals("Save"))
 		{
-			_agent.SaveAgentState(_agent.getName());
+			_agent.RequestAgentSave();
 		}
 		else if(action.startsWith("DA_QUERY"))
 		{

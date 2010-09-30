@@ -15,7 +15,7 @@ public class TestAction implements ActionListener {
 	}
 
 	public void actionPerformed(ActionEvent arg0) {
-		_ag.SaveAgentState(_ag.getName());
+		_ag.RequestAgentSave();
 	}
 	
 }
