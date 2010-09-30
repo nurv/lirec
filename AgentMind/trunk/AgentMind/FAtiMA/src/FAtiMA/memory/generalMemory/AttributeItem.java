@@ -28,7 +28,9 @@
 
 package FAtiMA.memory.generalMemory;
 
-public class AttributeItem implements Comparable {
+import java.io.Serializable;
+
+public class AttributeItem implements Comparable, Serializable {
 
 	private String _attrName;
 	private String _attrValue;

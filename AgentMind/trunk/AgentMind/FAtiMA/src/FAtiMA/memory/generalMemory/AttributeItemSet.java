@@ -31,11 +31,12 @@
 
 package FAtiMA.memory.generalMemory;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
 
-public class AttributeItemSet implements Comparable {
+public class AttributeItemSet implements Comparable, Serializable {
 	
 	private ArrayList<AttributeItem> _candidateItemSet;
 	private int _coverage;

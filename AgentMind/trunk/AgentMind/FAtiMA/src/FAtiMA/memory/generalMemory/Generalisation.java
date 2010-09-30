@@ -41,7 +41,7 @@ import FAtiMA.memory.episodicMemory.ActionDetail;
 import FAtiMA.memory.episodicMemory.EpisodicMemory;
 import FAtiMA.memory.episodicMemory.MemoryEpisode;
 
-public class Generalisation {
+public class Generalisation implements Serializable {
 
 	private ArrayList<AttributeItemSet> _itemSet;
 	private EpisodicMemory _episodicMemory;	
