@@ -1,0 +1,11 @@
+
+BehaviourExpression -	out		-connect-	L2DBIn		- PioneerDisplay
+							L2SBIn		- PioneerSound
+							L2PBIn		- PioneerPhysical
+
+
+
+PioneerDisplay 	- 	L2DBOut 	-connect- 	L1BIn 		- PioneerBaseLight
+PioneerSound 	-	L2SBOut 	-connect- 	SoundIn 	- Vrobot
+PioneerPhysical - 	L2PB_BOut 	-connect-	BehaveIn 	- Vrobot
+PioneerPhysical - 	L2PB_COut 	-connect-	CAMIn 		- Vrobot
