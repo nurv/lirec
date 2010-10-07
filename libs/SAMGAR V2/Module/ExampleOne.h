@@ -94,7 +94,7 @@ class ExampleThreeSendClass: public SamClass
 {
 private:
 int myint;
-BufferedPort<BinPortable<DataForm>> myfirst; // use BinPortable to make a class ready to be used on the network
+BufferedPort< BinPortable<DataForm> > myfirst; // use BinPortable to make a class ready to be used on the network
 Network yarp;
 public:
 	void SamInit(void)
@@ -119,7 +119,7 @@ public:
 
 // a Interupt port, when data hits this port it'll do whatever is onread, be carefull, fast firing interupts can cause big problems as in normal code
 
-class DataPort : public BufferedPort<BinPortable<DataForm>>  
+class DataPort : public BufferedPort< BinPortable<DataForm> >  
 {
      virtual void onRead(BinPortable<DataForm>& b) 
 	 {
