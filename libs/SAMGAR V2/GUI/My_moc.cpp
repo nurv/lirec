@@ -16,6 +16,8 @@
 #error "(The moc has changed too much.)"
 #endif
 
+string MyConnectionView::fakenames[10]={"","","","","","","","","",""};
+
 QT_BEGIN_MOC_NAMESPACE
 static const uint qt_meta_data_LogReadoutWindow[] = {
 

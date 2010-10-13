@@ -1,0 +1,126 @@
+This document describes installation of SAMGAR V2 on Linux system (tested on Ubuntu x64).
+
+------------------------------------------------------------------------------------
+INSTALL
+------------------------------------------------------------------------------------
+
+0. Start from creating a common directory for installation porpoise
+
+mkdir SRC_DIR
+cd SRC_DIR
+
+1. Download the latest version of SAMGAR V2 from 
+
+svn co https://svn.lirec.org/libs/SAMGAR%20V2/ SAMGAR_V2
+
+2. Download and install the latest version of yarp from download page
+http://eris.liralab.it/yarp/specs/dox/download.html
+or do this from command line i.e.
+
+wget http://downloads.sourceforge.net/yarp0/yarp-2.3.1.tar.gz
+
+Then extract the archive
+
+tar xf yarp-2.3.1.tar.gz
+
+3. Make sure that you have installed all essential software and libraries for compilation of yarp like ACE.
+
+sudo aptitude install libace-dev cmake cmake-curses-gui
+
+You can omit cmake-curses-gui, but I recommend to install this packet.
+Having all essential software and libraries installed you can install Qt that is required by SAMGAR V2
+
+sudo aptitude install libqt4-dev
+
+4. Copy SAMGAR V2 GUI files to proper yarp subdirestory
+
+cp SAMGAR_V2/GUI/*.cpp yarp-2.3.1/src/yarpserver/src/
+cp SAMGAR_V2/GUI/*.h yarp-2.3.1/src/yarpserver/src/
+
+5. Modify CMakeList.txt file responsible for compiling yarpserver
+
+gedit yarp-2.3.1/src/yarpserver/src/CMakeList.txt
+
+After line 
+
+if (CREATE_YARPSERVER3)
+
+add following lines
+
+FIND_PACKAGE(Qt4 REQUIRED)
+SET(QT_USE_QTXML 1)
+INCLUDE(${QT_USE_FILE})
+
+then add at the end of add_executable(yarpserver3 ...) file list following files
+
+${CMAKE_CURRENT_SOURCE_DIR}/src/My_moc.cpp 
+${CMAKE_CURRENT_SOURCE_DIR}/src/samheader.h 
+${CMAKE_CURRENT_SOURCE_DIR}/src/server3Gui.h
+
+Then go to YARP directory
+
+cd yarp-2.3.1
+
+and configure cmake 
+
+ccmake .
+
+I suggest building inside the source because otherwise one might have some problems with further usage of SWIG wrapper.
+
+Select to ON position variables CREATE_GUIS and CREATE_YARPSERVER3
+Then press two times [c] and [g] to generate makefile. Build yarp
+
+make
+
+and install it
+
+sudo make install
+
+6. To build example SAMGAR application go to 
+
+cd ../SAMGAR_V2/Module
+
+to prevent making mess in code this time I suggest to build outside the source, so we have to create a new directory
+
+mkdir build
+cd build
+ccmake ../
+
+Type [c] two times and then [g]. After creating makefile compile the example module
+
+make
+
+7. To make example working first start 
+
+yarpserver3
+
+and then the example module
+
+SAMGAR_V2/Module/build/SamExample
+
+Aster starting SamExample in yarpserver3 GUI appropriate elements should appear. You can connect modules ports by clicking 
+left mouse button on the desired ports.
+
+------------------------------------------------------------------------------------
+KNOWN BUGS
+------------------------------------------------------------------------------------
+
+1. Above mentioned installation process does not include the icons and other graphical elements
+
+2. Starting yarpserver3 application in the directory containing SAMGAR V2 graphics (GUI/Bin directory) caused Segmentation Fault
+after starting SAMGAR_V2/Module/build/SamExample with following error description
+
+QObject::connect: Cannot queue arguments of type 'QTextCursor'
+(Make sure 'QTextCursor' is registered using qRegisterMetaType().)
+QPixmap: It is not safe to use pixmaps outside the GUI thread
+QPixmap: It is not safe to use pixmaps outside the GUI thread
+QPixmap: It is not safe to use pixmaps outside the GUI thread
+QPixmap: It is not safe to use pixmaps outside the GUI thread
+QPixmap: It is not safe to use pixmaps outside the GUI thread
+QPixmap: It is not safe to use pixmaps outside the GUI thread
+Segmentation fault
+
+3. Installation process should be more simple. Patches and script should be applied.
+
+
+--- lukasz.malek@pwr.wroc.pl

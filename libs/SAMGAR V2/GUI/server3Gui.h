@@ -11,13 +11,12 @@ Although for connections the varibles themselves are mutexed
 
 Max connections,modules and ports are predefined, makes it easer for memory and speed (scince memory is predefined and speed becouse theres no create/deleate)
 */
+#ifndef _SERVER3GUI_H
+#define _SERVER3GUI_H
 
-
-
-
-
-
-#include "conio.h"
+#ifdef _WIN32
+	#include "conio.h"
+#endif
 #include <math.h>
 #include <QtGui/QApplication>
 #include <QtGui/QMainWindow>
@@ -772,7 +771,6 @@ QGraphicsLineItem *myCline3[100];
 
 
 
-
 void DeleateMod(string name)
 {
 string report = name;
@@ -1187,5 +1185,4 @@ void CreateConnection(string d,string m,int conntype,bool startcon,bool iscon)
      void rotateLeft(void)  { rotate(-10); }
      void rotateRight(void) { rotate(10); }
  };
-
- 
+#endif
