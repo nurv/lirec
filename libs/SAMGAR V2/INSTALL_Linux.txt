@@ -51,12 +51,17 @@ FIND_PACKAGE(Qt4 REQUIRED)
 SET(QT_USE_QTXML 1)
 INCLUDE(${QT_USE_FILE})
 
-then add at the end of add_executable(yarpserver3 ...) file list following files
+then beforre the line
 
-${CMAKE_CURRENT_SOURCE_DIR}/src/My_moc.cpp 
-${CMAKE_CURRENT_SOURCE_DIR}/src/samheader.h 
-${CMAKE_CURRENT_SOURCE_DIR}/src/server3Gui.h
-${CMAKE_CURRENT_SOURCE_DIR}/src/server3Gui.cpp
+add_executable(yarpserver3 ...)
+
+add line
+
+qt_wrap_cpp(yarpserver3 SERVER3GUI_MOC ${CMAKE_CURRENT_SOURCE_DIR}/src/server3Gui.h)
+
+add at the end of add_executable(yarpserver3 ...) file list following files
+
+${CMAKE_CURRENT_SOURCE_DIR}/src/samheader.h ${CMAKE_CURRENT_SOURCE_DIR}/src/server3Gui.h ${CMAKE_CURRENT_SOURCE_DIR}/src/server3Gui.cpp ${SERVER3GUI_MOC}
 
 Then go to YARP directory
 
