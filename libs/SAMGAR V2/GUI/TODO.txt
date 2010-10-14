@@ -1,0 +1,5 @@
+1. server3Gui.cpp -> MyConnectionView::LoadAll2
+   Assume that the comment line special sighn is # and ignore all data
+   that stands after it. 
+
+2. Remove the moc file from the source and create automatic moc file generation with the cmake in yarpserver directory.

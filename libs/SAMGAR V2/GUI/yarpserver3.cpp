@@ -19,7 +19,6 @@
 int main(int argc, char *argv[]) 
 {
 
-
  QApplication app(argc, argv);
  myconnwindow = new MyConnectionView();
 
@@ -131,17 +130,6 @@ int main(int argc, char *argv[])
     Network::registerContact(fallback.where());
     subscriber.welcome(fallback.where().getName().c_str(),1);
     ns.goPublic();
-
-
-
-
-
-
-
-
-
-
-
 
     app.exec();
 

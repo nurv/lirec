@@ -1,3 +1,5 @@
+#ifndef _SAMGARHEADER_H
+#define _SAMGARHEADER_H
 
 #include "server3Gui.h"
 
@@ -5,13 +7,7 @@
 //#define maxconns   100
 //#define maxports   10
 
-
-int Connecting=0,Currentconntype=0,numofconnections=0;
-double connstartx=0,connstarty=0,Xshift=0;
- SamConnection SamCons[100];
- SamConnection TempConnect;
-
- MyConnectionView *myconnwindow;
+MyConnectionView *myconnwindow;
 
 class DataPort : public BufferedPort<Bottle> 
 {
@@ -62,3 +58,5 @@ class myPortReport:public PortReport
 
  }
 };
+
+#endif 

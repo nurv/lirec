@@ -56,6 +56,7 @@ then add at the end of add_executable(yarpserver3 ...) file list following files
 ${CMAKE_CURRENT_SOURCE_DIR}/src/My_moc.cpp 
 ${CMAKE_CURRENT_SOURCE_DIR}/src/samheader.h 
 ${CMAKE_CURRENT_SOURCE_DIR}/src/server3Gui.h
+${CMAKE_CURRENT_SOURCE_DIR}/src/server3Gui.cpp
 
 Then go to YARP directory
 
