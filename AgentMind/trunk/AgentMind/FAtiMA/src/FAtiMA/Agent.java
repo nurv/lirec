@@ -1112,6 +1112,7 @@ public class Agent implements AgentModel {
 			s.writeObject(_actionsForExecution);
 			s.writeObject(_perceivedEvents);
 			//s.writeObject(_saveDirectory);
+			AgentSimulationTime.SaveState(s);
 			s.flush();
 			s.close();
 			return BinaryStringConverter.encodeBinaryToString(b.toByteArray());
@@ -1150,6 +1151,7 @@ public class Agent implements AgentModel {
 			//this._showStateWindow = ((Boolean) s.readObject()).booleanValue();
 			this._actionsForExecution = (ArrayList<ValuedAction>) s.readObject();
 			this._perceivedEvents = (ArrayList<Event>) s.readObject();
+			AgentSimulationTime.LoadState(s);
 			//this._saveDirectory = (String) s.readObject();
 		}
 		catch (Exception e)

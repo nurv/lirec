@@ -100,10 +100,30 @@ public class AgentSimulationTime implements Serializable {
 	}
 	
 	/**
+	 * Saves the state of the current AgentSimulationTimer to a 
+	 * currently opened ObjectOutputStream, the method does not 
+	 * close the stream and is intended for embedding the timer state
+	 * into an output stream containing other objects
+	 * @param stream - the open object output stream to save the timer to
+	 */
+	public static void SaveState(ObjectOutputStream stream)
+	{
+		try 
+		{
+	    	stream.writeObject(_timerInstance);
+		}
+		catch(Exception e)
+		{
+			AgentLogger.GetInstance().logAndPrint("Exception: " + e);			
+			e.printStackTrace();
+		}
+	}
+	
+	
+	/**
 	 * Loads a specific state of the AgentSimulationTimer from a previously
 	 * saved file
-	 * @param fileName - the name of the file that contains the stored
-	 * 					 timer
+	 * @param fileName - the stream to load the timer state from
 	 */
 	public static void LoadState(String fileName)
 	{
@@ -123,6 +143,24 @@ public class AgentSimulationTime implements Serializable {
 		}
 	}
 
+	/**
+	 * Loads a specific state of the AgentSimulationTimer from an open
+	 * ObjectInputStream, this method does not close the stream
+	 * @param stream - the name of the file that contains the stored
+	 * 					 timer
+	 */
+	public static void LoadState(ObjectInputStream stream)
+	{
+		try
+		{
+        	_timerInstance = (AgentSimulationTime) stream.readObject();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}	
+	
 	private long _simulationTime;
 	private float _timeMultiplier;
 	
