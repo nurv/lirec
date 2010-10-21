@@ -44,7 +44,7 @@ public class AgentLauncher {
 			ScenarioLoaderHandler scenHandler = new ScenarioLoaderHandler(args[0],args[1]);
 			SAXParserFactory factory = SAXParserFactory.newInstance();
 			SAXParser parser = factory.newSAXParser();
-			parser.parse(new File(Agent.MIND_PATH + "LirecScenarios.xml"), scenHandler);
+			parser.parse(new File(Agent.MIND_PATH + "LIRECScenarios.xml"), scenHandler);
 			args2 = scenHandler.getAgentArguments();
 		}
 		
@@ -63,7 +63,7 @@ public class AgentLauncher {
 			case AgentPlatform.ION:
 				if(args2.length >= 13){
 					
-					agent = new Agent(agentPlatform,args2[1], Integer.parseInt(args[2]), args2[3],  args2[4], Boolean.parseBoolean(args2[5]), args2[6], args2[7], args2[8], args2[9], args2[10], args2[11],null,null);
+					agent = new Agent(agentPlatform,args2[1], Integer.parseInt(args2[2]),"", Boolean.parseBoolean(args2[3]), args2[4], args2[5], args2[6], args2[7], args2[8], args2[9], args2[10],null,null);
 				}
 				else if(args2.length == 5)
 				{
@@ -77,27 +77,20 @@ public class AgentLauncher {
 				break;
 				
 			case AgentPlatform.WORLDSIM:
-				//String saveDirectory = "data/characters/minds/state/";
-				/*if (args2.length == 4){
-					agent = new Agent(agentPlatform, args2[1],Integer.parseInt(args2[2]),saveDirectory,args2[3]);
-				}else */
-				if(args2.length >= 13)
-				{
-					if (Boolean.parseBoolean(args2[12]))
-					{
-						agent = new Agent(agentPlatform, args2[1],Integer.parseInt(args2[2]), args2[3], args2[4]);
-					}
-					else
-					{
-						HashMap<String,String> properties = new HashMap<String,String>();
-						ArrayList<String> goals = new ArrayList<String>();
-						readPropertiesAndGoals(args2, properties, goals);
-						agent = new Agent(agentPlatform, args2[1], Integer.parseInt(args2[2]), args2[3], args2[4], Boolean.parseBoolean(args2[5]), args2[6], args2[7], args2[8],args2[9],args2[10],args2[11], properties, goals);
-					}
-				}
-				else
+				String saveDirectory = "";
+				if(args2.length < 11)
 				{
 					System.err.println("Wrong number of arguments!");
+				}
+				else if(args2.length == 12 && args2[11].equals("true"))
+				{
+					agent = new Agent(agentPlatform, args2[1],Integer.parseInt(args2[2]),saveDirectory,args2[4]);
+				}
+				else {
+					HashMap<String,String> properties = new HashMap<String,String>();
+					ArrayList<String> goals = new ArrayList<String>();
+					readPropertiesAndGoals(args2, properties, goals);
+					agent = new Agent(agentPlatform,args2[1], Integer.parseInt(args2[2]),saveDirectory,Boolean.parseBoolean(args2[3]),args2[4], args2[5], args2[6], args2[7],args2[8],args2[9],args2[10], properties, goals);		
 				}
 				break;
 		}
@@ -121,7 +114,7 @@ public class AgentLauncher {
 		StringTokenizer st;
 		String left;
 			
-		for(int i = 13; i < args.length; i++) {
+		for(int i = 12; i < args.length; i++) {
 			st = new StringTokenizer(args[i], ":");
 			left = st.nextToken();
 			if(left.equals("GOAL")) {
@@ -132,3 +125,4 @@ public class AgentLauncher {
 	}
 	
 }
+
