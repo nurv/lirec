@@ -113,9 +113,9 @@ class ExampleThreeSendClass: public SamClass
    {
       myint=0;
       RecognisePort("Out");
+      StartModule("/SClass");
       myfirst.open("/SClass_Out");
       myfirst.setReporter(myPortStatus);
-      StartModule("/SClass");
    }
    void SamIter(void)
    {
@@ -151,9 +151,9 @@ class ExampleFourReciveClassInterupt: public SamClass
    {
       myint=0;
       RecognisePort("In");
+      StartModule("/RClass");
       myfirst.open("/RClass_In");
       myfirst.setReporter(myPortStatus);
       myfirst.useCallback();				// this tells it to use the onread method
-      StartModule("/RClass");
    }	
 };
