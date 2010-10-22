@@ -169,6 +169,15 @@ public class CompetencyLibrary extends CmionComponent {
 				else
 					throw new Exception("No class name specified for a competency in competency library configuration file.");
 				
+				// read attribute Port
+				String portName;
+				Node atrPortName = attribs.getNamedItem("Port");
+				if (atrPortName!=null) 
+					portName = atrPortName.getNodeValue();
+				else
+					throw new Exception("No port specified for a samgar competency in competency library configuration file.");
+
+				
 				// read attribute ConstructorParameters: default none
 				String constructorParametersStr = "";
 				Node atrConstrPars = attribs.getNamedItem("ConstructorParameters");
@@ -203,26 +212,8 @@ public class CompetencyLibrary extends CmionComponent {
 				// and then store information about the competency (without creating it yet) in 
 				// the respective array list
 				if (samgarCompetency)
-				{
-					String catName;
-					Node atrCatName = attribs.getNamedItem("Category");
-					if (atrCatName!=null) 
-						catName = atrCatName.getNodeValue();
-					else
-						throw new Exception("No category specified for a Samgar competency in competency library configuration file.");
-
-					String subCatName;
-					Node atrSubCatName = attribs.getNamedItem("SubCategory");
-					if (atrSubCatName!=null) 
-						subCatName = atrSubCatName.getNodeValue();
-					else
-						throw new Exception("No sub-category specified for a Samgar competency in competency library configuration file.");
-					
-					samgarCompetencyInfos.add(new SamgarCompetencyInfo(className,constructorParameters,
-												constructorClasses,catName,subCatName));
-					
-					
-					
+				{					
+					samgarCompetencyInfos.add(new SamgarCompetencyInfo(className,portName,constructorParameters,constructorClasses));
 				}
 				else // otherwise directly construct the competency and add it to the library
 				{
@@ -255,8 +246,7 @@ public class CompetencyLibrary extends CmionComponent {
 	@Override
 	public final void registerHandlers() 
 	{
-		Simulation.instance.getEventHandlers().add(new HandleSamgarModuleAdded());
-		Simulation.instance.getEventHandlers().add(new HandleSamgarModuleRemoved());
+		Simulation.instance.getEventHandlers().add(new HandleSamgarModuleReady());
 		Simulation.instance.getEventHandlers().add(new HandleAddedElement());
 	}
 	
@@ -331,32 +321,18 @@ public class CompetencyLibrary extends CmionComponent {
 		}
 	}
 	
-	/** retrieves a matching samgar competency info for a samgar module*/
-	private SamgarCompetencyInfo findCompetencyForModule(SamgarModuleInfo modInfo)
-	{
-		/** pick the first samgar competency info that matches that we encounter,
-		 *  there should be never more than one */
-    	for (SamgarCompetencyInfo samgarCompInfo:samgarCompetencyInfos)
-    		if (samgarCompInfo.canConnectToModule(modInfo))
-    			return samgarCompInfo;
-    	return null;
-	}
-	
-	/** internal event handler class for listening to samgar module added events */
-	private class HandleSamgarModuleAdded extends EventHandler {
+	/** internal event handler class for listening to samgar module ready events */
+	private class HandleSamgarModuleReady extends EventHandler {
 
-	    public HandleSamgarModuleAdded() {
-	        super(EventSamgarModuleAdded.class);
+	    public HandleSamgarModuleReady() {
+	        super(EventSamgarModuleReady.class);
 	    }
 
 	    @Override
 	    public void invoke(IEvent evt) {
-	        // since this is an event handler only for type EventSamgarModuleAdded,
-	    	// the following casts always work
-	    	SamgarModuleInfo modInfo = ((EventSamgarModuleAdded)evt).getModuleInfo();
-	    	SamgarCompetencyInfo samgarCompInfo = findCompetencyForModule(modInfo);
-	    	if (samgarCompInfo!=null) 
-	    	{   // we have information about a competency suitable for this module
+	    	// cycle through all registered samgar competency infos, and construct the competency 
+	    	for (SamgarCompetencyInfo samgarCompInfo : samgarCompetencyInfos) 
+	    	{   
 	    		// check if the competency was already constructed before at some point
 	    		Competency comp = samgarCompetencies.get(samgarCompInfo);
 	    		if (comp!=null) // if yes, enable it by setting available true
@@ -403,28 +379,6 @@ public class CompetencyLibrary extends CmionComponent {
 	    }
 	}
 	
-	/** internal event handler class for listening to samgar module added events */
-	private class HandleSamgarModuleRemoved extends EventHandler {
-
-	    public HandleSamgarModuleRemoved() {
-	        super(EventSamgarModuleRemoved.class);
-	    }
-
-	    @Override
-	    public void invoke(IEvent evt) {
-	        // since this is an event handler only for type EventSamgarModuleRemoved,
-	    	// the following casts always work
-	    	SamgarModuleInfo modInfo = ((EventSamgarModuleRemoved)evt).getModuleInfo();
-	    	SamgarCompetencyInfo samgarCompInfo = findCompetencyForModule(modInfo);
-	    	if (samgarCompInfo !=null)
-	    	{
-	    		// check if the competency was already constructed before at some point
-	    		Competency comp = samgarCompetencies.get(samgarCompInfo);
-	    		if (comp!=null) // if yes, disable it by setting available false
-	    			comp.available = false;
-	    	}
-	    }
-	}	
 
 	/** internal event handler class for listening to ion element added events,
 	 * 	we want to react to them if the element added was a competency that we need
@@ -451,6 +405,14 @@ public class CompetencyLibrary extends CmionComponent {
 	    		competenciesToStart.remove(whatAdded);
 	    	}
 	    }
+	}
+
+	/** returns a list of information items regarding the samgar competencies
+	 *  to be loaded by the architecture. Do not modify the returned list or its
+	 *  contents outside this method*/
+	public synchronized ArrayList<SamgarCompetencyInfo> getSamgarCompetencyInfos() 
+	{
+		return samgarCompetencyInfos;	
 	}	
 
 }

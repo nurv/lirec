@@ -14,11 +14,9 @@ construction (assumed parameter type is String, parameters are seperated by comm
 
 <Competency ClassName="cmion.TeamBuddy.competencies.MoveToUser" />
 				  
-<SamgarCompetency ClassName="cmion.TeamBuddy.competencies.FaceDetect"
-				  Category="FaceDetect" SubCategory="FaceDetect" />
+<SamgarCompetency ClassName="cmion.TeamBuddy.competencies.FaceDetect" Port="FaceDetect"/>
 				  
-<SamgarCompetency ClassName="cmion.TeamBuddy.competencies.Motion"
-				  Category="MoveRobot" SubCategory="Motion" />
+<SamgarCompetency ClassName="cmion.TeamBuddy.competencies.Motion" Port="Motion"/>
 		
 </CompetencyLibrary>
 

@@ -11,6 +11,9 @@ public class SamgarCompetencyInfo
 
 	/** the full name of the class */
 	private String className;
+
+	/** the name of the port that will be linked to this class */
+	private String port;	
 	
 	/** the parameters for the constructor */
 	private ArrayList<Object> constructorParameters;
@@ -18,36 +21,17 @@ public class SamgarCompetencyInfo
 	/** the classes for the constructor parameters */
 	private ArrayList<Class<?>> constructorParameterClasses;
 	
-	/** the category of the Samgar module */
-	private String category;
-	
-	/** the sub-category of the Samgar module */
-	private String subCategory;
-	
-	
+
 
 	public SamgarCompetencyInfo(String className, 
+								String port,
 								ArrayList<Object> constructorParameters,
-								ArrayList<Class<?>> constructorParameterClasses,
-								String category, String subCategory)
+								ArrayList<Class<?>> constructorParameterClasses)
 	{
+		this.port = port;
 		this.className = className;
 		this.constructorParameters = constructorParameters;
 		this.constructorParameterClasses = constructorParameterClasses;
-		this.category = category;
-		this.subCategory = subCategory;
-	}
-	
-	
-	/** return whether the samgar competency represented by this info can be used to connect
-	 *  to the module passed */
-	public boolean canConnectToModule(SamgarModuleInfo modInfo)
-	{
-		if (category.equals(modInfo.getCategory())
-			&& subCategory.equals(modInfo.getSubCategory()))
-			return true;
-		else 
-			return false;
 	}
 	
 	/** constructs the competency that this info represents and returns it, throws 
@@ -67,7 +51,10 @@ public class SamgarCompetencyInfo
 		// check if instance is of the right type
 		if (!(instance instanceof Competency)) throw new Exception("Competency could not be constructed because "+ className+ " is not a subclass of Competency");
 		Competency competency = (Competency) instance;
-
+		
+		// tell the competency the name of the port
+		competency.setAdditionalData(port);
+		
 		return competency;
 	}
 
@@ -77,4 +64,9 @@ public class SamgarCompetencyInfo
 		return className;
 	}
 
+	/** returns the port name of the competency this info represents*/
+	public String getPortName() {
+		return port;
+	}
+	
 }

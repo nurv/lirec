@@ -14,9 +14,8 @@
  listed here. -->
 <!ATTLIST Competency ConstructorParameters CDATA #IMPLIED>
 
-<!--A competency that can communicate with a Samgar Module. It will only be built and used if
-a) Samgar is used (by using the samgarConnector component (cmion.addOns.level2.samgar.samgarConnector)) 
-b) The Samgar connector at runtime finds a running Samgar module with identical category and sub category
+<!--A competency that can communicate with a Samgar Module. It will only be built and used if Samgar 
+is used (by using the samgarConnector component (cmion.addOns.level2.samgar.samgarConnector)) 
 -->
 <!ELEMENT SamgarCompetency EMPTY>
 
@@ -30,10 +29,6 @@ b) The Samgar connector at runtime finds a running Samgar module with identical 
  listed here. -->
 <!ATTLIST SamgarCompetency ConstructorParameters CDATA #IMPLIED>
 
-<!--The category for this competency. Has to match the category of a SAMGAR module in order
-to talk to it -->
-<!ATTLIST SamgarCompetency Category CDATA #REQUIRED>
-
-<!--The sub category for this competency. Has to match the sub category of a SAMGAR module in order
-to talk to it -->
-<!ATTLIST SamgarCompetency SubCategory CDATA #REQUIRED>
+<!--The name of the port of the cmion module that is used in SAMGAR to communicate
+ with this competency -->
+<!ATTLIST SamgarCompetency Port CDATA #REQUIRED>

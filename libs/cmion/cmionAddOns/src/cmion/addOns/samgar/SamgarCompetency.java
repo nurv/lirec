@@ -14,17 +14,28 @@ public abstract class SamgarCompetency extends Competency {
 	/** the yarp communication port for this competency */
 	private CmionPort port;
 	
+	private String portName;
+	
 	public SamgarCompetency(IArchitecture architecture) 
 	{
 		super(architecture);
+		portName = null;
 	}
 
+	@Override
+	public void setAdditionalData(Object data)
+	{
+		if (data instanceof String)
+			portName = (String) data;
+	}
+	
 	/** in here we initialize the yarp port */
 	@Override
 	public final void initialize() 
 	{
+		if (portName==null) portName = this.getCompetencyName();
 		Network.init();
-		port = new CmionPort(this);		
+		port = new CmionPort(this,portName);		
 		// after the ports have been created we are ready
 		this.available = true;
 	}

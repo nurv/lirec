@@ -1,7 +1,5 @@
 package cmion.addOns.samgar;
 
-import java.util.ArrayList;
-
 import ion.Meta.EventHandler;
 import ion.Meta.IEvent;
 import ion.Meta.Simulation;
@@ -11,9 +9,8 @@ import yarp.Network;
 import cmion.architecture.CmionComponent;
 import cmion.architecture.EventCmionReady;
 import cmion.architecture.IArchitecture;
-import cmion.level2.EventSamgarModuleAdded;
-import cmion.level2.EventSamgarModuleRemoved;
-import cmion.level2.SamgarModuleInfo;
+import cmion.level2.EventSamgarModuleReady;
+
 
 /** this class provides a connector to SAMGAR. It handles the dynamic
  *  construction of SAMGAR competencies */
@@ -24,15 +21,11 @@ public class SamgarConnector extends CmionComponent implements Runnable {
 	
 	/** the main yarp port needed in order to represent Cmion as a Samgar module */
 	private MainCmionPort mainPort;
-	
-	/** storing the list of avilable Samgar modules*/
-	ArrayList<SamgarModuleInfo> availableModules;
-	
+
 	
 	public SamgarConnector(IArchitecture architecture) 
 	{
 		super(architecture);
-		availableModules = new ArrayList<SamgarModuleInfo>();
 	}
 
 	@Override
@@ -74,30 +67,10 @@ public class SamgarConnector extends CmionComponent implements Runnable {
 		yarp.Time.delay(2);
 		// now the main port should identify itself
 		mainPort.sendId();
-		
-		
+		// raise an event that the cmion Samgar module is ready
+		this.raise(new EventSamgarModuleReady());	
 	}
 
-	/** update the list of available Samgar modules*/
-	public synchronized void updateModules(ArrayList<SamgarModuleInfo> modules) 
-	{
-		// the modules that were found but are not yet in available modules are new
-		// (we ignore already existing ones)
-		for (SamgarModuleInfo modInfo:modules)
-			if (!availableModules.contains(modInfo))
-				this.raise(new EventSamgarModuleAdded(modInfo));				
-				
-		// the modules that are in available modules that were not found anymore 
-		// have to be removed 
-		for (SamgarModuleInfo modInfo:availableModules)
-			if (!modules.contains(modInfo))
-				this.raise(new EventSamgarModuleRemoved(modInfo));				
-
-		// now that we have raised the events, update the list for next call of this
-		// method
-		availableModules = modules;
-		
-	}
 }
 
 	

@@ -194,4 +194,9 @@ public abstract class Competency extends CmionComponent implements Runnable
 	    }
 	}
 	
+	/** a convenience function (i.e. dirty hack) to allow samgar competency construction
+	 *  Please ignore this and don't call it :) */ 
+	public void setAdditionalData(Object data)
+	{}
+	
 }
