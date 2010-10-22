@@ -9,7 +9,7 @@ find_package(YARP REQUIRED)
 include_directories(${YARP_INCLUDE_DIRS})
 
 # set up our program
-add_executable(SamExamples SamExample.cpp InteruptOverlay.h SamClass.h ExampleOne.h)
+add_executable(SamExamples SamExample.cpp InteruptOverlay.h SamClass.h ExampleOne.h VideoFeedExample.h)
 
 
 
