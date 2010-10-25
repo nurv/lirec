@@ -124,7 +124,7 @@ public class EmotionCondition extends PredicateCondition {
 		this._emotionType = emotion;	
 		this._direction = null;
 		this._intensity = new Symbol("0");
-		this._ToM = new Symbol(Constants.SELF);
+		this._ToM = Constants.UNIVERSAL;
 		
 		UpdateName();
 	}
@@ -225,15 +225,7 @@ public class EmotionCondition extends PredicateCondition {
 		ActiveEmotion aem;
 		ArrayList<Substitution> bindings;
 		ArrayList <SubstitutionSet>substitutionSets = new ArrayList<SubstitutionSet>();
-		AgentModel perspective = am;
-		
-		if(_ToM.isGrounded() && !_ToM.toString().equals(Constants.SELF))
-		{
-			if(am.getToM().containsKey(_ToM.toString()))
-			{
-				perspective = am.getToM().get(_ToM.toString());
-			}
-		}
+		AgentModel perspective = this.getPerspective(am);
 		
 		EmotionalState es = perspective.getEmotionalState();
 		
