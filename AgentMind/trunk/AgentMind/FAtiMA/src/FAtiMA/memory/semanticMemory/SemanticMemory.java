@@ -231,15 +231,21 @@ public class SemanticMemory implements Serializable {
     	return _stm.HasNewKnowledge();
     }
 	
-	private void InferEffects(Step infOp)
+	private void InferEffects(Step infOp, AgentModel am)
     {
+		
     	Effect eff;
+    	Condition cond;
+    	AgentModel perspective;
+    	
     	for(ListIterator<Effect> li = infOp.getEffects().listIterator();li.hasNext();)
     	{
     		eff = (Effect) li.next();
     		if(eff.isGrounded())
     		{
-    			_stm.Tell(_kb, eff.GetEffect().getName(),eff.GetEffect().GetValue().toString());
+    			cond = eff.GetEffect();
+    			perspective = cond.getPerspective(am);
+    			perspective.getMemory().getSemanticMemory().Tell(cond.getName(), cond.GetValue().toString());
     			//System.out.println("InferEffects");    			
     		}
     	}
@@ -285,7 +291,7 @@ public class SemanticMemory implements Serializable {
 						sSet = li2.next();
 						groundInfOp = (Step) infOp.clone();
 						groundInfOp.MakeGround(sSet.GetSubstitutions());
-						InferEffects(groundInfOp);
+						InferEffects(groundInfOp,am);
 					}
 				}
 			}

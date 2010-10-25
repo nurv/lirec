@@ -107,8 +107,9 @@ public class EpisodicMemory implements Serializable {
 		
 		searchKeys = GenerateSearchKeys(g.GetSuccessEvent());
 		numberOfSuccess = _am.CountEvent(searchKeys) 
-							+ _stm.CountEvent(searchKeys);			
-		return new Float(numberOfSuccess/numberOfTries);
+							+ _stm.CountEvent(searchKeys);
+		
+		return new Float(((float)numberOfSuccess/(float)numberOfTries));
 	}
 	
 	public void AssociateEmotionToAction(Memory m, ActiveEmotion em, Event cause)
@@ -316,6 +317,6 @@ public class EpisodicMemory implements Serializable {
 	
 	public String SummarizeLastEvent(Memory m)
 	{
-		return _am.SummarizeLastEvent(m);
+		return _am.SummarizeEpisode(m, episode);
 	}
 }

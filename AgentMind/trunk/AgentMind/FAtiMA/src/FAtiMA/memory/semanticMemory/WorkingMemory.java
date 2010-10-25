@@ -284,7 +284,7 @@ public class WorkingMemory implements Serializable {
 			{	
 				KnowledgeSlot ks = new KnowledgeSlot(property.toString());
 				ks.setValue(value);
-				_factList.add(ks);
+			 	_factList.add(ks);
 				_changeList.add(ks); // new info
 				_newFacts.add(ks);
 				//System.out.println("New property knowledge: " + ks.toString());

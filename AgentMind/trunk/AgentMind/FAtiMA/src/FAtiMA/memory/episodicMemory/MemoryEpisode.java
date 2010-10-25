@@ -360,6 +360,26 @@ public class MemoryEpisode implements Serializable {
 		return AMSummary;
 	}
 	
+	public BaseEmotion getStrongestEmotion()
+	{
+		BaseEmotion em;
+		BaseEmotion strongestEmotion = null;
+		
+		for(ActionDetail action : this._details)
+		{
+			em = action.getEmotion();
+			if(em != null)
+			{
+				if(strongestEmotion == null || em.GetPotential() > strongestEmotion.GetPotential())
+				{
+					strongestEmotion = em;
+				}
+			}
+		}
+		
+		return strongestEmotion;
+	}
+	
 	public float determineEmotionAverage()
 	{
 	

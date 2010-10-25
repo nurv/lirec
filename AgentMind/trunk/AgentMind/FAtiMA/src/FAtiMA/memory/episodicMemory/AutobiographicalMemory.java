@@ -48,6 +48,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
+import FAtiMA.conditions.Condition;
 import FAtiMA.deliberativeLayer.goals.Goal;
 import FAtiMA.memory.Memory;
 import FAtiMA.sensorEffector.Event;
@@ -333,23 +334,23 @@ public class AutobiographicalMemory implements Serializable {
 		}
 	}
 	
-	public String SummarizeLastEvent(Memory m)
+	public String SummarizeEpisode(Memory m, int episodeID)
 	{	
 		
 		String AMSummary = "";
 		
-		System.out.println("Number of Events in AM: " + this._memoryEvents.size());
+		//System.out.println("Number of Events in AM: " + this._memoryEvents.size());
 		
-		if(this._memoryEvents.size() > 1)
+		if(this._memoryEvents.size() > episodeID)
 		{
-			MemoryEpisode episode = (MemoryEpisode) this._memoryEvents.get(this._memoryEvents.size() - 2);
+			MemoryEpisode episode = (MemoryEpisode) this._memoryEvents.get(episodeID);
 			long elapsedTime = episode.getTime().getElapsedRealTime();
 			float avgEmotion = episode.determineEmotionAverage();
 			float stdDev = episode.determineEmotionStdDeviation();
 			AgentLogger.GetInstance().logAndPrint("Preparing Summary Generation...");
 			AgentLogger.GetInstance().logAndPrint("Time elapsed since episode happened: " + elapsedTime);
-			AgentLogger.GetInstance().logAndPrint("Average of the episode's emotions: " + avgEmotion);
-			AgentLogger.GetInstance().logAndPrint("Std deviation of the episode's emotions: " + stdDev);
+			//AgentLogger.GetInstance().logAndPrint("Average of the episode's emotions: " + avgEmotion);
+			//AgentLogger.GetInstance().logAndPrint("Std deviation of the episode's emotions: " + stdDev);
 			//if an hour passed since the user seen the last episode, we should report a summary
 			//we should also report if the episode is ambiguous, i.e if it is not very far from a neutral average
 			//if(elapsedTime >= 36000000 || stdDev >= 2.5)
