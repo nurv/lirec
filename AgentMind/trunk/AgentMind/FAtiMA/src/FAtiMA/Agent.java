@@ -150,7 +150,7 @@ public class Agent implements AgentModel {
 
 
 		try{
-			AgentLogger.GetInstance().initialize(name);
+			AgentLogger.GetInstance().initialize(name,displayMode);
 
 			String mind_path = MIND_PATH;
 			if (VersionChecker.runningOnAndroid()) mind_path = MIND_PATH_ANDROID;
@@ -615,19 +615,31 @@ public class Agent implements AgentModel {
 		}
 	}
 	
-	public void PerceivePropertyChanged(Name propertyName, String value)
+	public void PerceivePropertyChanged(String ToM, Name propertyName, String value)
 	{
-
+		AgentLogger.GetInstance().logAndPrint("PropertyChanged: " + ToM + " " + propertyName + " " + value);
 		_memory.getSemanticMemory().Tell(applyPerspective(propertyName, _name), value);
 		
-		for(String other : _nearbyAgents)
+		if(ToM.equals(Constants.UNIVERSAL.toString()))
 		{
-			ModelOfOther m = _ToM.get(other);
-			m.getMemory().getSemanticMemory().Tell(applyPerspective(propertyName,other), value);
+			for(String other : _nearbyAgents)
+			{
+				ModelOfOther m = _ToM.get(other);
+				m.getMemory().getSemanticMemory().Tell(applyPerspective(propertyName,other), value);
+			}
 		}
+		else if(!ToM.equals(_name))
+		{
+			ModelOfOther m = _ToM.get(ToM);
+			if(m != null)
+			{
+				m.getMemory().getSemanticMemory().Tell(applyPerspective(propertyName,ToM), value);
+			}
+		}
+		
 	}
 
-	public void PerceivePropertyChanged(String subject, String property, String value)
+	public void PerceivePropertyChanged(String ToM,String subject, String property, String value)
 	{
 		String newSubject = subject;
 		Name propertyName;
@@ -638,21 +650,43 @@ public class Agent implements AgentModel {
 		}
 		
 		propertyName = Name.ParseName(newSubject + "(" + property + ")");
+		
+		AgentLogger.GetInstance().logAndPrint("PropertyChanged: " + ToM + " " + propertyName + " " + value);
+		
 		_memory.getSemanticMemory().Tell(propertyName, value);
 		
-		for(String other : _nearbyAgents)
+		if(ToM.equals(Constants.UNIVERSAL.toString()))
 		{
-			if(subject.equals(other))
+			for(String other : _nearbyAgents)
 			{
-				newSubject = Constants.SELF; 
+				if(subject.equals(other))
+				{
+					newSubject = Constants.SELF; 
+				}
+				else
+				{
+					newSubject = subject;
+				}
+				ModelOfOther m = _ToM.get(other);
+				propertyName = Name.ParseName(newSubject + "(" + property + ")");
+				m.getMemory().getSemanticMemory().Tell(propertyName, value);
+			}
+		}
+		else if(!ToM.equals(_name))
+		{
+			if(subject.equals(ToM))
+			{
+				newSubject = Constants.SELF;
 			}
 			else
 			{
-				newSubject = subject;
+				newSubject = subject; 
 			}
-			ModelOfOther m = _ToM.get(other);
+			
+			ModelOfOther m = _ToM.get(ToM);
 			propertyName = Name.ParseName(newSubject + "(" + property + ")");
 			m.getMemory().getSemanticMemory().Tell(propertyName, value);
+			
 		}
 	}
 	

@@ -44,7 +44,7 @@ import javax.xml.parsers.SAXParserFactory;
 import FAtiMA.deliberativeLayer.plan.Step;
 import FAtiMA.exceptions.ActionsParsingException;
 import FAtiMA.util.AgentLogger;
-import FAtiMA.util.parsers.StripsOperatorsLoaderHandler;
+import FAtiMA.util.parsers.ActionsLoaderHandler;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
 import FAtiMA.wellFormedNames.Unifier;
@@ -139,14 +139,14 @@ public class ActionLibrary implements Serializable {
 	
 	public void LoadActionsFile(String xmlFile, AgentModel am) throws ActionsParsingException
 	{
-		StripsOperatorsLoaderHandler op = LoadOperators(xmlFile, am);
+		ActionsLoaderHandler op = LoadOperators(xmlFile, am);
 		_actions = op.getOperators();
 	}
 	
-	private StripsOperatorsLoaderHandler LoadOperators(String xmlFile, AgentModel am) throws ActionsParsingException {
+	private ActionsLoaderHandler LoadOperators(String xmlFile, AgentModel am) throws ActionsParsingException {
 		AgentLogger.GetInstance().logAndPrint("LOAD: " + xmlFile);
 		
-		StripsOperatorsLoaderHandler op = new StripsOperatorsLoaderHandler(am);
+		ActionsLoaderHandler op = new ActionsLoaderHandler(am);
 		
 		try {
 			SAXParserFactory factory = SAXParserFactory.newInstance();
