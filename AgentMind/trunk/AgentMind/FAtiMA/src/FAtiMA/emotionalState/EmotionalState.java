@@ -435,7 +435,13 @@ public class EmotionalState implements Serializable {
 			    _emotionPool.remove(em.GetHashKey());
 			    return null;
 			}
-			else return aEm;
+			else 
+			{
+				am.getMemory().getEpisodicMemory().AssociateEmotionToAction(am.getMemory(), 
+						aEm,
+						aEm.GetCause());
+				return aEm;
+			}
 		}
 		else {
 			if(em.GetPotential() == 0) return null;
