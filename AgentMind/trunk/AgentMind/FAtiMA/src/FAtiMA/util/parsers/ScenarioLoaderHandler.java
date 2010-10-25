@@ -74,6 +74,7 @@ public class ScenarioLoaderHandler extends ReflectXMLHandler{
     		_worldSimArgs.add(attributes.getValue("scenery"));
     		_worldSimArgs.add(attributes.getValue("actionsFile"));
     		_worldSimArgs.add(attributes.getValue("agentLanguageFile"));
+    		_worldSimArgs.add(attributes.getValue("userLanguageFile"));
     		_worldSimArgs.add(attributes.getValue("userOptionsFile"));
     	}
     }
@@ -100,8 +101,16 @@ public class ScenarioLoaderHandler extends ReflectXMLHandler{
 				_agentArgs.add(attributes.getValue("displayName"));
 				_agentArgs.add(attributes.getValue("actionsFile"));
 				_agentArgs.add(attributes.getValue("goalsFile"));
-				_agentArgs.add(attributes.getValue("cultureName"));	
-				_agentArgs.add(attributes.getValue("load"));
+				_agentArgs.add(attributes.getValue("cultureName"));
+				if(attributes.getValue("load") == null) 
+				{
+					
+					_agentArgs.add("false");
+				}
+				else
+				{
+					_agentArgs.add(attributes.getValue("load"));
+				}
 			}else{
 				this._isPretendedCharacter = false;
 			}    		
