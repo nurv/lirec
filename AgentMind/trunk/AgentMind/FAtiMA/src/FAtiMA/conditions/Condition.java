@@ -165,7 +165,7 @@ public abstract class Condition implements IGroundable, Cloneable, Serializable 
 						 	newSubSet.AddSubstitutions(subSet.GetSubstitutions());
 						 	//this set that resulted from this addition is valid
 						 	newValidSubstitutionsSet.add(newSubSet);
-						 }
+						}
 					}
 				}
 				if(newValidSubstitutionsSet.size() == 0) 
@@ -207,7 +207,7 @@ public abstract class Condition implements IGroundable, Cloneable, Serializable 
 	 */
 	public Condition(Name name) {
 		_name = name;
-		_ToM = new Symbol(Constants.SELF);
+		_ToM = Constants.UNIVERSAL;
 	}
 	
 	public Condition(Name name, Symbol ToM)
@@ -232,9 +232,21 @@ public abstract class Condition implements IGroundable, Cloneable, Serializable 
 		return _name;
 	}
 	
-	public Symbol getPerspective()
+	public AgentModel getPerspective(AgentModel am)
 	{
-		return _ToM;
+		if(_ToM.isGrounded() && !_ToM.equals(Constants.UNIVERSAL) && !_ToM.toString().equals(Constants.SELF))
+		{
+			if(am.getToM().containsKey(_ToM.toString()))
+			{
+				return am.getToM().get(_ToM.toString());
+			}
+		}
+		return am;
+	}
+	
+	public Symbol getToM()
+	{
+		return this._ToM;
 	}
 	
 	/**
@@ -304,10 +316,15 @@ public abstract class Condition implements IGroundable, Cloneable, Serializable 
 	 *         but with distinct values
 	 */
 	public boolean ThreatensCondition(Condition cond) {
-		if(_ToM.equals(cond._ToM) && _name.equals(cond._name)) 
+		//ToM test
+		if(_ToM.equals(Constants.UNIVERSAL) || cond._ToM.equals(Constants.UNIVERSAL) || _ToM.equals(cond._ToM))
 		{
-	        return !this.GetValue().equals(cond.GetValue());
-	    }
+			if(_name.equals(cond._name)) 
+			{
+		        return !this.GetValue().equals(cond.GetValue());
+		    }
+		}
+		
 	    return false;
 	}
 
