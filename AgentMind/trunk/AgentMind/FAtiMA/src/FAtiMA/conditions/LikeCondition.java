@@ -7,19 +7,22 @@ import org.xml.sax.Attributes;
 
 import FAtiMA.AgentModel;
 import FAtiMA.exceptions.ContextParsingException;
+import FAtiMA.exceptions.InvalidEmotionTypeException;
 import FAtiMA.memory.semanticMemory.KnowledgeBase;
 import FAtiMA.socialRelations.LikeRelation;
 import FAtiMA.util.AgentLogger;
 import FAtiMA.util.Constants;
+import FAtiMA.util.enumerables.EmotionType;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
+import FAtiMA.wellFormedNames.SubstitutionSet;
 import FAtiMA.wellFormedNames.Symbol;
 
 /**
- * Represents a Social Relation that needs to be fullfiled in order to trigger
- * the ritual.
- * The xml should be defined as <SocialRelation RELATION_NAME_STR="relation_name" TARGET_STR="character_name" OPERATOR_STR="operator" VALUE_STR="relation_value"/>,
- * for example, by default: <SocialRelation name="likes" target="John" operator=">" value="3"/>.
+ * Represents a Like Relation that needs to be fullfiled in order to trigger
+ * the condition.
+ * The xml should be defined as <LikeRelation SUBJECT_STR="subject_name" TARGET_STR="character_name" OPERATOR_STR="operator" VALUE_STR="relation_value"/>,
+ * for example, by default: <LikeRelation subject="Luke" target="John" operator=">" value="3"/>.
  * 		A target must be a character;
  * 		The value must be an integer in the range [-10;10]; 
  * 		Operator can be one of the following < <= = >= > !=
@@ -27,7 +30,7 @@ import FAtiMA.wellFormedNames.Symbol;
  * @see Context
  * @see Ritual
  */
-public class SocialCondition extends Condition {
+public class LikeCondition extends Condition {
 	/**
 	 * 
 	 */
@@ -40,55 +43,81 @@ public class SocialCondition extends Condition {
 	private static Operator MORE_THAN = new MoreThan();
 	private static Operator NOT_EQUAL = new NotEqual();
 	
-	private Symbol _subject;
 	private Operator _operator;
-	private Symbol _target;
 	private float _value;
 	
-	/**
-	 * Checks if the Predicate is verified in the agent's KnowledgeBase
-	 * @return true if the Predicate is verified, false otherwise
-	 * @see KnowledgeBase
-	 */
+	public static LikeCondition ParseSocialCondition(Attributes attributes) throws InvalidEmotionTypeException, ContextParsingException {
+		LikeCondition sc;
+		Symbol subject;
+		Symbol target = null;
+		Operator op;
+		float value = 0;
+		String aux;
+		
+		
+		aux = attributes.getValue("subject");
+		if(aux == null)
+		{
+			subject = Constants.UNIVERSAL;
+		}
+		else
+		{
+			subject = new Symbol(aux);
+		}
+		
+		
+		aux = attributes.getValue("target");
+		if(aux != null)
+		{
+			target = new Symbol(aux);
+		}
 	
-	private SocialCondition()
+		aux = attributes.getValue("operator");
+		op = LikeCondition.parseOperator(aux);
+
+		aux = attributes.getValue("value");
+		if(aux != null)
+		{
+			value = Float.parseFloat(aux);	
+		}
+		
+		sc = new LikeCondition(subject,target,value,op);
+			
+		return sc;
+	}
+	
+	private LikeCondition()
 	{
 		
 	}
 
-	protected SocialCondition(Symbol subject, Symbol target, float value, Operator op){
-		this._name = subject;
-		this._target = target;
+	protected LikeCondition(Symbol subject, Symbol target, float value, Operator op){
+		this._ToM = subject;
+		this._name = target;
 		this._value = value;
 		this._operator = op;
 	}
 	
 	public Object clone()
 	{
-		SocialCondition cond = new SocialCondition();
+		LikeCondition cond = new LikeCondition();
+		cond._ToM = (Symbol) this._ToM.clone();
 		cond._name = (Symbol) this._name.clone();
 		cond._value = this._value;
-		cond._target = (Symbol) this._target.clone();
 		cond._operator = this._operator;
 		return cond;
 	}
 	
 	
 	public boolean CheckCondition(AgentModel am) {
-		AgentModel modelToTest;
 		float existingValue;
-		if(!_subject.isGrounded() && !_target.isGrounded()) return false;
-
-		if(_subject.equals(Constants.SELF))
-		{
-			modelToTest = am;
-		}
-		else
-		{
-			modelToTest = am.getToM().get(_subject);
-		}
 		
-		existingValue = LikeRelation.getRelation(_subject.toString(), _target.toString()).getValue(modelToTest.getMemory());
+		if(!this.isGrounded()) return false;
+		
+		AgentModel perspective = this.getPerspective(am);
+		
+		
+		existingValue = LikeRelation.getRelation(Constants.SELF, _name.toString()).getValue(perspective.getMemory());
 		
 		return _operator.process(existingValue, _value);
 	}
@@ -96,7 +125,7 @@ public class SocialCondition extends Condition {
 	
 	public String toString()
 	{
-		return _subject + " like" + _operator + " " + _target + " " + _value;
+		return _ToM + " like" + _operator + " " + _name + " " + _value;
 	}
 	
 	private static ContextParsingException createException( String msg ){
@@ -196,57 +225,81 @@ public class SocialCondition extends Condition {
 
 	@Override
 	public Name GetValue() {
-		// TODO Auto-generated method stub
-		return null;
+		return new Symbol(String.valueOf(this._value));
 	}
 
 	@Override
-	protected ArrayList<Substitution> GetValueBindings(AgentModel am) {
-		// TODO Auto-generated method stub
-		return null;
+	public ArrayList<SubstitutionSet> GetValidBindings(AgentModel am) {
+		ArrayList<SubstitutionSet> bindingSets = new ArrayList<SubstitutionSet>();
+		
+		if(!this._ToM.isGrounded()) return null;
+		
+		if(this._name.isGrounded())
+		{
+			if(CheckCondition(am))
+			{
+				bindingSets.add(new SubstitutionSet());
+				return bindingSets;
+			}
+			else return null;
+		}
+		
+		
+		AgentModel perspective = this.getPerspective(am);
+		
+		Name likeProperty = Name.ParseName("Like(" + Constants.SELF + "," + this._name.toString() + ")");
+		bindingSets = perspective.getMemory().getSemanticMemory().GetPossibleBindings(likeProperty);
+		
+		return bindingSets;
 	}
 
 	@Override
 	public Object GenerateName(int id) {
-		SocialCondition cond = (SocialCondition) this.clone();
+		LikeCondition cond = (LikeCondition) this.clone();
 		cond.ReplaceUnboundVariables(id);
 		return cond;
 	}
 
 	@Override
 	public Object Ground(ArrayList<Substitution> bindingConstraints) {
-		SocialCondition cond = (SocialCondition) this.clone();
+		LikeCondition cond = (LikeCondition) this.clone();
 		cond.MakeGround(bindingConstraints);
 		return cond;
 	}
 
 	@Override
 	public Object Ground(Substitution subst) {
-		SocialCondition cond = (SocialCondition) this.clone();
+		LikeCondition cond = (LikeCondition) this.clone();
 		cond.MakeGround(subst);
 		return cond;
 	}
 
 	@Override
 	public void MakeGround(ArrayList<Substitution> bindings) {
-		this._subject.MakeGround(bindings);
-		this._target.MakeGround(bindings);	
+		this._ToM.MakeGround(bindings);
+		this._name.MakeGround(bindings);	
 	}
 
 	@Override
 	public void MakeGround(Substitution subst) {
-		this._subject.MakeGround(subst);
-		this._target.MakeGround(subst);	
+		this._ToM.MakeGround(subst);
+		this._name.MakeGround(subst);	
 	}
 
 	@Override
 	public void ReplaceUnboundVariables(int variableID) {
-		this._subject.ReplaceUnboundVariables(variableID);
-		this._target.ReplaceUnboundVariables(variableID);
+		this._ToM.ReplaceUnboundVariables(variableID);
+		this._name.ReplaceUnboundVariables(variableID);
 	}
 
 	@Override
 	public boolean isGrounded() {
-		return this._subject.isGrounded() && this._target.isGrounded();
+		return this._ToM.isGrounded() && this._name.isGrounded();
+	}
+
+	@Override
+	protected ArrayList<Substitution> GetValueBindings(AgentModel am) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
