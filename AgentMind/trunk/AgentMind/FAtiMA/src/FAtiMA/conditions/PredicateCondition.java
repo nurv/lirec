@@ -98,7 +98,7 @@ public class PredicateCondition extends Condition {
 		aux = attributes.getValue("ToM");
 		if(aux == null) 
 		{
-			ToM = new Symbol(Constants.SELF);
+			ToM = Constants.UNIVERSAL;
 		}
 		else
 		{
@@ -133,16 +133,9 @@ public class PredicateCondition extends Condition {
 	 */
 	public boolean CheckCondition(AgentModel am) {
 		boolean result;
-		AgentModel perspective = am;
+		AgentModel perspective = this.getPerspective(am);
 		if(!_name.isGrounded()) return false;
 		
-		if(_ToM.isGrounded() && !_ToM.toString().equals(Constants.SELF))
-		{
-			if(am.getToM().containsKey(_ToM.toString()))
-			{
-				perspective = am.getToM().get(_ToM.toString());
-			}
-		}
 		
 		result = perspective.getMemory().getSemanticMemory().AskPredicate(_name); 
 		return _positive == result;
