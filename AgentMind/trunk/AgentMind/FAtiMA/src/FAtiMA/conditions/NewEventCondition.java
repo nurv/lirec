@@ -62,7 +62,7 @@ public class NewEventCondition extends RecentEventCondition {
 	
 	public NewEventCondition(PastEventCondition cond)
 	{
-		this._ToM = new Symbol(Constants.SELF);
+		this._ToM = Constants.UNIVERSAL;
 		this._subject = cond._subject;
 		this._action = cond._action;
 		this._target = cond._target;
