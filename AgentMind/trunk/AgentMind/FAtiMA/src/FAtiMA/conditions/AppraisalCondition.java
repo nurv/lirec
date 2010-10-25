@@ -189,16 +189,9 @@ public class AppraisalCondition extends PastEventCondition {
 		SubstitutionSet sset;
 		float mood;
 	
-		AgentModel modelToTest = am;
-		
-		if(!this._ToM.isGrounded()) return null;
+		AgentModel modelToTest = this.getPerspective(am);
 	 	
 		if(!this._value.isGrounded()) return null;
-		
-		if(!this._ToM.toString().equals(Constants.SELF))
-		{
-			modelToTest = am.getToM().get(this._ToM.toString());
-		}
 		
 		mood = modelToTest.getEmotionalState().GetMood();
 		
