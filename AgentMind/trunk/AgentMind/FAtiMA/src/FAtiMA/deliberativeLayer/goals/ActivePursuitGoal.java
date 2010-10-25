@@ -211,7 +211,7 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
 	 * if all of them are verified the goal succeeds
 	 * @return true if the goal succeeded, false otherwise
 	 */
-	public boolean CheckSucess(AgentModel am) {
+	public boolean CheckSuccess(AgentModel am) {
 	    ListIterator<Condition> li;
 		Condition cond;
 		li = _successConditions.listIterator();
