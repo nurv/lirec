@@ -101,7 +101,7 @@ public class IONRemoteAgent extends RemoteAgent {
 		String msg = ra.toXML();
 		
 		
-		AgentLogger.GetInstance().log("Sending action for execution: " + msg);
+		AgentLogger.GetInstance().log("Sending action for execution: " + ra._actionType);
 		return Send(msg);
 	}
 	
@@ -142,11 +142,12 @@ public class IONRemoteAgent extends RemoteAgent {
 		//the perception specifies which property was changed and its new value
 		//percept-type object property newvalue 
 		//Ex: PROPERTYCHANGED Luke pose onfloor
+		String visibility = st.nextToken();
 		String subject = st.nextToken();
 		String property = st.nextToken();
 		String value = st.nextToken();
 		
-		_agent.PerceivePropertyChanged(subject, property, value);
+		_agent.PerceivePropertyChanged(visibility,subject, property, value);
 		
 		/*Event event;
 		event = new Event(subject,PROPERTY_CHANGED,property);

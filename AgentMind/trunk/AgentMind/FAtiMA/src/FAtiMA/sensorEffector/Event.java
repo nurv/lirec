@@ -134,7 +134,8 @@ public class Event implements Cloneable, Serializable {
 		
 		Event e = new Event(this._subject);
 		
-		if(this._subject.equals(agentName))
+		
+		if(this._subject != null && this._subject.equals(agentName))
 		{
 			e._subject = Constants.SELF;
 		}
@@ -531,7 +532,7 @@ public class Event implements Cloneable, Serializable {
 	
 	/**
 	 * Generates a List of bindings that associate the Variables [Subject],
-	 * [Action],[Target],[P1],[P2] respectively to the event's subject, action,
+	 * [Action],[Target],[P1],[P2],... respectively to the event's subject, action,
 	 * target and parameters 
 	 * @return the mentioned list of substitutions
 	 */

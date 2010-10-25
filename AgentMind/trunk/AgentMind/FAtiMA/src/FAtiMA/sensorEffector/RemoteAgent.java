@@ -565,7 +565,7 @@ public abstract class RemoteAgent extends SocketListener {
 			if(speechAct.getMeaning().equals("episodesummary"))
 			{
 				String summaryInfo = "<ABMemory><Receiver>" + you + "</Receiver>";
-				summaryInfo += am.getMemory().getEpisodicMemory().SummarizeLastEvent(am.getMemory());
+				//summaryInfo += am.getMemory().getEpisodicMemory().SummarizeLastEvent(am.getMemory());
 				summaryInfo += "</ABMemory>";
 				AgentLogger.GetInstance().log(summaryInfo);
 				speechAct.setAMSummary(summaryInfo);
@@ -615,7 +615,7 @@ public abstract class RemoteAgent extends SocketListener {
 		_canAct = false;
 		SendAction(rAction);
 
-		System.out.println("Sent action for execution");
+		System.out.println("Sent action for execution: " + rAction._actionType);
 		AgentLogger.GetInstance().logAndPrint("Cannot act now!");
 		
 	}
@@ -874,7 +874,7 @@ public abstract class RemoteAgent extends SocketListener {
 				
 			}
 			
-			_agent.PerceivePropertyChanged(subject, properties[0], properties[1]);
+			_agent.PerceivePropertyChanged("*",subject, properties[0], properties[1]);
 			AgentLogger.GetInstance().log("Look-At:" + subject + " " + properties[0] + " " + properties[1]);
 		}
 		//Signals a lookat event to the Agent

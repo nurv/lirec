@@ -311,6 +311,12 @@ public class SpeechAct extends RemoteAction {
 			event.AddParameter(new Parameter("param",li.next()));
 		}
 		
+		for(Parameter p : _contextVariables)
+		{
+			event.AddParameter(p);
+		}
+		
+		
 		return event;
 	}
 	

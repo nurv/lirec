@@ -88,23 +88,25 @@ public class WorldSimulatorRemoteAgent extends RemoteAgent {
 		//Ex: PROPERTYCHANGED Luke pose onfloor
 		
 		Name propertyName = null;
+		String ToM = null;
 		String subject = null;
 		String property = null;
 		String value = null;
 
-		if( st.countTokens() == 3 ){
+		if( st.countTokens() == 4 ){
+			ToM = st.nextToken();
 			subject = st.nextToken();
 			property = st.nextToken();
 			value = st.nextToken();
-			_agent.PerceivePropertyChanged(subject, property, value);
+			_agent.PerceivePropertyChanged(ToM,subject, property, value);
 			
 		}
-		else if( st.countTokens() == 2 ){
-			
+		else if( st.countTokens() == 3 ){
+			ToM = st.nextToken();
 			String subjectWithProperty = st.nextToken();
 			propertyName = Name.ParseName(subjectWithProperty);
 			value = st.nextToken();
-			_agent.PerceivePropertyChanged(propertyName, value);
+			_agent.PerceivePropertyChanged(ToM, propertyName, value);
 		}
 		
 		
