@@ -8,6 +8,7 @@ import java.util.Random;
 import java.util.StringTokenizer;
 
 import FAtiMA.memory.Memory;
+import FAtiMA.conditions.Condition;
 import FAtiMA.deliberativeLayer.plan.Effect;
 import FAtiMA.deliberativeLayer.plan.Step;
 import FAtiMA.sensorEffector.SpeechAct;
@@ -221,18 +222,21 @@ public class RemoteAgent extends SocketListener {
 	private void PropertiesChanged(ArrayList effects)
 	{
 		ListIterator li = effects.listIterator();
+		Condition c;
 		Effect e;
 		String msg;
 
 		while(li.hasNext())
 		{
 			e = (Effect) li.next();
-			String name = e.GetEffect().getName().toString();
+			c = e.GetEffect();
+			String name = c.getName().toString();
 			if(!name.startsWith("EVENT") && !name.startsWith("SpeechContext"))
 			{
 				if(e.GetProbability(null) > _r.nextFloat())
 				{
-					msg = "PROPERTY-CHANGED " + name + " " + e.GetEffect().GetValue();
+					
+					msg = "PROPERTY-CHANGED " + c.getToM() + " " + name + " " + c.GetValue();
 
 					_world.GetUserInterface().WriteLine(msg);
 					this._world.SendPerceptionToAll(msg);
