@@ -95,18 +95,10 @@ public class PropertyGreater extends PropertyCondition {
 		Float aux;
 		Float aux2;
 
-        AgentModel perspective = am;
+        AgentModel perspective = this.getPerspective(am);
 
         if (!super.CheckCondition(am))
             return false;
-        
-        if(_ToM.isGrounded() && !_ToM.toString().equals(Constants.SELF))
-		{
-			if(am.getToM().containsKey(_ToM.toString()))
-			{
-				perspective = am.getToM().get(_ToM.toString());
-			}
-		}
         
         propertyValue = this._name.evaluate(perspective.getMemory());
         value = this._value.evaluate(perspective.getMemory());
