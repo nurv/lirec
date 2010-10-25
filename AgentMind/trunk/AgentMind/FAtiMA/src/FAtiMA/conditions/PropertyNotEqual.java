@@ -116,18 +116,11 @@ public class PropertyNotEqual extends PropertyCondition {
 		Object propertyValue;
 		Object value;
 		
-        AgentModel perspective = am;
+        AgentModel perspective = this.getPerspective(am);
 
         if (!super.CheckCondition(am))
             return false;
         
-        if(_ToM.isGrounded() && !_ToM.toString().equals(Constants.SELF))
-		{
-			if(am.getToM().containsKey(_ToM.toString()))
-			{
-				perspective = am.getToM().get(_ToM.toString());
-			}
-		}
         
         propertyValue = this._name.evaluate(perspective.getMemory());
         value = this._value.evaluate(perspective.getMemory());
@@ -171,15 +164,7 @@ public class PropertyNotEqual extends PropertyCondition {
 			else return null;
 		}
 		
-		AgentModel perspective = am;
-		
-		if(_ToM.isGrounded() && !_ToM.toString().equals(Constants.SELF))
-		{
-			if(am.getToM().containsKey(_ToM.toString()))
-			{
-				perspective = am.getToM().get(_ToM.toString());
-			}
-		}
+		AgentModel perspective = this.getPerspective(am);
 		
 		//if the name is not grounded we try to get all possible bindings for it
 		bindingSets = perspective.getMemory().getSemanticMemory().GetPossibleBindings(_name);
@@ -223,12 +208,12 @@ public class PropertyNotEqual extends PropertyCondition {
 		//must be grounded. i.e, we cannot determine inequalities between
 		// [X] != [Y]
 		if (_name.isGrounded()) {
-			bindings = this.GetBindings(am,_name,_value,_ToM);
+			bindings = this.GetBindings(am,_name,_value);
 			if (bindings == null)
 				return null;
 		}
 		else if(_value.isGrounded()) {
-			bindings = this.GetBindings(am,_value,_name,_ToM);
+			bindings = this.GetBindings(am,_value,_name);
 			if (bindings == null)
 				return null;
 		}
