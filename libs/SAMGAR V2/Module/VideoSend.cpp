@@ -22,12 +22,33 @@ A example of sending a image over the network, has been tested for long runs, us
 using namespace std;
 using namespace cv;
 
+VideoSend::VideoSend(std::string name): SamClass(name)
+{
+}
+
+void VideoSend::SamInit()
+{
+   newPort(&videoOutput, "Out"); // add new port  
+   StartModule();	
+   puts("started video send");
+}
+
+void VideoSend::SamIter()
+{
+}
+
+void VideoSend::setImagePtr(const yarp::sig::ImageOf<yarp::sig::PixelBgr>& image)
+{
+  yarp::sig::ImageOf<yarp::sig::PixelBgr> &yarpImage = this->videoOutput.prepare();
+  yarpImage.copy(image);
+  this->videoOutput.write();
+}
 
 
 int main( void)
 {
-	Vsend MySendMod;   // create instance of the mod
-	MySendMod.innit(); // start the module up, samgar only code
+	VideoSend MySendMod("/VideoS");   // create instance of the mod
+	MySendMod.SamInit(); // start the module up, samgar only code
 
 	char Vid1[] = "Before";
 
@@ -47,9 +68,14 @@ if( capture )
 		cvShowImage (Vid1, frm);
 
 		//printf("%s \n",frm->colorModel); // probably rgb
+		yarp::sig::ImageOf<yarp::sig::PixelBgr> yarpImage;
+  		yarpImage.wrapIplImage(frm);
+		MySendMod.setImagePtr(yarpImage);
+/*
 		ImageOf<yarp::sig::PixelBgr> &yarpImage = MySendMod.VideoSend.prepare();
 		yarpImage.wrapIplImage(frm);
 		MySendMod.VideoSend.write();
+*/
 		int k = cvWaitKey( 50 );
 		}
 	}

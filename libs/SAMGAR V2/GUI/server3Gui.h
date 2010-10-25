@@ -82,22 +82,39 @@ using namespace std;
 class PortIcon;  
 class SamConnection;
 
-class SAMdef
+namespace SAMdef
 {
-public:
-static const int add_module     = 1;
-static const int online_module  = 2;
-static const int offline_module = 3;
-static const int deleate_module = 4;
-static const int save_modules   = 5;
-static const int load_modules   = 6;
+   enum SamgarDefinition {add_module = 1,      //!< add module flag 
+			  online_module,       //!< module is online
+			  offline_module,      //!< module is offline
+			  deleate_module,      /*!< module is deleated or going
+						*   to be delated 
+						*/
+			  save_modules,        //!< save modules and connections
+			  load_modules,        //!< load modules and connections
+			  add_connection,      //!< add new connection
+			  deleate_connection,  //!< delete existing connection
+			  online_connection,   //!< connection is valid
+			  offline_connection   //!< connection is invalid
+   };
 
-static const int add_connection     =7;
-static const int deleate_connection =8;
-static const int online_connection  =9;
-static const int offline_connection =10;
+   enum SamgarConnections { udp=0,    //!< udp connection
+			    tcp,      //!< tcp connection
+			    local,    //!< local connection
+			    shmem     //!< shared memory connection
+   };
+
+   static QColor samgarConnColor(SamgarConnections conn)
+   {
+     switch (conn) {
+     case SAMdef::udp :  return QColor(50,50,50);
+     case SAMdef::tcp :  return QColor(150,50,50);
+     case SAMdef::local: return QColor(50,150,50);
+     case SAMdef::shmem: return QColor(50,50,150);
+     default: return QColor(50,50,150);
+     }
+   }
 };
-
 
 class SamConnection 
 {
@@ -131,7 +148,6 @@ class PortIcon : public QGraphicsItem
   string myParentsName;
   mutable QMutex mutex;
  public:
-  QPixmap pm;
   int mynum;
   bool IExist;
   bool clicked;
@@ -165,8 +181,6 @@ class ModuleIcon : public QGraphicsItem
   bool online;
   double place;
   PortIcon *firstport[maxports];
-  QPixmap myiconpic;
-  QPixmap Rotatingpic;
   string myName;
   int howmanyportsiown;
   
@@ -236,6 +250,7 @@ class MyConnectionView : public QGraphicsView
   ToolWindow *myToolWindow;
   
   ModuleIcon *myModuleIcon[maxmodules];
+  QPixmap *modulePixmap[maxmodules];
   string hh[50];
   //static string fakenames[10];
   static string fakenames[10];
@@ -274,9 +289,10 @@ class MyConnectionView : public QGraphicsView
 
   void LoadAll2(void);
 
-  void updateconnection(string d,string m,bool deleate,bool connected);
+  void updateconnection(string d, string m, bool deleate, bool connected); 
 
-  void CreateConnection(string d,string m,int conntype,bool startcon,bool iscon);
+  void CreateConnection(string d, string m, int conntype, bool startcon,
+			bool iscon);
 
  private slots:
 

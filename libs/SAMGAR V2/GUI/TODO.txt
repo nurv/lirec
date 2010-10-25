@@ -2,4 +2,15 @@
    Assume that the comment line special sighn is # and ignore all data
    that stands after it. 
 
+3. Fix the problem with line connecting ports. After changing the scene (scaling, moving) the line ends during its  drowing does not point the right points. When the drowing is finished the line behaviour is good. 
+
+4. Sometimes line indicating connection between modules becomes made of stripes (I assume that it indicates wrong connection) but this happen when connection is working.
+
+5. Sometimes not all modules are visible in the GUI. Problem does not exist when there are no *.db files.
+
+
+DONE:
+
 2. Remove the moc file from the source and create automatic moc file generation with the cmake in yarpserver directory.
+
+

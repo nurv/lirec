@@ -13,6 +13,8 @@ cd SRC_DIR
 
 svn co https://svn.lirec.org/libs/SAMGAR%20V2/ SAMGAR_V2
 
+On yarp-2.3.0 aplication works but it was sometimes unstable. On yarp-2.3.1 aplication seams to work more stable.
+
 2. Download and install the latest version of yarp from download page
 http://eris.liralab.it/yarp/specs/dox/download.html
 or do this from command line i.e.
@@ -39,7 +41,7 @@ cp SAMGAR_V2/GUI/*.h yarp-2.3.1/src/yarpserver/src/
 
 5. Modify CMakeList.txt file responsible for compiling yarpserver
 
-gedit yarp-2.3.1/src/yarpserver/src/CMakeList.txt
+gedit yarp-2.3.1/src/yarpserver/CMakeList.txt
 
 After line 
 
@@ -62,6 +64,14 @@ qt_wrap_cpp(yarpserver3 SERVER3GUI_MOC ${CMAKE_CURRENT_SOURCE_DIR}/src/server3Gu
 add at the end of add_executable(yarpserver3 ...) file list following files
 
 ${CMAKE_CURRENT_SOURCE_DIR}/src/samheader.h ${CMAKE_CURRENT_SOURCE_DIR}/src/server3Gui.h ${CMAKE_CURRENT_SOURCE_DIR}/src/server3Gui.cpp ${SERVER3GUI_MOC}
+
+Finally change the line 
+
+target_link_libraries(yarpserver3 YARP_init)
+
+to 
+
+target_link_libraries(yarpserver3 YARP_init ${QT_LIBRARIES})
 
 Then go to YARP directory
 

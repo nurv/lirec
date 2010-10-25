@@ -1,20 +1,13 @@
 #include "SamClass.h"
+#include <yarp/sig/Image.h>
 
-
- 
-class Vsend: public SamClass 
+class VideoSend: public SamClass 
 {
-   public:
-
-   BufferedPort<ImageOf<PixelBgr>> VideoSend;
-   Network yarp;						
-  
-   void innit(void)
-   {
-	RecognisePort("Out");
-	StartModule("/VideoS");
-	VideoSend.open("/VideoS_Out");
-	VideoSend.setReporter(myPortStatus);
-   }
-
+ public:
+   VideoSend(std::string name);
+   virtual void SamInit();
+   virtual void SamIter();
+   void setImagePtr(const yarp::sig::ImageOf<yarp::sig::PixelBgr>& image);
+ private:
+   yarp::os::BufferedPort<yarp::sig::ImageOf<yarp::sig::PixelBgr> > videoOutput;	
 };

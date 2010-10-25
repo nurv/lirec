@@ -4,20 +4,23 @@ cmake_minimum_required(VERSION 2.6)
 # find YARP
 find_package(YARP REQUIRED)
 
-find_package(OpenCV)
-
+# find OpenCV
+find_package(OpenCV REQUIRED)
 
 # add YARP include directories
 include_directories(${YARP_INCLUDE_DIRS})
+include_directories(${OpenCV_INCLUDE_DIRS})
+
+
+# create samgar module library
+add_library(SamModule SamClass.cpp)
 
 # set up our program
-add_executable(SamExamples SamExample.cpp InteruptOverlay.h SamClass.h ExampleOne.h )
-add_executable(VideoSend VideoSend.cpp InteruptOverlay.h SamClass.h VideoSend.h)
-add_executable(VideoGet  VideoGet.cpp InteruptOverlay.h SamClass.h VideoGet.h)
-
-
+add_executable(SamExamples SamExample.cpp ExampleOne.cpp)
+add_executable(VideoSend VideoSend.cpp)
+add_executable(VideoGet  VideoGet.cpp)
 
 # link with YARP libraries
-target_link_libraries(SamExamples ${YARP_LIBRARIES})# ACE)
-target_link_libraries(VideoSend ${YARP_LIBRARIES} ${OPENCV_LIBRARIES})
-target_link_libraries(VideoGet ${YARP_LIBRARIES} ${OPENCV_LIBRARIES})
+target_link_libraries(SamExamples SamModule ${YARP_LIBRARIES} ACE)
+target_link_libraries(VideoSend SamModule ${YARP_LIBRARIES} ${OPENCV_LIBRARIES} ACE)
+target_link_libraries(VideoGet SamModule ${YARP_LIBRARIES} ${OPENCV_LIBRARIES} ACE)
