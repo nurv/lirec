@@ -17,7 +17,9 @@ import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 
+import FAtiMA.conditions.Condition;
 import FAtiMA.deliberativeLayer.plan.Effect;
 import FAtiMA.deliberativeLayer.plan.Step;
 import FAtiMA.emotionalState.BaseEmotion;
@@ -48,6 +50,7 @@ public class UserInterface implements ActionListener {
 	JComboBox _infoOptions;
 	JComboBox _queryOptions;
 	JComboBox _eventOptions;
+	JTextField _userSpeech;
 	WorldTest _world;
 	
 	public static final String CASE1 = "Case1";
@@ -150,6 +153,7 @@ public class UserInterface implements ActionListener {
 	        _locationOptions.addItem(UserInterface.KITCHEN);
 	      
 			_userOptions.addItem(UserInterface.AMY);
+			_userOptions.addItem(UserInterface.USER);
         }
         else if(_world.GetScenery().equals("Office"))
         {
@@ -239,6 +243,9 @@ public class UserInterface implements ActionListener {
         queryBox.add(new JLabel("Query: "));
         queryBox.add(_queryOptions );
         
+        
+        _userSpeech = new JTextField();
+        
         // Create the OK button to confirm input
         JButton okButton = new JButton("OK");
         okButton.addActionListener(this);
@@ -279,10 +286,12 @@ public class UserInterface implements ActionListener {
         buttonsPanel.setLayout(new BoxLayout(buttonsPanel,BoxLayout.X_AXIS));
         buttonsPanel.add(okButton);
         buttonsPanel.add(stepButton);
-        buttonsPanel.add(saButton);
-        buttonsPanel.add(ccButton);
+        buttonsPanel.add(usButton);
+        //buttonsPanel.add(saButton);
+        //buttonsPanel.add(ccButton);
         buttonsPanel.add(gButton);
         
+        _frame.getContentPane().add(_userSpeech);
         _frame.getContentPane().add(caseBox);
         _frame.getContentPane().add(timeBox);
         _frame.getContentPane().add(locationBox);
@@ -390,18 +399,20 @@ public class UserInterface implements ActionListener {
     private void PropertiesChanged(ArrayList effects)
 	{
 		ListIterator li = effects.listIterator();
+		Condition c;
 		Effect e;
 		String msg;
 
 		while(li.hasNext())
 		{
 			e = (Effect) li.next();
-			String name = e.GetEffect().getName().toString();
+			c = e.GetEffect();
+			String name = c.getName().toString();
 			if(!name.startsWith("EVENT") && !name.startsWith("SpeechContext"))
 			{
 				if(e.GetProbability(null) > _r.nextFloat())
 				{
-					msg = "PROPERTY-CHANGED " + name + " " + e.GetEffect().GetValue();
+					msg = "PROPERTY-CHANGED " + c.getToM() + " " + name + " " + c.GetValue();
 					
 					_world.GetUserInterface().WriteLine(msg);
 					this._world.SendPerceptionToAll(msg);
