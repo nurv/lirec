@@ -50,6 +50,7 @@ import org.xml.sax.Attributes;
 
 import FAtiMA.AgentModel;
 import FAtiMA.conditions.EmotionCondition;
+import FAtiMA.conditions.LikeCondition;
 import FAtiMA.conditions.NewEventCondition;
 import FAtiMA.conditions.PastEventCondition;
 import FAtiMA.conditions.RecentEventCondition;
@@ -61,6 +62,7 @@ import FAtiMA.conditions.SACondition;
 import FAtiMA.deliberativeLayer.plan.Effect;
 import FAtiMA.deliberativeLayer.plan.EffectOnDrive;
 import FAtiMA.deliberativeLayer.plan.Step;
+import FAtiMA.exceptions.ContextParsingException;
 import FAtiMA.exceptions.InvalidEmotionTypeException;
 import FAtiMA.util.Constants;
 import FAtiMA.util.enumerables.ActionEvent;
@@ -74,7 +76,7 @@ import FAtiMA.wellFormedNames.Symbol;
  * @author João Dias
  *
  */
-public class StripsOperatorsLoaderHandler extends ReflectXMLHandler {
+public class ActionsLoaderHandler extends ReflectXMLHandler {
 	private Step _currentOperator;
 	private ArrayList<Step> _operators; 
 	private boolean _precondition;
@@ -83,7 +85,7 @@ public class StripsOperatorsLoaderHandler extends ReflectXMLHandler {
 	private AgentModel _am;
 	private SACondition _sac;	
 	
-	public StripsOperatorsLoaderHandler(AgentModel am) {
+	public ActionsLoaderHandler(AgentModel am) {
 		_operators = new ArrayList<Step>();
 		_precondition = true;
 		_am = am;
@@ -181,10 +183,38 @@ public class StripsOperatorsLoaderHandler extends ReflectXMLHandler {
 	  }
 	}
 	
+	public void LikeCondition(Attributes attributes) throws InvalidEmotionTypeException, ContextParsingException {
+	  LikeCondition l;
+		  
+	  l = LikeCondition.ParseSocialCondition(attributes);
+	  l.MakeGround(_self);
+
+	  if(_precondition) 
+	  	_currentOperator.AddPrecondition(l);
+	  else {
+	  	String operatorName = _currentOperator.getName().GetFirstLiteral().toString();
+	  	_currentOperator.AddEffect(new Effect(_am, operatorName,_probability, l));	
+	  }
+	}
+	
 	public void RecentEvent(Attributes attributes)
 	{
 		RecentEventCondition event;
 		event = new RecentEventCondition(PastEventCondition.ParseEvent(attributes));
+		event.MakeGround(_self);
+		
+		if(_precondition) 
+		  	_currentOperator.AddPrecondition(event);
+		else {
+		  String operatorName = _currentOperator.getName().GetFirstLiteral().toString();
+		  _currentOperator.AddEffect(new Effect(_am, operatorName,_probability, event));	
+		}
+	}
+	
+	public void NewEvent(Attributes attributes)
+	{
+		RecentEventCondition event;
+		event = new NewEventCondition(PastEventCondition.ParseEvent(attributes));
 		event.MakeGround(_self);
 		
 		if(_precondition) 
