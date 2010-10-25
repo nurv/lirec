@@ -203,7 +203,7 @@ public class AgentLoaderHandler extends ReflectXMLHandler {
       float impOfFailure = 0;
 
       _goalName = attributes.getValue("name");
-      String aux = attributes.getValue("importanceOfSucess");
+      String aux = attributes.getValue("importanceOfSuccess");
       if(aux != null)
       {
     	  impOfSucess = Float.parseFloat(aux);
