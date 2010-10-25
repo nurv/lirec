@@ -14,6 +14,7 @@ public class AgentLogger {
 	private int _counter = 0;
 	private boolean _initialized;
 	private BufferedWriter outFile;
+	private boolean _debugMode;
 	
 	/**
 	 * Singleton pattern 
@@ -34,7 +35,7 @@ public class AgentLogger {
 		this._initialized = false;
 	}
 	
-	public void initialize(String logName) throws IOException{	
+	public void initialize(String logName,boolean debugMode) throws IOException{	
 		
 		if (VersionChecker.runningOnAndroid())
 			outFile = new BufferedWriter(new FileWriter("/sdcard/"+logName+"-Log.txt"));		
@@ -43,11 +44,12 @@ public class AgentLogger {
 		
 		System.out.println("Log Initialized");
 		
+		this._debugMode = debugMode;
 		this._initialized = true;
 	}
 
 	public void log(String msg) {
-		
+		if(!_debugMode) return;
 		if(this._initialized){
 			try{
 				outFile.write("\n"+msg+"\n");
@@ -62,6 +64,7 @@ public class AgentLogger {
 	
 	
 	public void logAndPrint(String msg) {
+		if(!_debugMode) return;
 		System.out.println(msg);
 		this.log(msg);
 	}	
@@ -76,6 +79,7 @@ public class AgentLogger {
 	}
 	
 	public void intermittentLog(String msg){
+		if(!_debugMode) return;
 		_counter++;
 		if(_counter == 1){
 			this.log(msg);	
