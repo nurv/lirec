@@ -7,8 +7,9 @@ import java.util.ListIterator;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import FAtiMA.sensorEffector.SpeechAct;
 import FAtiMA.util.parsers.ScenarioLoaderHandler;
-import FAtiMA.util.parsers.StripsOperatorsLoaderHandler;
+import FAtiMA.util.parsers.ActionsLoaderHandler;
 import Language.LanguageEngine;
 
 
@@ -39,6 +40,7 @@ public class WorldTest {
 	private String _scenery;
 	private ArrayList _actions;
 	private LanguageEngine agentLanguage;
+	private LanguageEngine userLanguage;
 	private UserInterface _userInterface;
 	private String _userOptionsFile;
 	private GretaAgent _ga;
@@ -57,22 +59,22 @@ public class WorldTest {
 			args = scenHandler.getWorldSimArguments();
 		}
 		
-		if (args.length < 5) {
+		if (args.length < 6) {
 			System.out.println("Wrong number of arguments!");
 			return;
 		}			
-		for(i = 5; i < args.length; i++) {
+		for(i = 6; i < args.length; i++) {
 			objects.add(args[i]);
 		}
 		
 		
-		WorldTest wt = new WorldTest(new Integer(args[0]).intValue(),args[1],args[2], args[3], args[4],objects);
+		WorldTest wt = new WorldTest(new Integer(args[0]).intValue(),args[1],args[2], args[3], args[4],args[5],objects);
 		wt.run();
 		
 		
 	}
 	
-	public WorldTest(int port, String scenery, String actionsFile, String agentLanguageFile, String userOptionsFile, ArrayList objects) {
+	public WorldTest(int port, String scenery, String actionsFile, String agentLanguageFile, String userLanguageFile, String userOptionsFile, ArrayList objects) {
 		_scenery = scenery;
 		_agents = new ArrayList();
 		_objects = new ArrayList();
@@ -101,9 +103,23 @@ public class WorldTest {
 			e.printStackTrace();
 		}
 		
+		_userInterface.WriteLine("Initializing User Language Engine(ULE)... ");
+		_userInterface.WriteLine("Language File: " + userLanguageFile);
+		_userInterface.WriteLine("Sex: M");
+		_userInterface.WriteLine("Role: Victim");
+		try
+		{
+			this.userLanguage = new LanguageEngine("name","M","User",new File(userLanguageFile));
+			_userInterface.WriteLine("Finished ALE initialization!");
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		
 					
 		try {
-			StripsOperatorsLoaderHandler op = LoadOperators(actionsFile, "[SELF]");
+			ActionsLoaderHandler op = LoadOperators(actionsFile, "[SELF]");
 			this._actions = op.getOperators();
 			_ss = new ServerSocket(port);
 			
@@ -116,12 +132,12 @@ public class WorldTest {
 		
 	}
 	
-	private StripsOperatorsLoaderHandler LoadOperators(String xmlFile, String self)  throws Exception
+	private ActionsLoaderHandler LoadOperators(String xmlFile, String self)  throws Exception
 	{
 		_userInterface.WriteLine("LOAD: " + xmlFile);
 		//com.sun.xml.parser.Parser parser;
 		//parser = new com.sun.xml.parser.Parser();
-		StripsOperatorsLoaderHandler op = new StripsOperatorsLoaderHandler(null);
+		ActionsLoaderHandler op = new ActionsLoaderHandler(null);
 		//parser.setDocumentHandler(op);
 		try 
 		{
@@ -247,6 +263,7 @@ public class WorldTest {
 		String utterance;
 		String aux;
 		String[] aux2;
+		
 		//System.out.println("Generating SpeechAct:" + speech);
 		if(this.agentLanguage!= null)
 		{
@@ -267,20 +284,50 @@ public class WorldTest {
 		return null;
 	}
 	
+	public String ProcessInput(String user,String target, String text)
+	{
+		GetUserInterface().WriteLine(user + " says to " + target + "; " + text);
+		//System.out.println("Generating SpeechAct:" + speech);
+		
+		SpeechAct userSpeech = new SpeechAct();
+		userSpeech.setReceiver(target);
+		userSpeech.setSender(user);
+		userSpeech.setUtterance(text);
+		userSpeech.setActionType(SpeechAct.UserSpeech);
+		
+		if(this.userLanguage!= null)
+		{
+			try
+			{
+				String speech = this.userLanguage.Input(userSpeech.toLanguageEngine());
+				userSpeech = (SpeechAct) SpeechAct.ParseFromXml(speech);
+				userSpeech.setActionType(SpeechAct.UserSpeech);
+				String perception = "ACTION-FINISHED " + user + " UserSpeech " + target + " " + userSpeech.toXML();
+				this.SendPerceptionToAll(perception);
+				
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+		}	
+		return null;
+	}
+	
 	public UserInterface GetUserInterface(){
 		return _userInterface;
 	}
 	
 	public void ChangeTime( String time ){
 		for( int i = 0, limit = _agents.size(); i != limit; ++i ){
-			SendPerceptionToAll( "PROPERTY-CHANGED " + ((RemoteAgent)_agents.get(i)).Name() + " time " + time );
+			SendPerceptionToAll( "PROPERTY-CHANGED " + "*" + ((RemoteAgent)_agents.get(i)).Name() + " time " + time );
 		}
 	}
 	
 	public void ChangePlace( String location ){
 		for( int i = 0, limit = _agents.size(); i != limit; ++i ){
-			SendPerceptionToAll( "PROPERTY-CHANGED " + ((RemoteAgent)_agents.get(i)).Name() + " location " + location );
-			SendPerceptionToAll( "ACTION-FINISHED " + ((RemoteAgent)_agents.get(i)).Name() + " MoveTo " + location );
+			SendPerceptionToAll( "PROPERTY-CHANGED " + "*" + ((RemoteAgent)_agents.get(i)).Name() + " location " + location );
+			SendPerceptionToAll( "ACTION-FINISHED " + "*" + ((RemoteAgent)_agents.get(i)).Name() + " MoveTo " + location );
 		}
 	}
 	
@@ -291,23 +338,23 @@ public class WorldTest {
 			{
 				if(previousUser.equalsIgnoreCase("LukePaulie"))
 				{
-					SendPerceptionToAll( "PROPERTY-CHANGED Luke(isPresent) False");
-					SendPerceptionToAll( "PROPERTY-CHANGED Paulie(isPresent) False");
+					SendPerceptionToAll( "PROPERTY-CHANGED * Luke(isPresent) False");
+					SendPerceptionToAll( "PROPERTY-CHANGED * Paulie(isPresent) False");
 				}
 				else
 				{
-					SendPerceptionToAll( "PROPERTY-CHANGED " + previousUser + "(isPresent) False");
+					SendPerceptionToAll( "PROPERTY-CHANGED * " + previousUser + "(isPresent) False");
 				}
 			}
 			
 			if(user.equalsIgnoreCase("LukePaulie"))
 			{
-				SendPerceptionToAll( "PROPERTY-CHANGED Luke(isPresent) True");
-				SendPerceptionToAll( "PROPERTY-CHANGED Paulie(isPresent) True");
+				SendPerceptionToAll( "PROPERTY-CHANGED * Luke(isPresent) True");
+				SendPerceptionToAll( "PROPERTY-CHANGED * Paulie(isPresent) True");
 			}
 			else
 			{
-				SendPerceptionToAll( "PROPERTY-CHANGED " + user + "(isPresent) True");
+				SendPerceptionToAll( "PROPERTY-CHANGED * " + user + "(isPresent) True");
 			}
 		}
 	}
