@@ -1,5 +1,5 @@
 #include <yarp/os/all.h>
-#include <yarp/sig/all.h>
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -7,7 +7,6 @@
 #include <iostream>
 using namespace yarp;
 using namespace yarp::os;
-using namespace yarp::sig;
 using namespace std;
 
 ///// a special class for sending and reciving data from the server, HIVE mind
