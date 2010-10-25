@@ -103,7 +103,7 @@ public abstract class PropertyCondition extends Condition {
 			aux = attributes.getValue("ToM");
 			if(aux == null)
 			{
-				ToM = new Symbol(Constants.SELF);
+				ToM = Constants.UNIVERSAL;
 			}
 			else
 			{
@@ -300,19 +300,11 @@ public abstract class PropertyCondition extends Condition {
 		AgentLogger.GetInstance().logAndPrint("    Property= " + _name + " value= " + _value);
 	}
 	
-	protected ArrayList<Substitution> GetBindings(AgentModel am, Name groundValue, Name value, Symbol ToM) {
+	protected ArrayList<Substitution> GetBindings(AgentModel am, Name groundValue, Name value) {
 		
 		Object val;
 		ArrayList<Substitution> bindings;
-		AgentModel perspective = am;
-		
-		if(ToM.isGrounded() && !ToM.toString().equals(Constants.SELF))
-		{
-			if(am.getToM().containsKey(ToM.toString()))
-			{
-				perspective = am.getToM().get(_ToM.toString());
-			}
-		}
+		AgentModel perspective = this.getPerspective(am);
 		
 		if (!groundValue.isGrounded())
 			return null;
@@ -342,6 +334,6 @@ public abstract class PropertyCondition extends Condition {
      * @return returns all set of Substitutions that make the condition valid.
      */
 	protected ArrayList<Substitution> GetValueBindings(AgentModel am) {
-		return GetBindings(am, _name, _value, _ToM);
+		return GetBindings(am, _name, _value);
 	}
 }
