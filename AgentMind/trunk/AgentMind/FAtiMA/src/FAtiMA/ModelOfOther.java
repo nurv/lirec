@@ -18,8 +18,10 @@ import FAtiMA.sensorEffector.Event;
 
 public class ModelOfOther implements AgentModel, Serializable {
 	
+	/**
+	 * 
+	 */
 	private static final long serialVersionUID = 1L;
-	
 	private ArrayList<Event> _perceivedEvents;
 	private String _name;
 	private EmotionalState _es;
