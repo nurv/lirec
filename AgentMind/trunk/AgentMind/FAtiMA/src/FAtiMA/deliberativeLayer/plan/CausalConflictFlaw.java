@@ -89,4 +89,9 @@ public class CausalConflictFlaw implements Serializable {
 	public Integer GetStep() {
 		return _step;
 	}
+	
+	public String toString() 
+	{
+		return "Step " + this._step + " " + this._effect + " -x-> " + this._link;  
+	}
 }

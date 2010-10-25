@@ -300,7 +300,6 @@ public class Intention implements Serializable {
 		if(!_strongCommitment)
 		{
 			_strongCommitment = true;
-			ProcessIntentionActivation(am);
 		}
 	}
 	
@@ -352,7 +351,7 @@ public class Intention implements Serializable {
 	 * Registers and appraises the activation of a given intention
 	 * @param intention - the intention that was activated
 	 */
-	private void ProcessIntentionActivation(AgentModel am) 
+	public void ProcessIntentionActivation(AgentModel am) 
 	{
 	    Event e = _goal.GetActivationEvent();
 	    

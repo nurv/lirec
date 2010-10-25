@@ -132,9 +132,11 @@ import FAtiMA.emotionalState.BaseEmotion;
 import FAtiMA.exceptions.UnknownSpeechActException;
 import FAtiMA.exceptions.UnspecifiedVariableException;
 import FAtiMA.util.AgentLogger;
+import FAtiMA.util.Constants;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
 import FAtiMA.wellFormedNames.SubstitutionSet;
+import FAtiMA.wellFormedNames.Symbol;
 import FAtiMA.wellFormedNames.Unifier;
 
 
@@ -252,6 +254,9 @@ public class EmotionalPlanner implements Serializable {
 		IPlanningOperator oldOp;
 		Plan newPlan;
 		boolean unifyResult;
+		
+		Symbol ToM_Cond;
+		Symbol ToM_effect;
 
 		oldOp = p.getOperator(openPrecond.getStep());
 		cond = oldOp.getPrecondition(openPrecond.getCondition());
@@ -263,7 +268,8 @@ public class EmotionalPlanner implements Serializable {
 
 		while (li.hasNext()) {
 			op = li.next();
-			if(!op.getName().equals(oldOp.getName())) {
+			if(!op.getName().equals(oldOp.getName())) 
+			{
 				if (newStep)
 				{
 					
@@ -276,44 +282,53 @@ public class EmotionalPlanner implements Serializable {
 					effect = (Effect) op.getEffects().get(i);
 					effectCond = effect.GetEffect();
 					substs = new ArrayList<Substitution>();
-					if(Unifier.Unify(cond.getPerspective(), effectCond.getPerspective(), substs) 
-							&& Unifier.Unify(cond.getName(), effectCond.getName(), substs)) 
+					
+					ToM_Cond = cond.getToM();
+					ToM_effect = effectCond.getToM();
+					
+					//if we have universal conditions/effects we don't need to unify the ToM's 
+					if(ToM_Cond.equals(Constants.UNIVERSAL) || 
+							ToM_effect.equals(Constants.UNIVERSAL) || 
+							Unifier.Unify(ToM_Cond, ToM_effect, substs))
 					{
-						condValue = cond.GetValue();
-						effectValue = effectCond.GetValue();
-						unifyResult = Unifier.Unify(condValue, effectValue, substs);
-						
-						if (cond instanceof PropertyNotEqual)
+						if(Unifier.Unify(cond.getName(), effectCond.getName(), substs))
 						{
-							return;
-							//unifyResult = !unifyResult;
-						}
-						if (unifyResult) 
-						{
-							newPlan = (Plan) p.clone();
+							condValue = cond.GetValue();
+							effectValue = effectCond.GetValue();
+							unifyResult = Unifier.Unify(condValue, effectValue, substs);
 							
-							if (newStep) {
-								opToAdd = (IPlanningOperator) op.clone();
-								_variableIdentifier++;
-								newPlan.AddOperator(opToAdd);
-							}
-							else
+							if (cond instanceof PropertyNotEqual)
 							{
-								opToAdd = op;
+								return;
+								//unifyResult = !unifyResult;
 							}
-							
-							newPlan.AddLink(
-							        new CausalLink(opToAdd.getID(),
-							        		new Integer(i),
-							                openPrecond.getStep(),
-							                openPrecond.getCondition(),
-							                effect.toString()));
-							newPlan.AddBindingConstraints(substs);
-							newPlan.CheckCausalConflicts();
-							newPlan.CheckProtectedConstraints();
-							if (newPlan.isValid()) {
-								//System.out.println("Adding new plan from FindStep: " + newPlan);
-								intention.AddPlan(newPlan);
+							if (unifyResult) 
+							{
+								newPlan = (Plan) p.clone();
+								
+								if (newStep) {
+									opToAdd = (IPlanningOperator) op.clone();
+									_variableIdentifier++;
+									newPlan.AddOperator(opToAdd);
+								}
+								else
+								{
+									opToAdd = op;
+								}
+								
+								newPlan.AddLink(
+								        new CausalLink(opToAdd.getID(),
+								        		new Integer(i),
+								                openPrecond.getStep(),
+								                openPrecond.getCondition(),
+								                effect.toString()));
+								newPlan.AddBindingConstraints(substs);
+								newPlan.CheckCausalConflicts();
+								newPlan.CheckProtectedConstraints();
+								if (newPlan.isValid()) {
+									//System.out.println("Adding new plan from FindStep: " + newPlan);
+									intention.AddPlan(newPlan);
+								}
 							}
 						}
 					}
@@ -454,7 +469,9 @@ public class EmotionalPlanner implements Serializable {
 		    //that consists in lowering the goal importance
 			intention.getGoal().DecreaseImportanceOfFailure(am, 0.5f);
 			intention.RemovePlan(p);
-			AgentLogger.GetInstance().log("ACCEPTANCE - Plan prob to low - " + intention.getGoal().getName().toString());
+			String debug = "ACCEPTANCE - Plan prob to low ( " + p.getProbability(am) + ") - Goal: " +
+				intention.getGoal().getName().toString() + " Plan: " + p.toString();
+			AgentLogger.GetInstance().log(debug);
 			return null;
 		}
 		
@@ -556,6 +573,7 @@ public class EmotionalPlanner implements Serializable {
 		//  Causal conflicts: promotion, demotion or emotion focused coping (to ignore the conflict
 		flaw = p.NextFlaw();
 		if (flaw != null) {
+			AgentLogger.GetInstance().log("CausalConflict detected" + flaw);
 			newPlans = true;
 			newPlan = (Plan) p.clone();
 			newPlan.AddOrderingConstraint(flaw.GetCausalLink().getDestination(), flaw.GetStep());
@@ -586,7 +604,6 @@ public class EmotionalPlanner implements Serializable {
 			openPrecond = (OpenPrecondition) openConditions.remove(0);
 			
 			cond = p.getOperator(openPrecond.getStep()).getPrecondition(openPrecond.getCondition());
-			AgentLogger.GetInstance().log("OpenPrecondition: " + cond.toString());
 			
 			//System.out.println("Step: " + p.getStep(openPrecond.getStep()));
 			//System.out.println("Open Precondition: " + cond);

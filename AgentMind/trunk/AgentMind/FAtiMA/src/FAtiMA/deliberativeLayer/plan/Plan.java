@@ -500,6 +500,47 @@ public class Plan implements Cloneable, Serializable
             }
         }
     }
+    
+    /**
+     * Checks if adding a new causal link will create additional causal
+     * conflicts with the existing operators. This method does not add anything to the plan! 
+     * @param link - the causal link to check
+     */
+    private boolean CreatesCausalConflicts(CausalLink link)
+    {
+        Condition cond;
+        ListIterator<Effect> li2;
+        Effect eff;
+        
+        for(IPlanningOperator op : this._steps)
+    	{
+        	if (!link.getDestination().equals(op.getID())
+                    && !link.getSource().equals(op.getID()))
+            {
+                cond = this.getOperator(link.getDestination()).getPrecondition(
+                        link.getCondition());
+                li2 = op.getEffects().listIterator();
+                while (li2.hasNext())
+                {
+                    eff = (Effect) li2.next();
+                    if (eff.GetEffect().ThreatensCondition(cond))
+                    {
+                    	//the threat only exits if the operator can occur between
+                    	//the source and the destination
+                    	if(Compare(op.getID(),link.getSource()) >= 0 &&
+                    			Compare(op.getID(),link.getDestination()) <= 0)
+                    	{
+                    		return true;
+                    	}
+                    }
+                }
+            } 
+    	}
+
+        return false;
+    }
+    
+    
 
     /**
      * Checks if any of the plan's operators introduced a causal conflict
@@ -570,6 +611,7 @@ public class Plan implements Cloneable, Serializable
     public void UpdatePlan(AgentModel am)
     {
         CausalLink link;
+        CausalLink startLink;
         ArrayList<CausalLink> linksToRemove = new ArrayList<CausalLink>();
         ArrayList<CausalLink> linksToAdd = new ArrayList<CausalLink>();
         Condition cond;
@@ -610,12 +652,16 @@ public class Plan implements Cloneable, Serializable
                 {
                 	if(cond.CheckCondition(am))
                 	{
-                		linksToAdd.add(new CausalLink(this._start.getID(),
-            			    new Integer(-1),
-            				link.getDestination(),
-            				link.getCondition(), 
-            				cond.toString()));
-                		linksToRemove.add(link);
+                		startLink = new CausalLink(this._start.getID(),
+                			    new Integer(-1),
+                				link.getDestination(),
+                				link.getCondition(), 
+                				cond.toString());
+                		if(!CreatesCausalConflicts(startLink))
+                		{
+                			linksToAdd.add(startLink);
+                    		linksToRemove.add(link);
+                		}
                 	}
                 }
                 else //if the condition is not grounded we must do another thing
@@ -629,7 +675,7 @@ public class Plan implements Cloneable, Serializable
                 		//establish the condition from the start step. Therefore, we must remove
                 		//this link, and reintroduce the condition as an open precondition, so that
                 		//the planning process can figure out if the substitution(s) is valid.
-                		AgentLogger.GetInstance().logAndPrint("condition verified in start: " + cond);
+                		//AgentLogger.GetInstance().logAndPrint("condition verified in start: " + cond);
                 		linksToRemove.add(link);
                 		_openPreconditions.add(
                 				new OpenPrecondition(link.getDestination(),link.getCondition()));
@@ -645,6 +691,10 @@ public class Plan implements Cloneable, Serializable
         for(ListIterator<CausalLink> li = linksToAdd.listIterator(); li.hasNext();)
         {
         	AddLink((CausalLink) li.next());
+        }
+        
+        if(linksToAdd.size() > 0)
+        {
         	//when a link to start is created (or extended), we also need to 
         	//check if it introduced new causal conflicts with existing links.
         	CheckCausalConflicts();
@@ -956,7 +1006,7 @@ public class Plan implements Cloneable, Serializable
      */
     public float h(AgentModel am)
     {
-        return (1 + _steps.size() + _openPreconditions.size() + _protectionThreats
+        return (1 + (_steps.size() * 2) + _openPreconditions.size() + _protectionThreats
                 .size() * 2)
                 / this.getProbability(am);
     }
@@ -1209,7 +1259,7 @@ public class Plan implements Cloneable, Serializable
      */
     public String toString()
     {
-        return  "Plan Steps: " + _steps;
+        return  "Plan P=" + this._probability + " Steps: " + _steps;
     }
 
     /**

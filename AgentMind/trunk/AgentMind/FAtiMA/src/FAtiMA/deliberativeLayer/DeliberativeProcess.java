@@ -144,7 +144,6 @@ import FAtiMA.sensorEffector.Event;
 import FAtiMA.sensorEffector.Parameter;
 import FAtiMA.util.AgentLogger;
 import FAtiMA.util.Constants;
-import FAtiMA.util.enumerables.EventType;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
 import FAtiMA.wellFormedNames.SubstitutionSet;
@@ -164,7 +163,7 @@ public class DeliberativeProcess extends AgentProcess {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private static final long waitingTime = 10000;
+	private static final long waitingTime = 30000;
 	private static final float MINIMUMUTILITY = 8;
 	private static final float SELECTIONTHRESHOLD = 1.2f; 
 	
@@ -742,7 +741,7 @@ public class DeliberativeProcess extends AgentProcess {
 								//the last thing we need to check is if the agent is included in the ritual's
 								//roles and if the ritual has not succeeded, because if not there is no sense in including the ritual as a goal
 								if(r3.GetRoles().contains(new Symbol(_self))
-										&& !r3.CheckSucess(am))
+										&& !r3.CheckSuccess(am))
 								{
 									ritualName = r3.getNameWithCharactersOrdered();
 									r3.setUrgency(2);
@@ -782,7 +781,7 @@ public class DeliberativeProcess extends AgentProcess {
 							//In addition to testing the preconditions, we only add a goal
 							// as a desire if it's success and failure conditions are not satisfied
 							
-							if(!desire.CheckSucess(am) && !desire.CheckFailure(am))
+							if(!desire.CheckSuccess(am) && !desire.CheckFailure(am))
 							{
 
 									_options.add(desire);	
@@ -938,7 +937,7 @@ public class DeliberativeProcess extends AgentProcess {
 			// the intention is not feasible. What we should do latter is to remove the intention from memory
 			// after some significant time has passed, or if a maximum number of stored intentions is reached
 			
-			if(i.getGoal().CheckSucess(am))
+			if(i.getGoal().CheckSuccess(am))
 			{
 				if(i.IsStrongCommitment())
 				{
@@ -947,7 +946,7 @@ public class DeliberativeProcess extends AgentProcess {
 					i.ProcessIntentionSuccess(am);
 				}
 			}
-			else if(!i.getGoal().checkPreconditions(am))
+			/*else if(!i.getGoal().checkPreconditions(am))
 			{
 				RemoveIntention(i);
 				if(i.IsStrongCommitment())
@@ -955,7 +954,7 @@ public class DeliberativeProcess extends AgentProcess {
 					_actionMonitor = null;
 					i.ProcessIntentionCancel(am);
 				}
-			}
+			}*/
 			else if(i.getGoal().CheckFailure(am))
 			{
 				RemoveIntention(i);
@@ -981,10 +980,16 @@ public class DeliberativeProcess extends AgentProcess {
 		}
 		
 		if(_actionMonitor == null && _selectedPlan != null) {
+			AgentLogger.GetInstance().logAndPrint("Plan Finished: " + _selectedPlan.toString());
 			copingAction = _selectedPlan.UnexecutedAction(am);
 			
 			if(copingAction != null) {
-				i.SetStrongCommitment(am);
+				if(!i.IsStrongCommitment())
+				{
+					i.SetStrongCommitment(am);
+					i.ProcessIntentionActivation(am);
+					AgentLogger.GetInstance().log("Plan Commited: " + _selectedPlan.toString());
+				}
 				String actionName = copingAction.getName().GetFirstLiteral().toString();
 				
 				if(copingAction instanceof ActivePursuitGoal)
@@ -1018,7 +1023,9 @@ public class DeliberativeProcess extends AgentProcess {
 						_selectedActionEmotion = fear;
 					}
 						
+					
 					_selectedAction = (Step) copingAction;
+					AgentLogger.GetInstance().log("Selecting Action: " + _selectedAction.toString() + "from plan:" +_selectedPlan.toString());
 				}
 				else if(actionName.startsWith("SA"))
 				{
