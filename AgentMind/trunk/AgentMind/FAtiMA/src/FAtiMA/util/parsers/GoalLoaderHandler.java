@@ -45,6 +45,7 @@ import java.util.ArrayList;
 import org.xml.sax.Attributes;
 
 import FAtiMA.conditions.EmotionCondition;
+import FAtiMA.conditions.LikeCondition;
 import FAtiMA.conditions.MoodCondition;
 import FAtiMA.conditions.NewEventCondition;
 import FAtiMA.conditions.PastEventCondition;
@@ -182,6 +183,23 @@ public class GoalLoaderHandler extends ReflectXMLHandler {
     		mc = MoodCondition.ParseMoodCondition(attributes);
         	mc.MakeGround(_self);
         	_currentGoal.AddCondition(_conditionType, mc);
+    	}
+    	catch(Exception e)
+    	{
+    		e.printStackTrace();
+    	}
+    }
+    
+    public void LikeRelation(Attributes attributes)
+    {
+    	LikeCondition lc;
+    	
+    	try
+    	{
+    		lc = LikeCondition.ParseSocialCondition(attributes);
+    			
+        	lc.MakeGround(_self);
+        	_currentGoal.AddCondition(_conditionType, lc);
     	}
     	catch(Exception e)
     	{
