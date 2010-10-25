@@ -120,7 +120,7 @@ public class PastEventCondition extends PredicateCondition {
 	
 	public PastEventCondition(boolean occurred, short type, short status, Symbol subject, Symbol action, Symbol target, ArrayList<Symbol> parameters)
 	{
-		this._ToM = new Symbol(Constants.SELF);
+		this._ToM = Constants.UNIVERSAL;
 		this._type = type;
 		this._status = status;
 		
