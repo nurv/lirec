@@ -125,7 +125,7 @@ public class MoodCondition extends Condition {
 	
 	public MoodCondition(short operator, float value)
 	{
-		this._ToM = new Symbol(Constants.SELF);
+		this._ToM = Constants.UNIVERSAL;
 		this._operator = operator;
 		
 		if(value > 10) {
