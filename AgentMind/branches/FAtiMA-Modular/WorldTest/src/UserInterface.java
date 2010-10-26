@@ -286,7 +286,7 @@ public class UserInterface implements ActionListener {
         buttonsPanel.setLayout(new BoxLayout(buttonsPanel,BoxLayout.X_AXIS));
         buttonsPanel.add(okButton);
         buttonsPanel.add(stepButton);
-        buttonsPanel.add(usButton);
+        //buttonsPanel.add(usButton);
         //buttonsPanel.add(saButton);
         //buttonsPanel.add(ccButton);
         buttonsPanel.add(gButton);
