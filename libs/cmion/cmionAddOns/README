@@ -1,22 +1,72 @@
 Instructions for building yarp for Java
 Authors: dave@fo.am from instructions by Michael Kriegel
+	 updated by Lukasz Malek
 
-This was documented from linux, but it should be similar on windows.
+This procedure has been tested on Ubuntu 10.04 64 with YARP 2.3.1 but ir should 
+be applicable (after posible small midifications) on other Linux systems and for 
+other YARP releases.
 
-You need ace, yarp and cmake installed.
+0) Download the latest YARP from http://eris.liralab.it/yarp/specs/dox/download.html 
+    
+1) Install YARP
 
-* Go to yarp/examples/swig and run cmake . 
+   $> tar xf yarp-2.3.1.tar.gz
+   $> cd yarp-2.3.1
+  
+   Use cmake to prepare compilation. Remember to select CREATE_YARPSERVER3 and 
+   CREATE_GUIS. If you do not have to do not select CREATE_SHARED_LIBRARY because
+   it might lead to problem in creating functional java wrapper. To simplify
+   java wrapper creation it is worth to build inside source.
 
-On linux I had to run ccmake . and enter the JAVA_INCLUDE_PATH by hand, it should be something like:
-PATH /usr/lib/jvm/java-6-sun-1.6.0.17/include/
-PATH2 /usr/lib/jvm/java-6-sun-1.6.0.17/include/linux
+   $> ccmake .
+   $> make         
+   (if you have more than one CPU core "make -jX" wher X is umber of cores +1)
+   $> sudo make install
 
-* Run make to build the swig binding this should give you libjyarp.so
-* Run the following commands to build the java yarp api
+2) Prepare java wrapper. To do this go to swig directory
 
-$ cd generated_src/
-$ javac *.java
-$ echo Main-Class: yarpJNI > manetfest.txt
-$ mv generated_src yarp
-$ jar cvfm jyarp-linux.jar manefest.txt yarp
+   $> cd example/swig
+   
+   Modify CMakeList.txt by adding the line
+
+   SWIG_LINK_LIBRARIES(${target_name} YARP_OS YARP_dev YARP_sig ACE)
+
+   just after line (in JAVA section)
+
+   SWIG_ADD_MODULE(${target_name} java yarp.i)
+
+   Next prepare compilation. Remember to select CREATE_JAVA.
+   In old YARP edition it was essential to set fields
+   JAVA_INCLUDE_PATH /usr/lib/jvm/java-6-sun-1.6.0.17/include/
+   JAVA_INCLUDE_PATH2 /usr/lib/jvm/java-6-sun-1.6.0.17/include/linux
+   by hand, but in the current one it happens automaticaly.
+
+   $> ccmake .
+   $> make
+   
+   During compilation there sould appear a lrge set of wornings that should be 
+   ignored. After compilation one should obtain file "libjyarp.so" and directory
+   "generated_src" full of java files. Next step is to compile that files:
+  
+   $> cd generated_src/
+   $> javac *.java
+   $> cd ..
+
+   Prepare manifest file
+
+   $> echo Main-Class: yarpJNI > manifest.txt
+ 
+   and finish wrapper creation
+ 
+   $> mv generated_src yarp
+   $> jar cvfm jyarp-linux.jar manifest.txt yarp
+    
+3) Copy created file to the cmion/cmionAddOns 
+
+   $> cp libjyarp.so jyarp-linux.jar PATH_TO_CMION/cmion/cmionAddOns
+
+   Do not forget to replace PATH_TO_CMION with apropretiate path of your CMION
+   installation.
+
+
 
