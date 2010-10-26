@@ -25,7 +25,6 @@ public class MainCmionPort extends BufferedPortBottle
 		{}   // a loop to wait until the network is on the local and not global server
 		open(SamgarConnector.MODULE_NAME);
 		this.addOutput("/CONTROL");
-		//open("/Main_"+SamgarConnector.MODULE_NAME); // open the port, this will be the main module port you'll get updates on
 		while(this.isWriting()){Thread.yield();} // you might want a line like this to know that the samgar gui 
 		// has actually connected to the maim module port	
 	}

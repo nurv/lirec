@@ -1,10 +1,12 @@
 package cmion.addOns.samgar;
 
 import ion.Meta.EventHandler;
+
 import ion.Meta.IEvent;
 import ion.Meta.Simulation;
 
 import yarp.Network;
+import yarp.Time;
 
 import cmion.architecture.CmionComponent;
 import cmion.architecture.EventCmionReady;
@@ -17,7 +19,7 @@ import cmion.level2.EventSamgarModuleReady;
 public class SamgarConnector extends CmionComponent implements Runnable {
 
 	/** the name of the cmion module within Samgar */
-	public static final String MODULE_NAME = "CMion"; 
+	public static final String MODULE_NAME = "/CMion"; 
 	
 	/** the main yarp port needed in order to represent Cmion as a Samgar module */
 	private MainCmionPort mainPort;
@@ -68,7 +70,13 @@ public class SamgarConnector extends CmionComponent implements Runnable {
 		// now the main port should identify itself
 		mainPort.sendId();
 		// raise an event that the cmion Samgar module is ready
-		this.raise(new EventSamgarModuleReady());	
+		this.raise(new EventSamgarModuleReady());
+		
+		String os = System.getProperty("os.name").toLowerCase();
+		boolean linuxSystem = os.indexOf( "nix") >=0 || os.indexOf( "nux") >=0;
+		while(linuxSystem) {
+		    Time.delay(1);
+		}
 	}
 
 }

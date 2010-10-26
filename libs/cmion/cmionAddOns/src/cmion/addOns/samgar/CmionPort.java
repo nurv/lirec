@@ -16,7 +16,7 @@ public class CmionPort extends BufferedPortBottle {
 	public CmionPort(SamgarCompetency parent,String portName)
 	{
 		this.parent = parent;
-		open("/"+SamgarConnector.MODULE_NAME+"_"+portName); // open the port
+		open(SamgarConnector.MODULE_NAME+"_"+portName); // open the port
 		useCallback(myBottleCallback); // set the callback for reading data on this port
 	}
 	
