@@ -1,0 +1,4 @@
+exist True
+recycledDrink True
+onMachine True
+availability True

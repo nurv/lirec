@@ -1,0 +1,23 @@
+Amy GreetBack Greta
+Amy Accept Greta apple
+Amy Reject Greta apple
+Amy Accept Greta orange
+Amy Reject Greta orange
+Amy Accept Greta banana
+Amy Reject Greta banana
+Amy Accept Greta cake
+Amy Reject Greta cake
+Amy Choose Greta apple
+Amy Choose Greta orange
+Amy Choose Greta banana
+Amy Choose Greta cake
+Amy Insult Jonas
+Amy Give Jonas pie
+Amy Give Jonas vegettables
+Amy Give Jonas cake
+Amy Give Jonas banana
+Amy Give Jonas orange
+Amy Insult Jonas
+Amy Slap Jonas
+Amy Hug Jonas
+Amy Massage Jonas

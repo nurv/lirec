@@ -1,0 +1,29 @@
+user GreetBack Abbuk
+user GreetBack Errep
+user GreetBack Ikop
+user GreetBack Evui
+user GreetWrongly Abbuk
+user GreetWrongly Errep
+user GreetWrongly Ikop
+user GreetWrongly Evui
+user ApproachTree tree
+user UserPickFromGround apple
+user UserPickFromTree apple
+user PickFromTable drink
+user Eat apple
+user Drink liquid
+user AcceptInvitation Abbuk meal
+user RejectInvitation Abbuk meal
+user AcceptFood Abbuk apple
+user RejectOffer Abbuk apple
+user AcceptInvitation Ikop meal
+user RejectInvitation Ikop meal
+user AcceptFood Ikop apple
+user RejectOffer Ikop apple
+user MeteorHit Errep
+user HealDyingSpryte Errep
+user Apologise Abbuk
+user Apologise Errep
+user Apologise Ikop
+user Apologise Evui
+user GiveAttention Evui

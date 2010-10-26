@@ -1,0 +1,332 @@
+<DomainActions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:noNamespaceSchemaLocation="./schemas/Actions.xsd">
+	
+	<Action name="respect-greeting-gesture([target])">
+		<PreConditions>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+     	</PreConditions>
+		<Effects>
+		</Effects>
+		<EffectsOnDrives>
+			<Motivator drive="Affiliation" target="[target]" value="+0.5"/>
+		</EffectsOnDrives>
+	</Action>
+
+	<Action name="casual-greeting-gesture([target])">
+		<PreConditions>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+     	</PreConditions>
+		<Effects>
+		</Effects>
+		<EffectsOnDrives>
+			<Motivator drive="Affiliation" target="[target]" value="+0.5"/>
+		</EffectsOnDrives>
+	</Action>
+	
+	<Action name="wave-hand([target])">
+		<PreConditions>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+     	</PreConditions>
+		<Effects>
+		</Effects>
+		<EffectsOnDrives>
+			<Motivator drive="Affiliation" target="[target]" value="+0.5"/>
+		</EffectsOnDrives>
+	</Action>
+	
+	<Action name="thumb-up([target])">
+		<PreConditions>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+     	</PreConditions>
+		<Effects>
+		</Effects>
+		<EffectsOnDrives>
+			<Motivator drive="Affiliation" target="[target]" value="+0.5"/>
+		</EffectsOnDrives>
+	</Action>
+	
+	<Action name="bow([target])">
+		<PreConditions>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+     	</PreConditions>
+		<Effects>
+		</Effects>
+		<EffectsOnDrives>
+			<Motivator drive="Affiliation" target="[target]" value="+1"/>
+		</EffectsOnDrives>
+	</Action>
+
+	<Action name="give-money([target])">
+		<PreConditions>
+			<Property name="[AGENT](hasMoney)" operator="=" value="True" />
+			<Property name="[target](hasMoney)" operator="=" value="False"/>
+			<Property name="SpeechContext()" operator="=" value="#EVENT([SELF],SpeechAct,[target],reason-for-giving-money)"/>	
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="[target](hasMoney)" operator="=" value="True"/>
+			</Effect>
+		</Effects>
+		<EffectsOnDrives>
+			<Motivator drive="Energy" target="[target]" value="+5"/>
+			<Motivator drive="Energy" target="[AGENT]" value="-5"/>
+		</EffectsOnDrives>	
+	</Action>	
+			
+	<Action name="walk-to-place([place])">
+		<PreConditions>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="[AGENT](place)" operator="=" value="[place]"/>
+			</Effect>
+		</Effects>
+		<EffectsOnDrives>
+			<Motivator drive="Energy" target="[AGENT]" value="-1"/>
+		</EffectsOnDrives>
+	</Action>	
+	
+	<Action name="sit-on-chair([chair])">
+		<PreConditions>																																							
+		</PreConditions>
+		<Effects>
+		</Effects>
+		<EffectsOnDrives>
+			<Motivator drive="Energy" target="[AGENT]" value="-1"/>
+		</EffectsOnDrives>
+	</Action>
+	
+	<Action name="get-up-from-chair()">
+		<PreConditions>																																							
+		</PreConditions>
+		<Effects>
+		</Effects>
+		<EffectsOnDrives>
+			<Motivator drive="Energy" target="[AGENT]" value="-1"/>
+		</EffectsOnDrives>
+	</Action>
+	
+	<Action name="start-eating()">
+		<PreConditions>																																							
+		</PreConditions>
+		<Effects>
+		</Effects>
+		<EffectsOnDrives>
+			<Motivator drive="Energy" target="[AGENT]" value="-1"/>
+		</EffectsOnDrives>
+	</Action>
+	
+	<Action name="give-object([target])">
+		<PreConditions>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+     	</PreConditions>
+		<Effects>
+		</Effects>
+		<EffectsOnDrives>
+			<Motivator drive="Energy" target="[AGENT]" value="-1"/>
+		</EffectsOnDrives>
+	</Action>
+	
+	<Action name="spit-standing([target])">
+		<PreConditions>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+     	</PreConditions>
+		<Effects>
+		</Effects>
+		<EffectsOnDrives>
+			<Motivator drive="Energy" target="[AGENT]" value="-1"/>
+		</EffectsOnDrives>
+	</Action>	
+
+	<Action name="give-gift([target])">
+		<PreConditions>
+			<Property name="SpeechContext()" operator="=" value="#EVENT([SELF],SpeechAct,[target],reason-for-gift)"/>	
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+     	</PreConditions>
+		<Effects>
+		</Effects>
+		<EffectsOnDrives>
+			<Motivator drive="Energy" target="[AGENT]" value="-1"/>
+		</EffectsOnDrives>
+	</Action>
+
+  	<Action name="SpeechAct([AGENT],reason-to-tell-jokes)">
+	    <PreConditions>
+	    </PreConditions>
+	    <Effects>
+	      <Effect probability="1">
+	        <Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],SpeechAct,[AGENT],reason-to-tell-jokes)"/>
+	      </Effect>
+	    </Effects>
+	    <EffectsOnDrives>
+	    </EffectsOnDrives>
+  	</Action>  
+	
+	<Action name="SpeechAct([target],tell-joke)">
+		<PreConditions>
+      <RecentEvent occurred="True" subject="[AGENT]" action="SpeechAct" target="[AGENT]" parameters="reason-to-tell-jokes"/>
+      <Property name="[target]" operator="!=" value="[AGENT]"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],SpeechAct,[target],tell-joke)"/>
+			</Effect>
+		</Effects>
+		<EffectsOnDrives>
+			<Motivator drive="Affiliation" target="[target]" value="+2"/>
+		</EffectsOnDrives>
+	</Action>
+	
+	<Action name="SpeechAct([target],laugh-at-joke)" probability="0.5">
+		<PreConditions>
+			<Property name="SpeechContext()" operator="=" value="#EVENT([target],SpeechAct,[AGENT],tell-joke)"/>	
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],SpeechAct,[target],laugh-at-joke)"/>
+			</Effect>
+		</Effects>
+		<EffectsOnDrives>
+			<Motivator drive="Affiliation" target="[target]" value="+2"/>
+		</EffectsOnDrives>
+	</Action>
+	
+	<Action name="SpeechAct([target],mock-joke)" probability="0.5">
+		<PreConditions>
+			<Property name="SpeechContext()" operator="=" value="#EVENT([target],SpeechAct,[AGENT],tell-joke)"/>	
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],SpeechAct,[target],mock-joke)"/>
+			</Effect>
+		</Effects>
+		<EffectsOnDrives>
+			<Motivator drive="Affiliation" target="[SELF]" value="+2"/>
+			<Motivator drive="Affiliation" target="[target]" value="-3"/>
+		</EffectsOnDrives>
+	</Action>	
+	
+	<Action name="SpeechAct([target],advice-for-obtaining-money)" probability="0.5">
+		<PreConditions>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],SpeechAct,[target],advice-for-obtaining-money)"/>
+			</Effect>
+		</Effects>
+		<EffectsOnDrives>
+			<Motivator drive="Affiliation" target="[target]" value="-3"/>
+		</EffectsOnDrives>
+	</Action>
+
+	<Action name="SpeechAct([target],offer-financial-help)" probability="0.5">
+		<PreConditions>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],SpeechAct,[target],offer-financial-help)"/>
+			</Effect>
+		</Effects>
+		<EffectsOnDrives>
+			<Motivator drive="Affiliation" target="[target]" value="+4"/>
+			<Motivator drive="Integrity" target="[target]" value="+4"/>
+		</EffectsOnDrives>
+	</Action>	
+	
+	<Action name="SpeechAct([target],show-smallgift-discontentment)" probability="0.5">
+		<PreConditions>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],SpeechAct,[target],show-smallgift-discontentment)"/>
+			</Effect>
+		</Effects>
+		<EffectsOnDrives>
+			<Motivator drive="Affiliation" target="[SELF]" value="+2"/>		
+			<Motivator drive="Affiliation" target="[target]" value="-4"/>	
+		</EffectsOnDrives>
+	</Action>
+	
+	<!-- General SpeechAct -->
+	<Action name="SpeechAct([target],[type])">
+		<PreConditions>
+			<!--<Property name="[target]" operator="!=" value="[AGENT]"/>-->
+			<Property name="[type]" operator="!=" value="protest"/>
+			<Property name="[type]" operator="!=" value="deceptionreveal"/>
+			<Property name="[type]" operator="!=" value="annoy"/>
+			<Property name="[type]" operator="!=" value="laughoff"/>
+			<Property name="[type]" operator="!=" value="followdontcare"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],SpeechAct,[target],[type])"/>
+			</Effect>
+		</Effects>
+		<EffectsOnDrives>
+		</EffectsOnDrives>
+	</Action>	
+	
+	<!-- General SpeechAct that contains an additional topic -->
+	<Action name="SpeechAct([target],[type],[topic])">
+		<PreConditions>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+			<Property name="[type]" operator="!=" value="joingroupquestionthreatleave"/>
+			<Property name="[type]" operator="!=" value="joingroupquestionthreatleavepositiveanswer"/>
+			<Property name="[type]" operator="!=" value="joingroupquestionthreatleavenegativeanswer"/>
+			<Property name="[type]" operator="!=" value="joingroupquestionnegativeanswerobjectaccept"/>
+			<Property name="[type]" operator="!=" value="joingroupquestionnegativeanswerobjectacceptanswer"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],SpeechAct,[target],[type],[topic])"/>
+			</Effect>
+		</Effects>
+		<EffectsOnDrives>
+		</EffectsOnDrives>
+	</Action>
+	
+	<!-- General SpeechAct that contains an additional topic -->
+	<Action name="SpeechAct([target],[type],[topic])">
+		<PreConditions>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+			<Property name="[type]" operator="!=" value="joingroupquestionthreatleave"/>
+			<Property name="[type]" operator="!=" value="joingroupquestionthreatleavepositiveanswer"/>
+			<Property name="[type]" operator="!=" value="joingroupquestionthreatleavenegativeanswer"/>
+			<Property name="[type]" operator="!=" value="joingroupquestionnegativeanswerobjectaccept"/>
+			<Property name="[type]" operator="!=" value="joingroupquestionnegativeanswerobjectacceptanswer"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],SpeechAct,[target],[type],[topic])"/>
+			</Effect>
+		</Effects>
+		<EffectsOnDrives>
+		</EffectsOnDrives>
+	</Action>
+	
+	<Action name="toast([character])">
+		<PreConditions>																																							
+		</PreConditions>
+		<Effects>
+		</Effects>
+		<EffectsOnDrives>
+			<Motivator drive="Energy" target="[AGENT]" value="-1"/>
+		</EffectsOnDrives>
+	</Action>
+	
+	<Action name="eat()">
+		<PreConditions>																																							
+		</PreConditions>
+		<Effects>
+		</Effects>
+		<EffectsOnDrives>
+			<Motivator drive="Energy" target="[AGENT]" value="-1"/>
+		</EffectsOnDrives>
+	</Action>
+	
+</DomainActions>

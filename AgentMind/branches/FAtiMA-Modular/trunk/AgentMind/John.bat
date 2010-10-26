@@ -1,0 +1,1 @@
+java -cp "FAtiMA.jar" FAtiMA.Agent localhost 46874 true John M Victim John strength:4 hurt:false pose:standing

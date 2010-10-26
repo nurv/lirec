@@ -1,0 +1,2 @@
+isFruit True
+eatable True

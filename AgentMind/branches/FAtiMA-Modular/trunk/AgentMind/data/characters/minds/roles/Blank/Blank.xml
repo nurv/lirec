@@ -1,0 +1,54 @@
+<Character role="Blank" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:noNamespaceSchemaLocation="../../schemas/Character.xsd">
+	<EmotionalThresholds>
+		<EmotionalThreshold emotion="Love" threshold="3" decay="5"/>
+		<EmotionalThreshold emotion="Hate" threshold="2" decay="5"/>
+		<EmotionalThreshold emotion="Hope" threshold="1" decay="2"/>
+		<EmotionalThreshold emotion="Fear" threshold="5" decay="8"/>
+		<EmotionalThreshold emotion="Satisfaction" threshold="3" decay="5"/>
+		<EmotionalThreshold emotion="Relief" threshold="2" decay="5"/>
+		<EmotionalThreshold emotion="Fears-Confirmed" threshold="5" decay="8"/>
+		<EmotionalThreshold emotion="Disappointment" threshold="2" decay="2"/>
+		<EmotionalThreshold emotion="Joy" threshold="3" decay="5"/>
+		<EmotionalThreshold emotion="Distress" threshold="3" decay="2"/>
+		<EmotionalThreshold emotion="Happy-For" threshold="5" decay="8"/>
+		<EmotionalThreshold emotion="Pitty" threshold="5" decay="8"/>
+		<EmotionalThreshold emotion="Resentment" threshold="2" decay="2"/>
+		<EmotionalThreshold emotion="Gloating" threshold="1" decay="8"/>
+		<EmotionalThreshold emotion="Pride" threshold="2" decay="6"/>
+		<EmotionalThreshold emotion="Shame" threshold="2" decay="6"/>
+		<EmotionalThreshold emotion="Gratification" threshold="2" decay="6"/>
+		<EmotionalThreshold emotion="Remorse" threshold="5" decay="8"/>
+		<EmotionalThreshold emotion="Admiration" threshold="2" decay="6"/>
+		<EmotionalThreshold emotion="Reproach" threshold="2" decay="6"/>
+		<EmotionalThreshold emotion="Gratitude" threshold="2" decay="6"/>
+		<EmotionalThreshold emotion="Anger" threshold="3" decay="8"/>
+	</EmotionalThresholds>
+	
+	<MotivationalParameters>
+		<MotivationalParameter motivator="Affiliation" decayFactor="1" weight="0.5" intensity="2"/>
+		<MotivationalParameter motivator="Integrity" decayFactor="1" weight="0.5" intensity="6"/>
+		<MotivationalParameter motivator="Energy" decayFactor="1" weight="0.5" intensity="5"/>
+		<MotivationalParameter motivator="Certainty" decayFactor="0.2" weight="0.5" intensity="10"/>
+		<MotivationalParameter motivator="Competence" decayFactor="0.2" weight="0.5" intensity="10"/>
+	</MotivationalParameters>
+		
+	<Goals>
+	</Goals>
+	
+	<InterpersonalRelations>
+	</InterpersonalRelations>
+
+	<ActionTendencies>
+		<ActionTendency action="SpeechAct([Subject],generic-express-admiration)">
+		<Preconditions>
+            </Preconditions>
+		<ElicitingEmotion type="Admiration" minIntensity="3">
+			<CauseEvent subject="*" action="*" target="*"/>
+		</ElicitingEmotion>
+		</ActionTendency>
+	</ActionTendencies>
+
+	<EventReactions>
+	</EventReactions>
+</Character>

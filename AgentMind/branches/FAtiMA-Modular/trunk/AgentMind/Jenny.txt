@@ -1,0 +1,3 @@
+isPerson True
+isPresent False
+has none

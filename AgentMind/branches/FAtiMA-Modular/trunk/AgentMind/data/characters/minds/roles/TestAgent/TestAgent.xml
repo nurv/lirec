@@ -1,0 +1,77 @@
+<Character role="Greta" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:noNamespaceSchemaLocation="../../schemas/Character.xsd">
+	<EmotionalThresholds>
+		<EmotionalThreshold emotion="Love" threshold="0" decay="1"/>
+		<EmotionalThreshold emotion="Hate" threshold="0" decay="1"/>
+		<EmotionalThreshold emotion="Hope" threshold="0" decay="1"/>
+		<EmotionalThreshold emotion="Fear" threshold="0" decay="1"/>
+		<EmotionalThreshold emotion="Satisfaction" threshold="0" decay="1"/>
+		<EmotionalThreshold emotion="Relief" threshold="0" decay="1"/>
+		<EmotionalThreshold emotion="Fears-Confirmed" threshold="0" decay="1"/>
+		<EmotionalThreshold emotion="Disappointment" threshold="0" decay="1"/>
+		<EmotionalThreshold emotion="Joy" threshold="0" decay="1"/>
+		<EmotionalThreshold emotion="Distress" threshold="0" decay="1"/>
+		<EmotionalThreshold emotion="Happy-For" threshold="0" decay="1"/>
+		<EmotionalThreshold emotion="Pitty" threshold="0" decay="1"/>
+		<EmotionalThreshold emotion="Resentment" threshold="0" decay="1"/>
+		<EmotionalThreshold emotion="Gloating" threshold="0" decay="1"/>
+		<EmotionalThreshold emotion="Pride" threshold="0" decay="1"/>
+		<EmotionalThreshold emotion="Shame" threshold="0" decay="1"/>
+		<EmotionalThreshold emotion="Gratification" threshold="0" decay="1"/>
+		<EmotionalThreshold emotion="Remorse" threshold="0" decay="1"/>
+		<EmotionalThreshold emotion="Admiration" threshold="0" decay="1"/>
+		<EmotionalThreshold emotion="Reproach" threshold="0" decay="1"/>
+		<EmotionalThreshold emotion="Gratitude" threshold="0" decay="1"/>
+		<EmotionalThreshold emotion="Anger" threshold="0" decay="1"/>
+	</EmotionalThresholds>
+	
+	<MotivationalParameters>
+			<MotivationalParameter motivator="Affiliation" decayFactor="1" weight="0.7" intensity="3"/>
+			<MotivationalParameter motivator="Integrity" decayFactor="0.5" weight="0.7" intensity="3"/>
+			<MotivationalParameter motivator="Energy" decayFactor="2" weight="0.2" intensity="6"/>
+			<MotivationalParameter motivator="Certainty" decayFactor="1.5" weight="0.25" intensity="5"/>
+			<MotivationalParameter motivator="Competence" decayFactor="1.5" weight="0.775" intensity="6"/>
+	</MotivationalParameters>
+	
+	<Goals>
+		
+		<Goal name="GatherInformation([target])" importanceOfSuccess="7" importanceOfFailure="7"/>
+		
+		<!--
+		<Goal name="Goal1([target])" importanceOfSuccess="8" importanceOfFailure="6"/>
+		<Goal name="Goal2([target])" importanceOfSuccess="8" importanceOfFailure="6"/>
+		<Goal name="InterestGoal1_test(test)_False" importanceOfSuccess="2" importanceOfFailure="2" />--> 
+	</Goals>
+	
+	<InterpersonalRelations>
+	</InterpersonalRelations>
+	
+	<EventReactions>
+	    
+		<EmotionalReaction desirability="6" desirabilityForOther="-4" praiseworthiness="-5">
+            <Event subject="SELF" action="TestAction" target="*" />
+        </EmotionalReaction>
+	
+	</EventReactions>
+	
+	<ActionTendencies>
+		<!-- 
+		<ActionTendency action="TestAction3()">
+            <Preconditions>
+            </Preconditions>
+            <ElicitingEmotion type="Joy" minIntensity="1">
+				<CauseEvent />
+			</ElicitingEmotion>
+        </ActionTendency>
+         -->
+		<ActionTendency action="TestAction4()">
+            <Preconditions>
+            </Preconditions>
+            <ElicitingEmotion type="Fear" minIntensity="5">
+				<CauseEvent />
+			</ElicitingEmotion>
+        </ActionTendency>
+        
+ 
+	</ActionTendencies>
+</Character>

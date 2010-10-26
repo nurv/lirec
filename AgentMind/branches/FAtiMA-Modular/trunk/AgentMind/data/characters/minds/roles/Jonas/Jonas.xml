@@ -1,0 +1,105 @@
+<Character role="Jonas" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:noNamespaceSchemaLocation="../../schemas/Character.xsd">
+	
+	<EmotionalThresholds>
+		<EmotionalThreshold emotion="Love" threshold="3" decay="5"/>
+		<EmotionalThreshold emotion="Hate" threshold="3" decay="5"/>
+		<EmotionalThreshold emotion="Hope" threshold="2" decay="8"/>
+		<EmotionalThreshold emotion="Fear" threshold="2" decay="2"/>
+		<EmotionalThreshold emotion="Satisfaction" threshold="2" decay="8"/>
+		<EmotionalThreshold emotion="Relief" threshold="2" decay="5"/>
+		<EmotionalThreshold emotion="Fears-Confirmed" threshold="2" decay="2"/>
+		<EmotionalThreshold emotion="Disappointment" threshold="2" decay="5"/>
+		<EmotionalThreshold emotion="Joy" threshold="2" decay="2"/>
+		<EmotionalThreshold emotion="Distress" threshold="2" decay="2"/>
+		<EmotionalThreshold emotion="Happy-For" threshold="2" decay="5"/>
+		<EmotionalThreshold emotion="Pitty" threshold="2" decay="2"/>
+		<EmotionalThreshold emotion="Resentment" threshold="3" decay="2"/>
+		<EmotionalThreshold emotion="Gloating" threshold="3" decay="8"/>
+		<EmotionalThreshold emotion="Pride" threshold="3" decay="5"/>
+		<EmotionalThreshold emotion="Shame" threshold="3" decay="2"/>
+		<EmotionalThreshold emotion="Gratification" threshold="2" decay="8"/>
+		<EmotionalThreshold emotion="Remorse" threshold="3" decay="2"/>
+		<EmotionalThreshold emotion="Admiration" threshold="2" decay="5"/>
+		<EmotionalThreshold emotion="Reproach" threshold="2" decay="8"/>
+		<EmotionalThreshold emotion="Gratitude" threshold="3" decay="5"/>
+		<EmotionalThreshold emotion="Anger" threshold="3" decay="5"/>
+	</EmotionalThresholds>
+	
+	<MotivationalParameters>
+		<MotivationalParameter motivator="Affiliation" decayFactor="2" weight="0.075" intensity="6"/>
+		<MotivationalParameter motivator="Integrity" decayFactor="1.5" weight="0.05" intensity="4"/>
+		<MotivationalParameter motivator="Energy" decayFactor="2" weight="0.055" intensity="5"/>
+		<MotivationalParameter motivator="Certainty" decayFactor="4" weight="0.065" intensity="4"/>
+		<MotivationalParameter motivator="Competence" decayFactor="3" weight="0.05" intensity="4"/>
+	</MotivationalParameters>
+
+	<Goals>
+	</Goals>
+	
+	<InterpersonalRelations>
+		
+		<Relation target="Luke" like="1" respect="0"/>
+		<Relation target="book" like="6"/>
+		<Relation target="Paul" like="-1" respect="-1"/>
+		<Relation target="Ollie" like="1" respect="1"/>
+		<Relation target="Rob" like="2" respect="1"/>
+		<Relation target="Janet" like="1" respect="-1"/>
+		<Relation target="Sarah" like="0" />
+		<Relation target="Nita" like="0" />
+		<Relation target="Martina" like="2" respect="1"/>
+		<Relation target="Elinor" like="4" respect="1"/>
+	</InterpersonalRelations>
+	
+	<EventReactions>	
+      
+	</EventReactions>
+	
+	<ActionTendencies>
+	
+		
+		<!-- Action tendency of insulting when the victim is angry. This also corresponds to the insult coping strategy. -->
+		<ActionTendency action="SpeechAct([Subject],insult)">
+			<Preconditions>
+            		</Preconditions>
+			<ElicitingEmotion type="Anger" minIntensity="4">
+				<CauseEvent/>
+			</ElicitingEmotion>
+		</ActionTendency>
+		
+		<!-- Action tendency of crying when the -->
+		<ActionTendency action="cry">
+			<Preconditions>
+            		</Preconditions>
+			<ElicitingEmotion type="Distress" minIntensity="4">
+				<CauseEvent/>
+			</ElicitingEmotion>
+		</ActionTendency>
+
+		<ActionTendency action="frown">
+			<Preconditions>
+            		</Preconditions>
+			<ElicitingEmotion type="Distress" minIntensity="2">
+				<CauseEvent/>
+			</ElicitingEmotion>
+		</ActionTendency>
+
+		<ActionTendency action="laugh">
+			<Preconditions>
+            		</Preconditions>
+			<ElicitingEmotion type="Joy" minIntensity="4">
+				<CauseEvent/>
+			</ElicitingEmotion>
+		</ActionTendency>
+
+		<ActionTendency action="smile">
+			<Preconditions>
+            		</Preconditions>
+			<ElicitingEmotion type="Joy" minIntensity="1">
+				<CauseEvent/>
+			</ElicitingEmotion>		
+		</ActionTendency>		
+		
+				
+	</ActionTendencies>
+</Character>

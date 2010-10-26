@@ -1,0 +1,439 @@
+<Scenarios>	
+	
+	<!--Scenario name="DinnerParty">
+		<WorldSimulator port="46874" scenery="Forest" actionsFile="data/characters/minds/Actions-DinnerParty.xml" 
+						agentLanguageFile="data/characters/minds/language/agent/en/language-set-1" 
+						userOptionsFile="UserOptions.txt">
+			<Objects>
+			</Objects>
+		</WorldSimulator>	
+		
+		<Agent name="Yoda" displayName="Yoda" role="Blank" platform="worldsim" host="localhost" 
+			   port="46874" displayMode="True" sex="M" actionsFile="Actions-DinnerParty" 
+			   goalsFile="GoalLibrary-DinnerParty" cultureName="HighPowerCulture">
+			<Properties>				
+				<Property name="place" value="party-spot"/>
+				<Property name="type" value="character"/>
+				<Property name="isPerson" value="True"/>
+				<Property name="power" value="10"/>
+				<Property name="time" value="noon"/>
+
+			   	<Property name="host" value="False"/>
+			    <Property name="hasInvitation" value="False"/>
+			    <Property name="pose" value="standing"/>
+			    <Property name="onScene" value="True"/>
+			    <Property name="isSeated" value="False"/>
+			</Properties>		
+		</Agent>
+		
+		<Agent name="ObiWan" displayName="ObiWan" role="Blank" platform="worldsim" host="localhost" 
+			   port="46874" displayMode="True" sex="M" actionsFile="Actions-DinnerParty" 
+			   goalsFile="GoalLibrary-DinnerParty" cultureName="HighPowerCulture">
+			<Properties>				
+				<Property name="place" value="party-spot"/>			
+				<Property name="type" value="character"/>
+				<Property name="isPerson" value="True"/>			
+				<Property name="power" value="7"/>
+				<Property name="time" value="noon"/>
+				<Property name="likesGifts" value="True"/>
+				<Property name="dislikesSmallGifts" value="True"/>			
+			
+				<Property name="host" value="True"/>
+				<Property name="hasInvitation" value="False"/>
+				<Property name="pose" value="standing"/>
+				<Property name="onScene" value="True"/>
+				<Property name="isSeated" value="False"/>	
+			</Properties>		
+		</Agent>
+		
+		<Agent name="QuiGon" displayName="QuiGon" role="Blank" platform="worldsim" host="localhost" 
+			   port="46874" displayMode="True" sex="M" actionsFile="Actions-DinnerParty" 
+			   goalsFile="GoalLibrary-DinnerParty" cultureName="HighPowerCulture">
+			<Properties>		
+				<Property name="place" value="meeting-spot"/>
+			    <Property name="type" value="character"/>
+			    <Property name="isPerson" value="True"/>
+			    <Property name="power" value="7"/>			      
+			    <Property name="time" value="morning"/>
+					
+				<Property name="hasSmallGift" value="True"/>	
+				<Property name="hasMoney" value="True"/>
+				<Property name="host" value="False"/>
+				<Property name="hasInvitation" value="True"/>
+				<Property name="pose" value="standing"/>
+				<Property name="onScene" value="True"/>
+				<Property name="isSeated" value="False"/>	
+			</Properties>		
+		</Agent>
+		
+		<Agent name="Sam" displayName="Sam" role="Blank" platform="worldsim" host="localhost" 
+			   port="46874" displayMode="True" sex="M" actionsFile="Actions-DinnerParty" 
+			   goalsFile="GoalLibrary-DinnerParty" cultureName="HighPowerCulture">
+			<Properties>		      	
+				<Property name="place" value="meeting-spot"/>	    
+      			<Property name="type" value="character" />
+      			<Property name="isPerson" value="True"/>     
+      			<Property name="power" value="4"/>
+      			<Property name="time" value="morning"/>  
+			
+		      	<Property name="hasMoney" value="False"/>
+		     	<Property name="host" value="False"/>
+		      	<Property name="hasInvitation" value="True"/>
+		      	<Property name="pose" value="standing"/>
+		      	<Property name="onScene" value="True"/>	
+		      	<Property name="isSeated" value="False"/>
+			</Properties>
+		</Agent>	
+		
+		<Agent name="John" displayName="John" role="Blank" platform="worldsim" host="localhost" 
+			   port="46874" displayMode="True" sex="M" actionsFile="Actions-DinnerParty" 
+			   goalsFile="GoalLibrary-DinnerParty" cultureName="HighPowerCulture">
+			<Properties>					
+				<Property name="place" value="meeting-spot"/>
+				<Property name="type" value="character" />
+				<Property name="isPerson" value="True"/>
+				<Property name="likesToTellJokes" value="True"/>			
+				<Property name="power" value="4"/>
+				<Property name="time" value="morning"/> 
+			
+				<Property name="host" value="False"/>
+				<Property name="hasInvitation" value="True"/>
+				<Property name="pose" value="standing"/>
+				<Property name="onScene" value="True"/>
+				<Property name="isSeated" value="False"/>
+			</Properties>
+		</Agent>
+	</Scenario-->
+	
+	<Scenario name="DinnerParty">
+		<WorldSimulator port="46874" scenery="Forest" actionsFile="data/characters/minds/Actions.xml" 
+						agentLanguageFile="data/characters/minds/language/agent/en/language-set-1" 
+						userOptionsFile="UserOptions.txt">
+			<Objects>
+			</Objects>			
+		</WorldSimulator>	
+		
+		<Agent name="Abbuk" displayName="Abbuk" role="Abbuk" platform="worldsim" host="localhost" 
+			   port="46874" displayMode="True" sex="M" actionsFile="Actions" 
+			   goalsFile="GoalLibrary" cultureName="SpryteCulture">
+			<Properties>				
+				<Property name="place" value="party-spot"/>
+				<Property name="type" value="character"/>
+				<Property name="isPerson" value="True"/>
+				<Property name="power" value="10"/>
+				<Property name="time" value="noon"/>
+
+			   	<Property name="host" value="False"/>
+			    <Property name="hasInvitation" value="False"/>
+			    <Property name="pose" value="standing"/>
+			    <Property name="onScene" value="True"/>
+			    <Property name="isSeated" value="False"/>
+			</Properties>		
+		</Agent>
+		
+		<Agent name="Cerkith" displayName="Cerkith" role="Cerkith" platform="worldsim" host="localhost" 
+			   port="46874" displayMode="True" sex="M" actionsFile="Actions" 
+			   goalsFile="GoalLibrary" cultureName="SpryteCulture">
+			<Properties>				
+				<Property name="place" value="party-spot"/>			
+				<Property name="type" value="character"/>
+				<Property name="isPerson" value="True"/>			
+				<Property name="power" value="7"/>
+				<Property name="time" value="noon"/>
+				<Property name="likesGifts" value="True"/>
+				<Property name="dislikesSmallGifts" value="True"/>			
+			
+				<Property name="host" value="True"/>
+				<Property name="hasInvitation" value="False"/>
+				<Property name="pose" value="standing"/>
+				<Property name="onScene" value="True"/>
+				<Property name="isSeated" value="False"/>	
+			</Properties>		
+		</Agent>
+		
+		<Agent name="Tigrit" displayName="Tigrit" role="Tigrit" platform="worldsim" host="localhost" 
+			   port="46874" displayMode="True" sex="M" actionsFile="Actions" 
+			   goalsFile="GoalLibrary" cultureName="SpryteCulture">	
+			<Properties>		
+				<Property name="place" value="meeting-spot"/>
+			    <Property name="type" value="character"/>
+			    <Property name="isPerson" value="True"/>
+			    <Property name="power" value="7"/>			      
+			    <Property name="time" value="morning"/>
+					
+				<Property name="hasSmallGift" value="True"/>	
+				<Property name="hasMoney" value="True"/>
+				<Property name="host" value="False"/>
+				<Property name="hasInvitation" value="True"/>
+				<Property name="pose" value="standing"/>
+				<Property name="onScene" value="True"/>
+				<Property name="isSeated" value="False"/>	
+			</Properties>		
+		</Agent>
+		
+		<Agent name="Ardoot" displayName="Ardoot" role="Ardoot" platform="worldsim" host="localhost" 
+			   port="46874" displayMode="True" sex="M" actionsFile="Actions" 
+			   goalsFile="GoalLibrary" cultureName="SpryteCulture">
+			<Properties>		      	
+				<Property name="place" value="meeting-spot"/>	    
+      			<Property name="type" value="character" />
+      			<Property name="isPerson" value="True"/>     
+      			<Property name="power" value="4"/>
+      			<Property name="time" value="morning"/>  
+			
+		      	<Property name="hasMoney" value="False"/>
+		     	<Property name="host" value="False"/>
+		      	<Property name="hasInvitation" value="True"/>
+		      	<Property name="pose" value="standing"/>
+		      	<Property name="onScene" value="True"/>	
+		      	<Property name="isSeated" value="False"/>
+			</Properties>
+		</Agent>		
+		
+		<Agent name="Ikop" displayName="Ikop" role="Ikop" platform="worldsim" host="localhost" 
+			   port="46874" displayMode="True" sex="M" actionsFile="Actions" 
+			   goalsFile="GoalLibrary" cultureName="SpryteCulture">
+			<Properties>					
+				<Property name="place" value="meeting-spot"/>
+				<Property name="type" value="character" />
+				<Property name="isPerson" value="True"/>
+				<Property name="likesToTellJokes" value="True"/>			
+				<Property name="power" value="4"/>
+				<Property name="time" value="morning"/> 
+			
+				<Property name="host" value="False"/>
+				<Property name="hasInvitation" value="True"/>
+				<Property name="pose" value="standing"/>
+				<Property name="onScene" value="True"/>
+				<Property name="isSeated" value="False"/>
+			</Properties>
+		</Agent>
+	</Scenario>
+		
+	<Scenario name="Meal">	
+		<WorldSimulator port="46874" scenery="Forest" actionsFile="data/characters/minds/Actions.xml" 
+						agentLanguageFile="data/characters/minds/language/agent/en/language-set-1" 
+						userOptionsFile="UserOptionsMeal.txt">
+			
+			<Objects>
+				<Object name="seedpod"/>
+				<Object name="seedpod1"/>
+				<Object name="seedpod2"/>
+				<Object name="seedpod3"/>
+				<Object name="seedpod4"/>
+				<Object name="seedpod5"/>
+				<Object name="seedpod6"/>
+				<Object name="liquid"/>
+				<Object name="liquid1"/>
+				<Object name="liquid2"/>
+				<Object name="user"/>
+				<Object name="meal"/>
+				<Object name="tree"/>
+				<Object name="ground"/>
+			</Objects>
+			
+		</WorldSimulator>
+		
+		<Agent name="Errep" displayName="Errep" role="Errep" platform="worldsim" host="localhost" 
+			   port="46874" displayMode="True" sex="M" actionsFile="Actions" 
+			   goalsFile="GoalLibrary" cultureName="SpryteCulture">
+			
+			<Properties>
+				<Property name="isPerson" value="True"/>
+				<Property name="isParent" value="False"/>
+				<Property name="strength" value="4"/>
+				<Property name="hurt" value="False"/>
+				<Property name="pose" value="standing"/>
+				<Property name="type" value="character"/>
+				<Property name="power" value="10"/>
+				<Property name="holds" value="none"/>
+			</Properties>	
+		</Agent> 
+		
+		<Agent name="Abbuk" displayName="Abbuk" role="Abbuk" platform="worldsim" host="localhost" 
+			   port="46874" displayMode="True" sex="M" actionsFile="Actions" 
+			   goalsFile="GoalLibrary" cultureName="SpryteCulture">
+			
+			<Properties>
+				<Property name="isPerson" value="True"/>
+				<Property name="isParent" value="False"/>
+				<Property name="strength" value="4"/>
+				<Property name="hurt" value="False"/>
+				<Property name="pose" value="standing"/>
+				<Property name="type" value="character"/>
+				<Property name="power" value="10"/>
+				<Property name="hasAuthority" value="True"/>
+				<Property name="holds" value="none"/>
+				<Property name="location" value="LivingRoom"/>	
+			</Properties>	
+		</Agent>
+		
+		<Agent name="Evui" displayName="Evui" role="Evui" platform="worldsim" host="localhost" 
+			   port="46874" displayMode="True" sex="M" actionsFile="Actions" 
+			   goalsFile="GoalLibrary" cultureName="SpryteCulture">
+			
+			<Properties>
+				<Property name="isPerson" value="True"/>
+				<Property name="strength" value="4"/>
+				<Property name="hurt" value="False"/>
+				<Property name="pose" value="standing"/>
+				<Property name="type" value="character"/>
+				<Property name="power" value="10"/>
+				<Property name="hasAuthority" value="False"/>
+				<Property name="isChild" value="True"/>
+				<Property name="holds" value="none"/>
+			</Properties>	
+		</Agent>
+		
+		<Agent name="Ikop" displayName="Ikop" role="Ikop" platform="worldsim" host="localhost" 
+			   port="46874" displayMode="True" sex="M" actionsFile="Actions" 
+			   goalsFile="GoalLibrary" cultureName="SpryteCulture">
+			
+			<Properties>
+				<Property name="isPerson" value="True"/>
+				<Property name="strength" value="4"/>
+				<Property name="hurt" value="False"/>
+				<Property name="pose" value="standing"/>
+				<Property name="type" value="character"/>
+				<Property name="power" value="10"/>
+				<Property name="holds" value="none"/>
+			</Properties>	
+		</Agent>
+	</Scenario>	
+	
+	<Scenario name="Gardening">	
+		<WorldSimulator port="46874" scenery="Forest" actionsFile="data/characters/minds/Actions.xml" 
+						agentLanguageFile="data/characters/minds/language/agent/en/language-set-1" 
+						userOptionsFile="UserOptionsGardening.txt">			
+			<Objects>
+				<Object name="user"/>
+				<Object name="garden"/>
+				<Object name="tree"/>
+				<Object name="soil"/>
+				<Object name="ground"/>
+			</Objects>
+						
+		</WorldSimulator>
+		
+		<Agent name="Errep" displayName="Errep" role="Errep" platform="worldsim" host="localhost" 
+			   port="46874" displayMode="True" sex="M" actionsFile="Actions" 
+			   goalsFile="GoalLibrary" cultureName="SpryteCulture">
+			
+			<Properties>
+				<Property name="isPerson" value="True"/>
+				<Property name="toBeFelled" value="False"/>
+				<Property name="strength" value="4"/>
+				<Property name="hurt" value="False"/>
+				<Property name="pose" value="standing"/>
+				<Property name="type" value="character"/>
+				<Property name="power" value="10"/>
+				<Property name="holds" value="none"/>
+			</Properties>	
+		</Agent> 
+		
+		<Agent name="Abbuk" displayName="Abbuk" role="Abbuk" platform="worldsim" host="localhost" 
+			   port="46874" displayMode="True" sex="M" actionsFile="Actions" 
+			   goalsFile="GoalLibrary" cultureName="SpryteCulture">
+			
+			<Properties>
+				<Property name="isPerson" value="True"/>
+				<Property name="strength" value="4"/>
+				<Property name="hurt" value="False"/>
+				<Property name="pose" value="standing"/>
+				<Property name="type" value="character"/>
+				<Property name="power" value="10"/>
+				<Property name="holds" value="none"/>
+				<Property name="hasAuthority" value="True"/>
+			</Properties>	
+		</Agent>
+		
+		<Agent name="Ardoot" displayName="Ardoot" role="Ardoot" platform="worldsim" host="localhost" 
+			   port="46874" displayMode="True" sex="M" actionsFile="Actions" 
+			   goalsFile="GoalLibrary" cultureName="SpryteCulture">
+			
+			<Properties>
+				<Property name="isPerson" value="True"/>
+				<Property name="strength" value="4"/>
+				<Property name="hurt" value="False"/>
+				<Property name="pose" value="standing"/>
+				<Property name="type" value="character"/>
+				<Property name="power" value="10"/>
+				<Property name="holds" value="none"/>
+				<Property name="hasAuthority" value="True"/>
+				<Property name="isGardener" value="True"/>
+			</Properties>	
+		</Agent>
+		
+		<Agent name="Ikop" displayName="Ikop" role="Ikop" platform="worldsim" host="localhost" 
+			   port="46874" displayMode="True" sex="M" actionsFile="Actions" 
+			   goalsFile="GoalLibrary" cultureName="SpryteCulture">
+			
+			<Properties>
+				<Property name="isPerson" value="True"/>
+				<Property name="toBeFelled" value="False"/>
+				<Property name="strength" value="4"/>
+				<Property name="hurt" value="False"/>
+				<Property name="pose" value="standing"/>
+				<Property name="type" value="character"/>
+				<Property name="power" value="10"/>
+				<Property name="holds" value="none"/>
+			</Properties>	
+		</Agent>
+	</Scenario>	
+	
+	<Scenario name="Recycling">	
+		<WorldSimulator port="46874" scenery="Forest" actionsFile="data/characters/minds/Actions.xml" 
+						agentLanguageFile="data/characters/minds/language/agent/en/language-set-1" 
+						userOptionsFile="UserOptionsRecycling.txt">
+			
+			<Objects>
+				<Object name="user"/>
+				<Object name="recycling"/>
+				<Object name="drink"/>
+				<Object name="button1"/>
+				<Object name="button2"/>
+				<Object name="body"/>
+				<Object name="greenDrink"/>
+				<Object name="soil"/>
+				<Object name="machine"/>
+				<Object name="ground"/>
+			</Objects>
+			
+		</WorldSimulator>
+		
+		<Agent name="Cerkith" displayName="Cerkith" role="Cerkith" platform="worldsim" host="localhost" 
+			   port="46874" displayMode="True" sex="M" actionsFile="Actions" 
+			   goalsFile="GoalLibrary" cultureName="SpryteCulture">
+			
+			<Properties>
+				<Property name="isPerson" value="True"/>
+				<Property name="isParent" value="False"/>
+				<Property name="strength" value="4"/>
+				<Property name="hurt" value="False"/>
+				<Property name="pose" value="standing"/>
+				<Property name="type" value="character"/>
+				<Property name="power" value="10"/>
+				<Property name="hasAuthority" value="True"/>
+				<Property name="holds" value="none"/>
+			</Properties>	
+		</Agent> 
+		
+		<Agent name="Tigrit" displayName="Tigrit" role="Tigrit" platform="worldsim" host="localhost" 
+			   port="46874" displayMode="True" sex="M" actionsFile="Actions" 
+			   goalsFile="GoalLibrary" cultureName="SpryteCulture">
+			
+			<Properties>
+				<Property name="isPerson" value="True"/>
+				<Property name="isParent" value="False"/>
+				<Property name="strength" value="4"/>
+				<Property name="hurt" value="False"/>
+				<Property name="pose" value="standing"/>
+				<Property name="type" value="character"/>
+				<Property name="power" value="10"/>
+				<Property name="hasAuthority" value="True"/>
+				<Property name="holds" value="none"/>
+			</Properties>	
+		</Agent>
+		
+	</Scenario>	
+</Scenarios>

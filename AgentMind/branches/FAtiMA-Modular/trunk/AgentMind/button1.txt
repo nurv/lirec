@@ -1,0 +1,3 @@
+onRecyclingMachine True
+produceLiquid True
+

@@ -1,0 +1,38 @@
+<GoalLibrary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:noNamespaceSchemaLocation="./schemas/GoalLibrary.xsd">
+	<!-- Getting information from database -->
+	<!--ActivePursuitGoal name="ReplyLocation([target])">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[target]" action="AskLocation" target="[SELF]" parameters="[agent2]"/>
+			<Property name="[agent2](location)" operator="=" value="[location]"/>
+			<Property name="[agent2](location)" operator="!=" value="unknown"/>
+		</PreConditions>
+		<SucessConditions>	
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[target]" parameters="replyLocation,[agent2],[location]"/>
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>			
+		<ExpectedEffects>
+			<OnSelect drive="Affiliation" target="[SELF]" value="+2"/>
+			<OnIgnore drive="Affiliation" target="[SELF]" value="-2"/>
+		</ExpectedEffects>	
+	</ActivePursuitGoal-->
+	
+	<!-- Getting information through spreading activation -->
+	<ActivePursuitGoal name="ReplyLocation([target],[agent2])">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[target]" action="AskLocation" target="[SELF]" parameters="[agent2]"/>
+		</PreConditions>
+		<SucessConditions>	
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[target]" parameters="replyLocation,[agent2],[possibleLocation]"/>
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>			
+		<ExpectedEffects>
+			<OnSelect drive="Affiliation" target="[SELF]" value="+2"/>
+			<OnIgnore drive="Affiliation" target="[SELF]" value="-2"/>
+		</ExpectedEffects>	
+	</ActivePursuitGoal>
+	
+</GoalLibrary>
+	

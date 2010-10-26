@@ -1,0 +1,91 @@
+<GoalLibrary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:noNamespaceSchemaLocation="./schemas/GoalLibrary.xsd">
+
+	<!-- Interest Goals -->
+	
+	<ActivePursuitGoal name="MorningGreeting([target])">
+		<PreConditions>
+			<Property name="[target](isPerson)" operator="=" value="True" />
+			<RecentEvent occurred="False" subject="[SELF]" action="Spact" target="[target]" parameters="greet" />
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="Spact" target="[target]"  parameters="greet" />
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>
+		<ExpectedEffects>
+			<OnSelect drive="Energy" target="[SELF]" value="-1"/>
+			<OnSelect drive="Affiliation" target="[SELF]" value="+3"/>
+			<OnIgnore drive="Affiliation" target="[SELF]" value="-3"/>
+		</ExpectedEffects>		
+	</ActivePursuitGoal>
+	
+	<ActivePursuitGoal name="DeliverPhone([target])">
+		<PreConditions>
+			<Property name="[target](isPerson)" operator="=" value="True" />
+			<Property name="Phone(isRinging)" operator="=" value="True" />
+			<Property name="Phone(onRobot)" operator="=" value="True" />
+		</PreConditions>
+		<SucessConditions>
+			<Property name="Phone(onRobot)" operator="=" value="False" />
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>
+		<ExpectedEffects>
+			<OnSelect drive="Energy" target="[SELF]" value="-1"/>
+			<OnSelect drive="Affiliation" target="[SELF]" value="+3"/>
+			<OnIgnore drive="Affiliation" target="[SELF]" value="-3"/>
+		</ExpectedEffects>		
+	</ActivePursuitGoal>
+	
+	<ActivePursuitGoal name="Remind([target],[reminder])">
+		<PreConditions>
+			<Property name="[reminder](isReminder)" operator="=" value="True" />
+			<Property name="[target](isPerson)" operator="=" value="True" />
+			<Property name="[reminder](for,[target])" operator="=" value="True" />
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="Spact" target="[target]" parameters="remind,[reminder]" />
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>
+		<ExpectedEffects>
+			<OnSelect drive="Energy" target="[SELF]" value="-1"/>
+			<OnSelect drive="Affiliation" target="[SELF]" value="+3"/>
+			<OnIgnore drive="Affiliation" target="[SELF]" value="-3"/>
+		</ExpectedEffects>		
+	</ActivePursuitGoal>
+	
+	<ActivePursuitGoal name="ChargeAt([charger])">
+		<PreConditions>
+			<Property name="[charger](isChargingStation)" operator="=" value="True" />
+			<NewEvent occurred="False" subject="[SELF]" action="Charge" target="[charger]" />
+		</PreConditions>
+		<SucessConditions>
+			<NewEvent occurred="True" subject="[SELF]" action="Charge" target="[charger]" />
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>
+		<ExpectedEffects>
+			<OnSelect drive="Energy" target="[SELF]" value="+8.5"/>
+			<OnSelect drive="Affiliation" target="[SELF]" value="-5"/>
+		</ExpectedEffects>		
+	</ActivePursuitGoal>
+	
+	<ActivePursuitGoal name="Migration([platform])">
+		<PreConditions>
+			<Property name="[platform](isMigrationTarget)" operator="=" value="True" />
+			<RecentEvent occurred="False" subject="[SELF]" action="Migrate" target="[platform]" />
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="Migrate" target="[platform]" />
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>
+		<ExpectedEffects>
+			<OnSelect drive="Energy" target="[SELF]" value="+5"/>
+			<OnIgnore drive="Energy" target="[SELF]" value="-5"/>
+		</ExpectedEffects>		
+	</ActivePursuitGoal>
+		
+</GoalLibrary>

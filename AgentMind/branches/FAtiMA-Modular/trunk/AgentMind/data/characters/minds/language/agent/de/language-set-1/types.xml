@@ -1,0 +1,196 @@
+<spinTypeSystem>
+
+  <class name="Entity" />
+
+  <class name="Type" extends="Entity">
+    <slot name="value" type="String" />
+  </class>
+
+  <class name="Utterance" extends="Entity,_Result">
+    <slot name="value" type="String,Synonym,Internal,Lex" />
+  </class>
+
+  <class name="Variable" extends="Entity">
+    <slot name="value" type="String" />
+  </class>
+
+  <class name="Context" extends="Variable"/>
+  <class name="localContext" extends="Context"/>
+  <class name="globalContext" extends="Context"/>
+
+  <class name="me" extends="localContext"/>
+  <class name="sex" extends="localContext"/>
+  <class name="role" extends="localContext"/>
+  <class name="you" extends="localContext"/>
+  <class name="bystander" extends="localContext"/>
+  <class name="defender" extends="localContext"/>
+  <class name="bullyassistant" extends="localContext"/>
+  <class name="yousex" extends="localContext"/>
+  <class name="yourole" extends="localContext"/>
+
+  <class name="it" extends="globalContext"/>
+  <class name="topic" extends="globalContext"/>
+  <class name="episode" extends="globalContext"/>
+  <class name="copingstrategy" extends="globalContext"/>
+  <class name="cssuccessful" extends="globalContext"/>
+  <class name="him" extends="globalContext"/>
+  <class name="bully" extends="globalContext"/>
+  <class name="victim" extends="globalContext"/>
+
+  <class name="Synonym" extends="Variable">
+    <slot name="semCat" type="String" />
+    <slot name="topic" type="String" />
+    <slot name="number" type="String" />
+    <slot name="gender" type="String" />
+    <slot name="case" type="String" />
+    <slot name="type" type="String" />
+    <slot name="det" type="String,Lex" />
+    <slot name="adj" type="String,Lex,Synonym" />
+  </class>
+  
+  <class name="Lex" extends="Entity">
+    <slot name="number" type="String" />
+    <slot name="gender" type="String" />
+    <slot name="case" type="String" />
+    <slot name="person" type="String" />
+    <slot name="tense" type="String" />
+    <slot name="stem" type="String" />
+    <slot name="semCat" type="String" />
+    <slot name="det" type="String,Lex"/>
+    <slot name="adj" type="String,Lex,Synonym"/>
+  </class>
+
+  <class name="Internal" extends="Entity"/>  
+  <class name="preInsult1" extends="Internal"/>  
+  <class name="preInsult2" extends="Internal"/>  
+  <class name="theInsult" extends="Internal">
+    <slot name="gender" type="String" />
+  </class>
+  <class name="theAInsult" extends="Internal">  
+    <slot name="gender" type="String" />
+  </class>
+  <class name="person" extends="Internal">  
+    <slot name="value" type="String" />
+  </class>
+  <class name="cs2text" extends="Internal">  
+    <slot name="value" type="String" />
+    <slot name="sex" type="String" />
+    <slot name="bully" type="String" />
+  </class>
+  <class name="intro" extends="Internal"/>  
+  <class name="join" extends="Internal"/>  
+  <class name="cs2ingtext" extends="Internal">
+    <slot name="value" type="String"/>
+    <slot name="sex" type="String" />
+    <slot name="bully" type="String" />
+  </class>  
+  <class name="cs2sctext" extends="Internal">
+    <slot name="value" type="String"/>
+    <slot name="sex" type="String" />
+    <slot name="bully" type="String" />
+  </class>  
+  <class name="goodIdea" extends="Internal"/>  
+  <class name="csreason" extends="Internal">
+    <slot name="sex" type="String"/>
+  </class>  
+
+
+<!-- for episode summaries -->
+  <class name="episodeSummary" extends="Entity"/>
+  <class name="Event" extends="episodeSummary">
+    <slot name="subject" type="String" />
+    <slot name="action" type="String" />
+    <slot name="target" type="String" />
+    <slot name="param" type="String" />
+    <slot name="location" type="String" />
+    <slot name="time" type="Time" />
+    <slot name="emotion" type="Emotion" />
+    <slot name="gender" type="String" />
+    <slot name="you" type="String" />
+    <slot name="sameSubject" type="String" />
+  </class>
+  <class name="SummaryElement" extends="episodeSummary">
+     <slot name="value" type="String" />
+  </class>
+  <class name="Summary" extends="episodeSummary">
+     <slot name="value" type="String,Lex,Synonym" />
+  </class>
+  <class name="FinalSummary" extends="episodeSummary,_Result">
+     <slot name="value" type="String,Lex,Synonym" />
+  </class>
+
+  <class name="Connection" extends="SummaryElement">
+     <slot name="isfinal" type="String" />
+  </class>
+  <class name="Emotion" extends="SummaryElement">
+     <slot name="direction" type="String" />
+     <slot name="intensity" type="String" />
+  </class>
+  <class name="EmotionPart" extends="SummaryElement">
+     <slot name="pos" type="String"/>
+  </class>
+  <class name="EConnector" extends="EmotionPart"/>
+  <class name="EIntensity" extends="EmotionPart">
+     <slot name="gender" type="String" />
+     <slot name="case" type="String" />
+     <slot name="number" type="String" />
+  </class>
+  <class name="EWord" extends="EmotionPart">
+     <slot name="direction" type="String" />
+     <slot name="intensity" type="String" />
+  </class>
+  <class name="Quantity" extends="SummaryElement">
+     <slot name="count" type="String" />
+  </class>
+  <class name="Location" extends="SummaryElement"/>
+  <class name="Time" extends="SummaryElement">
+     <slot name="count" type="String" />
+     <slot name="unit" type="String" />
+  </class>
+  <class name="subject2text" extends="SummaryElement">
+     <slot name="subject" type="String" />
+     <slot name="sameSubject" type="String" />
+     <slot name="gender" type="String" />
+  </class>
+  <class name="verb2text" extends="SummaryElement">
+     <slot name="subject" type="String" />
+     <slot name="time" type="String" />
+     <slot name="verb" type="String" />
+  </class>
+  <class name="Action" extends="SummaryElement">
+     <slot name="gender" type="String" />
+     <slot name="target" type="String" />
+     <slot name="param" type="String" />
+     <slot name="subject" type="String" />
+     <slot name="sameSubject" type="String" />
+  </class>
+
+  <class name="Param" extends="SummaryElement"/>
+
+  <class name="goal2text" extends="SummaryElement">  
+    <slot name="value" type="String" />
+    <slot name="parameter" type="String" />
+    <slot name="gender" type="String" />
+    <slot name="not" type="String" />
+  </class>
+  
+  <class name="name2text" extends="SummaryElement">  
+    <slot name="value" type="String" />
+  </class>
+  
+  <class name="target2text_nom" extends="SummaryElement">  
+      <slot name="target" type="String" />
+  </class>
+
+  <class name="target2text_dat" extends="SummaryElement">  
+      <slot name="target" type="String" />
+  </class>
+
+  <class name="target2text_akk" extends="SummaryElement">  
+      <slot name="target" type="String" />
+  </class>
+
+
+
+</spinTypeSystem>
+  

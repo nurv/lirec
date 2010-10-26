@@ -1,0 +1,1577 @@
+<DomainActions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:noNamespaceSchemaLocation="./schemas/Actions.xsd">
+
+	<!-- physical actions -->
+	<Action name="pick-from-floor([target])">
+		<PreConditions>
+			<Property name="[AGENT](pose)" operator="=" value="standing"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="[target](on-top)" operator="=" value="none"/>
+			</Effect>
+			<Effect probability="1.0">
+				<Property name="[AGENT](hold,[target])" operator="=" value="True"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<Action name="swipe([target])">
+		<PreConditions>
+			<Property name="[AGENT](pose)" operator="=" value="standing"/>
+			<Property name="[target](owner)" operator="=" value="[targetowner]"/>
+			<RecentEvent occurred="True" subject="[AGENT]" action="Reply" target="[targetowner]" parameters="teasedefend,negativeanswer"/>
+		</PreConditions>
+		<Effects>
+		</Effects>
+	</Action>
+	<Action name="poke([target])">
+		<PreConditions>
+			<Property name="[AGENT](pose)" operator="=" value="standing"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="0.8">
+				<Property name="[target](annoyed)" operator="=" value="True"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<Action name="steal([owner],[item])">
+		<PreConditions>
+			<Property name="[item](type)" operator="=" value="object"/>
+			<Property name="[item](owner)" operator="=" value="[owner]"/>
+			<Property name="[owner]" operator="!=" value="[AGENT]"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="[AGENT](hasItem,[item])" operator="=" value="True"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<Action name="attack([target])">
+		<PreConditions>
+			<Property name="[AGENT](pose)" operator="=" value="standing"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="0.6">
+				<Property name="[target](hurt)" operator="=" value="True"/>
+			</Effect>
+			<Effect probability="0.4">
+				<Property name="[SELF](hurt)" operator="=" value="True"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<Action name="throw([target],[item])">
+		<PreConditions>
+			<Property name="[AGENT](pose)" operator="=" value="standing"/>
+			<Property name="[AGENT](hasItem,[item])" operator="=" value="True"/>
+			<Property name="[Item](throwable)" operator="=" value="True"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="[AGENT](hasItem,[item])" operator="=" value="False"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<!-- Coping Strategy: walking away - not linked to graphics yet -->
+	<Action name="walkAway">
+		<PreConditions>
+			<Property name="[AGENT](pose)" operator="=" value="standing"/>
+			<!--<RecentEvent occurred="true" subject="[AGENT]" action="Question" target="[bully]" parameters="confrontationleave"/>-->
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="[AGENT](needToCope)" operator="=" value="False"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<!-- Coping Strategy: walking away - not linked to graphics yet -->
+	<Action name="runAway">
+		<PreConditions>
+			<Property name="[AGENT](pose)" operator="=" value="standing"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="[AGENT](needToCope)" operator="=" value="False"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<!-- PR 061123 added walkAwayVictim as a test - not linked to graphics yet-->
+	<Action name="walkAwayVictim([victim])" probability="0.3">
+		<PreConditions>
+			<Property name="[AGENT](pose)" operator="=" value="standing"/>
+		</PreConditions>
+		<Effects>
+		</Effects>
+	</Action>
+	
+	<!-- User Speech  actions, interaction only -->
+	<Action name="UserSpeech([target],suggestcopingstrategy,[cs])" probability="0.8">
+		<PreConditions>
+			<Property name="[AGENT]" operator="=" value="User"/>
+			<Property name="SpeechContext()" operator="=" value="#EVENT([target],Question,[AGENT],askforadvice)"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],UserSpeech,[target],suggestcopingstrategy,[cs])"/>
+			</Effect>
+		</Effects>
+	</Action>
+	
+	<Action name="UserSpeech([target],suggestcopingstrategy,[cs])" probability="0.3">
+		<PreConditions>
+			<Property name="[AGENT]" operator="=" value="User"/>
+			<Property name="SpeechContext()" operator="=" value="#EVENT([target],Question,[AGENT],askforadvice2nd)"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],UserSpeech,[target],suggestcopingstrategy,[cs])"/>
+			</Effect>
+		</Effects>
+	</Action>
+	
+	<Action name="UserSpeech([target],suggestcopingstrategy,[cs])" probability="0.5">
+		<PreConditions>
+			<Property name="[AGENT]" operator="=" value="User"/>
+			<Property name="SpeechContext()" operator="=" value="#EVENT([target],Question,[AGENT],askagain)"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],UserSpeech,[target],suggestcopingstrategy,[cs])"/>
+			</Effect>
+		</Effects>
+	</Action>
+	
+	<Action name="UserSpeech([target],yes,[strategy])" probability="0.8">
+		<PreConditions>
+			<Property name="[AGENT]" operator="=" value="User"/>
+			<RecentEvent occurred="True" subject="[SELF]" action="activate" target="AskIfKeepStrategy"/>
+			<RecentEvent occurred="False" subject="[SELF]" action="activate" target="AskCopingStrategy"/>
+			<Property name="SpeechContext()" operator="=" value="#EVENT([target],CopingSpeech,[AGENT],askifkeepcopingstrategy,[strategy])"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],UserSpeech,[target],yes,[strategy])"/>
+			</Effect>
+		</Effects>
+	</Action>
+	
+	<Action name="UserSpeech([target],yes,[strategy])" probability="1.0">
+		<PreConditions>
+			<Property name="[AGENT]" operator="=" value="User"/>
+			<RecentEvent occurred="True" subject="[SELF]" action="activate" target="AskCopingStrategy"/>
+			<Property name="SpeechContext()" operator="=" value="#EVENT([target],CopingSpeech,[AGENT],confirmcopingstrategy,[strategy])"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],UserSpeech,[target],yes,[strategy])"/>
+			</Effect>
+		</Effects>
+	</Action>
+	
+	<Action name="UserSpeech([target],yes,[strategy])" probability="0.5">
+		<PreConditions>
+			<Property name="[AGENT]" operator="=" value="User"/>
+			<RecentEvent occurred="True" subject="[SELF]" action="fail" target="AskCopingStrategy"/>
+			<Property name="SpeechContext()" operator="=" value="#EVENT([target],CopingSpeech,[AGENT],suggestcopingstrategy,[strategy])"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],UserSpeech,[target],yes,[strategy])"/>
+			</Effect>
+		</Effects>
+	</Action>
+	
+	<Action name="UserSpeech([target],givereason)" probability="1.0">
+		<PreConditions>
+			<Property name="[AGENT]" operator="=" value="User"/>
+			<RecentEvent occurred="True" subject="[SELF]" action="activate" target="AskCopingStrategy"/>
+			<Property name="SpeechContext()" operator="=" value="#EVENT([target],Question,[AGENT],askforreason)"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],UserSpeech,[target],givereason)"/>
+			</Effect>
+		</Effects>
+	</Action>
+	
+	<Action name="UserSpeech([target],givereason)" probability="1.0">
+		<PreConditions>
+			<Property name="[AGENT]" operator="=" value="User"/>
+			<RecentEvent occurred="False" subject="[SELF]" action="activate" target="AskCopingStrategy" />
+			<Property name="SpeechContext()" operator="=" value="#EVENT([target],Question,[AGENT],askwhykeep)"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],UserSpeech,[target],givereason)"/>
+			</Effect>
+		</Effects>
+	</Action>
+	
+	<!-- Speech Actions for the Victim's interaction with the user -->
+	<Action name="CopingSpeech(User,confirmcopingstrategy,[cs])">
+		<PreConditions>
+			<Property name="SpeechContext()" operator="=" value="#EVENT(User,UserSpeech,[AGENT],suggestcopingstrategy,[cs])"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],CopingSpeech,User,confirmcopingstrategy,[cs])"/>
+			</Effect>
+		</Effects>
+	</Action>
+	
+	<Action name="CopingSpeech(User,suggestcopingstrategy,[coping])">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="fail" target="AskCopingStrategy"/>
+			<Property name="[AGENT](cansuggestcoping,[coping])" operator="=" value="True"/>
+			<Property name="[AGENT](numberOfTries,[coping])" operator="LesserThan" value="6"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],CopingSpeech,User,suggestcopingstrategy,[coping])"/>
+			</Effect>
+		</Effects>
+	</Action>
+	
+	<Action name="CopingSpeech(User,askifkeepcopingstrategy,[coping])">
+		<PreConditions>
+			<Property name="[AGENT](copingStrategy)" operator="=" value="[coping]" />
+			<Property name="[coping]" operator="!=" value="False" />
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],CopingSpeech,User,askifkeepcopingstrategy,[coping])"/>
+			</Effect>
+		</Effects>
+	</Action>
+	
+	<Action name="CopingSpeech(User,cannotkeepcopingstrategy,[coping])">
+		<PreConditions>
+			<Property name="[AGENT](copingStrategy)" operator="=" value="[coping]" />
+			<Property name="[coping]" operator="!=" value="False" />
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],CopingSpeech,User,cannotkeepcopingstrategy,[coping])"/>
+			</Effect>
+		</Effects>
+	</Action>
+	
+	<Action name="CopingSpeech(User,acceptcopingstrategy,[coping])">
+		<PreConditions>
+			<Property name="[AGENT](copingStrategy)" operator="=" value="[coping]" />
+			<Property name="[coping]" operator="!=" value="False" />
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],CopingSpeech,User,acceptstrategy,[coping])"/>
+			</Effect>
+		</Effects>
+	</Action>
+	
+	<Action name="CopingSpeech(User,declinecopingstrategy,[coping])">
+		<PreConditions>
+			<Property name="[AGENT](copingStrategy)" operator="=" value="[coping]" />
+			<Property name="[coping]" operator="!=" value="False" />
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],CopingSpeech,User,declinecopingstrategy,[coping])"/>
+			</Effect>
+		</Effects>
+	</Action>
+	
+	<!-- General SpeechAct -->
+	<Action name="SpeechAct([target],[type])">
+		<PreConditions>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+			<Property name="[type]" operator="!=" value="protest"/>
+			<Property name="[type]" operator="!=" value="deceptionreveal"/>
+			<Property name="[type]" operator="!=" value="annoy"/>
+			<Property name="[type]" operator="!=" value="laughoff"/>
+			<Property name="[type]" operator="!=" value="followdontcare"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],SpeechAct,[target],[type])"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<!-- Specific protest SpeechAct that has the possible effect of getting hurt -->
+	<Action name="SpeechAct([target],protest)">
+		<PreConditions>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="0.4">
+				<Property name="[AGENT](atRisk)" operator="=" value="True"/>
+			</Effect>
+			<Effect probability="1">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],SpeechAct,[target],protest)"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<!-- Specific laughoff SpeechAct that has the possible effect of getting hurt -->
+	<Action name="SpeechAct([target],laughoff)">
+		<PreConditions>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="0.4">
+				<Property name="[AGENT](atRisk)" operator="=" value="True"/>
+			</Effect>
+			<Effect probability="1">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],SpeechAct,[target],protest)"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<!-- Specific SpeechAct for followdontcare -->
+	<Action name="SpeechAct([target],followdontcare)">
+		<PreConditions>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="0.8">
+				<Property name="[AGENT](atRisk)" operator="=" value="True"/>
+			</Effect>
+			<Effect probability="1">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],SpeechAct,[target],followdontcare)"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<!-- Specific annoy SpeechAct that has the possible effect of annoying the target -->
+	<Action name="SpeechAct([target],annoy)">
+		<PreConditions>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="0.5">
+				<Property name="[target](annoyed)" operator="=" value="True"/>
+			</Effect>
+			<Effect probability="1">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],SpeechAct,[target],annoy)"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<!-- Specific cancelinvitation SpeechAct that reflects that if someone tries to sabotage the partyinvitation the cancel
+	      invitation will be much more likely. It is still possible to use the generic speechAct for this purpose, but the likelihood
+		  is quite small -->
+	<Action name="SpeechAct([target],partyinvitationwithdraw)" probability="0.8">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[saboteur]" action="SpeechAct" target="[AGENT]" parameters="partyinvitationsabotagehost,[target]"/>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],SpeechAct,[target],partyinvitationwithdraw)"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<!-- Specific deceptionreveal SpeechAct that consists in the agent revealing the deception, the victim will need to cope -->
+	<Action name="SpeechAct([target],deceptionreveal)">
+		<PreConditions>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+			<RecentEvent occurred="True" subject="[target]" action="Reply" target="[AGENT]" parameters="deception,positiveanswer"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],SpeechAct,[target],deceptionreveal)"/>
+			</Effect>
+		</Effects>
+	</Action>
+  
+    
+    <!-- Join Group Speech Acts -->
+	<Action name="SpeechAct([target],joingroupquestionthreatleave,[group])" probability="0.5">
+		<PreConditions>
+			<Property name="[AGENT](role)" operator="=" value="Bully"/>
+			<Property name="[group](isGroup)" operator="=" value="True"/>
+			<Property name="[target](inGroup,[group])" operator="=" value="True"/>
+			<Property name="[AGENT](inGroup,[group])" operator="=" value="True"/>
+			<Property name="SpeechContext()" operator="=" value="#EVENT([target],Question,[AGENT],joingroupquestionnegativeanswerobject)"/>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],SpeechAct,[target],joingroupquestionthreatleave,[group])"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<Action name="SpeechAct([target],joingroupquestionnegativeanswerobjectaccept,[group])" probability="0.5">
+		<PreConditions>
+			<Property name="[AGENT](role)" operator="=" value="Bully"/>
+			<Property name="[group](isGroup)" operator="=" value="True"/>
+			<Property name="[target](inGroup,[group])" operator="=" value="True"/>
+			<Property name="[AGENT](inGroup,[group])" operator="=" value="True"/>
+			<Property name="SpeechContext()" operator="=" value="#EVENT([target],Question,[AGENT],joingroupquestionnegativeanswerobject)"/>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],SpeechAct,[target],joingroupquestionnegativeanswerobjectaccept,[group])"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<Action name="SpeechAct([target],joingroupquestionnegativeanswerobjectacceptanswer,[group])" probability="0.5">
+		<PreConditions>
+			<Property name="[target](role)" operator="=" value="Bully"/>
+			<Property name="[group](isGroup)" operator="=" value="True"/>
+			<Property name="[target](inGroup,[group])" operator="=" value="True"/>
+			<Property name="[AGENT](inGroup,[group])" operator="=" value="True"/>
+			<Property name="SpeechContext()" operator="=" value="#EVENT([target],SpeechAct,[AGENT],joingroupquestionnegativeanswerobjectaccept,[group])"/>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],SpeechAct,[target],joingroupquestionnegativeanswerobjectacceptanswer,[group])"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<Action name="SpeechAct([target],joingroupquestionthreatleavepositiveanswer,[group])" probability="0.5">
+		<PreConditions>
+			<Property name="[target](role)" operator="=" value="Bully"/>
+			<Property name="[group](isGroup)" operator="=" value="True"/>
+			<Property name="[target](inGroup,[group])" operator="=" value="True"/>
+			<Property name="[AGENT](inGroup,[group])" operator="=" value="True"/>
+			<Property name="SpeechContext()" operator="=" value="#EVENT([target],SpeechAct,[AGENT],joingroupquestionthreatleave,[group])"/>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],SpeechAct,[target],joingroupquestionthreatleavepositiveanswer,[group])"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<Action name="SpeechAct([target],joingroupquestionthreatleavenegativeanswer,[group])" probability="0.5">
+		<PreConditions>
+			<Property name="[target](role)" operator="=" value="Bully"/>
+			<Property name="[group](isGroup)" operator="=" value="True"/>
+			<Property name="[target](inGroup,[group])" operator="=" value="True"/>
+			<Property name="[AGENT](inGroup,[group])" operator="=" value="True"/>
+			<Property name="SpeechContext()" operator="=" value="#EVENT([target],SpeechAct,[AGENT],joingroupquestionthreatleave,[group])"/>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],SpeechAct,[target],joingroupquestionthreatleavenegativeanswer,[group])"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<Action name="Question([target],joingroupconvince,[group])">
+		<PreConditions>
+			<Property name="[group](isGroupOf1)" operator="=" value="True"/>
+			<Property name="[target](inGroup,[group])" operator="=" value="True"/>
+			<RecentEvent subject="[target]" target="[AGENT]" action="Reply" parameters="joingroupquestion,negativeanswer,[group]"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],Question,[target],joingroupconvince,[group])"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<Action name="Reply([target],joingroupconvince,positiveanswer,[group])" probability="0.5">
+		<PreConditions>
+			<Property name="[group](isGroupOf1)" operator="=" value="True"/>
+			<Property name="[target](inGroup,[group])" operator="=" value="Pending"/>
+			<RecentEvent subject="[target]" target="[AGENT]" action="Question" parameters="joingroupconvince,[group]"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],Reply,[target],joingroupconvince,positiveanswer,[group])"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<Action name="Reply([target],joingroupconvince,negativeanswer,[group])" probability="0.5">
+		<PreConditions>
+			<Property name="[group](isGroupOf1)" operator="=" value="True"/>
+			<Property name="[target](inGroup,[group])" operator="=" value="Pending"/>
+			<RecentEvent subject="[target]" target="[AGENT]" action="Question" parameters="joingroupconvince,[group]"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],Reply,[target],joingroupconvince,negativeanswer,[group])"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<!-- General SpeechAct that contains an additional topic -->
+	<Action name="SpeechAct([target],[type],[topic])">
+		<PreConditions>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+			<Property name="[type]" operator="!=" value="joingroupquestionthreatleave"/>
+			<Property name="[type]" operator="!=" value="joingroupquestionthreatleavepositiveanswer"/>
+			<Property name="[type]" operator="!=" value="joingroupquestionthreatleavenegativeanswer"/>
+			<Property name="[type]" operator="!=" value="joingroupquestionnegativeanswerobjectaccept"/>
+			<Property name="[type]" operator="!=" value="joingroupquestionnegativeanswerobjectacceptanswer"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],SpeechAct,[target],[type],[topic])"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<!-- General Reinforcement SpeechAct -->
+	<Action name="Reinforce([target],[type])">
+		<PreConditions>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+		</PreConditions>
+		<Effects>
+		</Effects>
+	</Action>
+	<!-- General Question SpeechAct -->
+	<Action name="Question([target],[question])">
+		<PreConditions>
+			<Property name="[question]" operator="!=" value="threatfightback"/>
+			<Property name="[question]" operator="!=" value="laughoff"/>
+			<Property name="[question]" operator="!=" value="protest"/>
+			<Property name="[question]" operator="!=" value="askforadvice"/>
+			<Property name="[question]" operator="!=" value="askforadvice2nd"/>
+			<Property name="[question]" operator="!=" value="askagain"/>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],Question,[target],[question])"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<!-- Specific protest Question that has the possible effect of getting hurt -->
+	<Action name="Question([target],protest)">
+		<PreConditions>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="0.4">
+				<Property name="[AGENT](atRisk)" operator="=" value="True"/>
+			</Effect>
+			<Effect probability="1">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],Question,[target],protest)"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<!-- Specific laughoff Question that has the possible effect of getting hurt -->
+	<Action name="Question([target],laughoff)">
+		<PreConditions>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="0.4">
+				<Property name="[AGENT](atRisk)" operator="=" value="True"/>
+			</Effect>
+			<Effect probability="1">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],Question,[target],laughoff)"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<!-- Specific threatfightback question -->
+	<Action name="Question([target],threatfightback)">
+		<PreConditions>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="0.7">
+				<Property name="[AGENT](atRisk)" operator="=" value="True"/>
+			</Effect>
+			<Effect probability="1">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],Question,[target],threatfightback)"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<!-- Specific threatfightback question -->
+	<Action name="Question([target],helpprotection)" probability="0.7">
+		<PreConditions>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+			<RecentEvent occurred="True" subject="[target]" target="[AGENT]" action="Reply" parameters="helpquestion,positiveanswer"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],Question,[target],helpprotection)"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<!-- Specific askforadvice question -->
+	<Action name="Question([target],askforadvice)">
+		<PreConditions>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+			<RecentEvent occurred="False" subject="[AGENT]" target="[target]" action="Question" parameters="askforadvice"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],Question,[target],askforadvice)"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<!-- Specific askforadvice2nd question -->
+	<Action name="Question([target],askforadvice2nd)">
+		<PreConditions>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+			<RecentEvent occurred="True" subject="[target]" target="[AGENT]" action="UserSpeech" parameters="suggestcopingstrategy,*"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],Question,[target],askforadvice2nd)"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<!-- Specific askagain question -->
+	<Action name="Question([target],askagain)">
+		<PreConditions>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+			<RecentEvent occurred="True" subject="[AGENT]" target="[target]" action="Question" parameters="askforadvice"/>
+			<RecentEvent occurred="False" subject="[target]" target="[AGENT]" action="UserSpeech" parameters="suggestcopingstrategy,*"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],Question,[target],askagain)"/>
+			</Effect>
+		</Effects>
+	</Action>
+
+	<!-- Group related questions -->
+	<Action name="Question([target],[question],[group])">
+		<PreConditions>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+			<Property name="[question]" operator="!=" value="joingroupconvince"/>
+			<Property name="[group](isGroup)" operator="=" value="True"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],Question,[target],[question],[group])"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<!-- General positive Reply SpeechAct. It's probability of execution by another agent is a little higher because this Reply is incentivated
+	      by a question -->
+	<Action name="Reply([target],[question],positiveanswer)" probability="0.5">
+		<PreConditions>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+			<Property name="[question]" operator="!=" value="joingroupquestionnegativeanswerobject"/>
+			<Property name="SpeechContext()" operator="=" value="#EVENT([target],Question,[AGENT],[question])"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],Reply,[target],[question],positiveanswer)"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<!-- General negative Reply SpeechAct. It's probability of execution by another agent is a little higher because this Reply is incentivated
+	      by a question. Additionally, saying no has some likelihood of getting hurt. -->
+	<Action name="Reply([target],[question],negativeanswer)" probability="0.5">
+		<PreConditions>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+			<Property name="[question]" operator="!=" value="joinparty"/>
+			<Property name="SpeechContext()" operator="=" value="#EVENT([target],Question,[AGENT],[question])"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="0.4">
+				<Property name="[AGENT](atRisk)" operator="=" value="True"/>
+			</Effect>
+			<Effect probability="1">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],Reply,[target],[question],positiveanswer)"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<!-- Specific negative Reply to a joinparty question. This operator reflects that if someone tries to sabotage the partyinvitation
+		the cancel the negative reply will be much more likely. It is still possible to use the generic Reply for this purpose, but the likelihood
+		  is quite small -->
+	<Action name="Reply([target],joinparty,negativeanswer)" probability="0.8">
+		<PreConditions>
+			<Property name="SpeechContext()" operator="=" value="#EVENT([target],Question,[AGENT],joinparty)"/>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+			<RecentEvent occurred="True" subject="[saboteur]" action="SpeechAct" target="[AGENT]" parameters="partyinvitationsabotagehost,[target]"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],Reply,[target],joinparty,negativeanswer)"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<!-- Reply SpeechAct used for replying to joingroup questions. It's probability of execution by another agent is a little higher because this Reply is incentivated
+	      by a question -->
+	<Action name="Reply([target],joingroupquestion,[answer],[group])" probability="0.5">
+		<PreConditions>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+			<Property name="[group](isGroup)" operator="=" value="True"/>
+			<Property name="[AGENT](inGroup,[group])" operator="=" value="True"/>
+			<RecentEvent subject="[target]" target="[group]" action="Question" parameters="joingroupquestion"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],Reply,[target],joingroupquestion,[answer],[group])"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<!-- Reply SpeechAct used for replying to joingroup questions. It's probability of execution by another agent is a little higher because this Reply is incentivated
+	      by a question -->
+	<Action name="Reply([target],joingroupquestionpositiveanswerobject,[answer],[group])" probability="0.5">
+		<PreConditions>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+			<Property name="[group](isGroup)" operator="=" value="True"/>
+			<Property name="[AGENT](inGroup,[group])" operator="=" value="True"/>
+			<RecentEvent subject="[target]" target="[AGENT]" action="Question" parameters="joingroupquestionpositiveanswerobject,[group]"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],Reply,[target],joingroupquestionpositiveanswerobject,[answer],[group])"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<!-- Inference Operators -->
+	<!-- InvitedToParty = True inference -->
+	<Action name="InferenceOperator1([Inviter],[Invited])">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[Invited]" action="Reply" target="[Inviter]" parameters="partyinvitation,positiveanswer"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="InvitedToParty([Inviter],[Invited])" operator="=" value="True"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<Action name="InferenceOperator2([Inviter],[Invited])">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[Inviter]" action="Reply" target="[Invited]" parameters="joinparty,positiveanswer"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="InvitedToParty([Inviter],[Invited])" operator="=" value="True"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<!-- invitedToParty = False inference -->
+	<Action name="InferenceOperator3([Inviter],[Invited])">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[Inviter]" action="SpeechAct" target="[Invited]" parameters="partyinvitationwithdraw"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="InvitedToParty([Inviter],[Invited])" operator="=" value="False"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<Action name="InferenceOperator4([Inviter],[Invited])">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[Inviter]" action="Reply" target="[Invited]" parameters="joinparty,negativeanswer"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="InvitedToParty([Inviter],[Invited])" operator="=" value="False"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<!-- NeedToCope inferences -->
+	<!-- I need to cope if I'm distressed -->
+	<Action name="InferenceNeedToCopeDistress()">
+		<PreConditions>
+			<EmotionCondition emotion="Distress" min-intensity="3"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="[SELF](needToCope)" operator="=" value="True"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<Action name="InferenceNeedToCopeDistress()">
+		<PreConditions>
+			<EmotionCondition active="False" emotion="Distress" min-intensity="2"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="[SELF](needToCope)" operator="=" value="False"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<!-- user conversation inferences -->
+	<Action name="InferenceAskIfKeepFailed(user)">
+		<PreConditions>
+			<!--<RecentEvent occurred="False" subject="User" action="UserSpeech" target="[SELF]" parameters="no" />-->
+			<RecentEvent occurred="True" subject="[SELF]" action="fail" target="AskIfKeepStrategy" />
+			<Property name="stopInference(askifkeepfailed)" operator="!=" value="True"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="[SELF](copingStrategy)" operator="=" value="False"/>
+				<Property name="stopInference(askifkeepfailed)" operator="=" value="True"/>
+			</Effect>
+		</Effects>
+	</Action>
+	
+	<Action name="InferenceAskIfKeepFailed2([target],[coping])">
+		<PreConditions>
+			<RecentEvent occurred="False" subject="[SELF]" action="fail" target="AskIfKeepStrategy" />
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="stopInference(askifkeepfailed)" operator="=" value="False"/>
+			</Effect>
+		</Effects>
+	</Action>
+	
+	<Action name="InferenceCopingStrategy([target],[coping])">
+		<PreConditions>
+			<Property name="SpeechContext()" operator="=" value="#EVENT(User,UserSpeech,[target],suggestcopingstrategy,[coping])"/>
+			<Property name="[target](canChangeCoping)" operator="=" value="True"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="[target](canChangeCoping)" operator="=" value="False"/>
+				<Property name="[target](copingStrategy)" operator="=" value="[coping]"/>
+			</Effect>
+		</Effects>
+	</Action>
+	
+	<Action name="InferenceCopingStrategy2([target],[coping])">
+		<PreConditions>
+			<Property name="SpeechContext()" operator="=" value="#EVENT([target],CopingSpeech,User,suggestcopingstrategy,[coping])"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="[target](canChangeCoping)" operator="=" value="False"/>
+				<Property name="[target](copingStrategy)" operator="=" value="[coping]"/>
+			</Effect>
+		</Effects>
+	</Action>
+	
+	<!--<Action name="InferenceCopingStrategy3([target],[coping])">
+		<PreConditions>
+			<Property name="SpeechContext()" operator="=" value="#EVENT(User,UserSpeech,[target],yes,[coping])"/>
+			<Property name="[coping]" operator="!=" value="null" />
+			<Property name="[target](canChangeCoping)" operator="=" value="True"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="[target](canChangeCoping)" operator="=" value="False"/>
+				
+			</Effect>
+		</Effects>
+	</Action>-->
+	
+	<Action name="InferenceStrategyConfirmed([target],[coping])">
+		<PreConditions>
+			<Property name="SpeechContext()" operator="=" value="#EVENT(User,UserSpeech,[target],yes,[coping])"/>
+			<Property name="[coping]" operator="!=" value="null" />
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="[target](canChangeCoping)" operator="=" value="False"/>
+				<Property name="[target](copingStrategy)" operator="=" value="[coping]"/>
+				<Property name="[target](confirmedStrategy)" operator="=" value="True"/>
+			</Effect>
+		</Effects>
+	</Action>
+	
+	<Action name="InferenceStrategyDisconfirmed([target])">
+		<PreConditions>
+			<Property name="SpeechContext()" operator="=" value="#EVENT(User,UserSpeech,[target],no)"/>
+			<Property name="[target](canChangeCoping)" operator="=" value="True"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="[target](canChangeCoping)" operator="=" value="False"/>
+				<Property name="[target](confirmedStrategy)" operator="=" value="False"/>
+				<Property name="[target](copingStrategy)" operator="=" value="False"/>
+			</Effect>
+		</Effects>
+	</Action>
+	
+	<Action name="InferenceStrategyDeclined([target],[coping])">
+		<PreConditions>
+			<Property name="SpeechContext()" operator="=" value="#EVENT([target],CopingSpeech,User,declinecopingstrategy,[coping])"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="[target](confirmedStrategy)" operator="=" value="False"/>
+				<Property name="[target](copingStrategy)" operator="=" value="False"/>
+			</Effect>
+		</Effects>
+	</Action>
+	
+	<Action name="InferenceCannotKeep([target])">
+		<PreConditions>
+			<Property name="SpeechContext()" operator="=" value="#EVENT([target],CopingSpeech,User,cannotkeepcopingstrategy,[cs])"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="[target](confirmedStrategy)" operator="=" value="False"/>
+				<Property name="[target](copingStrategy)" operator="=" value="False"/>
+			</Effect>
+		</Effects>
+	</Action>
+	
+	<Action name="InferenceCanChangeCoping1([target])">
+		<PreConditions>
+			<Property name="SpeechContext()" operator="=" value="#EVENT([target],CopingSpeech,User,confirmcopingstrategy,[cs])"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="[target](canChangeCoping)" operator="=" value="True"/>
+			</Effect>
+		</Effects>
+	</Action>
+	
+	<Action name="InferenceCanChangeCoping2([target])">
+		<PreConditions>
+			<Property name="SpeechContext()" operator="=" value="#EVENT([target],CopingSpeech,User,askifkeepcopingstrategy,[cs])"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="[target](canChangeCoping)" operator="=" value="True"/>
+			</Effect>
+		</Effects>
+	</Action>
+	
+	<Action name="InferenceCanChangeCoping3([target])">
+		<PreConditions>
+			<Property name="SpeechContext()" operator="=" value="#EVENT([target],Question,User,askforadvice)"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="[target](canChangeCoping)" operator="=" value="True"/>
+			</Effect>
+		</Effects>
+	</Action>
+	
+	<Action name="InferenceCanChangeCoping4([target])">
+		<PreConditions>
+			<Property name="SpeechContext()" operator="=" value="#EVENT([target],Question,User,askforadvice2nd)"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="[target](canChangeCoping)" operator="=" value="True"/>
+			</Effect>
+		</Effects>
+	</Action>
+	
+	<!-- the following operators deal with the counting of coping strategies selected -->
+	<Action name="InferenceIgnoreSelected()">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="activate" target="Ignore"/>
+			<Property name="stopInference(ignore)" operator="!=" value="True"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="stopInference(ignore)" operator="=" value="True"/>
+				<Property name="Increment(ignore)" operator="=" value="True"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<Action name="InferenceIgnoreUnSelected()">
+		<PreConditions>
+			<RecentEvent occurred="False" subject="[SELF]" action="activate" target="Ignore"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="stopInference(ignore)" operator="=" value="False"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<Action name="InferenceStandUpSelected()">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="activate" target="StandUp"/>
+			<Property name="stopInference(standup)" operator="!=" value="True"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="stopInference(standup)" operator="=" value="True"/>
+				<Property name="Increment(standup)" operator="=" value="True"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<Action name="InferenceStandUpUnSelected()">
+		<PreConditions>
+			<RecentEvent occurred="False" subject="[SELF]" action="activate" target="StandUp"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="stopInference(standup)" operator="=" value="False"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<Action name="InferenceMakeNewFriendSelected()">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="activate" target="MakeNewFriend"/>
+			<Property name="stopInference(makenewfriend)" operator="!=" value="True"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="stopInference(makenewfriend)" operator="=" value="True"/>
+				<Property name="Increment(makenewfriend)" operator="=" value="True"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<Action name="InferenceMakeNewFriendUnSelected()">
+		<PreConditions>
+			<RecentEvent occurred="False" subject="[SELF]" action="activate" target="MakeNewFriend"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="stopInference(makenewfriend)" operator="=" value="False"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<Action name="InferenceTellFriendSelected()">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="activate" target="TellFriend"/>
+			<Property name="stopInference(tellfriend)" operator="!=" value="True"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="stopInference(tellfriend)" operator="=" value="True"/>
+				<Property name="Increment(tellfriend)" operator="=" value="True"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<Action name="InferenceTellFriendUnSelected()">
+		<PreConditions>
+			<RecentEvent occurred="False" subject="[SELF]" action="activate" target="TellFriend"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="stopInference(tellfriend)" operator="=" value="False"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<Action name="InferenceWalkAwaySelected()">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="activate" target="WalkAway"/>
+			<Property name="stopInference(walkaway)" operator="!=" value="True"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="stopInference(walkaway)" operator="=" value="True"/>
+				<Property name="Increment(walkaway)" operator="=" value="True"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<Action name="InferenceWalkAwayUnSelected()">
+		<PreConditions>
+			<RecentEvent occurred="False" subject="[SELF]" action="activate" target="WalkAway"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="stopInference(walkAway)" operator="=" value="False"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<Action name="InferenceRunAwaySelected()">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="activate" target="RunAway"/>
+			<Property name="stopInference(runaway)" operator="!=" value="True"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="stopInference(runaway)" operator="=" value="True"/>
+				<Property name="Increment(runaway)" operator="=" value="True"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<Action name="InferenceRunAwayUnSelected()">
+		<PreConditions>
+			<RecentEvent occurred="False" subject="[SELF]" action="activate" target="RunAway"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="stopInference(runaway)" operator="=" value="False"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<Action name="InferenceLaughOffSelected()">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="activate" target="LaughOff"/>
+			<Property name="stopInference(laughoff)" operator="!=" value="True"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="stopInference(laughoff)" operator="=" value="True"/>
+				<Property name="Increment(laughoff)" operator="=" value="True"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<Action name="InferenceLaughOffUnSelected()">
+		<PreConditions>
+			<RecentEvent occurred="False" subject="[SELF]" action="activate" target="LaughOff"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="stopInference(laughoff)" operator="=" value="False"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<Action name="InferenceFightBackSelected()">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="activate" target="FightBack"/>
+			<Property name="stopInference(fightback)" operator="!=" value="True"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="stopInference(fightback)" operator="=" value="True"/>
+				<Property name="Increment(fightback)" operator="=" value="True"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<Action name="InferenceFightBackUnSelected()">
+		<PreConditions>
+			<RecentEvent occurred="False" subject="[SELF]" action="activate" target="FightBack"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="stopInference(fightback)" operator="=" value="False"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<Action name="InferenceInsultSelected()">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="activate" target="Insult"/>
+			<Property name="stopInference(insult)" operator="!=" value="True"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="stopInference(insult)" operator="=" value="True"/>
+				<Property name="Increment(insult)" operator="=" value="True"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<Action name="InferenceInsultUnSelected()">
+		<PreConditions>
+			<RecentEvent occurred="False" subject="[SELF]" action="activate" target="Insult"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="stopInference(insult)" operator="=" value="False"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<Action name="InferenceIncrementCS1([coping])">
+		<PreConditions>
+			<Property name="Increment([coping])" operator="=" value="True"/>
+			<Property name="[SELF](numberOfTries,[coping])" operator="=" value="0"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="Increment([coping])" operator="=" value="False"/>
+				<Property name="[SELF](numberOfTries,[coping])" operator="=" value="1"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<Action name="InferenceIncrementCS2([coping])">
+		<PreConditions>
+			<Property name="Increment([coping])" operator="=" value="True"/>
+			<Property name="[SELF](numberOfTries,[coping])" operator="=" value="1"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="Increment([coping])" operator="=" value="False"/>
+				<Property name="[SELF](numberOfTries,[coping])" operator="=" value="2"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<Action name="InferenceIncrementCS3([coping])">
+		<PreConditions>
+			<Property name="Increment([coping])" operator="=" value="True"/>
+			<Property name="[SELF](numberOfTries,[coping])" operator="=" value="2"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="Increment([coping])" operator="=" value="False"/>
+				<Property name="[SELF](numberOfTries,[coping])" operator="=" value="3"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<Action name="InferenceIncrementCS4([coping])">
+		<PreConditions>
+			<Property name="Increment([coping])" operator="=" value="True"/>
+			<Property name="[SELF](numberOfTries,[coping])" operator="=" value="3"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="Increment([coping])" operator="=" value="False"/>
+				<Property name="[SELF](numberOfTries,[coping])" operator="=" value="4"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<Action name="InferenceIncrementCS5([coping])">
+		<PreConditions>
+			<Property name="Increment([coping])" operator="=" value="True"/>
+			<Property name="[SELF](numberOfTries,[coping])" operator="=" value="4"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="Increment([coping])" operator="=" value="False"/>
+				<Property name="[SELF](numberOfTries,[coping])" operator="=" value="5"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<Action name="InferenceIncrementCS6([coping])">
+		<PreConditions>
+			<Property name="Increment([coping])" operator="=" value="True"/>
+			<Property name="[SELF](numberOfTries,[coping])" operator="=" value="5"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="Increment([coping])" operator="=" value="False"/>
+				<Property name="[SELF](numberOfTries,[coping])" operator="=" value="6"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<!--
+	<Action name="InferenceCopingSuccessFight([SELF],fightback)">
+		<PreConditions>
+			<Property name="[SELF](copingStrategy)" operator="=" value="fighback" />
+			<Property name="[bully](role)" operator="=" value="Bully" />
+			<RecentEvent occurred="True" subject="[SELF]" action="attack" target="[bully]" />
+			<MoodCondition operator="GreaterEqual" value="0" />
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="[SELF](cssuccessful)" operator="=" value="True" />
+			</Effect>
+		</Effects>
+	</Action>
+	
+	<Action name="InferenceCopingFailureFight([SELF],fightback)">
+		<PreConditions>
+			<Property name="[SELF](copingStrategy)" operator="=" value="fightback" />
+			<Property name="[bully](role)" operator="=" value="Bully" />
+			<RecentEvent occurred="True" subject="[SELF]" action="attack" target="[bully]" />
+			<MoodCondition operator="LesserThan" value="0" />
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="[SELF](cssuccessful)" operator="=" value="False" />
+			</Effect>
+		</Effects>
+	</Action>
+	
+	<Action name="InferenceCopingSuccessStandUp([SELF],standup)">
+		<PreConditions>
+			<Property name="[SELF](copingStrategy)" operator="=" value="standup" />
+			<Property name="[bully](role)" operator="=" value="Bully" />
+			<RecentEvent occurred="True" subject="[SELF]" action="succed" target="StandUp([bully])" />
+			<MoodCondition operator="GreaterEqual" value="0" />
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="[SELF](cssuccessful)" operator="=" value="True" />
+			</Effect>
+		</Effects>
+	</Action>
+	
+	<Action name="InferenceCopingFailureStandUp([SELF],standup)">
+		<PreConditions>
+			<Property name="[SELF](copingStrategy)" operator="=" value="standup" />
+			<Property name="[bully](role)" operator="=" value="Bully" />
+			<RecentEvent occurred="True" subject="[SELF]" action="succed" target="StandUp([bully])" />
+			<MoodCondition operator="LesserThan" value="0" />
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="[SELF](cssuccessful)" operator="=" value="False" />
+			</Effect>
+		</Effects>
+	</Action>-->
+	<!-- Annoyed inferences -->
+	<Action name="InferenceAnnoyed1([target])">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[target]" action="SpeechAct" target="[any]" parameters="protest"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="[target](annoyed)" operator="=" value="True"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<Action name="InferenceAnnoyed2([target])">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[target]" action="cry"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="[target](annoyed)" operator="=" value="True"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<Action name="InferenceAnnoyed3([target])">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[target]" action="SpeechAct" target="[any]" parameters="insult"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="[target](annoyed)" operator="=" value="True"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<Action name="InferenceAnnoyed4([target])">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[target]" action="Question" target="[any]" parameters="threatfightback"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="[target](annoyed)" operator="=" value="True"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<!-- Inference operators for the "join group" situation that involves 3 agents, i.e. trying to join a groupOf2 -->
+	<Action name="InferenceGroup1([JoinAgent],[GroupAgent1],[GroupAgent2],[group])">
+		<PreConditions>
+			<Property name="[group](isGroupOf2)" operator="=" value="True"/>
+			<Property name="[GroupAgent1](role)" operator="=" value="Bully"/>
+			<Property name="[GroupAgent2](role)" operator="=" value="Defender"/>
+			<Property name="[JoinAgent](inGroup,[group])" operator="=" value="Pending"/>
+			<Property name="[GroupAgent1](inGroup,[group])" operator="=" value="True"/>
+			<Property name="[GroupAgent2](inGroup,[group])" operator="=" value="True"/>
+			<RecentEvent occurred="True" subject="[GroupAgent1]" action="Reply" target="[JoinAgent]" parameters="joingroupquestion,positiveanswer,[group]"/>
+			<RecentEvent occurred="True" subject="[GroupAgent2]" action="Reply" target="[JoinAgent]" parameters="joingroupquestion,positiveanswer,[group]"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="[JoinAgent](inGroup,[group])" operator="=" value="True"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<Action name="InferenceGroup2([JoinAgent],[GroupAgent1],[group])">
+		<PreConditions>
+			<Property name="[group](isGroupOf2)" operator="=" value="True"/>
+			<Property name="[GroupAgent1](role)" operator="=" value="Bully"/>
+			<Property name="[GroupAgent2](role)" operator="=" value="Defender"/>
+			<Property name="[JoinAgent](inGroup,[group])" operator="=" value="Pending"/>
+			<Property name="[GroupAgent1](inGroup,[group])" operator="=" value="True"/>
+			<Property name="[GroupAgent2](inGroup,[group])" operator="=" value="True"/>
+			<RecentEvent occurred="True" subject="[GroupAgent1]" action="Reply" target="[JoinAgent]" parameters="joingroupquestion,negativeanswer,[group]"/>
+			<RecentEvent occurred="True" subject="[GroupAgent2]" action="Reply" target="[JoinAgent]" parameters="joingroupquestion,negativeanswer,[group]"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="[JoinAgent](inGroup,[group])" operator="=" value="False"/>
+			</Effect>
+			<Effect probability="1">
+				<Property name="[JoinAgent](needToCope)" operator="=" value="True"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<!-- For the next inference operators we will use the variables AgentPos and AgentNeg. All inferences
+		  refer to situations where, one agent tries to overpower the other in the question, of whether the 
+		  victim should be allowed to join. AgentPos is the agent who (initially) wants the victim to join (usually Defender),
+		  AgentNeg, the one who does not want that.
+		  The overpowered property reads like this:
+
+		  Helper(GroupAprovalOverpowered,Bully) = True means the helper could overpower the bully, John is in the group.
+			This is used when the bully started objecting.
+		  Helper(GroupAprovalOverpowered,Bully) = False means the helper could NOT overpower the bully, John is NOT in the group.
+			This is used when the bully started objecting.
+		  Bully(GroupAprovalOverpowered,Helper) = True means the bully could overpower the helper, John is NOT in the group.
+			This is used when the helper started objecting.
+		  Bully(GroupAprovalOverpowered,Helper) = True means the bully could NOT overpower the helper, John is in the group.
+			This is used when the helper started objecting.
+ -->
+	<Action name="InferenceGroup3([JoinAgent],[AgentNeg],[group])">
+		<PreConditions>
+			<Property name="[group](isGroupOf2)" operator="=" value="True"/>
+			<Property name="[AgentNeg](role)" operator="=" value="Bully"/>
+			<Property name="[AgentPos](role)" operator="=" value="Defender"/>
+			<Property name="[JoinAgent](inGroup,[group])" operator="=" value="Pending"/>
+			<Property name="[AgentNeg](inGroup,[group])" operator="=" value="True"/>
+			<Property name="[AgentPos](inGroup,[group])" operator="=" value="True"/>
+			<RecentEvent occurred="True" subject="[AgentNeg]" action="Reply" target="[JoinAgent]" parameters="joingroupquestion,negativeanswer,[group]"/>
+			<RecentEvent occurred="True" subject="[AgentPos]" action="Reply" target="[JoinAgent]" parameters="joingroupquestion,positiveanswer,[group]"/>
+			<Property name="[AgentPos](groupApprovalOverPowered,[AgentNeg],[group])" operator="=" value="False"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="[JoinAgent](inGroup,[group])" operator="=" value="False"/>
+			</Effect>
+			<Effect probability="1">
+				<Property name="[JoinAgent](needToCope)" operator="=" value="True"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<Action name="InferenceGroup4([JoinAgent],[AgentNeg],[group])">
+		<PreConditions>
+			<Property name="[group](isGroupOf2)" operator="=" value="True"/>
+			<Property name="[AgentNeg](role)" operator="=" value="Bully"/>
+			<Property name="[AgentPos](role)" operator="=" value="Defender"/>
+			<Property name="[JoinAgent](inGroup,[group])" operator="=" value="Pending"/>
+			<Property name="[AgentNeg](inGroup,[group])" operator="=" value="True"/>
+			<Property name="[AgentPos](inGroup,[group])" operator="=" value="True"/>
+			<RecentEvent occurred="True" subject="[AgentNeg]" action="Reply" target="[JoinAgent]" parameters="joingroupquestion,negativeanswer,[group]"/>
+			<RecentEvent occurred="True" subject="[AgentPos]" action="Reply" target="[JoinAgent]" parameters="joingroupquestion,positiveanswer,[group]"/>
+			<Property name="[AgentPos](groupApprovalOverPowered,[AgentNeg],[group])" operator="=" value="True"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="[JoinAgent](inGroup,[group])" operator="=" value="True"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<Action name="InferenceGroup5([JoinAgent],[AgentNeg],[group])">
+		<PreConditions>
+			<Property name="[group](isGroupOf2)" operator="=" value="True"/>
+			<Property name="[AgentNeg](role)" operator="=" value="Bully"/>
+			<Property name="[AgentPos](role)" operator="=" value="Defender"/>
+			<Property name="[JoinAgent](inGroup,[group])" operator="=" value="Pending"/>
+			<Property name="[AgentNeg](inGroup,[group])" operator="=" value="True"/>
+			<Property name="[AgentPos](inGroup,[group])" operator="=" value="True"/>
+			<RecentEvent occurred="True" subject="[AgentNeg]" action="Reply" target="[JoinAgent]" parameters="joingroupquestion,negativeanswer,[group]"/>
+			<RecentEvent occurred="True" subject="[AgentPos]" action="Reply" target="[JoinAgent]" parameters="joingroupquestion,positiveanswer,[group]"/>
+			<Property name="[AgentNeg](groupApprovalOverPowered,[AgentPos],[group])" operator="=" value="True"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="[JoinAgent](inGroup,[group])" operator="=" value="False"/>
+			</Effect>
+			<Effect probability="1">
+				<Property name="[JoinAgent](needToCope)" operator="=" value="True"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<Action name="InferenceGroup6([JoinAgent],[AgentNeg],[group])">
+		<PreConditions>
+			<Property name="[group](isGroupOf2)" operator="=" value="True"/>
+			<Property name="[AgentNeg](role)" operator="=" value="Bully"/>
+			<Property name="[AgentPos](role)" operator="=" value="Defender"/>
+			<Property name="[JoinAgent](inGroup,[group])" operator="=" value="Pending"/>
+			<Property name="[AgentNeg](inGroup,[group])" operator="=" value="True"/>
+			<Property name="[AgentPos](inGroup,[group])" operator="=" value="True"/>
+			<RecentEvent occurred="True" subject="[AgentNeg]" action="Reply" target="[JoinAgent]" parameters="joingroupquestion,negativeanswer,[group]"/>
+			<RecentEvent occurred="True" subject="[AgentPos]" action="Reply" target="[JoinAgent]" parameters="joingroupquestion,positiveanswer,[group]"/>
+			<Property name="[AgentNeg](groupApprovalOverPowered,[AgentPos],[group])" operator="=" value="False"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="[JoinAgent](inGroup,[group])" operator="=" value="True"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<Action name="InferenceGroup11([AgentNeg],[AgentPos],[group])">
+		<PreConditions>
+			<Property name="[AgentNeg](role)" operator="=" value="Bully"/>
+			<Property name="[AgentPos](role)" operator="=" value="Defender"/>
+			<RecentEvent subject="[AgentPos]" target="[AgentNeg]" action="SpeechAct" parameters="joingroupquestionnegativeanswerobjectacceptanswer,[group]"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="[AgentNeg](groupApprovalOverPowered,[AgentPos],[group])" operator="=" value="False"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<Action name="InferenceGroup12([AgentNeg],[AgentPos],[group])">
+		<PreConditions>
+			<Property name="[AgentNeg](role)" operator="=" value="Bully"/>
+			<Property name="[AgentPos](role)" operator="=" value="Defender"/>
+			<RecentEvent subject="[AgentPos]" target="[AgentNeg]" action="SpeechAct" parameters="joingroupquestionthreatleavepositiveanswer,[group]"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="[AgentNeg](groupApprovalOverPowered,[AgentPos],[group])" operator="=" value="True"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<Action name="InferenceGroup13([AgentNeg],[AgentPos],[group])">
+		<PreConditions>
+			<Property name="[AgentNeg](role)" operator="=" value="Bully"/>
+			<Property name="[AgentPos](role)" operator="=" value="Defender"/>
+			<RecentEvent subject="[AgentPos]" target="[AgentNeg]" action="SpeechAct" parameters="joingroupquestionthreatleavenegativeanswer,[group]"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="[AgentNeg](groupApprovalOverPowered,[AgentPos],[group])" operator="=" value="False"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<Action name="InferenceGroup16([AgentPos],[AgentNeg],[group])">
+		<PreConditions>
+			<Property name="[AgentNeg](role)" operator="=" value="Bully"/>
+			<Property name="[AgentPos](role)" operator="=" value="Defender"/>
+			<RecentEvent subject="[AgentPos]" target="[AgentNeg]" action="Reply" parameters="joingroupquestionpositiveanswerobject,negativeanswer,[group]"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="[AgentPos](groupApprovalOverPowered,[AgentNeg],[group])" operator="=" value="True"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<Action name="InferenceGroup17([AgentPos],[AgentNeg],[group])">
+		<PreConditions>
+			<Property name="[AgentNeg](role)" operator="=" value="Bully"/>
+			<Property name="[AgentPos](role)" operator="=" value="Defender"/>
+			<RecentEvent subject="[AgentPos]" target="[AgentNeg]" action="Reply" parameters="joingroupquestionpositiveanswerobject,positiveanswer,[group]"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="[AgentPos](groupApprovalOverPowered,[AgentNeg],[group])" operator="=" value="False"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<!-- Inference operators for the "join group" situation that involves 2 agents,  i.e. trying to join a groupOf1 -->
+	<Action name="InferenceGroup8([JoinAgent],[GroupAgent],[group])">
+		<PreConditions>
+			<Property name="[group](isGroupOf1)" operator="=" value="True"/>
+			<Property name="[JoinAgent](inGroup,[group])" operator="=" value="Pending"/>
+			<Property name="[GroupAgent](inGroup,[group])" operator="=" value="True"/>
+			<RecentEvent subject="[GroupAgent]" target="[JoinAgent]" action="Reply" parameters="joingroupquestion,positiveanswer,[group]"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="[JoinAgent](inGroup,[group])" operator="=" value="True"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<Action name="InferenceGroup9([JoinAgent],[GroupAgent],[group])">
+		<PreConditions>
+			<Property name="[group](isGroupOf1)" operator="=" value="True"/>
+			<Property name="[JoinAgent](inGroup,[group])" operator="=" value="Pending"/>
+			<Property name="[GroupAgent](inGroup,[group])" operator="=" value="True"/>
+			<RecentEvent subject="[GroupAgent]" target="[JoinAgent]" action="Reply" parameters="joingroupconvince,positiveanswer,[group]"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="[JoinAgent](inGroup,[group])" operator="=" value="True"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<Action name="InferenceGroup10([JoinAgent],[GroupAgent],[group])">
+		<PreConditions>
+			<Property name="[group](isGroupOf1)" operator="=" value="True"/>
+			<Property name="[JoinAgent](inGroup,[group])" operator="=" value="Pending"/>
+			<Property name="[GroupAgent](inGroup,[group])" operator="=" value="True"/>
+			<RecentEvent subject="[GroupAgent]" target="[JoinAgent]" action="Reply" parameters="joingroupconvince,negativeanswer,[group]"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="[JoinAgent](inGroup,[group])" operator="=" value="False"/>
+			</Effect>
+			<Effect probability="1">
+				<Property name="[JoinAgent](needToCope)" operator="=" value="True"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<!-- Friendship inferences -->
+	<Action name="InferenceFriends([ag1],[ag2])">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[ag1]" target="[ag2]" action="Reply" parameters="makefriend,positiveanswer"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="[ag1](friend,[ag2])" operator="=" value="True"/>
+				<Property name="[ag2](friend,[ag1])" operator="=" value="True"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<!-- Helper inferences -->
+	<Action name="InferenceHelper1([ag1],[ag2])">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[ag1]" target="[ag2]" action="Reply" parameters="askforhelp,positiveanswer"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="[ag1](helper,[ag2])" operator="=" value="True"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<Action name="InferenceHelper([ag1],[ag2])">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[ag1]" target="[ag2]" action="Reply" parameters="helpprotection,positiveanswer"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="[ag2](helper,[ag1])" operator="=" value="True"/>
+			</Effect>
+		</Effects>
+	</Action>
+</DomainActions>

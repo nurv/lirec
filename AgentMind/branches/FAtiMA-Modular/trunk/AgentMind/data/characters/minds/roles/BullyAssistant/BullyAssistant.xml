@@ -1,0 +1,132 @@
+<Character role="BullyAssistant" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:noNamespaceSchemaLocation="../../schemas/Character.xsd">
+	<EmotionalThresholds>
+		<EmotionalThreshold emotion="Love" threshold="3" decay="5"/>
+		<EmotionalThreshold emotion="Hate" threshold="3" decay="5"/>
+		<EmotionalThreshold emotion="Hope" threshold="3" decay="2"/>
+		<EmotionalThreshold emotion="Fear" threshold="5" decay="8"/>
+		<EmotionalThreshold emotion="Satisfaction" threshold="5" decay="5"/>
+		<EmotionalThreshold emotion="Relief" threshold="3" decay="5"/>
+		<EmotionalThreshold emotion="Fears-Confirmed" threshold="5" decay="8"/>
+		<EmotionalThreshold emotion="Disappointment" threshold="3" decay="2"/>
+		<EmotionalThreshold emotion="Joy" threshold="3" decay="5"/>
+		<EmotionalThreshold emotion="Distress" threshold="5" decay="2"/>
+		<EmotionalThreshold emotion="Happy-For" threshold="3" decay="8"/>
+		<EmotionalThreshold emotion="Pitty" threshold="3" decay="8"/>
+		<EmotionalThreshold emotion="Resentment" threshold="5" decay="2"/>
+		<EmotionalThreshold emotion="Gloating" threshold="2" decay="8"/>
+		<EmotionalThreshold emotion="Pride" threshold="3" decay="8"/>
+		<EmotionalThreshold emotion="Shame" threshold="3" decay="5"/>
+		<EmotionalThreshold emotion="Gratification" threshold="1" decay="5"/>
+		<EmotionalThreshold emotion="Remorse" threshold="5" decay="8"/>
+		<EmotionalThreshold emotion="Admiration" threshold="1" decay="8"/>
+		<EmotionalThreshold emotion="Reproach" threshold="3" decay="8"/>
+		<EmotionalThreshold emotion="Gratitude" threshold="3" decay="5"/>
+		<EmotionalThreshold emotion="Anger" threshold="3" decay="5"/>
+	</EmotionalThresholds>
+	<MotivationalParameters>
+		<MotivationalParameter motivator="Affiliation" decayFactor="2" weight="0.075" intensity="6"/>
+		<MotivationalParameter motivator="Integrity" decayFactor="1.5" weight="0.05" intensity="4"/>
+		<MotivationalParameter motivator="Energy" decayFactor="2" weight="0.055" intensity="5"/>
+		<MotivationalParameter motivator="Certainty" decayFactor="4" weight="0.065" intensity="4"/>
+		<MotivationalParameter motivator="Competence" decayFactor="3" weight="0.05" intensity="4"/>
+	</MotivationalParameters>
+
+	<Goals>
+	
+		<!-- Generic goals that are used in more than one episode -->
+		<Goal name="ReplyPositively([speaker],[question])" importanceOfSuccess="4" importanceOfFailure="3"/>
+		<Goal name="ReplyNegatively([speaker],[question])" importanceOfSuccess="4" importanceOfFailure="3"/>
+		<Goal name="ReplyPositivelyNoChoice([speaker],[question])" importanceOfSuccess="0" importanceOfFailure="4"/>
+		<Goal name="AssistBully([bully],[victim],[type])" importanceOfSuccess="4" importanceOfFailure="4"/>
+		
+		
+	</Goals>
+	
+	<InterpersonalRelations>
+		<Relation target="Luke" like="6" respect="3"/>
+		<Relation target="John" like="-2" respect="-2"/>
+		<Relation target="Ollie" like="3" respect="1"/>
+		<Relation target="Rob" like="2" respect="1"/>
+		<Relation target="Janet" like="6" respect="3"/>
+		<Relation target="Sarah" like="4" respect="2"/>
+		<Relation target="Nita" like="4"  respect="1"/>
+		<Relation target="Martina" like="2" respect="1"/>
+		<Relation target="Elinor" like="2" respect="1"/>
+		<Relation target="Frances" like="-2" respect="-2"/>
+	</InterpersonalRelations>
+	
+	<EventReactions>
+		<EmotionalReaction desirability="6" desirabilityForOther="-6" praiseworthiness="-3">
+			<Event action="cry"/>
+		</EmotionalReaction>
+		<EmotionalReaction desirability="-6" praiseworthiness="-3">
+			<Event subject="SELF" action="cry"/>
+		</EmotionalReaction>
+		<EmotionalReaction desirability="3" desirabilityForOther="-5" praiseworthiness="2">
+			<Event action="swipe" target="Book"/>
+		</EmotionalReaction>
+		<EmotionalReaction desirability="-9" praiseworthiness="5">
+			<Event action="attack" target="SELF"/>
+		</EmotionalReaction>
+		<EmotionalReaction desirability="4" desirabilityForOther="-7" praiseworthiness="4">
+			<Event action="attack"/>
+		</EmotionalReaction>
+		<EmotionalReaction praiseworthiness="5">
+            <Event action="SpeechAct" parameters="deceptionreveal" />
+        </EmotionalReaction>
+        
+        
+		<!-- Emotional Reactions for Episode B11: On the Way home -->
+		
+		<!-- emotional reactions for waterbomb episodes start here  -->
+
+        <EmotionalReaction desirability="3" desirabilityForOther="-4" praiseworthiness="3">
+            <Event action="SpeechAct" parameters="insultgreeting" />
+        </EmotionalReaction>
+		
+		<EmotionalReaction desirability="-3" desirabilityForOther="-3" praiseworthiness="-4">
+            <Event action="SpeechAct" parameters="confrontationbeg" />
+        </EmotionalReaction>
+		
+		<EmotionalReaction desirability="5" desirabilityForOther="-8" praiseworthiness="5">
+            <Event action="throw" parameters="[item]" />
+        </EmotionalReaction>
+		
+		<EmotionalReaction desirability="4" desirabilityForOther="-6" praiseworthiness="3">
+            <Event action="SpeechAct" parameters="bullywithobject" />
+        </EmotionalReaction>
+		
+		<EmotionalReaction desirability="3" desirabilityForOther="-3" praiseworthiness="-3">
+            <Event action="SpeechAct" parameters="bullywithobjectnegativeanswer" />
+        </EmotionalReaction>
+		
+		<EmotionalReaction desirability="-3" desirabilityForOther="3" praiseworthiness="3">
+            <Event action="SpeechAct" parameters="bullywithobjectpositiveanswer" />
+        </EmotionalReaction>
+		
+		<EmotionalReaction desirability="-3" desirabilityForOther="-3" praiseworthiness="3">
+            <Event action="SpeechAct" parameters="confrontationhelper" />
+        </EmotionalReaction>
+		
+		<EmotionalReaction desirability="-3" desirabilityForOther="3" praiseworthiness="-3">
+            <Event action="Reply" parameters="confrontationhelper,positiveanswer" />
+        </EmotionalReaction>
+		
+		<EmotionalReaction desirability="3" desirabilityForOther="-3" praiseworthiness="3">
+            <Event action="Reply" parameters="confrontationhelper,negativeanswer" />
+        </EmotionalReaction>
+		
+		<EmotionalReaction desirability="4" desirabilityForOther="-3" praiseworthiness="3">
+            <Event action="SpeechAct" parameters="mock" />
+        </EmotionalReaction>
+		
+		<EmotionalReaction desirability="5" desirabilityForOther="-5" praiseworthiness="3">
+            <Event action="SpeechAct" subject="[SELF]" parameters="mockreinforce" />
+        </EmotionalReaction>		
+		<!-- emotional reactions for waterbomb episodes end here -->
+        
+	</EventReactions>
+	<ActionTendencies>
+    </ActionTendencies>
+</Character>

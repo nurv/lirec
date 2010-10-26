@@ -1,0 +1,2 @@
+onRecyclingMachine True
+produceSoil True

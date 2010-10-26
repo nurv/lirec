@@ -1,0 +1,1438 @@
+# Episode summarys
+absOrder: e1_0, e1_1, default, e3_1, e3_2
+
+
+######################################
+# some technical stuff: pre-processing for events
+
+# add dummy location
+e1_0: $E=Event(not(location:))
+-> $E(location:" ")
+
+# set order of main phrase constituents: subject, verb, object, additional parameters, adverbials (location + time)
+#e1_1: $E=Event(subject:$SB,action:$AC,%$T=target:,%$P=param:,gender:$G) 
+#-> Summary(value:($SB," ")) Action(value:$AC,gender:$G,$T,$P) $E
+#e1_1: $E=Event(%$S=sameSubject:,subject:$SB,action:$AC,%$T=target:,%$P=param:,gender:$G)
+#-> Summary(value:($SB," ")) Action(value:$AC,gender:$G,$T,$P) $E
+e1_1: $E=Event(%$S=sameSubject:,subject:$SB,action:$AC,%$T=target:,%$P=param:,gender:$G)
+-> Action(value:$AC,gender:$G,$T,$P,subject:$SB) $E
+
+
+# use pronoun instead of name if the subject of the preceding event 
+# was the same as this
+#e1_1: $E=Event($S=sameSubject:yes,subject:$SB,action:$AC,%$T=target:,%$P=param:,gender:$G)
+#-> Summary(value:(Lex(semCat:ppn_3,number:sg,gender:$G,case:nom)," ")) Action(value:$AC,gender:$G,$T,$P) $E
+#e1_1: $E=Event($SS=sameSubject:yes,$S=subject:$SB=not(I,me),action:$AC,%$T=target:,%$P=param:,gender:$G)
+#-> Summary(value:(Lex(semCat:ppn_3,number:sg,gender:$G,case:nom)," ")) Action(value:$AC,gender:$G,$T,$P) $E
+e1_1: $E=Event($SS=sameSubject:yes,$S=subject:$SB=not(I,me),action:$AC,%$T=target:,%$P=param:,gender:$G)
+-> Action(value:$AC,gender:$G,$T,$P,$S,$SS) $E
+
+e1_1: $E=Event(location:$L)
+-> Location(value:$L) $E
+
+e1_1: $E=Event(time:$T,action:$A)
+-> $T $E(action:$A)
+
+
+
+######################################
+# add, edit and remove constituent values here
+
+# transitional phrases
+
+Connection(not(isfinal:)) 
+-> Summary(value:". Dann ")
+
+#Connection(not(isfinal:)) 
+#-> Summary(value:"und ")
+
+Connection(not(isfinal:)) 
+-> Summary(value:"und dann ")
+
+Connection(not(isfinal:)) 
+-> Summary(value:". Daraufhin ")
+
+Connection(not(isfinal:)) 
+-> Summary(value:". Als nächstes ")
+
+Connection(not(isfinal:)) 
+-> Summary(value:". Anschließend ")
+
+Connection(not(isfinal:)) 
+-> Summary(value:", dann ")
+
+Connection(isfinal:yes)
+-> Summary(value:". Zum Schluss ")
+
+###
+# list of all actions
+
+# Goal Related actions
+Action(value:activate,target:$T,param:%$P,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:wollen,time:imperf,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") @if($P,goal2text(value:$T,parameter:$P,$G),goal2text(value:$T,$G)) Summary(value:" ")
+
+Action(value:fail,target:$T,param:%$P,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:können,time:imperf,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") @if($P,goal2text(value:$T,parameter:$P,$G,not:"nicht "),goal2text(value:$T,$G,not:"nicht ")) Summary(value:" ")
+
+Action(value:succeed,target:$T,param:%$P,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:können,time:imperf,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") @if($P,goal2text(value:$T,parameter:$P,$G),goal2text(value:$T,$G)) Summary(value:" ")
+
+
+Action(value:sit,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> Summary(value:"saß ") subject2text($SB,$SS,$G) Summary(value:" ")
+
+Action(value:look-at,$SB=subject:,%$SS=sameSubject:,$G=gender:,target:$T)
+-> Summary(value:"habe ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_akk(target:$T) Summary(value:" getroffen ")
+
+Action(value:look-at,$SB=subject:,%$SS=sameSubject:,$G=gender:,target:$T)
+-> Summary(value:"habe ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_akk(target:$T) Summary(value:" gesehen ")
+
+#oder:
+#Action(value:sit,subject:$SB)
+#-> verb2text(verb:sitzen,time:imperf,$SB) Summary(value:" ") subject2text($SB) Summary(value:" ")
+# und das Verb (in diesem Fall sitzen) muss ins Lexikon
+
+Action(value:get-up,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> Summary(value:"stand ") subject2text($SB,$SS,$G) Summary(value:" auf ") 
+
+Action(value:crouch,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> Summary(value:"kroch ") subject2text($SB,$SS,$G) Summary(value:" ")
+
+Action(value:move-to,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> Summary(value:"ging ") subject2text($SB,$SS,$G) Summary(value:" zu ")
+
+Action(value:run-to,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> Summary(value:"rannte ") subject2text($SB,$SS,$G) Summary(value:" zu ")
+
+Action(value:walk-away,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> Summary(value:"ging ") subject2text($SB,$SS,$G) Summary(value:" weg ")
+
+Action(value:run-away,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> Summary(value:"rannte ") subject2text($SB,$SS,$G) Summary(value:" weg ")
+
+Action(value:run-away,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> Summary(value:"lief ") subject2text($SB,$SS,$G) Summary(value:" weg ")
+
+Action(value:laugh,$SB=subject:,%$SS=sameSubject:,$G=gender:) # at ?
+-> Summary(value:"lachte ") subject2text($SB,$SS,$G) Summary(value:" ")
+
+Action(value:attack,$SB=subject:,%$SS=sameSubject:,target:$T,$G=gender:)
+-> Summary(value:"ist ") subject2text($SB,$SS,$G) Summary(value:" auf ") target2text_akk(target:$T) Summary(value:" losgegangen ")
+
+Action(value:attack,$SB=subject:,%$SS=sameSubject:,target:$T,$G=gender:)
+-> Summary(value:"hat ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_akk(target:$T) Summary(value:" angegriffen ")
+
+Action(value:pick,target:$T,$SB=subject:,%$SS=sameSubject:,$G=gender:) # picked on?
+-> Summary(value:("picked ",$T," "))
+
+Action(value:steal,target:$T,$SB=subject:,%$SS=sameSubject:,$G=gender:) # the/a?
+-> Summary(value:("stole ",$T," "))
+
+Action(value:throw,target:$T,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> Summary(value:("threw ",$T," "))
+
+Action(value:sweep,target:$T,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> Summary(value:("sweeped ",$T," "))
+
+Action(value:swipe,target:$T,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> Summary(value:("swiped ",$T," "))
+
+Action(value:destroy,target:$T,$SB=subject:,%$SS=sameSubject:,$G=gender:) #the/a?
+-> Summary(value:("destroyed ",$T," "))
+
+Action(value:destroy,target:$T,$SB=subject:,%$SS=sameSubject:,$G=gender:) #the/a?
+-> Summary(value:("damaged ",$T," "))
+
+Action(value:destroy,target:$T,$SB=subject:,%$SS=sameSubject:,$G=gender:) #the/a?
+-> Summary(value:("ruined ",$T," "))
+
+Action(value:drop,target:$T,$SB=subject:,%$SS=sameSubject:,$G=gender:) #the/a?
+-> Summary(value:("dropped ",$T," "))
+
+Action(value:poke,target:$T,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> Summary(value:"poked ")
+
+
+#SpeechActs here
+
+Action(value:greeting,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" Hallo zu ") target2text_dat($T) Summary(value:" gesagt ")
+# hat/hab subject Hallo zu target(dat) gesagt
+
+Action(value:greeting,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_akk($T) Summary(value:" gegrüßt ")
+# hat/hab subject target(akk) gegrüßt
+
+Action(value:insult,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_akk($T) Summary(value:" beleidigt und beschimpft ")
+# hat/hab subject target(akk) beleidigt
+
+Action(value:insultgreeting,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_akk($T) Summary(value:" beleidigt ")
+# hat/hab subject target(akk) beleidigt
+
+Action(value:insultinsultback,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_akk($T) Summary(value:" auch beleidigt ")
+# hat/hab subject target(akk) beleidigt
+
+Action(value:or(cry,cryanswer),$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" geweint ")
+# hat/hab subject geweint
+
+Action(value:or(cry,cryanswer),$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" angefangen zu weinen ")
+# hat/hab subject angefangen zu weinen
+
+Action(value:mock,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_akk($T) Summary(value:" gehänselt ")
+# hat/hab subject target(akk) gehänselt
+
+Action(value:mockreinforce,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_akk($T) Summary(value:" weiter geärgert ")
+# hat/hab subject target(akk) gehänselt
+
+Action(value:laughoff,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" versucht, so zu tun als wär es witzig, ")
+# hat/hab subject versucht witzig zu sein
+
+Action(value:laughoffpositiveanswer,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_akk($T) Summary(value:" in Ruhe gelassen ")
+# hat/hab subject target(akk) in Ruhe gelassen
+
+Action(value:laughoffnegativeanswer,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> Summary(value:"fand ") subject2text($SB,$SS,$G) Summary(value:" das nicht lustig ")
+# fand subject target(akk) nicht lustig
+
+Action(value:threattalkto,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_dat($T) Summary(value:" verboten, mit jemandem darüber zu reden ")
+# hat/hab subject target(dat) verboten, mit jemandem zu reden 
+
+Action(value:threattalktoreinforce,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_dat($T) Summary(value:" gesagt, niemandem etwas davon zu erzählen ")
+# hat/hab subject target(dat) geraten, niemandem was zu sagen 
+
+Action(value:threattalktopositiveanswer,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_dat($T) Summary(value:" versichert, nichts zu sagen ")
+# hat/hab subject target(dat) versichert, nichts zu sagen 
+
+Action(value:threattalktonegativeanswer,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_dat($T) Summary(value:" gesagt, dass ") subject2text($SB,sameSubject:"yes",$G) Summary(value:" ") target2text_akk($T) Summary(value:" verpetzen ") verb2text(verb:werden,time:pres,$SB) Summary(value:" ")
+# hat/hab subject target(dat) gesagt, dass subject(ss:yes) petzen werde/wird 
+
+Action(value:or(tease,teasereinforce),$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" sich über ") target2text_akk($T) Summary(value:" lustig gemacht ")
+# hat/hab subject sich über target(akk) lustig gemacht
+
+Action(value:or(tease,teasereinforce),$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_akk($T) Summary(value:" gehänselt ")
+# hat/hab subject target(akk) gehänselt
+
+Action(value:teasedefend,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> Summary(value:("hab ich mich gegen ")) target2text_akk($T) Summary(value:" gewehrt ") 
+# hab ich mich gegen die Hänseleien von target(akk) gewehrt
+
+Action(value:teasedefendpositiveanswer,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" aufgehört ") target2text_akk($T) Summary(value:" zu ärgern ")
+# hat/hab subject aufgehört target(akk) aufzuziehen
+
+Action(value:teasedefendnegativeanswer,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_akk($T) Summary(value:" weiter geärgert ")
+# hat/hab subject target(akk) weiter aufgezogen
+
+Action(value:askforhelp,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_akk($T) Summary(value:" um Hilfe gefragt ")
+# hat/hab subject target(akk) um Hilfe gebeten
+
+Action(value:askforhelppositiveanswer,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" gesagt, dass ") subject2text($SB,sameSubject:"yes",$G) Summary(value:" ") target2text_dat($T) Summary(value:" helfen ") verb2text(verb:werden,time:pres,$SB) Summary(value:" ")
+# hat/hab subject gesagt, dass subject(ss:yes) target(dat) helfen wird/werde
+
+Action(value:askforhelpnegativeanswer,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" gesagt, dass ") subject2text($SB,sameSubject:"yes",$G) Summary(value:" ") target2text_dat($T) Summary(value:" nicht helfen ") verb2text(verb:werden,time:pres,$SB) Summary(value:" ")
+# hat/hab subject gesagt, dass subject(ss:yes) target(dat) nicht helfen wird/werde
+
+Action(value:makefriend,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_akk($T) Summary(value:" gefragt, ob wir Freunde werden wollen ")
+# hat/hab subject target(akk) gefragt, ob wir Freunde werden wollen
+
+Action(value:makefriendpositiveanswer,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> Summary(value:("fand ")) subject2text($SB,$SS,$G) Summary(value:(" es eine gute Idee, dass wir Freunde werden "))
+# fand subject die Idee, Freunde zu werden, gut
+
+Action(value:makefriendnegativeanswer,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> Summary(value:("wollte ")) subject2text($SB,$SS,$G) Summary(value:(" nicht mein Freund werden "))
+# wollte sich subject nicht mit mir anfreunden
+
+Action(value:makefriendnegativeanswerreply,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_dat($T) Summary(value:" gesagt, dass mir das egal ist ")
+# hab/hat subject target(dat) gesagt, dass mir das egal ist
+
+Action(value:helpquestion,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_akk($T) Summary(value:" gefragt, ob alles in Ordnung ist ")
+# hab/hat subject target(akk) gefragt, ob alles in Ordnung ist
+
+Action(value:helpquestionpositiveanswer,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_dat($T) Summary(value:" von meinen Problemen erzählt ")
+# hab/hat subject target(dat) von meinen Problemen erzählt
+
+Action(value:helpquestionnegativeanswer,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_dat($T) Summary(value:" gesagt, dass ") subject2text($SB,sameSubject:yes,$G) Summary(value:" kein Problem ") verb2text(verb:haben,time:pres,$SB) Summary(value:" ")
+# hab/hat subject target(dat) gesagt, dass es kein Problem gibt
+
+Action(value:helprefusal,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_dat($T) Summary(value:" gesagt, dass alles in Ordnung ist ")
+# hab/hat subject target(dat) gesagt, dass alles in Ordnung ist
+
+Action(value:helpunknown,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_dat($T) Summary(value:" gesagt, dass ") subject2text($SB,sameSubject:"yes",$G) Summary(value:" auch nicht weiß, wie ") subject2text($SB,sameSubject:"yes",$G)  Summary(value:" ") target2text_dat($T) Summary(value:" helfen kann ") 
+# hab/hat subject target(dat) gesagt, dass subject(ss:yes) keine Lösung für meine Probleme hat 
+
+Action(value:helpunknownanswer,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_dat($T) Summary(value:" fürs Zuhören gedankt ")
+# hab/hat subject target(dat) fürs Zuhören gedankt 
+
+Action(value:helpintroducefriend,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" angeboten, ") target2text_dat($T) Summary(value:" dabei zu helfen, Freunde zu finden ")
+# hab/hat subject angeboten, target(dat) dabei zu helfen, Freunde zu finden 
+
+Action(value:helpintroducefriendpositiveanswer,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> Summary(value:"war ") subject2text($SB,$SS,$G) Summary(value:" einverstanden, die Freunde von ") target2text_dat($T) Summary(value:" kennenzulernen ")
+# war subject einverstanden, die Freunde von target(dat) kennenzulernen 
+
+Action(value:helpintroducefriendnegativeanswer,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> Summary(value:"wollte ") subject2text($SB,$SS,$G) Summary(value:" nicht die Freunde von  ") target2text_dat($T) Summary(value:" kennenlernen ")
+# wollte subject nicht die Freunde von target(dat) kennenlernen 
+
+Action(value:helpinvitation,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_akk($T) Summary(value:" eingeladen ")
+# hab/hat subject target(akk) eingeladen
+
+Action(value:helpinvitationpositiveanswer,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" die Einladung von ") target2text_dat($T) Summary(value:" angenommen ")
+# hab/hat subject die Einladung von target(dat) angenommen
+
+Action(value:helpinvitationnegativeanswer,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> Summary(value:"wollte ") subject2text($SB,$SS,$G) Summary(value:" nicht zu  ") target2text_dat($T) Summary(value:" gehen ")
+# wollte subject nicht zu target(dat) gehen
+
+Action(value:helpprotection,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" angeboten, ") target2text_akk($T) Summary(value:" zu beschützen ")
+# hat/hab subject angeboten, target(akk) zu beschützen
+
+Action(value:helpprotectionpositiveanswer,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:) 
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_dat($T) Summary(value:" gesagt, dass es cool wäre, wenn ") Lex(semCat:ppn_3,number:sg,$G,case:nom) Summary(value:" mich beschützen könnte ") 
+# hat/hab subject target(dat) gesagt, dass es cool wäre, wenn er/sie mich beschützen könnte
+
+Action(value:helpprotectionnegativeanswer,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_dat($T) Summary(value:" gesagt, dass ich auf mich selbst aufpassen kann ") 
+# hat/hab subject target(dat) gesagt, dass ich auf mich selbst aufpassen kann
+
+Action(value:confrontationorder,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_akk($T) Summary(value:" angeschnauzt und gesagt, ich soll Platz machen ") 
+# hat/hab subject target(akk) angeschnauzt und gesagt ich soll Platz machen 
+
+Action(value:confrontationorderreinforce,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:"  gesagt, dass ") target2text_nom($T) Summary(value:" aus dem Weg gehen soll ") 
+# hat/hab subject gesagt, dass target(nom) aus dem Weg gehen soll  
+
+Action(value:confrontationorderpositiveanswer,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:"  gehorcht ")
+# hat/hab subject gehorcht 
+
+Action(value:confrontationordernegativeanswer,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_dat($T) Summary(value:" gesagt, dass ich mich nicht rumkomandieren lasse ") 
+# hat/hab subject target(dat) gesagt, dass ich mich nicht rumkomandieren lasse 
+
+Action(value:confrontationforbid,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_dat($T) Summary(value:" verboten, in den Raum zu kommen ") 
+# hat/hab subject target(dat) verboten, in den Raum zu kommen 
+
+Action(value:confrontationforbidpositiveanswer,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:"  gehorcht ")
+# hat/hab subject gehorcht 
+
+Action(value:confrontationforbidnegativeanswer,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_dat($T) Summary(value:" gesagt, dass ich mich nicht rumkomandieren lasse ") 
+# hat/hab subject target(dat) gesagt, dass ich mich nicht rumkomandieren lasse 
+
+Action(value:confrontationhelper,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" zu ") target2text_dat($T) Summary(value:" gesagt, dass ") Lex(semCat:ppn_3,number:sg,$G,case:nom) Summary(value:" aufhören soll mich zu ärgern ") 
+# hat/hab subject zu target(dat) gesagt, dass er/sie aufhören soll mich zu ärgern 
+
+Action(value:confrontationhelperpositiveanswer,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" gesagt, dass ") subject2text($SB,sameSubject:"yes",$G) Summary(value:" aufhören will mich zu ärgern ") 
+# hat/hab subject gesagt, dass subject(ss:yes) aufhören will mich zu ärgern
+
+Action(value:confrontationhelpernegativeanswer,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" zu ") target2text_dat($T) Summary(value:" gesagt, dass ") Lex(semCat:ppn_3,number:sg,$G,case:nom) Summary(value:" sich da nicht einmischen soll ") 
+# hat/hab subject zu target(dat) gesagt, dass er/sie sich da nicht einmischen soll
+
+Action(value:confrontationhelperdeny,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" behauptet, dass ") subject2text($SB,sameSubject:"yes",$G) Summary(value:" mich nicht geärgert hat ")
+# hat/hab subject bestritten, dass subject(ss:yes) mich geärgert hat
+
+Action(value:confrontationagressivequestionning,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_akk($T) Summary(value:" gefragt, wo ich hingehe ") 
+# hat/hab subject target(akk) mich gefragt, wo ich hingehe
+
+Action(value:confrontationagressivequestionningpositiveanswer,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_dat($T) Summary(value:" gesagt, wo ich hingehe ") 
+# hat/hab subject target(dat) gesagt, wo ich hingehe
+
+Action(value:confrontationagressivequestionningnegativeanswer,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_dat($T) Summary(value:" gesagt, ") Lex(semCat:ppn_3,number:sg,$G,case:nom) Summary(value:" soll mich in Ruhe lassen ") 
+# hat/hab subject target(dat) gesagt, er/sie soll mich in Ruhe lassen
+
+Action(value:confrontationappology,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" sich bei ") target2text_dat($T) Summary(value:" entschuldigt ")
+# hat/hab subject sich bei target(dat) entschuldigt
+
+Action(value:confrontationappologypositiveanswer,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" die Entschuldigung von ") target2text_dat($T) Summary(value:" angenommen ")
+# hat/hab subject die Entschuldigung von target(dat) angenommen
+
+Action(value:confrontationappologynegativeanswer,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> Summary(value:" konnte ") subject2text($SB,$SS,$G) Summary(value:" die Entschuldigung von ") target2text_dat($T) Summary(value:" nicht annehmen ")
+# konnte subject die Entschuldigung von target(dat) nicht annehmen
+
+Action(value:confrontationaskwhy,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_akk($T) Summary(value:"  gefragt, warum ") Lex(semCat:ppn_3,number:sg,$G,case:nom) Summary(value:" mich ständig ärgert ") 
+# hat/hab subject target(akk) gefragt, warum er/sie mich ständig ärgert
+
+Action(value:confrontationaskwhypositiveanswer,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_akk($T) Summary(value:" beleidigt ") 
+# hat/hab subject target(akk) beleidigt
+
+Action(value:confrontationaskwhynegativeanswer,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_akk($T) Summary(value:" bedroht ") 
+# hat/hab subject target(akk) bedroht
+
+Action(value:confrontationbeg,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_akk($T) Summary(value:" angefleht, mich nicht mehr ständig zu ärgern ") 
+# hat/hab subject target(akk) angefleht, aufzuhören mich ständig zu ärgern
+
+Action(value:confrontationleave,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_dat($T) Summary(value:" gesagt, dass ich gehe ") 
+# hat/hab subject target(dat) gesagt, dass ich gehe
+
+Action(value:confrontationleavenegativeanswer,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_akk($T) Summary(value:" gebeten, zu bleiben ") 
+# hat/hab subject target(akk) gebeten, zu bleiben
+
+Action(value:confrontationleavepositiveanswer,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" gesagt, ") target2text_nom($T) Summary(value:" soll doch verschwinden ") 
+# hat/hab subject gesagt, target(nom) soll doch verschwinden
+
+Action(value:confrontationstruggle,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" vor Schmerz aufgeheult ")
+# hat/hab subject vor Schmerz aufgeheult
+
+Action(value:confrontationletgo,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_akk($T) Summary(value:" gehen lassen ")
+# hat/hab subject target(akk) gehen lassen
+
+Action(value:confrontationtoldteacher,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" sich beschwert, dass ich mit dem Lehrer geredet hab ")
+# hat subject sich beschwert, dass ich mit dem Lehrer geredet hab
+
+Action(value:confrontationbullyassistant,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_akk($T) Summary(value:"  gefragt, warum ") Lex(semCat:ppn_3,number:sg,$G,case:nom) Summary(value:" dabei hilft mich ständig zu ärgern ") 
+# hat/hab subject target(akk) gefragt, warum er/sie dabei hilft mich ständig zu ärgern
+
+Action(value:confrontationbullyassistantpositiveanswer,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_dat($T) Summary(value:" gesagt, dass ") subject2text($SB,sameSubject:"yes",$G) Summary(value:" ") target2text_dat($T) Summary(value:" leider nicht helfen kann ")
+# hat/hab subject target(dat) gesagt, dass subject(ss:yes) mir leider nicht helfen kann
+
+Action(value:confrontationbullyassistantnegativeanswer,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" sich über ") target2text_akk($T) Summary(value:" lustig gemacht ")
+# hat/hab subject sich über target(akk) lustig gemacht
+
+Action(value:socialgreeting,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" hallo zu ") target2text_dat($T) Summary(value:" gesagt ")
+# hat/hab subject hallo zu target(dat) gesagt
+
+Action(value:socialgreetingpositiveanswer,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" hallo zu ") target2text_dat($T) Summary(value:" gesagt ")
+# hat/hab subject hallo zu target(dat) gesagt
+
+Action(value:socialgreetingnegativeanswer,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" hallo zu ") target2text_dat($T) Summary(value:" gesagt ")
+# hat/hab subject hallo zu target(dat) gesagt
+
+Action(value:socialgreetingend,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" sich von ") target2text_dat($T) Summary(value:" verabschiedet ")
+# hat/hab subject sich von target(dat) verabschiedet
+
+Action(value:threatfightback,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" zu ") target2text_dat($T) Summary(value:" gesagt, ") subject2text($SB,sameSubject:yes,$G) Summary(value:", dass ") Lex(semCat:ppn_3,number:sg,$G,case:akk) Summary(value:" schlagen werde, wenn ") Lex(semCat:ppn_3,number:sg,$G,case:nom) Summary(value:" nicht endlich aufhört ")
+# hat/hab subject zu target(dat) gesagt, dass ich ihn/sie schlagen, werde wenn er/sie nicht endlich aufhört
+
+Action(value:threatfightbackpositiveanswer,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" Angst gekriegt, als ") target2text_nom($T) Summary(value:" ") Lex(semCat:ppn_3,number:sg,$G,case:akk) Summary(value:" bedroht hab ")
+# hat/hab subject Angst gekriegt, als target(nom) ihn/sie bedroht hab
+
+Action(value:threatfightbacknegativeanswer,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_akk($T) Summary(value:" gewarnt, besser nicht mit ") Lex(semCat:ppn_3,number:sg,$G,case:dat) Summary(value:" zu kämpfen ")
+# hat/hab subject target(akk) gewarnt, besser nicht mit ihm/ihr zu kämpfen
+
+Action(value:fightstart,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_dat($T) Summary(value:" gesagt, dass ich endgültig genug hab ") 
+# hat/hab subject target(dat) gesagt, dass ich endgültig genug hab
+
+Action(value:gloatvictory,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" rumgeprahlt, dass ") Lex(semCat:ppn_3,number:sg,$G,case:nom) Summary(value:" den Kampf gegen ") target2text_akk($T) Summary(value:" gewonnen hat ")
+# hat/hab subject rumgeprahlt, dass subject(ss:yes) den Kampf gegen target(akk) gewonnen hat
+
+Action(value:gloatvictoryreinforce,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" über ") target2text_akk($T) Summary(value:" gelacht ") 
+# hat/hab subject über target(akk) gelacht
+
+Action(value:victimfightsuccess,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_akk($T) Summary(value:" damit aufgezogen, dass ich ") Lex(semCat:ppn_3,number:sg,$G,case:akk) Summary(value:" geschlagen hab ")
+# hat/hab subject target(akk) damit aufgezogen, dass ich ihn/sie geschlagen hab
+
+Action(value:victimfightsuccesspositiveanswer,$T=target:$A,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" eingesehen, dass ") target2text_nom($T) Summary(value:" der Sieger war ")
+# hat/hab subject eingesehen, dass target(nom) gewonnen hab
+
+Action(value:victimfightsuccessnegativeanswer,$T=target:$TT,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> Summary(value:" konnte ") subject2text($SB,$SS,$G) Summary(value:" nicht einsehen, dass ") target2text_nom($T) Summary(value:" der Sieger war ")
+# konnte subject nicht einsehen, dass target(nom) gewonnen hab
+
+Action(value:deception,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_akk($T) Summary(value:" gebeten, zu warten ")
+# hat/hab subject target(akk) gebeten, zu warten
+
+Action(value:deceptionreinforce,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_akk($T) Summary(value:" gebeten, zu warten ")
+# hat/hab subject target(akk) gebeten, zu warten
+
+Action(value:deceptionpositiveanswer,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_dat($T) Summary(value:" gesagt, dass ich warte ")
+# hat/hab subject target(dat) gesagt, dass ich warte
+
+Action(value:deceptionnegativeanswer,$T=target:,$SB=subject:$S,%$SS=sameSubject:,$G=gender:)
+-> Summary(value:" wusste ") subject2text($SB,$SS,$G) Summary(value:", dass ") target2text_nom($T) Summary(value:" mich nur reinlegen wollte ")
+# wusste subject, dass target(nom) nur versucht hat mich zu verarschen
+
+Action(value:deceptionreveal,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" gesagt, dass sie nie vorhatten, mit ") target2text_dat($T) Summary(value:" zusammen zur Schule zu gehen ")
+# hat/hab subject gesagt, dass sie nie mit target(dat) zusammen zur Schule gehen wollten
+
+Action(value:deceptionrevealreinforce,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" zugegeben, dass sie ") target2text_akk($T) Summary(value:" nur reinlegen wollten ")
+# hat/hab subject zugegeben, dass sie target(akk) nur verarschen wollten
+
+Action(value:partyinvitation,$T=target:,param:%$P,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_akk($T) Summary(value:" auf eine Party eingeladen ")
+# hat/hab subject target(akk) auf eine Party eingeladen
+
+Action(value:partyinvitationpositiveanswer,target:$T,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:(" zugesagt zu ",$T,"'s Party zu kommen "))
+# hat/hab subject zugesagt zu target's Party zu kommen
+
+Action(value:partyinvitationnegativeanswer,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_dat($T) Summary(value:" gesagt, dass ") subject2text($SB,sameSubject:"yes",$G) Summary(value:" nicht zu der Party kommen kann ") 
+# hat/hab subject target(dat) gesagt, dass target nicht zu der Party kommen kann
+
+Action(value:partyinvitationsabotagehost,target:$T,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> Summary(value:"wollte ") subject2text($SB,$SS,$G) Summary(value:(" nicht, dass ",$T," mich zu der Party einlädt "))
+# wollte subject nicht, dass target mich zu der Party einlädt
+
+Action(value:partyinvitationwithdraw,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" gesagt, dass ich doch nicht zu der Party kommen soll ")
+# hat/hab subject gesagt, dass ich doch nicht zu der Party kommen soll
+
+Action(value:partyinvitationwithdraw,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> Summary(value:"wollte ") subject2text($SB,$SS,$G) Summary(value:" nicht mehr, dass ich zu der Party komme ")
+# wollte subject nicht mehr, dass ich zu der Party komme
+
+Action(value:partyinvitationsabotageguest,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" versucht, ") target2text_akk($T) Summary(value:" zu überreden, nicht zu meiner Party zu kommen ")
+# hat/hab subject versucht target(akk) zu überreden, nicht zu meiner Party zu kommen
+
+Action(value:protest,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_dat($T) Summary(value:" gesagt, ") Lex(semCat:ppn_3,number:sg,$G,case:nom) Summary(value:" soll aufhören, mich zu ärgern ")
+# hat/hab subject target(dat) gesagt, er/sie soll aufhören mich zu ärgern
+
+Action(value:protestnegativeanswer,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" sich über ") target2text_akk($T) Summary(value:" lustig gemacht ") 
+# hat/hab subject sich über target(akk) lustig gemacht
+
+Action(value:protestpositiveanswer,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" aufgehört, ") target2text_akk($T) Summary(value:" zu ärgern ") 
+# hat/hab subject aufgehört, target(akk) zu ärgern
+
+
+# ############
+#
+# TO DO - itemclaim stuff here, need to find a way to reference item
+#
+# ###########
+
+
+Action(value:footballpassball,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" den Ball zu ") target2text_dat($T) Summary(value:" gespielt ") 
+# hat/hab subject den Ball zu target(dat) gespielt
+
+Action(value:footballrequestball,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> Summary(value:"wollte ") subject2text($SB,$SS,$G) Summary(value:" den Ball von ") target2text_dat($T) Summary(value:" haben ") 
+# wollte subject den Ball von target(dat) haben
+
+Action(value:footballreceiveball,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" den Ball von ") target2text_dat($T) Summary(value:" gekriegt ") 
+# hat/hab subject den Ball von target(dat) gekriegt
+
+Action(value:footballencourage,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" die Mannschaft angefeuert ") 
+# hat/hab subject die Mannschaft angefeuert
+
+Action(value:requestapology,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_dat($T) Summary(value:" gesagt, dass ") Lex(semCat:ppn_3,number:sg,$G,case:nom) Summary(value:" sich bei mir entschuldigen soll ")
+# hat/hab subject target(dat) gesagt, dass er/sie sich bei mir entschuldigen sollte
+
+Action(value:requestapologypositiveanswer,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> Summary(value:"wollte ") subject2text($SB,$SS,$G) Summary(value:" sich entschuldigen ")
+# wollte subject sich entschuldigen
+
+Action(value:requestapologynegativeanswer,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> Summary(value:"wollte ") subject2text($SB,$SS,$G) Summary(value:" sich nicht entschuldigen ")
+# wollte subject sich nicht entschuldigen
+
+Action(value:bullywithobject,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" versucht, ") target2text_akk($T) Summary(value:" zu bewerfen ") 
+# hat/hab subject versucht target(akk) zu bewerfen
+
+Action(value:bullywithobjectpositiveanswer,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> Summary(value:"wurde ") subject2text($SB,$SS,$G) Summary(value:" nicht von ") target2text_dat($T) Summary(value:" getroffen ")
+# wurde subject nicht von target(dat) getroffen
+
+Action(value:bullywithobjectpositiveanswer,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> Summary(value:"hab ich mich beschwert, dass ") target2text_nom($T) Summary(value:" mich getroffen hat ")
+# hab ich mich beschwert, dass target(nom) mich getroffen hat
+
+Action(value:annoy,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_akk($T) Summary(value:" absichtlich genervt ") 
+# hab/hat subject target(akk) absichtlich genervt
+
+Action(value:annoyrequeststop,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_dat($T) Summary(value:" gesagt, ") Lex(semCat:ppn_3,number:sg,$G,case:nom) Summary(value:" soll aufhören zu nerven ") 
+# hab/hat subject target(dat) gesagt, er/sie soll aufhören zu nerven
+
+Action(value:annoydeny,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" gemeint, ") subject2text($SB,sameSubject:"yes",$G) Summary(value:" ") verb2text(verb:haben,time:pres,$SB) Summary(value:" doch gar nichts gemacht ")  
+# hab/hat subject gemeint, subject(ss:yes) hat/hab doch gar nichts gemacht
+
+Action(value:humiliate,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> Summary(value:"wollte ") subject2text($SB,$SS,$G) Summary(value:", dass ich sage, dass ich meine Schuhe nicht allein zubinden kann ")
+# wollte subject, dass ich sage, dass ich meine Schuhe nicht allein zubinden kann
+
+Action(value:humiliatereinforce,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" gesagt, dass ") target2text_nom($T) Summary(value:" keinen Knoten machen kann ")
+# hab/hat subject gesagt, dass target(nom) keinen Knoten machen kann
+
+Action(value:humiliatepositivereply,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" halt gesagt, dass ich keinen Knoten machen kann, damit sie mich in Ruhe lassen ")
+# hab/hat subject halt gesagt, dass ich keinen Knoten machen kann, damit sie mich in Ruhe lassen
+
+Action(value:humiliatenegativereply,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_dat($T) Summary(value:" gesagt, dass ich kein Baby bin und sehr wohl meine Schuhe zubinden kann ") 
+# hab/hat subject target(dat) gesagt, dass ich kein Baby bin und sehr wohl meine Schuhe zubinden kann
+
+Action(value:humiliatethreat,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_dat($T) Summary(value:" gedroht, falls ich nicht zugebe, dass ich keine Schuhe binden kann, ") 
+# hat/hab subject target(dat) gedroht, falls ich es nicht sage
+
+Action(value:humiliatevictory,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" über seinen Witz gelacht ") 
+# hat/hab subject sich über den blöden Witz amüsiert
+
+Action(value:joingroupquestion,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" gefragt, ob ich mitmachen kann ") 
+# hat/hab subject gefragt, ob ich mitmachen kann
+
+Action(value:joingroupquestionpositiveanswer,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_dat($T) Summary(value:" erlaubt mitzumachen ") 
+# hat/hab subject target(dat) erlaubt mitzumachen
+
+Action(value:joingroupquestionnegativeanswer,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> Summary(value:"wollte ") subject2text($SB,$SS,$G) Summary(value:" nicht, dass ich mitmache ")
+# wollte subject nicht, dass ich mitmache
+
+Action(value:joingroupquestionnegativeanswerreinforce,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> Summary(value:"wollte ") subject2text($SB,$SS,$G) Summary(value:" nicht, dass ich mitmache ")
+# wollte subject nicht, dass ich mitmache
+
+Action(value:joingroupconvince,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ein zweites Mal gefragt, ob ich mitmachen kann ") 
+# hat/hab subject ein zweites Mal gefragt, ob ich mitmachen kann
+
+Action(value:joingroupconvincepositiveanswer,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_dat($T) Summary(value:" schließlich erlaubt mitzumachen ") 
+# hat/hab subject target(dat) schließlich erlaubt mitzumachen
+
+Action(value:joingroupconvincenegativeanswer,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> Summary(value:"wollte ") subject2text($SB,$SS,$G) Summary(value:" immer noch nicht, dass ich mitmache ")
+# wollte subject immer noch nicht, dass ich mitmache
+
+Action(value:hideandseekinstructions,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" gesagt, ich soll mich als erstes verstecken ") 
+# hat/hab subject gesagt, ich soll mich als erstes verstecken
+
+Action(value:hideandseekpositiveanswer,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" mich versteckt ") 
+# hat/hab subject mich versteckt
+
+Action(value:hideandseeknegativeanswer,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> Summary(value:"wollte ") subject2text($SB,$SS,$G) Summary(value:" nicht Verstecken spielen ")
+# wollte subject nicht verstecken spielen
+
+Action(value:hideandseekrunoff,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" den anderen gesagt, sie sollen einfach abhauen ") 
+# hat/hab subject den anderen gesagt, einfach abzuhauen
+
+Action(value:hideandseekrunoffpositiveanswer,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> Summary(value:"fand ") subject2text($SB,$SS,$G) Summary(value:" die Idee toll, wegzulaufen ")
+# fand subject die Idee toll wegzulaufen
+
+Action(value:hideandseekrunoffnegativeanswer,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> Summary(value:"wollte ") subject2text($SB,$SS,$G) Summary(value:" nicht weglaufen ")
+# wollte subject nicht weglaufen
+
+Action(value:hideandseekrunoffreport,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_dat($T) Summary(value:" erzählt, dass die anderen einfach weggegangen sind ") 
+# hat/hab subject target(dat) erzählt, dass die anderen einfach wegegangen sind
+
+Action(value:hideandseekrealizerunoff,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_dat($T) Summary(value:" gemerkt, dass die anderen einfach weggegangen sind ") 
+# hat/hab subject erkannt, dass die anderen einfach wegegangen sind ohne was zu sagen
+
+Action(value:hideandseekrunoffreportsadanswer,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_dat($T) Summary(value:" gesagt, dass ich traurig bin ") 
+# hat/hab subject target(dat) gesagt, dass ich traurig bin
+
+Action(value:hideandseekrunoffreportangryanswer,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_dat($T) Summary(value:" gesagt, dass ich richtig sauer auf die anderen bin ") 
+# hat/hab subject target(dat) gesagt, dass ich richtig sauer auf die anderen bin
+
+Action(value:hideandseekrunoffreportdontcareanswer,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_dat($T) Summary(value:" gesagt, dass mir das nichts ausmacht ") 
+# hat/hab subject target(dat) gesagt, dass mir das nichts ausmacht
+
+Action(value:gossip,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" über ") target2text_akk($T) Summary(value:" getratscht ") 
+# hat/hab subject über target(akk) getratscht
+
+Action(value:gossipreinforce,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" über ") target2text_akk($T) Summary(value:" getratscht ") 
+# hat/hab subject über target(akk) getratscht
+
+Action(value:gossipobject,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" zu ") target2text_dat($T) Summary(value:" gesagt, ") Lex(semCat:ppn_3,number:sg,$G,case:nom) Summary(value:" soll mit dem Getratsche aufhören ")
+# hat/hab subject zu target(dat) gesagt, er/sie soll mit dem Getratsche aufhören
+
+Action(value:gossipobjectpositiveanswer,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" zu ") target2text_dat($T) Summary(value:" gesagt, dass ") Lex(semCat:ppn_3,number:sg,$G,case:nom) Summary(value:" nicht mehr tratschen soll ")
+# hat/hab subject zu target(dat) gesagt, dass er/sie nicht mehr tratschen soll
+
+Action(value:gossipobjectnegativeanswer,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" zu ") target2text_dat($T) Summary(value:" gesagt, dass ") Lex(semCat:ppn_3,number:sg,$G,case:akk) Summary(value:" das nichts angeht ")
+# hat/hab subject zu target(dat) gesagt, dass ihn/sie das nichts angeht
+
+Action(value:gossipstop,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" aufgehört zu tratschen")
+# hat/hab subject aufgehört zu tratschen
+
+Action(value:gossipreport,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_dat($T) Summary(value:" erzählt, dass die anderen über mich getratscht haben ") 
+# hat/hab subject target(dat) erzählt, dass die anderen über mich getratscht haben
+
+Action(value:gossipreport,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_dat($T) Summary(value:" erzählt, dass die anderen fiese Sachen über mich gesagt haben ") 
+# hat/hab subject target(dat) erzählt, dass die anderen fiese Sachen über mich gesagt haben
+
+Action(value:gossipreportangryanswer,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_dat($T) Summary(value:" gesagt, dass ich richtig sauer auf die anderen bin ") 
+# hat/hab subject target(dat) gesagt, dass ich richtig sauer auf die anderen bin
+
+Action(value:gossipreportsadanswer,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_dat($T) Summary(value:" gesagt, dass ich traurig bin ") 
+# hat/hab subject target(dat) gesagt, dass ich traurig bin
+
+Action(value:gossipreportdontcareanswer,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_dat($T) Summary(value:" gesagt, dass mir das nichts ausmacht ") 
+# hat/hab subject target(dat) gesagt, dass mir das nichts ausmacht
+
+Action(value:gossipreporthelplessanswer,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_dat($T) Summary(value:" gesagt, dass ich verzweifelt bin ") 
+# hat/hab subject target(dat) gesagt, dass ich verzweifelt bin
+
+Action(value:gossipreportprotestanswer,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_dat($T) Summary(value:" gesagt, dass die anderen Lügen über mich erzählt haben ") 
+# hat/hab subject target(dat) gesagt, dass die anderen Lügen über mich erzählt haben
+
+Action(value:follow,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:sein,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_dat($T) Summary(value:" gefolgt, um mich zu ärgern ") 
+# ist/bin subject target(dat) gefolgt, um mich zu ärgern
+
+Action(value:followaskwhy,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_akk($T) Summary(value:" gefragt, warum ") Lex(semCat:ppn_3,number:sg,$G,case:nom) Summary(value:" mir hinterher läuft ")
+# hat/hab subject target(akk) gefragt, warum er/sie mir hinterher läuft
+
+Action(value:followaskwhypositiveanswer,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_akk($T) Summary(value:" beleidigt ") 
+# hab/hat subject target(akk) beleidigt
+
+Action(value:followaskwhynegativeanswer,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_akk($T) Summary(value:" beleidigt ") 
+# hab/hat subject target(akk) beleidigt
+
+Action(value:followdontcare,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_dat($T) Summary(value:" gesagt, dass es mir egal ist was ") Lex(semCat:ppn_3,number:sg,$G,case:nom) Summary(value:" macht ")
+# hab/hat subject target(dat) gesagt, dass es mir egal ist was er/sie macht
+
+Action(value:followleave,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_dat($T) Summary(value:" gesagt, dass ich gehe ")
+# hab/hat subject target(dat) gesagt, dass ich gehe
+
+Action(value:followleavefollow,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_dat($T) Summary(value:" gesagt, dass ") subject2text($SB,sameSubject:"yes",$G) Summary(value:" mir hinterher läuft, wenn ich gehe ")
+# hab/hat subject target(dat) gesagt, dass subject(ss:yes) mir hinterher läuft, wenn ich gehe
+
+Action(value:abandon,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:sein,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" gegangen, weil ich gekommen bin ") 
+# ist/bin subject gegangen, weil ich gekommen bin
+
+Action(value:joingroupsuccess,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" mich bei den anderen bedankt, dass ich mitmachen darf ") 
+# hab subject(ich) mich bei den anderen bedankt, dass ich mitmachen darf
+
+Action(value:joingroupquestionnegativeanswerobject,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" versucht, ") target2text_akk($T) Summary(value:" zu überreden, dass ich mitspielen kann ")
+# hat/hab subject versucht target(akk) zu überreden, dass ich mitspielen kann
+
+Action(value:joingroupquestionnegativeanswerobjectaccept,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> Summary(value:"war ") subject2text($SB,$SS,$G) Summary(value:" schließlich einverstanden, dass ich mitspiele ") 
+# war subject schließlich einverstanden, dass ich mitspiele
+
+Action(value:joingroupquestionnegativeanswerobjectacceptanswer,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> Summary(value:"war ") subject2text($SB,$SS,$G) Summary(value:" froh, dass ") subject2text($SB,sameSubject:"yes",$G) Summary(value:" ") target2text_akk($T) Summary(value:" überreden konnte ")
+# war subject froh, dass subject(ss:yes) target(akk) überreden konnte
+
+Action(value:joingroupquestionthreatleave,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" gesagt, dass ") subject2text($SB,sameSubject:"yes",$G) Summary(value:" geht, wenn ich mitspiele ")
+# hat/hab subject gesagt, dass subject(ss:yes) geht, wenn ich mitspiele
+
+Action(value:joingroupquestionthreatleavepositiveanswer,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" die Meinung geändert und gesagt ich kann doch nicht mitspielen ") 
+# hat/hab subject die Meinung geändert und gesagt ich kann doch nicht mitspielen
+
+Action(value:joingroupquestionthreatleavenegativeanswer,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" zu ") target2text_dat($T) Summary(value:" gesagt, dann soll ") Lex(semCat:ppn_3,number:sg,$G,case:nom) Summary(value:" halt gehen ")
+# hat/hab subject zu target(dat) gesagt, dann soll er/sie halt gehen
+
+Action(value:joingroupquestionpositiveanswerobject,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" versucht, ") target2text_akk($T) Summary(value:" zu überreden, dass ich nicht mitspielen soll ") 
+# hat/hab subject versucht target(akk) zu überreden, dass ich nicht mitspielen soll
+
+Action(value:joingroupquestionpositiveanswerobjectpositiveanswer,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" die Meinung geändert und gesagt ich kann doch nicht mitspielen ") 
+# hat/hab subject die Meinung geändert und gesagt ich kann doch nicht mitspielen
+
+Action(value:joingroupquestionpositiveanswerobjectnegativeanswer,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" sich ") subject2text($SB,$SS,$G) Summary(value:" gegen ") target2text_akk($T) Summary(value:" durchgesetzt und ich durfte mitspielen ") 
+# hat/hab sich subject gegen target(akk) durchgesetzt und ich durfte mitspielen
+
+Action(value:joinparty,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" versucht ") target2text_akk($T) Summary(value:" zu überreden mich einzuladen ") 
+# hat/hab subject versucht target(akk) zu überreden mich einzuladen
+
+Action(value:joinpartypositiveanswer,$T=target:,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" ") target2text_akk($T) Summary(value:" eingeladen ") 
+# hat/hab subject target(akk) eingeladen
+
+Action(value:joinpartynegativeanswer,$SB=subject:,%$SS=sameSubject:,$G=gender:)
+-> verb2text(verb:haben,time:pres,$SB) Summary(value:" ") subject2text($SB,$SS,$G) Summary(value:" gesagt, dass ich nicht eingeladen bin ") 
+# hat/hab subject gesagt, dass ich nicht eingeladen bin
+
+
+# Goal descriptions
+#TODO:
+
+goal2text(value:AvoidGettingHarmed,not(not:))
+-> Summary(value:" allen Schwierigkeiten aus dem Weg gehen")
+
+goal2text(value:AvoidGettingHarmed,not:$N)
+-> Summary(value:("dem Ärger ",$N,"aus dem Weg gehen"))
+
+goal2text(value:AvoidAnyRisk,%not:$N)
+-> Summary(value:($N,"verhindern, dass mir was passiert,"))
+
+goal2text(value:AvoidLookCoward,not:)
+-> Summary(value:"nicht mutig aussehen")
+
+goal2text(value:AvoidLookCoward,not(not:))
+-> Summary(value:"nicht wie ein Feigling aussehen")
+
+goal2text(value:ReplyPositively,%not:$N)
+-> Summary(value:($N,"ja sagen"))
+
+goal2text(value:ReplyPositively,parameter:$P,%not:$N)
+-> Summary(value:($N,"ja zu ",$P," sagen"))
+
+goal2text(value:ReplyNegatively,%not:$N)
+-> Summary(value:($N,"nein sagen"))
+
+goal2text(value:ReplyNegatively,parameter:$P,%not:$N)
+-> Summary(value:($N,"nein zu ",$P," sagen"))
+
+goal2text(value:ReplyPositivelyNoChoice,%not:$N)
+-> Summary(value:($N,"ja sagen, weil ich Angst hatte"))
+
+goal2text(value:ReplyPositivelyNoChoice,parameter:$P,%not:$N)
+-> Summary(value:($N,"ja zu ",$P," sagen, weil ich Angst hatte"))
+
+goal2text(value:JoinGroup,%not:$N)
+-> Summary(value:($N,"bei den anderen mitmachen"))
+
+goal2text(value:Ignore,%not:$N)
+-> Summary(value:("das ",$N,"ignorieren"))
+
+goal2text(value:Ignore,parameter:$P,%not:$N)
+-> Summary(value:($P," ",$N,"ignorieren"))
+
+goal2text(value:StandUp,%not:$N)
+-> Summary(value:("mich ",$N,"wehren"))
+
+goal2text(value:StandUp,parameter:$P,%not:$N)
+-> Summary(value:("mich ",$N,"gegen ",$P," wehren"))
+
+goal2text(value:MakeNewFriend,%not:$N)
+-> Summary(value:($N,"neue Freunde finden"))
+
+goal2text(value:MakeNewFriend,parameter:$P,%not:$N)
+-> Summary(value:("mich ",$N,"mit ",$P," anfreunden"))
+
+goal2text(value:MakeNewFriend,parameter:$P,%not:$N)
+-> Summary(value:($N,$P,"'s Freund werden"))
+
+goal2text(value:TellFriend,%not:$N)
+-> Summary(value:($N,"einem Freund von meinen Problemen erzählen"))
+
+goal2text(value:TellFriend,parameter:$P,%not:$N)
+-> Summary(value:($P," ",$N,"von meinen Problemen erzählen"))
+
+goal2text(value:RunAway,%not:$N)
+-> Summary(value:($N,"weglaufen"))
+
+goal2text(value:RunAway,parameter:$P,%not:$N)
+-> Summary(value:($N,"vor ",$P," wegrennen"))
+
+goal2text(value:WalkAway,%not:$N)
+-> Summary(value:($N,"weggehen"))
+
+goal2text(value:LaughOff,not:$N)
+-> Summary(value:"es nicht einfach abtun")
+
+goal2text(value:LaughOff,not(not:))
+-> Summary(value:"es nicht so ernst nehmen")
+
+goal2text(value:LaughOff,%not:$N)
+-> Summary(value:($N,"über das Ganze lachen"))
+
+goal2text(value:FightBack,%not:$N)
+-> Summary(value:($N,"zurückhauen"))
+
+goal2text(value:FightBack,parameter:$P,%not:$N)
+-> Summary(value:($P," ",$N,"hauen"))
+
+goal2text(value:FightBack,parameter:$P,not(not:))
+-> Summary(value:($P," auch mal hauen"))
+
+goal2text(value:Insult,parameter:$P,%not:$N)
+-> Summary(value:($P," ",$N,"beleidigen"))
+
+goal2text(value:Insult,parameter:$P,%not:$N)
+-> Summary(value:($P," ",$N,"beschimpfen"))
+
+goal2text(value:InsultBack,parameter:$P,not(not:))
+-> Summary(value:($P," auch mal beleidigen"))
+
+goal2text(value:FightSuccess,parameter:$P,gender:$G,%not:$N)
+-> Summary(value:($P," ",$N,"sagen, dass ",Lex(semCat:ppn_3,number:sg,gender:$G,case:nom)," mir nicht noch mal dumm kommen soll"))
+
+goal2text(value:Fight,parameter:$P,not(not:))
+-> Summary(value:("einen Kampf mit ",$P," beginnen"))
+
+goal2text(value:Fight,parameter:$P,not:)
+-> Summary(value:("keinen Kampf mit ",$P," beginnen"))
+
+goal2text(value:TeaseDefend,%not:$N)
+-> Summary(value:("mich ",$N,"verteidigen"))
+
+goal2text(value:AcceptInvitation,%not:$N)
+-> Summary(value:($N,"zur Party gehen"))
+
+goal2text(value:AcceptInvitation,%not:$N)
+-> Summary(value:("die Einladung ",$N,"annehmen"))
+
+goal2text(value:AcceptInvitation,parameter:$P,%not:$N)
+-> Summary(value:($P,"'s Einladung ",$N,"annehmen"))
+
+goal2text(value:AcceptInvitation,parameter:$P,%not:$N)
+-> Summary(value:($N,"zu ",$P,"'s Party gehen"))
+
+goal2text(value:PickFromFloor,parameter:$P,%not:$N)
+-> Summary(value:(Lex(semCat:$P,det:Lex(semCat:def),case:akk)," ",$N,"aufheben"))
+
+goal2text(value:ClaimBackItem,parameter:$P,%not:$N)
+-> Summary(value:(Lex(semCat:$P,det:Lex(semCat:def),case:akk)," ",$N,"wieder bekommen"))
+
+# fuer die anderen ähnlich; ich weiss aber nicht so genau, in welchem Kontext das vorkommt, deshalb belass ichs mal dabei...
+goal2text(value:ItemDestroyedComplain,parameter:book,%not:$N)
+-> Summary(value:("mich ",$N,"beschweren, weil das Buch jetzt kaputt ist"))
+
+#goal2text(value:ItemDestroyedComplain,parameter:$P)
+#-> Summary(value:("complain that ",$P," destroyed it"))
+
+goal2text(value:AskNotToThrowObject,%not:$N)
+-> Summary(value:("ihnen ",$N,"sagen, dass sie mich nicht bewerfen sollen"))
+
+goal2text(value:AskNotToThrowObject,parameter:$P,%not:$N)
+-> Summary(value:($N,"bitten, dass sie ",Lex(semCat:$P,adj:Lex(stem:kein),case:akk)," nach mir werfen"))
+
+goal2text(value:GotHitComplain,%not:$N)
+-> Summary(value:("mich ",$N,"beschweren, dass ich getroffen wurde"))
+
+goal2text(value:GotHitComplain,parameter:$P,%not:$N)
+-> Summary(value:("mich ",$N,"beschweren, dass ",$P," mich getroffen hat"))
+
+goal2text(value:Attack,parameter:$P,%not:$N)
+-> Summary(value:($P," ",$N,"angreifen"))
+
+goal2text(value:Attack,parameter:$P,not:)
+-> Summary(value:($P," keine runter hauen"))
+
+goal2text(value:Attack,parameter:$P,not(not:))
+-> Summary(value:($P," eine runter hauen"))
+
+goal2text(value:AskPity,parameter:$P,%not:$N)
+-> Summary(value:($P," ",$N,"bitten, mich in Ruhe zu lassen"))
+
+goal2text(value:respondtohumiliationnegativereply,parameter:$P,%not:$N)
+-> Summary(value:($N,"nein zu ",$P," sagen"))
+
+goal2text(value:or(respondtohumiliationpositivereply,respondtohumiliationthreatpositivereply),parameter:$P,%not:$N)
+-> Summary(value:($N,"ja zu ",$P," sagen"))
+
+goal2text(value:FollowAskWhy,parameter:$P,gender:$G,%not:$N)
+-> Summary(value:($P," ",$N,"fragen, warum ",Lex(semCat:ppn_3,number:sg,gender:$G,case:nom)," mir hinterher läuft"))
+
+goal2text(value:FollowDontCare,parameter:$P,gender:$G,%not:$N)
+-> Summary(value:($P," ",$N,"sagen, dass es mir egal ist, wenn ",Lex(semCat:ppn_3,number:sg,gender:$G,case:nom)," mir hinterherläuft"))
+
+goal2text(value:FollowLeave,%not:$N)
+-> Summary(value:($N,"gehen"))
+
+goal2text(value:FollowLeave,%not:$N)
+-> Summary(value:($N,"weggehen"))
+
+goal2text(value:GossipReportAngryAnswer,%not:$N)
+-> Summary(value:($N,"sagen, dass ich mich über das Getratsche von den anderen ärgere"))
+
+goal2text(value:GossipReportDontCareAnswer,%not:$N)
+-> Summary(value:($N,"sagen, dass mir das Getratsche der anderen nichts ausmacht"))
+
+goal2text(value:GossipReportHelplessAnswer,%not:$N)
+-> Summary(value:($N,"sagen, dass ich nicht weiss, was ich machen soll"))
+
+
+target2text_akk(target:"me")
+-> Summary(value:"mich")
+
+target2text_akk(target:$T=not(me))
+-> Summary(value:$T)
+
+target2text_nom(target:"me")
+-> Summary(value:"ich")
+
+target2text_nom(target:$T=not(me))
+-> Summary(value:$T)
+
+target2text_dat(target:"me")
+-> Summary(value:"mir")
+
+target2text_dat(target:$T=not(me))
+-> Summary(value:$T)
+
+
+
+subject2text(subject:"I")
+-> Summary(value:ich)
+
+subject2text(subject:$V=not(I),not(sameSubject:yes))
+-> Summary(value:$V)
+
+subject2text(subject:$V=not(I),sameSubject:yes,gender:$G)
+-> Summary(value:Lex(semCat:ppn_3,number:sg,gender:$G,case:nom))
+
+
+#verb2text(verb:$V,time:$T,subject:I)
+#-> Summary(value:Lex(stem:$V,case:$T,person:1,number:sg))
+
+#verb2text(verb:$V,time:$T,subject:not(I))
+#-> Summary(value:Lex(stem:$V,case:$T,person:3,number:sg))
+
+verb2text(verb:$V,time:pres,subject:I)
+-> Summary(value:Lex(stem:$V,case:nom,number:sg))
+
+verb2text(verb:$V,time:imperf,subject:I)
+-> Summary(value:Lex(stem:$V,case:dat,number:sg))
+
+verb2text(verb:$V,time:pres,subject:not(I))
+-> Summary(value:Lex(stem:$V,case:nom,number:pl))
+
+verb2text(verb:$V,time:imperf,subject:not(I))
+-> Summary(value:Lex(stem:$V,case:dat,number:pl))
+
+
+# location
+Location(value:" ")
+-> Summary(value:" ")
+
+Location(value:classroom)
+-> Summary(value:"im Klassenzimmer ")
+
+Location(value:library)
+-> Summary(value:"in der Bibliothek ")
+
+Location(value:school-hallway)
+-> Summary(value:"auf dem Flur ")
+
+Location(value:playground)
+-> Summary(value:"auf dem Spielplatz ")
+
+Location(value:bedroom)
+-> Summary(value:"in meinem Zimmer ")
+
+Location(value:street)
+-> Summary(value:"auf der Straße ")
+
+Location(value:football-pitch)
+-> Summary(value:"auf dem Fußballplatz ")
+
+Location(value:netball-court)
+-> Summary(value:"auf dem Handballplatz ")
+
+
+
+# different expressions for points in time
+Time(count:1,value:$U=or(month,week))
+-> Summary(value: (Lex(semCat:$U,adj:Lex(semCat:last),case:akk,number:sg)," ")) #("last ",$U," "))
+
+Time(count:1,value:month)
+-> Summary(value:"vor einem Monat ")
+
+Time(count:$C=not(1),value:month)
+-> Summary(value:"vor ") Quantity(count:$C) Summary(value:"Monaten ")
+
+Time(count:1,value:week)
+-> Summary(value:"vor einer Woche ")
+
+Time(count:$C=not(1),value:week)
+-> Summary(value:"vor ") Quantity(count:$C) Summary(value:"Wochen ")
+
+Time(count:1,value:day)
+-> Summary(value:"gestern ")
+
+Time(count:$C=not(1),value:day)
+-> Summary(value:"vor ") Quantity(count:$C) Summary(value:"Tagen ")
+
+Time(count:0,value:hour)
+-> Summary(value:"gerade eben ")
+
+Time(count:0,value:hour)
+-> Summary(value:"vor ein paar Minuten ")
+
+Time(count:0,value:hour)
+-> Summary(value:"gerade vor ein paar Minuten ")
+
+Time(count:1,value:hour)
+-> Summary(value:("vor ",Lex(semCat:hour,det:Lex(semCat:undef),case:dat,number:sg)," "))
+
+Time(count:$C=or(2,3),value:hour)
+-> Summary(value:"vor ") Quantity(count:$C) Summary(value:(" Stunden "))
+
+Time(count:not(0,1,2,3),value:hour)
+-> Summary(value:"heute morgen ")
+
+Time(count:not(0,1,2,3),value:hour)
+-> Summary(value:"heute ")
+
+
+
+Quantity()
+-> Summary(value:"ein paar ")
+
+Quantity()
+-> Summary(value:"einigen ")
+
+Quantity()
+-> Summary(value:"mehreren ")
+
+Quantity(count:$C)
+-> Summary(value:($C," "))
+
+Quantity(count:$C)
+-> Summary(value:("ungefähr ",$C," "))
+
+Quantity(count:2)
+-> Summary(value:"zwei")
+
+Quantity(count:3)
+-> Summary(value:"drei")
+
+
+# different expressions for emotions
+$E=Emotion(value:$V,intensity:$I,%$D=direction:)
+-> EConnector(pos:adj) EIntensity(value:$I,pos:adj) EWord(value:$V,pos:adj,$D)
+
+$E=Emotion(value:$V,intensity:$I,%$D=direction:)
+-> EConnector(pos:noun) EWord(value:$V,pos:noun,$D,intensity:$I)
+
+$E=Emotion(value:$V,intensity:$I,%$D=direction:)
+-> EConnector(pos:verb) EWord(value:$V,pos:verb,$D,intensity:$I)
+
+
+
+$E=Emotion(value:Fears-Confirmed,intensity:$I)
+-> Summary(value:". Meine Angst hat sich ") EIntensity(pos:verb,value:$I) Summary(value:"bestätigt ")
+
+
+
+EConnector(pos:verb)
+-> Summary(value:". Ich ")
+
+EConnector(pos:verb)
+-> Summary(value:"und ich ")
+
+EConnector(pos:adj)
+-> Summary(value:". Ich war ")
+
+#EConnector(pos:adj)
+#-> Summary(value:". Ich fühlte mich ")
+
+#EConnector(pos:noun)
+#-> Summary(value:". Ich fühlte ")
+
+EConnector(pos:noun)
+-> Summary(value:". Ich hatte ")
+
+
+EIntensity(value:little)
+-> Summary(value:"ein bißchen ")
+
+EIntensity(pos:or(adj,verb),value:little)
+-> Summary(value:"ein wenig ")
+
+EIntensity(pos:noun,value:little,gender:$G)
+-> Summary(value:(Lex(stem:leicht,gender:$G,case:akk,number:sg)," "))
+
+EIntensity(pos:noun,value:little,gender:$G)
+-> Summary(value:(Lex(stem:schwach,gender:$G,case:akk,number:sg)," "))
+
+EIntensity(pos:adj,value:little)
+-> Summary(value:"leicht ")
+
+EIntensity(value:normal)
+-> Summary(value:"")
+
+EIntensity(pos:adj,value:high)
+-> Summary(value:"sehr ")
+
+EIntensity(pos:adj,value:high)
+-> Summary(value:"so ")
+
+EIntensity(pos:or(adj,verb),value:high)
+-> Summary(value:"echt ")
+
+EIntensity(pos:verb,value:high)
+-> Summary(value:"total ")
+
+EIntensity(pos:verb,value:high)
+-> Summary(value:"voll ")
+
+EIntensity(pos:noun,value:high)
+-> Summary(value:"eine Menge ")
+
+EIntensity(pos:noun,value:high,gender:$G)
+-> Summary(value:(Lex(stem:groß,gender:$G,case:akk,number:sg)," "))
+
+
+
+EWord(pos:verb,value:Love,direction:$D,intensity:$I)
+-> Summary(value:("mag ",$D," ")) EIntensity(pos:verb,value:$I) 
+
+EWord(pos:verb,value:Love,direction:$D,intensity:$I)
+-> Summary(value:("finde ",$D," ")) EIntensity(pos:verb,value:$I) Summary(value:"nett ")
+
+#EWord(pos:verb,value:Love,direction:$D,intensity:$I)
+#-> Summary(value:("liebe ",$D," ")) EIntensity(pos:verb,value:$I) 
+
+EWord(pos:verb,value:Hate,direction:$D,intensity:little)
+-> Summary(value:("mag ",$D," nicht sehr "))
+
+EWord(pos:verb,value:Hate,direction:$D,intensity:normal)
+-> Summary(value:("mag ",$D," nicht "))
+
+EWord(pos:verb,value:Hate,direction:$D,intensity:high)
+-> Summary(value:("mag ",$D," überhaupt nicht "))
+
+EWord(pos:adj,value:Hope)
+-> Summary(value:"zuversichtlich ")
+
+EWord(pos:verb,value:Hope,intensity:$I)
+-> Summary(value:"hab mir ") EIntensity(pos:noun,value:$I,gender:fem) Summary(value:" Hoffnung gemacht ")
+
+#EWord(pos:noun,value:Hope,intensity:$I)
+#-> EIntensity(pos:noun,value:$I,gender:fem) Summary(value:" Hoffnung ")
+
+EWord(pos:adj,value:Fear)
+-> Summary(value:"eingeschüchtert ")
+
+EWord(pos:noun,value:Fear,intensity:$I)
+-> EIntensity(pos:noun,value:$I,gender:fem) Summary(value:"Angst ")
+
+#EWord(pos:noun,value:Fear,intensity:$I)
+#-> EIntensity(pos:noun,value:$I,gender:fem) Summary(value:"Furcht ")
+
+EWord(pos:adj,value:Satisfaction)
+-> Summary(value:"zufrieden ")
+
+EWord(pos:adj,value:Satisfaction)
+-> Summary(value:"froh ")
+
+#EWord(pos:noun,value:Satisfaction,intensity:$I)
+#-> EIntensity(pos:noun,value:$I,gender:fem) Summary(value:"Befriedigung ")
+
+EWord(pos:adj,value:Relief)
+-> Summary(value:"erleichtert ")
+
+#EWord(pos:noun,value:Relief,intensity:$I)
+#-> EIntensity(pos:noun,value:$I,gender:fem) Summary(value:"Erleichterung ")
+
+#EWord(pos:noun,value:Fears-Confirmed,intensity:$I)
+#-> EIntensity(pos:noun,value:$I,gender:fem) Summary(value:"my fears confirmed ")
+
+EWord(pos:adj,value:Disappointment)
+-> Summary(value:"enttäuscht ")
+
+#EWord(pos:noun,value:Disappointment,intensity:$I)
+#-> EIntensity(pos:noun,value:$I,gender:fem) Summary(value:"Enttäuschung ")
+
+EWord(pos:verb,value:Joy,intensity:$I)
+-> Summary(value:(" habe mich ")) EIntensity(pos:verb,value:$I) Summary(value:" gefreut ") 
+
+#EWord(pos:noun,value:Joy,intensity:$I)
+#-> EIntensity(pos:noun,value:$I,gender:fem) Summary(value:"Freude ")
+
+EWord(pos:adj,value:Distress)
+-> Summary(value:"traurig ")
+
+EWord(pos:adj,value:Distress)
+-> Summary(value:"verzweifelt ")
+
+EWord(pos:adj,value:Happy-For,direction:$D)
+-> Summary(value:("glücklich für ",$D," "))
+
+EWord(pos:verb,value:Pitty,direction:$D,intensity:$I)
+-> Summary(value:(" habe ",$D," ")) EIntensity(pos:verb,value:$I) Summary(value:" bemitleidet ") 
+
+EWord(pos:verb,value:Pitty,direction:$D,intensity:$I)
+-> Summary(value:("hatte "))  EIntensity(pos:verb,value:$I) Summary(value:(" Mitleid mit ",$D," "))
+
+EWord(pos:noun,value:Pitty,direction:$D,intensity:$I)
+-> EIntensity(pos:noun,value:$I,gender:neut) Summary(value:("Mitleid mit ",$D," "))
+
+EWord(pos:verb,value:Resentment,direction:$D,intensity:little)
+-> Summary(value:("mag ",$D," nicht so sehr "))
+
+EWord(pos:verb,value:Resentment,direction:$D,intensity:normal)
+-> Summary(value:("mag ",$D," nicht so sehr "))
+
+EWord(pos:verb,value:Resentment,direction:$D,intensity:high)
+-> Summary(value:("mag ",$D," überhaupt nicht "))
+
+EWord(pos:verb,value:Resentment,direction:$D,intensity:little)
+-> Summary(value:("kann ",$D," nicht so gut leiden "))
+
+EWord(pos:verb,value:Resentment,direction:$D,intensity:normal)
+-> Summary(value:("kann ",$D," nicht leiden "))
+
+EWord(pos:verb,value:Resentment,direction:$D,intensity:high)
+-> Summary(value:("kann ",$D," absolut nicht leiden "))
+
+EWord(pos:verb,value:Gloating,direction:$D,intensity:$I)
+-> Summary(value:"empfand Schadenfreude ") EIntensity(pos:verb,value:$I) Summary(value:(" über ",$D," "))
+
+EWord(pos:adj,value:Pride)
+-> Summary(value:"stolz ")
+
+#EWord(pos:noun,value:Pride,intensity:$I)
+#-> EIntensity(pos:noun,value:$I,gender:mask) Summary(value:"Stolz ")
+
+#EWord(pos:adj,value:Shame)
+#-> Summary(value:"beschämt ")
+
+EWord(pos:verb,value:Shame,intensity:$I)
+-> Summary(value:"schämte mich ") EIntensity(pos:verb,value:$I) 
+
+#EWord(pos:noun,value:Shame,intensity:$I)
+#-> EIntensity(pos:noun,value:$I,gender:fem) Summary(value:"Scham ")
+
+EWord(pos:verb,value:Gratification,intensity:$I)
+-> Summary(value:(" habe mich ")) EIntensity(pos:verb,value:$I) Summary(value:" gefreut ") 
+
+EWord(pos:verb,value:Remorse,intensity:$I)
+-> Summary(value:"hab mich ") EIntensity(pos:verb,value:$I) Summary(value:" über mich selbst geärgert ")
+
+EWord(pos:verb,value:Admiration,direction:$D,intensity:$I)
+-> Summary(value:("bewundere ",$D," ")) EIntensity(pos:verb,value:$I) 
+
+#EWord(pos:verb,value:Admiration,direction:$D,intensity:$I)
+#-> Summary(value:"schaue ") EIntensity(pos:verb,value:$I) Summary(value:(" zu ",$D," auf "))
+
+#EWord(pos:noun,value:Admiration,direction:$D,intensity:$I)
+#-> EIntensity(pos:noun,value:$I,gender:fem) Summary(value:("Bewunderung für ",$D," "))
+
+#EWord(pos:verb,value:Reproach)
+#-> Summary(value:"reproached ")
+
+EWord(pos:verb,value:Reproach,intensity:$I)
+-> Summary(value:"stand ") EIntensity(pos:verb,value:$I) Summary(value:" wie ein Depp da ")
+
+EWord(pos:adj,value:Gratitude,direction:$D)
+-> Summary(value:("froh über ",$D," "))
+
+#EWord(pos:noun,value:Gratitude,direction:$D,intensity:$I)
+#-> EIntensity(pos:noun,value:$I,gender:fem) Summary(value:("Dankbarkeit gegenüber ",$D," "))
+
+EWord(pos:adj,value:Anger,direction:$D)
+-> Summary(value:("böse auf ",$D," "))
+
+EWord(pos:adj,value:Anger,direction:$D)
+-> Summary(value:("sauer auf ",$D," "))
+
+EWord(pos:adj,value:Anger,direction:$D)
+-> Summary(value:("verärgert wegen ",$D," "))
+
+
+######################################
+#technical stuff: post-processing
+
+# add up all text constituents
+e3_1: [Summary(value:+$S1) Summary(value:+$S2)]
+-> Summary(value:$S1,value:$S2)
+
+e3_2: Summary(value:+$S)
+-> FinalSummary(value:$S)

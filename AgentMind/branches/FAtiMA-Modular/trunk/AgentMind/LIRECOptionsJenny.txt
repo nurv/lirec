@@ -1,0 +1,13 @@
+Jenny GreetBack Greta
+Jenny Accept Greta apple
+Jenny Reject Greta apple
+Jenny Accept Greta orange
+Jenny Reject Greta orange
+Jenny Accept Greta banana
+Jenny Reject Greta banana
+Jenny Accept Greta cake
+Jenny Reject Greta cake
+Jenny Choose Greta apple
+Jenny Choose Greta orange
+Jenny Choose Greta banana
+Jenny Choose Greta cake
