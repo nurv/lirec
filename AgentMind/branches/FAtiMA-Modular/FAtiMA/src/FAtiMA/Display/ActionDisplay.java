@@ -1,4 +1,4 @@
-package FAtiMA.Display;
+package FAtiMA.Display ;
 
 import java.awt.Dimension;
 
