@@ -1,1 +1,0 @@
-java -cp "FAtiMA.jar" FAtiMA.Agent localhost 46874 true Luke M Bully Luke strength:8 hurt:false pose:standing

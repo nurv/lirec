@@ -1,2 +1,0 @@
-isFruit True
-eatable True

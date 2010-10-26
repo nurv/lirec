@@ -1,1 +1,0 @@
-java -cp "FAtiMA.jar" FAtiMA.Agent worldsim localhost 46874 true Abbuk M Abbuk Abbuk Actions GoalLibrary CultureWithoutRituals isPerson:True isParent:False strength:4 hurt:False pose:standing type:character power:10 hasAuthority:True holds:none

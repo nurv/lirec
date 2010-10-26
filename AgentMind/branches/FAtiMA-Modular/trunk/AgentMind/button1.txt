@@ -1,3 +1,0 @@
-onRecyclingMachine True
-produceLiquid True
-
