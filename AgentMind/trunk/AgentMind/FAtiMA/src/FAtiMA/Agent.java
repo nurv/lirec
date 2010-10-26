@@ -12,7 +12,6 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.StringTokenizer;
 import java.util.logging.Logger;
@@ -212,11 +211,12 @@ public class Agent implements AgentModel {
 	public Agent(short agentPlatform, String host, int port, String directory, String fileName)
 	{
 		try{
-			AgentLogger.GetInstance().initialize(fileName);
 			_shutdown = false;
 			_numberOfCycles = 0;
 			
-			LoadAgentState(directory + fileName);		
+			LoadAgentState(directory + fileName);
+			AgentLogger.GetInstance().initialize(fileName,_showStateWindow);
+			
 			// creating a new episode when the agent loads 13/09/10
 			_memory.getEpisodicMemory().StartEpisode(_memory);
 			

@@ -315,7 +315,7 @@ public class EpisodicMemory implements Serializable {
 		}
 	}
 	
-	public String SummarizeLastEvent(Memory m)
+	public String SummarizeEpisode(Memory m, int episode)
 	{
 		return _am.SummarizeEpisode(m, episode);
 	}
