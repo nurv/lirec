@@ -6,7 +6,6 @@ import org.xml.sax.Attributes;
 
 import FAtiMA.AgentModel;
 import FAtiMA.util.AgentLogger;
-import FAtiMA.util.enumerables.MotivatorType;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
 import FAtiMA.wellFormedNames.SubstitutionSet;

@@ -1,1 +1,0 @@
-java -cp "FAtiMA.jar" FAtiMA.Agent worldsim localhost 46874 true Ikop M Ikop Ikop Actions GoalLibrary CultureWithoutRituals isPerson:True isParent:False strength:4 hurt:false pose:standing type:character power:10 holds:none

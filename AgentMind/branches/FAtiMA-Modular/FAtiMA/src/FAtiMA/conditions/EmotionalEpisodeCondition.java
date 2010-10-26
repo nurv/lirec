@@ -29,26 +29,21 @@
 
 package FAtiMA.conditions;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import org.xml.sax.Attributes;
 
 import FAtiMA.AgentModel;
-import FAtiMA.emotionalState.ActiveEmotion;
 import FAtiMA.emotionalState.BaseEmotion;
 import FAtiMA.emotionalState.EmotionalState;
 import FAtiMA.exceptions.InvalidEmotionTypeException;
 import FAtiMA.memory.episodicMemory.MemoryEpisode;
-import FAtiMA.memory.semanticMemory.KnowledgeBase;
 import FAtiMA.util.Constants;
 import FAtiMA.util.enumerables.EmotionType;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
 import FAtiMA.wellFormedNames.SubstitutionSet;
 import FAtiMA.wellFormedNames.Symbol;
-import FAtiMA.wellFormedNames.Unifier;
 
 public class EmotionalEpisodeCondition extends Condition {
 	
@@ -66,7 +61,6 @@ public class EmotionalEpisodeCondition extends Condition {
 	 * @return - the EmotionCondition Parsed
 	 */
 	public static EmotionalEpisodeCondition ParseEmotionalEpisodeCondition(Attributes attributes) throws InvalidEmotionTypeException {
-		EmotionCondition ec;
 		
 		Symbol emotion = null;
 		Symbol episode;
@@ -160,7 +154,6 @@ public class EmotionalEpisodeCondition extends Condition {
 		MemoryEpisode episode;
 		SubstitutionSet ss;
 		Substitution s;
-		ArrayList<SubstitutionSet> subSets;
 		BaseEmotion emotion;
 		int i = 0;
 		

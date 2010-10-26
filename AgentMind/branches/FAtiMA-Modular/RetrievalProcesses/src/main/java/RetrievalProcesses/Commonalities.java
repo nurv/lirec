@@ -35,7 +35,6 @@ import java.util.Hashtable;
 
 import FAtiMA.memory.ICommonalities;
 import FAtiMA.memory.episodicMemory.ActionDetail;
-import FAtiMA.memory.episodicMemory.EpisodicMemory;
 
 public class Commonalities extends RuleEngine implements ICommonalities {
 	/**

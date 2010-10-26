@@ -54,9 +54,6 @@ import FAtiMA.IIntegrityTester;
 import FAtiMA.IntegrityValidator;
 import FAtiMA.ValuedAction;
 import FAtiMA.conditions.Condition;
-import FAtiMA.deliberativeLayer.plan.Effect;
-import FAtiMA.deliberativeLayer.plan.EffectOnDrive;
-import FAtiMA.deliberativeLayer.plan.IPlanningOperator;
 import FAtiMA.emotionalState.ActiveEmotion;
 import FAtiMA.emotionalState.BaseEmotion;
 import FAtiMA.exceptions.UnknownSpeechActException;
@@ -65,7 +62,6 @@ import FAtiMA.wellFormedNames.IGroundable;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
 import FAtiMA.wellFormedNames.SubstitutionSet;
-import FAtiMA.wellFormedNames.Symbol;
 
 
 /**

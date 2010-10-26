@@ -4,10 +4,7 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.ListIterator;
 
-import FAtiMA.memory.episodicMemory.ActionDetail;
 
 public class GQuery {
 	

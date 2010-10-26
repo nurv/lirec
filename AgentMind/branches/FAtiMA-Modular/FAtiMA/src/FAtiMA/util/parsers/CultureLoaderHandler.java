@@ -44,7 +44,6 @@ import FAtiMA.conditions.PredicateCondition;
 import FAtiMA.conditions.PropertyCondition;
 import FAtiMA.conditions.RecentEventCondition;
 import FAtiMA.conditions.RitualCondition;
-import FAtiMA.conditions.LikeCondition;
 import FAtiMA.conditions.TimeCondition;
 import FAtiMA.culture.CulturalDimensions;
 import FAtiMA.culture.Ritual;

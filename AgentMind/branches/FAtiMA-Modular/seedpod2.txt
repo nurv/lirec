@@ -1,4 +1,0 @@
-isObject True
-eatable True
-onGround True
-availability True

@@ -1,6 +1,5 @@
 package FAtiMA.util;
 
-import java.util.Map;
 
 /** contains code to check which platform (pc/android) this instance of fatima is running on*/
 public class VersionChecker 

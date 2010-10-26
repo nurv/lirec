@@ -81,7 +81,6 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -100,7 +99,6 @@ import FAtiMA.util.parsers.SocketListener;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.SubstitutionSet;
 
-import FAtiMA.memory.episodicMemory.*;
 
 /**
  * Connection to the virtual world as a RemoteAgent. Implements 
@@ -339,26 +337,22 @@ public abstract class RemoteAgent extends SocketListener {
 				_agent.getSpreadActivate().Spread(question, knownInfo, _agent.getMemory().getEpisodicMemory());
 				
 				Hashtable<String, Integer> saResult = _agent.getSpreadActivate().getSAResults();
-				Iterator it = saResult.keySet().iterator();
-				while (it.hasNext())
+				
+				for(String result : saResult.keySet())
 				{
-					String result = (String) it.next();
 					System.out.println(question + " " + result + " frequency " + saResult.get(result));
 				}
 				
 				_agent.getCommonalities().eventCommonalities(_agent.getSpreadActivate().getDetails());
 				Hashtable<ArrayList<Integer>, Hashtable<String, String>> gResult = _agent.getCommonalities().getMatch();
 			
-				it = gResult.keySet().iterator();
-				while (it.hasNext())
+				for(ArrayList<Integer> result : gResult.keySet())
 				{
-					ArrayList<Integer> result = (ArrayList<Integer>) it.next();
 					System.out.println("id " + result);
 					Hashtable<String, String> match = gResult.get(result);
-					Iterator it2 = match.keySet().iterator();
-					while (it2.hasNext())
+					
+					for(String matchingValues : match.keySet())
 					{
-						String matchingValues = (String) it2.next();
 						System.out.println("match in Remote Agent " + matchingValues);
 					}
 				}

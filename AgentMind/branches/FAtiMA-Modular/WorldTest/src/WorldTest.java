@@ -2,11 +2,11 @@ import java.io.File;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.ListIterator;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import FAtiMA.deliberativeLayer.plan.Step;
 import FAtiMA.sensorEffector.SpeechAct;
 import FAtiMA.util.parsers.ScenarioLoaderHandler;
 import FAtiMA.util.parsers.ActionsLoaderHandler;
@@ -34,11 +34,10 @@ public class WorldTest {
 	public static final String SCENARIOS_PATH = "data/characters/minds/LIRECScenarios.xml";
 	//public static final String SCENARIOS_PATH = "data/characters/minds/Scenarios.xml";
 	private ServerSocket _ss;
-	private ServerSocket _ssToGreta;
-	private ArrayList _objects;
-	private ArrayList _agents;
+	private ArrayList<sObject> _objects;
+	private ArrayList<RemoteAgent> _agents;
 	private String _scenery;
-	private ArrayList _actions;
+	private ArrayList<Step> _actions;
 	private LanguageEngine agentLanguage;
 	private LanguageEngine userLanguage;
 	private UserInterface _userInterface;
@@ -47,7 +46,7 @@ public class WorldTest {
 	
 	static public void main(String args[]) throws Exception {
 		int i;
-		ArrayList objects = new ArrayList();
+		ArrayList<String> objects = new ArrayList<String>();
 		
 		
 		//Load the arguments from the scenario definition present in scenarios.xml
@@ -74,18 +73,15 @@ public class WorldTest {
 		
 	}
 	
-	public WorldTest(int port, String scenery, String actionsFile, String agentLanguageFile, String userLanguageFile, String userOptionsFile, ArrayList objects) {
+	public WorldTest(int port, String scenery, String actionsFile, String agentLanguageFile, String userLanguageFile, String userOptionsFile, ArrayList<String> objects) {
 		_scenery = scenery;
-		_agents = new ArrayList();
-		_objects = new ArrayList();
+		_agents = new ArrayList<RemoteAgent>();
+		_objects = new ArrayList<sObject>();
 		_userOptionsFile = userOptionsFile;
 		_userInterface = new UserInterface(this);
 		
-		ListIterator li = objects.listIterator();
-		String objName;
-		
-		while (li.hasNext()) {
-			objName = li.next().toString();
+		for(String objName : objects)
+		{
 			_objects.add(sObject.ParseFile(objName));
 		}
 		
@@ -155,7 +151,7 @@ public class WorldTest {
 	}
 	
 	public void run() {
-		Socket s1, s2;
+		Socket s2;
 		RemoteAgent ra;		
 		
 		while(true) {
@@ -185,13 +181,11 @@ public class WorldTest {
 	}
 	
 	public void NotifyEntityAdded(String entityName) {
-		ListIterator li = _agents.listIterator();
-		RemoteAgent ag;
+	
 		String msg = "ENTITY-ADDED " + entityName;
 		
-		while(li.hasNext()) {
-			ag = (RemoteAgent) li.next();
-						
+		for(RemoteAgent ag : _agents)
+		{
 			if(!ag.Name().equals(entityName)){
 				ag.Send(msg);
 			}
@@ -199,52 +193,41 @@ public class WorldTest {
 	}
 	
 	public void PerceiveEntities(RemoteAgent agent) {
-		ListIterator li = _agents.listIterator();
-		RemoteAgent ag;
+		
 		String entities = "AGENTS";
 		
-		while(li.hasNext()) {
-			ag = (RemoteAgent) li.next();
+		for(RemoteAgent ag : _agents)
+		{
 			entities = entities + " " + ag.Name();
 		}
 		
-		li = _objects.listIterator();
-		
-		while(li.hasNext()) {
-			entities = entities + " " + ((sObject) li.next()).Name();
+		for(sObject obj : _objects)
+		{
+			entities = entities + " " + obj.Name();
 		}
 		
 		agent.Send(entities);
 	}
 	
 	public void SendPerceptionToAll(String perception) {
-		ListIterator li = _agents.listIterator();
-		RemoteAgent ag;
 		
-		while(li.hasNext()) {
-			ag = (RemoteAgent) li.next();
+		for(RemoteAgent ag : _agents)
+		{
 			ag.Send(perception);
 		}
 	}
 	
 	public String GetPropertiesList(String target) {
 		
-		RemoteAgent ag;
-		sObject obj;
-		ListIterator li;
-		li = _agents.listIterator();
-		
-		while(li.hasNext()) {
-			ag = (RemoteAgent) li.next();
+		for(RemoteAgent ag : _agents)
+		{
 			if(target.equals(ag.Name())) {
 				return ag.GetPropertiesList();
 			}
 		}
 		
-		li = _objects.listIterator();
-		
-		while(li.hasNext()) {
-			obj = (sObject) li.next();
+		for(sObject obj : _objects)
+		{
 			if(target.equals(obj.Name())) {
 				return obj.GetPropertiesList();
 			}
@@ -253,7 +236,7 @@ public class WorldTest {
 		return null;
 	}
 	
-	public ArrayList GetActions()
+	public ArrayList<Step> GetActions()
 	{
 		return this._actions;
 	}

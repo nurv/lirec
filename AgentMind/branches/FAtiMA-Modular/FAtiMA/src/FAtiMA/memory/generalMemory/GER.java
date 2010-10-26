@@ -30,10 +30,13 @@ package FAtiMA.memory.generalMemory;
 
 import java.io.Serializable;
 
-import FAtiMA.memory.semanticMemory.KnowledgeSlot;
 
 public class GER implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String _subject;
 	private String _action;
 	private String _target;	

@@ -62,8 +62,6 @@ package FAtiMA.reactiveLayer;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.ListIterator;
 
 import FAtiMA.AgentModel;

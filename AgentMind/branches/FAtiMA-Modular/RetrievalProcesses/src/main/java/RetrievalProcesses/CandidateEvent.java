@@ -30,9 +30,7 @@ package RetrievalProcesses;
  * **/
 
 import java.util.ArrayList;
-import java.util.Hashtable;
 
-import FAtiMA.emotionalState.BaseEmotion;
 import FAtiMA.memory.episodicMemory.ActionDetail;
 
 

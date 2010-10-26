@@ -36,13 +36,17 @@ import java.util.Iterator;
 import java.util.Collections;
 import java.util.ListIterator;
 
-import FAtiMA.memory.Memory;
 import FAtiMA.memory.episodicMemory.ActionDetail;
 import FAtiMA.memory.episodicMemory.EpisodicMemory;
 import FAtiMA.memory.episodicMemory.MemoryEpisode;
 
 public class Generalisation implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
 	private ArrayList<AttributeItemSet> _itemSet;
 	private EpisodicMemory _episodicMemory;	
 	private static final int MIN_THRESHOLD = 3;
@@ -182,7 +186,7 @@ public class Generalisation implements Serializable {
 	{
 		ArrayList<AttributeItemSet> tempItemSet = new ArrayList<AttributeItemSet>();
 		
-		for (int k = 1; k < this.ITEMSET_SIZE ; k++)
+		for (int k = 1; k < Generalisation.ITEMSET_SIZE ; k++)
 		{
 			for (int i = 0; i < this._itemSet.size()-1; i++)
 			{
@@ -236,7 +240,7 @@ public class Generalisation implements Serializable {
 		// if coverage is less than the minimum threshold, delete the item set from the tempItemSet list
 		for (int i = 0; i < tempItemSet.size(); i++)
 		{
-			if(tempItemSet.get(i).getCoverage() < this.MIN_THRESHOLD)
+			if(tempItemSet.get(i).getCoverage() < Generalisation.MIN_THRESHOLD)
 			{
 				tempItemSet.remove(i);
 				i--;

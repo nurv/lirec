@@ -37,7 +37,6 @@ import java.util.Hashtable;
 import FAtiMA.memory.ISpreadActivate;
 import FAtiMA.memory.episodicMemory.*;
 import FAtiMA.memory.episodicMemory.ActionDetail;
-import FAtiMA.memory.episodicMemory.MemoryEpisode;
 
 public class SpreadActivate extends RuleEngine implements ISpreadActivate {
 	

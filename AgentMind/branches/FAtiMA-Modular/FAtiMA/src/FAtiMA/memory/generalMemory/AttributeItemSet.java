@@ -38,6 +38,11 @@ import java.util.ListIterator;
 
 public class AttributeItemSet implements Comparable, Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
 	private ArrayList<AttributeItem> _candidateItemSet;
 	private int _coverage;
 	

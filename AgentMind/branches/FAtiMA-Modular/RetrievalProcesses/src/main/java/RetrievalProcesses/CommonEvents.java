@@ -30,10 +30,8 @@ package RetrievalProcesses;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.Iterator;
 
 
-import FAtiMA.memory.episodicMemory.ActionDetail;
 
 public class CommonEvents {
 	private ArrayList<Integer> _ids;
@@ -49,9 +47,8 @@ public class CommonEvents {
 	
 	public void setIDs(ArrayList<Integer> ids)
 	{
-		for(Iterator i = ids.iterator(); i.hasNext(); )
+		for(Integer id : ids)
 		{
-			Integer id = (Integer) i.next();
 			if(!this._ids.contains(id))
 				this._ids.add(id);
 		}

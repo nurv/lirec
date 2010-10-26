@@ -1,5 +1,0 @@
-isObject True
-drinkable True
-onTable True
-availability True
-

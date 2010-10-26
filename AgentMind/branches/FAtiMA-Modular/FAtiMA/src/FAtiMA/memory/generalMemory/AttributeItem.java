@@ -32,6 +32,11 @@ import java.io.Serializable;
 
 public class AttributeItem implements Comparable, Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
 	private String _attrName;
 	private String _attrValue;
 	

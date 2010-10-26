@@ -1,8 +1,8 @@
 package RetrievalProcesses;
+
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.Iterator;
+
 
 import org.drools.KnowledgeBase;
 import org.drools.KnowledgeBaseFactory;
@@ -65,7 +65,6 @@ public class RuleEngine implements Serializable {
 			MemoryEpisode event;
 			ArrayList<ActionDetail> details;
 			ActionDetail actionDetail;
-			CandidateEvent cad; 
 			
 			_ksession = _kbase.newStatefulKnowledgeSession();
 		

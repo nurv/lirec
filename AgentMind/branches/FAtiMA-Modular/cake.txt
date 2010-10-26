@@ -1,2 +1,0 @@
-isCake True
-eatable True

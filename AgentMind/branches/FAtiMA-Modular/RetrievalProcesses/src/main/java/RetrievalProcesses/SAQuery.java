@@ -37,7 +37,6 @@ import java.util.Iterator;
 import java.util.StringTokenizer;
 
 import FAtiMA.memory.episodicMemory.ActionDetail;
-import FAtiMA.wellFormedNames.Symbol;
 
 public class SAQuery {
 

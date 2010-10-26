@@ -1,10 +1,7 @@
 package FAtiMA.conditions;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.ListIterator;
-import java.util.StringTokenizer;
 
 import FAtiMA.AgentModel;
 import FAtiMA.emotionalState.EmotionalPameters;

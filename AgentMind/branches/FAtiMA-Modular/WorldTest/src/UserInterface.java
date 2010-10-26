@@ -3,11 +3,9 @@ import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.ListIterator;
 import java.util.Random;
 import java.util.StringTokenizer;
 
-import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JComboBox;
@@ -22,15 +20,11 @@ import javax.swing.JTextField;
 import FAtiMA.conditions.Condition;
 import FAtiMA.deliberativeLayer.plan.Effect;
 import FAtiMA.deliberativeLayer.plan.Step;
-import FAtiMA.emotionalState.BaseEmotion;
-import FAtiMA.memory.episodicMemory.Time;
-import FAtiMA.sensorEffector.Parameter;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
 import FAtiMA.wellFormedNames.Symbol;
 import FAtiMA.wellFormedNames.Unifier;
 
-import java.awt.Dimension;
 import java.awt.event.*;
 
 /**
@@ -375,15 +369,12 @@ public class UserInterface implements ActionListener {
     
     private void UpdateActionEffects(String subject, Name action) 
 	{
-		ListIterator li = this._world.GetActions().listIterator();
-		ArrayList bindings;
-		Step s;
+		ArrayList<Substitution> bindings;
 		Step gStep;
 		
-		while(li.hasNext()) 
+		for(Step s : this._world.GetActions())
 		{
-			s = (Step) li.next();
-			bindings = new ArrayList();
+			bindings = new ArrayList<Substitution>();
 			bindings.add(new Substitution(new Symbol("[SELF]"), new Symbol(subject)));
 			bindings.add(new Substitution(new Symbol("[AGENT]"), new Symbol(subject)));
 			if(Unifier.Unify(s.getName(),action, bindings))
@@ -396,16 +387,13 @@ public class UserInterface implements ActionListener {
 	}
     
     
-    private void PropertiesChanged(ArrayList effects)
+    private void PropertiesChanged(ArrayList<Effect> effects)
 	{
-		ListIterator li = effects.listIterator();
 		Condition c;
-		Effect e;
 		String msg;
-
-		while(li.hasNext())
+		
+		for(Effect e : effects)
 		{
-			e = (Effect) li.next();
 			c = e.GetEffect();
 			String name = c.getName().toString();
 			if(!name.startsWith("EVENT") && !name.startsWith("SpeechContext"))
@@ -417,7 +405,7 @@ public class UserInterface implements ActionListener {
 					_world.GetUserInterface().WriteLine(msg);
 					this._world.SendPerceptionToAll(msg);
 				}
-			}			
+			}	
 		}
 	}
 	

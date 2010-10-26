@@ -1,2 +1,0 @@
-isPerson True
-isPresent False

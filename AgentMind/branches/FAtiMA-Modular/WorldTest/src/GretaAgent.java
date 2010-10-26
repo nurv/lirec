@@ -31,11 +31,8 @@
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Random;
-import java.util.StringTokenizer;
 
-import FAtiMA.memory.Memory;
+
 import FAtiMA.util.parsers.SocketListener;
 
 

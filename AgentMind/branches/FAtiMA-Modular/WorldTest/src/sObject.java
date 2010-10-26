@@ -1,6 +1,5 @@
 import java.io.FileInputStream;
 import java.util.ArrayList;
-import java.util.ListIterator;
 import java.util.StringTokenizer;
 
 /*
@@ -20,11 +19,11 @@ public class sObject {
 	
 	private static int buffsize = 250;
 	
-	private ArrayList _properties;
+	private ArrayList<Property> _properties;
 	private String _objectName;
 	
 	public sObject(String name) {
-		_properties = new ArrayList();
+		_properties = new ArrayList<Property>();
 		_objectName = name;
 	}
 	
@@ -38,13 +37,12 @@ public class sObject {
 	
 	public String GetPropertiesList() {
 		String properties = "";
-		Property p;
 		
-		ListIterator li = _properties.listIterator();
-		while(li.hasNext()) {
-			p = (Property) li.next();
+		for(Property p : _properties)
+		{
 			properties = properties + p.GetName() + ":" + p.GetValue() + " "; 
 		}
+		
 		
 		return properties;
 	}

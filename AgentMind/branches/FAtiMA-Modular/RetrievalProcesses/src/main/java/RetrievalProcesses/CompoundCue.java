@@ -30,28 +30,10 @@ package RetrievalProcesses;
  * 
  * **/
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.Iterator;
-
-import org.drools.KnowledgeBase;
-import org.drools.KnowledgeBaseFactory;
-import org.drools.builder.KnowledgeBuilder;
-import org.drools.builder.KnowledgeBuilderError;
-import org.drools.builder.KnowledgeBuilderErrors;
-import org.drools.builder.KnowledgeBuilderFactory;
-import org.drools.builder.ResourceType;
-import org.drools.event.rule.DebugAgendaEventListener;
-import org.drools.event.rule.DebugWorkingMemoryEventListener;
-import org.drools.io.ResourceFactory;
-import org.drools.runtime.StatefulKnowledgeSession;
-import org.drools.runtime.rule.*;
 
 import FAtiMA.memory.ICompoundCue;
 import FAtiMA.memory.episodicMemory.ActionDetail;
 import FAtiMA.memory.episodicMemory.EpisodicMemory;
-import FAtiMA.memory.episodicMemory.MemoryEpisode;
 
 
 public class CompoundCue extends RuleEngine implements ICompoundCue {

@@ -6,7 +6,6 @@ import FAtiMA.AgentModel;
 import FAtiMA.conditions.AppraisalCondition;
 import FAtiMA.conditions.EmotionCondition;
 import FAtiMA.conditions.NewEventCondition;
-import FAtiMA.conditions.RecentEventCondition;
 
 import FAtiMA.deliberativeLayer.plan.Effect;
 import FAtiMA.deliberativeLayer.plan.Step;

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 
 import FAtiMA.memory.episodicMemory.ActionDetail;
-import FAtiMA.memory.episodicMemory.MemoryEpisode;
 import FAtiMA.memory.episodicMemory.EpisodicMemory;;
 
 public interface ISpreadActivate {

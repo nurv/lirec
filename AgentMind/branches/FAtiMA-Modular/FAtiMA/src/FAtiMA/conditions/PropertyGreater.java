@@ -54,7 +54,6 @@ package FAtiMA.conditions;
 
 import FAtiMA.AgentModel;
 import FAtiMA.util.AgentLogger;
-import FAtiMA.util.Constants;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Symbol;
 

@@ -76,7 +76,6 @@ import java.util.ListIterator;
 
 import FAtiMA.AgentModel;
 import FAtiMA.util.AgentLogger;
-import FAtiMA.util.Constants;
 import FAtiMA.wellFormedNames.Inequality;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;

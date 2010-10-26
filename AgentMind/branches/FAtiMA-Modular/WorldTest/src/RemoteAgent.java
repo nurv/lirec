@@ -1,13 +1,10 @@
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.ListIterator;
 import java.util.Random;
 import java.util.StringTokenizer;
 
-import FAtiMA.memory.Memory;
 import FAtiMA.conditions.Condition;
 import FAtiMA.deliberativeLayer.plan.Effect;
 import FAtiMA.deliberativeLayer.plan.Step;
@@ -36,7 +33,7 @@ public class RemoteAgent extends SocketListener {
 	final static int MIN_ACTION_DELAY_MS = 500;
 	final static int MAX_ACTION_DELAY_MS = 500;
 	protected Random _generator; 
-	private ArrayList _properties;
+	private ArrayList<Property> _properties;
 	private String _name;
 	private String _role;
 	private String _displayName;
@@ -46,7 +43,7 @@ public class RemoteAgent extends SocketListener {
 
 	public RemoteAgent(WorldTest world, Socket s) {
 		_generator = new Random();
-		_properties = new ArrayList();
+		_properties = new ArrayList<Property>();
 		_world = world;
 		_r = new Random();
 		//Memory.GetInstance().setSelf(_name);
@@ -104,11 +101,9 @@ public class RemoteAgent extends SocketListener {
 
 	public String GetPropertiesList() {
 		String properties = "";
-		Property p;
-
-		ListIterator li = _properties.listIterator();
-		while(li.hasNext()) {
-			p = (Property) li.next();
+		
+		for(Property p : _properties)
+		{
 			properties = properties + p.GetName() + ":" + p.GetValue() + " "; 
 		}
 
@@ -198,15 +193,13 @@ public class RemoteAgent extends SocketListener {
 
 	protected void UpdateActionEffects(Name action) 
 	{
-		ListIterator li = this._world.GetActions().listIterator();
-		ArrayList bindings;
-		Step s;
+		ArrayList<Substitution> bindings;
+	
 		Step gStep;
-
-		while(li.hasNext()) 
+		
+		for(Step s : this._world.GetActions())
 		{
-			s = (Step) li.next();
-			bindings = new ArrayList();
+			bindings = new ArrayList<Substitution>();
 			bindings.add(new Substitution(new Symbol("[SELF]"), new Symbol(this._name)));
 			bindings.add(new Substitution(new Symbol("[AGENT]"), new Symbol(this._name)));
 			if(Unifier.Unify(s.getName(),action, bindings))
@@ -216,19 +209,15 @@ public class RemoteAgent extends SocketListener {
 				PropertiesChanged(gStep.getEffects());
 			}
 		}
-
 	}
 
-	private void PropertiesChanged(ArrayList effects)
+	private void PropertiesChanged(ArrayList<Effect> effects)
 	{
-		ListIterator li = effects.listIterator();
 		Condition c;
-		Effect e;
 		String msg;
-
-		while(li.hasNext())
+		
+		for(Effect e : effects)
 		{
-			e = (Effect) li.next();
 			c = e.GetEffect();
 			String name = c.getName().toString();
 			if(!name.startsWith("EVENT") && !name.startsWith("SpeechContext"))
@@ -293,10 +282,12 @@ class ActionSimulator extends Thread{
 				String actionName = say.getActionType() + "(";
 				actionName += say.getReceiver() + ",";
 				actionName += say.getMeaning();
-				for(ListIterator li = say.GetParameters().listIterator(); li.hasNext();)
+				
+				for(String s : say.GetParameters())
 				{
-					actionName += "," + li.next();
+					actionName += "," + s;
 				}
+				
 				actionName += ")";
 
 				synchronized(_ra){

@@ -8,11 +8,8 @@ import org.xml.sax.Attributes;
 import FAtiMA.AgentModel;
 import FAtiMA.exceptions.ContextParsingException;
 import FAtiMA.exceptions.InvalidEmotionTypeException;
-import FAtiMA.memory.semanticMemory.KnowledgeBase;
 import FAtiMA.socialRelations.LikeRelation;
-import FAtiMA.util.AgentLogger;
 import FAtiMA.util.Constants;
-import FAtiMA.util.enumerables.EmotionType;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
 import FAtiMA.wellFormedNames.SubstitutionSet;
@@ -128,9 +125,6 @@ public class LikeCondition extends Condition {
 		return _ToM + " like" + _operator + " " + _name + " " + _value;
 	}
 	
-	private static ContextParsingException createException( String msg ){
-		return new ContextParsingException("SocialRelationCondition: "+msg);
-	}
 	
 	private static Operator parseOperator( String operator ) throws ContextParsingException{
 		if( operator == null )

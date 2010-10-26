@@ -48,7 +48,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
-import FAtiMA.conditions.Condition;
 import FAtiMA.deliberativeLayer.goals.Goal;
 import FAtiMA.memory.Memory;
 import FAtiMA.sensorEffector.Event;
@@ -345,8 +344,8 @@ public class AutobiographicalMemory implements Serializable {
 		{
 			MemoryEpisode episode = (MemoryEpisode) this._memoryEvents.get(episodeID);
 			long elapsedTime = episode.getTime().getElapsedRealTime();
-			float avgEmotion = episode.determineEmotionAverage();
-			float stdDev = episode.determineEmotionStdDeviation();
+			//float avgEmotion = episode.determineEmotionAverage();
+			//float stdDev = episode.determineEmotionStdDeviation();
 			AgentLogger.GetInstance().logAndPrint("Preparing Summary Generation...");
 			AgentLogger.GetInstance().logAndPrint("Time elapsed since episode happened: " + elapsedTime);
 			//AgentLogger.GetInstance().logAndPrint("Average of the episode's emotions: " + avgEmotion);
