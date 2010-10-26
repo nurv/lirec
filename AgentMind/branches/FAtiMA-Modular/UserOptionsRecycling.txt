@@ -1,0 +1,18 @@
+user GreetBack Cerkith
+user GreetBack Tigrit
+user AcceptInvitation Cerkith recycling
+user RejectInvitation Cerkith recycling
+user AcceptInvitation Cerkith drink
+user RejectInvitation Cerkith drink
+user ApproachMachine machine
+user ProduceLiquid Cerkith body button1
+user PressWrongButton button2
+user AcceptDrink Cerkith greenDrink
+user RejectOffer Cerkith greenDrink
+user Drink greenDrink
+user AskRecyclingQuestion Cerkith
+user AskRecyclingQuestion Tigrit
+user AcceptSoil Tigrit soil
+user RejectOffer Tigrit soil
+user Apologise Cerkith
+user Apologise Tigrit

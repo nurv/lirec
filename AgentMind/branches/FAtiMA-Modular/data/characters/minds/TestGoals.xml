@@ -1,0 +1,36 @@
+<GoalLibrary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:noNamespaceSchemaLocation="./schemas/GoalLibrary.xsd">
+
+	<!-- Interest Goals -->
+	
+	<ActivePursuitGoal name="Goal1([target])">
+		<PreConditions>
+			<Property name="[target]" operator="=" value="[SELF]" />
+			<Property name="[SELF](isTestMind)" operator="=" value="True" />
+			<RecentEvent occurred="False" subject="[SELF]" action="TestAction" target="test" />
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="TestAction" target="test" />
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>
+		<ExpectedEffects>
+		</ExpectedEffects>		
+	</ActivePursuitGoal>
+	
+	<ActivePursuitGoal name="Goal2([target])">
+		<PreConditions>
+			<Property name="[SELF](isTestMind)" operator="=" value="True" />
+			<Property name="[target](test)" operator="=" value="True" />
+			<RecentEvent occurred="False" subject="[SELF]" action="TestAction2" />
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="TestAction2" />
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>
+		<ExpectedEffects>
+		</ExpectedEffects>		
+	</ActivePursuitGoal>
+	
+</GoalLibrary>

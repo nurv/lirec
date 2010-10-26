@@ -1,0 +1,121 @@
+<Character role="Cerkith" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:noNamespaceSchemaLocation="../../schemas/Character.xsd">
+	<EmotionalThresholds>
+		<EmotionalThreshold emotion="Love" threshold="3" decay="5"/>
+		<EmotionalThreshold emotion="Hate" threshold="3" decay="5"/>
+		<EmotionalThreshold emotion="Hope" threshold="1" decay="2"/>
+		<EmotionalThreshold emotion="Fear" threshold="3" decay="8"/>
+		<EmotionalThreshold emotion="Satisfaction" threshold="3" decay="5"/>
+		<EmotionalThreshold emotion="Relief" threshold="3" decay="5"/>
+		<EmotionalThreshold emotion="Fears-Confirmed" threshold="4" decay="8"/>
+		<EmotionalThreshold emotion="Disappointment" threshold="3" decay="2"/>
+		<EmotionalThreshold emotion="Joy" threshold="3" decay="5"/>
+		<EmotionalThreshold emotion="Distress" threshold="3" decay="2"/>
+		<EmotionalThreshold emotion="Happy-For" threshold="2" decay="8"/>
+		<EmotionalThreshold emotion="Pitty" threshold="3" decay="8"/>
+		<EmotionalThreshold emotion="Resentment" threshold="3" decay="2"/>
+		<EmotionalThreshold emotion="Gloating" threshold="3" decay="8"/>
+		<EmotionalThreshold emotion="Pride" threshold="2" decay="8"/>
+		<EmotionalThreshold emotion="Shame" threshold="3" decay="2"/>
+		<EmotionalThreshold emotion="Gratification" threshold="1" decay="5"/>
+		<EmotionalThreshold emotion="Remorse" threshold="5" decay="8"/>
+		<EmotionalThreshold emotion="Admiration" threshold="5" decay="8"/>
+		<EmotionalThreshold emotion="Reproach" threshold="1" decay="5"/>
+		<EmotionalThreshold emotion="Gratitude" threshold="3" decay="5"/>
+		<EmotionalThreshold emotion="Anger" threshold="2" decay="8"/>
+	</EmotionalThresholds>
+	
+	<MotivationalParameters>
+		<MotivationalParameter motivator="Affiliation" decayFactor="10" weight="0.413" intensity="8"/>
+		<MotivationalParameter motivator="Integrity" decayFactor="1" weight="0.67" intensity="4"/>
+		<MotivationalParameter motivator="Energy" decayFactor="1" weight="0.3" intensity="5"/>
+		<MotivationalParameter motivator="Certainty" decayFactor="2.5" weight="0.265" intensity="9"/>
+		<MotivationalParameter motivator="Competence" decayFactor="1" weight="0.7" intensity="5"/>
+	</MotivationalParameters>
+
+	<Goals>
+		<Goal name="Invite([target],[activity])" importanceOfSuccess="4" importanceOfFailure="3"/>
+		<Goal name="ExplainRecyclingMachine([target],[machine],[button1],[button2])" importanceOfSuccess="4" importanceOfFailure="3"/>	
+		<Goal name="AskToProduceLiquid([target],[body],[button])" importanceOfSuccess="4" importanceOfFailure="3"/>	
+		<Goal name="DrinkWith([target],[liquid])" importanceOfSuccess="4" importanceOfFailure="3"/>	
+	</Goals>
+	
+	<InterpersonalRelations>
+		<Relation target="user" like="2" respect="1"/>
+		<Relation target="Abbuk" like="2" respect="5"/>
+		<Relation target="Evui" like="1" respect="-4"/>
+		<Relation target="Errep" like="1" respect="-2"/>
+		<Relation target="Ardoot" like="-2" respect="-4"/>
+		<Relation target="Tigrit" like="3" respect="2"/>
+		<Relation target="Ikop" like="-2" respect="-4"/>
+	</InterpersonalRelations>
+	
+	<ActionTendencies>		
+		<ActionTendency action="AngryGesture()">
+            <Preconditions>
+            </Preconditions>
+            <ElicitingEmotion type="Reproach" minIntensity="2">
+				<CauseEvent subject="*" action="GreetWrongly" target="[SELF]" />
+			</ElicitingEmotion>
+        </ActionTendency>
+		
+		<ActionTendency action="AngryGesture()">
+            <Preconditions>
+            </Preconditions>
+            <ElicitingEmotion type="Reproach" minIntensity="2">
+				<CauseEvent subject="*" action="RejectInvitation" target="[SELF]" />
+			</ElicitingEmotion>
+        </ActionTendency>
+		
+		<ActionTendency action="AngryGesture()">
+            <Preconditions>
+            </Preconditions>
+            <ElicitingEmotion type="Reproach" minIntensity="2">
+				<CauseEvent subject="*" action="RejectOffer" target="[SELF]" />
+			</ElicitingEmotion>
+        </ActionTendency>
+		
+		<ActionTendency action="SpeechAct([Subject],warn,[Target])">
+            <Preconditions>
+				<Property name="recycling(isActivity)" operator="=" value="True"/>
+            </Preconditions>
+            <ElicitingEmotion type="Reproach" minIntensity="1">
+				<CauseEvent subject="*" action="ApproachMachine" target="*"/>
+			</ElicitingEmotion>
+        </ActionTendency>
+		
+		<ActionTendency action="SpeechAct([Subject],angryMachineBroke)">
+            <Preconditions>
+            </Preconditions>
+            <ElicitingEmotion type="Reproach" minIntensity="2">
+				<CauseEvent subject="*" action="PressWrongButton" target="*" />
+			</ElicitingEmotion>
+        </ActionTendency>
+		
+		<ActionTendency action="AngryGesture()">
+            <Preconditions>
+            </Preconditions>
+            <ElicitingEmotion type="Reproach" minIntensity="2">
+				<CauseEvent subject="*" action="PressWrongButton" target="*" />
+			</ElicitingEmotion>
+        </ActionTendency>
+        
+         <ActionTendency action="SpeechAct([Subject],midStatusReply)">
+            <Preconditions>
+            </Preconditions>
+            <ElicitingEmotion type="Admiration" minIntensity="0">
+				<CauseEvent subject="*" action="AskQuestion" target="[SELF]" />
+			</ElicitingEmotion>
+        </ActionTendency>
+
+        <!-- Dinner party scenario -->
+        <ActionTendency action="SpeechAct([Subject],generic-express-admiration)">
+			<Preconditions>
+            </Preconditions>
+			<ElicitingEmotion type="Admiration" minIntensity="3">
+				<CauseEvent subject="*" action="*" target="*"/>
+			</ElicitingEmotion>
+		</ActionTendency>
+	</ActionTendencies>	
+	
+</Character>

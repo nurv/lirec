@@ -1,0 +1,113 @@
+<DomainActions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:noNamespaceSchemaLocation="./schemas/Actions.xsd">
+
+	<Action name="Spact([target],greet)">
+		<PreConditions>
+			<Property name="[target](isPerson)" operator="=" value="True" />	
+			<Property name="[AGENT](near,[target])" operator="=" value="True" />
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="SContext()" operator="=" value="#EVENT([AGENT],Spact,[target],greet)"/>
+			</Effect>
+		</Effects>
+		<EffectsOnDrives>
+			<Motivator drive="Energy" value="-0.5" target="[AGENT]"/>
+			<Motivator drive="Affiliation" value="+3" target="[AGENT]"/>
+			<Motivator drive="Affiliation" value="+3" target="[target]"/>
+		</EffectsOnDrives>
+	</Action>
+	
+
+	<Action name="Spact([target],handOverPhone)">
+		<PreConditions>
+			<Property name="[target](isPerson)" operator="=" value="True" />
+			<Property name="[AGENT](near,[target])" operator="=" value="True" />
+			<Property name="Phone(isRinging)" operator="=" value="True" />
+			<Property name="Phone(onRobot)" operator="=" value="True" />
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="SContext()" operator="=" value="#EVENT([AGENT],Spact,[target],handOverPhone)"/>
+			</Effect>
+			<Effect probability="0.6">
+				<Property name="Phone(onRobot)" operator="=" value="False"/>
+			</Effect>
+		</Effects>
+		<EffectsOnDrives>
+			<Motivator drive="Energy" value="-0.5" target="[AGENT]"/>
+		</EffectsOnDrives>
+	</Action>
+	
+	<Action name="Spact([target],remind,[reminder])">
+		<PreConditions>
+			<Property name="[reminder](isReminder)" operator="=" value="True" />
+			<Property name="[AGENT](near,[target])" operator="=" value="True" />
+			<Property name="[target](isPerson)" operator="=" value="True" />
+			<Property name="[reminder](for,[target])" operator="=" value="True" />
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="SContext()" operator="=" value="#EVENT([AGENT],Spact,[target],remind,[reminder])"/>
+			</Effect>
+		</Effects>
+		<EffectsOnDrives>
+			<Motivator drive="Energy" value="-0.5" target="[AGENT]"/>
+			<Motivator drive="Affiliation" value="+1" target="[AGENT]"/>
+			<Motivator drive="Affiliation" value="+1" target="[target]"/>
+		</EffectsOnDrives>
+	</Action>
+
+	<Action name="MoveToPerson([target])">
+		<PreConditions>
+			<Property name="[target](isPerson)" operator="=" value="True" />	
+		</PreConditions>
+		<Effects>
+			<Effect probability="0.8">
+				<Property name="[AGENT](near,[target])" operator="=" value="True" />
+			</Effect>
+		</Effects>
+		<EffectsOnDrives>
+			<Motivator drive="Energy" value="-0.5" target="[AGENT]"/>
+		</EffectsOnDrives>	
+	</Action>
+
+	<Action name="MoveToPlace([place])">
+		<PreConditions>
+			<Property name="[place](isPlace)" operator="=" value="True" />	
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="[AGENT](at,[place])" operator="=" value="True" />
+			</Effect>
+		</Effects>
+		<EffectsOnDrives>
+			<Motivator drive="Energy" value="-0.5" target="[AGENT]"/>
+		</EffectsOnDrives>	
+	</Action>
+	
+	<Action name="Charge([place])">
+		<PreConditions>
+			<Property name="[place](isChargingStation)" operator="=" value="True" />
+			<Property name="[AGENT](at,[place])" operator="=" value="True" />
+		</PreConditions>
+		<Effects>
+		</Effects>
+		<EffectsOnDrives>
+			<Motivator drive="Energy" value="+9" target="[AGENT]"/>
+			<Motivator drive="Affiliation" value="-5" target="[AGENT]"/>
+		</EffectsOnDrives>	
+	</Action>
+	
+	<Action name="Migrate([platform])">
+		<PreConditions>
+			<Property name="[platform](isMigrationTarget)" operator="=" value="True" />
+		</PreConditions>
+		<Effects>
+		</Effects>
+		<EffectsOnDrives>
+		</EffectsOnDrives>	
+	</Action>
+
+
+</DomainActions>

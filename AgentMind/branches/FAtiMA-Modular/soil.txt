@@ -1,0 +1,3 @@
+exist False
+recycledSoil True
+availability True

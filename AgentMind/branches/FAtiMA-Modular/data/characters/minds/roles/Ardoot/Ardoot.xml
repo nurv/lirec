@@ -1,0 +1,112 @@
+<Character role="Ardoot" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:noNamespaceSchemaLocation="../../schemas/Character.xsd">
+	<EmotionalThresholds>
+		<EmotionalThreshold emotion="Love" threshold="4" decay="5"/>
+		<EmotionalThreshold emotion="Hate" threshold="2" decay="5"/>
+		<EmotionalThreshold emotion="Hope" threshold="1" decay="2"/>
+		<EmotionalThreshold emotion="Fear" threshold="3" decay="8"/>
+		<EmotionalThreshold emotion="Satisfaction" threshold="3" decay="5"/>
+		<EmotionalThreshold emotion="Relief" threshold="2" decay="5"/>
+		<EmotionalThreshold emotion="Fears-Confirmed" threshold="3" decay="8"/>
+		<EmotionalThreshold emotion="Disappointment" threshold="2" decay="2"/>
+		<EmotionalThreshold emotion="Joy" threshold="1" decay="5"/>
+		<EmotionalThreshold emotion="Distress" threshold="3" decay="2"/>
+		<EmotionalThreshold emotion="Happy-For" threshold="3" decay="8"/>
+		<EmotionalThreshold emotion="Pitty" threshold="3" decay="8"/>
+		<EmotionalThreshold emotion="Resentment" threshold="2" decay="2"/>
+		<EmotionalThreshold emotion="Gloating" threshold="2" decay="8"/>
+		<EmotionalThreshold emotion="Pride" threshold="1" decay="8"/>
+		<EmotionalThreshold emotion="Shame" threshold="5" decay="2"/>
+		<EmotionalThreshold emotion="Gratification" threshold="1" decay="5"/>
+		<EmotionalThreshold emotion="Remorse" threshold="5" decay="8"/>
+		<EmotionalThreshold emotion="Admiration" threshold="3" decay="8"/>
+		<EmotionalThreshold emotion="Reproach" threshold="1" decay="8"/>
+		<EmotionalThreshold emotion="Gratitude" threshold="3" decay="5"/>
+		<EmotionalThreshold emotion="Anger" threshold="3" decay="8"/>
+	</EmotionalThresholds>
+	
+	<MotivationalParameters>
+		<MotivationalParameter motivator="Affiliation" decayFactor="10" weight="0.425" intensity="8"/>
+		<MotivationalParameter motivator="Integrity" decayFactor="1" weight="0.76" intensity="5"/>
+		<MotivationalParameter motivator="Energy" decayFactor="1" weight="0.7" intensity="6"/>
+		<MotivationalParameter motivator="Certainty" decayFactor="1.5" weight="0.365" intensity="6"/>
+		<MotivationalParameter motivator="Competence" decayFactor="1.5" weight="0.825" intensity="7"/>
+	</MotivationalParameters>
+
+	<Goals>
+		<Goal name="ProvideKnowledge([target])" importanceOfSuccess="4" importanceOfFailure="3"/>	
+		<Goal name="AskFor([target],[soil])" importanceOfSuccess="4" importanceOfFailure="3"/>
+		<Goal name="ApproveFelling([target])" importanceOfSuccess="4" importanceOfFailure="3"/>	
+	</Goals>
+	
+	<InterpersonalRelations>
+		<Relation target="user" like="2" respect="1"/>
+		<Relation target="Abbuk" like="2" respect="1"/>
+		<Relation target="Evui" like="-1" respect="-5"/>
+		<Relation target="Cerkith" like="-2" respect="-3"/>
+		<Relation target="Errep" like="-1" respect="-3"/>
+		<Relation target="Tigrit" like="-1" respect="4"/>
+		<Relation target="Ikop" like="3" respect="1"/>
+	</InterpersonalRelations>
+	
+	<ActionTendencies>	
+		
+		<ActionTendency action="AngryGesture()">
+            <Preconditions>
+            </Preconditions>
+            <ElicitingEmotion type="Reproach" minIntensity="2">
+				<CauseEvent subject="*" action="GreetWrongly" target="[SELF]" />
+			</ElicitingEmotion>
+        </ActionTendency>
+		
+		<ActionTendency action="AngryGesture()">
+            <Preconditions>
+            </Preconditions>
+            <ElicitingEmotion type="Reproach" minIntensity="2">
+				<CauseEvent subject="*" action="RejectInvitation" target="[SELF]" />
+			</ElicitingEmotion>
+        </ActionTendency>
+		
+		<ActionTendency action="AngryGesture()">
+            <Preconditions>
+            </Preconditions>
+            <ElicitingEmotion type="Reproach" minIntensity="2">
+				<CauseEvent subject="*" action="RejectOffer" target="[SELF]" />
+			</ElicitingEmotion>
+        </ActionTendency>
+					
+		<ActionTendency action="SpeechAct([Subject],angryTreeDied)">
+            <Preconditions>
+            </Preconditions>
+            <ElicitingEmotion type="Reproach" minIntensity="2">
+				<CauseEvent subject="*" action="StepOnTree" target="*" />
+			</ElicitingEmotion>
+        </ActionTendency>
+		
+		<ActionTendency action="AngryGesture()">
+            <Preconditions>
+            </Preconditions>
+            <ElicitingEmotion type="Reproach" minIntensity="2">
+				<CauseEvent subject="*" action="StepOnTree" target="*" />
+			</ElicitingEmotion>
+        </ActionTendency>
+        
+        <ActionTendency action="SpeechAct([Subject],highStatusReply)">
+            <Preconditions>
+            </Preconditions>
+            <ElicitingEmotion type="Admiration" minIntensity="0">
+				<CauseEvent subject="*" action="AskQuestion" target="[SELF]" />
+			</ElicitingEmotion>
+        </ActionTendency>
+
+        <!-- Dinner party scenario -->
+        <ActionTendency action="SpeechAct([Subject],generic-express-admiration)">
+			<Preconditions>
+            </Preconditions>
+			<ElicitingEmotion type="Admiration" minIntensity="5">
+				<CauseEvent subject="*" action="*" target="*"/>
+			</ElicitingEmotion>
+		</ActionTendency>
+	</ActionTendencies>	
+	
+</Character>

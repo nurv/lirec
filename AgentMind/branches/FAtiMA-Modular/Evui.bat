@@ -1,0 +1,1 @@
+java -cp "FAtiMA.jar" FAtiMA.Agent worldsim localhost 46874 true Evui M Evui Evui Actions GoalLibrary CultureWithoutRituals isPerson:True strength:4 hurt:false pose:standing type:character power:10 isChild:True holds:none

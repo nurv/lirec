@@ -1,0 +1,50 @@
+<Character role="Greta" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:noNamespaceSchemaLocation="../../schemas/Character.xsd">
+	<EmotionalThresholds>
+		<EmotionalThreshold emotion="Love" threshold="1" decay="5"/>
+		<EmotionalThreshold emotion="Hate" threshold="3" decay="5"/>
+		<EmotionalThreshold emotion="Hope" threshold="1" decay="2"/>
+		<EmotionalThreshold emotion="Fear" threshold="4" decay="8"/>
+		<EmotionalThreshold emotion="Satisfaction" threshold="2" decay="5"/>
+		<EmotionalThreshold emotion="Relief" threshold="2" decay="5"/>
+		<EmotionalThreshold emotion="Fears-Confirmed" threshold="4" decay="8"/>
+		<EmotionalThreshold emotion="Disappointment" threshold="2" decay="2"/>
+		<EmotionalThreshold emotion="Joy" threshold="1" decay="5"/>
+		<EmotionalThreshold emotion="Distress" threshold="3" decay="2"/>
+		<EmotionalThreshold emotion="Happy-For" threshold="2" decay="8"/>
+		<EmotionalThreshold emotion="Pitty" threshold="2" decay="8"/>
+		<EmotionalThreshold emotion="Resentment" threshold="5" decay="2"/>
+		<EmotionalThreshold emotion="Gloating" threshold="3" decay="8"/>
+		<EmotionalThreshold emotion="Pride" threshold="2" decay="8"/>
+		<EmotionalThreshold emotion="Shame" threshold="5" decay="2"/>
+		<EmotionalThreshold emotion="Gratification" threshold="1" decay="5"/>
+		<EmotionalThreshold emotion="Remorse" threshold="3" decay="8"/>
+		<EmotionalThreshold emotion="Admiration" threshold="3" decay="8"/>
+		<EmotionalThreshold emotion="Reproach" threshold="2" decay="8"/>
+		<EmotionalThreshold emotion="Gratitude" threshold="3" decay="5"/>
+		<EmotionalThreshold emotion="Anger" threshold="3" decay="8"/>
+	</EmotionalThresholds>
+	
+	<MotivationalParameters>
+		<MotivationalParameter motivator="Affiliation" decayFactor="12.5" weight="0.4" intensity="7"/>
+		<MotivationalParameter motivator="Integrity" decayFactor="0.5" weight="0.7" intensity="3"/>
+		<MotivationalParameter motivator="Energy" decayFactor="2" weight="0.2" intensity="6"/>
+		<MotivationalParameter motivator="Certainty" decayFactor="1.5" weight="0.25" intensity="5"/>
+		<MotivationalParameter motivator="Competence" decayFactor="1.5" weight="0.775" intensity="6"/>
+	</MotivationalParameters>
+
+	<Goals>
+		<Goal name="Greet([target])" importanceOfSuccess="4" importanceOfFailure="3"/>
+		<Goal name="Welcome([target])" importanceOfSuccess="4" importanceOfFailure="3"/>
+		<Goal name="OfferFruit([target],[item])" importanceOfSuccess="4" importanceOfFailure="3"/>
+		<Goal name="OfferCake([target],[item])" importanceOfSuccess="4" importanceOfFailure="3"/>
+		<Goal name="AskPreference([target])" importanceOfSuccess="4" importanceOfFailure="3"/>
+		<Goal name="AcknowledgeChoice([target],[item])" importanceOfSuccess="4" importanceOfFailure="3"/>
+		<Goal name="Goodbye([target],[item])" importanceOfSuccess="4" importanceOfFailure="3"/>
+	</Goals>
+	
+	<InterpersonalRelations>
+		<Relation target="Amy" like="2" respect="1"/>
+		<!--Relation target="Jenny" like="3" respect="1"/-->
+	</InterpersonalRelations>
+</Character>

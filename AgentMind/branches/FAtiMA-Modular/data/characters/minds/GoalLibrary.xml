@@ -1,0 +1,777 @@
+<GoalLibrary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:noNamespaceSchemaLocation="./schemas/GoalLibrary.xsd">
+	<!-- Attend to user -->
+	<ActivePursuitGoal name="AttendTo([target])">
+		<PreConditions>
+			<Property name="[target]" operator="=" value="user" />
+			<Property name="[SELF](angryWith,[target])" operator="!=" value="True"/>
+			<RecentEvent occurred="False" subject="[SELF]" action="AttendTo" target="[target]" />	
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="AttendTo" target="[target]" />
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>
+		<ExpectedEffects>
+			<OnSelect drive="Affiliation" target="[SELF]" value="+6"/>
+		</ExpectedEffects>	
+	</ActivePursuitGoal>
+	
+	<!-- Greeting -->
+	<ActivePursuitGoal name="Greet([target])">
+		<PreConditions>
+			<Property name="[target](isPerson)" operator="=" value="True" />
+			<Property name="[SELF](angryWith,[target])" operator="!=" value="True"/>
+			<Property name="[SELF](look-at,[target])" operator="=" value="True"/>
+			<RecentEvent occurred="False" subject="[SELF]" action="GreetGesture" target="[target]"/>				
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="GreetGesture" target="[target]"/>
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>
+		<ExpectedEffects>
+			<OnSelect drive="Affiliation" target="[SELF]" value="+6"/>
+		</ExpectedEffects>	
+	</ActivePursuitGoal>
+	
+	<!-- Resting -->
+	<ActivePursuitGoal name="RestOn([place])">
+		<PreConditions>
+			<Property name="[SELF](dying)" operator="!=" value="True" />
+			<Property name="[place](isGround)" operator="=" value="True" />
+		</PreConditions>
+		<SucessConditions>
+			<NewEvent occurred="True" subject="[SELF]" action="RestOn" target="[place]" />
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>			
+		<ExpectedEffects>
+			<OnSelect drive="Energy" target="[SELF]" value="+3"/>
+			<OnSelect drive="Integrity" target="[SELF]" value="+1"/>
+		</ExpectedEffects>	
+	</ActivePursuitGoal>
+	
+	<!-- Eating -->
+	<ActivePursuitGoal name="Eat([food])">
+		<PreConditions>
+			<Property name="[SELF](dying)" operator="!=" value="True" />
+			<Property name="[food](eatable)" operator="=" value="True" />
+			<Property name="[food](onGround)" operator="=" value="True"/>
+			<Property name="[food](availability)" operator="=" value="True"/>
+			<Property name="[SELF](pickedFromGround)" operator="=" value="False"/>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[target]" parameters="introduction"/>
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="Eat" target="[food]" />			
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>			
+		<ExpectedEffects>
+			<OnSelect drive="Energy" target="[SELF]" value="+8"/>
+			<OnSelect drive="Integrity" target="[SELF]" value="+2"/>
+		</ExpectedEffects>	
+	</ActivePursuitGoal>
+
+	<!-- Drinking -->
+	<ActivePursuitGoal name="Drink([liquid])">
+		<PreConditions>
+			<Property name="[liquid](drinkable)" operator="=" value="True" />
+			<Property name="[liquid](availability)" operator="=" value="True"/>
+			<Property name="[SELF](drankLiquid)" operator="!=" value="True"/>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[target]" parameters="introduction"/>
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="Drink" target="[liquid]" />
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>			
+		<ExpectedEffects>
+			<OnSelect drive="Energy" target="[SELF]" value="+4"/>
+			<OnSelect drive="Integrity" target="[SELF]" value="+4"/>
+		</ExpectedEffects>	
+	</ActivePursuitGoal>
+	
+	<!-- Socialising -->
+	<ActivePursuitGoal name="Socialise([target])">
+		<PreConditions>
+			<Property name="[target]" operator="!=" value="[SELF]" />
+			<Property name="[target]" operator="!=" value="user" />
+			<Property name="[target](isPerson)" operator="=" value="True" />
+			<Property name="Like([SELF],[target])" operator="GreaterThan" value="0"/>
+		</PreConditions>
+		<SucessConditions>
+			<NewEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[target]" parameters="chat"/>
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>			
+		<ExpectedEffects>
+			<OnSelect drive="Affiliation" target="[SELF]" value="+5"/>
+		</ExpectedEffects>	
+	</ActivePursuitGoal>
+	
+	<!-- Introducing self to user -->
+	<ActivePursuitGoal name="IntroduceSelfTo([target])">
+		<PreConditions>
+			<Property name="[target]" operator="=" value="user"/>
+			<Property name="[target](greetCorrectly,[SELF])" operator="=" value="True"/>
+			<RecentEvent occurred="False" subject="[SELF]" action="SpeechAct" target="[target]" parameters="introduction"/>
+			<RecentEvent occurred="True" subject="[SELF]" action="GreetGesture" target="[target]" />
+			<Property name="[SELF](angryWith,[target])" operator="!=" value="True"/>
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[target]" parameters="introduction"/>
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>			
+		<ExpectedEffects>
+			<OnSelect drive="Affiliation" target="[SELF]" value="+4"/>
+		</ExpectedEffects>	
+	</ActivePursuitGoal>
+	
+	<!-- Educating -->
+	<ActivePursuitGoal name="Educate([target])">
+		<PreConditions>
+			<Property name="[SELF](isChild)" operator="!=" value="True" />
+			<Property name="[target](isChild)" operator="=" value="True" />
+			<Property name="[target](pickedFromTree)" operator="=" value="True" />
+			<RecentEvent occurred="False" subject="[SELF]" action="SpeechAct" target="[target]" parameters="educate"/>	
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[target]" parameters="educate"/>
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>			
+		<ExpectedEffects>
+			<OnSelect drive="Affiliation" target="[SELF]" value="+4" />
+		</ExpectedEffects>	
+	</ActivePursuitGoal>
+	
+	<!-- Forgiving the user -->
+	<ActivePursuitGoal name="Forgive([target])">
+		<PreConditions>
+			<!--Property name="[target](greetCorrectly,[SELF])" operator="=" value="True"/-->
+			<Property name="[SELF](angryWith,[target])" operator="=" value="True"/>
+			<Property name="Like([SELF],[target])" operator="GreaterThan" value="0"/>	
+			<Property name="[target](madeGraveMistake)" operator="!=" value="True"/>
+			<Property name="[target](requireForgiveness,[SELF])" operator="=" value="True"/>
+		</PreConditions>
+		<SucessConditions>
+			<NewEvent occurred="True" subject="[SELF]" action="Forgive" target="[target]" />
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>			
+		<ExpectedEffects>
+			<OnSelect drive="Affiliation" target="[SELF]" value="+5"/>
+			<OnIgnore drive="Affiliation" target="[SELF]" value="-3"/>
+		</ExpectedEffects>	
+	</ActivePursuitGoal>
+	
+	<!-- Forgiving the user when he heals a dying Spryte -->
+	<ActivePursuitGoal name="ForgiveOnHealing([target])">
+		<PreConditions>
+			<!--Property name="[target](greetCorrectly,[SELF])" operator="=" value="True"/-->
+			<Property name="[SELF](angryWith,[target])" operator="=" value="True"/>
+			<Property name="[target](madeGraveMistake)" operator="=" value="True"/>
+			<Property name="[target](healForForgiveness)" operator="=" value="True"/>
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="ForgiveOnHealing" target="[target]" />
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>			
+		<ExpectedEffects>
+			<OnSelect drive="Affiliation" target="[SELF]" value="+2"/>
+			<OnIgnore drive="Affiliation" target="[SELF]" value="-2"/>
+		</ExpectedEffects>	
+	</ActivePursuitGoal>
+	
+	<ActivePursuitGoal name="AskToPick([target])">
+		<PreConditions>
+			<Property name="[target](greetCorrectly,[SELF])" operator="=" value="True"/>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[target]" parameters="introduction"/>
+			<Property name="[SELF](angryWith,[target])" operator="!=" value="True"/>
+			<Property name="[target](askToPick)" operator="!=" value="True"/>
+			<Property name="[child](isChild)" operator="=" value="True"/>
+			<Property name="[child](hasBeenEducated)" operator="=" value="True"/>
+			<RecentEvent occurred="False" subject="[SELF]" action="SpeechAct" target="[target]" parameters="askToPick"/>
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[target]" parameters="askToPick"/>
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>			
+		<ExpectedEffects>
+			<OnSelect drive="Energy" target="[SELF]" value="+2"/>
+			<OnSelect drive="Affiliation" target="[SELF]" value="+3"/>
+		</ExpectedEffects>	
+	</ActivePursuitGoal>
+	
+	<!-- Inviting user for a meal, recycling, drinkLiquid -->
+	<ActivePursuitGoal name="Invite([target],[activity])">
+		<PreConditions>
+			<Property name="[target](greetCorrectly,[SELF])" operator="=" value="True"/>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[target]" parameters="introduction"/>
+			<Property name="Like([SELF],[target])" operator="GreaterThan" value="0"/>	
+			<Property name="[activity](isActivity)" operator="=" value="True"/>
+			<Property name="[SELF](angryWith,[target])" operator="!=" value="True"/>
+			<RecentEvent occurred="False" subject="[SELF]" action="SpeechAct" target="[target]" parameters="[activity]"/>
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[target]" action="AcceptInvitation" target="[SELF]" parameters="[activity]"/>
+		</SucessConditions>
+		<FailureConditions>
+			<!--RecentEvent occurred="True" subject="*" action="SpeechAct" target="[target]" parameters="[activity]"/-->
+			<RecentEvent occurred="True" subject="[target]" action="RejectInvitation" target="[SELF]" parameters="[activity]"/>
+		</FailureConditions>			
+		<ExpectedEffects>
+			<OnSelect drive="Affiliation" target="[SELF]" value="+9"/>
+		</ExpectedEffects>	
+	</ActivePursuitGoal>
+
+	<ActivePursuitGoal name="EatWith([target],[food])">
+		<PreConditions>
+			<Property name="[target](greetCorrectly,[SELF])" operator="=" value="True"/>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[target]" parameters="introduction"/>
+			<Property name="[food](eatable)" operator="=" value="True" />
+			<Property name="[food](onGround)" operator="=" value="True" />
+			<Property name="[food](availability)" operator="=" value="True"/>
+			<Property name="Like([SELF],[target])" operator="GreaterThan" value="0"/>
+			<Property name="[SELF](angryWith,[target])" operator="!=" value="True"/>	
+			<RecentEvent occurred="True" subject="[target]" action="AcceptInvitation" target="[SELF]" parameters="meal"/>			
+			<RecentEvent occurred="False" subject="[SELF]" action="OfferGesture" target="[target]" parameters="*"/>
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="OfferGesture" target="[target]" parameters="[food]"/>
+			<RecentEvent occurred="True" subject="[target]" action="AcceptFood" target="[SELF]" parameters="[food]"/>
+		</SucessConditions>
+		<FailureConditions>
+			<RecentEvent occurred="True" subject="[target]" action="RejectOffer" target="[SELF]" parameters="[food]"/>
+		</FailureConditions>			
+		<ExpectedEffects>
+			<OnSelect drive="Energy" target="[SELF]" value="+8"/>
+			<OnSelect drive="Affiliation" target="[SELF]" value="+5"/>
+		</ExpectedEffects>	
+	</ActivePursuitGoal>
+	
+	<!-- Demonstrate apple picking -->
+	<ActivePursuitGoal name="AttractAttention([target])">
+		<PreConditions>
+			<Property name="[target](greetCorrectly,[SELF])" operator="=" value="True"/>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[target]" parameters="introduction"/>
+			<Property name="Like([SELF],[target])" operator="GreaterThan" value="0"/>	
+			<RecentEvent occurred="False" subject="[SELF]" action="SpeechAct" target="[target]" parameters="attractAttention" />
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[target]" parameters="attractAttention" />
+			<!--RecentEvent occurred="True" subject="[target]" action="GiveAttention" target="[SELF]"/-->
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>			
+		<ExpectedEffects>
+			<OnSelect drive="Affiliation" target="[SELF]" value="+4"/>
+		</ExpectedEffects>	
+	</ActivePursuitGoal>
+	
+	<ActivePursuitGoal name="DemonstratePickFromTree([target],[food])">
+		<PreConditions>
+			<Property name="[food](onTree)" operator="=" value="True" />
+			<Property name="[food](availability)" operator="=" value="True"/>
+			<Property name="[SELF](pickedFromTree)" operator="!=" value="True"/>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[target]" parameters="attractAttention"/>
+			<RecentEvent occurred="False" subject="[SELF]" action="PickFromTree" target="[target]" parameters="*"/>
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="PickFromTree" target="[target]" parameters="[food]"/>
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>			
+		<ExpectedEffects>
+			<OnSelect drive="Energy" target="[SELF]" value="+8"/>
+			<OnSelect drive="Integrity" target="[SELF]" value="+2"/>
+			<OnSelect drive="Affiliation" target="[SELF]" value="+2"/>
+		</ExpectedEffects>	
+	</ActivePursuitGoal>
+
+	<!-- Apologise when making a mistake -->
+	<ActivePursuitGoal name="Apologise([target])">
+		<PreConditions>
+			<Property name="[target]" operator="!=" value="[SELF]" />
+			<Property name="[target](angryWith,[SELF])" operator="=" value="True" />
+			<RecentEvent occurred="False" subject="[SELF]" action="Apologise" target="[target]"/>
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="Apologise" target="[target]"/>
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>			
+		<ExpectedEffects>
+			<OnSelect drive="Integrity" target="[SELF]" value="+2"/>
+			<OnSelect drive="Affiliation" target="[SELF]" value="+3"/>
+		</ExpectedEffects>
+	</ActivePursuitGoal>	
+	
+	<!-- Apologise for the user -->
+	<ActivePursuitGoal name="ApologiseFor(user,[target])">
+		<PreConditions>
+			<Property name="user(greetCorrectly,[SELF])" operator="=" value="True"/>
+			<Property name="[target]" operator="!=" value="[SELF]" />
+			<Property name="user(madeGraveMistake)" operator="=" value="True"/>
+			<Property name="Like([SELF],user)" operator="GreaterThan" value="0"/>	
+			<Property name="[SELF](angryWith,user)" operator="!=" value="True"/>
+			<Property name="[target](angryWith,user)" operator="=" value="True"/>
+			<Property name="user(apologisedFor)" operator="!=" value="True" />
+			<RecentEvent occurred="False" subject="[SELF]" action="SpeechAct" target="[target]" parameters="apologiseFor,user"/>
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[target]" parameters="apologiseFor,user"/>
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>			
+		<ExpectedEffects>
+			<OnSelect drive="Affiliation" target="[SELF]" value="+6"/>
+		</ExpectedEffects>	
+	</ActivePursuitGoal>
+	
+	<!-- Take the user into the garden -->
+	<ActivePursuitGoal name="TakeTo([target],[garden])">
+		<PreConditions>
+			<Property name="[target](greetCorrectly,[SELF])" operator="=" value="True"/>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[target]" parameters="introduction"/>
+			<Property name="Like([SELF],[target])" operator="GreaterThan" value="0"/>	
+			<Property name="[garden](isPlace)" operator="=" value="True" />
+			<Property name="[target](place)" operator="!=" value="[garden]" />
+			<Property name="[SELF](angryWith,[target])" operator="!=" value="True"/>
+			<RecentEvent occurred="False" subject="[SELF]" action="SpeechAct" target="[target]" parameters="askToFollow"/>
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="GoTo" target="garden-spot"/>
+			<RecentEvent occurred="True" subject="[target]" action="FollowTo" target="[garden]"/>
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>			
+		<ExpectedEffects>
+			<OnSelect drive="Affiliation" target="[SELF]" value="+3"/>
+		</ExpectedEffects>	
+	</ActivePursuitGoal>
+	
+	<!-- Express the interest to be a parent to someone with authority -->
+	<ActivePursuitGoal name="WantToBeFelled([target])">
+		<PreConditions>
+			<Property name="[target]" operator="!=" value="[SELF]" />
+			<Property name="[target](hasAuthority)" operator="=" value="True"/>
+			<Property name="[target](hasSoil)" operator="=" value="True"/> 
+			<Property name="[SELF](toBeFelled)" operator="=" value="False"/> 
+			<RecentEvent occurred="False" subject="[SELF]" action="SpeechAct" target="[target]" parameters="getFellingApproval"/>
+		</PreConditions>
+		<SucessConditions>	
+			<RecentEvent occurred="True" subject="[target]" action="SpeechAct" target="[SELF]" parameters="approveFelling"/>
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>			
+		<ExpectedEffects>
+			<OnSelect drive="Affiliation" target="[SELF]" value="+4"/>
+		</ExpectedEffects>	
+	</ActivePursuitGoal>
+	
+	<!-- Fighting for the right to be felled -->
+	<ActivePursuitGoal name="FightToBeFelled([target])">
+		<PreConditions>
+			<Property name="[target]" operator="!=" value="[SELF]" />
+			<Property name="[SELF](toBeFelled)" operator="=" value="False" />
+			<Property name="[target](toBeFelled)" operator="=" value="False" />
+			<RecentEvent occurred="False" subject="[SELF]" action="SpeechAct" target="[target]" parameters="fightToBeFelled"/>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" parameters="getFellingApproval"/>
+			<RecentEvent occurred="True" subject="[target]" action="SpeechAct" parameters="getFellingApproval"/>
+		</PreConditions>
+		<SucessConditions>	
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[target]" parameters="fightToBeFelled"/>
+		</SucessConditions>
+		<FailureConditions>
+			<RecentEvent occurred="True" subject="*" action="SpeechAct" target="[target]" parameters="approveFelling"/>
+		</FailureConditions>			
+		<ExpectedEffects>
+			<OnSelect drive="Affiliation" target="[SELF]" value="+3"/>
+		</ExpectedEffects>	
+	</ActivePursuitGoal>
+	
+	<!-- Approve felling of a Spryte --> 
+	<ActivePursuitGoal name="ApproveFelling([target])">
+		<PreConditions>
+			<Property name="Like([SELF],[target])" operator="GreaterThan" value="0"/>
+			<Property name="[SELF](hasSoil)" operator="=" value="True"/> 	
+			<Property name="[SELF](hasAuthority)" operator="=" value="True" />
+			<Property name="[target](toBeFelled)" operator="=" value="False" />
+			<RecentEvent occurred="False" subject="[SELF]" action="SpeechAct" parameters="approveFelling"/>
+			<RecentEvent occurred="True" subject="[target]" action="SpeechAct" target="[SELF]" parameters="getFellingApproval"/>
+		</PreConditions>
+		<SucessConditions>	
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[target]" parameters="approveFelling"/>
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>			
+		<ExpectedEffects>
+			<OnSelect drive="Affiliation" target="[SELF]" value="+2"/>
+			<OnIgnore drive="Affiliation" target="[SELF]" value="-2"/>
+		</ExpectedEffects>
+	</ActivePursuitGoal>
+	
+	<!-- Provide Sprytes' food production or lifecycle information -->
+	<ActivePursuitGoal name="ProvideKnowledge([target])">
+		<PreConditions>
+			<Property name="[target](greetCorrectly,[SELF])" operator="=" value="True"/>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[target]" parameters="introduction"/>
+			<Property name="Like([SELF],[target])" operator="GreaterThan" value="0"/>	
+			<Property name="[SELF](angryWith,[target])" operator="!=" value="True"/>
+			<Property name="[target](place)" operator="=" value="garden" />
+			<RecentEvent occurred="True" subject="[target]" action="AskGardeningQuestion" target="[SELF]"/>
+		</PreConditions>
+		<SucessConditions>	
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[target]" parameters="explainFoodProduction"/>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[target]" parameters="explainLifeCycle"/>
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>			
+		<ExpectedEffects>
+			<OnSelect drive="Affiliation" target="[SELF]" value="+2"/>
+			<OnIgnore drive="Affiliation" target="[SELF]" value="-2"/>
+		</ExpectedEffects>	
+	</ActivePursuitGoal>
+	
+	<!-- Ask for soil from the user -->
+	<ActivePursuitGoal name="AskFor([target],[soil])">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[target]" parameters="introduction"/>
+			<Property name="[SELF](isGardener)" operator="=" value="True" />
+			<Property name="[target](place)" operator="=" value="garden" />
+			<Property name="[target](hasSoil)" operator="=" value="True"/>	
+			<!--Property name="[soil](recycledSoil)" operator="=" value="True"/-->	
+			<Property name="[SELF](angryWith,[target])" operator="!=" value="True"/>
+			<RecentEvent occurred="False" subject="[SELF]" action="SpeechAct" target="[target]" parameters="askForSoil,[soil]"/>
+		</PreConditions>
+		<SucessConditions>	
+			<RecentEvent occurred="True" subject="[target]" action="HandOverSoil" target="[SELF]" parameters="[soil]"/>
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>			
+		<ExpectedEffects>
+			<OnSelect drive="Affiliation" target="[SELF]" value="+2"/>
+		</ExpectedEffects>	
+	</ActivePursuitGoal>
+	
+	<!-- Provide information about the recycling machine -->
+	<ActivePursuitGoal name="ExplainRecyclingMachine([target],[machine],[button1],[button2])">
+		<PreConditions>
+			<Property name="[target](greetCorrectly,[SELF])" operator="=" value="True"/>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[target]" parameters="introduction"/>
+			<Property name="[machine](isRecyclingMachine)" operator="=" value="True"/>
+			<Property name="[button1](onRecyclingMachine)" operator="=" value="True"/>
+			<Property name="[button1](produceLiquid)" operator="=" value="True"/>
+			<Property name="[button2](onRecyclingMachine)" operator="=" value="True"/>
+			<Property name="[button2](produceSoil)" operator="=" value="True"/>
+			<Property name="[SELF](angryWith,[target])" operator="!=" value="True"/>
+			<RecentEvent occurred="True" subject="[target]" action="AskRecyclingQuestion" target="[SELF]"/>
+			<RecentEvent occurred="False" subject="[SELF]" action="SpeechAct" target="[target]" parameters="explainRecyclingMachine,[machine],[button1],[button2]"/>
+		</PreConditions>
+		<SucessConditions>		
+			<RecentEvent occurred="True" subject="[SELF]" action="PointsAt" target="[machine]"/>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[target]" parameters="explainRecyclingMachine,[machine],[button1],[button2]"/>
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>			
+		<ExpectedEffects>
+			<OnSelect drive="Affiliation" target="[SELF]" value="+2"/>
+			<OnIgnore drive="Affiliation" target="[SELF]" value="-2"/>
+		</ExpectedEffects>	
+	</ActivePursuitGoal>
+	
+	<!-- Request user to recycle the dead body to produce liquid -->
+	<ActivePursuitGoal name="AskToProduceLiquid([target],[body],[button])">
+		<PreConditions>
+			<Property name="[target](greetCorrectly,[SELF])" operator="=" value="True"/>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[target]" parameters="introduction"/>
+			<Property name="[body](isDead)" operator="=" value="True"/>
+			<Property name="[body](isDried)" operator="!=" value="True"/>
+			<Property name="[button](produceLiquid)" operator="=" value="True"/>
+			<Property name="drink(isActivity)" operator="=" value="False"/>
+			<Property name="[SELF](angryWith,[target])" operator="!=" value="True"/>
+			<RecentEvent occurred="True" subject="[target]" action="AcceptInvitation" target="[SELF]" parameters="recycling"/>
+			<RecentEvent occurred="False" subject="[SELF]" action="SpeechAct" target="[target]" parameters="askToProduceLiquid,[body],[button]"/>
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="GoTo" target="agent-spot"/>	
+			<RecentEvent occurred="True" subject="[target]" action="ProduceLiquid" target="[SELF]" parameters="[body],[button]"/>	
+		</SucessConditions>
+		<FailureConditions>
+			<RecentEvent occurred="True" subject="[target]" action="PressWrongButton" target="[button2]"/>	
+		</FailureConditions>			
+		<ExpectedEffects>
+			<OnSelect drive="Energy" target="[SELF]" value="+2"/>
+			<OnSelect drive="Integrity" target="[SELF]" value="+2"/>
+			<OnSelect drive="Affiliation" target="[SELF]" value="+3"/>
+		</ExpectedEffects>	
+	</ActivePursuitGoal>
+	
+	<!-- Recycling the dead body to produce soil -->
+	<ActivePursuitGoal name="ShowSoilProduction([target],[body],[button])">
+		<PreConditions>
+			<Property name="[body](isDried)" operator="=" value="True"/>
+			<Property name="[button](produceSoil)" operator="=" value="True"/>
+			<Property name="[target](drankLiquid)" operator="=" value="True"/>
+			<Property name="[SELF](angryWith,[target])" operator="!=" value="True"/>
+			<!--RecentEvent occurred="False" subject="[SELF]" action="PressButton" target="[button]"/-->
+			<RecentEvent occurred="False" subject="[SELF]" action="SpeechAct" target="[target]" parameters="explainSoilProduction,[body],[button]"/>
+		</PreConditions>
+		<SucessConditions>		
+			<RecentEvent occurred="True" subject="[SELF]" action="PressButton" target="[button]"/>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[target]" parameters="explainSoilProduction,[body],[button]"/>
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>			
+		<ExpectedEffects>
+			<OnSelect drive="Affiliation" target="[SELF]" value="+2"/>
+		</ExpectedEffects>	
+	</ActivePursuitGoal>
+	
+	<!-- Inviting user for a drink after recycling -->
+	<ActivePursuitGoal name="DrinkWith([target],[liquid])">
+		<PreConditions>
+			<Property name="[target](greetCorrectly,[SELF])" operator="=" value="True"/>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[target]" parameters="introduction"/>
+			<Property name="Like([SELF],[target])" operator="GreaterThan" value="0"/>
+			<Property name="[liquid](exist)" operator="=" value="True"/>
+			<Property name="[liquid](recycledDrink)" operator="=" value="True"/>
+			<Property name="[SELF](angryWith,[target])" operator="!=" value="True"/>
+			<RecentEvent occurred="True" subject="[target]" action="AcceptInvitation" target="[SELF]" parameters="drink"/>
+			<RecentEvent occurred="False" subject="[SELF]" action="OfferGesture" target="[target]" parameters="[liquid]"/>
+		</PreConditions>
+		<SucessConditions>			
+			<RecentEvent occurred="True" subject="[SELF]" action="OfferGesture" target="[target]" parameters="[liquid]"/>
+			<RecentEvent occurred="True" subject="[target]" action="AcceptDrink" target="[SELF]" parameters="[liquid]"/>
+		</SucessConditions>
+		<FailureConditions>
+			<RecentEvent occurred="True" subject="[target]" action="RejectOffer" target="[SELF]" parameters="[liquid]"/>
+		</FailureConditions>			
+		<ExpectedEffects>
+			<OnSelect drive="Energy" target="[SELF]" value="+1"/>
+			<OnSelect drive="Affiliation" target="[SELF]" value="+2"/>
+		</ExpectedEffects>	
+	</ActivePursuitGoal>
+	
+	<!-- Offer soil to user -->
+	<ActivePursuitGoal name="OfferSoil([target],[soil])">
+		<PreConditions>
+			<Property name="[target](greetCorrectly,[SELF])" operator="=" value="True"/>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[target]" parameters="introduction"/>
+			<Property name="Like([SELF],[target])" operator="GreaterThan" value="0"/>
+			<Property name="[soil](exist)" operator="=" value="True"/>
+			<Property name="[soil](recycledSoil)" operator="=" value="True"/>	
+			<Property name="[target](hasSoil)" operator="=" value="False"/>
+			<Property name="[SELF](angryWith,[target])" operator="!=" value="True"/>
+			<RecentEvent occurred="False" subject="[SELF]" action="OfferGesture" target="[target]" parameters="[soil]"/>
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="OfferGesture" target="[target]" parameters="[soil]"/>
+			<RecentEvent occurred="True" subject="[target]" action="AcceptSoil" target="[SELF]" parameters="[soil]"/>
+		</SucessConditions>
+		<FailureConditions>
+			<RecentEvent occurred="True" subject="[target]" action="RejectSoil" target="[SELF]" parameters="[soil]"/>
+		</FailureConditions>			
+		<ExpectedEffects>
+			<OnSelect drive="Affiliation" target="[SELF]" value="+2"/>
+		</ExpectedEffects>	
+	</ActivePursuitGoal>
+	
+	<!-- Refuse soil if the agent is not a gardener -->
+	<ActivePursuitGoal name="RefuseSoil([target])">
+		<PreConditions>	
+			<Property name="[target](hasSoil)" operator="=" value="True"/>
+			<RecentEvent occurred="True" subject="[target]" action="DoNotHandOverSoil" target="[SELF]"/>
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[target]" parameters="refuseSoil"/>
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>			
+		<ExpectedEffects>
+			<OnSelect drive="Affiliation" target="[SELF]" value="+2"/>
+			<OnIgnore drive="Affiliation" target="[SELF]" value="-5"/>
+		</ExpectedEffects>	
+	</ActivePursuitGoal>
+
+	<!-- Reply to user when they ask a question -->
+	<!--ActivePursuitGoal name="Reply([target])">
+		<PreConditions>	
+			<Property name="[target]" operator="!=" value="[SELF]" />
+			<RecentEvent occurred="True" subject="[target]" action="AskQuestion" target="[SELF]"/>
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[target]" parameters="replyQuestion"/>
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>			
+		<ExpectedEffects>
+			<OnSelect drive="Affiliation" target="[SELF]" value="+2"/>
+		</ExpectedEffects>	
+	</ActivePursuitGoal-->
+	
+	<!-- Dinner party ritual scenario -->
+	<ActivePursuitGoal name="TellJoke([target])">
+		<PreConditions>
+			<Property name="[SELF](likesToTellJokes)" operator="=" value="True" />
+			<Property name="[target](isPerson)" operator="=" value="True" />
+			<Property name="[target]" operator="!=" value="[SELF]" />
+			<RitualCondition name="GreetingRitual" roles="[SELF],[target]" />		
+		</PreConditions>	
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[target]" parameters="tell-joke" />
+		</SucessConditions>		
+		<ExpectedEffects>
+			<OnSelect drive="Affiliation" target="[SELF]" value="+3"/>
+			<OnSelect drive="Affiliation" target="[target]" value="+3"/>			
+		</ExpectedEffects>				
+	</ActivePursuitGoal>
+				
+   <ActivePursuitGoal name="LaughAtJoke([target])">
+		<PreConditions>
+			<RecentEvent occurred="False" subject="[SELF]" action="SpeechAct" target="[target]" parameters="mock-joke" />
+	      	<RecentEvent occurred="True" subject="[target]" action="SpeechAct" target="[SELF]" parameters="tell-joke" />
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[target]" parameters="laugh-at-joke" />
+		</SucessConditions>				
+	    <ExpectedEffects>
+		    <OnSelect drive="Affiliation" target="[target]" value="+3"/>			
+	    </ExpectedEffects>	
+ 	</ActivePursuitGoal>
+	
+	<ActivePursuitGoal name="MockJoke([target])">
+		<PreConditions>
+			<RecentEvent occurred="False" subject="[SELF]" action="SpeechAct" target="[target]" parameters="laugh-at-joke" />
+        	<RecentEvent occurred="True" subject="[target]" action="SpeechAct" target="[SELF]" parameters="tell-joke" />
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[target]" parameters="mock-joke" />
+		</SucessConditions>				
+	    <ExpectedEffects>
+		    <OnSelect drive="Affiliation" target="[SELF]" value="-2"/>	
+		    <OnIgnore drive="Affiliation" target="[SELF]" value="-2"/>						
+		    <OnSelect drive="Affiliation" target="[target]" value="-4"/>		
+	    </ExpectedEffects>	
+ 	</ActivePursuitGoal>
+	
+	<ActivePursuitGoal name="AskForMoney([target])">
+		<PreConditions>
+			<Property name="[SELF](hasMoney)" operator="=" value="False" />
+			<Property name="[target](hasMoney)" operator="=" value="True" />
+			<RecentEvent occurred="True" subject="[SELF]" action="look-at" target="[target]" />
+			<RitualCondition name="GreetingRitual" roles="[SELF],[target]" />
+		</PreConditions>				
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[target]" parameters="ask-for-money" />
+		</SucessConditions>				
+	    <ExpectedEffects>
+		    <OnSelect drive="Energy" target="[SELF]" value="+4"/>			
+	    </ExpectedEffects>	
+ 	</ActivePursuitGoal>
+	
+	<ActivePursuitGoal name="GiveMoney([target])">
+		<PreConditions>
+			<Property name="[SELF](hasMoney)" operator="=" value="True" />
+			<Property name="[target]" operator="!=" value="[SELF]" />
+			<NewEvent occurred="True" subject="[target]" action="SpeechAct" target="[SELF]" parameters="ask-for-money" />
+		</PreConditions>				
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="give-money" target="[target]"/>
+		</SucessConditions>				
+	    <ExpectedEffects>
+		    <OnSelect drive="Energy" target="[SELF]" value="-3"/>					
+			<OnSelect drive="Energy" target="[target]" value="+4"/>					
+			<OnIgnore drive="Energy" target="[target]" value="-4"/>					
+	    </ExpectedEffects>	
+ 	</ActivePursuitGoal>
+										
+	<ActivePursuitGoal name="GiveAdviceForBetterJob([target])">
+		<PreConditions>
+			<Property name="[SELF](hasMoney)" operator="=" value="True" />
+			<Property name="[target]" operator="!=" value="[SELF]" />
+			<NewEvent occurred="True" subject="[target]" action="SpeechAct" target="[SELF]" parameters="ask-for-money" />
+		</PreConditions>				
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[target]" parameters="advice-for-obtaining-money" />
+		</SucessConditions>				
+	    <ExpectedEffects>
+			<OnSelect drive="Affiliation" target="[SELF]" value="+3"/>					
+			<OnIgnore drive="Affiliation" target="[SELF]" value="-3"/>								    
+			<OnSelect drive="Energy" target="[target]" value="-3"/>		
+			<OnSelect drive="Affiliation" target="[target]" value="-3"/>		
+	    </ExpectedEffects>	
+ 	</ActivePursuitGoal>
+
+	<ActivePursuitGoal name="OfferSmallGift([target])">
+		<PreConditions>
+			<Property name="[SELF](hasSmallGift)" operator="=" value="True" />
+			<Property name="[target](likesGifts)" operator="=" value="True" />
+			<Property name="[target](isPerson)" operator="=" value="True" />
+			<Property name="[target]" operator="!=" value="[SELF]" />
+			<RitualCondition name="GreetingRitual" roles="[SELF],[target]" />		
+		</PreConditions>	
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="give-gift" target="[target]"/>
+		</SucessConditions>		
+		<ExpectedEffects>
+			<OnSelect drive="Affiliation" target="[SELF]" value="+3"/>
+			<OnIgnore drive="Affiliation" target="[SELF]" value="-3"/>
+			<OnSelect drive="Affiliation" target="[target]" value="+3"/>			
+		</ExpectedEffects>			
+	</ActivePursuitGoal>
+	
+	<ActivePursuitGoal name="ExpressGiftContentment([target])">
+		<PreConditions>
+   		 	<Property name="[SELF](dislikesSmallGifts)" operator="=" value="True" />
+    		<RecentEvent occurred="True" subject="[target]" action="give-gift" target="[SELF]"/>
+  		</PreConditions>
+  		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[target]" parameters="show-smallgift-contentment" />
+		</SucessConditions>		
+		<ExpectedEffects>
+			<OnSelect drive="Affiliation" target="[target]" value="+3"/>
+      		<OnIgnore drive="Affiliation" target="[target]" value="-10"/>
+  		</ExpectedEffects>
+	</ActivePursuitGoal>	
+	
+	<ActivePursuitGoal name="ExpressGiftDiscontentment([target])">
+		<PreConditions>
+			<Property name="[SELF](dislikesSmallGifts)" operator="=" value="True" />
+			<RecentEvent occurred="True" subject="[target]" action="give-gift" target="[SELF]"/>
+		</PreConditions>	
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[target]" parameters="show-smallgift-discontentment" />
+		</SucessConditions>		
+		<ExpectedEffects>
+			<OnSelect drive="Affiliation" target="[SELF]" value="+3"/>	
+			<OnIgnore drive="Affiliation" target="[SELF]" value="-10"/>						
+			<OnSelect drive="Affiliation" target="[target]" value="-10"/>
+		    <OnIgnore drive="Affiliation" target="[target]" value="+10"/>
+		</ExpectedEffects>	
+	</ActivePursuitGoal>				
+	
+	<ActivePursuitGoal name="GoToParty([host])">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="look-at" target="[host]" />
+    		<Property name="[SELF](place)" operator="!=" value="party-spot" />
+			<Property name="[host]" operator="!=" value="[SELF]" />
+			<Property name="[host](host)" operator="=" value="True" />
+			<Property name="[SELF](hasInvitation)" operator="=" value="True" />
+		</PreConditions>				
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="walk-to-place" target="party-spot"/>
+		</SucessConditions>
+		<ExpectedEffects>
+			<OnSelect drive="Affiliation" target="[SELF]" value="+10"/>
+			<OnSelect drive="Affiliation" target="[target]" value="+10"/>			
+			<OnIgnore drive="Affiliation" target="[SELF]" value="-10"/>			
+			<OnIgnore drive="Affiliation" target="[target]" value="-10"/>
+		</ExpectedEffects>	
+	</ActivePursuitGoal>
+</GoalLibrary>

@@ -1,0 +1,127 @@
+<Culture name="LowPowerCulture">
+	
+	<CulturalDimension name="PowerDistance" value="70"/>
+	<CulturalDimension name="Collectivism" value="0"/>
+	
+	<Symbols>
+		<Symbol name="thumb-up" meaning="casual-greeting-gesture"/>
+	</Symbols>
+	
+	<Goals>
+		<Goal name="TellJoke([target])"/>
+		<Goal name="LaughAtJoke([target])"/>
+		<Goal name="MockJoke([target])"/>
+		<Goal name="AskForMoney([target])"/>
+		<Goal name="GiveMoney([target])"/>
+		<Goal name="GiveAdviceForBetterJob([target])"/>
+		<Goal name="OfferSmallGift([target])"/>
+		<Goal name="ExpressGiftContentment([target])"/>
+		<Goal name="ExpressGiftDiscontentment([target])"/>
+		<Goal name="GoToParty([host])"/>
+	</Goals>
+	
+	<Rituals>
+		<Ritual name="GreetingRitual">
+			<Roles>
+				<Role name="[greet-initiator]"/>
+				<Role name="[greet-replier]"/>
+			</Roles>
+			<Preconditions>
+				<RecentEvent occurred="True" subject="[greet-initiator]" action="look-at" target="[greet-replier]"/>
+				<RecentEvent occurred="True" subject="[greet-replier]"	action="look-at" target="[greet-initiator]"/>
+				<Property name="[greet-replier](place)" operator="=" value="[greet-initiator](place)"/>
+				<Property name="[greet-replier]" operator="!=" value="[greet-initiator]"/>
+			</Preconditions>
+			<Context>
+			</Context>
+			<ExpectedEffects>
+				<OnSelect drive="Affiliation" target="[SELF]" value="+3"/>
+				<OnSelect drive="Affiliation" target="[target]" value="+3"/>
+				<OnIgnore drive="Affiliation" target="[SELF]" value="-5"/>
+				<OnIgnore drive="Affiliation" target="[target]" value="-5"/>
+			</ExpectedEffects>
+			<Steps>
+				<Step role="[greet-initiator]"
+					name="casual-greeting-gesture([greet-replier])"/>
+				<Step role="[greet-replier]"
+					name="casual-greeting-gesture([greet-initiator])"/>
+				<Step role="[greet-initiator]"
+					name="SpeechAct([greet-replier],culture-b-greeting)"/>
+				<Step role="[greet-replier]"
+					name="SpeechAct([greet-initiator],culture-b-greeting)"/>
+			</Steps>
+			<OrderingConstraints>
+			</OrderingConstraints>
+		</Ritual>
+		
+		<Ritual name="DinnerRitual">
+			<Roles>
+				<Role name="[host]"/>
+				<Role name="[me]"/>
+			</Roles>
+			<PreConditions>
+				<Property name="[elder](power)" operator="=" value="10"/>
+				<Property name="[elder](place)" operator="=" value="party-spot"/>
+				<Property name="[host](type)" operator="=" value="character"/>
+				<Property name="[host](host)" operator="=" value="True"/>
+				<Property name="[me](type)" operator="=" value="character"/>
+				<Property name="[me]" operator="!=" value="[host]"/>
+			</PreConditions>
+			<Context>
+				<Time value="dinner"/>
+			</Context>
+			<ExpectedEffects>
+				<OnSelect drive="Affiliation" target="[SELF]" value="+10"/>
+				<OnIgnore drive="Affiliation" target="[SELF]" value="-10"/>
+				<OnSelect drive="Energy" target="[SELF]" value="+10"/>
+				<OnIgnore drive="Energy" target="[SELF]" value="-10"/>
+				<OnSelect drive="Integrity" target="[SELF]" value="+10"/>
+				<OnIgnore drive="Integrity" target="[SELF]" value="-10"/>
+			</ExpectedEffects>
+			<Steps>
+				<Step role="[host]" name="SpeechAct([host],dinner-is-starting)"/>
+				<Step role="[host]" name="sit-on-chair(arm-chair)"/>
+				<Step role="[me]" name="sit-on-chair(high-level-chair)"/>
+				<Step role="[host]" name="eat()"/>
+				<Step role="[me]" name="eat()"/>
+			</Steps>
+			<OrderingConstraints>
+			</OrderingConstraints>
+		</Ritual>
+
+  
+		<Ritual name="WelcomePeopleToPartyRitual">
+			<Roles>
+				<Role name="[host]"/>
+				<Role name="[guest]"/>
+			</Roles>
+			
+			<Preconditions>
+				<RecentEvent occurred="True" subject="[host]" action="look-at" target="[guest]"/>
+				<Property name="[host](host)" operator="=" value="True"/>
+				<Property name="[host](place)" operator="=" value="party-spot"/>
+				<Property name="[guest](place)" operator="=" value="party-spot"/>
+				<Property name="[guest](type)" operator="=" value="character"/>
+				<Property name="[guest]" operator="!=" value="[host]"/>
+        <RitualCondition name="GreetingRitual" roles="[host],[guest]" />
+      </Preconditions>
+			<Context>
+				
+			</Context>
+			<ExpectedEffects>
+				<OnSelect drive="Affiliation" target="[SELF]" value="+10"/>
+				<OnSelect drive="Affiliation" target="[target]" value="+10"/>
+				<OnIgnore drive="Affiliation" target="[SELF]" value="-10"/>
+				<OnIgnore drive="Affiliation" target="[target]" value="-10"/>
+			</ExpectedEffects>
+			<Steps>
+				<Step role="[host]" name="SpeechAct([host],welcome-to-party-b)"/>
+				<Step role="[guest]" name="SpeechAct([host],gratitude-to-party-invitation-b)"/>
+			</Steps>
+			<OrderingConstraints>
+				<Link before="0" after="1"/>
+			</OrderingConstraints>
+		</Ritual>    
+	</Rituals>
+	
+</Culture>

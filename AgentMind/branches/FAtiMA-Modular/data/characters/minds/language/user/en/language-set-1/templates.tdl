@@ -1,0 +1,442 @@
+# TODO: unabhaengig von Gross- und Kleinschreibung machen
+# Ordnung mit default 
+#absOrder: prep1, pre2, preproc, proc, default, cleanup
+absOrder: pre, default
+
+pre: [do not]
+-> dont
+
+pre: [does not]
+-> dont
+
+
+#below added by Adrian Gordon 16/01/2007
+pre: [should not]
+-> shouldnt
+
+#below added by Adrian Gordon 16/01/2007
+pre: [has not]
+-> hasnt
+
+pre: [would not]
+-> wouldnt
+
+
+pre: Luke
+-> bullyname()
+
+pre: Janet
+-> bullyname()
+
+pre: Paul
+-> bullyassistantname()
+
+pre: Sarah
+-> bullyassistantname()
+
+pre: Nita
+-> bullyassistantname()
+
+pre: Martina
+-> bystandername()
+
+pre: Ollie
+-> bystandername()
+
+pre: Rob
+-> defendername()
+
+pre: Elinor
+-> defendername()
+
+
+
+# user doesn't know a coping strategy
+%I dont know
+-> Type(value:dontknow)
+
+no %Im sorry
+-> Type(value:dontknow)
+
+%I %have [no idea]
+-> Type(value:dontknow)
+
+
+
+#FIGHTBACK COPING STRATEGY
+
+$W=Word(semCat:punch) %face %$C=copingstrategy()
+-> Type(value:suggestcopingstrategy) copingstrategy(value:fightback) Synonym(semCat:punch,value:$W)
+
+fight %back %$C=copingstrategy()
+-> Type(value:suggestcopingstrategy) copingstrategy(value:fightback)
+
+make him scared %$C=copingstrategy()
+-> Type(value:suggestcopingstrategy) copingstrategy(value:fightback)
+
+
+#STANDUP coping strategy (i.e. stand up to the bully)
+
+#below added by Adrian Gordon 16/01/2007
+#tell the bully to get lost
+or(tell,say) get or(lost,stuffed) %$C=copingstrategy()
+-> Type(value:suggestcopingstrategy) copingstrategy(value:standup)
+
+#below added by Adrian Gordon 16/01/2007
+#tell the bully to push off, etc
+or(tell,say) or(bog,piss,push,shove) off %$C=copingstrategy()
+-> Type(value:suggestcopingstrategy) copingstrategy(value:standup)
+
+#below added by Adrian Gordon 16/01/2007
+#tell the bully to stop/quit/pack it in, etc
+or(tell,say) $W=Word(semCat:stop) %$C=copingstrategy()
+-> Type(value:suggestcopingstrategy) copingstrategy(value:standup) 
+
+or(tell,say) go away %$C=copingstrategy()
+-> Type(value:suggestcopingstrategy) copingstrategy(value:standup) 
+
+#below added by Adrian Gordon 16/01/2007
+#tell the bully don't do it anymore, etc
+$W=Word(semCat:no) or(tell,say) %do %$C=copingstrategy()
+-> Type(value:suggestcopingstrategy) copingstrategy(value:standup) 
+
+ask why bully you %$C=copingstrategy()
+-> Type(value:suggestcopingstrategy) copingstrategy(value:standup) 
+
+[stand up] %or(for,to) %yourself %$C=copingstrategy()
+-> Type(value:suggestcopingstrategy) copingstrategy(value:standup) 
+
+[or(talk,speak) to] or(him,her,bullyname()) %$C=copingstrategy()
+-> Type(value:suggestcopingstrategy) copingstrategy(value:standup) 
+
+or(tell,say) leave alone %$C=copingstrategy()
+-> Type(value:suggestcopingstrategy) copingstrategy(value:standup) 
+
+teach or(him,her) lesson %$C=copingstrategy()
+-> Type(value:suggestcopingstrategy) copingstrategy(value:standup) 
+
+defend yourself %$C=copingstrategy()
+-> Type(value:suggestcopingstrategy) copingstrategy(value:standup) 
+
+$W=Word(semCat:no) do what or(he,she) or(tell,say) %$C=copingstrategy()
+-> Type(value:suggestcopingstrategy) copingstrategy(value:standup) 
+
+ask or(him,her,bullyname()) why %$C=copingstrategy()
+-> Type(value:suggestcopingstrategy) copingstrategy(value:standup) 
+
+
+
+#Change by João Dias, 30/07/2007, commented the cry coping strategy
+#CRY coping strategy
+#below added by Adrian Gordon 16/01/2007
+#$W=Word(semCat:cry) %$C=copingstrategy()
+#-> Type(value:suggestcopingstrategy) copingstrategy(value:cry) 
+
+#IGNORE coping strategy
+#below added by Adrian Gordon 16/01/2007
+ignore %bullyname() %$C=copingstrategy()
+-> Type(value:suggestcopingstrategy) copingstrategy(value:ignore) 
+
+#below added by Adrian Gordon 16/01/2007
+# <no> do anything
+$W=Word(semCat:no) do anything %$C=copingstrategy()
+-> Type(value:suggestcopingstrategy) copingstrategy(value:ignore) 
+
+#below added by Adrian Gordon 16/01/2007
+#   do nothing
+%do nothing %$C=copingstrategy()
+-> Type(value:suggestcopingstrategy) copingstrategy(value:ignore) 
+
+#below added by Adrian Gordon 16/01/2007
+#   take no notice, don't listen, etc.
+$W=Word(semCat:no) $W=Word(semCat:listen) %$C=copingstrategy()
+-> Type(value:suggestcopingstrategy) copingstrategy(value:ignore) 
+
+#below added by Adrian Gordon 16/01/2007
+#   pretend he's not there/pretend it's not happening, etc.
+ pretend $W=Word(semCat:no) or(there,happening,happened) %$C=copingstrategy()
+-> Type(value:suggestcopingstrategy) copingstrategy(value:ignore) 
+
+
+#Change by João Dias, 30/07/2007, commented the avoid coping strategy
+#AVOID coping strategy
+#or(avoid,shun) %bullyname() %$C=copingstrategy()
+#-> Type(value:suggestcopingstrategy) copingstrategy(value:avoid)
+
+#or([stay away from],[keep away from]) %or(him,her,them,bullyname()) %$C=copingstrategy()
+#-> Type(value:suggestcopingstrategy) copingstrategy(value:avoid)
+
+#%or([shall be],stay) out of way %$C=copingstrategy()
+#-> Type(value:suggestcopingstrategy) copingstrategy(value:avoid)
+
+#hide %somewhere %$C=copingstrategy()
+#-> Type(value:suggestcopingstrategy) copingstrategy(value:avoid)
+
+#Change by João Dias, 30/07/2007, commented the confront bully assistant coping strategy
+#CONFRONTBULLYASSISTANT coping strategy
+#%or(go,talk,tell,ask,speak,say) bullyassistantname() %$C=copingstrategy()
+#-> Type(value:suggestcopingstrategy) copingstrategy(value:confrontbullyassistant)
+
+
+
+#MAKENEWFRIEND coping strategy
+
+#below modified by Adrian Gordon 16/01/2007
+or(find,make,get) %new friend %$C=copingstrategy()
+-> Type(value:suggestcopingstrategy) copingstrategy(value:makenewfriend)
+
+#below addedby Adrian Gordon 16/01/2007
+someone %or(new,friends) friend %$C=copingstrategy()
+-> Type(value:suggestcopingstrategy) copingstrategy(value:makenewfriend)
+
+hang out with %$C=copingstrategy()
+-> Type(value:suggestcopingstrategy) copingstrategy(value:makenewfriend)
+
+[you have a friend] %$C=copingstrategy()
+-> Type(value:suggestcopingstrategy) copingstrategy(value:makenewfriend)
+
+
+
+
+#TELLTEACHER coping strategy
+#below modified by Adrian Gordon 16/01/2007
+or(go,talk,tell,ask,speak,say,explain) teacher %$C=copingstrategy()
+-> Type(value:suggestcopingstrategy) copingstrategy(value:tellteacher)
+
+
+#TELLFRIEND coping strategy
+# below added by Adrian Gordon 15/01/2007
+or(go,talk,tell,ask,speak,say,explain) friend %$C=copingstrategy()
+-> Type(value:suggestcopingstrategy) copingstrategy(value:tellfriend)
+
+#Change by João Dias, 02/08/2007, added TELL SOMEONE rules as tellfriend copingstrategy
+or(go,talk,tell,ask,speak,say,explain) someone %$C=copingstrategy()
+-> Type(value:suggestcopingstrategy) copingstrategy(value:tellfriend)
+
+ask for help %$C=copingstrategy()
+-> Type(value:suggestcopingstrategy) copingstrategy(value:tellfriend)
+
+
+
+#Change by João Dias, 30/07/2007, commented the telldefender coping strategy
+#TELLDEFENDER coping strategy
+# below added by Adrian Gordon 15/01/2007
+#or(go,talk,tell,ask,speak,say,explain) %protect defendername() %$C=copingstrategy()
+#-> Type(value:suggestcopingstrategy) copingstrategy(value:telldefender)
+
+#Change by João Dias, 30/07/2007, commented the tellbystander coping strategy
+#TELLBYSTANDER coping strategy
+# below added by Adrian Gordon 15/01/2007
+#or(go,talk,tell,ask,speak,say,explain) bystandername() %$C=copingstrategy()
+#-> Type(value:suggestcopingstrategy) copingstrategy(value:tellbystander)
+
+#TELLPARENTS coping strategy
+# below added by Adrian Gordon 15/01/2007
+or(go,talk,tell,ask,speak,say,explain) $W=Word(semCat:parents) %$C=copingstrategy()
+-> Type(value:suggestcopingstrategy) copingstrategy(value:tellparents)
+
+#Change by João Dias, 30/07/2007, commented the tellbrothersister coping strategy
+#TELLBROTHERSISTER coping strategy
+# below added by Adrian Gordon 15/01/2007
+#or(go,talk,tell,ask,speak,say,explain) %bigger $W=Word(semCat:siblings) %$C=copingstrategy()
+#-> Type(value:suggestcopingstrategy) copingstrategy(value:tellbrothersister)
+
+#Change by João Dias, 02/08/2007, commented the tellsomeone coping strategy
+#TELLSOMEONE coping strategy
+# below added by Adrian Gordon 15/01/2007
+#or(go,talk,tell,ask,speak,say,explain) someone %$C=copingstrategy()
+#-> Type(value:suggestcopingstrategy) copingstrategy(value:tellsomeone)
+
+#ask for help %$C=copingstrategy()
+#-> Type(value:suggestcopingstrategy) copingstrategy(value:tellsomeone)
+
+
+#LAUHGOFF coping strategy
+pretend funny %$C=copingstrategy()
+-> Type(value:suggestcopingstrategy) copingstrategy(value:laughoff)
+
+# below modified by Adrian Gordon 16/01/2007
+#pretend/say that you don't care
+$W=Word(semCat:no) care %$C=copingstrategy()
+-> Type(value:suggestcopingstrategy) copingstrategy(value:laughoff)
+
+$W=Word(semCat:no) show %how  %$C=copingstrategy()
+-> Type(value:suggestcopingstrategy) copingstrategy(value:laughoff)
+
+# below added by Adrian Gordon 16/01/2007
+or(laugh,joke) %off %$C=copingstrategy()
+-> Type(value:suggestcopingstrategy) copingstrategy(value:laughoff)
+
+#WALKAWAY coping strategy
+# below added by Adrian Gordon 16/01/2007
+$W=Word(semCat:go) %away %home %somewhere %$C=copingstrategy()
+-> Type(value:suggestcopingstrategy) copingstrategy(value:walkaway)
+
+[keep on walking] %$C=copingstrategy()
+-> Type(value:suggestcopingstrategy) copingstrategy(value:walkaway)
+
+
+#RUNAWAY coping strategy
+# below added by Adrian Gordon 16/01/2007
+$W=Word(semCat:run) %away %home %somewhere %$C=copingstrategy()
+-> Type(value:suggestcopingstrategy) copingstrategy(value:runaway)
+
+# below added by Adrian Gordon 16/01/2007
+leg it %$C=copingstrategy()
+-> Type(value:suggestcopingstrategy) copingstrategy(value:runaway)
+
+#INSULT coping strategy
+or(call,tell,say) $W=Word(semCat:idiot) %him %her %$C=copingstrategy()
+-> Type(value:suggestcopingstrategy) copingstrategy(value:insult)
+
+call name %him %her %$C=copingstrategy()
+-> Type(value:suggestcopingstrategy) copingstrategy(value:insult)
+
+insult %him %her %$C=copingstrategy()
+-> Type(value:suggestcopingstrategy) copingstrategy(value:insult)
+
+shout at %or(him,her,bullyname()) %$C=copingstrategy()
+-> Type(value:suggestcopingstrategy) copingstrategy(value:insult)
+
+#Change by João Dias, 30/07/2007, commented the blameyourself coping strategy
+#BLAMEYOURSELF coping strategy
+#[blame yourself] %$C=copingstrategy()
+#-> Type(value:suggestcopingstrategy) copingstrategy(value:blameyourself)
+
+#[your %own fault] %$C=copingstrategy()
+#-> Type(value:suggestcopingstrategy) copingstrategy(value:blameyourself)
+
+#Change by João Dias, 30/07/2007, commented the stayoffschool coping strategy
+#STAYOFFSCHOOL coping strategy
+#[stay off]  school %$C=copingstrategy()
+#-> Type(value:suggestcopingstrategy) copingstrategy(value:stayoffschool)
+
+#[stay %at home] %$C=copingstrategy()
+#-> Type(value:suggestcopingstrategy) copingstrategy(value:stayoffschool)
+
+
+#Change by João Dias, 30/07/2007, commented the feign illness coping strategy
+#FEIGNILLNESS coping strategy
+#%pretend or(ill,illness,sick) %$C=copingstrategy()
+#-> Type(value:suggestcopingstrategy) copingstrategy(value:feignillness)
+
+#Change by João Dias, 30/07/2007, commented the changeyourself coping strategy
+#CHANGEYOURSELF coping strategy
+#[change yourself] %$C=copingstrategy()
+#-> Type(value:suggestcopingstrategy) copingstrategy(value:changeyourself)
+
+#you change %$C=copingstrategy()
+#-> Type(value:suggestcopingstrategy) copingstrategy(value:changeyourself)
+
+
+#end of coping strategies
+
+
+
+# Greetings
+or(hello,hi) 
+-> Type(value: "greeting") 
+
+how are you
+-> Type(value: "greeting")
+
+
+# Goodbye
+[%good bye %bye]
+-> Type(value:saygoodbye)
+
+[see you %later]
+-> Type(value:saygoodbye)
+
+
+# negative answers
+no %[probably not]
+-> Type (value: "no")
+
+%no wouldnt do %or(this,that)
+-> Type (value: "no")
+
+[dont think] [good idea]
+-> Type (value: "no")
+
+[bad idea]
+-> Type (value: "no")
+
+
+# positive answers
+or(Im,I) not sure
+-> Type (value: "yes")
+
+[I or(think,hope) %so]
+-> Type (value: "yes")
+
+worth or(try,trying)
+-> Type (value: "yes")
+
+%I %think %it will work
+-> Type (value: "yes")
+
+%yes or(should,will) help
+-> Type (value: "yes")
+
+[good idea]
+-> Type (value: "yes")
+
+yes %I %would
+-> Type (value: "yes")
+
+ok
+-> Type (value: "yes")
+
+probably
+-> Type (value: "yes")
+
+I agree
+-> Type (value: "yes")
+
+[is or(one,a) option]
+-> Type (value: "yes")
+
+# user gives reason
+because %"didn't" %work
+-> Type(value:givereason)
+
+[you cannot always]
+-> Type(value:givereason)
+
+%or(because,if) will get bored copingstrategy(value:ignore)
+-> Type(value:givereason) copingstrategy(value:ignore)
+
+%or(because,if) will leave you alone copingstrategy(value:ignore)
+-> Type(value:givereason) copingstrategy(value:ignore)
+
+%or(because,if) will feel sorry copingstrategy(value:cry)
+-> Type(value:givereason) copingstrategy(value:cry)
+
+or(he,she) or(might,will,wont)
+-> Type(value:givereason)
+
+#below added by Adrian Gordon, for he'll
+or(shell,hell,youll,theyll)
+-> Type(value:givereason)
+
+[if you]
+-> Type(value:givereason)
+
+or(he,she) sees
+-> Type(value:givereason)
+
+it shows or(him,her,bully)
+-> Type(value:givereason)
+
+[not scared]
+-> Type(value:givereason)
+
+#gefaehrlich
+stop
+-> Type(value:givereason)
+
+[when or(you,he,she)]
+-> Type(value:givereason)
+
+

@@ -1,0 +1,187 @@
+<GoalLibrary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:noNamespaceSchemaLocation="./schemas/GoalLibrary.xsd">
+
+	 <ActivePursuitGoal name="TellJoke([target])">
+			<PreConditions>
+				<Property name="[SELF](likesToTellJokes)" operator="=" value="True" />
+				<Property name="[target](isPerson)" operator="=" value="True" />
+				<Property name="[target]" operator="!=" value="[SELF]" />
+				<RitualCondition name="GreetingRitual" roles="[SELF],[target]" />		
+			</PreConditions>
+	
+			<SucessConditions>
+				<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[target]" parameters="tell-joke" />
+			</SucessConditions>
+		
+			<ExpectedEffects>
+				<OnSelect drive="Affiliation" target="[SELF]" value="+3"/>
+				<OnSelect drive="Affiliation" target="[target]" value="+3"/>			
+			</ExpectedEffects>	
+			
+		</ActivePursuitGoal>
+				
+	   <ActivePursuitGoal name="LaughAtJoke([target])">
+			<PreConditions>
+		      	<RecentEvent occurred="True" subject="[target]" action="SpeechAct" target="[SELF]" parameters="tell-joke" />
+			</PreConditions>
+
+			<SucessConditions>
+				<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[target]" parameters="laugh-at-joke" />
+			</SucessConditions>
+				
+		    <ExpectedEffects>
+			    <OnSelect drive="Affiliation" target="[target]" value="+3"/>			
+		    </ExpectedEffects>	
+     	</ActivePursuitGoal>
+		
+		<ActivePursuitGoal name="MockJoke([target])">
+			<PreConditions>
+	        	<RecentEvent occurred="True" subject="[target]" action="SpeechAct" target="[SELF]" parameters="tell-joke" />
+			</PreConditions>
+
+			<SucessConditions>
+				<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[target]" parameters="mock-joke" />
+			</SucessConditions>
+				
+		    <ExpectedEffects>
+			    <OnSelect drive="Affiliation" target="[SELF]" value="+2"/>	
+			    <OnIgnore drive="Affiliation" target="[SELF]" value="-2"/>						
+			    <OnSelect drive="Affiliation" target="[target]" value="-4"/>		
+		    </ExpectedEffects>	
+     	</ActivePursuitGoal>
+		
+		<ActivePursuitGoal name="AskForMoney([target])">
+			<PreConditions>
+				<Property name="[SELF](hasMoney)" operator="=" value="False" />
+				<Property name="[target](hasMoney)" operator="=" value="True" />
+				<RecentEvent occurred="True" subject="[SELF]" action="look-at" target="[target]" />
+				<RitualCondition name="GreetingRitual" roles="[SELF],[target]" />
+			</PreConditions>
+				
+			<SucessConditions>
+				<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[target]" parameters="ask-for-money" />
+			</SucessConditions>
+				
+		    <ExpectedEffects>
+			    <OnSelect drive="Energy" target="[SELF]" value="+4"/>			
+		    </ExpectedEffects>	
+     	</ActivePursuitGoal>
+		
+		<ActivePursuitGoal name="GiveMoney([target])">
+			<PreConditions>
+				<Property name="[SELF](hasMoney)" operator="=" value="True" />
+				<Property name="[target]" operator="!=" value="[SELF]" />
+				<NewEvent occurred="True" subject="[target]" action="SpeechAct" target="[SELF]" parameters="ask-for-money" />
+			</PreConditions>
+				
+			<SucessConditions>
+				<RecentEvent occurred="True" subject="[SELF]" action="give-money" target="[target]"/>
+			</SucessConditions>
+				
+		    <ExpectedEffects>
+			    <OnSelect drive="Energy" target="[SELF]" value="-3"/>					
+				<OnSelect drive="Energy" target="[target]" value="+4"/>					
+				<OnIgnore drive="Energy" target="[target]" value="-4"/>					
+		    </ExpectedEffects>	
+     	</ActivePursuitGoal>
+											
+		<ActivePursuitGoal name="GiveAdviceForBetterJob([target])">
+			<PreConditions>
+				<Property name="[SELF](hasMoney)" operator="=" value="True" />
+				<Property name="[target]" operator="!=" value="[SELF]" />
+				<NewEvent occurred="True" subject="[target]" action="SpeechAct" target="[SELF]" parameters="ask-for-money" />
+			</PreConditions>
+				
+			<SucessConditions>
+				<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[target]" parameters="advice-for-obtaining-money" />
+			</SucessConditions>
+				
+		    <ExpectedEffects>
+				<OnSelect drive="Affiliation" target="[SELF]" value="+3"/>					
+				<OnIgnore drive="Affiliation" target="[SELF]" value="-3"/>								    
+				<OnSelect drive="Energy" target="[target]" value="-3"/>		
+				<OnSelect drive="Affiliation" target="[target]" value="-3"/>		
+		    </ExpectedEffects>	
+     	</ActivePursuitGoal>
+
+		<ActivePursuitGoal name="OfferSmallGift([target])">
+			<PreConditions>
+				<Property name="[SELF](hasSmallGift)" operator="=" value="True" />
+				<Property name="[target](likesGifts)" operator="=" value="True" />
+				<Property name="[target](isPerson)" operator="=" value="True" />
+				<Property name="[target]" operator="!=" value="[SELF]" />
+				<RitualCondition name="GreetingRitual" roles="[SELF],[target]" />		
+			</PreConditions>
+	
+			<SucessConditions>
+				<RecentEvent occurred="True" subject="[SELF]" action="give-gift" target="[target]"/>
+			</SucessConditions>
+		
+			<ExpectedEffects>
+				<OnSelect drive="Affiliation" target="[SELF]" value="+3"/>
+				<OnIgnore drive="Affiliation" target="[SELF]" value="-3"/>
+				<OnSelect drive="Affiliation" target="[target]" value="+3"/>			
+			</ExpectedEffects>	
+			
+		</ActivePursuitGoal>
+		
+		<ActivePursuitGoal name="ExpressGiftContentment([target])">
+			<PreConditions>
+        <Property name="[SELF](dislikesSmallGifts)" operator="=" value="True" />
+        <RecentEvent occurred="True" subject="[target]" action="give-gift" target="[SELF]"/>
+      </PreConditions>
+
+      <SucessConditions>
+				<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[target]" parameters="show-smallgift-contentment" />
+			</SucessConditions>
+		
+			<ExpectedEffects>
+				  <OnSelect drive="Affiliation" target="[target]" value="+3"/>
+          <OnIgnore drive="Affiliation" target="[target]" value="-10"/>
+      </ExpectedEffects>	
+
+		</ActivePursuitGoal>
+		
+		
+		<ActivePursuitGoal name="ExpressGiftDiscontentment([target])">
+			<PreConditions>
+				<Property name="[SELF](dislikesSmallGifts)" operator="=" value="True" />
+				<RecentEvent occurred="True" subject="[target]" action="give-gift" target="[SELF]"/>
+			</PreConditions>
+	
+			<SucessConditions>
+				<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[target]" parameters="show-smallgift-discontentment" />
+			</SucessConditions>
+		
+			<ExpectedEffects>
+				<OnSelect drive="Affiliation" target="[SELF]" value="+3"/>	
+				<OnIgnore drive="Affiliation" target="[SELF]" value="-10"/>						
+				<OnSelect drive="Affiliation" target="[target]" value="-10"/>
+			        <OnIgnore drive="Affiliation" target="[target]" value="+10"/>
+			</ExpectedEffects>	
+
+		</ActivePursuitGoal>
+					
+		
+		<ActivePursuitGoal name="GoToParty([host])">
+			<PreConditions>
+				<RecentEvent occurred="True" subject="[SELF]" action="look-at" target="[host]" />
+        <Property name="[SELF](place)" operator="!=" value="party-spot" />
+				<Property name="[host]" operator="!=" value="[SELF]" />
+				<Property name="[host](host)" operator="=" value="True" />
+				<Property name="[SELF](hasInvitation)" operator="=" value="True" />
+			</PreConditions>	
+			
+			<SucessConditions>
+				<RecentEvent occurred="True" subject="[SELF]" action="walk-to-place" target="party-spot"/>
+			</SucessConditions>
+
+			<ExpectedEffects>
+				<OnSelect drive="Affiliation" target="[SELF]" value="+10"/>
+				<OnSelect drive="Affiliation" target="[target]" value="+10"/>			
+				<OnIgnore drive="Affiliation" target="[SELF]" value="-10"/>			
+				<OnIgnore drive="Affiliation" target="[target]" value="-10"/>
+			</ExpectedEffects>	
+		</ActivePursuitGoal>
+
+</GoalLibrary>

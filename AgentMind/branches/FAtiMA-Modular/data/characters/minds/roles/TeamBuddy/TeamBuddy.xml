@@ -1,0 +1,46 @@
+<Character role="TeamBuddy" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:noNamespaceSchemaLocation="../../schemas/Character.xsd">
+	<EmotionalThresholds>
+		<EmotionalThreshold emotion="Love" threshold="1" decay="5"/>
+		<EmotionalThreshold emotion="Hate" threshold="1" decay="5"/>
+		<EmotionalThreshold emotion="Hope" threshold="1" decay="8"/>
+		<EmotionalThreshold emotion="Fear" threshold="1" decay="2"/>
+		<EmotionalThreshold emotion="Satisfaction" threshold="1" decay="8"/>
+		<EmotionalThreshold emotion="Relief" threshold="1" decay="5"/>
+		<EmotionalThreshold emotion="Fears-Confirmed" threshold="1" decay="2"/>
+		<EmotionalThreshold emotion="Disappointment" threshold="1" decay="5"/>
+		<EmotionalThreshold emotion="Joy" threshold="1" decay="2"/>
+		<EmotionalThreshold emotion="Distress" threshold="1" decay="2"/>
+		<EmotionalThreshold emotion="Happy-For" threshold="1" decay="5"/>
+		<EmotionalThreshold emotion="Pitty" threshold="1" decay="2"/>
+		<EmotionalThreshold emotion="Resentment" threshold="1" decay="2"/>
+		<EmotionalThreshold emotion="Gloating" threshold="1" decay="8"/>
+		<EmotionalThreshold emotion="Pride" threshold="1" decay="5"/>
+		<EmotionalThreshold emotion="Shame" threshold="1" decay="2"/>
+		<EmotionalThreshold emotion="Gratification" threshold="1" decay="8"/>
+		<EmotionalThreshold emotion="Remorse" threshold="1" decay="2"/>
+		<EmotionalThreshold emotion="Admiration" threshold="1" decay="5"/>
+		<EmotionalThreshold emotion="Reproach" threshold="1" decay="8"/>
+		<EmotionalThreshold emotion="Gratitude" threshold="1" decay="5"/>
+		<EmotionalThreshold emotion="Anger" threshold="1" decay="5"/>
+	</EmotionalThresholds>
+	
+	<MotivationalParameters>
+		<MotivationalParameter motivator="Affiliation" decayFactor="0.005" weight="0.5" intensity="6"/>
+		<MotivationalParameter motivator="Integrity" decayFactor="0.005" weight="0.5" intensity="6"/>
+		<MotivationalParameter motivator="Energy" decayFactor="0.005" weight="0.5" intensity="6"/>
+		<MotivationalParameter motivator="Certainty" decayFactor="0.005" weight="0.5" intensity="6"/>
+		<MotivationalParameter motivator="Competence" decayFactor="0.005" weight="0.5" intensity="6"/>
+	</MotivationalParameters>
+	
+	<Goals>
+		<Goal name="MorningGreeting([target])" importanceOfSuccess="8" importanceOfFailure="6"/>
+		<Goal name="DeliverPhone([target])" importanceOfSuccess="8" importanceOfFailure="6"/>
+		<Goal name="Remind([target],[reminder])" importanceOfSuccess="8" importanceOfFailure="6"/>
+		<Goal name="ChargeAt([charger])" importanceOfSuccess="8" importanceOfFailure="6"/>
+		<Goal name="Migration([platform])" importanceOfSuccess="8" importanceOfFailure="6"/>
+	</Goals>
+	
+	<InterpersonalRelations>
+	</InterpersonalRelations>
+</Character>

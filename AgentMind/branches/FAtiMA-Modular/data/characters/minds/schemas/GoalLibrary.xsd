@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xs:schema elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+<xs:include schemaLocation="Types.xsd" />
+<xs:include schemaLocation="Conditions.xsd" />
+
+<xs:element name="GoalLibrary">
+  <xs:complexType>
+    <xs:sequence>
+    	<xs:choice minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="ActivePursuitGoal" type="ActivePursuitGoal" />
+    		<xs:element name="InterestGoal" type="InterestGoal"/>
+		</xs:choice>
+	</xs:sequence>
+  </xs:complexType>
+</xs:element>
+
+<xs:complexType name="ActivePursuitGoal">
+    <xs:sequence>
+    	<xs:element name="PreConditions" minOccurs="0" maxOccurs="1">
+            <xs:complexType>
+            	<xs:choice minOccurs="0" maxOccurs="unbounded">
+        			<xs:element name="Property" type="PropertyCondition" />
+        			<xs:element name="Predicate" type="PredicateCondition" />
+        			<xs:element name="RecentEvent" type="EventCondition"/>
+        			<xs:element name="PastEvent" type="EventCondition"/>
+        			<xs:element name="NewEvent" type="EventCondition"/>
+        			<xs:element name="RitualCondition" type="RitualCondition"/>
+        			<xs:element name="EmotionCondition" type="EmotionCondition"/>
+        			<xs:element name="MoodCondition" type="EmotionCondition"/>
+   				</xs:choice>
+   			</xs:complexType>
+   		</xs:element>	
+    	<xs:element name="SucessConditions" minOccurs="0" maxOccurs="1">
+            <xs:complexType>
+            	<xs:choice minOccurs="0" maxOccurs="unbounded">
+        			<xs:element name="Property" type="PropertyCondition" />
+        			<xs:element name="Predicate" type="PredicateCondition" />
+        			<xs:element name="RecentEvent" type="EventCondition"/>
+        			<xs:element name="PastEvent" type="EventCondition"/>
+        			<xs:element name="NewEvent" type="EventCondition"/>
+        			<xs:element name="EmotionCondition" type="EmotionCondition"/>
+        			<xs:element name="MoodCondition" type="MoodCondition"/>
+   				</xs:choice>
+   			</xs:complexType>
+   		</xs:element>	
+    	<xs:element name="FailureConditions" minOccurs="0" maxOccurs="1">
+            <xs:complexType>
+            	<xs:choice minOccurs="0" maxOccurs="unbounded">
+        			<xs:element name="Property" type="PropertyCondition" />
+        			<xs:element name="Predicate" type="PredicateCondition" />        			
+        			<xs:element name="RecentEvent" type="EventCondition"/>
+        			<xs:element name="PastEvent" type="EventCondition"/>
+        			<xs:element name="NewEvent" type="EventCondition"/>
+        			<xs:element name="EmotionCondition" type="EmotionCondition"/>
+        			<xs:element name="MoodCondition" type="MoodCondition"/>      			
+   				</xs:choice>
+   			</xs:complexType>
+   		</xs:element>
+   		<xs:element name="ExpectedEffects" minOccurs="0" maxOccurs="1">
+        		    <xs:complexType>
+        		    	<xs:sequence>
+					    	<xs:choice minOccurs="0" maxOccurs="unbounded">
+								<xs:element name="OnSelect" type="ExpectedEffect" />
+    							<xs:element name="OnIgnore" type="ExpectedEffect"/>
+							</xs:choice>
+        		    	</xs:sequence>
+        			</xs:complexType>
+        </xs:element>
+	</xs:sequence>
+	<xs:attribute name="name" type="xs:string" use="required"/>
+</xs:complexType>
+
+<xs:complexType name="InterestGoal">
+    <xs:sequence>
+    	<xs:element name="ProtectionConstraints" minOccurs="1" maxOccurs="1">
+    		<xs:complexType>
+				<xs:sequence>
+					<xs:element name="Property" type="PropertyCondition" minOccurs="1" maxOccurs="unbounded" />
+				</xs:sequence>
+			</xs:complexType>
+		</xs:element>
+	</xs:sequence>
+	<xs:attribute name="name" type="xs:string" use="required"/>
+</xs:complexType>
+
+<xs:complexType name="ExpectedEffect">
+ <xs:attribute name="drive" type="externalMotivatorsType" use="required"/>
+ <xs:attribute name="target" type="xs:string" use="required"/>
+ <xs:attribute name="value" type="xs:string" use="required"/>
+</xs:complexType>
+
+</xs:schema>

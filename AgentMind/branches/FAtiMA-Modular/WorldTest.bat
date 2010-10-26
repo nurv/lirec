@@ -1,0 +1,1 @@
+java -cp "WorldTest.jar;FAtiMA.jar;Language.jar" WorldTest 46874 Forest data/characters/minds/Actions.xml data/characters/minds/language/agent/en/language-set-1 apple drink user meal tree

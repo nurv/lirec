@@ -1,0 +1,324 @@
+<Culture name="SpryteCulture">
+
+	<CulturalDimension name="Collectivism" value="100"/>
+	<CulturalDimension name="PowerDistance" value="70"/>	
+	
+	<Symbols>
+		<Symbol name="bow" meaning="respect-greeting-gesture"/>
+		<Symbol name="wave-hand" meaning="casual-greeting-gesture"/>
+	</Symbols>
+	
+	<Praiseworthiness> 
+		<Action name="Surprise" value="0"/>
+		<Action name="GoTo" value="0"/>
+		<Action name="AngryGesture" value="0"/>
+		<Action name="Eat" value="0"/>
+		<Action name="Drink" value="0"/>
+		<Action name="RestOn" value="0"/>
+		<Action name="OfferGesture" value="0"/>	
+		<Action name="PointsAt" value="0"/>
+		<Action name="PressButton" value="0"/>
+		
+		<Action name="AttendTo" value="3"/>
+		<Action name="GreetGesture" value="2"/>			
+		<Action name="PickFromGround" value="3"/>
+		<Action name="PickFromTable" value="2"/>
+		<Action name="PickFromTree" value="-10"/>
+		<Action name="PickFromMachine" value="3"/>
+		<Action name="Forgive" value="5"/>	
+		<Action name="ForgiveOnHealing" value="3"/>					
+		<Action name="SpeechAct" parameters="introduction" value="3"/>
+		<Action name="SpeechAct" parameters="chat" value="5"/>
+		<Action name="SpeechAct" parameters="askToPick" value="4"/>
+		<Action name="SpeechAct" parameters="meal" value="4"/>	
+		<Action name="SpeechAct" parameters="gardening" value="4"/>
+		<Action name="SpeechAct" parameters="recycling" value="4"/>
+		<Action name="SpeechAct" parameters="seedpod" value="3"/>	
+		<Action name="SpeechAct" parameters="greenDrink" value="3"/>	
+		<Action name="SpeechAct" parameters="soil" value="3"/>	
+		<Action name="SpeechAct" parameters="attractAttention" value="0"/>	
+		<Action name="SpeechAct" parameters="educate" value="5"/>	
+		<Action name="SpeechAct" parameters="warn" value="3"/>	
+		<Action name="SpeechAct" parameters="blame" value="0"/>
+		<Action name="SpeechAct" parameters="apologiseFor" value="5"/>	
+		<Action name="SpeechAct" parameters="angryTreeDied" value="5"/>
+		<Action name="SpeechAct" parameters="angryMachineBroke" value="3"/>		
+		<Action name="SpeechAct" parameters="askToFollow" value="0"/>	
+		<Action name="SpeechAct" parameters="getAdoptionApproval" value="2"/>	
+		<Action name="SpeechAct" parameters="fightForChild" value="4"/>	
+		<Action name="SpeechAct" parameters="approveAdoption" value="4"/>
+		<Action name="SpeechAct" parameters="explainLifeCycle" value="3"/>	
+		<Action name="SpeechAct" parameters="explainFoodProduction" value="3"/>	
+		<Action name="SpeechAct" parameters="explainRecyclingMachine" value="3"/>	
+		<Action name="SpeechAct" parameters="askToProduceLiquid" value="4"/>	
+		<Action name="SpeechAct" parameters="explainSoilProduction" value="3"/>	
+		<Action name="ShowSoilProduction" value="5"/>
+		<Action name="SpeechAct" parameters="askForSoil" value="3"/>	
+		<Action name="GreetBack" value="4"/>	
+		<Action name="GreetWrongly" value="-4"/>	
+		<Action name="ApproachTree" value="-6"/>
+		<Action name="UserPickFromGround" value="3"/>
+		<Action name="UserPickFromTree" value="-10"/>	
+		<Action name="ApproachMachine" value="-6"/>
+		<Action name="HealDyingSpryte" value="10"/>	
+		<Action name="AcceptInvitation" value="8"/>	
+		<Action name="RejectInvitation" value="-8"/>	
+		<Action name="AcceptSoil" value="7"/>	
+		<Action name="AcceptFood" value="3"/>
+		<Action name="AcceptDrink" value="8"/>	
+		<Action name="RejectOffer" value="-7"/>	
+		<Action name="GiveAttention" value="3"/>	
+		<Action name="Follow" value="3"/>	
+		<Action name="AskGardeningQuestion" value="2"/>
+		<Action name="StepOnTree" value="-10"/>	
+		<Action name="PressWrongButton" value="-10"/>
+		<Action name="Apologise" value="5"/>
+		<Action name="AskRecyclingQuestion" value="3"/>		
+		<Action name="ProduceLiquid" value="5"/>
+		<Action name="HandOverSoil" value="6"/>	
+		<Action name="AskQuestion" value="2"/>		
+		<Action name="RefuseSoil" value="5"/>	
+		
+		<Action name="respect-greeting-gesture" value="4"/>		
+		<Action name="casual-greeting-gesture" value="2"/>		
+		<Action name="wave-hand" value="2"/>		
+		<Action name="thumb-up" value="3"/>		
+		<Action name="bow" value="4"/>		
+		<Action name="give-money" value="6"/>		
+		<Action name="give-object" value="3"/>		
+		<Action name="spit-standing" value="-3"/>		
+		<Action name="give-gift" value="6"/>		
+		<Action name="eating" value="0"/>	
+		<Action name="walk-to-place" value="0"/>
+		<Action name="sit-on-chair" value="0"/>	
+		<Action name="get-up-from-chair" value="0"/>			
+		<Action name="SpeechAct" parameters="reason-to-tell-jokes" value="1"/>	
+		<Action name="SpeechAct" parameters="tell-joke" value="2"/>	
+		<Action name="SpeechAct" parameters="laugh-at-joke" value="4"/>	
+		<Action name="SpeechAct" parameters="mock-joke" value="-5"/>	
+		<Action name="SpeechAct" parameters="ask-for-money" value="2"/>	
+		<Action name="SpeechAct" parameters="advice-for-obtaining-money" value="4"/>	
+		<Action name="SpeechAct" parameters="offer-financial-help" value="6"/>
+		<Action name="SpeechAct" parameters="reason-for-giving-money" value="2"/>	
+		<Action name="SpeechAct" parameters="reason-for-gift" value="2"/>	
+		<Action name="SpeechAct" parameters="show-smallgift-contentment" value="5"/>	
+		<Action name="SpeechAct" parameters="show-smallgift-discontentment" value="-5"/>
+		<Action name="SpeechAct" parameters="culture-a-greeting" value="2"/>
+		<Action name="SpeechAct" parameters="culture-a-greeting-reply-lower" value="5"/>
+		<Action name="SpeechAct" parameters="gratitude-to-party-invitation-a" value="5"/>	
+		<Action name="SpeechAct" parameters="welcome-to-party-a" value="5"/>
+		<Action name="SpeechAct" parameters="generic-express-admiration" value="3"/>										
+	</Praiseworthiness>	
+	
+	<Goals>	
+		<Goal name="AttendTo([target])"/>
+		<Goal name="Greet([target])"/>
+		<Goal name="RestOn([place])"/>
+		<Goal name="IntroduceSelfTo([target])"/>
+		<Goal name="Educate([target])"/>
+		<Goal name="Forgive([target])"/>
+		<Goal name="ForgiveOnHealing([target])"/>
+		
+		<!-- Dinner party scenario -->
+		<Goal name="TellJoke([target])"/>
+		<Goal name="LaughAtJoke([target])"/>
+		<Goal name="MockJoke([target])"/>
+		<Goal name="AskForMoney([target])"/>
+		<Goal name="GiveMoney([target])"/>
+		<Goal name="GiveAdviceForBetterJob([target])"/>
+		<Goal name="OfferSmallGift([target])"/>
+		<Goal name="ExpressGiftContentment([target])"/>
+		<Goal name="ExpressGiftDiscontentment([target])"/>
+		<Goal name="GoToParty([host])"/>
+	</Goals>
+	
+	<Rituals>
+		<Ritual name="GreetingRitual">
+			<Roles>
+				<Role name="[greet-initiator]"/>
+				<Role name="[greet-replier]"/>
+			</Roles>
+			<PreConditions>
+				<Property name="episode(name)" operator="=" value="TheDinnerParty"/>
+				<RecentEvent occurred="True" subject="[greet-initiator]" action="look-at" target="[greet-replier]"/>
+				<RecentEvent occurred="True" subject="[greet-replier]"	action="look-at" target="[greet-initiator]"/>
+				<Property name="[greet-replier](place)" operator="=" value="[greet-initiator](place)"/>
+				<Property name="[greet-replier]" operator="!=" value="[greet-initiator]"/>
+        		<Property name="[greet-initiator](power)" operator="=" value="[greet-replier](power)" />
+			</PreConditions>
+			<Context>
+			</Context>
+			<Steps>
+				<Step role="[greet-initiator]" name="casual-greeting-gesture([greet-replier])"/>
+				<Step role="[greet-replier]" name="casual-greeting-gesture([greet-initiator])"/>
+				<Step role="[greet-initiator]" name="SpeechAct([greet-replier],culture-a-greeting)"/>
+				<Step role="[greet-replier]" name="SpeechAct([greet-initiator],culture-a-greeting)"/>
+			</Steps>
+	      	<OrderingConstraints>
+	        	<Link before="2" after="3"/>
+	      	</OrderingConstraints>
+			<ExpectedEffects>
+				<OnSelect drive="Affiliation" target="[SELF]" value="+3"/>
+				<OnSelect drive="Affiliation" target="[target]" value="+3"/>
+				<OnIgnore drive="Affiliation" target="[SELF]" value="-8"/>
+				<OnIgnore drive="Affiliation" target="[target]" value="-8"/>
+			</ExpectedEffects>
+		</Ritual>
+		
+		
+		<Ritual name="GreetingRitual">
+			<Roles>
+				<Role name="[high-power]"/>
+				<Role name="[low-power]"/>
+			</Roles>
+			<PreConditions>
+				<Property name="episode(name)" operator="=" value="TheDinnerParty"/>
+				<RecentEvent occurred="True" subject="[high-power]" action="look-at" target="[low-power]"/>
+				<Property name="[high-power](place)" operator="=" value="[low-power](place)"/>
+				<Property name="[high-power]" operator="!=" value="[low-power]"/>
+			</PreConditions>
+			<Context>
+				<Social name="power" target="[high-power]" operator="LesserThan" value="10"/>
+				<Social name="power" target="[low-power]" operator="LesserThan" value="[high-power]"/>
+			</Context>
+			<Steps>
+				<Step role="[high-power]" name="casual-greeting-gesture([low-power])"/>
+				<Step role="[low-power]" name="respect-greeting-gesture([high-power])"/>
+				<Step role="[low-power]" name="SpeechAct([high-power],culture-a-greeting-reply-lower)"/>
+			</Steps>
+			<OrderingConstraints>
+			</OrderingConstraints>
+			<ExpectedEffects>
+				<OnSelect drive="Affiliation" target="[SELF]" value="+3"/>
+				<OnSelect drive="Affiliation" target="[target]" value="+3"/>
+				<OnIgnore drive="Affiliation" target="[SELF]" value="-5"/>
+				<OnIgnore drive="Affiliation" target="[target]" value="-5"/>
+			</ExpectedEffects>
+		</Ritual>
+		
+		<Ritual name="GreetingRitual">
+			<Roles>
+				<Role name="[elder]"/>
+				<Role name="[character]"/>
+			</Roles>
+			<PreConditions>
+				<Property name="episode(name)" operator="=" value="TheDinnerParty"/>
+				<RecentEvent occurred="True" subject="[elder]" action="look-at" target="[character]"/>
+				<RecentEvent occurred="True" subject="[character]" action="look-at" target="[elder]"/>
+				<Property name="[elder](place)" operator="=" value="[character](place)"/>
+				<Property name="[elder]" operator="!=" value="[character]"/>
+        		<Property name="[elder](power)" operator="=" value="10" />
+			</PreConditions>
+			<Context>
+			</Context>
+				<ExpectedEffects>
+				<OnSelect drive="Affiliation" target="[SELF]" value="+3"/>
+				<OnSelect drive="Affiliation" target="[target]" value="+3"/>
+				<OnIgnore drive="Affiliation" target="[SELF]" value="-5"/>
+				<OnIgnore drive="Affiliation" target="[target]" value="-5"/>
+			</ExpectedEffects>
+			<Steps>
+				<Step role="[character]" name="respect-greeting-gesture([elder])"/>
+			</Steps>
+			<OrderingConstraints>
+			</OrderingConstraints>
+		</Ritual>
+		
+		<Ritual name="WelcomePeopleToParty">
+			<Roles>
+				<Role name="[host]"/>
+				<Role name="[guest]"/>
+			</Roles>
+			
+			<PreConditions>
+				<Property name="[host](host)" operator="=" value="True"/>
+        		<Property name="[elder](power)" operator="=" value="10"/>
+				<RecentEvent occurred="True" subject="[host]" action="look-at" target="[guest]"/>
+				<RecentEvent occurred="True" subject="[guest]" action="look-at" target="[host]"/>
+				<Property name="[host](place)" operator="=" value="party-spot"/>
+				<Property name="[guest](place)" operator="=" value="party-spot"/>
+				<Property name="[guest]" operator="!=" value="[host]"/>
+        		<RitualCondition name="GreetingRitual" roles="[host],[guest]" />
+			</PreConditions>
+				<ExpectedEffects>
+				<OnSelect drive="Affiliation" target="[SELF]" value="+4"/>
+				<OnSelect drive="Affiliation" target="[target]" value="+4"/>
+				<OnIgnore drive="Affiliation" target="[SELF]" value="-10"/>
+				<OnIgnore drive="Affiliation" target="[target]" value="-10"/>
+			</ExpectedEffects>
+			<Steps>
+				<Step role="[host]" name="SpeechAct([host],welcome-to-party-a)"/>
+				<Step role="[guest]" name="SpeechAct([host],gratitude-to-party-invitation-a)"/>
+			</Steps>
+			<OrderingConstraints>
+				<Link before="0" after="1"/>
+			</OrderingConstraints>
+		</Ritual>
+		
+		<Ritual name="Dinner">
+			<Roles>
+				<Role name="[elder]"/>
+				<Role name="[host]"/>
+				<Role name="[high]"/>
+				<Role name="[low-a]"/>
+				<Role name="[low-b]"/>
+			</Roles>
+			<PreConditions>
+				<Property name="[elder](isSeated)" operator="=" value="False"/>
+				<Property name="[host](host)" operator="=" value="True"/>
+				<Property name="[high](host)" operator="=" value="False"/>
+				<Property name="[low-a](type)" operator="=" value="character"/>
+				<Property name="[low-b](type)" operator="=" value="character"/>
+				<Property name="[low-a]" operator="!=" value="[low-b]"/>
+      		</PreConditions>
+      		<Context>
+        		<Time value="dinner"/>
+       		 	<Social name="power" target="[elder]" operator="=" value="10"/>
+				<Social name="power" target="[host]" operator="LesserThan" value="10"/>
+				<Social name="power" target="[host]" operator="GreaterThan"	value="5"/>
+				<Social name="power" target="[high]" operator="LesserThan" value="10"/>
+				<Social name="power" target="[high]" operator="GreaterThan"	value="5"/>
+				<Social name="power" target="[low-a]" operator="LesserThan"	value="5"/>
+				<Social name="power" target="[low-b]" operator="LesserThan"	value="5"/>
+			</Context>
+			<ExpectedEffects>
+				<OnSelect drive="Affiliation" target="[SELF]" value="+3"/>
+				<OnSelect drive="Energy" target="[SELF]" value="+3"/>
+				<OnSelect drive="Integrity" target="[SELF]" value="+3"/>
+				<OnSelect drive="Affiliation" target="[target]" value="+3"/>
+				<OnSelect drive="Energy" target="[target]" value="+3"/>
+				<OnSelect drive="Integrity" target="[target]" value="+3"/>
+				<OnIgnore drive="Affiliation" target="[SELF]" value="-10"/>
+				<OnIgnore drive="Affiliation" target="[target]" value="-10"/>
+			</ExpectedEffects>
+			<Steps>
+				<Step role="[host]" name="SpeechAct([host],dinner-is-starting)"/>
+				<Step role="[elder]" name="sit-on-chair(arm-chair)"/>
+				<Step role="[host]" name="sit-on-chair(high-level-chair)"/>
+				<Step role="[high]" name="sit-on-chair(high-level-chair)"/>
+				<Step role="[low-a]" name="sit-on-chair(low-level-chair)"/>
+				<Step role="[low-b]" name="sit-on-chair(low-level-chair)"/>
+				<Step role="[elder]" name="eating()"/>
+				<Step role="[host]" name="eating()"/>
+				<Step role="[high]" name="eating()"/>
+				<Step role="[low-a]" name="eating()"/>
+				<Step role="[low-b]" name="eating()"/>
+			</Steps>
+			<OrderingConstraints>
+				<Link before="0" after="1"/>
+				<Link before="1" after="2"/>
+				<Link before="1" after="3"/>
+				<Link before="1" after="4"/>
+				<Link before="1" after="5"/>
+				<Link before="2" after="6"/>
+				<Link before="3" after="6"/>
+				<Link before="4" after="6"/>
+				<Link before="5" after="6"/>
+				<Link before="6" after="7"/>
+				<Link before="6" after="8"/>
+				<Link before="6" after="9"/>
+				<Link before="6" after="10"/>
+			</OrderingConstraints>
+		</Ritual>  	
+	</Rituals>
+</Culture>

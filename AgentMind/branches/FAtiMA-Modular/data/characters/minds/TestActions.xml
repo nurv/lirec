@@ -1,0 +1,24 @@
+<DomainActions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:noNamespaceSchemaLocation="./schemas/Actions.xsd">
+
+	<Action name="TestAction([target])">
+		<PreConditions>
+		</PreConditions>
+		<Effects>
+		</Effects>
+		<EffectsOnDrives>
+		</EffectsOnDrives>
+	</Action>
+
+	<Action name="TestAction2">
+		<PreConditions>
+		</PreConditions>
+		<Effects>
+		</Effects>
+		<EffectsOnDrives>
+		</EffectsOnDrives>
+	</Action>
+
+
+
+</DomainActions>

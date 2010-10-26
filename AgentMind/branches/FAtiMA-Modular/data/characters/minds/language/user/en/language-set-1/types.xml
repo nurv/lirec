@@ -1,0 +1,46 @@
+<spinTypeSystem>
+
+  <class name="Entity" />
+
+  <class name="Type" extends="Entity,_Result">
+    <slot name="value" type="String" />
+  </class>
+
+  <class name="Context" extends="Entity">
+  <slot name="value" type="String"/>
+  </class>
+
+  <class name="localContext" extends="Context"/>
+  <class name="me" extends="localContext"/>
+  <class name="you" extends="localContext"/>
+  <class name="role" extends="localContext"/>
+  <class name="sex" extends="localContext"/>
+  <class name="yourole" extends="localContext"/>
+  <class name="yousex" extends="localContext"/>
+  
+
+  <class name="globalContext" extends="Context"/>
+  <class name="him" extends="globalContext"/>
+  <class name="it" extends="globalContext"/>
+  <class name="bully" extends="globalContext"/>
+  <class name="victim" extends="globalContext"/>
+  <class name="bystander" extends="globalContext"/>
+  <class name="defender" extends="globalContext"/>
+  <class name="copingstrategy" extends="globalContext"/>
+  <class name="cssuccessful" extends="globalContext"/>
+
+
+
+  <class name="Synonym" extends="Context">
+     <slot name="topic" type="String" />
+     <slot name="semCat" type="String" />
+  </class>
+
+  <class name="Internal" extends="Entity"/>
+  <class name="bullyname" extends="Internal"/>
+  <class name="bullyassistantname" extends="Internal"/>
+  <class name="defendername" extends="Internal"/>
+  <class name="bystandername" extends="Internal"/>
+
+</spinTypeSystem>
+  

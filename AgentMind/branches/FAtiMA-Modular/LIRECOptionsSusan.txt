@@ -1,0 +1,13 @@
+Susan GreetBack Greta
+Susan Accept Greta apple
+Susan Reject Greta apple
+Susan Accept Greta orange
+Susan Reject Greta orange
+Susan Accept Greta banana
+Susan Reject Greta banana
+Susan Accept Greta cake
+Susan Reject Greta cake
+Susan Choose Greta apple
+Susan Choose Greta orange
+Susan Choose Greta banana
+Susan Choose Greta cake

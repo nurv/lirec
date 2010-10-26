@@ -1,0 +1,1705 @@
+<GoalLibrary>
+
+	
+	<ActivePursuitGoal name="TalkingWithFriend([target])">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="look-at" target="[target]" />
+			<Property name="Like([SELF],[target])" operator="GreaterThan" value="0"/>
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="talk" target="[target]" parameters="" />
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>
+	</ActivePursuitGoal>
+	
+	<!--<ActivePursuitGoal name="Chikaka">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="look-at" target="[target1]" />
+			<RecentEvent occurred="True" subject="[SELF]" action="look-at" target="[target2]" />
+			<Property name="[target1](type)" operator="=" value="character" />
+			<Property name="[target2](type)" operator="=" value="character" />
+			<Property name="[target1]" operator="!=" value="[target2]" />
+			<Property name="[target1]" operator="!=" value="[SELF]" />
+			<Property name="[target2]" operator="!=" value="[SELF]" />
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="succeed" target="Chikaka" parameters="[SELF],[target1]"/>
+			<RecentEvent occurred="True" subject="[SELF]" action="succeed" target="Chikaka" parameters="[SELF],[target2]"/>
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>
+	</ActivePursuitGoal>
+	-->
+	
+	<!-- Interest Goals -->
+	
+	<InterestGoal name="AvoidGettingHarmed">
+		<ProtectionConstraints>
+			<Property name="[SELF](hurt)" operator="=" value="False"/>
+		</ProtectionConstraints>
+	</InterestGoal>
+	
+	<InterestGoal name="AvoidAnyRisk">
+		<ProtectionConstraints>
+			<Property name="[SELF](atRisk)" operator="=" value="False"/>
+		</ProtectionConstraints>
+	</InterestGoal>
+	
+	<InterestGoal name="AvoidLookCoward">
+		<ProtectionConstraints>
+			<Property name="[SELF](lookCoward)" operator="=" value="False"/>
+		</ProtectionConstraints>
+	</InterestGoal>
+	
+	<!-- interaction goals (used for the interaction between the victim and the user)-->
+	<ActivePursuitGoal name="GreetUserFirstTime(user)">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="look-at" target="User" />
+			<PastEvent occurred="False" subject="[SELF]" action="look-at" target="User" />
+			<RecentEvent occurred="False" subject="[SELF]" action="SpeechAct" target="User" parameters="firstgreeting" />
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="User" parameters="firstgreeting" />
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>
+	</ActivePursuitGoal>
+
+	<ActivePursuitGoal name="GreetUser(user)">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="look-at" target="User" />
+			<PastEvent occurred="True" subject="[SELF]" action="look-at" target="User" />
+			<RecentEvent occurred="False" subject="[SELF]" action="SpeechAct" target="User" parameters="agentgreeting" />
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="User" parameters="agentgreeting" />
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>
+	</ActivePursuitGoal>
+	
+	<!--<ActivePursuitGoal name="SummarizeLastEpisode(user)">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="User" />
+			<RecentEvent occurred="False" subject="[SELF]" action="SpeechAct" target="User" parameters="episodesummary" />
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="User" parameters="episodesummary" />
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>
+	</ActivePursuitGoal>-->
+	
+	<ActivePursuitGoal name="AskIfKeepStrategy(user)">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="User" />
+			<Property name="[SELF](copingStrategy)" operator="=" value="[coping]" />
+			<Property name="[coping]" operator="!=" value="False" />
+			<Property name="[SELF](numberOfTries,[coping])" operator="LesserThan" value="[SELF](maxTries,[coping])" />
+			<RecentEvent occurred="False" subject="[SELF]" action="activate" target="AskIfKeepStrategy" parameters="user" />
+			<RecentEvent occurred="False" subject="[SELF]" action="activate" target="AskCopingStrategy" parameters="user" />
+		</PreConditions>
+		<SucessConditions>
+			<Property name="[SELF](confirmedStrategy)" operator="=" value="True" />
+		</SucessConditions>
+		<FailureConditions>
+			<RecentEvent occurred="True" subject="User" action="UserSpeech" target="[SELF]" parameters="no" />
+		</FailureConditions>
+	</ActivePursuitGoal>
+	
+	<ActivePursuitGoal name="CannotKeepStrategy(user)">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="User" />
+			<Property name="[SELF](copingStrategy)" operator="=" value="[coping]" />
+			<Property name="[coping]" operator="!=" value="False" />
+			<Property name="[SELF](numberOfTries,[coping])" operator="GreaterEqual" value="[SELF](maxTries,[coping])" />
+			<RecentEvent occurred="False" subject="[SELF]" action="activate" target="AskCopingStrategy" parameters="user"/>
+			<RecentEvent occurred="False" subject="[SELF]" action="activate" target="CannotKeepStrategy" parameters="user"/>
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="CopingSpeech" target="User" parameters="cannotkeepcopingstrategy,[coping]" />
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>
+	</ActivePursuitGoal>
+	
+	<ActivePursuitGoal name="AskCopingStrategy(user)">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="User" />
+			<RecentEvent occurred="False" subject="[SELF]" action="fail" target="AskCopingStrategy" parameters="user"/>
+			<Property name="[SELF](copingStrategy)" operator="=" value="False" />
+			<Property name="[SELF](confirmedStrategy)" operator="!=" value="True" />
+		</PreConditions>
+		<SucessConditions>
+			<Property name="SpeechContext()" operator="=" value="#EVENT(User,UserSpeech,[SELF],suggestcopingstrategy,[coping])"/>
+		</SucessConditions>
+		<FailureConditions>
+			<Property name="SpeechContext()" operator="=" value="#EVENT(User,UserSpeech,[SELF],dontknow)"/>
+		</FailureConditions>
+	</ActivePursuitGoal>
+
+	<ActivePursuitGoal name="ConfirmCopingStrategy(user)">
+		<PreConditions>
+			<Property name="SpeechContext()" operator="=" value="#EVENT(User,UserSpeech,[SELF],suggestcopingstrategy,[coping])"/>			
+		</PreConditions>
+		<SucessConditions>
+			<Property name="[SELF](confirmedStrategy)" operator="=" value="True" />
+		</SucessConditions>
+		<FailureConditions>
+			<Property name="SpeechContext()" operator="=" value="#EVENT(User,UserSpeech,[target],no)"/>
+		</FailureConditions>
+	</ActivePursuitGoal>
+	
+	<ActivePursuitGoal name="SuggestCopingStrategy(user)">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="User" />
+			<RecentEvent occurred="True" subject="[SELF]" action="fail" target="AskCopingStrategy" parameters="user" />
+			<Property name="[SELF](confirmedStrategy)" operator="!=" value="True" />
+		</PreConditions>
+		<SucessConditions>
+			<Property name="[SELF](confirmedStrategy)" operator="=" value="True" />
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>
+	</ActivePursuitGoal>
+	
+	<ActivePursuitGoal name="SayGoodbyeNoSuggestion(user)">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="fail" target="SuggestCopingStrategy" parameters="user" />
+			<RecentEvent occurred="False" subject="[SELF]" action="SpeechAct" target="User" parameters="saygoodbye"/>
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="User" parameters="saygoodbye"/>
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>
+	</ActivePursuitGoal>
+	
+	<ActivePursuitGoal name="AcceptStrategy(user)">
+		<PreConditions>
+			<Property name="[SELF](copingStrategy)" operator="=" value="[coping]" />
+			<Property name="[SELF](confirmedStrategy)" operator="=" value="True" />
+			<Property name="[SELF](numberOfTries,[coping])" operator="LesserThan" value="[SELF](maxTries,[coping])" />
+			<RecentEvent occurred="False" subject="[SELF]" action="CopingSpeech" target="User" parameters="acceptcopingstrategy,[coping]"/>
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="CopingSpeech" target="User" parameters="acceptcopingstrategy,[coping]"/>
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>
+	</ActivePursuitGoal>
+	
+	<ActivePursuitGoal name="DeclineStrategy(user)">
+		<PreConditions>
+			<Property name="[SELF](copingStrategy)" operator="=" value="[coping]" />
+			<Property name="[SELF](confirmedStrategy)" operator="=" value="True" />
+			<Property name="[SELF](numberOfTries,[coping])" operator="GreaterEqual" value="[SELF](maxTries,[coping])" />
+			<!--<RecentEvent occurred="False" subject="[SELF]" action="CopingSpeech" target="User" parameters="declinecopingstrategy,[coping]" />-->
+		</PreConditions>
+		<SucessConditions>
+			<Property name="SpeechContext()" operator="=" value="#EVENT([SELF],CopingSpeech,User,declinecopingstrategy,[coping])"/>
+			<!--<RecentEvent occurred="True" subject="[SELF]" action="CopingSpeech" target="User" parameters="declinecopingstrategy,[coping]" />-->
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>
+	</ActivePursuitGoal>
+	
+	<ActivePursuitGoal name="AskForReason(user)">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="CopingSpeech" target="User" parameters="acceptcopingstrategy,*"/>
+			<RecentEvent occurred="False" subject="[SELF]" action="activate" target="AskForReason" parameters="user" />
+		</PreConditions>
+		<SucessConditions>
+			<Property name="[SELF](askedwhy,User)" operator="=" value="True"/>
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>
+	</ActivePursuitGoal>
+	<ActivePursuitGoal name="WaitForReason(user)">
+		<PreConditions>
+			<Property name="[SELF](askedwhy,User)" operator="=" value="True"/>
+			<RecentEvent occurred="False" subject="[SELF]" action="activate" target="WaitForReason" parameters="user" />
+		</PreConditions>
+		<SucessConditions>
+			<Property name="SpeechContext()" operator="=" value="#EVENT(User,UserSpeech,[SELF],givereason)"/>
+		</SucessConditions>
+		<FailureConditions>
+			<Property name="SpeechContext()" operator="=" value="#EVENT(User,UserSpeech,[SELF],dontknow)"/>
+			<Property name="SpeechContext()" operator="=" value="#EVENT(User,UserSpeech,[SELF],unknown)"/>
+		</FailureConditions>
+	</ActivePursuitGoal>	
+	<ActivePursuitGoal name="AcceptReason(user)">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="succeed" target="WaitForReason" parameters="user"/>
+			<RecentEvent occurred="False" subject="[SELF]" action="SpeechAct" target="User" parameters="acceptreason"/>
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="User" parameters="acceptreason"/>
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>
+	</ActivePursuitGoal>
+	
+	<ActivePursuitGoal name="AcceptUnknownReason(user)">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="fail" target="WaitForReason" parameters="user"/>
+			<RecentEvent occurred="False" subject="[SELF]" action="SpeechAct" target="User" parameters="acceptunknownreason"/>
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="User" parameters="acceptunknownreason"/>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="User" parameters="saygoodbye"/>
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>
+	</ActivePursuitGoal>
+	
+	<ActivePursuitGoal name="SayGoodbye(user)">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="User" parameters="acceptreason"/>
+			<RecentEvent occurred="False" subject="[SELF]" action="SpeechAct" target="User" parameters="saygoodbye"/>
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="User" parameters="saygoodbye"/>
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>
+	</ActivePursuitGoal>
+	
+	<!-- Generic goals that are used in more than one episode -->
+	
+	<!-- Replying yes to any question except invitations-->
+	<ActivePursuitGoal name="ReplyPositively([speaker],[question])">
+		<PreConditions>
+			<!-- reply yes unless I don't like the character that is asking -->
+			<Property name="Respect([SELF],[speaker])" operator="GreaterEqual" value="0"/>
+			<!-- only active, if a question has been started -->
+			<RecentEvent occurred="True" subject="[speaker]" target="[SELF]" action="Question" parameters="[question]" />
+			<!-- that does not correspond to a party invitation -->
+			<Property name="[question]" operator="!=" value="partyinvitation"/>
+			<Property name="[question]" operator="!=" value="joinparty"/>
+			<!-- and I havent already answered (positive) -->
+			<RecentEvent occurred="False" subject="[SELF]" target="[speaker]" action="Reply" parameters="[question],positiveanswer"/>
+			<!-- and I havent already answered (negative) -->
+			<RecentEvent occurred="False" subject="[SELF]" target="[speaker]" action="Reply" parameters="[question],negativeanswer"/>
+		</PreConditions>
+		<SucessConditions>
+			<!-- goal succeeds, if i say yes -->
+			<RecentEvent occurred="True" subject="[SELF]" action="Reply" target="[speaker]" parameters="[question],positiveanswer"/>
+		</SucessConditions>
+		<FailureConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="Reply" target="[speaker]" parameters="[question],negativeanswer"/>
+		</FailureConditions>
+	</ActivePursuitGoal>
+	
+	<!-- Replying no to any question, it also corrresponds to a Stand Up coping stragegy -->
+	<ActivePursuitGoal name="ReplyNegatively([speaker],[question])">
+		<PreConditions>
+			<!-- reply no if I don't like the character that is asking -->
+			<Property name="Respect([SELF],[speaker])" operator="LesserThan" value="0"/>
+			<!-- only active, if a question has been started -->
+			<RecentEvent occurred="True" subject="[speaker]" target="[SELF]" action="Question" parameters="[question]"/>
+			<!-- that does not correspond to a party invitation -->
+			<Property name="[question]" operator="!=" value="partyinvitation"/>
+			<Property name="[question]" operator="!=" value="joinparty"/>
+			<!-- and I havent already answered (positive) -->
+			<RecentEvent occurred="False" subject="[SELF]" target="[speaker]" action="Reply" parameters="[question],positiveanswer"/>
+			<!-- and I havent already answered (negative) -->
+			<RecentEvent occurred="False" subject="[SELF]" target="[speaker]" action="Reply" parameters="[question],negativeanswer"/>
+			<!-- and I didn't dropped my goal of saying no because I'm afraid -->
+			<RecentEvent occurred="False" subject="[SELF]" action="fail" target="ReplyNegatively" parameters="[speaker],[question]" /> 
+			<!-- <Property name="GD(ReplyNegatively,[speaker],[question])" operator="!=" value="True"/>-->
+			<!-- and I'm not trying to ignore the bully -->
+			<Property name="[SELF](copingStrategy)" operator="!=" value="ignore" />
+		</PreConditions>
+		<SucessConditions>
+			<!-- goal succeeds, if i say no -->
+			<RecentEvent occurred="True" subject="[SELF]" action="Reply" target="[speaker]" parameters="[question],negativeanswer"/>
+		</SucessConditions>
+		<FailureConditions>
+			<!-- goal fails if I decided to say yes -->
+			<RecentEvent occurred="True" subject="[SELF]" action="Reply" target="[speaker]" parameters="[question],positiveanswer"/>
+		</FailureConditions>
+	</ActivePursuitGoal>
+	
+	<!-- Replying yes if I'm afraid of saying no because it threatens an interest goal -->
+	<ActivePursuitGoal name="ReplyPositivelyNoChoice([speaker],[question])">
+		<PreConditions>
+			<!-- only active, if a question has been started -->
+			<RecentEvent occurred="True" subject="[speaker]" target="[SELF]" action="Question" parameters="[question]"/>
+			<!-- that does not correspond to a party invitation -->
+			<Property name="[question]" operator="!=" value="partyinvitation"/>
+			<Property name="[question]" operator="!=" value="joinparty"/>
+			<!-- and I havent already answered (positive) -->
+			<RecentEvent occurred="False" subject="[SELF]" target="[speaker]" action="Reply" parameters="[question],positiveanswer"/>
+			<!-- and I havent already answered (negative) -->
+			<RecentEvent occurred="False" subject="[SELF]" target="[speaker]" action="Reply" parameters="[question],negativeanswer"/>
+			<!-- and I dropped my goal of saying no because I'm afraid -->
+			<RecentEvent occurred="True" subject="[SELF]" action="fail" target="ReplyNegatively" parameters="[speaker],[question]" />
+		</PreConditions>
+		<SucessConditions>
+			<!-- goal succeeds, if i say yes -->
+			<RecentEvent occurred="True" subject="[SELF]" action="Reply" target="[speaker]" parameters="[question],positiveanswer"/>
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>
+	</ActivePursuitGoal>
+	
+	<!-- BullyAssistant's Reinforce Goal -->
+	<ActivePursuitGoal name="AssistBully([bully],[victim],[type])">
+		<PreConditions>
+			<Property name="[bully](role)" operator="=" value="Bully"/>
+			<!-- can only reinforce the Bully  -->
+			<Property name="[victim](role)" operator="=" value="Victim"/>
+			<!-- can only reinforce anything towards the Victim  -->
+			<!-- only reinforce if i don't like the victim -->
+			<Property name="Like([SELF],[victim])" operator="LesserThan" value="0"/>
+			<!-- the bully must say something to the victim  -->
+			<RecentEvent occurred="True" subject="[bully]" target="[victim]" action="[anySpeech]" parameters="[type]"/>
+			<!-- the assistant or character that has the goal must be able to reinforce the speech act -->
+			<Property name="[SELF](canReinforce,[type])" operator="=" value="True"/>
+			<!-- and it haven't already reinforced that speech act -->
+			<RecentEvent occurred="False" subject="[SELF]" target="[victim]" action="Reinforce" parameters="[type]"/>
+		</PreConditions>
+		<SucessConditions>
+			<!-- goal succeeds, if i can reinforce the bully -->
+			<RecentEvent occurred="True" subject="[SELF]" target="[victim]" action="Reinforce" parameters="[type]"/>
+		</SucessConditions>
+		<FailureConditions>
+			<Property name="SpeechContext()" operator="!=" value="#EVENT([bully],[anySpeech],[victim],[type])"/>
+			<!--<RecentEvent occurred="True" subject="[victim]" action="Reply" target="[bully]" parameters="[type],*"/>-->
+		</FailureConditions>
+	</ActivePursuitGoal>
+	
+	<ActivePursuitGoal name="AssistBullyJoinGroupNegativeAnswer([bully],[victim])">
+		<PreConditions>
+			<Property name="[bully](role)" operator="=" value="Bully"/>
+			<!-- can only reinforce the Bully  -->
+			<Property name="[victim](role)" operator="=" value="Victim"/>
+			<!-- can only reinforce anything towards the Victim  -->
+			<!-- only reinforce if i don't like the victim -->
+			<Property name="Like([SELF],[victim])" operator="LesserThan" value="0"/>
+			<!-- the bully must say something to the victim  -->
+			<RecentEvent occurred="True" subject="[bully]" target="[victim]" action="Reply" parameters="joingroupquestion,negativeanswer,*"/>
+			<!-- and it hasn't already reinforced that speech act -->
+			<RecentEvent occurred="False" subject="[SELF]" target="[victim]" action="Reinforce" parameters="joingroupquestionnegativeanswer"/>
+		</PreConditions>
+		<SucessConditions>
+			<!-- goal succeeds, if i can reinforce the bully -->
+			<RecentEvent occurred="True" subject="[SELF]" target="[victim]" action="Reinforce" parameters="joingroupquestionnegativeanswer"/>
+		</SucessConditions>
+		<FailureConditions>
+			<!--<RecentEvent occurred="True" subject="[victim]" action="Question" target="[bully]" parameters="joingroupconvince,*"/>-->
+		</FailureConditions>
+	</ActivePursuitGoal>	
+	
+	<!-- Defender Goals -->
+	<!-- Help the victim to cope with the situation -->
+	<ActivePursuitGoal name="DefendVictimFrom([victim],[target])">
+		<PreConditions>
+			<Property name="[victim](role)" operator="=" value="Victim"/>
+			<Property name="[target](role)" operator="=" value="Bully"/>
+			<EmotionCondition emotion="Pitty" min-intensity="1" target="[Victim]" />    <!--only respond this way if you feel pitty for the victim -->
+			<EmotionCondition emotion="Anger" min-intensity="1" target="[target]" /> <!-- and you'r angry at the bully -->
+			<Property name="Like([SELF],[victim])" operator="GreaterThan" value="1"/>
+			<RecentEvent occurred="False" subject="[SELF]" action="Question" target="[target]" parameters="confrontationhelper"/>
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[target]" action="Reply" target="[SELF]" parameters="confrontationhelper,positiveanswer"/>
+		</SucessConditions>
+		<FailureConditions>
+			<RecentEvent occurred="True" subject="[target]" action="Reply" target="[SELF]" parameters="confrontationhelper,negativeanswer"/>
+		</FailureConditions>
+	</ActivePursuitGoal>
+	
+	<!-- ByStander Goals -->
+	<!-- Help the victim to cope with the situation, but only if the victim previously asked for hep -->
+	<ActivePursuitGoal name="DefendFriendFrom([victim],[target])">
+		<PreConditions>
+			<Property name="[victim](role)" operator="=" value="Victim"/>
+			<Property name="[target](role)" operator="=" value="Bully"/>
+			<EmotionCondition emotion="Pitty" min-intensity="0" target="[Victim]" />    <!--only respond this way if you feel pitty for the victim -->
+			<EmotionCondition emotion="Anger" min-intensity="1" target="[target]" /> <!-- and you'r angry at the bully -->
+			<Property name="[SELF](helper,[victim])" operator="=" value="True" />
+			<RecentEvent occurred="False" subject="[SELF]" action="SpeechAct" target="[target]" parameters="confrontationhelper"/>
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[target]" action="Reply" target="[SELF]" parameters="confrontationhelper,positiveanswer"/>
+		</SucessConditions>
+		<FailureConditions>
+			<RecentEvent occurred="True" subject="[target]" action="Reply" target="[SELF]" parameters="confrontationhelper,negativeanswer"/>
+		</FailureConditions>
+	</ActivePursuitGoal>
+	
+	<!-- Group Joinning Related Goals -->
+	
+	<!-- trying to join a new group -->
+	<ActivePursuitGoal name="JoinGroup([group])">
+		<PreConditions>
+			<Property name="[group](isGroup)" operator="=" value="True" /> <!-- can only join something that is a group  -->
+			<Property name="[SELF](inGroup,[group])" operator="!=" value="True" /> <!-- can only join if I'm not yet in  -->
+			<Property name="[SELF](inGroup,[group])" operator="!=" value="False" /> <!-- can only join if I'm not definitely out yet in  -->
+		</PreConditions>
+		<SucessConditions>
+			<Property name="[SELF](inGroup,[group])" operator="=" value="True" /> <!-- succesful if I'm in  -->
+		</SucessConditions>
+		<FailureConditions>
+			<Property name="[SELF](inGroup,[group])" operator="=" value="False" /> <!-- unsuccesful if I'm out  -->
+		</FailureConditions>
+	</ActivePursuitGoal>	
+	
+	 <!-- convincing another agent not to let victim join group, occurs when 2 agents in group decided differently on the request question to join group -->
+	<ActivePursuitGoal name="ConvinceOtherNoJoinGroupOf2([other],[joiner],[group])">
+		<PreConditions>
+			<Property name="[group](isGroupOf2)" operator="=" value="True" /> 
+			<Property name="[SELF](inGroup,[group])"  operator="=" value="True" />
+			<Property name="[other](inGroup,[group])"  operator="=" value="True" />
+		    <Property name="[joiner](inGroup,[group])"  operator="=" value="Pending" /> 
+			<RecentEvent occurred="True" subject="[joiner]" target="[group]" action="Question" parameters="joingroupquestion" />
+			<RecentEvent occurred="True" subject="[SELF]" action="Reply" target="[joiner]" parameters="joingroupquestion,negativeanswer,[group]"/>
+			<RecentEvent occurred="True" subject="[other]" action="Reply" target="[joiner]" parameters="joingroupquestion,positiveanswer,[group]"/>
+			<Property name="[other]" operator="!=" value="[SELF]" />
+			<RecentEvent occurred="False" subject="[other]" target="[SELF]" action="Question" parameters="joingroupquestionnegativeanswerobject,[group]" /> 
+			<RecentEvent occurred="False" subject="[SELF]" target="[other]" action="Question" parameters="joingroupquestionpositiveanswerobject,[group]" /> 
+		</PreConditions>
+		<SucessConditions>
+			<Property name="[other](groupApprovalOverPowered,[SELF],[group])"  operator="=" value="False" />			
+		</SucessConditions>
+		<FailureConditions>
+			<Property name="[other](groupApprovalOverPowered,[SELF],[group])"  operator="=" value="True" />			
+			<RecentEvent occurred="True" subject="[other]" target="[SELF]" action="Question" parameters="joingroupquestionnegativeanswerobject,[group]" /> 
+		</FailureConditions>
+	</ActivePursuitGoal>
+	
+	<!-- convincing another agent to let victim join group, occurs when 2 agents in group decided differently on the request question to join group -->
+	<ActivePursuitGoal name="ConvinceOtherJoinGroupOf2([other],[joiner],[group])"> 
+		<PreConditions>
+			<Property name="[group](isGroupOf2)" operator="=" value="True" /> 
+			<Property name="[SELF](inGroup,[group])"  operator="=" value="True" />
+			<Property name="[other](inGroup,[group])"  operator="=" value="True" />
+		    <Property name="[joiner](inGroup,[group])"  operator="=" value="Pending" /> 
+			<RecentEvent occurred="True" subject="[joiner]" target="[group]" action="Question" parameters="joingroupquestion" />
+			<RecentEvent occurred="True" subject="[SELF]" action="Reply" target="[joiner]" parameters="joingroupquestion,positiveanswer,[group]"/>
+			<RecentEvent occurred="True" subject="[other]" action="Reply" target="[joiner]" parameters="joingroupquestion,negativeanswer,[group]"/>
+			<Property name="[other]" operator="!=" value="[SELF]" />			
+			<RecentEvent occurred="False" subject="[other]" target="[SELF]" action="Question" parameters="joingroupquestionpositiveanswerobject,[group]" /> 
+			<RecentEvent occurred="False" subject="[SELF]" target="[other]" action="Question" parameters="joingroupquestionnegativeanswerobject,[group]" /> 
+			<!-- <RecentEvent occurred="false" subject="[other]" target="[SELF]" action="SpeechAct" parameters="joingroupquestionthreatleave,[group]" /> 	-->					
+		</PreConditions>
+		<SucessConditions>
+			<!-- <RecentEvent occurred="True" subject="[SELF]" target="[other]" action="SpeechAct" parameters="joingroupquestionnegativeanswerobjectaccept,[group]" /> -->
+			<Property name="[other](groupApprovalOverPowered,[SELF],[group])"  operator="=" value="False" />			
+
+		</SucessConditions>
+		<FailureConditions>
+			<Property name="[other](groupApprovalOverPowered,[SELF],[group])"  operator="=" value="True" />			
+			<RecentEvent occurred="True" subject="[other]" target="[SELF]" action="Question" parameters="joingroupquestionpositiveanswerobject,[group]" /> 
+			<RecentEvent occurred="True" subject="[other]" target="[SELF]" action="SpeechAct" parameters="joingroupquestionthreatleave,[group]" /> 
+		</FailureConditions>
+	</ActivePursuitGoal>
+	
+	<!-- choosing the positive answer to a joingroup question  --> 
+	<ActivePursuitGoal name="JoinGroupAccept([joiner],[group])"> 
+		<PreConditions>
+			<Property name="[group](isGroup)" operator="=" value="True" /> 
+			<Property name="[SELF](inGroup,[group])"  operator="=" value="True" />
+			 <Property name="[joiner](inGroup,[group])"  operator="=" value="Pending" />
+			<RecentEvent occurred="True" subject="[joiner]" target="[group]" action="Question" parameters="joingroupquestion" /> <!-- only active, if a join request was made -->
+			<RecentEvent occurred="False" subject="[SELF]" action="Reply" target="[joiner]" parameters="joingroupquestion,positiveanswer"/>
+			<RecentEvent occurred="False" subject="[SELF]" action="Reply" target="[joiner]" parameters="joingroupquestion,negativeanswer"/>
+			<Property name="Like([SELF],[joiner])" operator="GreaterEqual" value="-2" /> <!-- choose pos unless I strongly hate joiner -->				
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="Reply" target="[joiner]" parameters="joingroupquestion,positiveanswer,[group]"/>
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>
+	</ActivePursuitGoal>
+
+	<!-- choosing the negative answer to a joingroup question  --> 
+	<ActivePursuitGoal name="JoinGroupRefuse([joiner],[group])"> 
+		<PreConditions>
+			<Property name="[group](isGroup)" operator="=" value="True" /> 
+			<Property name="[SELF](inGroup,[group])"  operator="=" value="True" />
+		    <Property name="[joiner](inGroup,[group])"  operator="=" value="Pending" /> 
+			<RecentEvent occurred="True" subject="[joiner]" target="[group]" action="Question" parameters="joingroupquestion" /> <!-- only active, if a join request was made -->
+			<RecentEvent occurred="False" subject="[SELF]" action="Reply" target="[joiner]" parameters="joingroupquestion,positiveanswer"/>
+			<RecentEvent occurred="False" subject="[SELF]" action="Reply" target="[joiner]" parameters="joingroupquestion,negativeanswer"/>
+			<Property name="Like([SELF],[joiner])" operator="LesserThan" value="-2" /> <!-- choose neg if I strongly dislike joiner -->
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="Reply" target="[joiner]" parameters="joingroupquestion,negativeanswer,[group]"/> 
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>
+	</ActivePursuitGoal>
+	
+	<ActivePursuitGoal name="ConvinceGroupAccept([joiner],[group])"> <!-- choosing the positive answer to a joingroupconvince question  --> 
+		<PreConditions>
+			<Property name="[group](isGroup)" operator="=" value="True" /> 
+			<Property name="[SELF](inGroup,[group])"  operator="=" value="True" />
+			 <Property name="[joiner](inGroup,[group])"  operator="=" value="Pending" />
+			<RecentEvent occurred="True" subject="[joiner]" target="[SELF]" action="Question" parameters="joingroupconvince,[group]" />
+			<RecentEvent occurred="False" subject="[SELF]" target="[joiner]" action="Reply" parameters="joingroupconvince,*,[group]"/> 
+			<Property name="Like([SELF],[joiner])" operator="GreaterEqual" value="-2" /> <!-- choose pos unless I strongly hate joiner -->				
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" target="[joiner]" action="[Reply]" parameters="joingroupconvince,positiveanswer,[group]"/> 
+		</SucessConditions>
+		<FailureConditions>
+			<RecentEvent occurred="True" subject="[SELF]" target="[joiner]" action="[Reply]" parameters="joingroupconvince,negativeanswer,[group]"/> 
+			</FailureConditions>
+	</ActivePursuitGoal>
+
+	<ActivePursuitGoal name="ConvinceGroupRefuse([joiner],[group])"> <!-- choosing the positive answer to a joingroupconvince question  --> 
+		<PreConditions>
+			<Property name="[group](isGroup)" operator="=" value="True" /> 
+			<Property name="[SELF](inGroup,[group])"  operator="=" value="True" />
+			 <Property name="[joiner](inGroup,[group])"  operator="=" value="Pending" />
+			<RecentEvent occurred="True" subject="[joiner]" target="[SELF]" action="Question" parameters="joingroupconvince,[group]" />
+			<RecentEvent occurred="False" subject="[SELF]" target="[joiner]" action="Reply" parameters="joingroupconvince,*,[group]"/> 
+			<Property name="Like([SELF],[joiner])" operator="LesserThan" value="-2" /> <!-- choose neg if I strongly dislike joiner -->
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" target="[joiner]" action="[Reply]" parameters="joingroupconvince,negativeanswer,[group]"/> 
+		</SucessConditions>
+		<FailureConditions>
+			<RecentEvent occurred="True" subject="[SELF]" target="[joiner]" action="[Reply]" parameters="joingroupconvince,positiveanswer,[group]"/> 
+		</FailureConditions>
+	</ActivePursuitGoal>	
+	
+	<ActivePursuitGoal name="ConvinceOtherNoJoinGroupOf2Accept([other],[joiner],[group])"> 
+		<PreConditions>
+			<Property name="[group](isGroupOf2)" operator="=" value="True" /> 
+			<RecentEvent occurred="True" subject="[joiner]" target="[group]" action="Question" parameters="joingroupquestion" /> 
+			<RecentEvent occurred="True" subject="[other]" target="[SELF]" action="Question" parameters="joingroupquestionpositiveanswerobject,[group]" /> 
+			<Property name="[SELF](inGroup,[group])"  operator="=" value="True" />
+			<Property name="[other](inGroup,[group])"  operator="=" value="True" />
+		    <Property name="[joiner](inGroup,[group])"  operator="=" value="Pending" />
+			<Property name="[other]" operator="!=" value="[SELF]" />		
+			<Property name="Like([SELF],[other])" operator="GreaterEqual" value="Like([SELF],[joiner])" /> <!-- choose if I like other more than joiner-->
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="Reply" target="[other]" parameters="joingroupquestionpositiveanswerobject,positiveanswer,[group]" /> 
+		</SucessConditions>
+		<FailureConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="Reply" target="[other]" parameters="joingroupquestionpositiveanswerobject,negativeanswer,[group]" /> 
+		</FailureConditions>
+	</ActivePursuitGoal>
+
+	<ActivePursuitGoal name="ConvinceOtherNoJoinGroupOf2Refuse([other],[joiner],[group])"> <!-- convincing another agent not to let victim join group, occurs when 2 agents in group decided differently on the request question to join group -->
+		<PreConditions>
+			<Property name="[group](isGroupOf2)" operator="=" value="True" /> 
+			<RecentEvent occurred="True" subject="[joiner]" target="[group]" action="Question" parameters="joingroupquestion" /> 
+			<RecentEvent occurred="True" subject="[other]" target="[SELF]" action="Question" parameters="joingroupquestionpositiveanswerobject,[group]" /> 
+			<Property name="[SELF](inGroup,[group])"  operator="=" value="True" />
+			<Property name="[other](inGroup,[group])"  operator="=" value="True" />
+		    <Property name="[joiner](inGroup,[group])"  operator="=" value="Pending" />
+			<Property name="[other]" operator="!=" value="[SELF]" />					
+			<Property name="Like([SELF],[other])" operator="LesserThan" value="Like([SELF],[joiner])" /> <!-- choose if I  like other less then joiner -->
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="Reply" target="[other]" parameters="joingroupquestionpositiveanswerobject,negativeanswer,[group]" /> 
+		</SucessConditions>
+		<FailureConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="Reply" target="[other]" parameters="joingroupquestionpositiveanswerobject,positiveanswer,[group]" /> 
+		</FailureConditions>
+	</ActivePursuitGoal>
+
+	<ActivePursuitGoal name="ConvinceOtherJoinGroupOf2Accept([other],[group])"> 
+		<PreConditions>
+			<Property name="[group](isGroupOf2)" operator="=" value="True" /> 
+			<RecentEvent occurred="True" subject="[other]" target="[SELF]" action="Question" parameters="joingroupquestionnegativeanswerobject" /> 
+			<Property name="[SELF](inGroup,[group])"  operator="=" value="True" />
+			<Property name="[other](inGroup,[group])"  operator="=" value="True" />
+			<Property name="Like([SELF],[other])" operator="GreaterEqual" value="0" /> <!-- choose if I like other -->
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[other]" parameters="joingroupquestionnegativeanswerobjectaccept,[group]" /> 
+		</SucessConditions>
+		<FailureConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[other]" parameters="joingroupquestionthreatleave,[group]" /> 
+		</FailureConditions>
+	</ActivePursuitGoal>
+
+	<ActivePursuitGoal name="ConvinceOtherJoinGroupOf2Refuse([other],[group])"> <!-- convincing another agent not to let victim join group, occurs when 2 agents in group decided differently on the request question to join group -->
+		<PreConditions>
+			<Property name="[group](isGroupOf2)" operator="=" value="True" /> 
+			<RecentEvent occurred="True" subject="[other]" target="[SELF]" action="Question" parameters="joingroupquestionnegativeanswerobject" /> 
+			<Property name="[SELF](inGroup,[group])"  operator="=" value="True" />
+			<Property name="[other](inGroup,[group])"  operator="=" value="True" />
+			<Property name="Like([SELF],[other])" operator="LesserThan" value="0" /> <!-- choose if I dont like other much -->
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[other]" parameters="joingroupquestionthreatleave,[group]" /> 
+		</SucessConditions>
+		<FailureConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[other]" parameters="joingroupquestionnegativeanswerobjectaccept,[group]" /> 
+		</FailureConditions>
+	</ActivePursuitGoal>
+	
+	<!-- Join group threat leave - not letting bully leave -->
+	<ActivePursuitGoal name="JoinGroupThreatLeaveAccept([other],[joiner],[group])"> 
+		<PreConditions>
+			<Property name="[group](isGroupOf2)" operator="=" value="True" /> 
+			<RecentEvent occurred="True" subject="[other]" target="[SELF]" action="SpeechAct" parameters="joingroupquestionthreatleave,[group]" /> 
+			<Property name="[joiner](inGroup,[group])" operator="=" value="Pending" /> 
+			<Property name="Like([SELF],[other])" operator="GreaterEqual" value="Like([SELF],[joiner])" /> 
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[other]" parameters="joingroupquestionthreatleavepositiveanswer,[group]" /> 
+		</SucessConditions>
+		<FailureConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[other]" parameters="joingroupquestionthreatleavenegativeanswer,[group]" /> 
+		</FailureConditions>
+	</ActivePursuitGoal>
+
+	<!-- Join group threat leave - letting bully leave -->
+	<ActivePursuitGoal name="JoinGroupThreatLeaveRefuse([other],[joiner],[group])"> 
+		<PreConditions>
+			<Property name="[group](isGroupOf2)" operator="=" value="True" /> 
+			<RecentEvent occurred="True" subject="[other]" target="[SELF]" action="SpeechAct" parameters="joingroupquestionthreatleave,[group]" /> 
+			<Property name="[joiner](inGroup,[group])" operator="=" value="Pending" /> 
+			<Property name="Like([SELF],[other])" operator="LesserThan" value="Like([SELF],[joiner])" /> 
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[other]" parameters="joingroupquestionthreatleavenegativeanswer,[group]" /> 
+		</SucessConditions>
+		<FailureConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[other]" parameters="joingroupquestionthreatleavepositiveanswer,[group]" /> 
+		</FailureConditions>
+	</ActivePursuitGoal>
+	
+	<ActivePursuitGoal name="ConfrontVictimTellTeacher([victim])"> 
+		<PreConditions>
+			<!--<Property name="Like([SELF],[victim])" operator="LesserThan" value="0" /> -->
+			<Property name="[victim](role)" operator="=" value="Victim" /> 
+			<RecentEvent occurred="True" subject="[SELF]" action="look-at" target="[victim]" />
+			<RecentEvent occurred="False" subject="[SELF]" action="SpeechAct" target="[victim]" parameters="confrontationtoldteacher" /> 
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[victim]" parameters="confrontationtoldteacher" /> 
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>
+	</ActivePursuitGoal>
+	
+	
+	<!-- Goals that correspond to Coping Strategies -->
+	
+	<!-- Coping Strategy Goals -->
+	<ActivePursuitGoal name="Ignore([bully])">
+		<PreConditions>
+			<Property name="[SELF](copingStrategy)" operator="=" value="ignore" />
+			<Property name="[bully](role)" operator="=" value="Bully" /> <!-- can only use ignore goal against a Bully  -->
+			<Property name="[SELF](needToCope)" operator="=" value="True" /> <!-- can only use ignore goal if you got a reason for it  -->
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[bully]" action="walkAwayVictim" target="[SELF]"  />
+		</SucessConditions>
+		<FailureConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[bully]" parameters="insult" />
+			<RecentEvent occurred="True" subject="[SELF]" action="cry"  />
+		</FailureConditions>
+	</ActivePursuitGoal>	
+	
+
+	<ActivePursuitGoal name="StandUp([bully])">
+		<PreConditions>
+			<Property name="[SELF](copingStrategy)" operator="=" value="standup" />
+			<Property name="[bully](role)" operator="=" value="Bully" /> <!-- can only stand up against a Bully  -->
+			<Property name="[SELF](role)" operator="=" value="Victim" /> <!-- can only stand up if you're a victim  -->
+			<Property name="[SELF](needToCope)" operator="=" value="True" /> <!-- can only stand up if you got a reason for it  -->
+			<RecentEvent occurred="False" subject="[SELF]" action="Question" target="[bully]" parameters="protest" />
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="Question" target="[bully]" parameters="protest" />
+		</SucessConditions>
+		<FailureConditions>
+			<!--<Property name="[SELF](needToCope)" operator="=" value="False" />--> <!-- can drop goal if we dont need to cope anymore  -->
+		</FailureConditions>
+	</ActivePursuitGoal>
+	
+	<!-- Make new friends coping strategy -->
+	<ActivePursuitGoal name="MakeNewFriend([friend])">
+		<PreConditions>
+			<Property name="[SELF](copingStrategy)" operator="=" value="makenewfriend" />
+			<RecentEvent occurred="True" subject="[SELF]" action="look-at" target="[friend]" />
+			<Property name="Like([SELF],[friend])" operator="GreaterThan" value="1"/>
+			<RecentEvent occurred="True" subject="[SELF]" action="look-at" target="[friend]" />
+			<!--<Property name="[bully](role)" operator="=" value="Bully" />
+			<RecentEvent occured="False" subject="[SELF]" action="look-at" target="[bully]" />-->
+			<Property name="[SELF](friend,[friend])" operator="!=" value="True" />
+			<RecentEvent occurred="False" subject="[friend]" action="Reply" target="[SELF]" parameters="makefriend,negativeanswer"/>
+		</PreConditions>
+		<SucessConditions>
+			<Property name="[SELF](friend,[friend])" operator="=" value="True" />
+		</SucessConditions>
+		<FailureConditions>
+			<RecentEvent occurred="True" subject="[friend]" action="Reply" target="[SELF]" parameters="makefriend,negativeanswer"/>
+		</FailureConditions>
+	</ActivePursuitGoal>
+	
+	<!-- Tell a friend coping strategy -->
+	<ActivePursuitGoal name="TellFriend([friend])">
+		<PreConditions>
+			<Property name="[SELF](copingStrategy)" operator="=" value="tellfriend" />
+			<RecentEvent occurred="True" subject="[SELF]" action="look-at" target="[friend]" />
+			<Property name="[friend](role)" operator="!=" value="Bully"/>
+			<Property name="[friend](role)" operator="!=" value="BullyAssistant"/>
+			<Property name="Like([SELF],[friend])" operator="GreaterThan" value="0"/>
+			<Property name="[friend](helper,[SELF])" operator="!=" value="True" />
+		</PreConditions>
+		<SucessConditions>
+			<Property name="[friend](helper,[SELF])" operator="=" value="True" />
+		</SucessConditions>
+		<FailureConditions>
+			<RecentEvent occurred="True" subject="[friend]" action="Reply" target="[SELF]" parameters="askforhelp,negativeanswer"/>
+		</FailureConditions>
+	</ActivePursuitGoal>
+
+	<ActivePursuitGoal name="RunAway([bully])">
+		<PreConditions>
+			<Property name="[SELF](copingStrategy)" operator="=" value="runaway" />
+			<Property name="[bully](role)" operator="=" value="Bully" /> <!-- can only stand up against a Bully  -->
+			<Property name="[SELF](role)" operator="=" value="Victim" /> <!-- can only stand up if you're a victim  -->
+			<Property name="[SELF](needToCope)" operator="=" value="True" /> <!-- can only stand up if you got a reason for it  -->
+			<RecentEvent occurred="False" subject="[SELF]" action="runAway" /> <!-- only if I have not runned away already-->
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="runAway" />
+		</SucessConditions>
+		<FailureConditions>
+			<!--<Property name="[SELF](needToCope)" operator="=" value="False" />--> <!-- can drop goal if we dont need to cope anymore  -->
+		</FailureConditions>
+	</ActivePursuitGoal>
+	
+	<ActivePursuitGoal name="WalkAway([bully])">
+		<PreConditions>
+			<Property name="[SELF](copingStrategy)" operator="=" value="walkaway" />
+			<Property name="[bully](role)" operator="=" value="Bully" /> <!-- can only stand up against a Bully  -->
+			<Property name="[SELF](role)" operator="=" value="Victim" /> <!-- can only stand up if you're a victim  -->
+			<Property name="[SELF](needToCope)" operator="=" value="True" /> <!-- can only stand up if you got a reason for it  -->
+			<RecentEvent occurred="False" subject="[SELF]" action="walkAway" />
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="walkAway"  />
+		</SucessConditions>
+		<FailureConditions>
+			<!--<Property name="[SELF](needToCope)" operator="=" value="False" />--> <!-- can drop goal if we dont need to cope anymore  -->
+		</FailureConditions>
+	</ActivePursuitGoal>	
+
+	<ActivePursuitGoal name="LaughOff([bully])">
+		<PreConditions>
+			<Property name="[SELF](copingStrategy)" operator="=" value="laughoff" />
+			<Property name="[bully](role)" operator="=" value="Bully" /> <!-- can only stand up against a Bully  -->
+			<Property name="[SELF](role)" operator="=" value="Victim" /> <!-- can only stand up if you're a victim  -->
+			<Property name="[SELF](needToCope)" operator="=" value="True" /> <!-- can only stand up if you got a reason for it  -->
+			<RecentEvent occurred="False" subject="[SELF]" action="Question" target="[bully]" parameters="laughoff"/>
+			<RecentEvent occurred="False" subject="[SELF]" action="fail" target="LaughOff" parameters="[bully]" />
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" action="Question" subject="[SELF]" target="[bully]" parameters="laughoff"  />
+		</SucessConditions>
+		<FailureConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[bully]" parameters="insult"/>
+			<RecentEvent occurred="True" subject="[SELF]" action="cry"/>
+			<!--<Property name="[SELF](needToCope)" operator="=" value="False" />--> <!-- can drop goal if we dont need to cope anymore  -->
+		</FailureConditions>
+	</ActivePursuitGoal>	
+	
+	<ActivePursuitGoal name="FightBack([target])">
+		<PreConditions>
+			<Property name="[SELF](copingStrategy)" operator="=" value="fightback" />
+			<Property name="[target](role)" operator="=" value="Bully" /> <!-- can only fight against a Bully  -->
+			<Property name="[SELF](needToCope)" operator="=" value="True" /> <!-- can only fight back if you got a reason for it  -->
+			<!--<RecentEvent occurred="False" subject="[SELF]" action="cry"/>-->
+			<RecentEvent occurred="False" subject="[SELF]" action="fail" target="FightBack" parameters="[target]" /> 
+			<!--<EmotionCondition emotion="Anger" min-intensity="1" target="[target]" />-->                  <!--only respond this way if angry with the bully -->
+			<!--<Property name="[SELF](hurt)" operator="=" value="False" />-->
+			<Property name="[target](hurt)" operator="=" value="False" />
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[target]" parameters="fightstart"/>
+			<!--<RecentEvent occurred="True" subject="[SELF]" action="attack" target="[target]" />-->
+			<Property name="[target](hurt)" operator="=" value="True" />
+		</SucessConditions>
+		<FailureConditions>
+			<Property name="[SELF](hurt)" operator="=" value="True" />
+		</FailureConditions>
+		<ExpectedIntegrity value="3" />
+		<ExpectedAffiliation value="0" />
+		<ExpectedEnergy value="-2" />
+	</ActivePursuitGoal>
+	
+	<ActivePursuitGoal name="Insult([target])">
+		<PreConditions>
+			<Property name="[SELF](copingStrategy)" operator="=" value="insult" />
+			<Property name="[target](role)" operator="=" value="Bully" /> <!-- can only insult a Bully  -->
+			<Property name="[SELF](needToCope)" operator="=" value="True" /> <!-- can only insult if you got a reason for it  -->
+			<!--<EmotionCondition emotion="Anger" min-intensity="1" target="[target]" />-->  <!--only respond this way if angry  -->
+			<RecentEvent occurred="False" subject="[SELF]" target="[target]" action="SpeechAct" parameters="insult"/>
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" target="[target]" action="SpeechAct" parameters="insult"/>
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>
+	</ActivePursuitGoal>
+	
+	<ActivePursuitGoal name="InsultBack([target])">
+		<PreConditions>
+			<Property name="[SELF](copingStrategy)" operator="=" value="insult" />
+			<Property name="[target](role)" operator="=" value="Bully" /> <!-- can only insult a Bully  -->
+			<Property name="[SELF](needToCope)" operator="=" value="True" /> <!-- can only insult if you got a reason for it  -->
+			<!--<EmotionCondition emotion="Anger" min-intensity="1" target="[target]" />-->  <!--only respond this way if angry  -->
+			<RecentEvent occurred="True" subject="[target]" target="[SELF]" action="SpeechAct" parameters="insult"/>
+			<RecentEvent occurred="False" subject="[SELF]" target="[target]" action="SpeechAct" parameters="insultinsultback"/>
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" target="[target]" action="SpeechAct" parameters="insultinsultback"/>
+		</SucessConditions>
+	</ActivePursuitGoal>	
+	
+	<ActivePursuitGoal name="FightSuccess([target])">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="attack" target="[target]"/>
+			<Property name="[target](hurt)" operator="=" value="True" />
+			<RecentEvent occurred="False" subject="[SELF]" action="Question" target="[target]" parameters="victimfightsuccess"/>
+			<Property name="[SELF](hurt)" operator="=" value="False" />
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="Question" target="[target]" parameters="victimfightsuccess"/>
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>
+	</ActivePursuitGoal>
+	
+	<!-- Fighting Goal -->
+	<ActivePursuitGoal name="Fight([target])">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[target]" action="attack" target="[SELF]"/>
+			<Property name="[SELF](hurt)" operator="=" value="False" />
+			<Property name="[target](hurt)" operator="=" value="False" />
+			<RecentEvent occurred="False" subject="[SELF]" action="fail" target="Fight" parameters="[target]" />
+		</PreConditions>
+		<SucessConditions>
+			<Property name="[target](hurt)" operator="=" value="True" />
+		</SucessConditions>
+		<FailureConditions>
+			<Property name="[SELF](hurt)" operator="=" value="True" />
+		</FailureConditions>
+	</ActivePursuitGoal>
+		
+	<!-- Bully's goal of gloating with the victim when he successfully wins a fight back -->
+	<ActivePursuitGoal name="GloatVictory([target])">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="attack" target="[target]"/>
+			<RecentEvent occurred="True" subject="[target]" action="attack" target="[SELF]"/>
+			<Property name="[target](hurt)" operator="=" value="True" />
+			<Property name="[SELF](hurt)" operator="=" value="False" />
+			<RecentEvent occurred="False" subject="[SELF]" action="SpeechAct" target="[target]" parameters="gloatvictory"/>
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[target]" parameters="gloatvictory"/>
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>
+	</ActivePursuitGoal>
+	
+	<!-- Goals used in particular episodes -->
+	
+	<!-- Episode B24: Make New Friend -->
+	
+	<!-- Defender inviting his new friend -->
+	<ActivePursuitGoal name="HelpInvite([target])">
+		<PreConditions>
+			<Property name="[SELF](friend,[target])" operator="=" value="True" />
+			<RecentEvent occurred="True" subject="[SELF]" action="look-at" target="[target]"/>
+			<RecentEvent occurred="False" subject="[SELF]" action="Question" target="[target]" parameters="helpinvitation"/>
+			<PastEvent occurred="False" subject="[SELF]" action="Question" target="[target]" parameters="helpinvitation"/>
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[target]" action="Reply" target="[SELF]" parameters="helpinvitation,positiveanswer" />
+		</SucessConditions>
+		<FailureConditions>
+			<RecentEvent occurred="True" subject="[target]" action="Reply" target="[SELF]" parameters="helpinvitation,negativeanswer" />
+		</FailureConditions>
+	</ActivePursuitGoal>
+	
+	<!-- Episode B04 - On the Way to School -->
+
+	<!-- Bully's goal of deceiving the Victim -->
+	<ActivePursuitGoal name="DeceiveVictim([target])"> <!-- trying to fool the victim by being nice to him and later revealing that it was not serious-->
+		<PreConditions>
+			<Property name="[target](role)" operator="=" value="Victim" /> <!-- target of the deception has to be victim -->
+			<RecentEvent occurred="False" subject="[SELF]" action="SpeechAct" target="[target]" parameters="insult"  /> <!-- deception doesn't make sense if victim was recently insulted -->
+			<RecentEvent occurred="False" subject="[SELF]" action="Question" target="[target]" parameters="deception"  /> <!-- deception doesn't make sense if it already happened -->
+			<Property name="Episode(name)" operator="=" value="B04" /> <!-- this is probably cheating -->
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[target]" parameters="deceptionreveal" /> <!-- goal succeeds, if victim believes deception and I reveal the deception -->
+		</SucessConditions>
+		<FailureConditions>
+			<RecentEvent occurred="True" subject="[target]" action="Reply" target="[SELF]" parameters="deception,negativeanswer" /> <!-- goal fails, if victim doesn't believe the deception -->
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[target]" parameters="insult"  /> <!-- goal fails if the victim is insulted -->
+		</FailureConditions>
+	</ActivePursuitGoal>
+	
+	<!-- Episode B06 - Party Invitation  -->
+	
+	<!-- If someone invites me to a party, I want to be there -->
+	<ActivePursuitGoal name="AcceptInvitation([friend])">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[friend]" action="Question" target="[SELF]" parameters="partyinvitation"/>
+			<RecentEvent occurred="False" subject="[SELF]" action="Reply" target="[friend]" parameters="partyinvitation,positiveanswer"/>
+			<RecentEvent occurred="False" subject="[SELF]" action="Reply" target="[friend]" parameters="partyinvitation,negativeanswer"/>
+			<RecentEvent occurred="False" subject="[friend]" action="Reply" target="[SELF]" parameters="joinparty,negativeanswer"/>
+			<RecentEvent occurred="False" subject="[friend]" action="Reply" target="[SELF]" parameters="joinparty,positiveanswer"/>
+			<RecentEvent occurred="False" subject="[SELF]" action="activate" target="AcceptInvitation" parameters="[friend]"/>
+		</PreConditions>
+		<SucessConditions>
+			<Property name="InvitedToParty([friend],[SELF])" operator="=" value="True"/>
+		</SucessConditions>
+		<FailureConditions>
+			<Property name="InvitedToParty([friend],[SELF])" operator="=" value="False"/>
+			<!--<RecentEvent occurred="True" subject="[friend]" action="Reply" target="[SELF]" parameters="joinparty,negativeanswer"/>-->
+		</FailureConditions>
+	</ActivePursuitGoal>
+	
+	<!-- ByStander goal If I'm giving a party, I want to invite my friends -->
+	<ActivePursuitGoal name="InviteToParty([party],[friend])">
+		<PreConditions>
+			<Property name="[SELF](party)" operator="=" value="[party]"/> <!-- I'm giving a party -->
+			<Property name="Like([SELF],[friend])" operator="GreaterEqual" value="2"/> <!-- I must like the persons I invite -->
+			<Property name="[friend]" operator="!=" value="[SELF]" />
+			<RecentEvent occurred="True" subject="[SELF]" action="look-at" target="[friend]"/> <!-- I see one of my friends -->
+			<RecentEvent occurred="False" subject="[SELF]" action="Question" target="[friend]" parameters="partyinvitation"/> <!-- haven't invited him yet -->
+		</PreConditions>
+		<SucessConditions>
+			<Property name="InvitedToParty([SELF],[friend])" operator="=" value="True"/> <!-- I want him to become invited -->
+		</SucessConditions>
+		<FailureConditions>
+			<!-- the goal fails if he rejects my invitation -->
+			<RecentEvent occurred="True" subject="[friend]" action="Reply" target="[SELF]" parameters="partyinvitation,negativeanswer"/>
+			<!-- or if I don't like him anymore -->
+			<Property name="Like([SELF],[friend])" operator="LesserThan" value="2"/>
+		</FailureConditions>
+	</ActivePursuitGoal>
+	
+	<!-- ByStander's goal of canceling a party invitation if he stops liking the invited person -->
+	<ActivePursuitGoal name="CancelPartyInvitation([party],[notfriend])">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="Question" target="[notfriend]" parameters="partyinvitation"/>
+			<Property name="InvitedToParty([SELF],[notfriend])" operator="=" value="True"/>
+			<Property name="[SELF](party)" operator="=" value="[party]"/>
+			<Property name="Like([SELF],[notfriend])" operator="LesserThan" value="2"/>
+		</PreConditions>
+		<SucessConditions>
+			<Property name="InvitedToParty([SELF],[notfriend])" operator="=" value="False"/>
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>
+	</ActivePursuitGoal>
+	
+	<!-- ByStander's goal of refusing a party to someone he does not like -->
+	<ActivePursuitGoal name="RefuseParty([party],[notfriend])">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[notfriend]" action="Question" target="[SELF]" parameters="joinparty"/>
+			<RecentEvent occurred="False" subject="[SELF]" action="Reply" target="[notfriend]" parameters="joinparty,negativeanswer"/>
+			<Property name="[SELF](party)" operator="=" value="[party]"/>
+			<Property name="Like([SELF],[notfriend])" operator="LesserThan" value="2"/>
+			<Property name="InvitedToParty([SELF],[notfriend])" operator="!=" value="False"/>
+		</PreConditions>
+		<SucessConditions>
+			<Property name="InvitedToParty([SELF],[notfriend])" operator="=" value="False"/>
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>
+	</ActivePursuitGoal>
+	
+	<!-- Bully's goal of sabotaging the Victim's invitation to the party -->
+	<ActivePursuitGoal name="SabotagePartyInvitation([inviter],[notfriend])">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[inviter]" action="Question" target="[notfriend]" parameters="partyinvitation"/>
+			<Property name="Like([SELF],[notfriend])" operator="LesserThan" value="-4"/>
+			<Property name="InvitedToParty([inviter],[notfriend])" operator="!=" value="False"/>
+			<RecentEvent occurred="False" subject="[SELF]" action="activate" target="SabotagePartyInvitation" parameters="[inviter],[notfriend]"/>
+			<!--<Property name="GF(SabotagePartyInvitation,[inviter],[notfriend])" operator="!=" value="True"/>-->
+		</PreConditions>
+		<SucessConditions>
+			<Property name="InvitedToParty([inviter],[notfriend])" operator="=" value="False"/>
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>
+	</ActivePursuitGoal>
+	
+	<!-- Episode B07: The Books in the classroom -->
+	
+	<ActivePursuitGoal name="Bully([target])">
+		<PreConditions>
+			<Property name="[target](strength)" operator="LesserThan" value="[SELF](strength)"/>
+			<RecentEvent occurred="False" subject="[SELF]" action="attack" target="[target]"/>
+			<RecentEvent occurred="True" subject="[SELF]" action="swipe" target="book" />
+			<RecentEvent occurred="True" subject="[target]" action="pick-from-floor" target="book"/>
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="attack" target="[target]"/>
+		</SucessConditions>
+	</ActivePursuitGoal>
+
+	<ActivePursuitGoal name="TeaseVictim([target])">
+		<PreConditions>
+			<Property name="[target](role)" operator="=" value="Victim"/>
+			<Property name="[target](strength)" operator="LesserThan" value="[SELF](strength)" />
+			<RecentEvent occurred="False" subject="[SELF]" action="SpeechAct" target="[target]" parameters="tease" />
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[target]" parameters="tease" />
+		</SucessConditions>
+	</ActivePursuitGoal>
+
+	<ActivePursuitGoal name="TeaseDefend([target])">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[target]" action="SpeechAct" target="[SELF]" parameters="tease" />
+			<RecentEvent occurred="False" subject="[SELF]" action="Question" target="[target]" parameters="teasedefend" />
+			<Property name="[SELF](copingStrategy)" operator="!=" value="ignore" />
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="Question" target="[target]" parameters="teasedefend" />
+		</SucessConditions>
+	</ActivePursuitGoal>
+
+	<ActivePursuitGoal name="PickFromFloor([target])">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="Luke" action="swipe" target="[target]"/>
+			<Property name="[target](owner)" operator="=" value="[SELF]"/>
+			<RecentEvent occurred="False" subject="[SELF]" action="pick-from-floor" target="[target]"/>
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="pick-from-floor" target="[target]"/>
+		</SucessConditions>
+	</ActivePursuitGoal>
+
+	<ActivePursuitGoal name="BullyObject([target])">
+		<PreConditions>
+			<Property name="[target](type)" operator="=" value="object"/>
+			<Property name="[target](owner)" operator="=" value="[victim]"/>
+			<Property name="[victim]" operator="!=" value="[SELF]"/>
+			<RecentEvent occurred="True" subject="[SELF]" action="look-at" target="[victim]"/>
+			<RecentEvent occurred="False" subject="[SELF]" action="swipe" target="[target]"/>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[victim]" parameters="tease"/>
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="swipe" target="[target]"/>				
+		</SucessConditions>
+	</ActivePursuitGoal>
+	
+	
+	<!-- Episode B08: Stealing a Chocolate Bar -->
+	
+	<!-- Victim's goal of claiming back the chocolate bar -->
+	<ActivePursuitGoal name="ClaimBackItem([item],[thief])">
+		<PreConditions>
+			<Property name="[item](owner)" operator="=" value="[SELF]" /> 
+			<RecentEvent subject="[thief]" action="steal" target="[SELF]" parameters="[item]"  /> 
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[thief]" target="[SELF]" action="Reply" parameters="itemclaimback,positiveanswer" /> 
+		</SucessConditions>
+		<FailureConditions>
+			<RecentEvent occurred="True" subject="[thief]" target="[SELF]" action="Reply" parameters="itemclaimback,negativeanswer" /> 
+		</FailureConditions>
+	</ActivePursuitGoal>
+
+	<!-- Victim's goal of complaining about the destroyed item (in this episode, his chocolate bar) -->
+	<ActivePursuitGoal name="ItemDestroyedComplain([destroyer])">	
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[destroyer]" target="[SELF]" action="SpeechAct" parameters="itemdestroyed" /> 				
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" target="[destroyer]" action="SpeechAct" parameters="itemdestroyedcomplain" /> 				
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>	
+	</ActivePursuitGoal>	
+	
+	<!-- Bully's goal of claiming the item -->
+	<ActivePursuitGoal name="ClaimItem([item],[owner])">
+		<PreConditions>
+			<Property name="[item](type)" operator="=" value="object" />
+			<Property name="[owner](role)" operator="=" value="Victim" />
+			<Property name="[item](owner)" operator="=" value="[owner]" />
+			<Property name="Like([SELF],[owner])" operator="LesserThan" value="-2" /> <!-- choose only if I dont like the other -->			 
+			<RecentEvent occurred="False" subject="[SELF]" target="[owner]" action="Question" parameters="itemclaim" /> 
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[owner]" target="[SELF]" action="Reply" parameters="itemclaim,positiveanswer" /> 
+		</SucessConditions>
+		<FailureConditions>
+			<RecentEvent occurred="True" subject="[owner]" target="[SELF]" action="Reply" parameters="itemclaim,negativeanswer" /> 
+		</FailureConditions>
+		<ExpectedIntegrity value="-1.5" />
+		<ExpectedEnergy value="1" />
+		<ExpectedAffiliation value="-2" />
+	</ActivePursuitGoal>
+
+	<!-- Bully's goal of stealing the item (in this case the chocolate bar) -->
+	<ActivePursuitGoal name="StealItem([item],[owner])">
+		<PreConditions>
+			<Property name="[item](type)" operator="=" value="object" />
+			<Property name="[owner](role)" operator="=" value="Victim" />
+			<Property name="[item](owner)" operator="=" value="[owner]" />
+			<Property name="[SELF](hasItem,[item])" operator="!=" value="True" />
+			<Property name="Like([SELF],[owner])" operator="LesserThan" value="-4" /><!-- choose only if I dont like the other -->			 
+			<RecentEvent occurred="True" subject="[owner]" target="[SELF]" action="Reply" parameters="itemclaim,negativeanswer" /> 
+		</PreConditions>
+		<SucessConditions>
+				<!--<Property name="[SELF](hasItem,[item])" operator="=" value="True" />-->
+				<RecentEvent occurred="True" subject="[SELF]" target="[owner]" action="steal"  parameters="[item]" />
+		</SucessConditions>
+		<FailureConditions> 
+		</FailureConditions>	
+	</ActivePursuitGoal>
+
+	<!-- Bully's goal of destroying the stolen item -->
+	<ActivePursuitGoal name="DestroyItem([item],[owner])">	
+		<PreConditions>
+			<Property name="[item](type)" operator="=" value="object" />
+			<Property name="[owner](role)" operator="=" value="Victim" />
+			<Property name="[item](owner)" operator="=" value="[owner]" />			 
+			<Property name="[SELF](hasItem,[item])" operator="=" value="True" />
+			<Property name="Like([SELF],[owner])" operator="LesserThan" value="-4" /> <!-- choose only if I dont like the other -->			 
+			<RecentEvent occurred="True" subject="[SELF]" target="[owner]" action="Reply" parameters="itemclaimback,negativeanswer" /> 		
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" target="[owner]" action="SpeechAct" parameters="itemdestroyed" /> 				
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>	
+	</ActivePursuitGoal>
+
+	
+	<!-- Episode B11: On the Way Home -->
+	<!-- Victim Goals -->	
+	<!-- Ask target(s) not to throw their waterbomb  -->
+	<ActivePursuitGoal name="AskNotToThrowObject([item],[target])">	
+		<PreConditions>
+			<Property name="[item](type)" operator="=" value="object" />
+			<Property name="[item](owner)" operator="=" value="[target]" />
+			<Property name="[target](hasItem,[item])" operator="=" value="True" />
+			<Property name="[item](throwable)" operator="=" value="True" />
+			<RecentEvent occurred="False" subject="[SELF]" target="[target]" action="SpeechAct" parameters="confrontationbeg" /> 				
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" target="[target]" action="SpeechAct" parameters="confrontationbeg" /> 				
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>	
+	</ActivePursuitGoal>	
+	
+	<!-- Complain to target(s) that he's got hit-->
+	<ActivePursuitGoal name="GotHitComplain([target])">	
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[target]" target="[SELF]" action="throw" parameters="[item]" />
+			<RecentEvent occurred="True" subject="[target]" target="[SELF]" action="SpeechAct" parameters="bullywithobject" />
+			<RecentEvent occurred="False" subject="[SELF]" target="[target]" action="SpeechAct" parameters="bullywithobjectnegativeanswer" />
+			<RecentEvent occurred="False" subject="[SELF]" target="[target]" action="SpeechAct" parameters="bullywithobjectpositiveanswer" /> 			 			 				
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" target="[target]" action="SpeechAct" parameters="bullywithobjectnegativeanswer,[item]" />				
+		</SucessConditions>
+		<FailureConditions>
+			<RecentEvent occurred="True" subject="[SELF]" target="[target]" action="SpeechAct" parameters="bullywithobjectpositiveanswer,[item]" /> 
+		</FailureConditions>	
+	</ActivePursuitGoal>
+	
+	<!-- Warn the victim he is going to throw the object  -->
+	<ActivePursuitGoal name="WarnVictimBeforeThrowingObject([item],[target])">	
+		<PreConditions>
+			<Property name="[item](type)" operator="=" value="object" />
+			<Property name="[item](owner)" operator="=" value="[SELF]" />			
+			<Property name="[item](throwable)" operator="=" value="True" />
+			<Property name="[SELF](hasItem,[item])" operator="=" value="True" />
+			<Property name="Like([SELF],[target])" operator="LesserThan" value="-2" />
+			<RecentEvent occurred="True" subject="[target]" target="[SELF]" action="SpeechAct" parameters="confrontationbeg" /> 				
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" target="[target]" action="SpeechAct" parameters="bullywithobject" />
+			<RecentEvent occurred="True" subject="[SELF]" target="[target]" action="throw" parameters="[item]" />				
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>	
+	</ActivePursuitGoal>
+	
+	
+	<!-- Episode B13: Very Physical -->
+	<!-- PR BULLY -->
+	<!-- PR 061109 the following goal was in the group of goals commented out, don't know why: 
+	I am trying to use it in a modified version that uses kicking -->
+	<!-- João Dias: I've made some changes to PR's original goal to be conformant to the rest of the 
+           goal definitions -->
+	<ActivePursuitGoal name="Attack([target])">
+		<!-- João Dias: changed the goal's name from Bully to attack (there is already a bully goal with different
+			  preconditions used in the episode B07) -->
+		<PreConditions>
+			<Property name="[target](strength)" operator="LesserThan" value="[SELF](strength)" />
+			<!-- 061123 added following prec. to avoid that bully kicks bystanders -->	
+			<Property name="Like([SELF],[target])" operator="LesserThan" value="0" />	
+			<!-- PR 061124 next prec. avoids that bully attacks more than once -->
+			<RecentEvent occurred="False" subject="[SELF]" target="[target]" action="attack" />
+		</PreConditions>
+		<SucessConditions>
+		<!-- PR 061109 changed "push" into "kick" -->
+		<!-- João Dias changed the "kick" into a more general "attack" -->
+			<RecentEvent occurred="True" subject="[SELF]" target="[target]" action="attack" />
+		</SucessConditions>
+		<ExpectedAffiliation value="1" />
+		<ExpectedIntegrity value="-2" />
+		<ExpectedEnergy value="-2" />
+	</ActivePursuitGoal>
+
+	<!-- PR ORDER TO LEAVE -->
+	<!-- PR 061109 the following goal has been created by copying and modifying the Bully() goal -->
+	<ActivePursuitGoal name="OrderToLeave([target])">
+		<PreConditions>
+			<Property name="[target](strength)" operator="LesserThan" value="[SELF](strength)" />
+			<!-- PR 061123 added following prec. to avoid that bully kicks bystanders -->	
+			<Property name="Like([SELF],[target])" operator="LesserThan" value="0" />
+			<Property name="[SELF](hurt)" operator="=" value="False" />
+			<RecentEvent occurred="False" subject="[SELF]" target="[target]" action="Question" parameters="confrontationorder" />
+		</PreConditions>
+		<SucessConditions>
+			<!-- PR 061124 next condition suggested by Michael -->
+			<RecentEvent occurred="True" subject="[target]" target="[SELF]" action="Reply" parameters="confrontationorder,positiveanswer" />
+		</SucessConditions>
+		<FailureConditions>
+			<!-- PR 061124 next condition suggested by Michael -->
+			<RecentEvent occurred="True" subject="[target]" target="[SELF]" action="Reply" parameters="confrontationorder,negativeanswer" />
+			<Property name="[SELF](hurt)" operator="=" value="True" />
+		</FailureConditions>
+	</ActivePursuitGoal>
+	
+	<!-- PR ASK PITY -->
+	<!--PR 061123 created new goal for Victim out of fightback-->
+	<ActivePursuitGoal name="AskPity([target])">
+		<PreConditions>
+			<!-- PR 061123 !!! THERE SHOULD BE A WAY TO CATEGORIZE AND PARAMETERIZE EVENTS: E.G. NOT ONLY KICKING, BUT A CLASS OF SIMILAR ACTIONS LIKE PUSHING, BEATING, ETC., OTHERWISE THERE SHOULD BE A DISTINCT GOAL FOR EACH OF SUCH ACTIONS !!! -->
+			<RecentEvent occurred="True" subject="[target]" target="[SELF]" action="attack" />
+			<Property name="[SELF](hurt)" operator="=" value="True" />
+			<RecentEvent occurred="False" subject="[SELF]" target="[target]" action="SpeechAct" parameters="confrontationbeg" />
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" target="[target]" action="SpeechAct" parameters="confrontationbeg" />
+		</SucessConditions>
+	</ActivePursuitGoal>
+
+	<!-- PR WALK AWAY_PR-->
+	<!--PR 061123 added following goal for letting bully go away after gloating victory-->
+	<ActivePursuitGoal name="WalkAwayVictim([victim])">
+		<PreConditions>
+			<Property name="[victim](role)" operator="=" value="Victim" /> <!-- can only walk away from the victim  -->
+			<Property name="[SELF](role)" operator="=" value="Bully" /> <!-- can only walk away if you're a bully  -->
+			<RecentEvent occurred="False" subject="[SELF]" target="[victim]" action="walkAwayVictim" /> <!--PR 061123 bully goes away only if he didn't already go away, of course  ???BUT WHY IT DOESN'T WORK??? -->
+			<RecentEvent occurred="True" subject="[SELF]" target="[victim]" action="SpeechAct" parameters="gloatvictory" /> <!--PR 061123 bully goes away after he's gloated victory against bully -->
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="walkAwayVictim" target="[victim]"  />
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>
+	</ActivePursuitGoal>	
+
+	<!-- PR GLOAT VICTORY -->
+	<!--PR 061123 recovered and slightly changed following goal that was commented out -->
+	<ActivePursuitGoal name="GloatVictory([target])">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[target]" target="[SELF]" action="Reply" parameters="confrontationorder,positiveanswer" />
+			<RecentEvent occurred="False" subject="[SELF]" target="[target]" action="SpeechAct" parameters="gloatvictory" />
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" target="[target]" action="SpeechAct" parameters="gloatvictory" />
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>
+	</ActivePursuitGoal>
+	
+	<!-- Episode B14: The Library -->
+	<!-- Bully's goal of annoying the victim in the library -->
+	<ActivePursuitGoal name="AnnoyVictim([target])">
+		<PreConditions>
+			<Property name="[target](type)" operator="=" value="character"/>
+			<Property name="[target]" operator="!=" value="[SELF]"/>
+			<Property name="Like([SELF],[target])" operator="LesserThan" value="0"/>
+			<Property name="[target](annoyed)" operator="!=" value="True"/>
+			<RecentEvent occurred="False" subject="[SELF]" action="fail" target="AnnoyVictim" parameters="[target]" />
+			<!--<Property name="GF(AnnoyVictim,[target])" operator="!=" value="True"/> -->
+		</PreConditions>
+		<SucessConditions>
+			<Property name="[target](annoyed)" operator="=" value="True"/>
+		</SucessConditions>
+	</ActivePursuitGoal>
+	
+	<!-- Bully's goal of leaving if he does not succeed in annoying the victim -->
+	<ActivePursuitGoal name="LeaveFrom([target])">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="fail" target="AnnoyVictim" parameters="[target]" />
+			<!--<Property name="GF(AnnoyVictim,[target])" operator="=" value="True"/>-->
+			<RecentEvent occurred="False" subject="[SELF]" action="SpeechAct" target="[target]" parameters="giveupandleave" />
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[target]" parameters="giveupandleave" />
+		</SucessConditions>
+	</ActivePursuitGoal>
+	
+	<!-- Episode B16: After Lunch -->
+	<!-- PR AGGRESSIVE QUESTIONING -->
+	<!-- PR 061216 the following goal has been created by copying and modifying the OrderToLeave() goal -->
+	<ActivePursuitGoal name="AggressiveQuestion([target])">
+		<PreConditions>
+			<Property name="[target](strength)" operator="LesserThan" value="[SELF](strength)" />
+			<!-- PR 061123 added following prec. to avoid that bully kicks bystanders -->	
+			<Property name="Like([SELF],[target])" operator="LesserThan" value="0" />	
+			<RecentEvent occurred="False" subject="[target]" target="[SELF]" action="Reply" parameters="confrontationagressivequestionning,positiveanswer" />
+		</PreConditions>
+		<SucessConditions>
+			<!-- PR 061124 next condition suggested by Michael -->
+			<RecentEvent occurred="True" subject="[target]" target="[SELF]" action="Reply" parameters="confrontationagressivequestionning,positiveanswer" />
+		</SucessConditions>
+		<FailureConditions>
+			<!-- PR 061124 next condition suggested by Michael -->
+			<RecentEvent occurred="True" subject="[target]" target="[SELF]" action="Reply" parameters="confrontationagressivequestionning,negativeanswer" />
+		</FailureConditions>
+	</ActivePursuitGoal>
+	
+	<!-- Episode B22: Hallway - Verbal -->
+	
+	<!-- Below goal added by Adrian Gordon for Episode B22 -->
+	<ActivePursuitGoal name="respondtohumiliationnegativereply([target])"> <!-- Respond negatively to humiliation by bully-->
+		<PreConditions>
+			<Property name="[target](role)" operator="=" value="Bully" /> <!-- target of the response has to be bully -->
+			<RecentEvent occurred="True" subject="[target]" action="SpeechAct" target="[SELF]" parameters="humiliate"  /> <!-- bully has attempted to humiliate the victim-->
+			<RecentEvent occurred="False" subject="[SELF]" action="SpeechAct" target="[target]" parameters="humiliatenegativereply" /> <!-- don't reply negatively to the humiliation if you have already done so -->
+			<RecentEvent occurred="False" subject="[SELF]" action="SpeechAct" target="[target]" parameters="humiliatepositivereply"  />
+			<EmotionCondition emotion="Anger" min-intensity="1" target="[target]" />                  <!--only respond this way if angry with the bully -->
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[target]" parameters="humiliatenegativereply" /> <!-- goal succeeds if I respond negatively to (i.e. refute) the humiliation -->
+		</SucessConditions>
+		<FailureConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[target]" parameters="humiliatepositivereply"  /> <!-- fail if  victim has already replied positively-->
+		</FailureConditions>
+	</ActivePursuitGoal>
+
+<!-- Below goal added by Adrian Gordon for Episode B22 -->
+	<ActivePursuitGoal name="respondtohumiliationpositivereply([target])"> <!-- Respond positively to humiliation by bully-->
+		<PreConditions>
+			<Property name="[target](role)" operator="=" value="Bully" /> <!-- target of the response has to be bully -->
+			<RecentEvent occurred="True" subject="[target]" action="SpeechAct" target="[SELF]" parameters="humiliate"  /> <!-- bully has attempted to humiliate the victim-->
+			<RecentEvent occurred="False" subject="[SELF]" action="SpeechAct" target="[target]" parameters="humiliatepositivereply" /> <!--don't reply positively to the humiliation if you have already done so  -->
+			<EmotionCondition emotion="Anger" active="False"  min-intensity="1" target="[target]" />     <!--only respond this way if not especially angry with the bully -->
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[target]" parameters="humiliatepositivereply" /> <!-- goal succeeds if I respond positively to (i.e. accept) the humiliation -->
+		</SucessConditions>
+		<FailureConditions>
+		    <RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[target]" parameters="humiliatenegativereply"  /> <!-- fail if  victim has already replied negatively-->
+		</FailureConditions>
+	</ActivePursuitGoal>
+
+<!-- Below goal added by Adrian Gordon for Episode B22 -->
+	<ActivePursuitGoal name="respondtohumiliationthreatpositivereply([target])"> <!-- Respond positively to a humiliation threat issued by a bully - i.e. accept the original humiliation-->
+		<PreConditions>
+			<Property name="[target](role)" operator="=" value="Bully" /> <!-- target of the response has to be bully -->
+			<RecentEvent occurred="True" subject="[target]" action="SpeechAct" target="[SELF]" parameters="humiliatethreat"  /> <!-- bully has threatened the victim after humiliation him/her-->
+			<RecentEvent occurred="False" subject="[SELF]" action="SpeechAct" target="[target]" parameters="humiliatepositivereply" />
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[target]" parameters="humiliatepositivereply" /> <!-- goal succeeds if I respond positively to (i.e. accept) the threat-->
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>
+	</ActivePursuitGoal>
+
+<!-- Bully Goals -->
+<!-- Below goal added by Adrian Gordon for Episode B22 -->
+	<ActivePursuitGoal name="Humiliate([target])"> <!-- Humiliate the target-->
+		<PreConditions>
+			<Property name="[target](role)" operator="=" value="Victim" /> <!-- target of the humiliation has to be victim -->
+			<RecentEvent occurred="False" subject="[SELF]" action="SpeechAct" target="[target]" parameters="humiliate"  /> <!-- don't attempt to humiliate someone who was recently humiliated already-->
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[target]" parameters="humiliate" /> <!-- goal succeeds if I say something humiliating to the victim -->
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>
+	</ActivePursuitGoal>
+
+
+<!-- Below goal added by Adrian Gordon for Episode B22 -->
+	<ActivePursuitGoal name="HumiliateThreat([target])"> <!-- Threaten the victim if the victim does not give in to humiliation-->
+		<PreConditions>
+			<Property name="[target](role)" operator="=" value="Victim" /> <!-- target of the humiliation has to be victim -->
+			<RecentEvent occurred="True" subject="[target]" action="SpeechAct"  parameters="humiliatenegativereply"  /> <!-- victim refused to be humiliated-->
+			<RecentEvent occurred="False" subject="[SELF]" action="SpeechAct" target="[target]" parameters="humiliatethreat"  /> <!-- don't attempt to threaten someone who was recently threatened already-->
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[target]" parameters="humiliatethreat" /> <!-- goal succeeds if I threaten the victim who refused to be humiliated -->
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>
+	</ActivePursuitGoal>
+
+<!-- Below goal added by Adrian Gordon for Episode B22 -->
+	<ActivePursuitGoal name="HumiliateVictory([target])"> <!-- declare victory if the victim gives in to humiliation-->
+		<PreConditions>
+			<Property name="[target](role)" operator="=" value="Victim" /> <!-- target of the humiliation has to be victim -->
+			<RecentEvent occurred="True" subject="[target]" action="SpeechAct"  parameters="humiliatepositivereply"  /> <!-- victim accepted humiliation-->
+			<RecentEvent occurred="False" subject="[SELF]" action="SpeechAct" target="[target]" parameters="humiliatevictory"  /> <!-- don't declare humiliation victory if you have already done so-->
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[target]" parameters="humiliatevictory" /> <!-- goal succeeds if I declare victory over a humiliated victim -->
+		</SucessConditions>
+		<FailureConditions>
+		</FailureConditions>
+	</ActivePursuitGoal>
+	
+	<!-- G23 goals -->
+
+	<ActivePursuitGoal name="Follow([victim])">
+		<PreConditions>
+			<Property name="[victim](role)" operator="=" value="Victim"/>
+			<RecentEvent occurred="False" subject="[SELF]" action="SpeechAct" target="[victim]" parameters="follow" />
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[victim]" parameters="follow" />
+		</SucessConditions>
+	</ActivePursuitGoal>
+
+	<ActivePursuitGoal name="FollowAskWhy([follower])">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[follower]" action="SpeechAct" target="[SELF]" parameters="follow" />
+			<RecentEvent occurred="False" subject="[SELF]" action="Question" target="[follower]" parameters="followaskwhy" />
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="Question" target="[follower]" parameters="followaskwhy" />
+		</SucessConditions>
+	</ActivePursuitGoal>
+
+	<ActivePursuitGoal name="FollowDontCare([follower])">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[follower]" action="Reply" target="[SELF]" parameters="followaskwhy,negativeanswer" />
+			<RecentEvent occurred="False" subject="[SELF]" action="SpeechAct" target="[follower]" parameters="followdontcare" />
+			<RecentEvent occurred="False" subject="[SELF]" action="SpeechAct" target="[follower]" parameters="followleave" />
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[follower]" parameters="followdontcare" />
+		</SucessConditions>
+		<FailureConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[follower]" parameters="followleave" />
+		</FailureConditions>	
+	</ActivePursuitGoal>
+
+	<ActivePursuitGoal name="FollowLeave([follower])">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[follower]" action="Reply" target="[SELF]" parameters="followaskwhy,negativeanswer" />
+			<RecentEvent occurred="False" subject="[SELF]" action="SpeechAct" target="[follower]" parameters="followleave" />
+			<RecentEvent occurred="False" subject="[SELF]" action="SpeechAct" target="[follower]" parameters="followdontcare" />
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[follower]" parameters="followleave" />
+		</SucessConditions>
+		<FailureConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[follower]" parameters="followdontcare" />
+		</FailureConditions>	
+	</ActivePursuitGoal>
+
+	<ActivePursuitGoal name="FollowLeaveFollow([victim])">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[victim]" action="SpeechAct" target="[SELF]" parameters="followleave" />
+			<RecentEvent occurred="False" subject="[SELF]" action="SpeechAct" target="[victim]" parameters="followleavefollow" />
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[victim]" parameters="followleavefollow" />
+		</SucessConditions>
+	</ActivePursuitGoal>
+	
+	<!-- G09 goals -->
+
+
+	<!-- Gossiping about the victim if he/she is not present, gossiping happens inside a group -->
+	<ActivePursuitGoal name="GossipAboutVictim([victim],[group])">
+		<PreConditions>
+		    <!-- I don't like the victim-->
+			<Property name="Like([SELF],[victim])" operator="LesserThan" value="-2"/>
+			<!-- the victim is a character, not an object -->
+			<Property name="[victim](type)" operator="=" value="character" />
+		    <!-- he/she is not there -->
+			<!--<RecentEvent occurred="False" subject="[SELF]" action="look-at" target="[victim]"/>-->
+		    <!-- need to be in group -->
+			<Property name="[SELF](inGroup,[group])" operator="=" value="True" /> 
+			<!-- didnt gossip before already -->
+			<RecentEvent occurred="False" subject="[SELF]" action="SpeechAct" target="[group]" parameters="gossip,[victim]" />
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[group]" parameters="gossip,[victim]" />
+		</SucessConditions>	
+	</ActivePursuitGoal>
+
+	<!-- I have gossiped about victim and want to leave now that the victim is arriving -->
+	<ActivePursuitGoal name="GossipLeave([victim],[group])">
+		<PreConditions>
+		    <!-- need to be in group -->
+			<Property name="[SELF](inGroup,[group])" operator="=" value="True" /> 
+			<!-- i already gossiped-->
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[group]" parameters="gossip,[victim]" />
+			<!-- i havent been convinced that gossiping was bad-->
+			<RecentEvent occurred="False" subject="[SELF]" action="SpeechAct" target="[group]" parameters="gossipobjectpositiveanswer,[victim]" />
+		    <!-- victim is arriving -->
+			<RecentEvent occurred="True" subject="[SELF]" action="look-at" target="[victim]"/>
+			<!-- didnt say I leaave before-->
+			<RecentEvent occurred="False" subject="[SELF]" action="SpeechAct" target="[group]" parameters="gossipstop,[victim]" />
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[group]" parameters="gossipstop,[victim]" />
+		</SucessConditions>	
+	</ActivePursuitGoal>
+
+	<!-- Participating in the Gossiping about the victim -->
+	<ActivePursuitGoal name="GossipReinforce([gossiper],[victim],[group])">
+		<PreConditions>
+		    <!-- need to be in group -->
+			<Property name="[SELF](inGroup,[group])" operator="=" value="True" /> 
+			<!-- gossiping must have happened -->
+			<RecentEvent occurred="True" subject="[gossiper]" action="SpeechAct" target="[group]" parameters="gossip,[victim]" />
+		    <!-- I don't like the victim-->
+			<Property name="Like([SELF],[victim])" operator="LesserThan" value="0.1"/>		
+			<!-- I havent already gossiped -->
+			<RecentEvent occurred="False" subject="[SELF]" action="SpeechAct" target="[group]" parameters="gossipreinforce,[victim]"/>
+		</PreConditions>
+		<SucessConditions>
+				<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[group]" parameters="gossipreinforce,[victim]"/>
+		</SucessConditions>	
+	</ActivePursuitGoal>
+
+	<!-- Objecting to the Gossiping about the victim -->
+	<ActivePursuitGoal name="GossipObject([gossiper],[victim],[group])">
+		<PreConditions>
+		    <!-- need to be in group -->
+			<Property name="[SELF](inGroup,[group])" operator="=" value="True" /> 
+			<!-- gossiping must have happened -->
+			<RecentEvent occurred="True" subject="[gossiper]" action="SpeechAct" target="[group]" parameters="gossip,[victim]" />
+		    <!-- I like the victim-->
+			<Property name="Like([SELF],[victim])" operator="GreaterThan" value="0"/>		
+			<!-- I havent already objected to the gossiping -->
+			<RecentEvent occurred="False" subject="[SELF]" action="SpeechAct" target="[gossiper]" parameters="gossipobject,[victim]"/>
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[gossiper]" parameters="gossipobject,[victim]"/>
+		</SucessConditions>	
+	</ActivePursuitGoal>
+
+	<!-- Agreeing with the objection to the Gossiping about the victim -->
+	<ActivePursuitGoal name="GossipObjectAgree([objecter],[victim],[group])">
+		<PreConditions>
+		    <!-- need to be in group -->
+			<Property name="[SELF](inGroup,[group])" operator="=" value="True" /> 
+			<!-- gossiping objection must have happened -->
+			<RecentEvent occurred="True" subject="[objecter]" action="SpeechAct" target="[SELF]" parameters="gossipobject,[victim]"/>
+		    <!-- I like the objecter a lot-->
+			<Property name="Like([SELF],[objecter])" operator="GreaterEqual" value="2"/>		
+			<!-- I havent agreed before --> 
+			<RecentEvent occurred="False" subject="[SELF]" action="SpeechAct" target="[objecter]" parameters="gossipobjectpositiveanswer,[victim]"/>
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[objecter]" parameters="gossipobjectpositiveanswer,[victim]"/>
+		</SucessConditions>	
+	</ActivePursuitGoal>
+
+	<!-- Disagreeing with the objection to the Gossiping about the victim -->
+	<ActivePursuitGoal name="GossipObjectDisagree([objecter],[victim],[group])">
+		<PreConditions>
+		    <!-- need to be in group -->
+			<Property name="[SELF](inGroup,[group])" operator="=" value="True" /> 
+			<!-- gossiping objection must have happened -->
+			<RecentEvent occurred="True" subject="[objecter]" action="SpeechAct" target="[SELF]" parameters="gossipobject,[victim]"/>
+		    <!-- I dont like the objecter a lot-->
+			<Property name="Like([SELF],[objecter])" operator="LesserThan" value="2"/>		
+			<!-- I havent disagreed before --> 
+			<RecentEvent occurred="False" subject="[SELF]" action="SpeechAct" target="[objecter]" parameters="gossipobjectnegativeanswer,[victim]"/>
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[objecter]" parameters="gossipobjectnegativeanswer,[victim]"/>
+		</SucessConditions>	
+	</ActivePursuitGoal>
+
+	<!-- Telling the Victim about the gossiping -->
+	<ActivePursuitGoal name="GossipReport([gossiper],[victim],[group])">
+		<PreConditions>
+			<!-- gossiping must have happened -->
+			<RecentEvent occurred="True" subject="[gossiper]" action="SpeechAct" target="[group]" parameters="gossip,[victim]" />			
+			<!-- I must have objected to the gossiping -->
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[gossiper]" parameters="gossipobject,[victim]"/>
+		    <!-- victim must have arrived -->
+			<RecentEvent occurred="True" subject="[SELF]" action="look-at" target="[victim]"/>
+			<!-- bully must have left -->
+			<RecentEvent occurred="True" subject="[gossiper]" action="walkAway" />
+			<!-- I havent reported the gossiping before --> 
+			<RecentEvent occurred="False" subject="[SELF]" action="SpeechAct" target="[victim]" parameters="gossipreport,[gossiper]"/>
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[victim]" parameters="gossipreport,[gossiper]"/>
+		</SucessConditions>	
+	</ActivePursuitGoal>
+
+	<!-- Victim commenting the gossiping: angry -->
+	<ActivePursuitGoal name="GossipReportAngryAnswer([gossiper],[reporter])">
+		<PreConditions>
+			<!-- some reported me about the gossiping gossiping must have happened -->
+			<RecentEvent occurred="True" subject="[reporter]" action="SpeechAct" target="[SELF]" parameters="gossipreport,[gossiper]" />			
+			<!-- must be very angry at gossiper-->
+			<EmotionCondition emotion="Anger" min-intensity="4" target="[gossiper]" />
+			<!-- I havent commented the gossiping before-->
+			<RecentEvent occurred="False" subject="[SELF]" action="SpeechAct" target="[reporter]" parameters="gossipreportangryanswer,[gossiper]" />			
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[reporter]" parameters="gossipreportangryanswer,[gossiper]" />			
+		</SucessConditions>	
+	</ActivePursuitGoal>
+
+	<!-- Victim commenting the gossiping: doesnt care -->
+	<ActivePursuitGoal name="GossipReportDontCareAnswer([gossiper],[reporter])">
+		<PreConditions>
+			<!-- some reported me about the gossiping gossiping must have happened -->
+			<RecentEvent occurred="True" subject="[reporter]" action="SpeechAct" target="[SELF]" parameters="gossipreport,[gossiper]" />			
+			<!-- I am not that angry at gossiper-->
+			<EmotionCondition emotion="Anger" active="False" min-intensity="4" target="[gossiper]" />
+			<!-- I am not that distressed -->
+			<EmotionCondition emotion="Distress" active="False" min-intensity="2" target="[gossiper]" />
+			<!-- I havent commented the gossiping before-->
+			<RecentEvent occurred="False" subject="[SELF]" action="SpeechAct" target="[reporter]" parameters="gossipreportdontcareanswer,[gossiper]" />			
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[reporter]" parameters="gossipreportdontcareanswer,[gossiper]" />			
+		</SucessConditions>	
+	</ActivePursuitGoal>
+
+	<!-- Victim commenting the gossiping: helpless -->
+	<ActivePursuitGoal name="GossipReportHelplessAnswer([gossiper],[reporter])">
+		<PreConditions>
+			<!-- some reported me about the gossiping gossiping must have happened -->
+			<RecentEvent occurred="True" subject="[reporter]" action="SpeechAct" target="[SELF]" parameters="gossipreport,[gossiper]" />			
+			<!-- I am not that angry at gossiper-->
+			<EmotionCondition emotion="Anger" active="False" min-intensity="4" target="[gossiper]" />
+			<!-- I am quite distressed -->
+			<EmotionCondition emotion="Distress"  min-intensity="2" target="[gossiper]" />
+			<!-- I havent commented the gossiping before-->
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[reporter]" parameters="gossipreporthelplessanswer,[gossiper]" />			
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="SpeechAct" target="[reporter]" parameters="gossipreporthelplessanswer,[gossiper]" />			
+		</SucessConditions>	
+	</ActivePursuitGoal>	
+	
+</GoalLibrary>

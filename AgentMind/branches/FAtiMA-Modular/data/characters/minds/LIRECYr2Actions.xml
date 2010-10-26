@@ -1,0 +1,75 @@
+<DomainActions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:noNamespaceSchemaLocation="./schemas/Actions.xsd">
+
+	<!--Action name="SpeechAct([target],replyLocation,[agent2],[location])">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[target]" action="AskLocation" target="[AGENT]" parameters="[agent2]"/>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+			<Property name="[agent2](location)" operator="=" value="[location]" />
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],SpeechAct,[target],replyLocation,[location])"/>
+			</Effect>
+		</Effects>
+		<EffectsOnDrives>
+			<Motivator drive="Affiliation" target="[AGENT]" value="+4"/>
+			<Motivator drive="Affiliation" target="[target]" value="+2"/>
+		</EffectsOnDrives>
+	</Action-->
+	
+	
+	<Action name="SpeechAct([target],replyLocation,[agent2],[possibleLocation])">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[target]" action="AskLocation" target="[AGENT]" parameters="[agent2]"/>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+			<Property name="[AGENT](time)" operator="=" value="[time]"/>
+			<Property name="[agent2](knowPossibleLocation,[time])" operator="=" value="True"/>
+			<Property name="[agent2](possibleLocation,[time])" operator="=" value="[possibleLocation]"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],SpeechAct,[target],replyLocation,[possibleLocation])"/>
+			</Effect>
+		</Effects>
+		<EffectsOnDrives>
+			<Motivator drive="Affiliation" target="[AGENT]" value="+4"/>
+			<Motivator drive="Affiliation" target="[target]" value="+2"/>
+		</EffectsOnDrives>
+	</Action>
+	
+	<Action name="AskLocation([target],[agent2])">
+		<PreConditions>
+			<Property name="[target]" operator="!=" value="[AGENT]" />
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+			</Effect>
+		</Effects>
+		<EffectsOnDrives>
+		
+		</EffectsOnDrives>
+	</Action>		
+
+	<Action name="SA([target],location)">
+		<PreConditions>
+			<Property name="[AGENT](time)" operator="=" value="[time]" />
+			<Property name="[target](knowPossibleLocation,[time])" operator="!=" value="True" />
+			<SACondition query="location" value="[possibleLocation]"/>
+			<SAKnown name="target" value="[target]" />
+			<SAKnown name="time" value="[time]"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="[target](possibleLocation,[time])" operator="=" value="[possibleLocation]" />
+				<Property name="[target](knowPossibleLocation,[time])" operator="=" value="True" />
+			</Effect>
+		</Effects>
+		<EffectsOnDrives>
+			<Motivator drive="Affiliation" target="[AGENT]" value="+4"/>
+			<Motivator drive="Affiliation" target="[target]" value="+2"/>
+		</EffectsOnDrives>
+	</Action>
+	
+</DomainActions>
+	
