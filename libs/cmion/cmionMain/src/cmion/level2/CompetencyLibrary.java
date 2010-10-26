@@ -169,14 +169,6 @@ public class CompetencyLibrary extends CmionComponent {
 				else
 					throw new Exception("No class name specified for a competency in competency library configuration file.");
 				
-				// read attribute Port
-				String portName;
-				Node atrPortName = attribs.getNamedItem("Port");
-				if (atrPortName!=null) 
-					portName = atrPortName.getNodeValue();
-				else
-					throw new Exception("No port specified for a samgar competency in competency library configuration file.");
-
 				
 				// read attribute ConstructorParameters: default none
 				String constructorParametersStr = "";
@@ -212,7 +204,14 @@ public class CompetencyLibrary extends CmionComponent {
 				// and then store information about the competency (without creating it yet) in 
 				// the respective array list
 				if (samgarCompetency)
-				{					
+				{	
+					// read attribute Port
+					String portName;
+					Node atrPortName = attribs.getNamedItem("Port");
+					if (atrPortName!=null) 
+						portName = atrPortName.getNodeValue();
+					else
+						throw new Exception("No port specified for a samgar competency in competency library configuration file.");
 					samgarCompetencyInfos.add(new SamgarCompetencyInfo(className,portName,constructorParameters,constructorClasses));
 				}
 				else // otherwise directly construct the competency and add it to the library
