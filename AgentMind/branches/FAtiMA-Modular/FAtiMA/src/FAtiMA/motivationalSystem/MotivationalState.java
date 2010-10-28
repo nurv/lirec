@@ -14,7 +14,6 @@ import FAtiMA.AgentSimulationTime;
 import FAtiMA.IComponent;
 import FAtiMA.ModelOfOther;
 import FAtiMA.conditions.MotivatorCondition;
-import FAtiMA.culture.CulturalDimensions;
 import FAtiMA.deliberativeLayer.IExpectedUtilityStrategy;
 import FAtiMA.deliberativeLayer.goals.ActivePursuitGoal;
 import FAtiMA.deliberativeLayer.plan.EffectOnDrive;
@@ -127,26 +126,6 @@ public class MotivationalState implements Serializable, Cloneable, IComponent, I
 		
 		
 		
-		//LSignal an ReplyLSignal Events Update The Motivatores Using The Cultural Dimensions
-		if(e.GetAction().equalsIgnoreCase("LSignal")
-				|| e.GetAction().equalsIgnoreCase("ReplyLSignal")){
-			
-			
-			String lSignalName = ((Parameter)e.GetParameters().get(1)).toString();
-			Name lSignalValueProperty = Name.ParseName(lSignalName + "(value)");
-			float lSignalValue = ((Float)am.getMemory().getSemanticMemory().AskProperty(lSignalValueProperty)).floatValue();
-			
-			
-			float affiliationEffect = CulturalDimensions.GetInstance().determineAffiliationEffectFromLSignal(eventSubject,eventTarget,lSignalName,lSignalValue);
-			
-			
-			if(eventTarget.equalsIgnoreCase(Constants.SELF)){		
-				contributionToSelfNeeds += _motivators[MotivatorType.AFFILIATION].UpdateIntensity(affiliationEffect);
-				
-			}	
-		}
-		
-		
 		//Other Events Update The Motivators According to The Effects Specified By the Author in The Actions.xml 
 		for(ListIterator<? extends IPlanningOperator> li = operators.listIterator(); li.hasNext();)
 		{
@@ -204,7 +183,7 @@ public class MotivationalState implements Serializable, Cloneable, IComponent, I
 		ArrayList<BaseEmotion> emotions;
 		BaseEmotion em;
 		
-		float praiseWorthiness = CulturalDimensions.GetInstance().determinePraiseWorthiness( contributionToSubjectNeeds,contributionToTargetNeeds);
+		float praiseWorthiness = CulturalDimensions.GetInstance().determinePraiseWorthiness(contributionToSubjectNeeds,contributionToTargetNeeds);
 		
 		AppraisalVector vec = new AppraisalVector();
 		vec.setAppraisalVariable(AppraisalVector.DESIRABILITY, contributionToSelfNeeds);

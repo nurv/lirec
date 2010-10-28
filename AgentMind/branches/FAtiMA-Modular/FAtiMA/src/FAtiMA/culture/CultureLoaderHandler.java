@@ -27,7 +27,7 @@
  * João Dias: 12/03/2008 - File created  
  */
 
-package FAtiMA.util.parsers;
+package FAtiMA.culture;
 
 import java.util.ArrayList;
 
@@ -45,9 +45,7 @@ import FAtiMA.conditions.PropertyCondition;
 import FAtiMA.conditions.RecentEventCondition;
 import FAtiMA.conditions.RitualCondition;
 import FAtiMA.conditions.TimeCondition;
-import FAtiMA.culture.CulturalDimensions;
-import FAtiMA.culture.Ritual;
-import FAtiMA.culture.SymbolTranslator;
+import FAtiMA.culture.CulturalDimensionsComponent;
 import FAtiMA.deliberativeLayer.DeliberativeProcess;
 import FAtiMA.exceptions.ContextParsingException;
 import FAtiMA.exceptions.DuplicateSymbolTranslatorEntry;
@@ -59,6 +57,7 @@ import FAtiMA.reactiveLayer.ReactiveProcess;
 import FAtiMA.sensorEffector.Event;
 import FAtiMA.util.AgentLogger;
 import FAtiMA.util.enumerables.CulturalDimensionType;
+import FAtiMA.util.parsers.ReflectXMLHandler;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
 import FAtiMA.wellFormedNames.Symbol;
@@ -113,7 +112,7 @@ public class CultureLoaderHandler extends ReflectXMLHandler {
 			e.printStackTrace();
 		}
 
-		CulturalDimensions.GetInstance().setDimensionValue(dimensionType,value);
+		CulturalDimensionsComponent.GetInstance().setDimensionValue(dimensionType,value);
 	}
 
 	/**

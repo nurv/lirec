@@ -1,54 +1,91 @@
 package FAtiMA.culture;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.ListIterator;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+
+import org.xml.sax.SAXException;
 
 
 import FAtiMA.AgentModel;
+import FAtiMA.IComponent;
+import FAtiMA.deliberativeLayer.DeliberativeProcess;
 import FAtiMA.deliberativeLayer.goals.ActivePursuitGoal;
 import FAtiMA.motivationalSystem.Motivator;
+import FAtiMA.reactiveLayer.ReactiveProcess;
+import FAtiMA.sensorEffector.Event;
+import FAtiMA.util.AgentLogger;
+import FAtiMA.util.VersionChecker;
 import FAtiMA.util.enumerables.CulturalDimensionType;
 import FAtiMA.util.enumerables.MotivatorType;
 import FAtiMA.wellFormedNames.Name;
 
 
-public class CulturalDimensions {
+public class CulturalDimensionsComponent implements IComponent{
+	final String NAME = "CulturalDimensionsComponent";
 	final float ALPHA = 0.3f;
 	final float POWER_DISTANCE_K = 1.2f;
-
-	int[] _dimensionalValues;
-	ArrayList<String> _positiveLSignals;
-	ArrayList<String> _negativeLSignals;
-	ArrayList<String> _positiveReplyLSignals;
-	ArrayList<String> _negativeReplyLSignals;
 	
+	private String cultureName;
+	private int[] _dimensionalValues;	
 	
-
-	/**
-	 * Singleton pattern 
-	 */	
-	private static CulturalDimensions _culturalDimensionsInstance = null;
-
-
-	public static CulturalDimensions GetInstance()
-	{
-		if(_culturalDimensionsInstance == null)
-		{
-			_culturalDimensionsInstance = new CulturalDimensions();
-
-		}
-		return _culturalDimensionsInstance;
-	}
-
-
-	private CulturalDimensions() {
+	public CulturalDimensionsComponent(String cultureName){
+		this.cultureName = cultureName;
 		_dimensionalValues = new int[CulturalDimensionType.numberOfTypes()];
-		_positiveLSignals = new ArrayList<String>();
-		_negativeLSignals = new ArrayList<String>();
-		_positiveReplyLSignals = new ArrayList<String>();
-		_negativeReplyLSignals = new ArrayList<String>();
 	}
 
+	public String name(){
+		return this.NAME;
+	}
 	
+	//unused interface methods:
+	@Override
+	public void initialize(AgentModel am){
+		this.loadCulture(am);
+	};
+	@Override
+	public void reset(){};
+	@Override
+	public void shutdown(){};
+	@Override
+	public void decay(long time){};
+	@Override
+	public void update(Event e){};
+	@Override
+	public void appraisal(Event e, AgentModel am){};
+	@Override
+	public void coping(){}
+	
+	
+	private void loadCulture(ReactiveProcess rP, DeliberativeProcess dP) throws ParserConfigurationException, SAXException, IOException{
+
+		AgentLogger.GetInstance().log("LOADING Culture: " + this.cultureName);
+		
+		CultureLoaderHandler culture = new CultureLoaderHandler(this,rP,dP);
+		SAXParserFactory factory = SAXParserFactory.newInstance();
+		SAXParser parser = factory.newSAXParser();
+		if (VersionChecker.runningOnAndroid())
+			parser.parse(new File(MIND_PATH_ANDROID + cultureName + ".xml"), culture);		
+		else	
+			parser.parse(new File(MIND_PATH + cultureName + ".xml"), culture);
+
+		Ritual r;
+		ListIterator<Ritual> li = culture.GetRituals(this).listIterator();
+		while(li.hasNext())
+		{
+			r = (Ritual) li.next();
+			_deliberativeLayer.AddRitual(r);
+			_deliberativeLayer.AddGoal(r);
+			AgentLogger.GetInstance().log("Ritual: "+ r.toString());
+		}
+
+		CulturalDimensions.GetInstance().changeNeedsWeightsAndDecays(this);
+	}
 
 	public int getDimensionValue(short dimensionType){
 		return _dimensionalValues[dimensionType];
@@ -57,27 +94,9 @@ public class CulturalDimensions {
 	public void setDimensionValue(short dimensionType, int value){
 		_dimensionalValues[dimensionType] = value;
 	}
-
-
-	public void addPositiveLSignal(String lSignal){	
-		_positiveLSignals.add(lSignal);
-	}
-	
-	public void addNegativeLSignal(String lSignal){	
-		_negativeLSignals.add(lSignal);
-	}
-	
-	public void addPositiveReplyLSignal(String lSignal){	
-		_positiveReplyLSignals.add(lSignal);
-	}
-	
-	public void addNegativeReplyLSignal(String lSignal){	
-		_negativeReplyLSignals.add(lSignal);
-	}
 	
 	// Currently only affects affiliation
 	public void changeNeedsWeightsAndDecays(AgentModel am) {
-
 		float collectivismCoefficient = _dimensionalValues[CulturalDimensionType.COLLECTIVISM] * 0.01f;
 		Motivator affiliationMotivator = am.getMotivationalState().GetMotivator(MotivatorType.AFFILIATION);		
 		float personalityAffiliationWeight = affiliationMotivator.GetWeight();
@@ -88,26 +107,19 @@ public class CulturalDimensions {
 
 		//A collectivism score of 100 doubles the agent's affiliation decay factor
 		float newAffiliationDecayFactor = personalityAffiliationDecayFactor * (1 + collectivismCoefficient);
-
-
 		affiliationMotivator.SetWeight(newAffiliationWeight);
 		affiliationMotivator.SetDecayFactor(newAffiliationDecayFactor);
-
 	}
 
 	public float determineCulturalUtility(AgentModel am, ActivePursuitGoal goal, float selfContrib, float otherContrib){
 
-		
 		//float powerDistanceCoefficient = _dimensionalValues[CulturalDimensionType.POWERDISTANCE] * 0.01f;
 		float collectivismCoefficient = _dimensionalValues[CulturalDimensionType.COLLECTIVISM] * 0.01f;
-		float individualismCoefficient = 1 - collectivismCoefficient; 
-	
+		float individualismCoefficient = 1 - collectivismCoefficient; 	
 		//String goalName = goal.getName().GetFirstLiteral().toString();	
 		String target = goal.getName().GetLiteralList().get(1).toString();
-		
 		float likeValue = this.obtainLikeRelationshipFromKB(am, target);
 		//float differenceInPower = this.obtainDifferenceInPowerFromKB(am, target);
-			
 		float result = selfContrib + //(otherContrib * Math.pow(POWER_DISTANCE_K, differenceInPower) + 
 												 (otherContrib * collectivismCoefficient)+ 
 												 (otherContrib * likeValue * individualismCoefficient);
@@ -146,11 +158,6 @@ public class CulturalDimensions {
 		}
 	}*/
 
-	public float determineAffiliationEffectFromLSignal(String subject, String target, String signalName, float signalValue) {
-		return signalValue;
-	}
-
-
 	public float determinePraiseWorthiness(float contributionToSelfNeeds, float contributionToOthersNeeds) {
 		float collectivismCoefficient = _dimensionalValues[CulturalDimensionType.COLLECTIVISM] * 0.01f;
 
@@ -163,55 +170,5 @@ public class CulturalDimensions {
 		}
 	}
 
-/*
-	public String determineLSignalToSend(String targetAgentName, boolean reply) {
-		float powerDistanceCoefficient = _dimensionalValues[CulturalDimensionType.POWERDISTANCE] * 0.01f;
-		float collectivismCoefficient = _dimensionalValues[CulturalDimensionType.COLLECTIVISM] * 0.01f;
-		float individualismCoefficient = 1 - collectivismCoefficient;
-		float likeValue = this.obtainLikeRelationshipFromKB(targetAgentName);
-		float powerDistance = this.obtainDistanceInPowerFromKB(targetAgentName);
-
-		float lSignalBaseValue = 0;
-
-		lSignalBaseValue += likeValue * individualismCoefficient;		
-
-		if(powerDistance > 0){
-			lSignalBaseValue += powerDistance * powerDistanceCoefficient;	
-		}
-
-		if(lSignalBaseValue >= 0){
-			return getRandomLSignal("positive", reply);
-		}else{
-			return getRandomLSignal("negative", reply);
-		}	
-	}
-
-	private String getRandomLSignal(String signal, boolean reply){
-
-		Random randomGenerator = new Random();
-		int randomIndex;
-
-		if(signal.equalsIgnoreCase("positive") && reply == false){
-			randomIndex = randomGenerator.nextInt(_positiveLSignals.size());
-			return (String)_positiveLSignals.get(randomIndex);
-		}
-		
-		if(signal.equalsIgnoreCase("positive") && reply == true){
-			randomIndex = randomGenerator.nextInt(_positiveReplyLSignals.size());
-			return (String)_positiveReplyLSignals.get(randomIndex);
-		}
-		
-		if(signal.equalsIgnoreCase("negative") && reply == false){
-			randomIndex = randomGenerator.nextInt(_negativeLSignals.size());
-			return (String)_negativeLSignals.get(randomIndex);
-		}
-		
-		if(signal.equalsIgnoreCase("negative") && reply == true){
-			randomIndex = randomGenerator.nextInt(_negativeReplyLSignals.size());
-			return (String)_negativeReplyLSignals.get(randomIndex);
-		}
-		else{
-			return null;
-		}
-	}*/
+	
 }
