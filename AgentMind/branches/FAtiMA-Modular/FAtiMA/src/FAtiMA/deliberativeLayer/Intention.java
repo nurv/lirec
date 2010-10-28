@@ -240,12 +240,6 @@ public class Intention implements Serializable {
 		return bestProb;
 	}
 	
-	public float GetExpectedUtility(AgentModel am)
-	{
-		_goal.SetProbability(new Float(GetProbability(am)));
-		return _goal.GetExpectedUtility(am);
-	}
-	
 
 	/**
 	 * Gets the number of alternative plans that the agent has

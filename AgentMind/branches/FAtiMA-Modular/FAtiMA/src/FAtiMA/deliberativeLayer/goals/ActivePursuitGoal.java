@@ -318,7 +318,7 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
 	 * @author Samuel Mascarenhas
 	 * @return the goal's urgency ranging from 0 (not urgent) to 1 (very urgent)
 	 */
-	private float GetGoalUrgency(){
+	public float GetGoalUrgency(){
 		
 		ListIterator<Condition> li;
 		Condition cond;
@@ -383,7 +383,7 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
 	}
 	
 	
-	public float getContributionToTargetNeeds(AgentModel am)
+	/*public float getContributionToTargetNeeds(AgentModel am)
 	{
 		float result = 0;		
 		
@@ -402,74 +402,9 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
 	public float getContributionToPersonalNeeds(AgentModel am)
 	{
 		return this.getContributionToNeeds(am, "SELF");
-	}
+	}*/
 	
-	private float getContributionToNeeds(AgentModel am, String target){
-		float result = 0;
-		String[] effectTypes = {"OnSelect","OnIgnore"};
-		String[] nonCognitiveDrives = {"Affiliation","Integrity","Energy"};
-		float expectedContribution;
-		float currentIntensity = 0;
-		float auxMultiplier; // this is used for the effects that are OnIgnore
-			
-		try {
-			
-				
-			// If target is SELF
-			if(target.equalsIgnoreCase(Constants.SELF)){
-				auxMultiplier = 1;
-				//Calculate the effect on Non-Cognitive Needs
-				for (int c = 0; c < effectTypes.length; c++ ){
-					
-					for(int i = 0; i < nonCognitiveDrives.length; i++){
-						expectedContribution = this.GetExpectedEffectOnDrive(effectTypes[c], nonCognitiveDrives[i], "[SELF]").floatValue();
-						currentIntensity =  am.getMotivationalState().GetIntensity(MotivatorType.ParseType(nonCognitiveDrives[i]));
-						result +=  auxMultiplier * MotivationalState.determineQuadraticNeedVariation(currentIntensity, expectedContribution); 
-					}
-					auxMultiplier = -1;
-
-				}
-				
-				float currentCompetenceIntensity = am.getMotivationalState().GetIntensity(MotivatorType.COMPETENCE);
-				float expectedCompetenceContribution = am.getMotivationalState().PredictCompetenceChange(true);
-				result += MotivationalState.determineQuadraticNeedVariation(currentCompetenceIntensity, expectedCompetenceContribution);
-				
-				float currentUncertaintyIntensity = am.getMotivationalState().GetIntensity(MotivatorType.CERTAINTY);
-				//expected error assuming that the goal is successful
-				float expectedError = 1 - getProbability(am);
-				float currentError = getUncertainty(am);
-				float expectedUncertaintyContribution = 10*(currentError - expectedError); 
-				result += MotivationalState.determineQuadraticNeedVariation(currentUncertaintyIntensity,expectedUncertaintyContribution);	
-								
-			}
-			else{
-			// If target is NOT SELF
-			// Only the non-cognitive needs are taken into account for other agents. This is because his actions cannot impact those needs.
-				
-				if(am.getToM().containsKey(target))
-				{
-					auxMultiplier = 1;
-					ModelOfOther m = am.getToM().get(target);
-					
-					//Calculate the effect on Non-Cognitive Needs
-					for (int c = 0; c < effectTypes.length; c++ ){
-						for(int i = 0; i < nonCognitiveDrives.length; i++){
-							expectedContribution = this.GetExpectedEffectOnDrive(effectTypes[c], nonCognitiveDrives[i], "[target]").floatValue();
-							currentIntensity =  m.getMotivationalState().GetIntensity(MotivatorType.ParseType(nonCognitiveDrives[i]));
-							result += auxMultiplier * MotivationalState.determineQuadraticNeedVariation(currentIntensity, expectedContribution); 		
-						}
-						auxMultiplier = -1;
-					}		
-				}
-			}
-		} catch (InvalidMotivatorTypeException e) {
-			AgentLogger.GetInstance().log("EXCEPTION:" + e);
-			e.printStackTrace();
-		}
-
-
-		return result;
-	}
+	
 	
 	/*public float getContributionToPersonalNeeds(){
 		float result = 0;
@@ -502,34 +437,7 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
 		return result;		
 	}*/
 	
-	private float getCompetence(AgentModel am){
-		float generalCompetence = am.getMotivationalState().GetIntensity(MotivatorType.COMPETENCE)/10;
-		Float probability = GetProbability(am);
-		
-		if(probability != null){
-			return (generalCompetence + probability.floatValue())/2;
-		}else{
-			//if there is no knowledge about the goal probability, the goal was never executed before
-			//however, the agent assumes that he will be successful in achieving it 
-			return (generalCompetence + 1)/2;
-		}
-	}
 	
-	
-	public float GetExpectedUtility(AgentModel am)
-	{		
-		float contributionToSelf = getContributionToPersonalNeeds(am);
-		float contributionOthers = getContributionToTargetNeeds(am);
-		
-		float culturalGoalUtility = CulturalDimensions.GetInstance().determineCulturalUtility(am, this,contributionToSelf,contributionOthers);		
-		
-		float EU = culturalGoalUtility * getCompetence(am) + (1 + this.GetGoalUrgency());
-		
-		
-		AgentLogger.GetInstance().intermittentLog("Goal: " + this.getName() + " CulturalUtilitity: " + culturalGoalUtility + " Competence: " + this.getCompetence(am) +
-				" Urgency: "+ this.GetGoalUrgency() + " Total: " + EU);
-		return EU;
-	}
 	
 	
 	public void IncrementNumberOfTries()

@@ -11,6 +11,8 @@ import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.SAXException;
 
 import FAtiMA.Agent;
+import FAtiMA.AgentTemplate;
+import FAtiMA.motivationalSystem.MotivationalState;
 import FAtiMA.util.enumerables.AgentPlatform;
 import FAtiMA.util.parsers.ScenarioLoaderHandler;
 
@@ -30,7 +32,7 @@ public class AgentLauncher {
 		
 		short agentPlatform = 0;
 		String platform;
-		Agent agent = null;
+		AgentTemplate agent = null;
 		String args2[] = null;
 		
 		
@@ -63,12 +65,12 @@ public class AgentLauncher {
 			case AgentPlatform.ION:
 				if(args2.length >= 13){
 					
-					agent = new Agent(agentPlatform,args2[1], Integer.parseInt(args2[2]),"", args2[4], Boolean.parseBoolean(args2[5]), args2[6], args2[7], args2[8], args2[9], args2[10], args2[11],null,null);
+					agent = new AgentTemplate(agentPlatform,args2[1], Integer.parseInt(args2[2]),"", args2[4], Boolean.parseBoolean(args2[5]), args2[6], args2[7], args2[8], args2[9], args2[10], null,null);
 				}
 				else if(args2.length == 5)
 				{
 					System.err.println("Creating the agent instance");
-					agent = new Agent(agentPlatform,args2[1],Integer.parseInt(args2[2]), args2[3], args2[4]);
+					agent = new AgentTemplate(agentPlatform,args2[1],Integer.parseInt(args2[2]), args2[3], args2[4]);
 				}
 				else
 				{
@@ -84,13 +86,13 @@ public class AgentLauncher {
 				}
 				else if(args2.length == 13 && args2[12].equals("true"))
 				{
-					agent = new Agent(agentPlatform, args2[1],Integer.parseInt(args2[2]),saveDirectory,args2[4]);
+					agent = new AgentTemplate(agentPlatform, args2[1],Integer.parseInt(args2[2]),saveDirectory,args2[4]);
 				}
 				else {
 					HashMap<String,String> properties = new HashMap<String,String>();
 					ArrayList<String> goals = new ArrayList<String>();
 					readPropertiesAndGoals(args2, properties, goals);
-					agent = new Agent(agentPlatform,args2[1], Integer.parseInt(args2[2]),saveDirectory,args2[4],Boolean.parseBoolean(args2[5]),args2[6], args2[7], args2[8], args2[9],args2[10],args2[11], properties, goals);		
+					agent = new AgentTemplate(agentPlatform,args2[1], Integer.parseInt(args2[2]),saveDirectory,args2[4],Boolean.parseBoolean(args2[5]),args2[6], args2[7], args2[8], args2[9],args2[10], properties, goals);		
 				}
 				break;
 		}
@@ -98,6 +100,10 @@ public class AgentLauncher {
 		// setting the memory mechanisms
 		if (agent != null)
 		{
+			
+			MotivationalState ms = new MotivationalState();
+			agent.AddComponent(ms);
+			
 			agent.setCompoundCue(new CompoundCue());
 			System.out.println("Compound cue set ");
 			agent.setSpreadActivate(new SpreadActivate());

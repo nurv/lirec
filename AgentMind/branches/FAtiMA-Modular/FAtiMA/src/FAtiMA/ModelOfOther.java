@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
+import FAtiMA.deliberativeLayer.DeliberativeProcess;
 import FAtiMA.emotionalState.EmotionDisposition;
 import FAtiMA.emotionalState.EmotionalState;
 import FAtiMA.memory.ICompoundCue;
@@ -116,6 +117,12 @@ public class ModelOfOther implements AgentModel, Serializable {
 
 	@Override
 	public ICompoundCue getCompoundCue() {
+		return null;
+	}
+	
+	@Override
+	public DeliberativeProcess getDeliberativeComponent()
+	{
 		return null;
 	}
 

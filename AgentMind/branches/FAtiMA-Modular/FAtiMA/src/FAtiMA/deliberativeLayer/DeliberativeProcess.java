@@ -181,6 +181,7 @@ public class DeliberativeProcess extends AgentProcess {
 	private HashMap<String,Ritual> _ritualOptions;
 	private ArrayList<ProtectedCondition> _protectionConstraints;
 	private Intention _currentIntention;
+	private IExpectedUtilityStrategy _EUStrategy;
 	
 	/**
 	 * Creates a new DeliberativeProcess
@@ -203,6 +204,12 @@ public class DeliberativeProcess extends AgentProcess {
 		_intentions = new HashMap<String,Intention>();
 		_protectionConstraints = new ArrayList<ProtectedCondition>();
 		_currentIntention = null;
+		_EUStrategy = new DefaultExpectedUtility();
+	}
+	
+	public void SetExpectedUtilityStrategy(IExpectedUtilityStrategy strategy)
+	{
+		_EUStrategy = strategy;
 	}
 	
 	/**
@@ -636,7 +643,7 @@ public class DeliberativeProcess extends AgentProcess {
 					
 					//updating selfMotivators
 					Event event2 = event.ApplyPerspective(am.getName());
-					am.getMotivationalState().UpdateMotivators(am, event2, _planner.GetOperators());
+					//am.getMotivationalState().UpdateMotivators(am, event2, _planner.GetOperators());
 					
 					
 					if(_actionMonitor != null && _actionMonitor.MatchEvent(event2)) {
@@ -810,7 +817,7 @@ public class DeliberativeProcess extends AgentProcess {
 			g = li.next();
 			if(!ContainsIntention(g))
 			{		
-				EU = g.GetExpectedUtility(am);
+				EU = _EUStrategy.getExpectedUtility(am, g);
 				
 				if(EU > maxUtility)
 				{
@@ -825,7 +832,7 @@ public class DeliberativeProcess extends AgentProcess {
 			if(maxUtility >= MINIMUMUTILITY)
 			{
 				if(_currentIntention == null ||
-						maxUtility > _currentIntention.getGoal().GetExpectedUtility(am)*SELECTIONTHRESHOLD)
+						maxUtility > _EUStrategy.getExpectedUtility(am,_currentIntention.getGoal())*SELECTIONTHRESHOLD)
 				{
 					return maxGoal;
 				}
@@ -852,7 +859,8 @@ public class DeliberativeProcess extends AgentProcess {
 		{
 			maxIntention = _currentIntention;
 			//TODO selection threshold here!
-			highestUtility = _currentIntention.getGoal().GetExpectedUtility(am);
+			
+			highestUtility = _EUStrategy.getExpectedUtility(am, _currentIntention.getGoal());
 		}
 		else
 		{
@@ -871,7 +879,7 @@ public class DeliberativeProcess extends AgentProcess {
 				
 				if(intention != _currentIntention) 
 				{
-					EU = intention.GetExpectedUtility(am);
+					EU = _EUStrategy.getExpectedUtility(am, intention.getGoal()); 
 					
 					if(EU > highestUtility)
 					{

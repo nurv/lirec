@@ -3,6 +3,7 @@ package FAtiMA;
 import java.util.Collection;
 import java.util.HashMap;
 
+import FAtiMA.deliberativeLayer.DeliberativeProcess;
 import FAtiMA.emotionalState.EmotionalState;
 import FAtiMA.memory.ICompoundCue;
 import FAtiMA.memory.ISpreadActivate;
@@ -37,5 +38,7 @@ public interface AgentModel {
 	public Collection<Event> getEvents();
 	
 	public void clearEvents();
+	
+	public DeliberativeProcess getDeliberativeComponent();
 	
 }

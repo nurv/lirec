@@ -11,8 +11,12 @@ import java.util.ListIterator;
 
 import FAtiMA.AgentModel;
 import FAtiMA.AgentSimulationTime;
+import FAtiMA.IComponent;
+import FAtiMA.ModelOfOther;
 import FAtiMA.conditions.MotivatorCondition;
 import FAtiMA.culture.CulturalDimensions;
+import FAtiMA.deliberativeLayer.IExpectedUtilityStrategy;
+import FAtiMA.deliberativeLayer.goals.ActivePursuitGoal;
 import FAtiMA.deliberativeLayer.plan.EffectOnDrive;
 import FAtiMA.deliberativeLayer.plan.IPlanningOperator;
 import FAtiMA.deliberativeLayer.plan.Step;
@@ -31,17 +35,18 @@ import FAtiMA.wellFormedNames.Symbol;
 import FAtiMA.wellFormedNames.Unifier;
 
 /**
- * Implements the character's motivational state. You cannot create an MotivatorState, 
- * since there is one and only one instance of the MotivatorState for the agent. 
- * If you want to access it use MotivatorState.GetInstance() method.
+ * Implements the character's motivational state.
  * 
  * @author Meiyii Lim, Samuel Mascarenhas 
  */
 
-public class MotivationalState implements Serializable, Cloneable {
+public class MotivationalState implements Serializable, Cloneable, IComponent, IExpectedUtilityStrategy {
 	
 	
 	private static final long serialVersionUID = 1L;
+	
+	private static final String NAME ="MotivationalState";
+	
 	protected Motivator[]  _motivators;
 	//protected Hashtable<String,Motivator[]> _otherAgentsMotivators;
 	protected long _lastTime;
@@ -216,6 +221,101 @@ public class MotivationalState implements Serializable, Cloneable {
 			am.getEmotionalState().AddEmotion(em, am);
 		}
 	}
+	
+	public float getContributionToNeeds(AgentModel am, ActivePursuitGoal g, String target){
+		float result = 0;
+		String[] effectTypes = {"OnSelect","OnIgnore"};
+		String[] nonCognitiveDrives = {"Affiliation","Integrity","Energy"};
+		float expectedContribution;
+		float currentIntensity = 0;
+		float auxMultiplier; // this is used for the effects that are OnIgnore
+			
+		try {
+			
+				
+			// If target is SELF
+			if(target.equalsIgnoreCase(Constants.SELF)){
+				auxMultiplier = 1;
+				//Calculate the effect on Non-Cognitive Needs
+				for (int c = 0; c < effectTypes.length; c++ ){
+					
+					for(int i = 0; i < nonCognitiveDrives.length; i++){
+						expectedContribution = g.GetExpectedEffectOnDrive(effectTypes[c], nonCognitiveDrives[i], "[SELF]").floatValue();
+						currentIntensity =  am.getMotivationalState().GetIntensity(MotivatorType.ParseType(nonCognitiveDrives[i]));
+						result +=  auxMultiplier * MotivationalState.determineQuadraticNeedVariation(currentIntensity, expectedContribution); 
+					}
+					auxMultiplier = -1;
+
+				}
+				
+				float currentCompetenceIntensity = am.getMotivationalState().GetIntensity(MotivatorType.COMPETENCE);
+				float expectedCompetenceContribution = am.getMotivationalState().PredictCompetenceChange(true);
+				result += MotivationalState.determineQuadraticNeedVariation(currentCompetenceIntensity, expectedCompetenceContribution);
+				
+				float currentUncertaintyIntensity = am.getMotivationalState().GetIntensity(MotivatorType.CERTAINTY);
+				//expected error assuming that the goal is successful
+				float expectedError = 1 - g.getProbability(am);
+				float currentError = g.getUncertainty(am);
+				float expectedUncertaintyContribution = 10*(currentError - expectedError); 
+				result += MotivationalState.determineQuadraticNeedVariation(currentUncertaintyIntensity,expectedUncertaintyContribution);	
+								
+			}
+			else{
+			// If target is NOT SELF
+			// Only the non-cognitive needs are taken into account for other agents. This is because his actions cannot impact those needs.
+				
+				if(am.getToM().containsKey(target))
+				{
+					auxMultiplier = 1;
+					ModelOfOther m = am.getToM().get(target);
+					
+					//Calculate the effect on Non-Cognitive Needs
+					for (int c = 0; c < effectTypes.length; c++ ){
+						for(int i = 0; i < nonCognitiveDrives.length; i++){
+							expectedContribution = g.GetExpectedEffectOnDrive(effectTypes[c], nonCognitiveDrives[i], "[target]").floatValue();
+							currentIntensity =  GetIntensity(MotivatorType.ParseType(nonCognitiveDrives[i]));
+							result += auxMultiplier * MotivationalState.determineQuadraticNeedVariation(currentIntensity, expectedContribution); 		
+						}
+						auxMultiplier = -1;
+					}		
+				}
+			}
+		} catch (InvalidMotivatorTypeException e) {
+			AgentLogger.GetInstance().log("EXCEPTION:" + e);
+			e.printStackTrace();
+		}
+
+
+		return result;
+	}
+	
+	public float getExpectedUtility(AgentModel am, ActivePursuitGoal g)
+	{		
+		float utility = getContributionToNeeds(am, g, Constants.SELF);
+				
+		
+		float EU = utility * getCompetence(am, g) + (1 + g.GetGoalUrgency());
+		
+		
+		AgentLogger.GetInstance().intermittentLog("Goal: " + g.getName() + " Utilitity: " + utility + " Competence: " + getCompetence(am,g) +
+				" Urgency: "+ g.GetGoalUrgency() + " Total: " + EU);
+		return EU;
+	}
+	
+	public float getCompetence(AgentModel am, ActivePursuitGoal g){
+		float generalCompetence = GetIntensity(MotivatorType.COMPETENCE)/10;
+		Float probability = g.GetProbability(am);
+		
+		if(probability != null){
+			return (generalCompetence + probability.floatValue())/2;
+		}else{
+			//if there is no knowledge about the goal probability, the goal was never executed before
+			//however, the agent assumes that he will be successful in achieving it 
+			return (generalCompetence + 1)/2;
+		}
+	}
+	
+	
 
 	/**
 	 * Gets the current motivator with the highest need (i.e. the one with the lowest intensity)
@@ -363,9 +463,8 @@ public class MotivationalState implements Serializable, Cloneable {
 	/**TODO find a decay formula
 	 * Decays all needs according to the System Time
 	 */
-	public void Decay() {
+	public void decay(long currentTime) {
 
-		long currentTime = AgentSimulationTime.GetInstance().Time();;
 		if (currentTime >= _lastTime + 1000) {
 			_lastTime = currentTime;
 			
@@ -393,5 +492,61 @@ public class MotivationalState implements Serializable, Cloneable {
 		
 		result = result + "</MotivationalState>";
 		return result;
+	}
+
+
+	@Override
+	public String name() {
+		return MotivationalState.NAME;
+	}
+
+
+	@Override
+	public void reset() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void shutdown() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void appraisal(Event e, AgentModel am) {
+		Event event2 = e.ApplyPerspective(am.getName());
+		UpdateMotivators(am, event2, am.getDeliberativeComponent().getEmotionalPlanner().GetOperators());	
+	}
+
+
+	@Override
+	public void coping() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void PropertyChangedPerception(String ToM, Name propertyName,
+			String value) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void LookAtPerception(String subject, String target) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void Initialize(AgentModel am) {
+		
+		am.getDeliberativeComponent().SetExpectedUtilityStrategy(this);
 	}
 }
