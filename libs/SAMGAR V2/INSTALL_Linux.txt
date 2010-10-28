@@ -92,7 +92,11 @@ and install it
 
 sudo make install
 
-6. To build example SAMGAR application go to 
+6. To build example SAMGAR application one have to prepare cmake to use YARP 
+
+sudo cp FindYARP.cmake /usr/share/cmake-2.8/Modules/
+
+than go to module directory  
 
 cd ../SAMGAR_V2/Module
 
