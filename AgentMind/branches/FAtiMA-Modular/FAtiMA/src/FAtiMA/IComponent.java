@@ -7,7 +7,7 @@ public interface IComponent {
 	
 	public String name();
 	
-	public void Initialize(AgentModel am);
+	public void initialize(AgentModel am);
 	
 	public void reset();
 	
@@ -19,8 +19,8 @@ public interface IComponent {
 	
 	public void coping();
 	
-	public void PropertyChangedPerception(String ToM, Name propertyName, String value);
+	public void propertyChangedPerception(String ToM, Name propertyName, String value);
 	
-	public void LookAtPerception(String subject, String target);
+	public void lookAtPerception(String subject, String target);
 	
 }
