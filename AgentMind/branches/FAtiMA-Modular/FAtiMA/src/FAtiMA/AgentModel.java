@@ -11,6 +11,7 @@ import FAtiMA.memory.Memory;
 import FAtiMA.motivationalSystem.MotivationalState;
 import FAtiMA.reactiveLayer.ActionTendencies;
 import FAtiMA.reactiveLayer.EmotionalReactionTreeNode;
+import FAtiMA.reactiveLayer.ReactiveProcess;
 import FAtiMA.sensorEffector.Event;
 
 public interface AgentModel {
@@ -39,6 +40,8 @@ public interface AgentModel {
 	
 	public void clearEvents();
 	
-	public DeliberativeProcess getDeliberativeComponent();
+	public DeliberativeProcess getDeliberativeLayer();
+	
+	public ReactiveProcess getReactiveLayer();
 	
 }

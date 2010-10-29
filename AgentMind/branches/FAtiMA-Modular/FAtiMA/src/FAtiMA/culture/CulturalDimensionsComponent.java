@@ -1,41 +1,37 @@
 package FAtiMA.culture;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.ListIterator;
-
-import javax.xml.parsers.ParserConfigurationException;
+import java.util.HashMap;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-
-import org.xml.sax.SAXException;
-
-
+import FAtiMA.Agent;
 import FAtiMA.AgentModel;
 import FAtiMA.IComponent;
-import FAtiMA.deliberativeLayer.DeliberativeProcess;
 import FAtiMA.deliberativeLayer.goals.ActivePursuitGoal;
-import FAtiMA.motivationalSystem.Motivator;
-import FAtiMA.reactiveLayer.ReactiveProcess;
 import FAtiMA.sensorEffector.Event;
 import FAtiMA.util.AgentLogger;
 import FAtiMA.util.VersionChecker;
 import FAtiMA.util.enumerables.CulturalDimensionType;
-import FAtiMA.util.enumerables.MotivatorType;
 import FAtiMA.wellFormedNames.Name;
 
 
 public class CulturalDimensionsComponent implements IComponent{
 	final String NAME = "CulturalDimensionsComponent";
+	
 	final float ALPHA = 0.3f;
 	final float POWER_DISTANCE_K = 1.2f;
 	
 	private String cultureName;
 	private int[] _dimensionalValues;	
+	private ArrayList<Ritual> _rituals;
+	private HashMap<String,Ritual> _ritualOptions;
 	
+
 	public CulturalDimensionsComponent(String cultureName){
 		this.cultureName = cultureName;
+		_rituals = new ArrayList<Ritual>();
+		_ritualOptions = new HashMap<String,Ritual>();
 		_dimensionalValues = new int[CulturalDimensionType.numberOfTypes()];
 	}
 
@@ -45,46 +41,44 @@ public class CulturalDimensionsComponent implements IComponent{
 	
 	//unused interface methods:
 	@Override
-	public void initialize(AgentModel am){
-		this.loadCulture(am);
-	};
+	public void initialize(AgentModel aM){
+		this.loadCulture(aM);
+	}
+	
 	@Override
-	public void reset(){};
-	@Override
-	public void shutdown(){};
-	@Override
-	public void decay(long time){};
-	@Override
-	public void update(Event e){};
-	@Override
-	public void appraisal(Event e, AgentModel am){};
+	public void appraisal(Event e, AgentModel am){}
 	@Override
 	public void coping(){}
 	
+	public void AddRitual(Ritual r)
+	{
+		_rituals.add(r);
+		//_planner.AddOperator(r);
+	}
 	
-	private void loadCulture(ReactiveProcess rP, DeliberativeProcess dP) throws ParserConfigurationException, SAXException, IOException{
+	
+	private void loadCulture(AgentModel aM){
 
 		AgentLogger.GetInstance().log("LOADING Culture: " + this.cultureName);
+		CultureLoaderHandler cultureLoader = new CultureLoaderHandler(aM,this);
 		
-		CultureLoaderHandler culture = new CultureLoaderHandler(this,rP,dP);
-		SAXParserFactory factory = SAXParserFactory.newInstance();
-		SAXParser parser = factory.newSAXParser();
-		if (VersionChecker.runningOnAndroid())
-			parser.parse(new File(MIND_PATH_ANDROID + cultureName + ".xml"), culture);		
-		else	
-			parser.parse(new File(MIND_PATH + cultureName + ".xml"), culture);
+		try{
+			SAXParserFactory factory = SAXParserFactory.newInstance();
+			SAXParser parser = factory.newSAXParser();
+			if (VersionChecker.runningOnAndroid())
+				parser.parse(new File(Agent.MIND_PATH_ANDROID + cultureName + ".xml"), cultureLoader);		
+			else	
+				parser.parse(new File(Agent.MIND_PATH + cultureName + ".xml"), cultureLoader);
 
-		Ritual r;
-		ListIterator<Ritual> li = culture.GetRituals(this).listIterator();
-		while(li.hasNext())
-		{
-			r = (Ritual) li.next();
-			_deliberativeLayer.AddRitual(r);
-			_deliberativeLayer.AddGoal(r);
-			AgentLogger.GetInstance().log("Ritual: "+ r.toString());
+			for(Ritual r : cultureLoader.GetRituals(aM)){
+				this._rituals.add(r);
+				aM.getDeliberativeLayer().AddGoal(r);
+			}
+
+		}catch(Exception e){
+			throw new RuntimeException("Error on Loading the Culture XML File:" + e);
 		}
-
-		CulturalDimensions.GetInstance().changeNeedsWeightsAndDecays(this);
+		//this.changeNeedsWeightsAndDecays(aM);
 	}
 
 	public int getDimensionValue(short dimensionType){
@@ -94,9 +88,10 @@ public class CulturalDimensionsComponent implements IComponent{
 	public void setDimensionValue(short dimensionType, int value){
 		_dimensionalValues[dimensionType] = value;
 	}
+
 	
 	// Currently only affects affiliation
-	public void changeNeedsWeightsAndDecays(AgentModel am) {
+	/*public void changeNeedsWeightsAndDecays(AgentModel am) {
 		float collectivismCoefficient = _dimensionalValues[CulturalDimensionType.COLLECTIVISM] * 0.01f;
 		Motivator affiliationMotivator = am.getMotivationalState().GetMotivator(MotivatorType.AFFILIATION);		
 		float personalityAffiliationWeight = affiliationMotivator.GetWeight();
@@ -109,7 +104,7 @@ public class CulturalDimensionsComponent implements IComponent{
 		float newAffiliationDecayFactor = personalityAffiliationDecayFactor * (1 + collectivismCoefficient);
 		affiliationMotivator.SetWeight(newAffiliationWeight);
 		affiliationMotivator.SetDecayFactor(newAffiliationDecayFactor);
-	}
+	}*/
 
 	public float determineCulturalUtility(AgentModel am, ActivePursuitGoal goal, float selfContrib, float otherContrib){
 
@@ -171,4 +166,16 @@ public class CulturalDimensionsComponent implements IComponent{
 	}
 
 	
+
+	//Unused methods from the interface:
+	@Override
+	public void reset(){}
+	@Override
+	public void shutdown(){}
+	@Override
+	public void decay(long time){}	
+	@Override
+	public void lookAtPerception(String subject, String target) {}	
+	@Override
+	public void propertyChangedPerception(String ToM, Name propertyName,String value) {}	
 }

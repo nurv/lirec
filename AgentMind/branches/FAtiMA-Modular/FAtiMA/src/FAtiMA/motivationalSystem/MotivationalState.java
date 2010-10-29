@@ -497,7 +497,7 @@ public class MotivationalState implements Serializable, Cloneable, IComponent, I
 	@Override
 	public void appraisal(Event e, AgentModel am) {
 		Event event2 = e.ApplyPerspective(am.getName());
-		UpdateMotivators(am, event2, am.getDeliberativeComponent().getEmotionalPlanner().GetOperators());	
+		UpdateMotivators(am, event2, am.getDeliberativeLayer().getEmotionalPlanner().GetOperators());	
 	}
 
 

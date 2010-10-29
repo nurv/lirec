@@ -1,5 +1,11 @@
 package FAtiMA;
 
+import java.io.IOException;
+
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.xml.sax.SAXException;
+
 import FAtiMA.sensorEffector.Event;
 import FAtiMA.wellFormedNames.Name;
 

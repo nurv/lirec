@@ -70,6 +70,7 @@ public class CultureLoaderHandler extends ReflectXMLHandler {
 	private String _conditionType;
 	private Substitution _self;
 	private AgentModel _am;
+	private CulturalDimensionsComponent _culturalComponent;
 	
 	ReactiveProcess _reactiveLayer;
 	DeliberativeProcess _deliberativeLayer;
@@ -77,13 +78,13 @@ public class CultureLoaderHandler extends ReflectXMLHandler {
 
 	private Context _contextBeingParsed;
 
-	public CultureLoaderHandler(AgentModel am, ReactiveProcess reactiveLayer, DeliberativeProcess deliberativeLayer) {
+	public CultureLoaderHandler(AgentModel aM, CulturalDimensionsComponent cDM) {
 		_rituals = new ArrayList<Ritual>();
 		_self = new Substitution(new Symbol("[SELF]"), new Symbol(FAtiMA.util.Constants.SELF));
-		_reactiveLayer = reactiveLayer;
-		_deliberativeLayer = deliberativeLayer;
-		_am = am;
-		
+		_reactiveLayer = aM.getReactiveLayer(); 
+		_deliberativeLayer = aM.getDeliberativeLayer();
+		_am = aM;
+		_culturalComponent = cDM;
 	}
 
 
@@ -112,7 +113,7 @@ public class CultureLoaderHandler extends ReflectXMLHandler {
 			e.printStackTrace();
 		}
 
-		CulturalDimensionsComponent.GetInstance().setDimensionValue(dimensionType,value);
+		_culturalComponent.setDimensionValue(dimensionType,value);
 	}
 
 	/**
@@ -360,9 +361,7 @@ public class CultureLoaderHandler extends ReflectXMLHandler {
 		}
 	}
 
-	// To read context
 	public void Context( Attributes attributes ){
-		//if( attributes != null ) TODO check if they exist? should be null...
 		_contextBeingParsed = new Context();
 		if(_ritual != null)
 		{
@@ -382,12 +381,5 @@ public class CultureLoaderHandler extends ReflectXMLHandler {
 			throw new ContextParsingException("Trying to parse a PlaceCondition outside of a Context");
 
 		_contextBeingParsed.SetPlaceCondition( PlaceCondition.Parse(attributes) );
-	}
-
-	public void Social(Attributes attributes ) throws ContextParsingException{
-		if( _contextBeingParsed == null )
-			throw new ContextParsingException("Trying to parse a SocialCondition outside of a Context");
-
-		//_contextBeingParsed.AddSocialCondition( SocialCondition.Parse(attributes) );
 	}
 }

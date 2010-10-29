@@ -168,17 +168,15 @@ public class DeliberativeProcess extends AgentProcess {
 	private static final float SELECTIONTHRESHOLD = 1.2f; 
 	
 	private ArrayList<Goal> _goals;
-	private ArrayList<Ritual> _rituals;
+	
 	private GoalLibrary _goalLibrary;
 	private EmotionalPlanner _planner;
-	
 	private ActionMonitor _actionMonitor;
 	private Plan _selectedPlan;
 	private Step _selectedAction;
 	private ActiveEmotion _selectedActionEmotion;
 	private ArrayList<ActivePursuitGoal> _options;
 	private HashMap<String,Intention> _intentions;
-	private HashMap<String,Ritual> _ritualOptions;
 	private ArrayList<ProtectedCondition> _protectionConstraints;
 	private Intention _currentIntention;
 	private IExpectedUtilityStrategy _EUStrategy;
@@ -193,14 +191,14 @@ public class DeliberativeProcess extends AgentProcess {
 	public DeliberativeProcess(String name, GoalLibrary goalLibrary,  EmotionalPlanner planner) {
 		super(name);
 		_goals = new ArrayList<Goal>();
-		_rituals = new ArrayList<Ritual>();
+	
 		_goalLibrary = goalLibrary;
 		_planner = planner;
 		_actionMonitor = null;
 		_selectedAction = null;
 		_selectedPlan = null;
 		_options = new ArrayList<ActivePursuitGoal>();
-		_ritualOptions = new HashMap<String,Ritual>();
+
 		_intentions = new HashMap<String,Intention>();
 		_protectionConstraints = new ArrayList<ProtectedCondition>();
 		_currentIntention = null;
@@ -252,11 +250,6 @@ public class DeliberativeProcess extends AgentProcess {
 		_protectionConstraints.add(cond);
 	}
 	
-	public void AddRitual(Ritual r)
-	{
-		_rituals.add(r);
-		//_planner.AddOperator(r);
-	}
 	
 	/**
 	 * Updates all the plans that the deliberative layer is currently working with, i.e.,

@@ -82,7 +82,6 @@ import FAtiMA.ModelOfOther;
 import FAtiMA.conditions.Condition;
 import FAtiMA.conditions.NewEventCondition;
 import FAtiMA.conditions.RecentEventCondition;
-import FAtiMA.culture.CulturalDimensions;
 import FAtiMA.deliberativeLayer.plan.Effect;
 import FAtiMA.deliberativeLayer.plan.EffectOnDrive;
 import FAtiMA.deliberativeLayer.plan.IPlanningOperator;

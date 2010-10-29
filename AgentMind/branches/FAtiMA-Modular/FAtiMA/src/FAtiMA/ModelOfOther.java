@@ -15,6 +15,7 @@ import FAtiMA.motivationalSystem.MotivationalState;
 import FAtiMA.motivationalSystem.Motivator;
 import FAtiMA.reactiveLayer.ActionTendencies;
 import FAtiMA.reactiveLayer.EmotionalReactionTreeNode;
+import FAtiMA.reactiveLayer.ReactiveProcess;
 import FAtiMA.sensorEffector.Event;
 
 public class ModelOfOther implements AgentModel, Serializable {
@@ -121,8 +122,13 @@ public class ModelOfOther implements AgentModel, Serializable {
 	}
 	
 	@Override
-	public DeliberativeProcess getDeliberativeComponent()
+	public DeliberativeProcess getDeliberativeLayer()
 	{
+		return null;
+	}
+
+	@Override
+	public ReactiveProcess getReactiveLayer() {
 		return null;
 	}
 

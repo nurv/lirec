@@ -25,7 +25,6 @@ import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.SAXException;
 
 import FAtiMA.Display.AgentDisplay;
-import FAtiMA.culture.CulturalDimensions;
 import FAtiMA.culture.Ritual;
 import FAtiMA.deliberativeLayer.DeliberativeProcess;
 import FAtiMA.deliberativeLayer.EmotionalPlanner;
@@ -63,7 +62,6 @@ import FAtiMA.util.enumerables.EmotionType;
 import FAtiMA.util.enumerables.EventType;
 import FAtiMA.util.parsers.AgentLoaderHandler;
 import FAtiMA.util.parsers.BinaryStringConverter;
-import FAtiMA.util.parsers.CultureLoaderHandler;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Symbol;
 
@@ -179,15 +177,11 @@ public class Agent implements AgentModel {
 				planner.AddOperator(s);
 			}
 			
-			
 			for(Action at: _reactiveLayer.getActionTendencies().getActions())
 			{
 				planner.AddOperator(ActionTendencyOperatorFactory.CreateATOperator(this, at));
 			}
-			
-			
-			loadCulture(cultureName);
-			
+				
 			if(agentPlatform == AgentPlatform.WORLDSIM){
 				_remoteAgent = new WorldSimulatorRemoteAgent(host, port, this, properties);
 			}else if (agentPlatform == AgentPlatform.ION){
@@ -450,32 +444,6 @@ public class Agent implements AgentModel {
 		ActionLibrary.LoadState(fileName+"-ActionLibrary.dat");
 		
 		//_remoteAgent.LoadState(fileName+"-RemoteAgent.dat");
-	}
-	
-	private void loadCulture(String cultureName)
-		throws ParserConfigurationException, SAXException, IOException{
-
-		AgentLogger.GetInstance().log("LOADING Culture: " + cultureName);
-		
-		CultureLoaderHandler culture = new CultureLoaderHandler(this, _reactiveLayer,_deliberativeLayer);
-		SAXParserFactory factory = SAXParserFactory.newInstance();
-		SAXParser parser = factory.newSAXParser();
-		if (VersionChecker.runningOnAndroid())
-			parser.parse(new File(MIND_PATH_ANDROID + cultureName + ".xml"), culture);		
-		else	
-			parser.parse(new File(MIND_PATH + cultureName + ".xml"), culture);
-		
-		Ritual r;
-		ListIterator<Ritual> li = culture.GetRituals(this).listIterator();
-		while(li.hasNext())
-		{
-			r = (Ritual) li.next();
-			_deliberativeLayer.AddRitual(r);
-			_deliberativeLayer.AddGoal(r);
-			AgentLogger.GetInstance().log("Ritual: "+ r.toString());
-		}
-		
-		CulturalDimensions.GetInstance().changeNeedsWeightsAndDecays(this);
 	}
 	
 	private void loadPersonality(String personalityFile, short agentPlatform, ArrayList<String> goalList) 
