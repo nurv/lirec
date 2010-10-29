@@ -2,21 +2,29 @@ package FAtiMA.culture;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.ListIterator;
+
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import FAtiMA.Agent;
 import FAtiMA.AgentModel;
 import FAtiMA.IComponent;
+import FAtiMA.conditions.Condition;
+import FAtiMA.deliberativeLayer.IOptionsStrategy;
 import FAtiMA.deliberativeLayer.goals.ActivePursuitGoal;
 import FAtiMA.sensorEffector.Event;
 import FAtiMA.util.AgentLogger;
+import FAtiMA.util.Constants;
 import FAtiMA.util.VersionChecker;
 import FAtiMA.util.enumerables.CulturalDimensionType;
 import FAtiMA.wellFormedNames.Name;
+import FAtiMA.wellFormedNames.SubstitutionSet;
+import FAtiMA.wellFormedNames.Symbol;
 
 
-public class CulturalDimensionsComponent implements IComponent{
+public class CulturalDimensionsComponent implements IComponent, IOptionsStrategy {
 	final String NAME = "CulturalDimensionsComponent";
 	
 	final float ALPHA = 0.3f;
@@ -43,10 +51,58 @@ public class CulturalDimensionsComponent implements IComponent{
 	@Override
 	public void initialize(AgentModel aM){
 		this.loadCulture(aM);
+		aM.getDeliberativeLayer().AddOptionsStrategy(this);
 	}
 	
 	@Override
-	public void appraisal(Event e, AgentModel am){}
+	public void appraisal(Event e, AgentModel am)
+	{
+		ArrayList<SubstitutionSet> substitutions;
+		ArrayList<SubstitutionSet> substitutions2;
+		Ritual r2;
+		Ritual r3;
+		String ritualName;
+		
+		//this section detects if a ritual has started with another agent's action
+		if(!e.GetSubject().equals(Constants.SELF))
+		{
+			for(Ritual r : this._rituals)
+			{		
+				substitutions = r.findMatchWithStep(new Symbol(e.GetSubject()),e.toStepName());
+				for(SubstitutionSet sSet : substitutions)
+				{
+					r2 = (Ritual) r.clone();
+					r2.MakeGround(sSet.GetSubstitutions());
+					
+					//we must check the ritual preconditions
+					substitutions2 = Condition.CheckActivation(am,r2.GetPreconditions());
+					if(substitutions2 != null)
+					{
+						for(SubstitutionSet sSet2 : substitutions2)
+						{
+							r3 = (Ritual) r2.clone();
+							r3.MakeGround(sSet2.GetSubstitutions());
+							
+							//the last thing we need to check is if the agent is included in the ritual's
+							//roles and if the ritual has not succeeded, because if not there is no sense in including the ritual as a goal
+							if(r3.GetRoles().contains(new Symbol(am.getName()))
+									&& !r3.CheckSuccess(am))
+							{
+								ritualName = r3.getNameWithCharactersOrdered();
+								r3.setUrgency(2);
+								if(!_ritualOptions.containsKey(ritualName) && !am.getDeliberativeLayer().ContainsIntention(r3))
+								{
+									AgentLogger.GetInstance().logAndPrint("Reactive Activation of a Ritual:" + r3.getName());
+									_ritualOptions.put(ritualName,r3);
+								}
+							}
+						}
+					}
+				}
+			}	
+		}
+	}
+	
 	@Override
 	public void coping(){}
 	
@@ -177,5 +233,11 @@ public class CulturalDimensionsComponent implements IComponent{
 	@Override
 	public void lookAtPerception(String subject, String target) {}	
 	@Override
-	public void propertyChangedPerception(String ToM, Name propertyName,String value) {}	
+	public void propertyChangedPerception(String ToM, Name propertyName,String value) {}
+
+	@Override
+	public Collection<? extends ActivePursuitGoal> options(AgentModel am) {
+		return _ritualOptions.values();
+		//TODO samuel há aqui um problema com o clear dos ritualOptions, depois explico.	
+	}	
 }

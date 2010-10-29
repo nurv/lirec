@@ -509,7 +509,7 @@ public class MotivationalState implements Serializable, Cloneable, IComponent, I
 
 
 	@Override
-	public void PropertyChangedPerception(String ToM, Name propertyName,
+	public void propertyChangedPerception(String ToM, Name propertyName,
 			String value) {
 		// TODO Auto-generated method stub
 		
@@ -517,15 +517,15 @@ public class MotivationalState implements Serializable, Cloneable, IComponent, I
 
 
 	@Override
-	public void LookAtPerception(String subject, String target) {
+	public void lookAtPerception(String subject, String target) {
 		// TODO Auto-generated method stub
 		
 	}
 
 
 	@Override
-	public void Initialize(AgentModel am) {
+	public void initialize(AgentModel am) {
 		
-		am.getDeliberativeComponent().SetExpectedUtilityStrategy(this);
+		am.getDeliberativeLayer().SetExpectedUtilityStrategy(this);
 	}
 }

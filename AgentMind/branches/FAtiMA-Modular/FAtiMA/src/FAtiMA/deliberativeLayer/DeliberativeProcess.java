@@ -157,7 +157,7 @@ import FAtiMA.wellFormedNames.Unifier;
  * 
  * @author João Dias
  */
-public class DeliberativeProcess extends AgentProcess {
+public class DeliberativeProcess extends AgentProcess implements IOptionsStrategy {
 	
 	/**
 	 * 
@@ -180,6 +180,7 @@ public class DeliberativeProcess extends AgentProcess {
 	private ArrayList<ProtectedCondition> _protectionConstraints;
 	private Intention _currentIntention;
 	private IExpectedUtilityStrategy _EUStrategy;
+	private ArrayList<IOptionsStrategy> _optionStrategies;
 	
 	/**
 	 * Creates a new DeliberativeProcess
@@ -203,6 +204,8 @@ public class DeliberativeProcess extends AgentProcess {
 		_protectionConstraints = new ArrayList<ProtectedCondition>();
 		_currentIntention = null;
 		_EUStrategy = new DefaultExpectedUtility();
+		_optionStrategies = new ArrayList<IOptionsStrategy>();
+		_optionStrategies.add(this);
 	}
 	
 	public void SetExpectedUtilityStrategy(IExpectedUtilityStrategy strategy)
@@ -447,6 +450,11 @@ public class DeliberativeProcess extends AgentProcess {
 		mainIntention.AddSubIntention(subIntention);
 	}
 	
+	public void AddOptionsStrategy(IOptionsStrategy strategy)
+	{
+		_optionStrategies.add(strategy);
+	}
+	
 	/**
 	 * Gets the agent's goals
 	 * @return a list with the agent's goals
@@ -677,14 +685,17 @@ public class DeliberativeProcess extends AgentProcess {
 			}
 		}
 		
-		Options(am);
-		
+		_options.clear();
+		for(IOptionsStrategy strategy : _optionStrategies)
+		{
+			_options.addAll(strategy.options(am));
+		}
 		
 		_eventPool.clear();
 		
 	}
 	
-	public void Options(AgentModel am)
+	public ArrayList<ActivePursuitGoal> options(AgentModel am)
 	{
 		Goal g;
 		ActivePursuitGoal aGoal;
@@ -693,70 +704,14 @@ public class DeliberativeProcess extends AgentProcess {
 		ActivePursuitGoal desire;
 		SubstitutionSet subSet;
 		ArrayList<SubstitutionSet> substitutionSets;
+		ArrayList<ActivePursuitGoal> options;
 		
-		Ritual r;
-		Ritual r2;
-		Ritual r3;
-		ArrayList<SubstitutionSet> substitutions;
-		ArrayList<SubstitutionSet> substitutions2;
-		SubstitutionSet sSet;
-		SubstitutionSet sSet2;
-		Event event; 
-		String ritualName;
+		options = new ArrayList<ActivePursuitGoal>();
 		
-		_options.clear();
+		//_options.clear();
 		
 		
-		for(ListIterator<Event> eventIterator = this._eventPool.listIterator(); eventIterator.hasNext();)
-		{
-			event = eventIterator.next();
 		
-			//this section detects if a ritual has started with another agent's action
-			if(!event.GetSubject().equals(Constants.SELF))
-			{
-				for(ListIterator<Ritual> rIterator = this._rituals.listIterator(); rIterator.hasNext();)
-				{
-					r = rIterator.next();
-					
-						
-					substitutions = r.findMatchWithStep(new Symbol(event.GetSubject()),event.toStepName());
-					for(ListIterator<SubstitutionSet> sIterator = substitutions.listIterator(); sIterator.hasNext();)
-					{
-						// a possible activation of a ritual
-						sSet = (SubstitutionSet) sIterator.next();
-						r2 = (Ritual) r.clone();
-						r2.MakeGround(sSet.GetSubstitutions());
-						
-						//we must check the ritual preconditions
-						substitutions2 = Condition.CheckActivation(am,r2.GetPreconditions());
-						if(substitutions2 != null)
-						{
-							for(ListIterator<SubstitutionSet> s2Iterator = substitutions2.listIterator(); s2Iterator.hasNext();)
-							{
-								//good, the preconditions are satisfied by this subset
-								sSet2 = (SubstitutionSet) s2Iterator.next();
-								r3 = (Ritual) r2.clone();
-								r3.MakeGround(sSet2.GetSubstitutions());
-								
-								//the last thing we need to check is if the agent is included in the ritual's
-								//roles and if the ritual has not succeeded, because if not there is no sense in including the ritual as a goal
-								if(r3.GetRoles().contains(new Symbol(_self))
-										&& !r3.CheckSuccess(am))
-								{
-									ritualName = r3.getNameWithCharactersOrdered();
-									r3.setUrgency(2);
-									if(!_ritualOptions.containsKey(ritualName) && !ContainsIntention(r3))
-									{
-										AgentLogger.GetInstance().logAndPrint("Reactive Activation of a Ritual:" + r3.getName());
-										_ritualOptions.put(ritualName,r3);
-									}
-								}
-							}
-						}
-					}
-				}	
-			}
-		}
 		
 		//TODO optimize the goal activation verification
 		synchronized (this)
@@ -784,13 +739,15 @@ public class DeliberativeProcess extends AgentProcess {
 							if(!desire.CheckSuccess(am) && !desire.CheckFailure(am))
 							{
 
-									_options.add(desire);	
+									options.add(desire);	
 							}
 						}
 					}
 				}
 			}
 		}
+		
+		return options;
 	}
 	
 	public ActivePursuitGoal Filter(AgentModel am, ArrayList<ActivePursuitGoal> options) {
@@ -908,8 +865,6 @@ public class DeliberativeProcess extends AgentProcess {
 		_selectedActionEmotion = null;
 		_selectedAction = null;
 		_selectedPlan = null;
-		
-		this._options.addAll(_ritualOptions.values());
 		
 		//deliberation;
 		ActivePursuitGoal g = Filter(am, this._options);
