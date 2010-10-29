@@ -14,6 +14,9 @@ import FAtiMA.IComponent;
 import FAtiMA.conditions.Condition;
 import FAtiMA.deliberativeLayer.IOptionsStrategy;
 import FAtiMA.deliberativeLayer.goals.ActivePursuitGoal;
+import FAtiMA.emotionalState.Appraisal;
+import FAtiMA.emotionalState.AppraisalVector;
+import FAtiMA.emotionalState.BaseEmotion;
 import FAtiMA.sensorEffector.Event;
 import FAtiMA.util.AgentLogger;
 import FAtiMA.util.Constants;
@@ -55,12 +58,35 @@ public class CulturalDimensionsComponent implements IComponent, IOptionsStrategy
 	}
 	
 	@Override
-	public void appraisal(Event e, AgentModel am)
-	{
-		ArrayList<SubstitutionSet> substitutions;
-		ArrayList<SubstitutionSet> substitutions2;
-		Ritual r2;
-		Ritual r3;
+	public void appraisal(Event e, AgentModel am){
+		
+		//reactive appraisal
+		this.updateEmotionalState(e,am);
+		
+		//deliberative appraisal
+		this.addRitualOptions(e,am);
+	}
+	
+	
+	//NOTA: este código é bastante repetido do método com o mesmo nome na classe MotivationalState
+	private void updateEmotionalState(Event e, AgentModel am){
+		ArrayList<BaseEmotion> emotions;
+		AppraisalVector vec = new AppraisalVector();
+		
+		//João - como é que se obtem então estas duas variáveis? são obtidas através do evento?
+		float praiseWorthiness = this.determinePraiseWorthiness(contributionToSubjectNeeds,contributionToTargetNeeds);
+		
+		vec.setAppraisalVariable(AppraisalVector.PRAISEWORTHINESS, praiseWorthiness);
+		emotions = Appraisal.GenerateSelfEmotions(am, e, vec);
+		
+		for (BaseEmotion emotion : emotions){
+			am.getEmotionalState().AddEmotion(emotion, am);
+		}
+	}
+	
+	private void addRitualOptions(Event e, AgentModel am){
+		ArrayList<SubstitutionSet> substitutions, substitutions2;
+		Ritual r2, r3;
 		String ritualName;
 		
 		//this section detects if a ritual has started with another agent's action
@@ -82,7 +108,6 @@ public class CulturalDimensionsComponent implements IComponent, IOptionsStrategy
 						{
 							r3 = (Ritual) r2.clone();
 							r3.MakeGround(sSet2.GetSubstitutions());
-							
 							//the last thing we need to check is if the agent is included in the ritual's
 							//roles and if the ritual has not succeeded, because if not there is no sense in including the ritual as a goal
 							if(r3.GetRoles().contains(new Symbol(am.getName()))

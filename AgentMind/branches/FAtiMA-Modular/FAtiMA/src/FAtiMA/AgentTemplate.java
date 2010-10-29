@@ -26,7 +26,6 @@ import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.SAXException;
 
 import FAtiMA.Display.AgentDisplay;
-import FAtiMA.culture.CulturalDimensions;
 import FAtiMA.culture.Ritual;
 import FAtiMA.deliberativeLayer.DeliberativeProcess;
 import FAtiMA.deliberativeLayer.EmotionalPlanner;
@@ -64,7 +63,6 @@ import FAtiMA.util.enumerables.EmotionType;
 import FAtiMA.util.enumerables.EventType;
 import FAtiMA.util.parsers.AgentLoaderHandler;
 import FAtiMA.util.parsers.BinaryStringConverter;
-import FAtiMA.util.parsers.CultureLoaderHandler;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Symbol;
 
@@ -79,7 +77,6 @@ public class AgentTemplate {
 	protected EmotionalState _emotionalState;
 	
 	protected Memory _memory;
-	
 	
 	protected boolean _shutdown;
 	protected DeliberativeProcess _deliberativeLayer;
@@ -125,10 +122,7 @@ public class AgentTemplate {
 		_currentEmotion = EmotionType.NEUTRAL;//neutral emotion - no emotion
 		_actionsForExecution = new ArrayList<ValuedAction>();
 		_perceivedEvents = new ArrayList<Event>();
-		
-		
 		_emotionalState = new EmotionalState();
-		
 		_memory = new Memory();
 		// creating a new episode when the agent starts 13/09/10
 		_memory.getEpisodicMemory().StartEpisode(_memory);
@@ -505,13 +499,10 @@ public class AgentTemplate {
 							
 							for(IComponent c : this._components.values())
 							{
-								c.update(e);
+								c.update(e); // isto ainda é usado? (samuel)
 								c.appraisal(e,this);
 							}
-							
-							
-									
-	
+								
 						}
 						this._perceivedEvents.clear();
 					}

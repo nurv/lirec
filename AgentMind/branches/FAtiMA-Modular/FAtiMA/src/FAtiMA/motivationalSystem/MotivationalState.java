@@ -173,31 +173,23 @@ public class MotivationalState implements Serializable, Cloneable, IComponent, I
 		}
 		
 		
-		this.updateEmotionalState(am, e, contributionToSelfNeeds, contributionToSubjectNeeds, contributionToTargetNeeds);
+		this.updateEmotionalState(am, e, contributionToSelfNeeds);
 		
 	}
 
 	
 	
-	private void updateEmotionalState(AgentModel am, Event e, float contributionToSelfNeeds, float contributionToSubjectNeeds, float contributionToTargetNeeds) {
+	private void updateEmotionalState(AgentModel am, Event e, float contributionToSelfNeeds) {
 		ArrayList<BaseEmotion> emotions;
-		BaseEmotion em;
-		
-		float praiseWorthiness = CulturalDimensions.GetInstance().determinePraiseWorthiness(contributionToSubjectNeeds,contributionToTargetNeeds);
 		
 		AppraisalVector vec = new AppraisalVector();
 		vec.setAppraisalVariable(AppraisalVector.DESIRABILITY, contributionToSelfNeeds);
-		vec.setAppraisalVariable(AppraisalVector.PRAISEWORTHINESS, praiseWorthiness);
 	
 		//emotions of self
 		emotions = Appraisal.GenerateSelfEmotions(am, e, vec);
 		
-		
-		ListIterator<BaseEmotion> li = emotions.listIterator();
-		while(li.hasNext())
-		{
-			em = li.next();
-			am.getEmotionalState().AddEmotion(em, am);
+		for (BaseEmotion emotion : emotions){
+			am.getEmotionalState().AddEmotion(emotion, am);
 		}
 	}
 	
