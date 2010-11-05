@@ -244,7 +244,7 @@ public class SemanticMemory implements Serializable {
     		if(eff.isGrounded())
     		{
     			cond = eff.GetEffect();
-    			perspective = cond.getPerspective(am);
+    			perspective = am.getModelToTest(cond.getToM());
     			perspective.getMemory().getSemanticMemory().Tell(cond.getName(), cond.GetValue().toString());
     			//System.out.println("InferEffects");    			
     		}

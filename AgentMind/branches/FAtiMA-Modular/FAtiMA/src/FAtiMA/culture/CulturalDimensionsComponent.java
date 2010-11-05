@@ -4,19 +4,21 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.ListIterator;
+import java.util.Iterator;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import FAtiMA.Agent;
+import FAtiMA.AgentCore;
 import FAtiMA.AgentModel;
 import FAtiMA.IComponent;
 import FAtiMA.conditions.Condition;
+import FAtiMA.deliberativeLayer.IExpectedUtilityStrategy;
 import FAtiMA.deliberativeLayer.IOptionsStrategy;
+import FAtiMA.deliberativeLayer.IUtilityForTargetStrategy;
 import FAtiMA.deliberativeLayer.goals.ActivePursuitGoal;
-import FAtiMA.emotionalState.Appraisal;
+import FAtiMA.emotionalState.ActiveEmotion;
 import FAtiMA.emotionalState.AppraisalVector;
-import FAtiMA.emotionalState.BaseEmotion;
 import FAtiMA.sensorEffector.Event;
 import FAtiMA.util.AgentLogger;
 import FAtiMA.util.Constants;
@@ -27,7 +29,7 @@ import FAtiMA.wellFormedNames.SubstitutionSet;
 import FAtiMA.wellFormedNames.Symbol;
 
 
-public class CulturalDimensionsComponent implements IComponent, IOptionsStrategy {
+public class CulturalDimensionsComponent implements IComponent, IOptionsStrategy, IExpectedUtilityStrategy {
 	final String NAME = "CulturalDimensionsComponent";
 	
 	final float ALPHA = 0.3f;
@@ -52,37 +54,36 @@ public class CulturalDimensionsComponent implements IComponent, IOptionsStrategy
 	
 	//unused interface methods:
 	@Override
-	public void initialize(AgentModel aM){
+	public void initialize(AgentCore aM){
 		this.loadCulture(aM);
 		aM.getDeliberativeLayer().AddOptionsStrategy(this);
+		aM.getDeliberativeLayer().setExpectedUtilityStrategy(this);
 	}
 	
 	@Override
-	public void appraisal(Event e, AgentModel am){
+	public AppraisalVector appraisal(Event e, AgentModel am){
 		
 		//reactive appraisal
-		this.updateEmotionalState(e,am);
+		//this.updateEmotionalState(e,am);
 		
 		//deliberative appraisal
 		this.addRitualOptions(e,am);
+		return new AppraisalVector();
 	}
 	
-	
-	//NOTA: este código é bastante repetido do método com o mesmo nome na classe MotivationalState
-	private void updateEmotionalState(Event e, AgentModel am){
-		ArrayList<BaseEmotion> emotions;
-		AppraisalVector vec = new AppraisalVector();
+	public AppraisalVector composedAppraisal(Event e, AppraisalVector v, AgentModel am)
+	{
+		float praiseWorthiness = this.determinePraiseWorthiness(
+				v.getAppraisalVariable(AppraisalVector.DESIRABILITY),
+				v.getAppraisalVariable(AppraisalVector.DESIRABILITY_FOR_OTHER));
 		
-		//João - como é que se obtem então estas duas variáveis? são obtidas através do evento?
-		float praiseWorthiness = this.determinePraiseWorthiness(contributionToSubjectNeeds,contributionToTargetNeeds);
+		AppraisalVector v2 = new AppraisalVector();
+		v2.setAppraisalVariable(AppraisalVector.PRAISEWORTHINESS, praiseWorthiness);
 		
-		vec.setAppraisalVariable(AppraisalVector.PRAISEWORTHINESS, praiseWorthiness);
-		emotions = Appraisal.GenerateSelfEmotions(am, e, vec);
-		
-		for (BaseEmotion emotion : emotions){
-			am.getEmotionalState().AddEmotion(emotion, am);
-		}
+		return v2;
 	}
+
+	
 	
 	private void addRitualOptions(Event e, AgentModel am){
 		ArrayList<SubstitutionSet> substitutions, substitutions2;
@@ -127,9 +128,6 @@ public class CulturalDimensionsComponent implements IComponent, IOptionsStrategy
 			}	
 		}
 	}
-	
-	@Override
-	public void coping(){}
 	
 	public void AddRitual(Ritual r)
 	{
@@ -241,7 +239,8 @@ public class CulturalDimensionsComponent implements IComponent, IOptionsStrategy
 		if((contributionToOthersNeeds >= 0)  && (contributionToSelfNeeds - contributionToOthersNeeds > 0)){
 			//if agent doesn't lower other agents needs and he does something better for himself than to others
 			return 0;
-		}else{
+		}
+		else{
 			return (contributionToOthersNeeds - contributionToSelfNeeds) * collectivismCoefficient;
 		}
 	}
@@ -251,18 +250,86 @@ public class CulturalDimensionsComponent implements IComponent, IOptionsStrategy
 	//Unused methods from the interface:
 	@Override
 	public void reset(){}
-	@Override
-	public void shutdown(){}
+	
 	@Override
 	public void decay(long time){}	
 	@Override
-	public void lookAtPerception(String subject, String target) {}	
+	public void lookAtPerception(AgentCore ag, String subject, String target) {}	
 	@Override
 	public void propertyChangedPerception(String ToM, Name propertyName,String value) {}
 
 	@Override
 	public Collection<? extends ActivePursuitGoal> options(AgentModel am) {
+		
+		Iterator<Ritual> it = _ritualOptions.values().iterator();
+		Ritual r;
+		
+		while(it.hasNext())
+		{
+			r = it.next();
+			if(am.getDeliberativeLayer().ContainsIntention(r))
+			{
+				it.remove();
+			}
+		}
+		
 		return _ritualOptions.values();
-		//TODO samuel há aqui um problema com o clear dos ritualOptions, depois explico.	
+		
+	}
+
+	@Override
+	public float getExpectedUtility(AgentModel am, ActivePursuitGoal g) {
+		
+		
+		
+		float probability = am.getDeliberativeLayer().getProbabilityStrategy().getProbability(am, g);
+		
+		IUtilityForTargetStrategy str =  am.getDeliberativeLayer().getUtilityForTargetStrategy();
+		
+		float contributionToSelf = str.getUtilityForTarget(Constants.SELF, am, g);
+		
+		
+		float contributionOthers = 0;
+		
+		for(Symbol s : g.getName().GetLiteralList())
+		{
+			contributionOthers += str.getUtilityForTarget(s.toString(), am, g);
+		}
+		
+		float culturalGoalUtility = determineCulturalUtility(am, g,contributionToSelf,contributionOthers);		
+		
+		float EU = culturalGoalUtility * probability + (1 + g.GetGoalUrgency());
+		
+		
+		AgentLogger.GetInstance().intermittentLog("Goal: " + g.getName() + " CulturalUtilitity: " + culturalGoalUtility + " Competence: " + probability +
+				" Urgency: "+ g.GetGoalUrgency() + " Total: " + EU);
+		return EU;
+	}
+
+	@Override
+	public void update(AgentModel am) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void coping(AgentModel am) {
+	}
+
+	@Override
+	public void emotionActivation(Event e, ActiveEmotion em, AgentModel am) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void entityRemovedPerception(String entity) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public IComponent createModelOfOther() {
+		return null;
 	}	
 }

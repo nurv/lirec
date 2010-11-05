@@ -58,6 +58,7 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import FAtiMA.Agent;
+import FAtiMA.AgentCore;
 import FAtiMA.culture.SymbolTranslator;
 import FAtiMA.util.AgentLogger;
 import FAtiMA.util.Constants;
@@ -85,7 +86,7 @@ public class IONRemoteAgent extends RemoteAgent {
 	 * 						 connection socket
 	 */
 	//public IONRemoteAgent(String host, int port, LanguageEngine language, String userLanguage, Agent agent) throws UnknownHostException, IOException
-	public IONRemoteAgent(String host, int port, Agent agent) throws UnknownHostException, IOException
+	public IONRemoteAgent(String host, int port, AgentCore agent) throws UnknownHostException, IOException
 	{
 		super(host,port,agent, null);
 	}
@@ -254,10 +255,11 @@ public class IONRemoteAgent extends RemoteAgent {
 	
 	protected void ActionStartedPerception(String perc)
 	{
-		if(perc.startsWith("<SpeechAct"))
+		//TODO reimplement this
+		/*if(perc.startsWith("<SpeechAct"))
 		{
 			_agent.SpeechStarted();
-		}
+		}*/
 	}
 	
 	protected void ActionFinishedPerception(String perc)
@@ -282,7 +284,8 @@ public class IONRemoteAgent extends RemoteAgent {
 	    			AgentLogger.GetInstance().logAndPrint("");
 	    			AgentLogger.GetInstance().logAndPrint("Selected Coping Strategy: " + coping);
 	    			AgentLogger.GetInstance().logAndPrint("");
-	    			_agent.EnforceCopingStrategy(coping.toString());
+	    			//TODO implement this
+	    			//_agent.EnforceCopingStrategy(coping.toString());
 	    		}
 	    	}
 	    	event = speechAct.toEvent(ActionEvent.SUCCESS);
@@ -292,6 +295,10 @@ public class IONRemoteAgent extends RemoteAgent {
 	    	RemoteAction rmAction = RemoteAction.ParseFromXml(perc);
 	    	
 	    	rmAction.setActionType(SymbolTranslator.GetInstance().translateSymbolToAction(rmAction.getActionType()));
+	    	if(rmAction.getActionType().equals("look-at"))
+	    	{
+	    		_agent.PerceiveLookAt(rmAction.getSubject(), rmAction.getTarget());
+	    	}
 	    	event = rmAction.toEvent(ActionEvent.SUCCESS);
 	    }
 		

@@ -40,6 +40,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import FAtiMA.Agent;
+import FAtiMA.AgentCore;
 import FAtiMA.AgentModel;
 import FAtiMA.memory.episodicMemory.MemoryEpisode;
 
@@ -72,7 +73,7 @@ public class EpisodicMemoryPanel extends AgentDisplayPanel {
 		this.add(eventsScrool);
     }
     
-    public boolean Update(Agent ag)
+    public boolean Update(AgentCore ag)
     {
     	return Update((AgentModel) ag);
     }

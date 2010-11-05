@@ -3,13 +3,13 @@ package FAtiMA.Display;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import FAtiMA.Agent;
+import FAtiMA.AgentCore;
 
 public class TestAction implements ActionListener {
 	
-	Agent _ag;
+	AgentCore _ag;
 
-	public TestAction(Agent a)
+	public TestAction(AgentCore a)
 	{	
 		_ag = a;
 	}

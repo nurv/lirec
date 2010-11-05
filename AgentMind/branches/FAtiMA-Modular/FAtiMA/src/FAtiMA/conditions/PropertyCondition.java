@@ -304,7 +304,7 @@ public abstract class PropertyCondition extends Condition {
 		
 		Object val;
 		ArrayList<Substitution> bindings;
-		AgentModel perspective = this.getPerspective(am);
+		AgentModel perspective = am.getModelToTest(_ToM);
 		
 		if (!groundValue.isGrounded())
 			return null;

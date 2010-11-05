@@ -225,7 +225,7 @@ public class EmotionCondition extends PredicateCondition {
 		ActiveEmotion aem;
 		ArrayList<Substitution> bindings;
 		ArrayList <SubstitutionSet>substitutionSets = new ArrayList<SubstitutionSet>();
-		AgentModel perspective = this.getPerspective(am);
+		AgentModel perspective = am.getModelToTest(_ToM);
 		
 		EmotionalState es = perspective.getEmotionalState();
 		

@@ -89,7 +89,7 @@ public class PropertyEqual extends PropertyCondition
     {
         Object propertyValue;
         Object value;
-        AgentModel perspective = this.getPerspective(am);
+        AgentModel perspective = am.getModelToTest(_ToM);
 
         if (!super.CheckCondition(am))
             return false;

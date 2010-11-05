@@ -87,6 +87,7 @@ import java.util.StringTokenizer;
 import java.util.Hashtable;
 
 import FAtiMA.Agent;
+import FAtiMA.AgentCore;
 import FAtiMA.AgentModel;
 import FAtiMA.AgentSimulationTime;
 import FAtiMA.ValuedAction;
@@ -137,7 +138,7 @@ public abstract class RemoteAgent extends SocketListener {
 	
 	protected ArrayList<ValuedAction> _actions;
 	
-	protected Agent _agent;
+	protected AgentCore _agent;
 	protected boolean _canAct;
 	
 	//protected FileWriter _fileWriter;
@@ -152,7 +153,7 @@ public abstract class RemoteAgent extends SocketListener {
 	
 	
 	
-	protected RemoteAgent(String host, int port, Agent agent, Map<String,String> arguments) throws UnknownHostException, IOException
+	protected RemoteAgent(String host, int port, AgentCore agent, Map<String,String> arguments) throws UnknownHostException, IOException
 	{
 		_agent = agent;
 		_lookAtList = new ArrayList<String>();
@@ -343,7 +344,7 @@ public abstract class RemoteAgent extends SocketListener {
 					System.out.println(question + " " + result + " frequency " + saResult.get(result));
 				}
 				
-				_agent.getCommonalities().eventCommonalities(_agent.getSpreadActivate().getDetails());
+				/*_agent.getCommonalities().eventCommonalities(_agent.getSpreadActivate().getDetails());
 				Hashtable<ArrayList<Integer>, Hashtable<String, String>> gResult = _agent.getCommonalities().getMatch();
 			
 				for(ArrayList<Integer> result : gResult.keySet())
@@ -355,7 +356,7 @@ public abstract class RemoteAgent extends SocketListener {
 					{
 						System.out.println("match in Remote Agent " + matchingValues);
 					}
-				}
+				}*/
 				
 				System.out.println("\n\n");
 			}
@@ -767,8 +768,8 @@ public abstract class RemoteAgent extends SocketListener {
 				parameters.add(param);
 			}
 			
-			
-			ActiveEmotion appraisal = _agent.simulateAppraisal(action, name, parameters);
+			//TODO implement this
+			/*ActiveEmotion appraisal = _agent.simulateAppraisal(action, name, parameters);
 			if(appraisal == null)
 			{
 				intensity = 0;
@@ -778,7 +779,7 @@ public abstract class RemoteAgent extends SocketListener {
 				intensity = Math.round(appraisal.GetIntensity());
 			}
 			String output = "DAQueryResponse|" + actionRepresentation + ":" + triggerID + ":" + intensity;
-			this.Send(output);
+			this.Send(output);*/
 		}
 		else if(action.startsWith(GET_STATE))
 		{
@@ -858,15 +859,7 @@ public abstract class RemoteAgent extends SocketListener {
 			//property[0] corresponds to the property name, [1] to the property value
 			//constructs something like Luke(Strength)
 			
-			//If the agent looks at another agent it initializes it's needs
-			if(!subject.equalsIgnoreCase(_agent.getName()) && 
-		       (properties[0].equalsIgnoreCase("isPerson") ||
-		       (properties[0].equalsIgnoreCase("type") && properties[1].equalsIgnoreCase("character"))))
-			{
-				_agent.initializeModelOfOther(subject);
-				_agent.AddNearByAgent(subject);
-				
-			}
+			
 			
 			_agent.PerceivePropertyChanged("*",subject, properties[0], properties[1]);
 			AgentLogger.GetInstance().log("Look-At:" + subject + " " + properties[0] + " " + properties[1]);
@@ -887,7 +880,8 @@ public abstract class RemoteAgent extends SocketListener {
 	protected void EntityRemovedPerception(String perc)
 	{
 		StringTokenizer st = new StringTokenizer(perc, " ");
-		_agent.RemoveNearByAgent(st.nextToken());
+		//TODO check if this is done
+		_agent.PerceiveEntityRemoved(st.nextToken());
 	}
 	
 	

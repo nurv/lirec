@@ -49,4 +49,15 @@ public class AppraisalVector {
 	{
 		this._vector[variable] = value;
 	}
+	
+	public void sum(AppraisalVector v)
+	{
+		if(v != null)
+		{
+			_vector[0] = this._vector[0] + v._vector[0];
+			_vector[1] = this._vector[1] + v._vector[1];
+			_vector[2] = this._vector[2] + v._vector[2];
+			_vector[3] = this._vector[3] + v._vector[3];
+		}
+	}
 }

@@ -9,25 +9,26 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
+import FAtiMA.AgentCore;
 import FAtiMA.AgentModel;
 import FAtiMA.AgentSimulationTime;
 import FAtiMA.IComponent;
-import FAtiMA.ModelOfOther;
-import FAtiMA.conditions.MotivatorCondition;
+import FAtiMA.Display.AgentDisplayPanel;
+import FAtiMA.ToM.ModelOfOther;
 import FAtiMA.deliberativeLayer.IExpectedUtilityStrategy;
+import FAtiMA.deliberativeLayer.IProbabilityStrategy;
+import FAtiMA.deliberativeLayer.IUtilityForTargetStrategy;
 import FAtiMA.deliberativeLayer.goals.ActivePursuitGoal;
 import FAtiMA.deliberativeLayer.plan.EffectOnDrive;
 import FAtiMA.deliberativeLayer.plan.IPlanningOperator;
 import FAtiMA.deliberativeLayer.plan.Step;
+import FAtiMA.emotionalState.ActiveEmotion;
 import FAtiMA.emotionalState.Appraisal;
 import FAtiMA.emotionalState.AppraisalVector;
 import FAtiMA.emotionalState.BaseEmotion;
-import FAtiMA.exceptions.InvalidMotivatorTypeException;
 import FAtiMA.sensorEffector.Event;
-import FAtiMA.sensorEffector.Parameter;
 import FAtiMA.util.AgentLogger;
 import FAtiMA.util.Constants;
-import FAtiMA.util.enumerables.MotivatorType;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
 import FAtiMA.wellFormedNames.Symbol;
@@ -39,12 +40,12 @@ import FAtiMA.wellFormedNames.Unifier;
  * @author Meiyii Lim, Samuel Mascarenhas 
  */
 
-public class MotivationalState implements Serializable, Cloneable, IComponent, IExpectedUtilityStrategy {
+public class MotivationalState implements Serializable, Cloneable, IComponent, IExpectedUtilityStrategy, IProbabilityStrategy, IUtilityForTargetStrategy {
 	
 	
 	private static final long serialVersionUID = 1L;
 	
-	private static final String NAME ="MotivationalState";
+	public static final String NAME ="MotivationalState";
 	
 	protected Motivator[]  _motivators;
 	//protected Hashtable<String,Motivator[]> _otherAgentsMotivators;
@@ -109,7 +110,7 @@ public class MotivationalState implements Serializable, Cloneable, IComponent, I
 	 * Updates the intensity of the motivators based on the event received
 	 * @throws InvalidMotivatorTypeException 
 	 */
-	public void UpdateMotivators(AgentModel am, Event e, ArrayList<? extends IPlanningOperator> operators)
+	public AppraisalVector UpdateMotivators(AgentModel am, Event e, ArrayList<? extends IPlanningOperator> operators)
 	{
 		ArrayList<Substitution> substitutions;
 		IPlanningOperator operator;
@@ -141,6 +142,8 @@ public class MotivationalState implements Serializable, Cloneable, IComponent, I
 					substitutions.add(new Substitution(new Symbol("[AGENT]"),new Symbol(e.GetSubject())));
 					action = (Step) action.clone();
 					action.MakeGround(substitutions);
+					
+					//TODO ver com o samuel isto dos target needs
 
 					for(ListIterator<EffectOnDrive> li2 = action.getEffectsOnDrives().listIterator(); li2.hasNext();)
 					{
@@ -172,25 +175,12 @@ public class MotivationalState implements Serializable, Cloneable, IComponent, I
 			}			
 		}
 		
-		
-		this.updateEmotionalState(am, e, contributionToSelfNeeds);
-		
-	}
-
-	
-	
-	private void updateEmotionalState(AgentModel am, Event e, float contributionToSelfNeeds) {
-		ArrayList<BaseEmotion> emotions;
-		
 		AppraisalVector vec = new AppraisalVector();
 		vec.setAppraisalVariable(AppraisalVector.DESIRABILITY, contributionToSelfNeeds);
-	
-		//emotions of self
-		emotions = Appraisal.GenerateSelfEmotions(am, e, vec);
 		
-		for (BaseEmotion emotion : emotions){
-			am.getEmotionalState().AddEmotion(emotion, am);
-		}
+		return vec;
+		
+		
 	}
 	
 	public float getContributionToNeeds(AgentModel am, ActivePursuitGoal g, String target){
@@ -262,15 +252,26 @@ public class MotivationalState implements Serializable, Cloneable, IComponent, I
 	
 	public float getExpectedUtility(AgentModel am, ActivePursuitGoal g)
 	{		
-		float utility = getContributionToNeeds(am, g, Constants.SELF);
-				
-		
-		float EU = utility * getCompetence(am, g) + (1 + g.GetGoalUrgency());
+		float utility = am.getDeliberativeLayer().getUtilityForTargetStrategy().getUtilityForTarget(Constants.SELF, am, g);
+		float probability = am.getDeliberativeLayer().getProbabilityStrategy().getProbability(am, g);
 		
 		
-		AgentLogger.GetInstance().intermittentLog("Goal: " + g.getName() + " Utilitity: " + utility + " Competence: " + getCompetence(am,g) +
+		float EU = utility * probability + (1 + g.GetGoalUrgency());
+		
+		
+		AgentLogger.GetInstance().intermittentLog("Goal: " + g.getName() + " Utilitity: " + utility + " Competence: " + probability +
 				" Urgency: "+ g.GetGoalUrgency() + " Total: " + EU);
 		return EU;
+	}
+	
+	public float getUtilityForTarget(String target, AgentModel am, ActivePursuitGoal g)
+	{
+		return getContributionToNeeds(am,g,target);
+	}
+	
+	public float getProbability(AgentModel am, ActivePursuitGoal g)
+	{
+		return getCompetence(am,g);
 	}
 	
 	public float getCompetence(AgentModel am, ActivePursuitGoal g){
@@ -478,46 +479,81 @@ public class MotivationalState implements Serializable, Cloneable, IComponent, I
 		
 	}
 
-
 	@Override
-	public void shutdown() {
-		// TODO Auto-generated method stub
-		
-	}
-
-
-	@Override
-	public void appraisal(Event e, AgentModel am) {
+	public AppraisalVector appraisal(Event e, AgentModel am) {
 		Event event2 = e.ApplyPerspective(am.getName());
-		UpdateMotivators(am, event2, am.getDeliberativeLayer().getEmotionalPlanner().GetOperators());	
-	}
-
-
-	@Override
-	public void coping() {
-		// TODO Auto-generated method stub
-		
+		return UpdateMotivators(am, event2, am.getDeliberativeLayer().getEmotionalPlanner().GetOperators());	
 	}
 
 
 	@Override
 	public void propertyChangedPerception(String ToM, Name propertyName,
 			String value) {
+		
+	}
+
+
+	@Override
+	public void lookAtPerception(AgentCore ag, String subject, String target) {
+	}
+
+
+	@Override
+	public void initialize(AgentCore am) {
+		
+		am.getDeliberativeLayer().setExpectedUtilityStrategy(this);
+		am.getDeliberativeLayer().setProbabilityStrategy(this);
+		am.getDeliberativeLayer().setUtilityForTargetStrategy(this);
+	}
+
+
+	@Override
+	public void update(AgentModel am) {
+	}
+
+
+	@Override
+	public void coping(AgentModel am) {
+	}
+
+
+	@Override
+	public AppraisalVector composedAppraisal(Event e, AppraisalVector v,
+			AgentModel am) {
+		return null;
+	}
+
+
+	@Override
+	public void emotionActivation(Event e, ActiveEmotion em, AgentModel am) {
+	}
+
+
+	@Override
+	public void entityRemovedPerception(String entity) {
 		// TODO Auto-generated method stub
 		
 	}
 
 
 	@Override
-	public void lookAtPerception(String subject, String target) {
-		// TODO Auto-generated method stub
+	public IComponent createModelOfOther() {
+		MotivationalState ms = new MotivationalState();
+		Motivator m2;
 		
+		for(Motivator m : _motivators)
+		{
+			m2 = new Motivator(m);
+			m2.SetIntensity(5);
+			ms.AddMotivator(m2);
+		}
+		
+		return ms;
 	}
 
 
 	@Override
-	public void initialize(AgentModel am) {
-		
-		am.getDeliberativeLayer().SetExpectedUtilityStrategy(this);
+	public AgentDisplayPanel createComponentDisplayPanel(AgentModel am) {
+		return new NeedsPanel(this);
 	}
 }

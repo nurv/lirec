@@ -61,13 +61,14 @@
 package FAtiMA.reactiveLayer;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.ListIterator;
 
+import FAtiMA.AgentCore;
 import FAtiMA.AgentModel;
-import FAtiMA.AgentProcess;
-import FAtiMA.ModelOfOther;
+import FAtiMA.IComponent;
 import FAtiMA.ValuedAction;
+import FAtiMA.ToM.ModelOfOther;
+import FAtiMA.emotionalState.ActiveEmotion;
 import FAtiMA.emotionalState.Appraisal;
 import FAtiMA.emotionalState.AppraisalVector;
 import FAtiMA.emotionalState.BaseEmotion;
@@ -75,12 +76,13 @@ import FAtiMA.memory.episodicMemory.ActionDetail;
 import FAtiMA.sensorEffector.Event;
 import FAtiMA.socialRelations.LikeRelation;
 import FAtiMA.util.Constants;
+import FAtiMA.wellFormedNames.Name;
 
 /**
  * Implements FearNot's Agent Reactive Layer (appraisal and coping processes)
  * @author João Dias
  */
-public class ReactiveProcess extends AgentProcess {
+public class ReactiveProcess implements IComponent {
 	
     /**
 	 * 
@@ -88,6 +90,7 @@ public class ReactiveProcess extends AgentProcess {
 	private static final long serialVersionUID = 1L;
 	
 	private static final long IGNOREDURATION = 30000;
+	public static final String NAME = "Reactive";
 	
 	private ActionTendencies _actionTendencies;
 	private EmotionalReactionTreeNode _emotionalReactions;
@@ -95,10 +98,8 @@ public class ReactiveProcess extends AgentProcess {
 	
 	/**
 	 * Creates a new ReactiveProcess
-	 * @param name - the name of the agent
 	 */
-	public ReactiveProcess(String name) {
-		super(name);
+	public ReactiveProcess() {
 		this._actionTendencies = new ActionTendencies();
 		this._emotionalReactions = new EmotionalReactionTreeNode(EmotionalReactionTreeNode.subjectNode);
 	}
@@ -128,15 +129,6 @@ public class ReactiveProcess extends AgentProcess {
 		return _actionTendencies;
 	}
 	
-	public Collection<Event> getEvents()
-	{
-		return _eventPool;
-	}
-	
-	public void clearEvents()
-	{
-		_eventPool.clear();
-	}
 	
 	/**
 	 * Determines an answer to a SpeechAct according to the agent's emotional reactions
@@ -165,16 +157,13 @@ public class ReactiveProcess extends AgentProcess {
 		_actionTendencies.ReinforceActionTendency(coping);
 	}
 	
-	public void Appraisal(AgentModel am)
-	{
-	}
 	
 	
 	/**
 	 * Reactive appraisal. Appraises received events according to the emotional
 	 * reaction rules
 	 */
-	public void Appraisal(Event event, AgentModel ag) {
+	public AppraisalVector appraisal(Event event, AgentModel ag) {
 		Event event2;
 		Event event3;
 		ArrayList<BaseEmotion> emotions;
@@ -183,26 +172,17 @@ public class ReactiveProcess extends AgentProcess {
 		Reaction otherEvaluation;
 		AppraisalVector v;
 		
+		v = new AppraisalVector();
+		
 			
 		//self evaluation
 		event2 = event.ApplyPerspective(ag.getName());
 		selfEvaluation = Evaluate(ag, event2);
+		return translateEmotionalReaction(selfEvaluation);
 		
-		if(selfEvaluation != null)
-		{
-			emotions = Appraisal.GenerateSelfEmotions(
-					ag, 
-					event2, 
-					translateEmotionalReaction(selfEvaluation));
-				
-			ListIterator<BaseEmotion> li2 = emotions.listIterator();
-			while(li2.hasNext())
-			{
-				ag.getEmotionalState().AddEmotion(li2.next(), ag);
-			}			
-		}
 		
-		if(ag.getCompoundCue() != null)
+		//TODO move this code to the memory appraisal
+		/*if(ag.getCompoundCue() != null)
 		{
 			//appraisal from memory
 			ActionDetail ad = new ActionDetail(0,event2.GetSubject(),
@@ -221,17 +201,12 @@ public class ReactiveProcess extends AgentProcess {
 				{
 					v = new AppraisalVector();
 					v.setAppraisalVariable(AppraisalVector.DESIRABILITY, desirability*eval);
-					emotions = Appraisal.GenerateSelfEmotions(ag, event2, v);
-					for(BaseEmotion em : emotions)
-					{
-						ag.getEmotionalState().AddEmotion(em, ag);
-					}
 				}
 			}	
-		}
+		}*/
 		
-		
-		if(ag.getToM() != null)
+		//TODO do this in the ToM component
+		/*if(ag.getToM() != null)
 		{
 			
 			// generating fortune of others emotions
@@ -262,14 +237,14 @@ public class ReactiveProcess extends AgentProcess {
 					ag.getEmotionalState().AddEmotion(emotionForOther, ag);
 				}
 			}
-		}
+		}*/
 	}
 	
 	/**
 	 * Reactive Coping. Consists in selecting the most relevant action (reaction)
 	 * according to the emotional state.
 	 */
-	public void Coping(AgentModel am) {
+	public void coping(AgentModel am) {
 		ValuedAction action;
 		action = _actionTendencies.SelectAction(am);
 		if(_selectedAction == null || (action != null && action.GetValue(am.getEmotionalState()) > _selectedAction.GetValue(am.getEmotionalState()))) {
@@ -336,40 +311,83 @@ public class ReactiveProcess extends AgentProcess {
 	 * Resets the reactive layer, clearing all received events that
 	 * were not appraised yet
 	 */
-	public void Reset() {
-		_eventPool.clear();
+	public void reset() {
 		_selectedAction = null;
 	}
 	
 	/**
 	 * prepares the reactive layer for a shutdown
 	 */
-	public void ShutDown() {
+	public void shutDown() {
 	}
 	
 	public static Reaction Evaluate(AgentModel am, Event event)
 	{
-	
 		Reaction emotionalReaction;
 		
-		if(event.GetAction().equals("look-at"))
+		emotionalReaction = am.getEmotionalReactions().MatchEvent(event);
+		if(emotionalReaction != null)
 		{
-			int relationShip = Math.round(LikeRelation.getRelation(Constants.SELF, event.GetTarget()).getValue(am.getMemory()));
-			emotionalReaction = new Reaction(event);
-			emotionalReaction.setLike(new Float(relationShip));
-		}
-		else
-		{
-			emotionalReaction = am.getEmotionalReactions().MatchEvent(event);
-			if(emotionalReaction != null)
-			{
-				emotionalReaction = (Reaction) emotionalReaction.clone();
-				emotionalReaction.MakeGround(event.GenerateBindings());
-			}
+			emotionalReaction = (Reaction) emotionalReaction.clone();
+			emotionalReaction.MakeGround(event.GenerateBindings());
 		}
 		
 		return emotionalReaction;
 	}
+
+	@Override
+	public String name() {
+		return ReactiveProcess.NAME;
+	}
+
+	@Override
+	public void initialize(AgentCore ag) {
+	}
+
+	@Override
+	public void decay(long time) {
+	}
+
+	@Override
+	public void update(AgentModel am) {
+	}
+
+	@Override
+	public void propertyChangedPerception(String ToM, Name propertyName,
+			String value) {
+	}
+
+	@Override
+	public void lookAtPerception(AgentCore ag, String subject, String target) {
+	}
+
+	@Override
+	public AppraisalVector composedAppraisal(Event e, AppraisalVector v,
+			AgentModel am) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void emotionActivation(Event e, ActiveEmotion em, AgentModel am) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void entityRemovedPerception(String entity) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public IComponent createModelOfOther() {
+		ReactiveProcess reactive = new ReactiveProcess();
+		reactive._actionTendencies = (ActionTendencies) this._actionTendencies.clone();
+		reactive._emotionalReactions = (EmotionalReactionTreeNode) this._emotionalReactions.clone();
 	
-	
+		reactive._actionTendencies.ClearFilters();
+		
+		return reactive;
+	}
 }

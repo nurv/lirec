@@ -133,7 +133,7 @@ public class PredicateCondition extends Condition {
 	 */
 	public boolean CheckCondition(AgentModel am) {
 		boolean result;
-		AgentModel perspective = this.getPerspective(am);
+		AgentModel perspective = am.getModelToTest(_ToM);
 		if(!_name.isGrounded()) return false;
 		
 		

@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import FAtiMA.Agent;
+import FAtiMA.AgentCore;
 import FAtiMA.culture.SymbolTranslator;
 import FAtiMA.util.AgentLogger;
 import FAtiMA.util.Constants;
@@ -20,7 +21,7 @@ import FAtiMA.wellFormedNames.Symbol;
 public class WorldSimulatorRemoteAgent extends RemoteAgent {
 
 	
-	public WorldSimulatorRemoteAgent(String host, int port, Agent agent, Map<String,String> properties) throws IOException
+	public WorldSimulatorRemoteAgent(String host, int port, AgentCore agent, Map<String,String> properties) throws IOException
 	{
 		super(host,port,agent,properties);
 	}
@@ -216,7 +217,8 @@ public class WorldSimulatorRemoteAgent extends RemoteAgent {
 						Name.ParseName(_agent.getName()+"(copingStrategy)"));
 				if(coping != null)
 				{
-					_agent.EnforceCopingStrategy(coping.toString());
+					//TODO implement this
+					//_agent.EnforceCopingStrategy(coping.toString());
 				}
 			}
 
@@ -351,7 +353,9 @@ public class WorldSimulatorRemoteAgent extends RemoteAgent {
 						Name.ParseName(_agent.getName()+"(copingStrategy)"));
 				if(coping != null)
 				{
-					_agent.EnforceCopingStrategy(coping.toString());
+					//TODO implement this
+					//
+					//_agent.EnforceCopingStrategy(coping.toString());
 				}
 			}
 

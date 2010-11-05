@@ -38,6 +38,10 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
 import FAtiMA.Agent;
+import FAtiMA.AgentCore;
+import FAtiMA.ToM.ToMPanel;
+import FAtiMA.motivationalSystem.NeedsPanel;
+import FAtiMA.socialRelations.SocialRelationsPanel;
 
 
 /**
@@ -47,9 +51,9 @@ public class AgentDisplay {
     JFrame _frame;
     JTabbedPane _displayPane;
     
-    Agent _ag;
+    AgentCore _ag;
     
-    public AgentDisplay(Agent ag) {
+    public AgentDisplay(AgentCore ag) {
         
         _ag = ag;
         _frame = new JFrame(ag.displayName());
@@ -68,11 +72,6 @@ public class AgentDisplay {
 		/*panel = new DrivesPanel();
 		_displayPane.addTab("Drives", null, panel, "displays the character's drives.");*/
 		
-		panel = new NeedsPanel();
-		_displayPane.addTab("Needs",null,panel,"displays the characters needs");		
-		
-		panel = new SocialRelationsPanel();
-		_displayPane.addTab("Social Relations",null,panel,"displays the character's realtions state");
 		
 		panel = new KnowledgeBasePanel();
 		_displayPane.addTab("Knowledge Base",null,panel,"displays all information stored in the KB");
@@ -89,10 +88,6 @@ public class AgentDisplay {
 		panel = new GeneralMemoryPanel();
 		_displayPane.addTab("General Memory", null, panel, "displays all the records in the character's general memory");
 		
-		panel = new ToMPanel();
-		_displayPane.addTab("Theory of Mind",null, panel, "displays the ToM (memory, emotional state,etc) of the other agent's");
-	
-		
 		JButton teste = new JButton("Save");
 		teste.addActionListener(new TestAction(ag));
 		teste.setText("Save");
@@ -100,6 +95,11 @@ public class AgentDisplay {
 		_frame.getContentPane().add(teste);
 		_frame.setVisible(true);
 		
+    }
+    
+    public void AddPanel(AgentDisplayPanel panel, String title, String description)
+    {
+    	_displayPane.addTab(title,null,panel, description);
     }
     
     public void update() {

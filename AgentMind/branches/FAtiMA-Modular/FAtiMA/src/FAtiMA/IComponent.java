@@ -6,6 +6,9 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
 
+import FAtiMA.Display.AgentDisplayPanel;
+import FAtiMA.emotionalState.ActiveEmotion;
+import FAtiMA.emotionalState.AppraisalVector;
 import FAtiMA.sensorEffector.Event;
 import FAtiMA.wellFormedNames.Name;
 
@@ -13,20 +16,30 @@ public interface IComponent {
 	
 	public String name();
 	
-	public void initialize(AgentModel am);
+	public void initialize(AgentCore ag);
 	
 	public void reset();
 	
-	public void shutdown();
-	
 	public void decay(long time);
 	
-	public void appraisal(Event e, AgentModel am);
+	public void update(AgentModel am);
 	
-	public void coping();
+	public IComponent createModelOfOther();
+	
+	public AppraisalVector appraisal(Event e, AgentModel am);
+	
+	public AppraisalVector composedAppraisal(Event e, AppraisalVector v, AgentModel am);
+	
+	public void emotionActivation(Event e, ActiveEmotion em, AgentModel am);
+	
+	public void coping(AgentModel am);
 	
 	public void propertyChangedPerception(String ToM, Name propertyName, String value);
 	
-	public void lookAtPerception(String subject, String target);
+	public void lookAtPerception(AgentCore ag, String subject, String target);
+	
+	public void entityRemovedPerception(String entity);
+	
+	public AgentDisplayPanel createComponentDisplayPanel(AgentModel am);
 	
 }

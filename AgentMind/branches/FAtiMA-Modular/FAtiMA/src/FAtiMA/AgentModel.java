@@ -3,6 +3,7 @@ package FAtiMA;
 import java.util.Collection;
 import java.util.HashMap;
 
+import FAtiMA.Display.AgentDisplay;
 import FAtiMA.deliberativeLayer.DeliberativeProcess;
 import FAtiMA.emotionalState.EmotionalState;
 import FAtiMA.memory.ICompoundCue;
@@ -13,6 +14,7 @@ import FAtiMA.reactiveLayer.ActionTendencies;
 import FAtiMA.reactiveLayer.EmotionalReactionTreeNode;
 import FAtiMA.reactiveLayer.ReactiveProcess;
 import FAtiMA.sensorEffector.Event;
+import FAtiMA.wellFormedNames.Symbol;
 
 public interface AgentModel {
 	
@@ -20,28 +22,12 @@ public interface AgentModel {
 	
 	public EmotionalState getEmotionalState();
 	
-	public Memory getMemory();
-	
-	public MotivationalState getMotivationalState();
-	
-	public ActionTendencies getActionTendencies();
-	
-	public EmotionalReactionTreeNode getEmotionalReactions();
-	
-	public HashMap<String,ModelOfOther> getToM();
-	
-	public ISpreadActivate getSpreadActivate();
-	
-	public ICompoundCue getCompoundCue(); 
-	
-	public Collection<String> getNearByAgents();
-	
-	public Collection<Event> getEvents();
-	
-	public void clearEvents();
+	public Memory getMemory(); 
 	
 	public DeliberativeProcess getDeliberativeLayer();
 	
 	public ReactiveProcess getReactiveLayer();
+	
+	public AgentModel getModelToTest(Symbol ToM);
 	
 }

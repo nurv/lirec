@@ -71,7 +71,7 @@ public class PropertyLesserEqual extends PropertyCondition {
 		Float aux;
 		Float aux2;
 
-        AgentModel perspective = this.getPerspective(am);
+        AgentModel perspective = am.getModelToTest(_ToM);
 
         if (!super.CheckCondition(am))
             return false;

@@ -232,18 +232,6 @@ public abstract class Condition implements IGroundable, Cloneable, Serializable 
 		return _name;
 	}
 	
-	public AgentModel getPerspective(AgentModel am)
-	{
-		if(_ToM.isGrounded() && !_ToM.equals(Constants.UNIVERSAL) && !_ToM.toString().equals(Constants.SELF))
-		{
-			if(am.getToM().containsKey(_ToM.toString()))
-			{
-				return am.getToM().get(_ToM.toString());
-			}
-		}
-		return am;
-	}
-	
 	public Symbol getToM()
 	{
 		return this._ToM;
@@ -308,25 +296,7 @@ public abstract class Condition implements IGroundable, Cloneable, Serializable 
 	 * @return The Conditions's copy.
 	 */
 	public abstract Object clone();
-	
-	/**
-	 * Checks if a given condition is threatened by this condition 
-	 * @param cond - the Condition to test
-	 * @return true if the both conditions refer to the same ToM and to the same property/predicate
-	 *         but with distinct values
-	 */
-	public boolean ThreatensCondition(Condition cond) {
-		//ToM test
-		if(_ToM.equals(Constants.UNIVERSAL) || cond._ToM.equals(Constants.UNIVERSAL) || _ToM.equals(cond._ToM))
-		{
-			if(_name.equals(cond._name)) 
-			{
-		        return !this.GetValue().equals(cond.GetValue());
-		    }
-		}
-		
-	    return false;
-	}
+
 
 	/**
 	 * Find a set of Substitutions for the second part of the condition, which will 

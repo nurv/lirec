@@ -149,8 +149,8 @@ public class EmotionalPlanner implements Serializable {
 	
 	private ArrayList<Step> _actions;
 	private int _variableIdentifier;
-	//private int _numberOfGoalsTried = 0;
-	//private int _numberOfGoalsAchieved = 0;
+	
+	
 
 	/**
 	 * Creates a new EmotionalPlanner
@@ -692,7 +692,7 @@ public class EmotionalPlanner implements Serializable {
 	 */
 	public Plan DevelopPlan(AgentModel am, ActivePursuitGoal goal)
     {
-	    Plan p = new Plan(new ArrayList<ProtectedCondition>(),goal.GetSuccessConditions());
+	    Plan p = new Plan(new ArrayList<ProtectedCondition>(),am.getDeliberativeLayer().getDetectThreatStrategy(),goal.GetSuccessConditions());
         Intention i = new Intention(goal);
         i.AddPlan(p);
         Plan completePlan = null;
@@ -707,6 +707,4 @@ public class EmotionalPlanner implements Serializable {
         }
         return null;
     }
-	
-	
 }

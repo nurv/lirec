@@ -42,6 +42,7 @@ import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 
 import FAtiMA.Agent;
+import FAtiMA.AgentCore;
 import FAtiMA.AgentModel;
 import FAtiMA.emotionalState.ActiveEmotion;
 import FAtiMA.emotionalState.EmotionalState;
@@ -99,7 +100,7 @@ public class EmotionalStatePanel extends AgentDisplayPanel {
 		this.add(emotionsScroll);
     }
     
-    public boolean Update(Agent ag)
+    public boolean Update(AgentCore ag)
     {
     	return Update((AgentModel) ag);
     }

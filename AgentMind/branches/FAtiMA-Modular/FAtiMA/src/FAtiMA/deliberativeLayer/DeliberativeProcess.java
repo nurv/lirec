@@ -123,11 +123,11 @@ import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.Set;
 
+import FAtiMA.AgentCore;
 import FAtiMA.AgentModel;
-import FAtiMA.AgentProcess;
+import FAtiMA.IComponent;
 import FAtiMA.ValuedAction;
 import FAtiMA.conditions.Condition;
-import FAtiMA.culture.Ritual;
 import FAtiMA.deliberativeLayer.goals.ActivePursuitGoal;
 import FAtiMA.deliberativeLayer.goals.Goal;
 import FAtiMA.deliberativeLayer.goals.GoalLibrary;
@@ -138,8 +138,9 @@ import FAtiMA.deliberativeLayer.plan.Plan;
 import FAtiMA.deliberativeLayer.plan.ProtectedCondition;
 import FAtiMA.deliberativeLayer.plan.Step;
 import FAtiMA.emotionalState.ActiveEmotion;
-import FAtiMA.exceptions.InvalidMotivatorTypeException;
+import FAtiMA.emotionalState.AppraisalVector;
 import FAtiMA.exceptions.UnknownGoalException;
+import FAtiMA.motivationalSystem.InvalidMotivatorTypeException;
 import FAtiMA.sensorEffector.Event;
 import FAtiMA.sensorEffector.Parameter;
 import FAtiMA.util.AgentLogger;
@@ -157,7 +158,7 @@ import FAtiMA.wellFormedNames.Unifier;
  * 
  * @author João Dias
  */
-public class DeliberativeProcess extends AgentProcess implements IOptionsStrategy {
+public class DeliberativeProcess implements IComponent, IOptionsStrategy, IExpectedUtilityStrategy {
 	
 	/**
 	 * 
@@ -166,6 +167,7 @@ public class DeliberativeProcess extends AgentProcess implements IOptionsStrateg
 	private static final long waitingTime = 30000;
 	private static final float MINIMUMUTILITY = 8;
 	private static final float SELECTIONTHRESHOLD = 1.2f; 
+	private static final String COMPONENTNAME = "Deliberative";
 	
 	private ArrayList<Goal> _goals;
 	
@@ -179,18 +181,20 @@ public class DeliberativeProcess extends AgentProcess implements IOptionsStrateg
 	private HashMap<String,Intention> _intentions;
 	private ArrayList<ProtectedCondition> _protectionConstraints;
 	private Intention _currentIntention;
+	
+	//strategies
 	private IExpectedUtilityStrategy _EUStrategy;
+	private IUtilityForTargetStrategy _UStrategy;
+	private IProbabilityStrategy _PStrategy;
+	private IDetectThreatStrategy _isThreatStrat;
 	private ArrayList<IOptionsStrategy> _optionStrategies;
 	
 	/**
 	 * Creates a new DeliberativeProcess
-	 * @param name - the name of the agent
 	 * @param goalLibrary - the GoalLibrary with all domain's goals
 	 * @param planner - the EmotionalPlanner that will be used by the deliberative layer
-	 * @param kb - a reference to the KnowledgeBase
 	 */
-	public DeliberativeProcess(String name, GoalLibrary goalLibrary,  EmotionalPlanner planner) {
-		super(name);
+	public DeliberativeProcess(GoalLibrary goalLibrary,  EmotionalPlanner planner) {
 		_goals = new ArrayList<Goal>();
 	
 		_goalLibrary = goalLibrary;
@@ -203,14 +207,52 @@ public class DeliberativeProcess extends AgentProcess implements IOptionsStrateg
 		_intentions = new HashMap<String,Intention>();
 		_protectionConstraints = new ArrayList<ProtectedCondition>();
 		_currentIntention = null;
-		_EUStrategy = new DefaultExpectedUtility();
+		_EUStrategy = this;
+		_UStrategy = new DefaultStrategy();
+		_PStrategy = new DefaultStrategy();
+		_isThreatStrat = new DefaultDetectThreatStrategy();
 		_optionStrategies = new ArrayList<IOptionsStrategy>();
 		_optionStrategies.add(this);
 	}
 	
-	public void SetExpectedUtilityStrategy(IExpectedUtilityStrategy strategy)
+	public void setDetectThreatStrategy(IDetectThreatStrategy strat)
+	{
+		_isThreatStrat = strat;
+	}
+	
+	public void setExpectedUtilityStrategy(IExpectedUtilityStrategy strategy)
 	{
 		_EUStrategy = strategy;
+	}
+	
+	public void setProbabilityStrategy(IProbabilityStrategy strategy)
+	{
+		_PStrategy = strategy;
+	}
+	
+	public void setUtilityForTargetStrategy(IUtilityForTargetStrategy strategy)
+	{
+		_UStrategy = strategy;
+	}
+	
+	public IExpectedUtilityStrategy getExpectedUtilityStrategy()
+	{
+		return _EUStrategy;
+	}
+	
+	public IProbabilityStrategy getProbabilityStrategy()
+	{
+		return _PStrategy;
+	}
+	
+	public IUtilityForTargetStrategy getUtilityForTargetStrategy()
+	{
+		return _UStrategy;
+	}
+	
+	public IDetectThreatStrategy getDetectThreatStrategy()
+	{
+		return _isThreatStrat;
 	}
 	
 	/**
@@ -416,7 +458,7 @@ public class DeliberativeProcess extends AgentProcess implements IOptionsStrateg
 			plans = goal.getPlans(am);
 			if(plans == null)
 			{
-				newPlan = new Plan(_protectionConstraints, goal.GetSuccessConditions());
+				newPlan = new Plan(_protectionConstraints, _isThreatStrat, goal.GetSuccessConditions());
 				intention.AddPlan(newPlan);
 			}
 			else
@@ -439,7 +481,7 @@ public class DeliberativeProcess extends AgentProcess implements IOptionsStrateg
 		plans = goal.getPlans(am);
 		if(plans == null)
 		{
-			newPlan = new Plan(_protectionConstraints, goal.GetSuccessConditions());
+			newPlan = new Plan(_protectionConstraints, _isThreatStrat, goal.GetSuccessConditions());
 			subIntention.AddPlan(newPlan);
 		}
 		else
@@ -605,94 +647,50 @@ public class DeliberativeProcess extends AgentProcess implements IOptionsStrateg
 	 * @throws InvalidMotivatorTypeException 
 	 */
 	
-	public void AppraiseForOthers(Event event, AgentModel am)
+	/*public void AppraiseForOthers(Event event, AgentModel am)
 	{
 		Event event2 = event.ApplyPerspective(am.getName());
 		am.getMotivationalState().UpdateMotivators(am, event2, _planner.GetOperators());
-	}
+	}*/
 	
 	
-	public void Appraisal(AgentModel am) {
-		ListIterator<Event> li;
-		Event event;
+	public AppraisalVector appraisal(Event event, AgentModel am) {
+					
+		//updating selfMotivators
+		Event event2 = event.ApplyPerspective(am.getName());
 		
-		
-		if(_actionMonitor != null && _actionMonitor.Expired()) {
-			AgentLogger.GetInstance().logAndPrint("Action monitor expired: " + _actionMonitor.toString());
-			//If the action expired we must check the plan links (continuous planning)
-			//just to make sure
-			CheckLinks(am);
-			/*if(_actionMonitor.GetStep().getName().toString().startsWith("WaitFor"))
-			{
-				_actionMonitor.GetStep().updateEffectsProbability();
-			}*/
-			
-			//System.out.println("Calling UpdateCertainty (action monitor expired)");
-			am.getMotivationalState().UpdateCertainty(-_actionMonitor.GetStep().getProbability(am));
-			_actionMonitor.GetStep().DecreaseProbability(am);
-			
+		if(_actionMonitor != null && _actionMonitor.MatchEvent(event2)) {
+		    if(_actionMonitor.GetStep().getAgent().isGrounded() &&  
+		    		!_actionMonitor.GetStep().getAgent().toString().equals("SELF"))
+		    {
+		    	//the agent was waiting for an action of other agent to be complete
+		    	//since the step of another agent may contain unbound variables,
+		    	//we cannot just compare the names, we need to try to unify them
+		    	if(Unifier.Unify(event2.toStepName(), 
+		    			_actionMonitor.GetStep().getName()) != null)
+		    	{
+		    		_actionMonitor.GetStep().IncreaseProbability(am);
+		    		//System.out.println("Calling updateEffectsProbability (other's action: step completed)");
+		    		_actionMonitor.GetStep().updateEffectsProbability(am);
+		    	}
+		    	else
+		    	{
+		    		//System.out.println("Calling UpdateCertainty (other's action: step completed)");
+		    		am.getMotivationalState().UpdateCertainty(-_actionMonitor.GetStep().getProbability(am));
+		    		_actionMonitor.GetStep().DecreaseProbability(am);
+		    	}
+		    }
+		    else 
+		    {
+		    	//System.out.println("Calling updateEffectsProbability (self: step completed)");
+		    	_actionMonitor.GetStep().updateEffectsProbability(am);
+		    }
+		    		
 			UpdateProbabilities();
-		    _actionMonitor = null;
+			_actionMonitor = null;
 		}
 		
-		synchronized (_eventPool) {
-			li = _eventPool.listIterator();
-			if(li.hasNext()) {
-				
-		        while (li.hasNext()) {
-					event = li.next();
-					
-					//updating selfMotivators
-					Event event2 = event.ApplyPerspective(am.getName());
-					//am.getMotivationalState().UpdateMotivators(am, event2, _planner.GetOperators());
-					
-					
-					if(_actionMonitor != null && _actionMonitor.MatchEvent(event2)) {
-					    if(_actionMonitor.GetStep().getAgent().isGrounded() &&  
-					    		!_actionMonitor.GetStep().getAgent().toString().equals("SELF"))
-					    {
-					    	//the agent was waiting for an action of other agent to be complete
-					    	//since the step of another agent may contain unbound variables,
-					    	//we cannot just compare the names, we need to try to unify them
-					    	if(Unifier.Unify(event2.toStepName(), 
-					    			_actionMonitor.GetStep().getName()) != null)
-					    	{
-					    		_actionMonitor.GetStep().IncreaseProbability(am);
-					    		//System.out.println("Calling updateEffectsProbability (other's action: step completed)");
-					    		_actionMonitor.GetStep().updateEffectsProbability(am);
-					    	}
-					    	else
-					    	{
-					    		//System.out.println("Calling UpdateCertainty (other's action: step completed)");
-					    		am.getMotivationalState().UpdateCertainty(-_actionMonitor.GetStep().getProbability(am));
-					    		_actionMonitor.GetStep().DecreaseProbability(am);
-					    	}
-					    }
-					    else 
-					    {
-					    	//System.out.println("Calling updateEffectsProbability (self: step completed)");
-					    	_actionMonitor.GetStep().updateEffectsProbability(am);
-					    }
-					    		
-						UpdateProbabilities();
-						_actionMonitor = null;
-					}
-				}
-		        //If there were any external events we must update the plans
-				//according to the continuous planning techniques
-				//TODO GARANTIR QUE SEMPRE QUE UM PLANO É ACTUALIZADO a EMOÇÃO É ACTUALIZADA
-				CheckLinks(am);
-			}
-		}
-		
-		_options.clear();
-		for(IOptionsStrategy strategy : _optionStrategies)
-		{
-			_options.addAll(strategy.options(am));
-		}
-		
-		_eventPool.clear();
-		
+		return new AppraisalVector();
 	}
 	
 	public ArrayList<ActivePursuitGoal> options(AgentModel am)
@@ -706,11 +704,7 @@ public class DeliberativeProcess extends AgentProcess implements IOptionsStrateg
 		ArrayList<SubstitutionSet> substitutionSets;
 		ArrayList<ActivePursuitGoal> options;
 		
-		options = new ArrayList<ActivePursuitGoal>();
-		
-		//_options.clear();
-		
-		
+		options = new ArrayList<ActivePursuitGoal>();	
 		
 		
 		//TODO optimize the goal activation verification
@@ -855,7 +849,7 @@ public class DeliberativeProcess extends AgentProcess implements IOptionsStrateg
 	 * for one reasoning cycle (planning) and if possible selects an action for 
 	 * execution.
 	 */
-	public void Coping(AgentModel am) {
+	public void coping(AgentModel am) {
 		Intention i = null;
 		ActiveEmotion fear;
 		ActiveEmotion hope;
@@ -866,16 +860,18 @@ public class DeliberativeProcess extends AgentProcess implements IOptionsStrateg
 		_selectedAction = null;
 		_selectedPlan = null;
 		
+		_options.clear();
+		for(IOptionsStrategy strategy : _optionStrategies)
+		{
+			_options.addAll(strategy.options(am));
+		}
+		
 		//deliberation;
 		ActivePursuitGoal g = Filter(am, this._options);
 		
 		if(g != null)
 		{
 			AddIntention(am, g);
-			if(_ritualOptions.containsKey(g.getNameWithCharactersOrdered()))
-			{
-				_ritualOptions.remove(g.getNameWithCharactersOrdered());
-			}
 		}
 		
 		//means-end reasoning
@@ -1061,7 +1057,7 @@ public class DeliberativeProcess extends AgentProcess implements IOptionsStrateg
 	    		
 	    		//TODO I should clone the step before grounding it,
 	    		//however I can only do it if the UpdatePlan method in class
-	    		//Plan starts to work propertly with unbound preconditions
+	    		//Plan starts to work properly with unbound preconditions
 	    		//_selectedAction = (Step) _selectedAction.clone();
 	    		//I know that this sucks, but for the moment I have to do it
 	    		//like this
@@ -1126,8 +1122,7 @@ public class DeliberativeProcess extends AgentProcess implements IOptionsStrateg
 	 * Resets the deliberative layer. Clears the events to be appraised,
 	 * the current intentions and actions.
 	 */
-	public void Reset() {
-	    _eventPool.clear();
+	public void reset() {
 		_options.clear();
 		_intentions.clear();
 		_actionMonitor = null;
@@ -1169,6 +1164,85 @@ public class DeliberativeProcess extends AgentProcess implements IOptionsStrateg
 	/**
 	 * Prepares the deliberative layer for a shutdown
 	 */
-	public void ShutDown() {
+
+
+	public float getExpectedUtility(AgentModel am, ActivePursuitGoal g) {
+		return _UStrategy.getUtilityForTarget(Constants.SELF, am, g) * _PStrategy.getProbability(am, g);
+	}
+
+	@Override
+	public String name() {
+		return DeliberativeProcess.COMPONENTNAME;
+	}
+
+	@Override
+	public void initialize(AgentCore ag) {	
+	}
+
+	@Override
+	public void decay(long time) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	public void update(AgentModel am)
+	{
+		if(_actionMonitor != null && _actionMonitor.Expired()) {
+			AgentLogger.GetInstance().logAndPrint("Action monitor expired: " + _actionMonitor.toString());
+			//If the action expired we must check the plan links (continuous planning)
+			//just to make sure
+			CheckLinks(am);
+			/*if(_actionMonitor.GetStep().getName().toString().startsWith("WaitFor"))
+			{
+				_actionMonitor.GetStep().updateEffectsProbability();
+			}*/
+			
+			//System.out.println("Calling UpdateCertainty (action monitor expired)");
+			am.getMotivationalState().UpdateCertainty(-_actionMonitor.GetStep().getProbability(am));
+			_actionMonitor.GetStep().DecreaseProbability(am);
+			
+			UpdateProbabilities();
+		    _actionMonitor = null;
+		}
+		else
+		{
+			if(am.getEvents().size() > 0)
+			{
+				CheckLinks(am);
+			}
+		}
+	}
+
+	@Override
+	public void propertyChangedPerception(String ToM, Name propertyName,
+			String value) {
+	}
+
+	@Override
+	public void lookAtPerception(AgentCore ag, String subject, String target) {
+	}
+
+	@Override
+	public AppraisalVector composedAppraisal(Event e, AppraisalVector v,
+			AgentModel am) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void emotionActivation(Event e, ActiveEmotion em, AgentModel am) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void entityRemovedPerception(String entity) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public IComponent createModelOfOther() {
+		return null;
 	}
 }

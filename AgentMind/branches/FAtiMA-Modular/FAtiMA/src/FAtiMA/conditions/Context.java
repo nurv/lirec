@@ -3,6 +3,7 @@ package FAtiMA.conditions;
 import java.util.ArrayList;
 
 import FAtiMA.AgentModel;
+import FAtiMA.socialRelations.LikeCondition;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
 import FAtiMA.wellFormedNames.SubstitutionSet;

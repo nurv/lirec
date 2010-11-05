@@ -76,9 +76,9 @@ import FAtiMA.util.enumerables.EmotionType;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Substitution;
 import FAtiMA.wellFormedNames.Symbol;
+import FAtiMA.motivationalSystem.InvalidMotivatorTypeException;
 import FAtiMA.motivationalSystem.Motivator;
-import FAtiMA.util.enumerables.MotivatorType;
-import FAtiMA.exceptions.InvalidMotivatorTypeException;
+import FAtiMA.motivationalSystem.MotivatorType;
 
 public class AgentLoaderHandler extends ReflectXMLHandler {
 	

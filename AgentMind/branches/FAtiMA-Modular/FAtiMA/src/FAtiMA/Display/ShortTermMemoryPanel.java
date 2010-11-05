@@ -40,6 +40,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import FAtiMA.Agent;
+import FAtiMA.AgentCore;
 import FAtiMA.AgentModel;
 import FAtiMA.memory.semanticMemory.KnowledgeSlot;
 import FAtiMA.memory.semanticMemory.SemanticMemory;
@@ -123,7 +124,7 @@ public class ShortTermMemoryPanel extends AgentDisplayPanel {
 		_knowledgePanel.add(_workingFactsPanel);*/
     }
     
-    public boolean Update(Agent ag)
+    public boolean Update(AgentCore ag)
     {
     	return Update((AgentModel) ag);
     }

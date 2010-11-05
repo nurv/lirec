@@ -25,6 +25,7 @@ import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.SAXException;
 
 import FAtiMA.Display.AgentDisplay;
+import FAtiMA.ToM.ModelOfOther;
 import FAtiMA.culture.Ritual;
 import FAtiMA.deliberativeLayer.DeliberativeProcess;
 import FAtiMA.deliberativeLayer.EmotionalPlanner;
@@ -564,23 +565,7 @@ public class Agent implements AgentModel {
 			auxTarget = target;
 		}
 		
-		for(String other : _nearbyAgents)
-		{
-			if(other.equals(subject))
-			{
-				ModelOfOther m = _ToM.get(other);
-				knownInfo = _memory.getSemanticMemory().GetObjectDetails(auxTarget);
-				if(knownInfo!= null)
-				{
-					for(String s : knownInfo.getKeys())
-					{	
-						property = knownInfo.get(s);
-						propertyName = Name.ParseName(target + "(" + property.getName() + ")");
-						m.getMemory().getSemanticMemory().Tell(applyPerspective(propertyName,other), property.getValue());
-					}
-				}		
-			}	
-		}
+		
 	}
 	
 	public void PerceivePropertyChanged(String ToM, Name propertyName, String value)
@@ -588,22 +573,7 @@ public class Agent implements AgentModel {
 		AgentLogger.GetInstance().logAndPrint("PropertyChanged: " + ToM + " " + propertyName + " " + value);
 		_memory.getSemanticMemory().Tell(applyPerspective(propertyName, _name), value);
 		
-		if(ToM.equals(Constants.UNIVERSAL.toString()))
-		{
-			for(String other : _nearbyAgents)
-			{
-				ModelOfOther m = _ToM.get(other);
-				m.getMemory().getSemanticMemory().Tell(applyPerspective(propertyName,other), value);
-			}
-		}
-		else if(!ToM.equals(_name))
-		{
-			ModelOfOther m = _ToM.get(ToM);
-			if(m != null)
-			{
-				m.getMemory().getSemanticMemory().Tell(applyPerspective(propertyName,ToM), value);
-			}
-		}
+		
 		
 	}
 
@@ -721,17 +691,17 @@ public class Agent implements AgentModel {
 					//decay the agent's emotional state
 					//self
 					_emotionalState.Decay();
-					_motivationalState.Decay();
+					//_motivationalState.Decay();
 					_dialogManager.DecayCauseIDontHaveABetterName(_memory);
 					
 					//others
 					//TODO question: apply decay to all models or only to the agents nearby?
-					for(String other: _nearbyAgents)
-					{
-						ModelOfOther m = _ToM.get(other);
-						m.getEmotionalState().Decay();
-						m.getMotivationalState().Decay();
-					}
+					//for(String other: _nearbyAgents)
+					//{
+					//	ModelOfOther m = _ToM.get(other);
+						//m.getEmotionalState().Decay();
+						//m.getMotivationalState().Decay();
+					//}
 					
 					//perceives new events
 					synchronized (this)

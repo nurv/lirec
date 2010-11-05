@@ -111,6 +111,7 @@ import java.util.ListIterator;
 
 import FAtiMA.AgentModel;
 import FAtiMA.conditions.Condition;
+import FAtiMA.deliberativeLayer.IDetectThreatStrategy;
 import FAtiMA.util.AgentLogger;
 import FAtiMA.util.Constants;
 import FAtiMA.wellFormedNames.Inequality;
@@ -163,6 +164,8 @@ public class Plan implements Cloneable, Serializable
     private boolean _valid;
 
     private boolean _probabilityChanged;
+    
+    private IDetectThreatStrategy _isThreatStrategy;
 
     protected Plan()
     {
@@ -221,7 +224,7 @@ public class Plan implements Cloneable, Serializable
         _protectedConditions.addAll(protectedConditions);
     }*/
     
-    public Plan(ArrayList<ProtectedCondition> protectedConditions,
+    public Plan(ArrayList<ProtectedCondition> protectedConditions, IDetectThreatStrategy strat, 
             ArrayList<Condition> finishConditions)
     {
         _valid = true;
@@ -263,6 +266,7 @@ public class Plan implements Cloneable, Serializable
         }
 
         _protectedConditions.addAll(protectedConditions);
+        _isThreatStrategy = strat;
     }
 
     /**
@@ -438,7 +442,7 @@ public class Plan implements Cloneable, Serializable
             while (li2.hasNext())
             {
                 eff = (Effect) li2.next();
-                if (eff.GetEffect().ThreatensCondition(cond))
+                if(_isThreatStrategy.isThreat(eff.GetEffect(), cond))
                 {
                     _protectionThreats.add(new GoalThreat(pCond, op, eff));
                 }
@@ -485,7 +489,7 @@ public class Plan implements Cloneable, Serializable
                 while (li2.hasNext())
                 {
                     eff = (Effect) li2.next();
-                    if (eff.GetEffect().ThreatensCondition(cond))
+                    if(_isThreatStrategy.isThreat(eff.GetEffect(), cond))
                     {
                     	//the threat only exits if the operator can occur between
                     	//the source and the destination
@@ -523,7 +527,7 @@ public class Plan implements Cloneable, Serializable
                 while (li2.hasNext())
                 {
                     eff = (Effect) li2.next();
-                    if (eff.GetEffect().ThreatensCondition(cond))
+                    if(_isThreatStrategy.isThreat(eff.GetEffect(), cond))
                     {
                     	//the threat only exits if the operator can occur between
                     	//the source and the destination
@@ -853,6 +857,7 @@ public class Plan implements Cloneable, Serializable
 
         //TODO think about these ones
         p._protectedConditions = new ArrayList<ProtectedCondition>(_protectedConditions);
+        p._isThreatStrategy = this._isThreatStrategy;
         
         p._protectionThreats = new ArrayList<GoalThreat>(_protectionThreats); 
         p._ignoredConflicts = new ArrayList<CausalConflictFlaw>(_ignoredConflicts); 

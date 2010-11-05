@@ -6,6 +6,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import FAtiMA.Agent;
+import FAtiMA.AgentCore;
 import FAtiMA.AgentModel;
 import FAtiMA.reactiveLayer.Action;
 import FAtiMA.reactiveLayer.ActionTendencies;
@@ -37,13 +38,13 @@ public class ActionTendenciesPanel extends AgentDisplayPanel {
 	}
 
 	@Override
-	public boolean Update(Agent ag) {
+	public boolean Update(AgentCore ag) {
 		return Update((AgentModel) ag);
 	}
 
 	@Override
 	public boolean Update(AgentModel am) {
-		ActionTendencies at = am.getActionTendencies();
+		ActionTendencies at = am.getReactiveLayer().getActionTendencies();
 		if(at.getActions().size() != _numberOfAT)
 		{
 			_actionsPanel.removeAll();

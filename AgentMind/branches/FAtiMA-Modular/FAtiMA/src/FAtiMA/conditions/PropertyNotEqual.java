@@ -115,7 +115,7 @@ public class PropertyNotEqual extends PropertyCondition {
 		Object propertyValue;
 		Object value;
 		
-        AgentModel perspective = this.getPerspective(am);
+        AgentModel perspective = am.getModelToTest(_ToM);
 
         if (!super.CheckCondition(am))
             return false;
@@ -163,7 +163,7 @@ public class PropertyNotEqual extends PropertyCondition {
 			else return null;
 		}
 		
-		AgentModel perspective = this.getPerspective(am);
+		AgentModel perspective = am.getModelToTest(_ToM);
 		
 		//if the name is not grounded we try to get all possible bindings for it
 		bindingSets = perspective.getMemory().getSemanticMemory().GetPossibleBindings(_name);

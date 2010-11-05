@@ -43,7 +43,6 @@ import FAtiMA.conditions.PlaceCondition;
 import FAtiMA.conditions.PredicateCondition;
 import FAtiMA.conditions.PropertyCondition;
 import FAtiMA.conditions.RecentEventCondition;
-import FAtiMA.conditions.RitualCondition;
 import FAtiMA.conditions.TimeCondition;
 import FAtiMA.culture.CulturalDimensionsComponent;
 import FAtiMA.deliberativeLayer.DeliberativeProcess;

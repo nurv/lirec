@@ -12,6 +12,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import FAtiMA.Agent;
+import FAtiMA.AgentCore;
 import FAtiMA.AgentModel;
 import FAtiMA.memory.generalMemory.GER;
 
@@ -89,7 +90,7 @@ public class GeneralMemoryPanel extends AgentDisplayPanel {
         _gersPanel.add(aux); 
 	}
 
-	 public boolean Update(Agent ag)
+	 public boolean Update(AgentCore ag)
     {
     	return Update((AgentModel) ag);
     }

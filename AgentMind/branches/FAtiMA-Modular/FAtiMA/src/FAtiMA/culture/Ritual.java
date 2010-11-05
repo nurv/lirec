@@ -39,7 +39,6 @@ import java.util.ListIterator;
 import FAtiMA.ActionLibrary;
 import FAtiMA.AgentModel;
 import FAtiMA.conditions.Condition;
-import FAtiMA.conditions.RitualCondition;
 import FAtiMA.deliberativeLayer.goals.ActivePursuitGoal;
 import FAtiMA.deliberativeLayer.plan.CausalLink;
 import FAtiMA.deliberativeLayer.plan.Effect;
@@ -157,7 +156,7 @@ public class Ritual extends ActivePursuitGoal {
 	{
 		Step s;
 		OrderingConstraint o;
-		_plan = new Plan(new ArrayList<ProtectedCondition>(),_successConditions);
+		_plan = new Plan(new ArrayList<ProtectedCondition>(),am.getDeliberativeLayer().getDetectThreatStrategy(),_successConditions);
 		
 		for(int i=0; i < _steps.size(); i++)
 		{
