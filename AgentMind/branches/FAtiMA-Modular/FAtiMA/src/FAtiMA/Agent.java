@@ -35,7 +35,7 @@ import FAtiMA.emotionalIntelligence.ActionTendencyOperatorFactory;
 import FAtiMA.emotionalIntelligence.OCCAppraisalRules;
 import FAtiMA.emotionalState.ActiveEmotion;
 import FAtiMA.emotionalState.Appraisal;
-import FAtiMA.emotionalState.AppraisalVector;
+import FAtiMA.emotionalState.AppraisalStructure;
 import FAtiMA.emotionalState.BaseEmotion;
 import FAtiMA.emotionalState.EmotionalState;
 import FAtiMA.exceptions.UnknownGoalException;
@@ -489,7 +489,7 @@ public class Agent implements AgentModel {
 		String subject;
 		BaseEmotion perceivedEmotion;
 		BaseEmotion predictedEmotion;
-		AppraisalVector v;
+		AppraisalStructure v;
 		Reaction r;
 		
 		
@@ -511,17 +511,17 @@ public class Agent implements AgentModel {
 						//updating other's emotional state
 						m.getEmotionalState().UpdateEmotionalState(perceivedEmotion, m);
 						//upating other's emotional reactions
-						if(v.getAppraisalVariable(AppraisalVector.LIKE) != 0)
+						if(v.getAppraisalVariable(AppraisalStructure.LIKE) != 0)
 						{
 							LikeRelation.getRelation(subject, e.GetTarget()).setValue(m.getMemory(), 
-									v.getAppraisalVariable(AppraisalVector.LIKE));
+									v.getAppraisalVariable(AppraisalStructure.LIKE));
 						}
-						if(v.getAppraisalVariable(AppraisalVector.DESIRABILITY) != 0 ||
-								v.getAppraisalVariable(AppraisalVector.PRAISEWORTHINESS) != 0)
+						if(v.getAppraisalVariable(AppraisalStructure.DESIRABILITY) != 0 ||
+								v.getAppraisalVariable(AppraisalStructure.PRAISEWORTHINESS) != 0)
 						{
 							r = new Reaction(perceivedEmotion.GetCause());
-							r.setDesirability(v.getAppraisalVariable(AppraisalVector.DESIRABILITY));
-							r.setPraiseworthiness(v.getAppraisalVariable(AppraisalVector.PRAISEWORTHINESS));
+							r.setDesirability(v.getAppraisalVariable(AppraisalStructure.DESIRABILITY));
+							r.setPraiseworthiness(v.getAppraisalVariable(AppraisalStructure.PRAISEWORTHINESS));
 							m.getEmotionalReactions().AddEmotionalReaction(r);
 						}
 					}
@@ -984,8 +984,8 @@ public class Agent implements AgentModel {
 		{
 			e = new Event(Constants.SELF, "look-at", name, EventType.ACTION, ActionEvent.SUCCESS);
 			int like = Math.round(LikeRelation.getRelation(Constants.SELF, name).getValue(_memory));
-			AppraisalVector v = new AppraisalVector();
-			v.setAppraisalVariable(AppraisalVector.LIKE, like);
+			AppraisalStructure v = new AppraisalStructure();
+			v.setAppraisalVariable(AppraisalStructure.LIKE, like);
 			em = (BaseEmotion) Appraisal.GenerateSelfEmotions(this, e, v).get(0);
 			return _emotionalState.DetermineActiveEmotion(em);
 		}

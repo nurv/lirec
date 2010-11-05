@@ -41,16 +41,16 @@ import FAtiMA.wellFormedNames.Name;
 
 public abstract class Appraisal {
 	
-	public static ArrayList<BaseEmotion> GenerateSelfEmotions(AgentModel am, Event event, AppraisalVector vector)
+	public static ArrayList<BaseEmotion> GenerateSelfEmotions(AgentModel am, Event event, AppraisalStructure vector)
 	{
 		ArrayList<BaseEmotion> emotions = new ArrayList<BaseEmotion>();
 		float desirability;
 		float praiseworthiness;
 		float like;
 		
-		desirability = vector.getAppraisalVariable(AppraisalVector.DESIRABILITY);
-		praiseworthiness = vector.getAppraisalVariable(AppraisalVector.PRAISEWORTHINESS);
-		like = vector.getAppraisalVariable(AppraisalVector.LIKE);
+		desirability = vector.getAppraisalVariable(AppraisalStructure.DESIRABILITY);
+		praiseworthiness = vector.getAppraisalVariable(AppraisalStructure.PRAISEWORTHINESS);
+		like = vector.getAppraisalVariable(AppraisalStructure.LIKE);
 		
 		
 		if(like!=0)
@@ -70,7 +70,7 @@ public abstract class Appraisal {
 		return emotions;
 	}
 	
-	public static AppraisalVector InverseOCCAppraisal(BaseEmotion em, EmotionalState es)
+	public static AppraisalStructure InverseOCCAppraisal(BaseEmotion em, EmotionalState es)
 	{
 		//ignoring mood for now
 		EmotionDisposition disposition = es._emotionDispositions[em.GetType()];
@@ -78,61 +78,61 @@ public abstract class Appraisal {
 		int threshold = disposition.GetThreshold();
 		float potentialValue = em.GetPotential() + threshold; 
 		
-		AppraisalVector vector = new AppraisalVector();
+		AppraisalStructure vector = new AppraisalStructure();
 		
 		if(em.GetType() == EmotionType.LOVE)
 		{
-			vector.setAppraisalVariable(AppraisalVector.LIKE, potentialValue * 1.43f);  
+			vector.setAppraisalVariable(AppraisalStructure.LIKE, potentialValue * 1.43f);  
 		}
 		else if(em.GetType() == EmotionType.HATE)
 		{
-			vector.setAppraisalVariable(AppraisalVector.LIKE, -potentialValue * 1.43f);
+			vector.setAppraisalVariable(AppraisalStructure.LIKE, -potentialValue * 1.43f);
 		}
 		else if(em.GetType() == EmotionType.JOY)
 		{
-			vector.setAppraisalVariable(AppraisalVector.DESIRABILITY, potentialValue);
+			vector.setAppraisalVariable(AppraisalStructure.DESIRABILITY, potentialValue);
 		}
 		else if(em.GetType() == EmotionType.DISTRESS)
 		{
-			vector.setAppraisalVariable(AppraisalVector.DESIRABILITY, -potentialValue);
+			vector.setAppraisalVariable(AppraisalStructure.DESIRABILITY, -potentialValue);
 		}
 		else if(em.GetType() == EmotionType.PRIDE || em.GetType() == EmotionType.ADMIRATION)
 		{
-			vector.setAppraisalVariable(AppraisalVector.PRAISEWORTHINESS, potentialValue);
+			vector.setAppraisalVariable(AppraisalStructure.PRAISEWORTHINESS, potentialValue);
 		}
 		else if(em.GetType() == EmotionType.SHAME || em.GetType() == EmotionType.REPROACH)
 		{
-			vector.setAppraisalVariable(AppraisalVector.PRAISEWORTHINESS, potentialValue);
+			vector.setAppraisalVariable(AppraisalStructure.PRAISEWORTHINESS, potentialValue);
 		}
 		else if(em.GetType() == EmotionType.GLOATING)
 		{
-			vector.setAppraisalVariable(AppraisalVector.DESIRABILITY, potentialValue);
-			vector.setAppraisalVariable(AppraisalVector.DESIRABILITY_FOR_OTHER, -potentialValue);
+			vector.setAppraisalVariable(AppraisalStructure.DESIRABILITY, potentialValue);
+			vector.setAppraisalVariable(AppraisalStructure.DESIRABILITY_FOR_OTHER, -potentialValue);
 		}
 		else if(em.GetType() == EmotionType.HAPPYFOR)
 		{
-			vector.setAppraisalVariable(AppraisalVector.DESIRABILITY, potentialValue);
-			vector.setAppraisalVariable(AppraisalVector.DESIRABILITY_FOR_OTHER, potentialValue);
+			vector.setAppraisalVariable(AppraisalStructure.DESIRABILITY, potentialValue);
+			vector.setAppraisalVariable(AppraisalStructure.DESIRABILITY_FOR_OTHER, potentialValue);
 		}
 		else if(em.GetType() == EmotionType.PITTY)
 		{
-			vector.setAppraisalVariable(AppraisalVector.DESIRABILITY, -potentialValue);
-			vector.setAppraisalVariable(AppraisalVector.DESIRABILITY_FOR_OTHER, -potentialValue);
+			vector.setAppraisalVariable(AppraisalStructure.DESIRABILITY, -potentialValue);
+			vector.setAppraisalVariable(AppraisalStructure.DESIRABILITY_FOR_OTHER, -potentialValue);
 		}
 		else if(em.GetType() == EmotionType.RESENTMENT)
 		{
-			vector.setAppraisalVariable(AppraisalVector.DESIRABILITY, -potentialValue);
-			vector.setAppraisalVariable(AppraisalVector.DESIRABILITY_FOR_OTHER, potentialValue);
+			vector.setAppraisalVariable(AppraisalStructure.DESIRABILITY, -potentialValue);
+			vector.setAppraisalVariable(AppraisalStructure.DESIRABILITY_FOR_OTHER, potentialValue);
 		}
 		else if(em.GetType() == EmotionType.GRATIFICATION || em.GetType() == EmotionType.GRATITUDE)
 		{
-			vector.setAppraisalVariable(AppraisalVector.DESIRABILITY, potentialValue);
-			vector.setAppraisalVariable(AppraisalVector.PRAISEWORTHINESS, potentialValue);
+			vector.setAppraisalVariable(AppraisalStructure.DESIRABILITY, potentialValue);
+			vector.setAppraisalVariable(AppraisalStructure.PRAISEWORTHINESS, potentialValue);
 		}
 		else if(em.GetType() == EmotionType.REGRET || em.GetType() == EmotionType.ANGER)
 		{
-			vector.setAppraisalVariable(AppraisalVector.DESIRABILITY, -potentialValue);
-			vector.setAppraisalVariable(AppraisalVector.PRAISEWORTHINESS, -potentialValue);
+			vector.setAppraisalVariable(AppraisalStructure.DESIRABILITY, -potentialValue);
+			vector.setAppraisalVariable(AppraisalStructure.PRAISEWORTHINESS, -potentialValue);
 		}
 		return vector;
 		
@@ -187,10 +187,10 @@ public abstract class Appraisal {
 		return em;
 	}
 	
-	public static BaseEmotion GenerateEmotionForOther(AgentModel am, Event event, AppraisalVector v, String other)
+	public static BaseEmotion GenerateEmotionForOther(AgentModel am, Event event, AppraisalStructure v, String other)
 	{
-		float desirabilityForOther = v.getAppraisalVariable(AppraisalVector.DESIRABILITY_FOR_OTHER);
-		float desirability = v.getAppraisalVariable(AppraisalVector.DESIRABILITY);
+		float desirabilityForOther = v.getAppraisalVariable(AppraisalStructure.DESIRABILITY_FOR_OTHER);
+		float desirability = v.getAppraisalVariable(AppraisalStructure.DESIRABILITY);
 		float targetBias = 0;
 		float subjectBias = 0;
 		float bias;

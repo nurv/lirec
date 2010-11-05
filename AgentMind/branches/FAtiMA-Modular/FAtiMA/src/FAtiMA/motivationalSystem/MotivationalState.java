@@ -24,7 +24,7 @@ import FAtiMA.deliberativeLayer.plan.IPlanningOperator;
 import FAtiMA.deliberativeLayer.plan.Step;
 import FAtiMA.emotionalState.ActiveEmotion;
 import FAtiMA.emotionalState.Appraisal;
-import FAtiMA.emotionalState.AppraisalVector;
+import FAtiMA.emotionalState.AppraisalStructure;
 import FAtiMA.emotionalState.BaseEmotion;
 import FAtiMA.sensorEffector.Event;
 import FAtiMA.util.AgentLogger;
@@ -110,7 +110,7 @@ public class MotivationalState implements Serializable, Cloneable, IComponent, I
 	 * Updates the intensity of the motivators based on the event received
 	 * @throws InvalidMotivatorTypeException 
 	 */
-	public AppraisalVector UpdateMotivators(AgentModel am, Event e, ArrayList<? extends IPlanningOperator> operators)
+	public AppraisalStructure UpdateMotivators(AgentModel am, Event e, ArrayList<? extends IPlanningOperator> operators)
 	{
 		ArrayList<Substitution> substitutions;
 		IPlanningOperator operator;
@@ -175,8 +175,8 @@ public class MotivationalState implements Serializable, Cloneable, IComponent, I
 			}			
 		}
 		
-		AppraisalVector vec = new AppraisalVector();
-		vec.setAppraisalVariable(AppraisalVector.DESIRABILITY, contributionToSelfNeeds);
+		AppraisalStructure vec = new AppraisalStructure();
+		vec.setAppraisalVariable(AppraisalStructure.DESIRABILITY, contributionToSelfNeeds);
 		
 		return vec;
 		
@@ -480,7 +480,7 @@ public class MotivationalState implements Serializable, Cloneable, IComponent, I
 	}
 
 	@Override
-	public AppraisalVector appraisal(Event e, AgentModel am) {
+	public AppraisalStructure appraisal(Event e, AgentModel am) {
 		Event event2 = e.ApplyPerspective(am.getName());
 		return UpdateMotivators(am, event2, am.getDeliberativeLayer().getEmotionalPlanner().GetOperators());	
 	}
@@ -518,7 +518,7 @@ public class MotivationalState implements Serializable, Cloneable, IComponent, I
 
 
 	@Override
-	public AppraisalVector composedAppraisal(Event e, AppraisalVector v,
+	public AppraisalStructure composedAppraisal(Event e, AppraisalStructure v,
 			AgentModel am) {
 		return null;
 	}

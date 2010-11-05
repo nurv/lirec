@@ -138,7 +138,7 @@ import FAtiMA.deliberativeLayer.plan.Plan;
 import FAtiMA.deliberativeLayer.plan.ProtectedCondition;
 import FAtiMA.deliberativeLayer.plan.Step;
 import FAtiMA.emotionalState.ActiveEmotion;
-import FAtiMA.emotionalState.AppraisalVector;
+import FAtiMA.emotionalState.AppraisalStructure;
 import FAtiMA.exceptions.UnknownGoalException;
 import FAtiMA.motivationalSystem.InvalidMotivatorTypeException;
 import FAtiMA.sensorEffector.Event;
@@ -654,7 +654,7 @@ public class DeliberativeProcess implements IComponent, IOptionsStrategy, IExpec
 	}*/
 	
 	
-	public AppraisalVector appraisal(Event event, AgentModel am) {
+	public AppraisalStructure appraisal(Event event, AgentModel am) {
 					
 		//updating selfMotivators
 		Event event2 = event.ApplyPerspective(am.getName());
@@ -690,7 +690,7 @@ public class DeliberativeProcess implements IComponent, IOptionsStrategy, IExpec
 			_actionMonitor = null;
 		}
 		
-		return new AppraisalVector();
+		return new AppraisalStructure();
 	}
 	
 	public ArrayList<ActivePursuitGoal> options(AgentModel am)
@@ -1223,7 +1223,7 @@ public class DeliberativeProcess implements IComponent, IOptionsStrategy, IExpec
 	}
 
 	@Override
-	public AppraisalVector composedAppraisal(Event e, AppraisalVector v,
+	public AppraisalStructure composedAppraisal(Event e, AppraisalStructure v,
 			AgentModel am) {
 		// TODO Auto-generated method stub
 		return null;

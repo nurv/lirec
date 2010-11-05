@@ -5,7 +5,7 @@ import FAtiMA.AgentModel;
 import FAtiMA.IComponent;
 import FAtiMA.Display.AgentDisplayPanel;
 import FAtiMA.emotionalState.ActiveEmotion;
-import FAtiMA.emotionalState.AppraisalVector;
+import FAtiMA.emotionalState.AppraisalStructure;
 import FAtiMA.memory.Memory;
 import FAtiMA.reactiveLayer.Reaction;
 import FAtiMA.sensorEffector.Event;
@@ -46,19 +46,19 @@ public class SocialRelationsComponent implements IComponent {
 	}
 
 	@Override
-	public AppraisalVector appraisal(Event e, AgentModel am) {
+	public AppraisalStructure appraisal(Event e, AgentModel am) {
 		if(e.GetSubject().equals(Constants.SELF) && e.GetAction().equals("look-at"))
 		{
 			int relationShip = Math.round(LikeRelation.getRelation(Constants.SELF, e.GetTarget()).getValue(am.getMemory()));
-			AppraisalVector v = new AppraisalVector();
-			v.setAppraisalVariable(AppraisalVector.LIKE, relationShip);
+			AppraisalStructure v = new AppraisalStructure();
+			v.setAppraisalVariable(AppraisalStructure.LIKE, relationShip);
 			return v;
 		}
 		else return null;
 	}
 
 	@Override
-	public AppraisalVector composedAppraisal(Event e, AppraisalVector v,
+	public AppraisalStructure composedAppraisal(Event e, AppraisalStructure v,
 			AgentModel am) {
 		return null;
 	}

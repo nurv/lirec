@@ -11,7 +11,7 @@ import FAtiMA.IComponent;
 import FAtiMA.IGetModelStrategy;
 import FAtiMA.Display.AgentDisplayPanel;
 import FAtiMA.emotionalState.ActiveEmotion;
-import FAtiMA.emotionalState.AppraisalVector;
+import FAtiMA.emotionalState.AppraisalStructure;
 import FAtiMA.memory.semanticMemory.KnowledgeSlot;
 import FAtiMA.sensorEffector.Event;
 import FAtiMA.util.Constants;
@@ -103,13 +103,13 @@ public class ToMComponent implements IComponent, IGetModelStrategy {
 	}
 
 	@Override
-	public AppraisalVector appraisal(Event e, AgentModel am) {
+	public AppraisalStructure appraisal(Event e, AgentModel am) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public AppraisalVector composedAppraisal(Event e, AppraisalVector v,
+	public AppraisalStructure composedAppraisal(Event e, AppraisalStructure v,
 			AgentModel am) {
 		// TODO Auto-generated method stub
 		return null;

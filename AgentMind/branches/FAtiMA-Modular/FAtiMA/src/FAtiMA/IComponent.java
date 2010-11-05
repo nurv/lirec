@@ -8,7 +8,7 @@ import org.xml.sax.SAXException;
 
 import FAtiMA.Display.AgentDisplayPanel;
 import FAtiMA.emotionalState.ActiveEmotion;
-import FAtiMA.emotionalState.AppraisalVector;
+import FAtiMA.emotionalState.AppraisalStructure;
 import FAtiMA.sensorEffector.Event;
 import FAtiMA.wellFormedNames.Name;
 
@@ -26,9 +26,9 @@ public interface IComponent {
 	
 	public IComponent createModelOfOther();
 	
-	public AppraisalVector appraisal(Event e, AgentModel am);
+	public AppraisalStructure appraisal(Event e, AgentModel am);
 	
-	public AppraisalVector composedAppraisal(Event e, AppraisalVector v, AgentModel am);
+	public AppraisalStructure composedAppraisal(Event e, AppraisalStructure v, AgentModel am);
 	
 	public void emotionActivation(Event e, ActiveEmotion em, AgentModel am);
 	

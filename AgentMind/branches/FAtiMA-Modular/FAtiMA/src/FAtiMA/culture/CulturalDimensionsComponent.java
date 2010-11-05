@@ -18,7 +18,7 @@ import FAtiMA.deliberativeLayer.IOptionsStrategy;
 import FAtiMA.deliberativeLayer.IUtilityForTargetStrategy;
 import FAtiMA.deliberativeLayer.goals.ActivePursuitGoal;
 import FAtiMA.emotionalState.ActiveEmotion;
-import FAtiMA.emotionalState.AppraisalVector;
+import FAtiMA.emotionalState.AppraisalStructure;
 import FAtiMA.sensorEffector.Event;
 import FAtiMA.util.AgentLogger;
 import FAtiMA.util.Constants;
@@ -61,24 +61,24 @@ public class CulturalDimensionsComponent implements IComponent, IOptionsStrategy
 	}
 	
 	@Override
-	public AppraisalVector appraisal(Event e, AgentModel am){
+	public AppraisalStructure appraisal(Event e, AgentModel am){
 		
 		//reactive appraisal
 		//this.updateEmotionalState(e,am);
 		
 		//deliberative appraisal
 		this.addRitualOptions(e,am);
-		return new AppraisalVector();
+		return new AppraisalStructure();
 	}
 	
-	public AppraisalVector composedAppraisal(Event e, AppraisalVector v, AgentModel am)
+	public AppraisalStructure composedAppraisal(Event e, AppraisalStructure v, AgentModel am)
 	{
 		float praiseWorthiness = this.determinePraiseWorthiness(
-				v.getAppraisalVariable(AppraisalVector.DESIRABILITY),
-				v.getAppraisalVariable(AppraisalVector.DESIRABILITY_FOR_OTHER));
+				v.getAppraisalVariable(AppraisalStructure.DESIRABILITY),
+				v.getAppraisalVariable(AppraisalStructure.DESIRABILITY_FOR_OTHER));
 		
-		AppraisalVector v2 = new AppraisalVector();
-		v2.setAppraisalVariable(AppraisalVector.PRAISEWORTHINESS, praiseWorthiness);
+		AppraisalStructure v2 = new AppraisalStructure();
+		v2.setAppraisalVariable(AppraisalStructure.PRAISEWORTHINESS, praiseWorthiness);
 		
 		return v2;
 	}

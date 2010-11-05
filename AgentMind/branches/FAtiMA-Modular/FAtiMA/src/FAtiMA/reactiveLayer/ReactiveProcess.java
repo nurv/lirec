@@ -70,7 +70,7 @@ import FAtiMA.ValuedAction;
 import FAtiMA.ToM.ModelOfOther;
 import FAtiMA.emotionalState.ActiveEmotion;
 import FAtiMA.emotionalState.Appraisal;
-import FAtiMA.emotionalState.AppraisalVector;
+import FAtiMA.emotionalState.AppraisalStructure;
 import FAtiMA.emotionalState.BaseEmotion;
 import FAtiMA.memory.episodicMemory.ActionDetail;
 import FAtiMA.sensorEffector.Event;
@@ -163,16 +163,16 @@ public class ReactiveProcess implements IComponent {
 	 * Reactive appraisal. Appraises received events according to the emotional
 	 * reaction rules
 	 */
-	public AppraisalVector appraisal(Event event, AgentModel ag) {
+	public AppraisalStructure appraisal(Event event, AgentModel ag) {
 		Event event2;
 		Event event3;
 		ArrayList<BaseEmotion> emotions;
 		BaseEmotion emotionForOther;
 		Reaction selfEvaluation;
 		Reaction otherEvaluation;
-		AppraisalVector v;
+		AppraisalStructure v;
 		
-		v = new AppraisalVector();
+		v = new AppraisalStructure();
 		
 			
 		//self evaluation
@@ -252,25 +252,25 @@ public class ReactiveProcess implements IComponent {
 		}
 	}
 	
-	public static AppraisalVector translateEmotionalReaction(Reaction r)
+	public static AppraisalStructure translateEmotionalReaction(Reaction r)
 	{
-		AppraisalVector vector = new AppraisalVector();
+		AppraisalStructure vector = new AppraisalStructure();
 		
 		if(r._desirability != null)
 		{
-			vector.setAppraisalVariable(AppraisalVector.DESIRABILITY, r._desirability.intValue());
+			vector.setAppraisalVariable(AppraisalStructure.DESIRABILITY, r._desirability.intValue());
 		}
 		if(r._desirabilityForOther != null)
 		{
-			vector.setAppraisalVariable(AppraisalVector.DESIRABILITY_FOR_OTHER, r._desirabilityForOther.intValue());
+			vector.setAppraisalVariable(AppraisalStructure.DESIRABILITY_FOR_OTHER, r._desirabilityForOther.intValue());
 		}
 		if(r._praiseworthiness != null)
 		{
-			vector.setAppraisalVariable(AppraisalVector.PRAISEWORTHINESS, r._praiseworthiness.intValue());
+			vector.setAppraisalVariable(AppraisalStructure.PRAISEWORTHINESS, r._praiseworthiness.intValue());
 		}
 		if(r._like != null)
 		{
-			vector.setAppraisalVariable(AppraisalVector.LIKE, r._like.intValue());
+			vector.setAppraisalVariable(AppraisalStructure.LIKE, r._like.intValue());
 		}
 		
 		return vector;
@@ -362,7 +362,7 @@ public class ReactiveProcess implements IComponent {
 	}
 
 	@Override
-	public AppraisalVector composedAppraisal(Event e, AppraisalVector v,
+	public AppraisalStructure composedAppraisal(Event e, AppraisalStructure v,
 			AgentModel am) {
 		// TODO Auto-generated method stub
 		return null;

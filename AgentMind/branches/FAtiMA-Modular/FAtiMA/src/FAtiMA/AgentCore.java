@@ -37,7 +37,7 @@ import FAtiMA.emotionalIntelligence.ActionTendencyOperatorFactory;
 import FAtiMA.emotionalIntelligence.OCCAppraisalRules;
 import FAtiMA.emotionalState.ActiveEmotion;
 import FAtiMA.emotionalState.Appraisal;
-import FAtiMA.emotionalState.AppraisalVector;
+import FAtiMA.emotionalState.AppraisalStructure;
 import FAtiMA.emotionalState.BaseEmotion;
 import FAtiMA.emotionalState.EmotionalState;
 import FAtiMA.exceptions.UnknownGoalException;
@@ -492,8 +492,8 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 	 */
 	public void Run() {
 		ValuedAction action;
-		AppraisalVector appraisal;
-		AppraisalVector a2;
+		AppraisalStructure appraisal;
+		AppraisalStructure a2;
 		ArrayList<BaseEmotion> emotions;
 		ActiveEmotion activeEmotion;
 		
@@ -531,7 +531,7 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 						{
 							AgentLogger.GetInstance().log("appraising event: " + e.toName());
 							
-							appraisal = new AppraisalVector();
+							appraisal = new AppraisalStructure();
 							
 							for(IComponent c : this._components.values())
 							{
