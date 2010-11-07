@@ -72,7 +72,6 @@ public class MotivationalState implements Serializable, Cloneable, IComponent, I
 		currentLevelStr = Math.pow(MAX_INTENSITY - currentLevel,2); 
 		finalLevelStr = Math.pow(MAX_INTENSITY - finalLevel,2);
 
-		
 		result = - (finalLevelStr - currentLevelStr); 
 		return result;
 	}

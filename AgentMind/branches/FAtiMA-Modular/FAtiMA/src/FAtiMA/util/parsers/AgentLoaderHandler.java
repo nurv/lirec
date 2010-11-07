@@ -165,21 +165,7 @@ public class AgentLoaderHandler extends ReflectXMLHandler {
                                                               new Integer(attributes.getValue("decay")).intValue()));
     }
     
-    /*
-     * Added by Meiyii 
-     */    
-    public void MotivationalParameter(Attributes attributes) throws InvalidMotivatorTypeException {
-    	String motivatorName;
-    	short type;
-    	
-    	motivatorName = attributes.getValue("motivator");
-    	type = MotivatorType.ParseType(motivatorName);
-        _am.getMotivationalState().AddMotivator(new Motivator(type,
-        												new Float(attributes.getValue("decayFactor")).floatValue(),
-        												new Float(attributes.getValue("weight")).floatValue(),
-        												new Float(attributes.getValue("intensity")).floatValue()));
-        AgentLogger.GetInstance().logAndPrint("Motivator found: " + type);
-    }
+   
 
     public void Event(Attributes attributes) 
     {
