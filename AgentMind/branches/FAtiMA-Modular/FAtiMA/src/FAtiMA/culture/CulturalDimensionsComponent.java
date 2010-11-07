@@ -12,6 +12,7 @@ import FAtiMA.Agent;
 import FAtiMA.AgentCore;
 import FAtiMA.AgentModel;
 import FAtiMA.IComponent;
+import FAtiMA.Display.AgentDisplayPanel;
 import FAtiMA.conditions.Condition;
 import FAtiMA.deliberativeLayer.IExpectedUtilityStrategy;
 import FAtiMA.deliberativeLayer.IOptionsStrategy;
@@ -60,30 +61,24 @@ public class CulturalDimensionsComponent implements IComponent, IOptionsStrategy
 		aM.getDeliberativeLayer().setExpectedUtilityStrategy(this);
 	}
 	
-	@Override
-	public AppraisalStructure appraisal(Event e, AgentModel am){
-		
-		//reactive appraisal
-		//this.updateEmotionalState(e,am);
-		
-		//deliberative appraisal
-		this.addRitualOptions(e,am);
-		return new AppraisalStructure();
-	}
-	
-	public AppraisalStructure composedAppraisal(Event e, AppraisalStructure v, AgentModel am)
+	public void update(Event e, AgentModel am)
 	{
-		float praiseWorthiness = this.determinePraiseWorthiness(
-				v.getAppraisalVariable(AppraisalStructure.DESIRABILITY),
-				v.getAppraisalVariable(AppraisalStructure.DESIRABILITY_FOR_OTHER));
-		
-		AppraisalStructure v2 = new AppraisalStructure();
-		v2.setAppraisalVariable(AppraisalStructure.PRAISEWORTHINESS, praiseWorthiness);
-		
-		return v2;
+		this.addRitualOptions(e,am);
 	}
-
 	
+	@Override
+	public void appraisal(Event e, AppraisalStructure as, AgentModel am)
+	{
+		float desirability = as.getAppraisalVariable(AppraisalStructure.DESIRABILITY);
+		float desirabilityForOther = as.getAppraisalVariable(AppraisalStructure.DESIRABILITY_FOR_OTHER);
+			
+		float praiseWorthiness = this.determinePraiseWorthiness(
+				desirability,
+				desirabilityForOther);
+		
+		as.SetAppraisalVariable(NAME, (short)4, AppraisalStructure.PRAISEWORTHINESS, praiseWorthiness);	
+		
+	}
 	
 	private void addRitualOptions(Event e, AgentModel am){
 		ArrayList<SubstitutionSet> substitutions, substitutions2;
@@ -330,6 +325,11 @@ public class CulturalDimensionsComponent implements IComponent, IOptionsStrategy
 
 	@Override
 	public IComponent createModelOfOther() {
+		return null;
+	}
+
+	@Override
+	public AgentDisplayPanel createComponentDisplayPanel(AgentModel am) {
 		return null;
 	}	
 }

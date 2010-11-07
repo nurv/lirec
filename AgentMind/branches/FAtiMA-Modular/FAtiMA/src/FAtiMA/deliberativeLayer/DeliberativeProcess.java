@@ -127,6 +127,7 @@ import FAtiMA.AgentCore;
 import FAtiMA.AgentModel;
 import FAtiMA.IComponent;
 import FAtiMA.ValuedAction;
+import FAtiMA.Display.AgentDisplayPanel;
 import FAtiMA.conditions.Condition;
 import FAtiMA.deliberativeLayer.goals.ActivePursuitGoal;
 import FAtiMA.deliberativeLayer.goals.Goal;
@@ -653,8 +654,7 @@ public class DeliberativeProcess implements IComponent, IOptionsStrategy, IExpec
 		am.getMotivationalState().UpdateMotivators(am, event2, _planner.GetOperators());
 	}*/
 	
-	
-	public AppraisalStructure appraisal(Event event, AgentModel am) {
+	public void update(Event event, AgentModel am) {
 					
 		//updating selfMotivators
 		Event event2 = event.ApplyPerspective(am.getName());
@@ -1223,13 +1223,6 @@ public class DeliberativeProcess implements IComponent, IOptionsStrategy, IExpec
 	}
 
 	@Override
-	public AppraisalStructure composedAppraisal(Event e, AppraisalStructure v,
-			AgentModel am) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public void emotionActivation(Event e, ActiveEmotion em, AgentModel am) {
 		// TODO Auto-generated method stub
 		
@@ -1243,6 +1236,16 @@ public class DeliberativeProcess implements IComponent, IOptionsStrategy, IExpec
 
 	@Override
 	public IComponent createModelOfOther() {
+		return null;
+	}
+
+	@Override
+	public void appraisal(Event e, AppraisalStructure as, AgentModel am) {
+	}
+
+	@Override
+	public AgentDisplayPanel createComponentDisplayPanel(AgentModel am) {
+		// TODO Auto-generated method stub
 		return null;
 	}
 }

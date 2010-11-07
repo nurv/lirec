@@ -24,11 +24,11 @@ public interface IComponent {
 	
 	public void update(AgentModel am);
 	
+	public void update(Event e, AgentModel am);
+	
 	public IComponent createModelOfOther();
 	
-	public AppraisalStructure appraisal(Event e, AgentModel am);
-	
-	public AppraisalStructure composedAppraisal(Event e, AppraisalStructure v, AgentModel am);
+	public void appraisal(Event e, AppraisalStructure as, AgentModel am);
 	
 	public void emotionActivation(Event e, ActiveEmotion em, AgentModel am);
 	

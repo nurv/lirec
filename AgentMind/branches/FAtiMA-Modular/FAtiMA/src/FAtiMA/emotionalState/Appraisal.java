@@ -70,7 +70,7 @@ public abstract class Appraisal {
 		return emotions;
 	}
 	
-	public static AppraisalStructure InverseOCCAppraisal(BaseEmotion em, EmotionalState es)
+	/*public static AppraisalStructure InverseOCCAppraisal(BaseEmotion em, EmotionalState es)
 	{
 		//ignoring mood for now
 		EmotionDisposition disposition = es._emotionDispositions[em.GetType()];
@@ -136,7 +136,8 @@ public abstract class Appraisal {
 		}
 		return vector;
 		
-	}
+		
+	}*/
 	
 	private static BaseEmotion OCCAppraiseAttribution(Event event, float like)
 	{

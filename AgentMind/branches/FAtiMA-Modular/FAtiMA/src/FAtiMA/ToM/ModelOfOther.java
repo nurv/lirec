@@ -92,11 +92,6 @@ public class ModelOfOther implements AgentModel, Serializable {
 	}
 
 	@Override
-	public AgentDisplay getAgentDisplay() {
-		return null;
-	}
-
-	@Override
 	public AgentModel getModelToTest(Symbol ToM) {
 		return null;
 	}

@@ -101,18 +101,14 @@ public class ToMComponent implements IComponent, IGetModelStrategy {
 		// TODO Auto-generated method stub
 		
 	}
-
+	
 	@Override
-	public AppraisalStructure appraisal(Event e, AgentModel am) {
-		// TODO Auto-generated method stub
-		return null;
+	public void update(Event e, AgentModel am)
+	{
 	}
 
 	@Override
-	public AppraisalStructure composedAppraisal(Event e, AppraisalStructure v,
-			AgentModel am) {
-		// TODO Auto-generated method stub
-		return null;
+	public void appraisal(Event e, AppraisalStructure as, AgentModel am) {
 	}
 
 	@Override

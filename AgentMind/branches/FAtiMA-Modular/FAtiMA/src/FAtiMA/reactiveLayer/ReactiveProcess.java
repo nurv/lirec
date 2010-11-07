@@ -67,6 +67,7 @@ import FAtiMA.AgentCore;
 import FAtiMA.AgentModel;
 import FAtiMA.IComponent;
 import FAtiMA.ValuedAction;
+import FAtiMA.Display.AgentDisplayPanel;
 import FAtiMA.ToM.ModelOfOther;
 import FAtiMA.emotionalState.ActiveEmotion;
 import FAtiMA.emotionalState.Appraisal;
@@ -163,22 +164,30 @@ public class ReactiveProcess implements IComponent {
 	 * Reactive appraisal. Appraises received events according to the emotional
 	 * reaction rules
 	 */
-	public AppraisalStructure appraisal(Event event, AgentModel ag) {
+	public void appraisal(Event event, AppraisalStructure as, AgentModel ag) {
 		Event event2;
-		Event event3;
-		ArrayList<BaseEmotion> emotions;
-		BaseEmotion emotionForOther;
-		Reaction selfEvaluation;
-		Reaction otherEvaluation;
-		AppraisalStructure v;
-		
-		v = new AppraisalStructure();
-		
+		Reaction selfEvaluation;	
 			
 		//self evaluation
 		event2 = event.ApplyPerspective(ag.getName());
 		selfEvaluation = Evaluate(ag, event2);
-		return translateEmotionalReaction(selfEvaluation);
+		
+		if(selfEvaluation._desirability != null)
+		{
+			as.SetAppraisalVariable(NAME, (short)5, AppraisalStructure.DESIRABILITY, selfEvaluation._desirability.intValue());
+		}
+		if(selfEvaluation._desirabilityForOther != null)
+		{
+			as.SetAppraisalVariable(NAME, (short)5, AppraisalStructure.DESIRABILITY_FOR_OTHER, selfEvaluation._desirabilityForOther.intValue());
+		}
+		if(selfEvaluation._praiseworthiness != null)
+		{
+			as.SetAppraisalVariable(NAME, (short)5, AppraisalStructure.PRAISEWORTHINESS, selfEvaluation._praiseworthiness.intValue());
+		}
+		if(selfEvaluation._like != null)
+		{
+			as.SetAppraisalVariable(NAME, (short)5, AppraisalStructure.LIKE, selfEvaluation._like.intValue());
+		}
 		
 		
 		//TODO move this code to the memory appraisal
@@ -252,30 +261,6 @@ public class ReactiveProcess implements IComponent {
 		}
 	}
 	
-	public static AppraisalStructure translateEmotionalReaction(Reaction r)
-	{
-		AppraisalStructure vector = new AppraisalStructure();
-		
-		if(r._desirability != null)
-		{
-			vector.setAppraisalVariable(AppraisalStructure.DESIRABILITY, r._desirability.intValue());
-		}
-		if(r._desirabilityForOther != null)
-		{
-			vector.setAppraisalVariable(AppraisalStructure.DESIRABILITY_FOR_OTHER, r._desirabilityForOther.intValue());
-		}
-		if(r._praiseworthiness != null)
-		{
-			vector.setAppraisalVariable(AppraisalStructure.PRAISEWORTHINESS, r._praiseworthiness.intValue());
-		}
-		if(r._like != null)
-		{
-			vector.setAppraisalVariable(AppraisalStructure.LIKE, r._like.intValue());
-		}
-		
-		return vector;
-	}
-	
 	/**
 	 * Gets the action selected for execution in the last Coping process,
 	 * @return the action selected for execution
@@ -321,11 +306,11 @@ public class ReactiveProcess implements IComponent {
 	public void shutDown() {
 	}
 	
-	public static Reaction Evaluate(AgentModel am, Event event)
+	public Reaction Evaluate(AgentModel am, Event event)
 	{
 		Reaction emotionalReaction;
 		
-		emotionalReaction = am.getEmotionalReactions().MatchEvent(event);
+		emotionalReaction = _emotionalReactions.MatchEvent(event);
 		if(emotionalReaction != null)
 		{
 			emotionalReaction = (Reaction) emotionalReaction.clone();
@@ -351,6 +336,11 @@ public class ReactiveProcess implements IComponent {
 	@Override
 	public void update(AgentModel am) {
 	}
+	
+	@Override
+	public void update(Event e, AgentModel am)
+	{
+	}
 
 	@Override
 	public void propertyChangedPerception(String ToM, Name propertyName,
@@ -359,13 +349,6 @@ public class ReactiveProcess implements IComponent {
 
 	@Override
 	public void lookAtPerception(AgentCore ag, String subject, String target) {
-	}
-
-	@Override
-	public AppraisalStructure composedAppraisal(Event e, AppraisalStructure v,
-			AgentModel am) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override
@@ -389,5 +372,10 @@ public class ReactiveProcess implements IComponent {
 		reactive._actionTendencies.ClearFilters();
 		
 		return reactive;
+	}
+
+	@Override
+	public AgentDisplayPanel createComponentDisplayPanel(AgentModel am) {
+		return null;
 	}
 }

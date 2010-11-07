@@ -27,10 +27,7 @@ public class SocialRelationsComponent implements IComponent {
 	}
 
 	@Override
-	public void initialize(AgentCore am) {	
-		
-		SocialRelationsPanel panel = new SocialRelationsPanel();
-		am.getAgentDisplay().AddPanel(panel, "Social Relations", "displays the character's relations' state");		
+	public void initialize(AgentCore am) {			
 	}
 
 	@Override
@@ -44,23 +41,19 @@ public class SocialRelationsComponent implements IComponent {
 	@Override
 	public void update(AgentModel am) {
 	}
-
+	
 	@Override
-	public AppraisalStructure appraisal(Event e, AgentModel am) {
-		if(e.GetSubject().equals(Constants.SELF) && e.GetAction().equals("look-at"))
-		{
-			int relationShip = Math.round(LikeRelation.getRelation(Constants.SELF, e.GetTarget()).getValue(am.getMemory()));
-			AppraisalStructure v = new AppraisalStructure();
-			v.setAppraisalVariable(AppraisalStructure.LIKE, relationShip);
-			return v;
-		}
-		else return null;
+	public void update(Event e, AgentModel am)
+	{
 	}
 
 	@Override
-	public AppraisalStructure composedAppraisal(Event e, AppraisalStructure v,
-			AgentModel am) {
-		return null;
+	public void appraisal(Event e, AppraisalStructure as, AgentModel am) {
+		if(e.GetSubject().equals(Constants.SELF) && e.GetAction().equals("look-at"))
+		{
+			int relationShip = Math.round(LikeRelation.getRelation(Constants.SELF, e.GetTarget()).getValue(am.getMemory()));
+			as.SetAppraisalVariable(NAME, (short)7, AppraisalStructure.LIKE, relationShip);
+		}
 	}
 
 	@Override

@@ -7,6 +7,7 @@ package FAtiMA.motivationalSystem;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.ListIterator;
 
 import FAtiMA.AgentCore;
@@ -48,10 +49,13 @@ public class MotivationalState implements Serializable, Cloneable, IComponent, I
 	public static final String NAME ="MotivationalState";
 	
 	protected Motivator[]  _motivators;
+	
 	//protected Hashtable<String,Motivator[]> _otherAgentsMotivators;
 	protected long _lastTime;
 	protected int _goalTried;
 	protected int _goalSucceeded;
+	
+	protected HashMap<String,Float> _appraisals;
 
 	public static double determineQuadraticNeedVariation(float currentLevel, float deviation){
 		final float MAX_INTENSITY = 10;
@@ -83,6 +87,7 @@ public class MotivationalState implements Serializable, Cloneable, IComponent, I
 		_goalTried = 0;
 		_goalSucceeded = 0;
 		_lastTime = AgentSimulationTime.GetInstance().Time();
+		_appraisals = new HashMap<String,Float>();
 	}
 
 	
@@ -110,7 +115,7 @@ public class MotivationalState implements Serializable, Cloneable, IComponent, I
 	 * Updates the intensity of the motivators based on the event received
 	 * @throws InvalidMotivatorTypeException 
 	 */
-	public AppraisalStructure UpdateMotivators(AgentModel am, Event e, ArrayList<? extends IPlanningOperator> operators)
+	public float UpdateMotivators(AgentModel am, Event e, ArrayList<? extends IPlanningOperator> operators)
 	{
 		ArrayList<Substitution> substitutions;
 		IPlanningOperator operator;
@@ -175,12 +180,7 @@ public class MotivationalState implements Serializable, Cloneable, IComponent, I
 			}			
 		}
 		
-		AppraisalStructure vec = new AppraisalStructure();
-		vec.setAppraisalVariable(AppraisalStructure.DESIRABILITY, contributionToSelfNeeds);
-		
-		return vec;
-		
-		
+		return contributionToSelfNeeds;
 	}
 	
 	public float getContributionToNeeds(AgentModel am, ActivePursuitGoal g, String target){
@@ -191,9 +191,7 @@ public class MotivationalState implements Serializable, Cloneable, IComponent, I
 		float currentIntensity = 0;
 		float auxMultiplier; // this is used for the effects that are OnIgnore
 			
-		try {
-			
-				
+		try {		
 			// If target is SELF
 			if(target.equalsIgnoreCase(Constants.SELF)){
 				auxMultiplier = 1;
@@ -202,18 +200,18 @@ public class MotivationalState implements Serializable, Cloneable, IComponent, I
 					
 					for(int i = 0; i < nonCognitiveDrives.length; i++){
 						expectedContribution = g.GetExpectedEffectOnDrive(effectTypes[c], nonCognitiveDrives[i], "[SELF]").floatValue();
-						currentIntensity =  am.getMotivationalState().GetIntensity(MotivatorType.ParseType(nonCognitiveDrives[i]));
+						currentIntensity =  GetIntensity(MotivatorType.ParseType(nonCognitiveDrives[i]));
 						result +=  auxMultiplier * MotivationalState.determineQuadraticNeedVariation(currentIntensity, expectedContribution); 
 					}
 					auxMultiplier = -1;
 
 				}
 				
-				float currentCompetenceIntensity = am.getMotivationalState().GetIntensity(MotivatorType.COMPETENCE);
-				float expectedCompetenceContribution = am.getMotivationalState().PredictCompetenceChange(true);
+				float currentCompetenceIntensity = GetIntensity(MotivatorType.COMPETENCE);
+				float expectedCompetenceContribution = PredictCompetenceChange(true);
 				result += MotivationalState.determineQuadraticNeedVariation(currentCompetenceIntensity, expectedCompetenceContribution);
 				
-				float currentUncertaintyIntensity = am.getMotivationalState().GetIntensity(MotivatorType.CERTAINTY);
+				float currentUncertaintyIntensity = GetIntensity(MotivatorType.CERTAINTY);
 				//expected error assuming that the goal is successful
 				float expectedError = 1 - g.getProbability(am);
 				float currentError = g.getUncertainty(am);
@@ -476,13 +474,23 @@ public class MotivationalState implements Serializable, Cloneable, IComponent, I
 	@Override
 	public void reset() {
 		// TODO Auto-generated method stub
-		
+	
+	}
+	
+	public void update(Event e, AgentModel am)
+	{
+		Event event2 = e.ApplyPerspective(am.getName());
+		float result =  UpdateMotivators(am, event2, am.getDeliberativeLayer().getEmotionalPlanner().GetOperators());
+		_appraisals.put(e.toString(), new Float(result));
 	}
 
 	@Override
-	public AppraisalStructure appraisal(Event e, AgentModel am) {
-		Event event2 = e.ApplyPerspective(am.getName());
-		return UpdateMotivators(am, event2, am.getDeliberativeLayer().getEmotionalPlanner().GetOperators());	
+	public void appraisal(Event e, AppraisalStructure as, AgentModel am) {
+		Float desirability = _appraisals.get(e.toString());
+		if(desirability != null)
+		{
+			as.SetAppraisalVariable(NAME, (short) 8, AppraisalStructure.DESIRABILITY, desirability.floatValue());
+		}
 	}
 
 
@@ -509,18 +517,12 @@ public class MotivationalState implements Serializable, Cloneable, IComponent, I
 
 	@Override
 	public void update(AgentModel am) {
+		_appraisals.clear();
 	}
 
 
 	@Override
 	public void coping(AgentModel am) {
-	}
-
-
-	@Override
-	public AppraisalStructure composedAppraisal(Event e, AppraisalStructure v,
-			AgentModel am) {
-		return null;
 	}
 
 

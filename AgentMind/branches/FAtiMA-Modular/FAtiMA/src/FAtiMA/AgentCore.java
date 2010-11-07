@@ -531,16 +531,20 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 						{
 							AgentLogger.GetInstance().log("appraising event: " + e.toName());
 							
-							appraisal = new AppraisalStructure();
-							
 							for(IComponent c : this._components.values())
 							{
-								appraisal.sum(c.appraisal(e,this));
+								c.update(e,this);
 							}
 							
-							for(IComponent c : this._components.values())
+							appraisal = new AppraisalStructure();
+							
+							while(appraisal.hasChanged())
 							{
-								appraisal.sum(c.composedAppraisal(e,appraisal,this));
+								for(IComponent c : this._components.values())
+								{
+									c.appraisal(e,appraisal,this);
+									
+								}
 							}
 							
 							emotions = Appraisal.GenerateSelfEmotions(this, e, appraisal);
