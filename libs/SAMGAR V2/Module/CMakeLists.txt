@@ -22,5 +22,5 @@ add_executable(VideoGet  VideoGet.cpp)
 
 # link with YARP libraries
 target_link_libraries(SamExamples SamModule ${YARP_LIBRARIES})
-target_link_libraries(VideoSend SamModule ${YARP_LIBRARIES} ${OpenCV_LIBRARIES})
-target_link_libraries(VideoGet SamModule ${YARP_LIBRARIES} ${OpenCV_LIBRARIES})
+target_link_libraries(VideoSend SamModule ${YARP_LIBRARIES} ${OpenCV_LIBS})
+target_link_libraries(VideoGet SamModule ${YARP_LIBRARIES} ${OpenCV_LIBS})
