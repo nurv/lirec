@@ -38,10 +38,6 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
 import FAtiMA.AgentCore;
-import FAtiMA.ToM.ToMPanel;
-import FAtiMA.motivationalSystem.NeedsPanel;
-import FAtiMA.socialRelations.SocialRelationsPanel;
-
 
 /**
  * @author  bruno

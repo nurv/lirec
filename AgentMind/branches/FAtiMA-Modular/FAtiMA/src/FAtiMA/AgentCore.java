@@ -58,6 +58,7 @@ import FAtiMA.sensorEffector.WorldSimulatorRemoteAgent;
 import FAtiMA.socialRelations.LikeRelation;
 import FAtiMA.util.AgentLogger;
 import FAtiMA.util.Constants;
+import FAtiMA.util.FileLocator;
 import FAtiMA.util.VersionChecker;
 import FAtiMA.util.enumerables.ActionEvent;
 import FAtiMA.util.enumerables.AgentPlatform;
@@ -73,24 +74,20 @@ import FAtiMA.memory.ISpreadActivate;
 import FAtiMA.memory.ICommonalities;
 
 public class AgentCore implements AgentModel, IGetModelStrategy {
+
+	private static final String MIND_PATH = "data/characters/minds/";
+	private static final String MIND_PATH_ANDROID = "sdcard/data/characters/minds/";
 	
-	public static final String MIND_PATH = "data/characters/minds/";
-	public static final String MIND_PATH_ANDROID = "sdcard/data/characters/minds/";
+	
 	
 	protected HashMap<String, IComponent> _components;
-	
 	protected EmotionalState _emotionalState;
-	
 	protected Memory _memory;
-	
 	protected boolean _shutdown;
 	protected DeliberativeProcess _deliberativeLayer;
 	protected ReactiveProcess _reactiveLayer;
-	
-
 	protected ArrayList<ValuedAction> _actionsForExecution;
 	protected ArrayList<Event> _perceivedEvents;
-
 	protected RemoteAgent _remoteAgent;
 	protected String _role;
 	protected String _name; //the agent's name
@@ -110,26 +107,13 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 	
 	private IGetModelStrategy _strat;
 	
-	public static Name applyPerspective(Name n, String agentName)
-	{
-		Name newName = (Name) n.clone();
-		ArrayList<Symbol> symbols = newName.GetLiteralList();
-		
-		for(int i = 0; i < symbols.size(); i++)
-		{
-			if(symbols.get(i).getName().equals(agentName))
-			{
-				symbols.set(i, new Symbol(Constants.SELF));
-			}
-		}
-		
-		return newName;
-	}
 
 	public AgentCore(short agentPlatform, String host, int port, String saveDirectory, String name, boolean displayMode, 
 			String sex, String role, 
 			String displayName, String actionsFile, 
 			String goalsFile, HashMap<String,String> properties, ArrayList<String> goalList) {
+		
+		
 		
 		_saveDirectory = saveDirectory;
 		_shutdown = false;
@@ -157,18 +141,20 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 		try{
 			AgentLogger.GetInstance().initialize(name,displayMode);
 			
-
-			String mind_path = MIND_PATH;
-			if (VersionChecker.runningOnAndroid()) mind_path = MIND_PATH_ANDROID;
+			//TODO: O METODO SEGUINTE ESTA ULTRA MARTELADO
+			if (VersionChecker.runningOnAndroid()){
+				FileLocator.initialize(MIND_PATH_ANDROID, saveDirectory, actionsFile, goalsFile, role);
+			}else{
+				FileLocator.initialize(MIND_PATH, saveDirectory, actionsFile, goalsFile, role);
+			}
 			
 			// Load Plan Operators
-			ActionLibrary.GetInstance().LoadActionsFile("" + mind_path + actionsFile + ".xml", this);
+			ActionLibrary.GetInstance().LoadActionsFile(FileLocator.getActionsFile(), this);
 			EmotionalPlanner planner = new EmotionalPlanner(ActionLibrary.GetInstance().GetActions());
 			
 			// Load GoalLibrary
-			GoalLibrary goalLibrary = new GoalLibrary(mind_path + goalsFile + ".xml");
-			
-			
+			GoalLibrary goalLibrary = new GoalLibrary(FileLocator.getGoalsFile());
+		
 			//For efficiency reasons these two are not real processes
 			_reactiveLayer = new ReactiveProcess();
 			AddComponent(_reactiveLayer);
@@ -176,14 +162,10 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 			_deliberativeLayer = new DeliberativeProcess(goalLibrary,planner);
 			AddComponent(_deliberativeLayer);
 	
-			String personalityFile = mind_path + "roles/" + role + "/" + role + ".xml";
-			loadPersonality(personalityFile,agentPlatform, goalList);
+			loadPersonality(FileLocator.getPersonalityFile(),agentPlatform, goalList);
 			
-			if(agentPlatform == AgentPlatform.WORLDSIM){
-				_remoteAgent = new WorldSimulatorRemoteAgent(host, port, this, properties);
-			}else if (agentPlatform == AgentPlatform.ION){
-				_remoteAgent = new IONRemoteAgent(host, port, this);	
-			}
+			//Start the remote agent socket
+			_remoteAgent = startRemoteAgent(agentPlatform,host, port, properties);
 			 
 			/*
 			 * This call will initialize the timer for the agent's
@@ -196,29 +178,23 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 			AgentLogger.GetInstance().log("Exception: " + e);
 			terminateExecution();
 		}
-
 	}
+	
+	
 	
 	public AgentCore(short agentPlatform, String host, int port, String directory, String fileName)
 	{
 		try{
 			_shutdown = false;
 			_numberOfCycles = 0;
-			
-			LoadAgentState(directory + fileName);
 			AgentLogger.GetInstance().initialize(fileName,_showStateWindow);
+	
+			LoadAgentState(directory + fileName);
 			
 			// creating a new episode when the agent loads 13/09/10
+	
 			_memory.getEpisodicMemory().StartEpisode(_memory);
-			
-			if(agentPlatform == AgentPlatform.ION)
-			{
-				_remoteAgent = new IONRemoteAgent(host,port,this);
-			}
-			else if (agentPlatform == AgentPlatform.WORLDSIM)
-			{
-				_remoteAgent = new WorldSimulatorRemoteAgent(host,port,this,new HashMap<String,String>());
-			}			
+			_remoteAgent = this.startRemoteAgent(agentPlatform, host, port, new HashMap<String,String>());
 			_remoteAgent.LoadState(fileName+"-RemoteAgent.dat");
 		}
 		catch (Exception e) {
@@ -226,6 +202,35 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 			this.terminateExecution();
 		}
 	}
+	
+	
+	private RemoteAgent startRemoteAgent(short aP, String host, int port, HashMap<String,String> properties) throws IOException{
+		if(aP == AgentPlatform.WORLDSIM){
+			return new WorldSimulatorRemoteAgent(host, port, this, properties);
+		}else if (aP == AgentPlatform.ION){
+			return new IONRemoteAgent(host, port, this);	
+		}else{
+			throw new RuntimeException("startRemoteAgent: AgentPlatform has an incorrect value:" + aP);
+		}
+	}
+	
+
+	public static Name applyPerspective(Name n, String agentName)
+	{
+		Name newName = (Name) n.clone();
+		ArrayList<Symbol> symbols = newName.GetLiteralList();
+		
+		for(int i = 0; i < symbols.size(); i++)
+		{
+			if(symbols.get(i).getName().equals(agentName))
+			{
+				symbols.set(i, new Symbol(Constants.SELF));
+			}
+		}
+		
+		return newName;
+	}
+	
 	
 	public void AddComponent(IComponent c)
 	{
