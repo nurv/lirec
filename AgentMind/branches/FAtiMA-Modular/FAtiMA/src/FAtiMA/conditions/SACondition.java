@@ -104,7 +104,7 @@ public class SACondition extends Condition{
 				System.out.println("SAKnown " + key + " " + value.toString());
 			}
 		}
-				
+		
 		am.getSpreadActivate().Spread(_query, knownInfo, am.getMemory().getEpisodicMemory());
 		String result = am.getSpreadActivate().getSABestResult();
 		System.out.println("Result " + result);
