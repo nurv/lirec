@@ -684,7 +684,9 @@ public class DeliberativeProcess implements IComponent, IOptionsStrategy, IExpec
 	}*/
 	
 	public void update(Event event, AgentModel am) {
-					
+		
+		CheckLinks(am);
+		
 		//updating selfMotivators
 		Event event2 = event.ApplyPerspective(am.getName());
 		
@@ -1250,13 +1252,6 @@ public class DeliberativeProcess implements IComponent, IOptionsStrategy, IExpec
 			
 			UpdateProbabilities();
 		    _actionMonitor = null;
-		}
-		else
-		{
-			if(am.getEvents().size() > 0)
-			{
-				CheckLinks(am);
-			}
 		}
 	}
 

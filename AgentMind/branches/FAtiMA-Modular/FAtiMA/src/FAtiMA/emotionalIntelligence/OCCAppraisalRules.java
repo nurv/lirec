@@ -3,7 +3,6 @@ package FAtiMA.emotionalIntelligence;
 import java.util.ArrayList;
 
 import FAtiMA.AgentModel;
-import FAtiMA.conditions.AppraisalCondition;
 import FAtiMA.conditions.EmotionCondition;
 import FAtiMA.conditions.NewEventCondition;
 
