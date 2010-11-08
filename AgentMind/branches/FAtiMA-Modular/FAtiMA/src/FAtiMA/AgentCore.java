@@ -77,6 +77,7 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 
 	private static final String MIND_PATH = "data/characters/minds/";
 	private static final String MIND_PATH_ANDROID = "sdcard/data/characters/minds/";
+	private static final Name ACTION_CONTEXT = Name.ParseName("ActionContext()");
 	
 	
 	
@@ -428,6 +429,8 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 	{
 		AgentLogger.GetInstance().logAndPrint("PropertyChanged: " + ToM + " " + propertyName + " " + value);
 		
+		_memory.getSemanticMemory().Tell(applyPerspective(propertyName, _name), value);
+		
 		for(IComponent c : this._components.values())
 		{
 			c.propertyChangedPerception(ToM, applyPerspective(propertyName, _name), value);
@@ -445,8 +448,6 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 		}
 		
 		propertyName = Name.ParseName(newSubject + "(" + property + ")");
-		
-		AgentLogger.GetInstance().logAndPrint("PropertyChanged: " + ToM + " " + propertyName + " " + value);
 		
 		PerceivePropertyChanged(ToM,propertyName,value);
 	}
@@ -535,6 +536,13 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 						for(Event e : this._perceivedEvents)
 						{
 							AgentLogger.GetInstance().log("appraising event: " + e.toName());
+							
+							
+							
+							Event e2 = e.ApplyPerspective(_name);
+							_memory.getEpisodicMemory().StoreAction(_memory, e2);
+							_memory.getSemanticMemory().Tell(ACTION_CONTEXT, e2.toName().toString());
+							
 							
 							for(IComponent c : this._components.values())
 							{

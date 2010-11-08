@@ -5,7 +5,6 @@ import java.util.HashMap;
 import javax.swing.BoxLayout;
 import javax.swing.JTabbedPane;
 
-import FAtiMA.Agent;
 import FAtiMA.AgentCore;
 import FAtiMA.AgentModel;
 import FAtiMA.Display.AgentDisplayPanel;

@@ -92,14 +92,26 @@ public class ToMComponent implements IComponent, IGetModelStrategy {
 
 	@Override
 	public void decay(long time) {
-		// TODO Auto-generated method stub
-		
+		for(String s : _nearbyAgents)
+		{
+			ModelOfOther m = _ToM.get(s);
+			for(IComponent c : m.getComponents())
+			{
+				c.decay(time);
+			}
+		}
 	}
 
 	@Override
 	public void update(AgentModel am) {
-		// TODO Auto-generated method stub
-		
+		for(String s : _nearbyAgents)
+		{
+			ModelOfOther m = _ToM.get(s);
+			for(IComponent c : m.getComponents())
+			{
+				c.update(m);
+			}
+		}		
 	}
 	
 	@Override
@@ -109,18 +121,15 @@ public class ToMComponent implements IComponent, IGetModelStrategy {
 
 	@Override
 	public void appraisal(Event e, AppraisalStructure as, AgentModel am) {
+		
 	}
 
 	@Override
 	public void emotionActivation(Event e, ActiveEmotion em, AgentModel am) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void coping(AgentModel am) {
-		// TODO Auto-generated method stub
-		
 	}
 	
 	public AgentModel execute(Symbol ToM)

@@ -3,7 +3,6 @@ package FAtiMA.ToM;
 import javax.swing.BoxLayout;
 import javax.swing.JTabbedPane;
 
-import FAtiMA.Agent;
 import FAtiMA.AgentCore;
 import FAtiMA.AgentModel;
 import FAtiMA.IComponent;
@@ -12,8 +11,6 @@ import FAtiMA.Display.AgentDisplayPanel;
 import FAtiMA.Display.EmotionalStatePanel;
 import FAtiMA.Display.KnowledgeBasePanel;
 import FAtiMA.Display.ShortTermMemoryPanel;
-import FAtiMA.motivationalSystem.NeedsPanel;
-import FAtiMA.socialRelations.SocialRelationsPanel;
 
 public class ModelOfOtherPanel extends AgentDisplayPanel {
 
