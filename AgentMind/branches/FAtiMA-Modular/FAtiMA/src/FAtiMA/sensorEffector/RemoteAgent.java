@@ -326,7 +326,8 @@ public abstract class RemoteAgent extends SocketListener {
 			}
 			else if(msgType.equals(SA_MEMORY))
 			{
-				st = new StringTokenizer(perception, "$");
+				//TODO ver isto depois com a refactorização
+				/*st = new StringTokenizer(perception, "$");
 				String question = st.nextToken();
 				String known = "";
 				while(st.hasMoreTokens())

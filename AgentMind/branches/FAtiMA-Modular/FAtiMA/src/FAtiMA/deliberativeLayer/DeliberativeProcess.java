@@ -189,6 +189,10 @@ public class DeliberativeProcess implements IComponent, IOptionsStrategy, IExpec
 	private IProbabilityStrategy _PStrategy;
 	private IDetectThreatStrategy _isThreatStrat;
 	private ArrayList<IOptionsStrategy> _optionStrategies;
+	private ArrayList<IGoalSuccessStrategy> _goalSuccessStrategies;
+	private ArrayList<IGoalFailureStrategy> _goalFailureStrategies;
+	private ArrayList<IActionSuccessStrategy> _actionSuccessStrategies;
+	private ArrayList<IActionFailureStrategy> _actionFailureStrategies;
 	
 	/**
 	 * Creates a new DeliberativeProcess
@@ -214,6 +218,31 @@ public class DeliberativeProcess implements IComponent, IOptionsStrategy, IExpec
 		_isThreatStrat = new DefaultDetectThreatStrategy();
 		_optionStrategies = new ArrayList<IOptionsStrategy>();
 		_optionStrategies.add(this);
+		
+		_goalFailureStrategies = new ArrayList<IGoalFailureStrategy>();
+		_goalSuccessStrategies = new ArrayList<IGoalSuccessStrategy>();
+		_actionFailureStrategies = new ArrayList<IActionFailureStrategy>();
+		_actionSuccessStrategies = new ArrayList<IActionSuccessStrategy>();
+	}
+	
+	public void addGoalSuccessStrategy(IGoalSuccessStrategy strat)
+	{
+		_goalSuccessStrategies.add(strat);
+	}
+	
+	public void addGoalFailureStrategy(IGoalFailureStrategy strat)
+	{
+		_goalFailureStrategies.add(strat);
+	}
+	
+	public void addActionSuccessStrategy(IActionSuccessStrategy strat)
+	{
+		_actionSuccessStrategies.add(strat);
+	}
+	
+	public void addActionFailureStrategy(IActionFailureStrategy strat)
+	{
+		_actionFailureStrategies.add(strat);
 	}
 	
 	public void setDetectThreatStrategy(IDetectThreatStrategy strat)
@@ -675,13 +704,20 @@ public class DeliberativeProcess implements IComponent, IOptionsStrategy, IExpec
 		    	}
 		    	else
 		    	{
-		    		//System.out.println("Calling UpdateCertainty (other's action: step completed)");
-		    		am.getMotivationalState().UpdateCertainty(-_actionMonitor.GetStep().getProbability(am));
+		    		for(IActionFailureStrategy s : _actionFailureStrategies)
+		    		{
+		    			s.perceiveActionFailure(am, _actionMonitor.GetStep());
+		    		}
+		    
 		    		_actionMonitor.GetStep().DecreaseProbability(am);
 		    	}
 		    }
 		    else 
 		    {
+		    	for(IActionSuccessStrategy s : _actionSuccessStrategies)
+		    	{
+		    		s.perceiveActionSuccess(am, _actionMonitor.GetStep());
+		    	}
 		    	//System.out.println("Calling updateEffectsProbability (self: step completed)");
 		    	_actionMonitor.GetStep().updateEffectsProbability(am);
 		    }
@@ -689,8 +725,6 @@ public class DeliberativeProcess implements IComponent, IOptionsStrategy, IExpec
 			UpdateProbabilities();
 			_actionMonitor = null;
 		}
-		
-		return new AppraisalStructure();
 	}
 	
 	public ArrayList<ActivePursuitGoal> options(AgentModel am)
@@ -895,7 +929,12 @@ public class DeliberativeProcess implements IComponent, IOptionsStrategy, IExpec
 				{
 					RemoveIntention(i);
 					_actionMonitor = null;
+					for(IGoalSuccessStrategy s: _goalSuccessStrategies)
+					{
+						s.perceiveGoalSuccess(am, i.getGoal());
+					}
 					i.ProcessIntentionSuccess(am);
+					
 				}
 			}
 			/*else if(!i.getGoal().checkPreconditions(am))
@@ -913,6 +952,10 @@ public class DeliberativeProcess implements IComponent, IOptionsStrategy, IExpec
 				if(i.IsStrongCommitment())
 				{
 					_actionMonitor = null;
+					for(IGoalFailureStrategy s: _goalFailureStrategies)
+					{
+						s.perceiveGoalFailure(am, i.getGoal());
+					}
 					 i.ProcessIntentionFailure(am);
 				}
 			}
@@ -922,6 +965,10 @@ public class DeliberativeProcess implements IComponent, IOptionsStrategy, IExpec
 				{
 					RemoveIntention(i);
 					_actionMonitor = null;
+					for(IGoalFailureStrategy s: _goalFailureStrategies)
+					{
+						s.perceiveGoalFailure(am, i.getGoal());
+					}
 					i.ProcessIntentionFailure(am);
 				}
 			}
@@ -1192,13 +1239,13 @@ public class DeliberativeProcess implements IComponent, IOptionsStrategy, IExpec
 			//If the action expired we must check the plan links (continuous planning)
 			//just to make sure
 			CheckLinks(am);
-			/*if(_actionMonitor.GetStep().getName().toString().startsWith("WaitFor"))
-			{
-				_actionMonitor.GetStep().updateEffectsProbability();
-			}*/
+			
 			
 			//System.out.println("Calling UpdateCertainty (action monitor expired)");
-			am.getMotivationalState().UpdateCertainty(-_actionMonitor.GetStep().getProbability(am));
+			for(IActionFailureStrategy s : _actionFailureStrategies)
+			{
+				s.perceiveActionFailure(am, _actionMonitor.GetStep());
+			}
 			_actionMonitor.GetStep().DecreaseProbability(am);
 			
 			UpdateProbabilities();

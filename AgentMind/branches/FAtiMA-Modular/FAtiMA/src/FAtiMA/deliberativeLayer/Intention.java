@@ -373,22 +373,7 @@ public class Intention implements Serializable {
 		//mental disengagement consists in lowering the goal's importance
 		_goal.DecreaseImportanceOfFailure(am, 0.5f);
 		
-		//_numberOfGoalsTried++;
-		am.getMotivationalState().UpdateCompetence(false);
-		
-		
 	    Event e = _goal.GetFailureEvent();
-	    
-	    //observed error = |estimation of success - realsuccess|
-	    //given that the goal failed, the real success is none and the formula resumes to
-	    //observed error = estimation of success - 0 (=) estimation of success
-	    float observedError = _goal.getProbability(am);
-	    float previousExpectedError = _goal.getUncertainty(am);
-	    
-	    float newExpectedError = ActivePursuitGoal.alfa * observedError + (1 - ActivePursuitGoal.alfa) * previousExpectedError;
-	    float deltaError = newExpectedError - previousExpectedError;
-	    am.getMotivationalState().UpdateCertainty(-deltaError);
-	    _goal.setUncertainty(am, newExpectedError);
 	    
 	    am.getMemory().getEpisodicMemory().StoreAction(am.getMemory(), e);
 	    
@@ -426,22 +411,8 @@ public class Intention implements Serializable {
 	{
 		
 		EmotionalState es = am.getEmotionalState();
-		//_numberOfGoalsAchieved++;
-		//_numberOfGoalsTried++;
-		am.getMotivationalState().UpdateCompetence(true);
+		
 	    Event e = _goal.GetSuccessEvent();
-	    
-	    //observed error = |realsuccess - estimation of success|
-	    //given that the goal succeeded, the real success is 1 and the formula resumes to
-	    //observed error = 1 - estimation of success 
-	    float observedError = 1 - _goal.getProbability(am);
-	    float previousExpectedError = _goal.getUncertainty(am);
-	    
-	    float newExpectedError = ActivePursuitGoal.alfa * observedError + (1 - ActivePursuitGoal.alfa) * previousExpectedError;
-	    float deltaError = newExpectedError - previousExpectedError;
-	    am.getMotivationalState().UpdateCertainty(-deltaError);
-	    _goal.setUncertainty(am,newExpectedError);
-	    
 	    
 	    am.getMemory().getEpisodicMemory().StoreAction(am.getMemory(), e);
 	    

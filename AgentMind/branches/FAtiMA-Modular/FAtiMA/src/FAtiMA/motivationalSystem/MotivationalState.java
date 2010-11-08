@@ -16,10 +16,14 @@ import FAtiMA.AgentSimulationTime;
 import FAtiMA.IComponent;
 import FAtiMA.Display.AgentDisplayPanel;
 import FAtiMA.ToM.ModelOfOther;
+import FAtiMA.deliberativeLayer.IActionFailureStrategy;
 import FAtiMA.deliberativeLayer.IExpectedUtilityStrategy;
+import FAtiMA.deliberativeLayer.IGoalFailureStrategy;
+import FAtiMA.deliberativeLayer.IGoalSuccessStrategy;
 import FAtiMA.deliberativeLayer.IProbabilityStrategy;
 import FAtiMA.deliberativeLayer.IUtilityForTargetStrategy;
 import FAtiMA.deliberativeLayer.goals.ActivePursuitGoal;
+import FAtiMA.deliberativeLayer.goals.Goal;
 import FAtiMA.deliberativeLayer.plan.EffectOnDrive;
 import FAtiMA.deliberativeLayer.plan.IPlanningOperator;
 import FAtiMA.deliberativeLayer.plan.Step;
@@ -27,6 +31,7 @@ import FAtiMA.emotionalState.ActiveEmotion;
 import FAtiMA.emotionalState.Appraisal;
 import FAtiMA.emotionalState.AppraisalStructure;
 import FAtiMA.emotionalState.BaseEmotion;
+import FAtiMA.emotionalState.EmotionalState;
 import FAtiMA.sensorEffector.Event;
 import FAtiMA.util.AgentLogger;
 import FAtiMA.util.Constants;
@@ -41,7 +46,7 @@ import FAtiMA.wellFormedNames.Unifier;
  * @author Meiyii Lim, Samuel Mascarenhas 
  */
 
-public class MotivationalState implements Serializable, Cloneable, IComponent, IExpectedUtilityStrategy, IProbabilityStrategy, IUtilityForTargetStrategy {
+public class MotivationalState implements Serializable, Cloneable, IComponent, IExpectedUtilityStrategy, IProbabilityStrategy, IUtilityForTargetStrategy, IGoalSuccessStrategy, IGoalFailureStrategy, IActionFailureStrategy {
 	
 	
 	private static final long serialVersionUID = 1L;
@@ -221,8 +226,9 @@ public class MotivationalState implements Serializable, Cloneable, IComponent, I
 			else{
 			// If target is NOT SELF
 			// Only the non-cognitive needs are taken into account for other agents. This is because his actions cannot impact those needs.
-				
-				if(am.getToM().containsKey(target))
+			
+			//TODO move this code to the ToM component??? 	
+				/*if(am.getToM().containsKey(target))
 				{
 					auxMultiplier = 1;
 					ModelOfOther m = am.getToM().get(target);
@@ -236,7 +242,7 @@ public class MotivationalState implements Serializable, Cloneable, IComponent, I
 						}
 						auxMultiplier = -1;
 					}		
-				}
+				}*/
 			}
 		} catch (InvalidMotivatorTypeException e) {
 			AgentLogger.GetInstance().log("EXCEPTION:" + e);
@@ -511,6 +517,9 @@ public class MotivationalState implements Serializable, Cloneable, IComponent, I
 		am.getDeliberativeLayer().setExpectedUtilityStrategy(this);
 		am.getDeliberativeLayer().setProbabilityStrategy(this);
 		am.getDeliberativeLayer().setUtilityForTargetStrategy(this);
+		am.getDeliberativeLayer().addActionFailureStrategy(this);
+		am.getDeliberativeLayer().addGoalFailureStrategy(this);
+		am.getDeliberativeLayer().addGoalSuccessStrategy(this);
 	}
 
 
@@ -556,5 +565,48 @@ public class MotivationalState implements Serializable, Cloneable, IComponent, I
 	@Override
 	public AgentDisplayPanel createComponentDisplayPanel(AgentModel am) {
 		return new NeedsPanel(this);
+	}
+
+
+	@Override
+	public void perceiveGoalSuccess(AgentModel am, ActivePursuitGoal g) {
+		
+		UpdateCompetence(true);
+	    
+	    //observed error = |realsuccess - estimation of success|
+	    //given that the goal succeeded, the real success is 1 and the formula resumes to
+	    //observed error = 1 - estimation of success 
+	    float observedError = 1 - g.getProbability(am);
+	    float previousExpectedError = g.getUncertainty(am);
+	    
+	    float newExpectedError = ActivePursuitGoal.alfa * observedError + (1 - ActivePursuitGoal.alfa) * previousExpectedError;
+	    float deltaError = newExpectedError - previousExpectedError;
+	    UpdateCertainty(-deltaError);
+	    g.setUncertainty(am,newExpectedError);
+	}
+
+
+	@Override
+	public void perceiveGoalFailure(AgentModel am, ActivePursuitGoal g) {
+		//_numberOfGoalsTried++;
+		UpdateCompetence(false);
+		
+	    //observed error = |estimation of success - realsuccess|
+	    //given that the goal failed, the real success is none and the formula resumes to
+	    //observed error = estimation of success - 0 (=) estimation of success
+	    float observedError = g.getProbability(am);
+	    float previousExpectedError = g.getUncertainty(am);
+	    
+	    float newExpectedError = ActivePursuitGoal.alfa * observedError + (1 - ActivePursuitGoal.alfa) * previousExpectedError;
+	    float deltaError = newExpectedError - previousExpectedError;
+	    UpdateCertainty(-deltaError);
+	    g.setUncertainty(am, newExpectedError);
+	}
+
+
+	@Override
+	public void perceiveActionFailure(AgentModel am, Step a) {
+		//System.out.println("Calling UpdateCertainty (other's action: step completed)");
+		UpdateCertainty(-a.getProbability(am));
 	}
 }
