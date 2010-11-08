@@ -41,7 +41,6 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 
-import FAtiMA.Agent;
 import FAtiMA.AgentCore;
 import FAtiMA.AgentModel;
 import FAtiMA.emotionalState.ActiveEmotion;

@@ -32,7 +32,6 @@ package FAtiMA.Display;
 
 import javax.swing.JPanel;
 
-import FAtiMA.Agent;
 import FAtiMA.AgentCore;
 import FAtiMA.AgentModel;
 

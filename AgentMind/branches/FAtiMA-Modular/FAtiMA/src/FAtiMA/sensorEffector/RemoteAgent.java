@@ -86,7 +86,6 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.Hashtable;
 
-import FAtiMA.Agent;
 import FAtiMA.AgentCore;
 import FAtiMA.AgentModel;
 import FAtiMA.AgentSimulationTime;

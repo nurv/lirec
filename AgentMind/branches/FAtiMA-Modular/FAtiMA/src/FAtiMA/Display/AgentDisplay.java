@@ -37,7 +37,6 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
-import FAtiMA.Agent;
 import FAtiMA.AgentCore;
 import FAtiMA.ToM.ToMPanel;
 import FAtiMA.motivationalSystem.NeedsPanel;

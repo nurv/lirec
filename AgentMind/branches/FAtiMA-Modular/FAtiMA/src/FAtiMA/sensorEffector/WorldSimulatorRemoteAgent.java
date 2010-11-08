@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import FAtiMA.Agent;
+
 import FAtiMA.AgentCore;
 import FAtiMA.culture.SymbolTranslator;
 import FAtiMA.util.AgentLogger;
