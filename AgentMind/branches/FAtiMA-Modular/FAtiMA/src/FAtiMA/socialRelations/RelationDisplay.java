@@ -36,8 +36,8 @@ import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 
-import FAtiMA.memory.Memory;
-import FAtiMA.util.enumerables.RelationType;
+import FAtiMA.Core.memory.Memory;
+import FAtiMA.Core.util.enumerables.RelationType;
 
 
 /**

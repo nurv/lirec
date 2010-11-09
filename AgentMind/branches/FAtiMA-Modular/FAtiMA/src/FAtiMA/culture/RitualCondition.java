@@ -35,12 +35,12 @@ import java.util.StringTokenizer;
 
 import org.xml.sax.Attributes;
 
-import FAtiMA.AgentModel;
-import FAtiMA.conditions.PredicateCondition;
-import FAtiMA.memory.episodicMemory.SearchKey;
-import FAtiMA.wellFormedNames.Name;
-import FAtiMA.wellFormedNames.Substitution;
-import FAtiMA.wellFormedNames.Symbol;
+import FAtiMA.Core.AgentModel;
+import FAtiMA.Core.conditions.PredicateCondition;
+import FAtiMA.Core.memory.episodicMemory.SearchKey;
+import FAtiMA.Core.wellFormedNames.Name;
+import FAtiMA.Core.wellFormedNames.Substitution;
+import FAtiMA.Core.wellFormedNames.Symbol;
 
 
 /**

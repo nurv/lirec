@@ -7,7 +7,7 @@ package FAtiMA.motivationalSystem;
 
 import java.io.Serializable;
 
-import FAtiMA.AgentSimulationTime;
+import FAtiMA.Core.AgentSimulationTime;
 
 /**
  *  Represents a motivator based on the PSI model, which is an instance of MotivatorType

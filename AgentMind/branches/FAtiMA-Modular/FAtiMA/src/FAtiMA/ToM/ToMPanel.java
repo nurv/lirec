@@ -5,9 +5,9 @@ import java.util.HashMap;
 import javax.swing.BoxLayout;
 import javax.swing.JTabbedPane;
 
-import FAtiMA.AgentCore;
-import FAtiMA.AgentModel;
-import FAtiMA.Display.AgentDisplayPanel;
+import FAtiMA.Core.AgentCore;
+import FAtiMA.Core.AgentModel;
+import FAtiMA.Core.Display.AgentDisplayPanel;
 
 public class ToMPanel extends AgentDisplayPanel {
 

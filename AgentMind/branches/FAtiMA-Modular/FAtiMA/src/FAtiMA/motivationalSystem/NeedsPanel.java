@@ -8,10 +8,10 @@ import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import FAtiMA.AgentCore;
-import FAtiMA.AgentModel;
-import FAtiMA.Display.AgentDisplayPanel;
-import FAtiMA.util.Constants;
+import FAtiMA.Core.AgentCore;
+import FAtiMA.Core.AgentModel;
+import FAtiMA.Core.Display.AgentDisplayPanel;
+import FAtiMA.Core.util.Constants;
 
 public class NeedsPanel extends AgentDisplayPanel {
 	private static final long serialVersionUID = 1L;

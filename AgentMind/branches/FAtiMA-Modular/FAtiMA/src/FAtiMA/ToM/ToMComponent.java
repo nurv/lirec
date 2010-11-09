@@ -5,20 +5,20 @@ import java.util.HashMap;
 
 import com.sun.org.apache.bcel.internal.generic.FADD;
 
-import FAtiMA.AgentCore;
-import FAtiMA.AgentModel;
-import FAtiMA.IComponent;
-import FAtiMA.IGetModelStrategy;
-import FAtiMA.Display.AgentDisplayPanel;
-import FAtiMA.deliberativeLayer.IUtilityForTargetStrategy;
-import FAtiMA.deliberativeLayer.goals.ActivePursuitGoal;
-import FAtiMA.emotionalState.ActiveEmotion;
-import FAtiMA.emotionalState.AppraisalStructure;
-import FAtiMA.memory.semanticMemory.KnowledgeSlot;
-import FAtiMA.sensorEffector.Event;
-import FAtiMA.util.Constants;
-import FAtiMA.wellFormedNames.Name;
-import FAtiMA.wellFormedNames.Symbol;
+import FAtiMA.Core.AgentCore;
+import FAtiMA.Core.AgentModel;
+import FAtiMA.Core.IComponent;
+import FAtiMA.Core.IGetModelStrategy;
+import FAtiMA.Core.Display.AgentDisplayPanel;
+import FAtiMA.Core.deliberativeLayer.IUtilityForTargetStrategy;
+import FAtiMA.Core.deliberativeLayer.goals.ActivePursuitGoal;
+import FAtiMA.Core.emotionalState.ActiveEmotion;
+import FAtiMA.Core.emotionalState.AppraisalStructure;
+import FAtiMA.Core.memory.semanticMemory.KnowledgeSlot;
+import FAtiMA.Core.sensorEffector.Event;
+import FAtiMA.Core.util.Constants;
+import FAtiMA.Core.wellFormedNames.Name;
+import FAtiMA.Core.wellFormedNames.Symbol;
 
 public class ToMComponent implements IComponent, IGetModelStrategy, IUtilityForTargetStrategy {
 	

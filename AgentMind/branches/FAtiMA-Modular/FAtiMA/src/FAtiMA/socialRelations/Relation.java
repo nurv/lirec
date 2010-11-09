@@ -1,6 +1,6 @@
 package FAtiMA.socialRelations;
 
-import FAtiMA.memory.Memory;
+import FAtiMA.Core.memory.Memory;
 
 public abstract class Relation {
 

@@ -1,17 +1,17 @@
 package FAtiMA.socialRelations;
 
-import FAtiMA.AgentCore;
-import FAtiMA.AgentModel;
-import FAtiMA.IComponent;
-import FAtiMA.Display.AgentDisplayPanel;
-import FAtiMA.emotionalState.ActiveEmotion;
-import FAtiMA.emotionalState.AppraisalStructure;
-import FAtiMA.memory.Memory;
-import FAtiMA.reactiveLayer.Reaction;
-import FAtiMA.sensorEffector.Event;
-import FAtiMA.util.Constants;
-import FAtiMA.util.enumerables.EmotionType;
-import FAtiMA.wellFormedNames.Name;
+import FAtiMA.Core.AgentCore;
+import FAtiMA.Core.AgentModel;
+import FAtiMA.Core.IComponent;
+import FAtiMA.Core.Display.AgentDisplayPanel;
+import FAtiMA.Core.emotionalState.ActiveEmotion;
+import FAtiMA.Core.emotionalState.AppraisalStructure;
+import FAtiMA.Core.memory.Memory;
+import FAtiMA.Core.reactiveLayer.Reaction;
+import FAtiMA.Core.sensorEffector.Event;
+import FAtiMA.Core.util.Constants;
+import FAtiMA.Core.util.enumerables.EmotionType;
+import FAtiMA.Core.wellFormedNames.Name;
 
 public class SocialRelationsComponent implements IComponent {
 	

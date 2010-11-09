@@ -33,33 +33,33 @@ import java.util.ArrayList;
 
 import org.xml.sax.Attributes;
 
-import FAtiMA.AgentModel;
-import FAtiMA.conditions.Context;
-import FAtiMA.conditions.EmotionCondition;
-import FAtiMA.conditions.MoodCondition;
-import FAtiMA.conditions.NewEventCondition;
-import FAtiMA.conditions.PastEventCondition;
-import FAtiMA.conditions.PlaceCondition;
-import FAtiMA.conditions.PredicateCondition;
-import FAtiMA.conditions.PropertyCondition;
-import FAtiMA.conditions.RecentEventCondition;
-import FAtiMA.conditions.TimeCondition;
+import FAtiMA.Core.AgentModel;
+import FAtiMA.Core.conditions.Context;
+import FAtiMA.Core.conditions.EmotionCondition;
+import FAtiMA.Core.conditions.MoodCondition;
+import FAtiMA.Core.conditions.NewEventCondition;
+import FAtiMA.Core.conditions.PastEventCondition;
+import FAtiMA.Core.conditions.PlaceCondition;
+import FAtiMA.Core.conditions.PredicateCondition;
+import FAtiMA.Core.conditions.PropertyCondition;
+import FAtiMA.Core.conditions.RecentEventCondition;
+import FAtiMA.Core.conditions.TimeCondition;
+import FAtiMA.Core.deliberativeLayer.DeliberativeProcess;
+import FAtiMA.Core.exceptions.ContextParsingException;
+import FAtiMA.Core.exceptions.DuplicateSymbolTranslatorEntry;
+import FAtiMA.Core.exceptions.InvalidDimensionTypeException;
+import FAtiMA.Core.exceptions.InvalidEmotionTypeException;
+import FAtiMA.Core.exceptions.UnknownGoalException;
+import FAtiMA.Core.reactiveLayer.Reaction;
+import FAtiMA.Core.reactiveLayer.ReactiveProcess;
+import FAtiMA.Core.sensorEffector.Event;
+import FAtiMA.Core.util.AgentLogger;
+import FAtiMA.Core.util.enumerables.CulturalDimensionType;
+import FAtiMA.Core.util.parsers.ReflectXMLHandler;
+import FAtiMA.Core.wellFormedNames.Name;
+import FAtiMA.Core.wellFormedNames.Substitution;
+import FAtiMA.Core.wellFormedNames.Symbol;
 import FAtiMA.culture.CulturalDimensionsComponent;
-import FAtiMA.deliberativeLayer.DeliberativeProcess;
-import FAtiMA.exceptions.ContextParsingException;
-import FAtiMA.exceptions.DuplicateSymbolTranslatorEntry;
-import FAtiMA.exceptions.InvalidDimensionTypeException;
-import FAtiMA.exceptions.InvalidEmotionTypeException;
-import FAtiMA.exceptions.UnknownGoalException;
-import FAtiMA.reactiveLayer.Reaction;
-import FAtiMA.reactiveLayer.ReactiveProcess;
-import FAtiMA.sensorEffector.Event;
-import FAtiMA.util.AgentLogger;
-import FAtiMA.util.enumerables.CulturalDimensionType;
-import FAtiMA.util.parsers.ReflectXMLHandler;
-import FAtiMA.wellFormedNames.Name;
-import FAtiMA.wellFormedNames.Substitution;
-import FAtiMA.wellFormedNames.Symbol;
 
 
 public class CultureLoaderHandler extends ReflectXMLHandler {
@@ -79,7 +79,7 @@ public class CultureLoaderHandler extends ReflectXMLHandler {
 
 	public CultureLoaderHandler(AgentModel aM, CulturalDimensionsComponent cDM) {
 		_rituals = new ArrayList<Ritual>();
-		_self = new Substitution(new Symbol("[SELF]"), new Symbol(FAtiMA.util.Constants.SELF));
+		_self = new Substitution(new Symbol("[SELF]"), new Symbol(FAtiMA.Core.util.Constants.SELF));
 		_reactiveLayer = aM.getReactiveLayer(); 
 		_deliberativeLayer = aM.getDeliberativeLayer();
 		_am = aM;

@@ -36,24 +36,24 @@ import java.util.Collections;
 import java.util.Hashtable;
 import java.util.ListIterator;
 
-import FAtiMA.ActionLibrary;
-import FAtiMA.AgentModel;
-import FAtiMA.conditions.Condition;
-import FAtiMA.deliberativeLayer.goals.ActivePursuitGoal;
-import FAtiMA.deliberativeLayer.plan.CausalLink;
-import FAtiMA.deliberativeLayer.plan.Effect;
-import FAtiMA.deliberativeLayer.plan.IPlanningOperator;
-import FAtiMA.deliberativeLayer.plan.OrderingConstraint;
-import FAtiMA.deliberativeLayer.plan.Plan;
-import FAtiMA.deliberativeLayer.plan.ProtectedCondition;
-import FAtiMA.deliberativeLayer.plan.Step;
-import FAtiMA.exceptions.InvalidReplaceUnboundVariableException;
-import FAtiMA.sensorEffector.Event;
-import FAtiMA.wellFormedNames.Name;
-import FAtiMA.wellFormedNames.Substitution;
-import FAtiMA.wellFormedNames.SubstitutionSet;
-import FAtiMA.wellFormedNames.Symbol;
-import FAtiMA.wellFormedNames.Unifier;
+import FAtiMA.Core.ActionLibrary;
+import FAtiMA.Core.AgentModel;
+import FAtiMA.Core.conditions.Condition;
+import FAtiMA.Core.deliberativeLayer.goals.ActivePursuitGoal;
+import FAtiMA.Core.deliberativeLayer.plan.CausalLink;
+import FAtiMA.Core.deliberativeLayer.plan.Effect;
+import FAtiMA.Core.deliberativeLayer.plan.IPlanningOperator;
+import FAtiMA.Core.deliberativeLayer.plan.OrderingConstraint;
+import FAtiMA.Core.deliberativeLayer.plan.Plan;
+import FAtiMA.Core.deliberativeLayer.plan.ProtectedCondition;
+import FAtiMA.Core.deliberativeLayer.plan.Step;
+import FAtiMA.Core.exceptions.InvalidReplaceUnboundVariableException;
+import FAtiMA.Core.sensorEffector.Event;
+import FAtiMA.Core.wellFormedNames.Name;
+import FAtiMA.Core.wellFormedNames.Substitution;
+import FAtiMA.Core.wellFormedNames.SubstitutionSet;
+import FAtiMA.Core.wellFormedNames.Symbol;
+import FAtiMA.Core.wellFormedNames.Unifier;
 
 public class Ritual extends ActivePursuitGoal {
 	

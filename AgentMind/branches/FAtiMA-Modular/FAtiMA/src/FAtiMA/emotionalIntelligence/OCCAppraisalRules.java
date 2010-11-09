@@ -2,18 +2,18 @@ package FAtiMA.emotionalIntelligence;
 
 import java.util.ArrayList;
 
-import FAtiMA.AgentModel;
-import FAtiMA.conditions.EmotionCondition;
-import FAtiMA.conditions.NewEventCondition;
+import FAtiMA.Core.AgentModel;
+import FAtiMA.Core.conditions.EmotionCondition;
+import FAtiMA.Core.conditions.NewEventCondition;
+import FAtiMA.Core.deliberativeLayer.plan.Effect;
+import FAtiMA.Core.deliberativeLayer.plan.Step;
+import FAtiMA.Core.emotionalState.EmotionDisposition;
+import FAtiMA.Core.util.enumerables.ActionEvent;
+import FAtiMA.Core.util.enumerables.EmotionType;
+import FAtiMA.Core.util.enumerables.EventType;
+import FAtiMA.Core.wellFormedNames.Name;
+import FAtiMA.Core.wellFormedNames.Symbol;
 
-import FAtiMA.deliberativeLayer.plan.Effect;
-import FAtiMA.deliberativeLayer.plan.Step;
-import FAtiMA.emotionalState.EmotionDisposition;
-import FAtiMA.util.enumerables.ActionEvent;
-import FAtiMA.util.enumerables.EmotionType;
-import FAtiMA.util.enumerables.EventType;
-import FAtiMA.wellFormedNames.Name;
-import FAtiMA.wellFormedNames.Symbol;
 
 public abstract class OCCAppraisalRules {
 	

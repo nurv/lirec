@@ -3,15 +3,15 @@ package FAtiMA.emotionalIntelligence;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
-import FAtiMA.AgentModel;
-import FAtiMA.conditions.PastEventCondition;
-import FAtiMA.emotionalState.EmotionalPameters;
-import FAtiMA.memory.episodicMemory.ActionDetail;
-import FAtiMA.util.Constants;
-import FAtiMA.wellFormedNames.Name;
-import FAtiMA.wellFormedNames.Substitution;
-import FAtiMA.wellFormedNames.SubstitutionSet;
-import FAtiMA.wellFormedNames.Symbol;
+import FAtiMA.Core.AgentModel;
+import FAtiMA.Core.conditions.PastEventCondition;
+import FAtiMA.Core.emotionalState.EmotionalPameters;
+import FAtiMA.Core.memory.episodicMemory.ActionDetail;
+import FAtiMA.Core.util.Constants;
+import FAtiMA.Core.wellFormedNames.Name;
+import FAtiMA.Core.wellFormedNames.Substitution;
+import FAtiMA.Core.wellFormedNames.SubstitutionSet;
+import FAtiMA.Core.wellFormedNames.Symbol;
 
 public class AppraisalCondition extends PastEventCondition {
 

@@ -8,25 +8,26 @@ import java.util.Iterator;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import FAtiMA.AgentCore;
-import FAtiMA.AgentModel;
-import FAtiMA.IComponent;
-import FAtiMA.Display.AgentDisplayPanel;
-import FAtiMA.conditions.Condition;
-import FAtiMA.deliberativeLayer.IExpectedUtilityStrategy;
-import FAtiMA.deliberativeLayer.IOptionsStrategy;
-import FAtiMA.deliberativeLayer.IUtilityForTargetStrategy;
-import FAtiMA.deliberativeLayer.goals.ActivePursuitGoal;
-import FAtiMA.emotionalState.ActiveEmotion;
-import FAtiMA.emotionalState.AppraisalStructure;
-import FAtiMA.sensorEffector.Event;
-import FAtiMA.util.AgentLogger;
-import FAtiMA.util.Constants;
-import FAtiMA.util.VersionChecker;
-import FAtiMA.util.enumerables.CulturalDimensionType;
-import FAtiMA.wellFormedNames.Name;
-import FAtiMA.wellFormedNames.SubstitutionSet;
-import FAtiMA.wellFormedNames.Symbol;
+
+import FAtiMA.Core.AgentCore;
+import FAtiMA.Core.AgentModel;
+import FAtiMA.Core.IComponent;
+import FAtiMA.Core.Display.AgentDisplayPanel;
+import FAtiMA.Core.conditions.Condition;
+import FAtiMA.Core.deliberativeLayer.IExpectedUtilityStrategy;
+import FAtiMA.Core.deliberativeLayer.IOptionsStrategy;
+import FAtiMA.Core.deliberativeLayer.IUtilityForTargetStrategy;
+import FAtiMA.Core.deliberativeLayer.goals.ActivePursuitGoal;
+import FAtiMA.Core.emotionalState.ActiveEmotion;
+import FAtiMA.Core.emotionalState.AppraisalStructure;
+import FAtiMA.Core.sensorEffector.Event;
+import FAtiMA.Core.util.AgentLogger;
+import FAtiMA.Core.util.Constants;
+import FAtiMA.Core.util.VersionChecker;
+import FAtiMA.Core.util.enumerables.CulturalDimensionType;
+import FAtiMA.Core.wellFormedNames.Name;
+import FAtiMA.Core.wellFormedNames.SubstitutionSet;
+import FAtiMA.Core.wellFormedNames.Symbol;
 
 
 public class CulturalDimensionsComponent implements IComponent, IOptionsStrategy, IExpectedUtilityStrategy {

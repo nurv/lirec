@@ -5,23 +5,23 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
-import FAtiMA.AgentCore;
-import FAtiMA.AgentModel;
-import FAtiMA.IComponent;
-import FAtiMA.Display.AgentDisplay;
-import FAtiMA.deliberativeLayer.DeliberativeProcess;
-import FAtiMA.emotionalState.EmotionDisposition;
-import FAtiMA.emotionalState.EmotionalState;
-import FAtiMA.memory.ICompoundCue;
-import FAtiMA.memory.ISpreadActivate;
-import FAtiMA.memory.Memory;
+import FAtiMA.Core.AgentCore;
+import FAtiMA.Core.AgentModel;
+import FAtiMA.Core.IComponent;
+import FAtiMA.Core.Display.AgentDisplay;
+import FAtiMA.Core.deliberativeLayer.DeliberativeProcess;
+import FAtiMA.Core.emotionalState.EmotionDisposition;
+import FAtiMA.Core.emotionalState.EmotionalState;
+import FAtiMA.Core.memory.ICompoundCue;
+import FAtiMA.Core.memory.ISpreadActivate;
+import FAtiMA.Core.memory.Memory;
+import FAtiMA.Core.reactiveLayer.ActionTendencies;
+import FAtiMA.Core.reactiveLayer.EmotionalReactionTreeNode;
+import FAtiMA.Core.reactiveLayer.ReactiveProcess;
+import FAtiMA.Core.sensorEffector.Event;
+import FAtiMA.Core.wellFormedNames.Symbol;
 import FAtiMA.motivationalSystem.MotivationalState;
 import FAtiMA.motivationalSystem.Motivator;
-import FAtiMA.reactiveLayer.ActionTendencies;
-import FAtiMA.reactiveLayer.EmotionalReactionTreeNode;
-import FAtiMA.reactiveLayer.ReactiveProcess;
-import FAtiMA.sensorEffector.Event;
-import FAtiMA.wellFormedNames.Symbol;
 
 public class ModelOfOther implements AgentModel, Serializable {
 	

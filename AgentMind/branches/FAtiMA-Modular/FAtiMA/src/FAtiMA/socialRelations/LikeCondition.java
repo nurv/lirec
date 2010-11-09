@@ -5,16 +5,16 @@ import java.util.ArrayList;
 import org.xml.sax.Attributes;
 
 
-import FAtiMA.AgentModel;
-import FAtiMA.conditions.Condition;
-import FAtiMA.conditions.Context;
-import FAtiMA.exceptions.ContextParsingException;
-import FAtiMA.exceptions.InvalidEmotionTypeException;
-import FAtiMA.util.Constants;
-import FAtiMA.wellFormedNames.Name;
-import FAtiMA.wellFormedNames.Substitution;
-import FAtiMA.wellFormedNames.SubstitutionSet;
-import FAtiMA.wellFormedNames.Symbol;
+import FAtiMA.Core.AgentModel;
+import FAtiMA.Core.conditions.Condition;
+import FAtiMA.Core.conditions.Context;
+import FAtiMA.Core.exceptions.ContextParsingException;
+import FAtiMA.Core.exceptions.InvalidEmotionTypeException;
+import FAtiMA.Core.util.Constants;
+import FAtiMA.Core.wellFormedNames.Name;
+import FAtiMA.Core.wellFormedNames.Substitution;
+import FAtiMA.Core.wellFormedNames.SubstitutionSet;
+import FAtiMA.Core.wellFormedNames.Symbol;
 
 /**
  * Represents a Like Relation that needs to be fullfiled in order to trigger

@@ -1,17 +1,17 @@
 package FAtiMA.emotionalIntelligence;
 
-import FAtiMA.AgentModel;
-import FAtiMA.conditions.Condition;
-import FAtiMA.conditions.EmotionCondition;
-import FAtiMA.conditions.RecentEventCondition;
-import FAtiMA.deliberativeLayer.plan.Effect;
-import FAtiMA.deliberativeLayer.plan.Step;
-import FAtiMA.emotionalState.BaseEmotion;
-import FAtiMA.reactiveLayer.Action;
-import FAtiMA.util.enumerables.ActionEvent;
-import FAtiMA.util.enumerables.EventType;
-import FAtiMA.wellFormedNames.Name;
-import FAtiMA.wellFormedNames.Symbol;
+import FAtiMA.Core.AgentModel;
+import FAtiMA.Core.conditions.Condition;
+import FAtiMA.Core.conditions.EmotionCondition;
+import FAtiMA.Core.conditions.RecentEventCondition;
+import FAtiMA.Core.deliberativeLayer.plan.Effect;
+import FAtiMA.Core.deliberativeLayer.plan.Step;
+import FAtiMA.Core.emotionalState.BaseEmotion;
+import FAtiMA.Core.reactiveLayer.Action;
+import FAtiMA.Core.util.enumerables.ActionEvent;
+import FAtiMA.Core.util.enumerables.EventType;
+import FAtiMA.Core.wellFormedNames.Name;
+import FAtiMA.Core.wellFormedNames.Symbol;
 
 public abstract class ActionTendencyOperatorFactory {
 	

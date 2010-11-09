@@ -4,13 +4,13 @@ import java.util.ArrayList;
 
 import org.xml.sax.Attributes;
 
-import FAtiMA.AgentModel;
-import FAtiMA.conditions.Condition;
-import FAtiMA.util.AgentLogger;
-import FAtiMA.wellFormedNames.Name;
-import FAtiMA.wellFormedNames.Substitution;
-import FAtiMA.wellFormedNames.SubstitutionSet;
-import FAtiMA.wellFormedNames.Symbol;
+import FAtiMA.Core.AgentModel;
+import FAtiMA.Core.conditions.Condition;
+import FAtiMA.Core.util.AgentLogger;
+import FAtiMA.Core.wellFormedNames.Name;
+import FAtiMA.Core.wellFormedNames.Substitution;
+import FAtiMA.Core.wellFormedNames.SubstitutionSet;
+import FAtiMA.Core.wellFormedNames.Symbol;
 
 public class MotivatorCondition extends Condition {
 	
