@@ -123,34 +123,48 @@ import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.Set;
 
-import FAtiMA.Core.AgentCore;
-import FAtiMA.Core.AgentModel;
-import FAtiMA.Core.IComponent;
-import FAtiMA.Core.ValuedAction;
-import FAtiMA.Core.Display.AgentDisplayPanel;
-import FAtiMA.Core.conditions.Condition;
-import FAtiMA.Core.deliberativeLayer.goals.ActivePursuitGoal;
-import FAtiMA.Core.deliberativeLayer.goals.Goal;
-import FAtiMA.Core.deliberativeLayer.goals.GoalLibrary;
-import FAtiMA.Core.deliberativeLayer.goals.InterestGoal;
-import FAtiMA.Core.deliberativeLayer.plan.Effect;
-import FAtiMA.Core.deliberativeLayer.plan.IPlanningOperator;
-import FAtiMA.Core.deliberativeLayer.plan.Plan;
-import FAtiMA.Core.deliberativeLayer.plan.ProtectedCondition;
-import FAtiMA.Core.deliberativeLayer.plan.Step;
-import FAtiMA.Core.emotionalState.ActiveEmotion;
-import FAtiMA.Core.emotionalState.AppraisalStructure;
-import FAtiMA.Core.exceptions.UnknownGoalException;
-import FAtiMA.Core.sensorEffector.Event;
-import FAtiMA.Core.sensorEffector.Parameter;
-import FAtiMA.Core.util.AgentLogger;
-import FAtiMA.Core.util.Constants;
-import FAtiMA.Core.wellFormedNames.Name;
-import FAtiMA.Core.wellFormedNames.Substitution;
-import FAtiMA.Core.wellFormedNames.SubstitutionSet;
-import FAtiMA.Core.wellFormedNames.Symbol;
-import FAtiMA.Core.wellFormedNames.Unifier;
+import FAtiMA.AgentCore;
+import FAtiMA.AgentModel;
+import FAtiMA.IComponent;
+import FAtiMA.ValuedAction;
+import FAtiMA.Display.AgentDisplayPanel;
+import FAtiMA.conditions.Condition;
+import FAtiMA.deliberativeLayer.ActionMonitor;
+import FAtiMA.deliberativeLayer.DefaultDetectThreatStrategy;
+import FAtiMA.deliberativeLayer.DefaultStrategy;
+import FAtiMA.deliberativeLayer.EmotionalPlanner;
+import FAtiMA.deliberativeLayer.ExpirableActionMonitor;
+import FAtiMA.deliberativeLayer.IActionFailureStrategy;
+import FAtiMA.deliberativeLayer.IActionSuccessStrategy;
+import FAtiMA.deliberativeLayer.IDetectThreatStrategy;
+import FAtiMA.deliberativeLayer.IExpectedUtilityStrategy;
+import FAtiMA.deliberativeLayer.IGoalFailureStrategy;
+import FAtiMA.deliberativeLayer.IGoalSuccessStrategy;
+import FAtiMA.deliberativeLayer.IOptionsStrategy;
+import FAtiMA.deliberativeLayer.IProbabilityStrategy;
+import FAtiMA.deliberativeLayer.Intention;
+import FAtiMA.deliberativeLayer.goals.ActivePursuitGoal;
+import FAtiMA.deliberativeLayer.goals.Goal;
+import FAtiMA.deliberativeLayer.goals.GoalLibrary;
+import FAtiMA.deliberativeLayer.goals.InterestGoal;
+import FAtiMA.deliberativeLayer.plan.Effect;
+import FAtiMA.deliberativeLayer.plan.IPlanningOperator;
+import FAtiMA.deliberativeLayer.plan.Plan;
+import FAtiMA.deliberativeLayer.plan.ProtectedCondition;
+import FAtiMA.deliberativeLayer.plan.Step;
+import FAtiMA.emotionalState.ActiveEmotion;
+import FAtiMA.emotionalState.AppraisalStructure;
+import FAtiMA.exceptions.UnknownGoalException;
 import FAtiMA.motivationalSystem.InvalidMotivatorTypeException;
+import FAtiMA.sensorEffector.Event;
+import FAtiMA.sensorEffector.Parameter;
+import FAtiMA.util.AgentLogger;
+import FAtiMA.util.Constants;
+import FAtiMA.wellFormedNames.Name;
+import FAtiMA.wellFormedNames.Substitution;
+import FAtiMA.wellFormedNames.SubstitutionSet;
+import FAtiMA.wellFormedNames.Symbol;
+import FAtiMA.wellFormedNames.Unifier;
 
 
 /**
@@ -185,7 +199,7 @@ public class DeliberativeProcess implements IComponent, IOptionsStrategy, IExpec
 	
 	//strategies
 	private IExpectedUtilityStrategy _EUStrategy;
-	private IUtilityForTargetStrategy _UStrategy;
+	private IUtilityStrategy _UStrategy;
 	private IProbabilityStrategy _PStrategy;
 	private IDetectThreatStrategy _isThreatStrat;
 	private ArrayList<IOptionsStrategy> _optionStrategies;
@@ -260,7 +274,7 @@ public class DeliberativeProcess implements IComponent, IOptionsStrategy, IExpec
 		_PStrategy = strategy;
 	}
 	
-	public void setUtilityForTargetStrategy(IUtilityForTargetStrategy strategy)
+	public void setUtilityForTargetStrategy(IUtilityStrategy strategy)
 	{
 		_UStrategy = strategy;
 	}
@@ -275,7 +289,7 @@ public class DeliberativeProcess implements IComponent, IOptionsStrategy, IExpec
 		return _PStrategy;
 	}
 	
-	public IUtilityForTargetStrategy getUtilityForTargetStrategy()
+	public IUtilityStrategy getUtilityForTargetStrategy()
 	{
 		return _UStrategy;
 	}
