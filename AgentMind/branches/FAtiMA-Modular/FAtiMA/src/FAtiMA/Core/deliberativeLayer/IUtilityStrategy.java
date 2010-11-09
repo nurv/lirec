@@ -1,7 +1,7 @@
 package FAtiMA.Core.deliberativeLayer;
 
-import FAtiMA.AgentModel;
-import FAtiMA.deliberativeLayer.goals.ActivePursuitGoal;
+import FAtiMA.Core.AgentModel;
+import FAtiMA.Core.deliberativeLayer.goals.ActivePursuitGoal;
 
 public interface IUtilityStrategy {
 	

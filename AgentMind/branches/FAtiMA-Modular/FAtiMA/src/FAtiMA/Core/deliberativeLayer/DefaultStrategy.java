@@ -4,14 +4,11 @@ import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.deliberativeLayer.goals.ActivePursuitGoal;
 import FAtiMA.Core.util.Constants;
 
-public class DefaultStrategy implements IUtilityForTargetStrategy, IProbabilityStrategy 
+public class DefaultStrategy implements IUtilityStrategy, IProbabilityStrategy 
 {	
-	public float getUtilityForTarget(String target, AgentModel am, ActivePursuitGoal g)
+	public float getUtility(AgentModel am, ActivePursuitGoal g)
 	{
-		if(target.equals(Constants.SELF))
-			return g.GetImportanceOfSuccess(am);
-		
-		else return 0;
+		return g.GetImportanceOfSuccess(am);
 	}
 	
 	public float getProbability(AgentModel am, ActivePursuitGoal g)

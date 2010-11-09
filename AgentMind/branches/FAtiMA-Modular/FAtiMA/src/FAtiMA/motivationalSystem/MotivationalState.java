@@ -40,28 +40,7 @@ import FAtiMA.Core.wellFormedNames.Substitution;
 import FAtiMA.Core.wellFormedNames.Symbol;
 import FAtiMA.Core.wellFormedNames.Unifier;
 import FAtiMA.ToM.ModelOfOther;
-import FAtiMA.deliberativeLayer.IActionFailureStrategy;
-import FAtiMA.deliberativeLayer.IExpectedUtilityStrategy;
-import FAtiMA.deliberativeLayer.IGoalFailureStrategy;
-import FAtiMA.deliberativeLayer.IGoalSuccessStrategy;
-import FAtiMA.deliberativeLayer.IProbabilityStrategy;
-import FAtiMA.deliberativeLayer.goals.ActivePursuitGoal;
-import FAtiMA.deliberativeLayer.goals.Goal;
-import FAtiMA.deliberativeLayer.plan.EffectOnDrive;
-import FAtiMA.deliberativeLayer.plan.IPlanningOperator;
-import FAtiMA.deliberativeLayer.plan.Step;
-import FAtiMA.emotionalState.ActiveEmotion;
-import FAtiMA.emotionalState.Appraisal;
-import FAtiMA.emotionalState.AppraisalStructure;
-import FAtiMA.emotionalState.BaseEmotion;
-import FAtiMA.emotionalState.EmotionalState;
-import FAtiMA.sensorEffector.Event;
-import FAtiMA.util.AgentLogger;
-import FAtiMA.util.Constants;
-import FAtiMA.wellFormedNames.Name;
-import FAtiMA.wellFormedNames.Substitution;
-import FAtiMA.wellFormedNames.Symbol;
-import FAtiMA.wellFormedNames.Unifier;
+
 
 /**
  * Implements the character's motivational state.
@@ -266,7 +245,7 @@ public class MotivationalState implements Serializable, Cloneable, IComponent, I
 	
 	public float getExpectedUtility(AgentModel am, ActivePursuitGoal g)
 	{		
-		float utility = am.getDeliberativeLayer().getUtilityForTargetStrategy().getUtilityForTarget(Constants.SELF, am, g);
+		float utility = am.getDeliberativeLayer().getUtilityForTargetStrategy().getUtility(am, g);
 		float probability = am.getDeliberativeLayer().getProbabilityStrategy().getProbability(am, g);
 		
 		

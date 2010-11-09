@@ -123,48 +123,48 @@ import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.Set;
 
-import FAtiMA.AgentCore;
-import FAtiMA.AgentModel;
-import FAtiMA.IComponent;
-import FAtiMA.ValuedAction;
-import FAtiMA.Display.AgentDisplayPanel;
-import FAtiMA.conditions.Condition;
-import FAtiMA.deliberativeLayer.ActionMonitor;
-import FAtiMA.deliberativeLayer.DefaultDetectThreatStrategy;
-import FAtiMA.deliberativeLayer.DefaultStrategy;
-import FAtiMA.deliberativeLayer.EmotionalPlanner;
-import FAtiMA.deliberativeLayer.ExpirableActionMonitor;
-import FAtiMA.deliberativeLayer.IActionFailureStrategy;
-import FAtiMA.deliberativeLayer.IActionSuccessStrategy;
-import FAtiMA.deliberativeLayer.IDetectThreatStrategy;
-import FAtiMA.deliberativeLayer.IExpectedUtilityStrategy;
-import FAtiMA.deliberativeLayer.IGoalFailureStrategy;
-import FAtiMA.deliberativeLayer.IGoalSuccessStrategy;
-import FAtiMA.deliberativeLayer.IOptionsStrategy;
-import FAtiMA.deliberativeLayer.IProbabilityStrategy;
-import FAtiMA.deliberativeLayer.Intention;
-import FAtiMA.deliberativeLayer.goals.ActivePursuitGoal;
-import FAtiMA.deliberativeLayer.goals.Goal;
-import FAtiMA.deliberativeLayer.goals.GoalLibrary;
-import FAtiMA.deliberativeLayer.goals.InterestGoal;
-import FAtiMA.deliberativeLayer.plan.Effect;
-import FAtiMA.deliberativeLayer.plan.IPlanningOperator;
-import FAtiMA.deliberativeLayer.plan.Plan;
-import FAtiMA.deliberativeLayer.plan.ProtectedCondition;
-import FAtiMA.deliberativeLayer.plan.Step;
-import FAtiMA.emotionalState.ActiveEmotion;
-import FAtiMA.emotionalState.AppraisalStructure;
-import FAtiMA.exceptions.UnknownGoalException;
+import FAtiMA.Core.AgentCore;
+import FAtiMA.Core.AgentModel;
+import FAtiMA.Core.IComponent;
+import FAtiMA.Core.ValuedAction;
+import FAtiMA.Core.Display.AgentDisplayPanel;
+import FAtiMA.Core.conditions.Condition;
+import FAtiMA.Core.deliberativeLayer.ActionMonitor;
+import FAtiMA.Core.deliberativeLayer.DefaultDetectThreatStrategy;
+import FAtiMA.Core.deliberativeLayer.DefaultStrategy;
+import FAtiMA.Core.deliberativeLayer.EmotionalPlanner;
+import FAtiMA.Core.deliberativeLayer.ExpirableActionMonitor;
+import FAtiMA.Core.deliberativeLayer.IActionFailureStrategy;
+import FAtiMA.Core.deliberativeLayer.IActionSuccessStrategy;
+import FAtiMA.Core.deliberativeLayer.IDetectThreatStrategy;
+import FAtiMA.Core.deliberativeLayer.IExpectedUtilityStrategy;
+import FAtiMA.Core.deliberativeLayer.IGoalFailureStrategy;
+import FAtiMA.Core.deliberativeLayer.IGoalSuccessStrategy;
+import FAtiMA.Core.deliberativeLayer.IOptionsStrategy;
+import FAtiMA.Core.deliberativeLayer.IProbabilityStrategy;
+import FAtiMA.Core.deliberativeLayer.Intention;
+import FAtiMA.Core.deliberativeLayer.goals.ActivePursuitGoal;
+import FAtiMA.Core.deliberativeLayer.goals.Goal;
+import FAtiMA.Core.deliberativeLayer.goals.GoalLibrary;
+import FAtiMA.Core.deliberativeLayer.goals.InterestGoal;
+import FAtiMA.Core.deliberativeLayer.plan.Effect;
+import FAtiMA.Core.deliberativeLayer.plan.IPlanningOperator;
+import FAtiMA.Core.deliberativeLayer.plan.Plan;
+import FAtiMA.Core.deliberativeLayer.plan.ProtectedCondition;
+import FAtiMA.Core.deliberativeLayer.plan.Step;
+import FAtiMA.Core.emotionalState.ActiveEmotion;
+import FAtiMA.Core.emotionalState.AppraisalStructure;
+import FAtiMA.Core.exceptions.UnknownGoalException;
 import FAtiMA.motivationalSystem.InvalidMotivatorTypeException;
-import FAtiMA.sensorEffector.Event;
-import FAtiMA.sensorEffector.Parameter;
-import FAtiMA.util.AgentLogger;
-import FAtiMA.util.Constants;
-import FAtiMA.wellFormedNames.Name;
-import FAtiMA.wellFormedNames.Substitution;
-import FAtiMA.wellFormedNames.SubstitutionSet;
-import FAtiMA.wellFormedNames.Symbol;
-import FAtiMA.wellFormedNames.Unifier;
+import FAtiMA.Core.sensorEffector.Event;
+import FAtiMA.Core.sensorEffector.Parameter;
+import FAtiMA.Core.util.AgentLogger;
+import FAtiMA.Core.util.Constants;
+import FAtiMA.Core.wellFormedNames.Name;
+import FAtiMA.Core.wellFormedNames.Substitution;
+import FAtiMA.Core.wellFormedNames.SubstitutionSet;
+import FAtiMA.Core.wellFormedNames.Symbol;
+import FAtiMA.Core.wellFormedNames.Unifier;
 
 
 /**
@@ -1230,7 +1230,7 @@ public class DeliberativeProcess implements IComponent, IOptionsStrategy, IExpec
 
 
 	public float getExpectedUtility(AgentModel am, ActivePursuitGoal g) {
-		return _UStrategy.getUtilityForTarget(Constants.SELF, am, g) * _PStrategy.getProbability(am, g);
+		return _UStrategy.getUtility(am, g) * _PStrategy.getProbability(am, g);
 	}
 
 	@Override
