@@ -27,7 +27,7 @@ public class SocialRelationsComponent implements IComponent {
 	}
 
 	@Override
-	public void initialize(AgentCore am) {			
+	public void initialize(AgentModel am) {			
 	}
 
 	@Override

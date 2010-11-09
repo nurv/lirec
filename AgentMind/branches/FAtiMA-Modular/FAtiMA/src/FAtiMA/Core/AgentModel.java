@@ -30,4 +30,6 @@ public interface AgentModel {
 	
 	public AgentModel getModelToTest(Symbol ToM);
 	
+	public void setModelStrategy(IGetModelStrategy strat);
+	
 }

@@ -20,18 +20,13 @@ import FAtiMA.Core.deliberativeLayer.IExpectedUtilityStrategy;
 import FAtiMA.Core.deliberativeLayer.IGoalFailureStrategy;
 import FAtiMA.Core.deliberativeLayer.IGoalSuccessStrategy;
 import FAtiMA.Core.deliberativeLayer.IProbabilityStrategy;
-import FAtiMA.Core.deliberativeLayer.IUtilityForTargetStrategy;
 import FAtiMA.Core.deliberativeLayer.IUtilityStrategy;
 import FAtiMA.Core.deliberativeLayer.goals.ActivePursuitGoal;
-import FAtiMA.Core.deliberativeLayer.goals.Goal;
 import FAtiMA.Core.deliberativeLayer.plan.EffectOnDrive;
 import FAtiMA.Core.deliberativeLayer.plan.IPlanningOperator;
 import FAtiMA.Core.deliberativeLayer.plan.Step;
 import FAtiMA.Core.emotionalState.ActiveEmotion;
-import FAtiMA.Core.emotionalState.Appraisal;
 import FAtiMA.Core.emotionalState.AppraisalStructure;
-import FAtiMA.Core.emotionalState.BaseEmotion;
-import FAtiMA.Core.emotionalState.EmotionalState;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.util.AgentLogger;
 import FAtiMA.Core.util.Constants;
@@ -39,7 +34,6 @@ import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Substitution;
 import FAtiMA.Core.wellFormedNames.Symbol;
 import FAtiMA.Core.wellFormedNames.Unifier;
-import FAtiMA.ToM.ModelOfOther;
 
 
 /**
@@ -177,7 +171,7 @@ public class MotivationalState implements Serializable, Cloneable, IComponent, I
 		return contributionToSelfNeeds;
 	}
 	
-	public float getContributionToNeeds(AgentModel am, ActivePursuitGoal g, String target){
+	public float getContributionToNeeds(AgentModel am, ActivePursuitGoal g){
 		float result = 0;
 		String[] effectTypes = {"OnSelect","OnIgnore"};
 		String[] nonCognitiveDrives = {"Affiliation","Integrity","Energy"};
@@ -186,54 +180,31 @@ public class MotivationalState implements Serializable, Cloneable, IComponent, I
 		float auxMultiplier; // this is used for the effects that are OnIgnore
 			
 		try {		
-			// If target is SELF
-			if(target.equalsIgnoreCase(Constants.SELF)){
-				auxMultiplier = 1;
-				//Calculate the effect on Non-Cognitive Needs
-				for (int c = 0; c < effectTypes.length; c++ ){
-					
-					for(int i = 0; i < nonCognitiveDrives.length; i++){
-						expectedContribution = g.GetExpectedEffectOnDrive(effectTypes[c], nonCognitiveDrives[i], "[SELF]").floatValue();
-						currentIntensity =  GetIntensity(MotivatorType.ParseType(nonCognitiveDrives[i]));
-						result +=  auxMultiplier * MotivationalState.determineQuadraticNeedVariation(currentIntensity, expectedContribution); 
-					}
-					auxMultiplier = -1;
-
+			auxMultiplier = 1;
+			//Calculate the effect on Non-Cognitive Needs
+			for (int c = 0; c < effectTypes.length; c++ ){
+				
+				for(int i = 0; i < nonCognitiveDrives.length; i++){
+					expectedContribution = g.GetExpectedEffectOnDrive(effectTypes[c], nonCognitiveDrives[i], "[SELF]").floatValue();
+					currentIntensity =  GetIntensity(MotivatorType.ParseType(nonCognitiveDrives[i]));
+					result +=  auxMultiplier * MotivationalState.determineQuadraticNeedVariation(currentIntensity, expectedContribution); 
 				}
+				auxMultiplier = -1;
+
+			}
 				
-				float currentCompetenceIntensity = GetIntensity(MotivatorType.COMPETENCE);
-				float expectedCompetenceContribution = PredictCompetenceChange(true);
-				result += MotivationalState.determineQuadraticNeedVariation(currentCompetenceIntensity, expectedCompetenceContribution);
+			float currentCompetenceIntensity = GetIntensity(MotivatorType.COMPETENCE);
+			float expectedCompetenceContribution = PredictCompetenceChange(true);
+			result += MotivationalState.determineQuadraticNeedVariation(currentCompetenceIntensity, expectedCompetenceContribution);
 				
-				float currentUncertaintyIntensity = GetIntensity(MotivatorType.CERTAINTY);
-				//expected error assuming that the goal is successful
-				float expectedError = 1 - g.getProbability(am);
-				float currentError = g.getUncertainty(am);
-				float expectedUncertaintyContribution = 10*(currentError - expectedError); 
-				result += MotivationalState.determineQuadraticNeedVariation(currentUncertaintyIntensity,expectedUncertaintyContribution);	
+			float currentUncertaintyIntensity = GetIntensity(MotivatorType.CERTAINTY);
+			//expected error assuming that the goal is successful
+			float expectedError = 1 - g.getProbability(am);
+			float currentError = g.getUncertainty(am);
+			float expectedUncertaintyContribution = 10*(currentError - expectedError); 
+			result += MotivationalState.determineQuadraticNeedVariation(currentUncertaintyIntensity,expectedUncertaintyContribution);	
 								
-			}
-			else{
-			// If target is NOT SELF
-			// Only the non-cognitive needs are taken into account for other agents. This is because his actions cannot impact those needs.
-			
-			//TODO move this code to the ToM component??? 	
-				/*if(am.getToM().containsKey(target))
-				{
-					auxMultiplier = 1;
-					ModelOfOther m = am.getToM().get(target);
-					
-					//Calculate the effect on Non-Cognitive Needs
-					for (int c = 0; c < effectTypes.length; c++ ){
-						for(int i = 0; i < nonCognitiveDrives.length; i++){
-							expectedContribution = g.GetExpectedEffectOnDrive(effectTypes[c], nonCognitiveDrives[i], "[target]").floatValue();
-							currentIntensity =  GetIntensity(MotivatorType.ParseType(nonCognitiveDrives[i]));
-							result += auxMultiplier * MotivationalState.determineQuadraticNeedVariation(currentIntensity, expectedContribution); 		
-						}
-						auxMultiplier = -1;
-					}		
-				}*/
-			}
+	
 		} catch (InvalidMotivatorTypeException e) {
 			AgentLogger.GetInstance().log("EXCEPTION:" + e);
 			e.printStackTrace();
@@ -245,7 +216,7 @@ public class MotivationalState implements Serializable, Cloneable, IComponent, I
 	
 	public float getExpectedUtility(AgentModel am, ActivePursuitGoal g)
 	{		
-		float utility = am.getDeliberativeLayer().getUtilityForTargetStrategy().getUtility(am, g);
+		float utility = am.getDeliberativeLayer().getUtilityStrategy().getUtility(am, g);
 		float probability = am.getDeliberativeLayer().getProbabilityStrategy().getProbability(am, g);
 		
 		
@@ -257,9 +228,9 @@ public class MotivationalState implements Serializable, Cloneable, IComponent, I
 		return EU;
 	}
 	
-	public float getUtilityForTarget(String target, AgentModel am, ActivePursuitGoal g)
+	public float getUtility(AgentModel am, ActivePursuitGoal g)
 	{
-		return getContributionToNeeds(am,g,target);
+		return getContributionToNeeds(am,g);
 	}
 	
 	public float getProbability(AgentModel am, ActivePursuitGoal g)
@@ -502,11 +473,10 @@ public class MotivationalState implements Serializable, Cloneable, IComponent, I
 
 
 	@Override
-	public void initialize(AgentCore am) {
-		
+	public void initialize(AgentModel am) {
 		am.getDeliberativeLayer().setExpectedUtilityStrategy(this);
 		am.getDeliberativeLayer().setProbabilityStrategy(this);
-		am.getDeliberativeLayer().setUtilityForTargetStrategy(this);
+		am.getDeliberativeLayer().setUtilityStrategy(this);
 		am.getDeliberativeLayer().addActionFailureStrategy(this);
 		am.getDeliberativeLayer().addGoalFailureStrategy(this);
 		am.getDeliberativeLayer().addGoalSuccessStrategy(this);

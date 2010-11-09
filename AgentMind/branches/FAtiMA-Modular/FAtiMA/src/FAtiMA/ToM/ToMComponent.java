@@ -3,14 +3,12 @@ package FAtiMA.ToM;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.sun.org.apache.bcel.internal.generic.FADD;
-
 import FAtiMA.Core.AgentCore;
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.IComponent;
 import FAtiMA.Core.IGetModelStrategy;
 import FAtiMA.Core.Display.AgentDisplayPanel;
-import FAtiMA.Core.deliberativeLayer.IUtilityForTargetStrategy;
+import FAtiMA.Core.deliberativeLayer.IGetUtilityForOthers;
 import FAtiMA.Core.deliberativeLayer.goals.ActivePursuitGoal;
 import FAtiMA.Core.emotionalState.ActiveEmotion;
 import FAtiMA.Core.emotionalState.AppraisalStructure;
@@ -20,7 +18,7 @@ import FAtiMA.Core.util.Constants;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Symbol;
 
-public class ToMComponent implements IComponent, IGetModelStrategy, IUtilityForTargetStrategy {
+public class ToMComponent implements IComponent, IGetModelStrategy, IGetUtilityForOthers {
 	
 	public static final String NAME = "ToM";
 	
@@ -59,9 +57,10 @@ public class ToMComponent implements IComponent, IGetModelStrategy, IUtilityForT
 	}
 
 	@Override
-	public void initialize(AgentCore ag) {
-		ag.setModelStrategy(this);
-		ag.getDeliberativeLayer().setDetectThreatStrategy(new DetectThreatStrategy());
+	public void initialize(AgentModel am) {
+		am.setModelStrategy(this);
+		am.getDeliberativeLayer().setDetectThreatStrategy(new DetectThreatStrategy());
+		am.getDeliberativeLayer().setUtilityForOthersStrategy(this);
 	}
 	
 	private void initializeModelOfOther(AgentCore ag, String name)
@@ -224,33 +223,15 @@ public class ToMComponent implements IComponent, IGetModelStrategy, IUtilityForT
 	}
 
 	@Override
-	public float getUtilityForTarget(String target, AgentModel am, ActivePursuitGoal g) {
+	public float getUtilityForOthers(AgentModel am, ActivePursuitGoal g) {
 		
-		ModelOfOther m;
+		float utility = 0;
 		
-		if(_ToM.containsKey(target))
+		for(ModelOfOther m : _ToM.values())
 		{
-			m = _ToM.get(target);
+			utility+= m.getDeliberativeLayer().getUtilityStrategy().getUtility(m, g);
 		}
 		
-		m.getDeliberativeLayer().getUtilityForTargetStrategy()
-		
-		auxMultiplier = 1; 
-		ModelOfOther m = am.getToM().get(target);
-		
-		
-		//Calculate the effect on Non-Cognitive Needs
-		for (int c = 0; c < effectTypes.length; c++ ){
-			
-			for(int i = 0; i < nonCognitiveDrives.length; i++){
-				expectedContribution = g.GetExpectedEffectOnDrive(effectTypes[c], nonCognitiveDrives[i], "[target]").floatValue();
-				currentIntensity =  GetIntensity(MotivatorType.ParseType(nonCognitiveDrives[i]));
-				result += auxMultiplier * MotivationalState.determineQuadraticNeedVariation(currentIntensity, expectedContribution); 		
-			}
-			
-			auxMultiplier = -1;
-		}		
-		
-		return 0;
+		return utility;
 	}
 }

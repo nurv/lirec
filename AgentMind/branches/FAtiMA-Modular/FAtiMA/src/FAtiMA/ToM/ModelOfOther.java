@@ -8,6 +8,7 @@ import java.util.HashMap;
 import FAtiMA.Core.AgentCore;
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.IComponent;
+import FAtiMA.Core.IGetModelStrategy;
 import FAtiMA.Core.Display.AgentDisplay;
 import FAtiMA.Core.deliberativeLayer.DeliberativeProcess;
 import FAtiMA.Core.emotionalState.EmotionDisposition;
@@ -34,6 +35,7 @@ public class ModelOfOther implements AgentModel, Serializable {
 	private Memory _mem;
 	private HashMap<String,IComponent> _components;
 	private ReactiveProcess _reactiveProcess;
+	private DeliberativeProcess _deliberativeProcess;
 	
 	public ModelOfOther(String name, AgentCore ag) 
 	{
@@ -79,10 +81,17 @@ public class ModelOfOther implements AgentModel, Serializable {
 	
 	public void addComponent(IComponent c)
 	{
+		c.initialize(this);
 		if(c.name().equals(ReactiveProcess.NAME))
 		{
 			_reactiveProcess = (ReactiveProcess) c;
 		}
+		if(c.name().equals(DeliberativeProcess.NAME))
+		{
+			_deliberativeProcess = (DeliberativeProcess) c;
+			return;
+		}
+		
 		_components.put(c.name(),c);
 	}
 	
@@ -110,6 +119,10 @@ public class ModelOfOther implements AgentModel, Serializable {
 	@Override
 	public AgentModel getModelToTest(Symbol ToM) {
 		return null;
+	}
+
+	@Override
+	public void setModelStrategy(IGetModelStrategy strat) {
 	}
 
 }

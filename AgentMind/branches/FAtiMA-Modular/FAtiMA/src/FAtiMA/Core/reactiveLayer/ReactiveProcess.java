@@ -326,7 +326,7 @@ public class ReactiveProcess implements IComponent {
 	}
 
 	@Override
-	public void initialize(AgentCore ag) {
+	public void initialize(AgentModel am) {
 	}
 
 	@Override

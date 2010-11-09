@@ -8,24 +8,6 @@ import java.util.Iterator;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import FAtiMA.AgentCore;
-import FAtiMA.AgentModel;
-import FAtiMA.IComponent;
-import FAtiMA.Display.AgentDisplayPanel;
-import FAtiMA.conditions.Condition;
-import FAtiMA.deliberativeLayer.IExpectedUtilityStrategy;
-import FAtiMA.deliberativeLayer.IOptionsStrategy;
-import FAtiMA.deliberativeLayer.goals.ActivePursuitGoal;
-import FAtiMA.emotionalState.ActiveEmotion;
-import FAtiMA.emotionalState.AppraisalStructure;
-import FAtiMA.sensorEffector.Event;
-import FAtiMA.util.AgentLogger;
-import FAtiMA.util.Constants;
-import FAtiMA.util.VersionChecker;
-import FAtiMA.util.enumerables.CulturalDimensionType;
-import FAtiMA.wellFormedNames.Name;
-import FAtiMA.wellFormedNames.SubstitutionSet;
-import FAtiMA.wellFormedNames.Symbol;
 
 import FAtiMA.Core.AgentCore;
 import FAtiMA.Core.AgentModel;
@@ -33,8 +15,8 @@ import FAtiMA.Core.IComponent;
 import FAtiMA.Core.Display.AgentDisplayPanel;
 import FAtiMA.Core.conditions.Condition;
 import FAtiMA.Core.deliberativeLayer.IExpectedUtilityStrategy;
+import FAtiMA.Core.deliberativeLayer.IGetUtilityForOthers;
 import FAtiMA.Core.deliberativeLayer.IOptionsStrategy;
-import FAtiMA.Core.deliberativeLayer.IUtilityForTargetStrategy;
 import FAtiMA.Core.deliberativeLayer.IUtilityStrategy;
 import FAtiMA.Core.deliberativeLayer.goals.ActivePursuitGoal;
 import FAtiMA.Core.emotionalState.ActiveEmotion;
@@ -74,7 +56,7 @@ public class CulturalDimensionsComponent implements IComponent, IOptionsStrategy
 	
 	//unused interface methods:
 	@Override
-	public void initialize(AgentCore aM){
+	public void initialize(AgentModel aM){
 		this.loadCulture(aM);
 		aM.getDeliberativeLayer().AddOptionsStrategy(this);
 		aM.getDeliberativeLayer().setExpectedUtilityStrategy(this);
@@ -159,9 +141,9 @@ public class CulturalDimensionsComponent implements IComponent, IOptionsStrategy
 			SAXParserFactory factory = SAXParserFactory.newInstance();
 			SAXParser parser = factory.newSAXParser();
 			if (VersionChecker.runningOnAndroid())
-				parser.parse(new File(Agent.MIND_PATH_ANDROID + cultureName + ".xml"), cultureLoader);		
+				parser.parse(new File(AgentCore.MIND_PATH_ANDROID + cultureName + ".xml"), cultureLoader);		
 			else	
-				parser.parse(new File(Agent.MIND_PATH + cultureName + ".xml"), cultureLoader);
+				parser.parse(new File(AgentCore.MIND_PATH + cultureName + ".xml"), cultureLoader);
 
 			for(Ritual r : cultureLoader.GetRituals(aM)){
 				this._rituals.add(r);
@@ -298,18 +280,14 @@ public class CulturalDimensionsComponent implements IComponent, IOptionsStrategy
 		
 		float probability = am.getDeliberativeLayer().getProbabilityStrategy().getProbability(am, g);
 		
-		IUtilityStrategy str =  am.getDeliberativeLayer().getUtilityForTargetStrategy();
+		IUtilityStrategy str =  am.getDeliberativeLayer().getUtilityStrategy();
 		
-		float contributionToSelf = str.getUtilityForTarget(Constants.SELF, am, g);
+		float contributionToSelf = str.getUtility(am, g);
 		
+		IGetUtilityForOthers ostrat = am.getDeliberativeLayer().getUtilityForOthersStrategy();
 		
-		float contributionOthers = 0;
-		
-		for(Symbol s : g.getName().GetLiteralList())
-		{
-			contributionOthers += str.getUtilityForTarget(s.toString(), am, g);
-		}
-		
+		float contributionOthers = ostrat.getUtilityForOthers(am, g);
+				
 		float culturalGoalUtility = determineCulturalUtility(am, g,contributionToSelf,contributionOthers);		
 		
 		float EU = culturalGoalUtility * probability + (1 + g.GetGoalUrgency());

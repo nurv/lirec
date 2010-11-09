@@ -72,6 +72,7 @@ package FAtiMA.Core.deliberativeLayer.goals;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.ListIterator;
 
 import FAtiMA.Core.AgentModel;
@@ -110,7 +111,7 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
 	protected ArrayList<Condition> _preConditions;
 	protected ArrayList<Condition> _successConditions;
 	protected int _numberOfTries;
-	protected Hashtable<String, Float> _expectedEffects;
+	protected Hashtable<Symbol, Float> _expectedEffects;
 		
 	protected Float _probability = null;
 	protected boolean _probabilityDetermined = false;
@@ -130,7 +131,7 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
 	public ActivePursuitGoal(Name description) {
 		super(description);
 		
-		_expectedEffects = new Hashtable<String,Float>();
+		_expectedEffects = new Hashtable<Symbol,Float>();
 		_preConditions = new ArrayList<Condition>(5);
 		_successConditions = new ArrayList<Condition>(2);
 		_failureConditions = new ArrayList<Condition>(2);
@@ -568,6 +569,15 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
     	{
     		e.MakeGround(bindings);
     	}
+    	
+    	Iterator<String> it = this._expectedEffects.keySet().iterator();
+    	
+    	while(it.hasNext())
+    	{
+    		
+    	}
+    	
+    	for(this._expectedEffects.v)
     }
     
     
@@ -655,6 +665,8 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
     	{
     		e.MakeGround(subst);
     	}
+    	
+    	for(_)
     }
 	
 	/**

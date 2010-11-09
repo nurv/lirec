@@ -182,7 +182,7 @@ public class DeliberativeProcess implements IComponent, IOptionsStrategy, IExpec
 	private static final long waitingTime = 30000;
 	private static final float MINIMUMUTILITY = 8;
 	private static final float SELECTIONTHRESHOLD = 1.2f; 
-	private static final String COMPONENTNAME = "Deliberative";
+	public static final String NAME = "Deliberative";
 	
 	private ArrayList<Goal> _goals;
 	
@@ -200,6 +200,7 @@ public class DeliberativeProcess implements IComponent, IOptionsStrategy, IExpec
 	//strategies
 	private IExpectedUtilityStrategy _EUStrategy;
 	private IUtilityStrategy _UStrategy;
+	private IGetUtilityForOthers _UOthersStrategy;
 	private IProbabilityStrategy _PStrategy;
 	private IDetectThreatStrategy _isThreatStrat;
 	private ArrayList<IOptionsStrategy> _optionStrategies;
@@ -228,6 +229,7 @@ public class DeliberativeProcess implements IComponent, IOptionsStrategy, IExpec
 		_currentIntention = null;
 		_EUStrategy = this;
 		_UStrategy = new DefaultStrategy();
+		_UOthersStrategy = new DefaultStrategy();
 		_PStrategy = new DefaultStrategy();
 		_isThreatStrat = new DefaultDetectThreatStrategy();
 		_optionStrategies = new ArrayList<IOptionsStrategy>();
@@ -259,6 +261,11 @@ public class DeliberativeProcess implements IComponent, IOptionsStrategy, IExpec
 		_actionFailureStrategies.add(strat);
 	}
 	
+	public void setUtilityForOthersStrategy(IGetUtilityForOthers strat)
+	{
+		_UOthersStrategy = strat;
+	}
+	
 	public void setDetectThreatStrategy(IDetectThreatStrategy strat)
 	{
 		_isThreatStrat = strat;
@@ -274,7 +281,7 @@ public class DeliberativeProcess implements IComponent, IOptionsStrategy, IExpec
 		_PStrategy = strategy;
 	}
 	
-	public void setUtilityForTargetStrategy(IUtilityStrategy strategy)
+	public void setUtilityStrategy(IUtilityStrategy strategy)
 	{
 		_UStrategy = strategy;
 	}
@@ -284,12 +291,17 @@ public class DeliberativeProcess implements IComponent, IOptionsStrategy, IExpec
 		return _EUStrategy;
 	}
 	
+	public IGetUtilityForOthers getUtilityForOthersStrategy()
+	{
+		return _UOthersStrategy;
+	}
+	
 	public IProbabilityStrategy getProbabilityStrategy()
 	{
 		return _PStrategy;
 	}
 	
-	public IUtilityStrategy getUtilityForTargetStrategy()
+	public IUtilityStrategy getUtilityStrategy()
 	{
 		return _UStrategy;
 	}
@@ -1235,11 +1247,11 @@ public class DeliberativeProcess implements IComponent, IOptionsStrategy, IExpec
 
 	@Override
 	public String name() {
-		return DeliberativeProcess.COMPONENTNAME;
+		return DeliberativeProcess.NAME;
 	}
 
 	@Override
-	public void initialize(AgentCore ag) {	
+	public void initialize(AgentModel ag) {	
 	}
 
 	@Override
@@ -1292,7 +1304,7 @@ public class DeliberativeProcess implements IComponent, IOptionsStrategy, IExpec
 
 	@Override
 	public IComponent createModelOfOther() {
-		return null;
+		return new DeliberativeProcess(_goalLibrary, _planner);
 	}
 
 	@Override
@@ -1301,7 +1313,6 @@ public class DeliberativeProcess implements IComponent, IOptionsStrategy, IExpec
 
 	@Override
 	public AgentDisplayPanel createComponentDisplayPanel(AgentModel am) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 }

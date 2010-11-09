@@ -1,11 +1,5 @@
 package FAtiMA.Core;
 
-import java.io.IOException;
-
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.xml.sax.SAXException;
-
 import FAtiMA.Core.Display.AgentDisplayPanel;
 import FAtiMA.Core.emotionalState.ActiveEmotion;
 import FAtiMA.Core.emotionalState.AppraisalStructure;
@@ -16,7 +10,7 @@ public interface IComponent {
 	
 	public String name();
 	
-	public void initialize(AgentCore ag);
+	public void initialize(AgentModel am);
 	
 	public void reset();
 	
