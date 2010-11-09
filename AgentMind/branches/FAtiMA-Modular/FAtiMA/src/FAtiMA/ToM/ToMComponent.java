@@ -233,6 +233,8 @@ public class ToMComponent implements IComponent, IGetModelStrategy, IUtilityForT
 			m = _ToM.get(target);
 		}
 		
+		m.getDeliberativeLayer().getUtilityForTargetStrategy()
+		
 		auxMultiplier = 1; 
 		ModelOfOther m = am.getToM().get(target);
 		
