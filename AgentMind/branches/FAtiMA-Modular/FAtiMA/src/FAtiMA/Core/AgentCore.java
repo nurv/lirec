@@ -1,24 +1,19 @@
 package FAtiMA.Core;
 
-import java.io.File;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.ListIterator;
 import java.util.StringTokenizer;
 import java.util.logging.Logger;
-
-
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -31,7 +26,6 @@ import FAtiMA.Core.Display.AgentDisplayPanel;
 import FAtiMA.Core.deliberativeLayer.DeliberativeProcess;
 import FAtiMA.Core.deliberativeLayer.EmotionalPlanner;
 import FAtiMA.Core.deliberativeLayer.goals.GoalLibrary;
-import FAtiMA.Core.deliberativeLayer.plan.Step;
 import FAtiMA.Core.emotionalState.ActiveEmotion;
 import FAtiMA.Core.emotionalState.Appraisal;
 import FAtiMA.Core.emotionalState.AppraisalStructure;
@@ -40,19 +34,11 @@ import FAtiMA.Core.emotionalState.EmotionalState;
 import FAtiMA.Core.exceptions.ActionsParsingException;
 import FAtiMA.Core.exceptions.GoalLibParsingException;
 import FAtiMA.Core.exceptions.UnknownGoalException;
-import FAtiMA.Core.memory.ICommonalities;
-import FAtiMA.Core.memory.ICompoundCue;
-import FAtiMA.Core.memory.ISpreadActivate;
 import FAtiMA.Core.memory.Memory;
 import FAtiMA.Core.memory.semanticMemory.KnowledgeSlot;
-import FAtiMA.Core.reactiveLayer.Action;
-import FAtiMA.Core.reactiveLayer.ActionTendencies;
-import FAtiMA.Core.reactiveLayer.EmotionalReactionTreeNode;
-import FAtiMA.Core.reactiveLayer.Reaction;
 import FAtiMA.Core.reactiveLayer.ReactiveProcess;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.sensorEffector.IONRemoteAgent;
-import FAtiMA.Core.sensorEffector.Parameter;
 import FAtiMA.Core.sensorEffector.RemoteAgent;
 import FAtiMA.Core.sensorEffector.SpeechAct;
 import FAtiMA.Core.sensorEffector.WorldSimulatorRemoteAgent;
@@ -60,20 +46,12 @@ import FAtiMA.Core.util.AgentLogger;
 import FAtiMA.Core.util.ConfigurationManager;
 import FAtiMA.Core.util.Constants;
 import FAtiMA.Core.util.VersionChecker;
-import FAtiMA.Core.util.enumerables.ActionEvent;
 import FAtiMA.Core.util.enumerables.AgentPlatform;
 import FAtiMA.Core.util.enumerables.EmotionType;
-import FAtiMA.Core.util.enumerables.EventType;
 import FAtiMA.Core.util.parsers.AgentLoaderHandler;
 import FAtiMA.Core.util.parsers.BinaryStringConverter;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Symbol;
-import FAtiMA.ToM.ModelOfOther;
-import FAtiMA.culture.Ritual;
-import FAtiMA.emotionalIntelligence.ActionTendencyOperatorFactory;
-import FAtiMA.emotionalIntelligence.OCCAppraisalRules;
-import FAtiMA.motivationalSystem.MotivationalState;
-import FAtiMA.socialRelations.LikeRelation;
 
 
 public class AgentCore implements AgentModel, IGetModelStrategy {
