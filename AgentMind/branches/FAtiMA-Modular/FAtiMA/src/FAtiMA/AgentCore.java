@@ -537,8 +537,6 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 						{
 							AgentLogger.GetInstance().log("appraising event: " + e.toName());
 							
-							
-							
 							Event e2 = e.ApplyPerspective(_name);
 							_memory.getEpisodicMemory().StoreAction(_memory, e2);
 							_memory.getSemanticMemory().Tell(ACTION_CONTEXT, e2.toName().toString());

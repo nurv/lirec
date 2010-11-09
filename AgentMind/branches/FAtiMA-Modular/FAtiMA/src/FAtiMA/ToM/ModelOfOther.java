@@ -61,6 +61,22 @@ public class ModelOfOther implements AgentModel, Serializable {
 		return _name;
 	}
 	
+	public void update()
+	{
+		for(IComponent c : _components.values())
+		{
+			c.update(this);
+		}
+	}
+	
+	public void update(Event e)
+	{
+		for(IComponent c : _components.values())
+		{
+			c.update(e,this);
+		}
+	}
+	
 	public void addComponent(IComponent c)
 	{
 		if(c.name().equals(ReactiveProcess.NAME))

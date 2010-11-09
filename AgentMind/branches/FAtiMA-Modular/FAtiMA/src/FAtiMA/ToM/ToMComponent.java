@@ -107,16 +107,18 @@ public class ToMComponent implements IComponent, IGetModelStrategy {
 		for(String s : _nearbyAgents)
 		{
 			ModelOfOther m = _ToM.get(s);
-			for(IComponent c : m.getComponents())
-			{
-				c.update(m);
-			}
+			m.update();
 		}		
 	}
 	
 	@Override
 	public void update(Event e, AgentModel am)
 	{
+		for(String s : _nearbyAgents)
+		{
+			ModelOfOther m = _ToM.get(s);
+			m.update(e);
+		}	
 	}
 
 	@Override
