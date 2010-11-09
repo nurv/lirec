@@ -10,6 +10,8 @@ import FAtiMA.AgentModel;
 import FAtiMA.IComponent;
 import FAtiMA.IGetModelStrategy;
 import FAtiMA.Display.AgentDisplayPanel;
+import FAtiMA.deliberativeLayer.IUtilityForTargetStrategy;
+import FAtiMA.deliberativeLayer.goals.ActivePursuitGoal;
 import FAtiMA.emotionalState.ActiveEmotion;
 import FAtiMA.emotionalState.AppraisalStructure;
 import FAtiMA.memory.semanticMemory.KnowledgeSlot;
@@ -18,7 +20,7 @@ import FAtiMA.util.Constants;
 import FAtiMA.wellFormedNames.Name;
 import FAtiMA.wellFormedNames.Symbol;
 
-public class ToMComponent implements IComponent, IGetModelStrategy {
+public class ToMComponent implements IComponent, IGetModelStrategy, IUtilityForTargetStrategy {
 	
 	public static final String NAME = "ToM";
 	
@@ -219,5 +221,34 @@ public class ToMComponent implements IComponent, IGetModelStrategy {
 	@Override
 	public AgentDisplayPanel createComponentDisplayPanel(AgentModel am) {
 		return new ToMPanel(this);
+	}
+
+	@Override
+	public float getUtilityForTarget(String target, AgentModel am, ActivePursuitGoal g) {
+		
+		ModelOfOther m;
+		
+		if(_ToM.containsKey(target))
+		{
+			m = _ToM.get(target);
+		}
+		
+		auxMultiplier = 1; 
+		ModelOfOther m = am.getToM().get(target);
+		
+		
+		//Calculate the effect on Non-Cognitive Needs
+		for (int c = 0; c < effectTypes.length; c++ ){
+			
+			for(int i = 0; i < nonCognitiveDrives.length; i++){
+				expectedContribution = g.GetExpectedEffectOnDrive(effectTypes[c], nonCognitiveDrives[i], "[target]").floatValue();
+				currentIntensity =  GetIntensity(MotivatorType.ParseType(nonCognitiveDrives[i]));
+				result += auxMultiplier * MotivationalState.determineQuadraticNeedVariation(currentIntensity, expectedContribution); 		
+			}
+			
+			auxMultiplier = -1;
+		}		
+		
+		return 0;
 	}
 }

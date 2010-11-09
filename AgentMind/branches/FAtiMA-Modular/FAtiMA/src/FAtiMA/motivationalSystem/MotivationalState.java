@@ -126,12 +126,8 @@ public class MotivationalState implements Serializable, Cloneable, IComponent, I
 		Step action;
 		EffectOnDrive effectOnDrive;
 		MotivatorCondition motCondition;
-		String eventSubject = e.GetSubject();
-		String eventTarget = e.GetTarget();
 		float deviation = 0;
 		double contributionToNeed =0f;
-		float contributionToSubjectNeeds=0f;
-		float contributionToTargetNeeds=0f;
 	    float contributionToSelfNeeds = 0f;  //used for events performed by the agent
 		
 		
@@ -151,8 +147,6 @@ public class MotivationalState implements Serializable, Cloneable, IComponent, I
 					substitutions.add(new Substitution(new Symbol("[AGENT]"),new Symbol(e.GetSubject())));
 					action = (Step) action.clone();
 					action.MakeGround(substitutions);
-					
-					//TODO ver com o samuel isto dos target needs
 
 					for(ListIterator<EffectOnDrive> li2 = action.getEffectsOnDrives().listIterator(); li2.hasNext();)
 					{
@@ -172,12 +166,6 @@ public class MotivationalState implements Serializable, Cloneable, IComponent, I
 							} catch (InvalidMotivatorTypeException e1) {
 								e1.printStackTrace();
 							}
-						}
-						
-						if(eventSubject.equalsIgnoreCase(target.toString())){
-							contributionToSubjectNeeds += contributionToNeed;
-						}else{
-							contributionToTargetNeeds += contributionToNeed;
 						}
 					}			
 				}	
