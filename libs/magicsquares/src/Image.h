@@ -18,6 +18,7 @@
 #include "Vector.h"
 #include "Geometry.h"
 #include <string>
+#include <iostream>
 
 #ifndef IMAGE
 #define IMAGE
@@ -34,6 +35,19 @@ public:
 	~Image();
 
 	void Clear();
+
+    float Get(int x, int y, int c) 
+    {
+        if (x>=0 && x<m_Image->width &&
+            y>=0 && y<m_Image->height)
+        {
+            return cvGet2D(m_Image,y,x).val[c]; 
+        }
+        else
+        {
+            return 0;
+        } 
+    }
 
 	Image operator-(const Image &other);
 	Image operator+(const Image &other);
@@ -70,6 +84,8 @@ public:
 	unsigned int NumElements() { return m_Image->width*m_Image->height*m_Image->nChannels; }
 	
 	void Save(const std::string &filename);
+
+    void GetBB(int thresh, int &minx, int &miny, int &maxx, int &maxy);
 	
 	IplImage *m_Image;
 	

@@ -17,6 +17,7 @@
 #include "RadarParticleFilter.h"
 #include <math.h>
 #include <iostream>
+#include <cstdlib>
 
 using namespace std;
 
@@ -75,8 +76,9 @@ float Distance(float ax, float ay, float bx, float by)
 /////////////////////////////////////////////////////////
 // Observation functions
 
-float RadarParticleFilter::RadarObservation::Weight(const Observation *Other)
+float RadarParticleFilter::RadarObservation::Weight(const State *state) const
 {
+    /*
     const RadarObservation *RadarOther = static_cast<const RadarObservation *>(Other);
     
     // todo: angle error will be wrong around 360 -> 0 boundary
@@ -88,6 +90,8 @@ float RadarParticleFilter::RadarObservation::Weight(const Observation *Other)
     // than the distance readings. This has the effect of making the pdf into a cresent 
     // shape.
     return 1/(fabs(AngErr)+fabs(DistErr));
+    */
+    return 1;
 }
 
 /////////////////////////////////////////////////////////////

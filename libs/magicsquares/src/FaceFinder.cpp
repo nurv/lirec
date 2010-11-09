@@ -35,7 +35,7 @@ vector<Rect> FaceFinder::Find(const Image &in, bool largest)
 	cvClearMemStorage(m_Storage);
 
 	int flags=0;
-	if (largest) flags|=CV_HAAR_FIND_BIGGEST_OBJECT;
+	//if (largest) flags|=CV_HAAR_FIND_BIGGEST_OBJECT;
 
 	CvSeq* faces = cvHaarDetectObjects( in.m_Image, m_Cascade, m_Storage,
 			1.1, 2, flags

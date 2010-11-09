@@ -17,6 +17,8 @@
 #include <assert.h>
 #include <math.h>
 #include <iostream>
+#include <stdio.h>
+#include <memory.h>
 
 #ifndef FOAM_VECTOR
 #define FOAM_VECTOR

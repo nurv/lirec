@@ -14,36 +14,31 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-#include <glob.h>
-#include <stdio.h>
-#include "FileTools.h"
+#include "App.h"
 
 using namespace std;
 
-FILE *OpenFile(char * filename, char *mode)
-{
-	return fopen(filename,mode);
-}
+#ifdef _EiC
+#define WIN32
+#endif
 
-void CloseFile(FILE *f)
-{
-	fclose(f);
-}
+#ifdef WIN32
+#include <string>
+#define snprintf _snprintf 
+#else
+#include <unistd.h>
+#endif
 
-vector<string> Glob(const string &path)
+
+//////////////////////////////////////////////////////////
+
+int main( int argc, char** argv )
 {
-	// todo windoze version
-	glob_t g;
-	vector<string> ret;
-	glob(path.c_str(),GLOB_PERIOD,NULL,&g);
-	for (unsigned int n=0; n<g.gl_pathc; n++)
+	string fn;
+	if (argc>1) fn=argv[1];
+	App app(fn);
+	while (1) 
 	{
-		string path=g.gl_pathv[n];
-		if (path[path.find_last_of("/")+1]!='.')
-		{
-			ret.push_back(path);
-		}
+		app.Run();
 	}
-	globfree (&g);
-	return ret;
 }

@@ -14,36 +14,33 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-#include <glob.h>
-#include <stdio.h>
-#include "FileTools.h"
+#include "cv.h"
+#include "highgui.h"
+#include <yarp/os/all.h>
+#include <string>
+#include <map>
+#include <Image.h>
 
+using namespace yarp::os;
 using namespace std;
 
-FILE *OpenFile(char * filename, char *mode)
+class App
 {
-	return fopen(filename,mode);
-}
-
-void CloseFile(FILE *f)
-{
-	fclose(f);
-}
-
-vector<string> Glob(const string &path)
-{
-	// todo windoze version
-	glob_t g;
-	vector<string> ret;
-	glob(path.c_str(),GLOB_PERIOD,NULL,&g);
-	for (unsigned int n=0; n<g.gl_pathc; n++)
-	{
-		string path=g.gl_pathv[n];
-		if (path[path.find_last_of("/")+1]!='.')
-		{
-			ret.push_back(path);
-		}
-	}
-	globfree (&g);
-	return ret;
-}
+public:
+	App(const string &filename);
+	~App();
+	
+	void Run();
+	void Update(Image &camera);
+	
+private:
+	
+	CvCapture* m_Capture;
+	
+	CvFont m_Font; 
+	CvFont m_LargeFont; 
+	
+	IplImage *m_Frame;
+	IplImage *m_FrameCopy;
+	int m_FrameNum;
+};

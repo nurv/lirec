@@ -14,33 +14,31 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-#include "cv.h"
-#include "highgui.h"
-
-#include <RadarParticleFilter.h>
+#include "App.h"
 
 using namespace std;
 
-class App
+#ifdef _EiC
+#define WIN32
+#endif
+
+#ifdef WIN32
+#include <string>
+#define snprintf _snprintf 
+#else
+#include <unistd.h>
+#endif
+
+
+//////////////////////////////////////////////////////////
+
+int main( int argc, char** argv )
 {
-public:
-	App(const string &filename);
-	~App();
-	
-	void Run();
-	void Update(IplImage *camera);
-	
-private:
-	
-	CvCapture* m_Capture;
-	
-	RadarParticleFilter m_PF;
-	
-	CvFont m_Font; 
-	CvFont m_LargeFont; 
-	
-	IplImage *frame;
-	IplImage *frame_copy;
-		
-	int m_FrameNum;
-};
+	string fn;
+	if (argc>1) fn=argv[1];
+	App app(fn);
+	while (1) 
+	{
+		app.Run();
+	}
+}

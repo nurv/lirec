@@ -13,11 +13,12 @@ SRCS    := src/Image.cpp\
 	src/Geometry.cpp\
 	src/ParticleFilter.cpp\
 	src/RadarParticleFilter.cpp\
+	src/LEDParticleFilter.cpp\
 	src/tinyxml.cpp\
 	src/tinyxmlerror.cpp\
 	src/tinyxmlparser.cpp
 
-CCFLAGS = `pkg-config --cflags opencv` -ggdb -Wall -O3 -ffast-math -Wno-unused -DTIXML_USE_STL 
+CCFLAGS = `pkg-config --cflags opencv` -ggdb -Wall -march=core2 -mfpmath=sse -O3 -ffast-math -Wno-unused -DTIXML_USE_STL 
 LIBS    = `pkg-config --libs opencv` 
 PYTHON_INCLUDE = -I/usr/include/python2.5
 

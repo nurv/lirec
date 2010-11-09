@@ -34,11 +34,14 @@ public:
     // Needs an initialise as we have to call virtual funcs
     void Initialise();
 
+    class State;
+
 	// An observation of the state
 	class Observation
 	{
 	public:
-        virtual float Weight(const Observation *Target)=0;
+        //virtual float Weight(const Observation *Target)=0;
+        virtual float Weight(const State *State) const =0;
 	};
 
 	// The hidden state we want to estimate
@@ -46,7 +49,7 @@ public:
 	{
 	public:
 		// Gets the observation we would expect from this state
-		virtual Observation *Observe()=0;
+		//virtual Observation *Observe()=0;
 		// Put the state into a random position and velocity
 		virtual void Randomise()=0;
 		// Add a small random amount to the position and velocity

@@ -15,8 +15,6 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "App.h"
-#include <string>
-#include <iostream>
 
 using namespace std;
 
@@ -25,34 +23,17 @@ using namespace std;
 #endif
 
 #ifdef WIN32
+#include <string>
 #define snprintf _snprintf 
 #else
 #include <unistd.h>
 #endif
 
-class base 
-{
-public:
-    void go() { f(); }
-
-    virtual void f() { cerr<<"base"<<endl; }
-};
-
-class deriv : public base
-{
-public:
-    virtual void f() { cerr<<"deriv"<<endl; }
-};
 
 //////////////////////////////////////////////////////////
 
 int main( int argc, char** argv )
 {
-
-    deriv d;
-    d.go();
-
-
 	string fn;
 	if (argc>1) fn=argv[1];
 	App app(fn);

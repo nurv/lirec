@@ -138,6 +138,7 @@ Image Image::operator+(const Image &other)
 
 Image &Image::operator=(const Image &other)
 {
+	if (m_Image!=NULL) cvReleaseImage(&m_Image);
 	m_Image=cvCloneImage(other.m_Image);
 	return *this;
 }
@@ -415,3 +416,24 @@ void Image::Save(const string &filename)
 	cvSaveImage(filename.c_str(),m_Image);
 }
 
+void Image::GetBB(int thresh, int &minx, int &miny, int &maxx, int &maxy)
+{
+    minx=m_Image->width;
+    miny=m_Image->height;
+    maxx=0;
+    maxy=0;
+
+    for(int y=0; y<m_Image->height; y++)
+	{
+        for(int x=0; x<m_Image->width; x++)
+		{
+            if (cvGet2D(m_Image,y,x).val[0]>thresh)
+            {
+                if (x<minx) minx=x;           
+                if (y<miny) miny=y;
+                if (x>maxx) maxx=x;           
+                if (y>maxy) maxy=y;
+            }
+        }
+    }
+}

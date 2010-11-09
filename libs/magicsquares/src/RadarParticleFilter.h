@@ -39,12 +39,14 @@ public:
 
     ~RadarParticleFilter() {}
     
+    class RadarState;
+
     // Our observation class
     class RadarObservation : public ParticleFilter::Observation
     {
     public:        
         // Return a weight compared against the target
-        virtual float Weight(const Observation *Target);
+        virtual float Weight(const State *state) const;
 
         float Dist;
         float Angle;

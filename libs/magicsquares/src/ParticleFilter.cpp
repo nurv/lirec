@@ -18,6 +18,7 @@
 #include <math.h>
 #include "ParticleFilter.h"
 #include <iostream>
+#include <cstdlib>
 
 using namespace std;
 
@@ -79,9 +80,10 @@ ParticleFilter::State *ParticleFilter::Update(const Observation *Obs)
 		// Assign the weight to each particle, based on the difference 
 		// between the one observation from the outside world, and the 
 		// observation of the particle's state
-		Observation *PObs=i->m_State->Observe();
-        i->m_Weight = PObs->Weight(Obs);
-        delete PObs;
+		//Observation *PObs=i->m_State->Observe();
+        //i->m_Weight = PObs->Weight(Obs);
+        i->m_Weight = Obs->Weight(i->m_State);
+        //delete PObs;
         
 		TotalWeight+=i->m_Weight;
 	}
