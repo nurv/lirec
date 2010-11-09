@@ -81,7 +81,7 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 	public static final String MIND_PATH = "data/characters/minds/";
 	public static final String MIND_PATH_ANDROID = "sdcard/data/characters/minds/";
 	public static final String SCENARIO_FILENAME = "LIRECScenarios.xml";
-
+	private static final Name ACTION_CONTEXT = Name.ParseName("ActionContext()");
 
 	protected HashMap<String, IComponent> _components;
 	protected EmotionalState _emotionalState;
@@ -420,7 +420,9 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 	public void PerceivePropertyChanged(String ToM, Name propertyName, String value)
 	{
 		AgentLogger.GetInstance().logAndPrint("PropertyChanged: " + ToM + " " + propertyName + " " + value);
-
+		
+		_memory.getSemanticMemory().Tell(applyPerspective(propertyName, _name), value);
+		
 		for(IComponent c : this._components.values())
 		{
 			c.propertyChangedPerception(ToM, applyPerspective(propertyName, _name), value);
@@ -528,7 +530,12 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 						for(Event e : this._perceivedEvents)
 						{
 							AgentLogger.GetInstance().log("appraising event: " + e.toName());
-
+							
+							Event e2 = e.ApplyPerspective(_name);
+							_memory.getEpisodicMemory().StoreAction(_memory, e2);
+							_memory.getSemanticMemory().Tell(ACTION_CONTEXT, e2.toName().toString());
+							
+							
 							for(IComponent c : this._components.values())
 							{
 								c.update(e,this);
@@ -865,21 +872,5 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 		{
 			e.printStackTrace();
 		}
-	}
-	
-	static private ArrayList<String> readGoalsFromArguments(String args[]){
-		ArrayList<String> goals = new ArrayList<String>();
-		
-		StringTokenizer st;
-		String left;
-			
-		for(int i = 11; i < args.length; i++) {
-			st = new StringTokenizer(args[i], ":");
-			left = st.nextToken();
-			if(left.equals("GOAL")) {
-				goals.add(st.nextToken());
-			}
-		}
-		return goals;
 	}
 }
