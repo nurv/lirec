@@ -39,6 +39,29 @@ import FAtiMA.Core.wellFormedNames.Substitution;
 import FAtiMA.Core.wellFormedNames.Symbol;
 import FAtiMA.Core.wellFormedNames.Unifier;
 import FAtiMA.ToM.ModelOfOther;
+import FAtiMA.deliberativeLayer.IActionFailureStrategy;
+import FAtiMA.deliberativeLayer.IExpectedUtilityStrategy;
+import FAtiMA.deliberativeLayer.IGoalFailureStrategy;
+import FAtiMA.deliberativeLayer.IGoalSuccessStrategy;
+import FAtiMA.deliberativeLayer.IProbabilityStrategy;
+import FAtiMA.deliberativeLayer.IUtilityStrategy;
+import FAtiMA.deliberativeLayer.goals.ActivePursuitGoal;
+import FAtiMA.deliberativeLayer.goals.Goal;
+import FAtiMA.deliberativeLayer.plan.EffectOnDrive;
+import FAtiMA.deliberativeLayer.plan.IPlanningOperator;
+import FAtiMA.deliberativeLayer.plan.Step;
+import FAtiMA.emotionalState.ActiveEmotion;
+import FAtiMA.emotionalState.Appraisal;
+import FAtiMA.emotionalState.AppraisalStructure;
+import FAtiMA.emotionalState.BaseEmotion;
+import FAtiMA.emotionalState.EmotionalState;
+import FAtiMA.sensorEffector.Event;
+import FAtiMA.util.AgentLogger;
+import FAtiMA.util.Constants;
+import FAtiMA.wellFormedNames.Name;
+import FAtiMA.wellFormedNames.Substitution;
+import FAtiMA.wellFormedNames.Symbol;
+import FAtiMA.wellFormedNames.Unifier;
 
 /**
  * Implements the character's motivational state.
@@ -46,7 +69,7 @@ import FAtiMA.ToM.ModelOfOther;
  * @author Meiyii Lim, Samuel Mascarenhas 
  */
 
-public class MotivationalState implements Serializable, Cloneable, IComponent, IExpectedUtilityStrategy, IProbabilityStrategy, IUtilityForTargetStrategy, IGoalSuccessStrategy, IGoalFailureStrategy, IActionFailureStrategy {
+public class MotivationalState implements Serializable, Cloneable, IComponent, IExpectedUtilityStrategy, IProbabilityStrategy, IUtilityStrategy, IGoalSuccessStrategy, IGoalFailureStrategy, IActionFailureStrategy {
 	
 	
 	private static final long serialVersionUID = 1L;
