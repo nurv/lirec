@@ -8,6 +8,25 @@ import java.util.Iterator;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+import FAtiMA.AgentCore;
+import FAtiMA.AgentModel;
+import FAtiMA.IComponent;
+import FAtiMA.Display.AgentDisplayPanel;
+import FAtiMA.conditions.Condition;
+import FAtiMA.deliberativeLayer.IExpectedUtilityStrategy;
+import FAtiMA.deliberativeLayer.IOptionsStrategy;
+import FAtiMA.deliberativeLayer.IUtilityStrategy;
+import FAtiMA.deliberativeLayer.goals.ActivePursuitGoal;
+import FAtiMA.emotionalState.ActiveEmotion;
+import FAtiMA.emotionalState.AppraisalStructure;
+import FAtiMA.sensorEffector.Event;
+import FAtiMA.util.AgentLogger;
+import FAtiMA.util.Constants;
+import FAtiMA.util.VersionChecker;
+import FAtiMA.util.enumerables.CulturalDimensionType;
+import FAtiMA.wellFormedNames.Name;
+import FAtiMA.wellFormedNames.SubstitutionSet;
+import FAtiMA.wellFormedNames.Symbol;
 
 import FAtiMA.Core.AgentCore;
 import FAtiMA.Core.AgentModel;
@@ -279,7 +298,7 @@ public class CulturalDimensionsComponent implements IComponent, IOptionsStrategy
 		
 		float probability = am.getDeliberativeLayer().getProbabilityStrategy().getProbability(am, g);
 		
-		IUtilityForTargetStrategy str =  am.getDeliberativeLayer().getUtilityForTargetStrategy();
+		IUtilityStrategy str =  am.getDeliberativeLayer().getUtilityForTargetStrategy();
 		
 		float contributionToSelf = str.getUtilityForTarget(Constants.SELF, am, g);
 		
