@@ -68,7 +68,6 @@ import FAtiMA.Core.reactiveLayer.Action;
 import FAtiMA.Core.reactiveLayer.Reaction;
 import FAtiMA.Core.reactiveLayer.ReactiveProcess;
 import FAtiMA.Core.sensorEffector.Event;
-import FAtiMA.Core.util.AgentLogger;
 import FAtiMA.Core.util.Constants;
 import FAtiMA.Core.util.enumerables.EmotionType;
 import FAtiMA.Core.wellFormedNames.Name;
@@ -76,9 +75,6 @@ import FAtiMA.Core.wellFormedNames.Substitution;
 import FAtiMA.Core.wellFormedNames.Symbol;
 import FAtiMA.socialRelations.LikeRelation;
 import FAtiMA.socialRelations.RespectRelation;
-import FAtiMA.motivationalSystem.InvalidMotivatorTypeException;
-import FAtiMA.motivationalSystem.Motivator;
-import FAtiMA.motivationalSystem.MotivatorType;
 
 public class AgentLoaderHandler extends ReflectXMLHandler {
 	

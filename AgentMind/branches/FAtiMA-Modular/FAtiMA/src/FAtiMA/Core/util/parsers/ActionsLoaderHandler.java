@@ -68,7 +68,6 @@ import FAtiMA.Core.util.enumerables.EventType;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Substitution;
 import FAtiMA.Core.wellFormedNames.Symbol;
-import FAtiMA.motivationalSystem.MotivatorCondition;
 import FAtiMA.socialRelations.LikeCondition;
 
 

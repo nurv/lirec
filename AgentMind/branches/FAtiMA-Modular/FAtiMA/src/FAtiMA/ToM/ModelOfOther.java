@@ -1,7 +1,6 @@
 package FAtiMA.ToM;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
@@ -9,20 +8,13 @@ import FAtiMA.Core.AgentCore;
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.IComponent;
 import FAtiMA.Core.IGetModelStrategy;
-import FAtiMA.Core.Display.AgentDisplay;
 import FAtiMA.Core.deliberativeLayer.DeliberativeProcess;
 import FAtiMA.Core.emotionalState.EmotionDisposition;
 import FAtiMA.Core.emotionalState.EmotionalState;
-import FAtiMA.Core.memory.ICompoundCue;
-import FAtiMA.Core.memory.ISpreadActivate;
 import FAtiMA.Core.memory.Memory;
-import FAtiMA.Core.reactiveLayer.ActionTendencies;
-import FAtiMA.Core.reactiveLayer.EmotionalReactionTreeNode;
 import FAtiMA.Core.reactiveLayer.ReactiveProcess;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.wellFormedNames.Symbol;
-import FAtiMA.motivationalSystem.MotivationalState;
-import FAtiMA.motivationalSystem.Motivator;
 
 public class ModelOfOther implements AgentModel, Serializable {
 	

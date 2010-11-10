@@ -151,7 +151,7 @@ public class Ritual extends ActivePursuitGoal {
 	
 	private void addRoleToRitualKey(Symbol role){
 		if(_roles.size() == 1){
-			this._key = this._key + "(" + role + ",";
+			this._key = this._key + "(" + role + ")";
 		}else{
 			this._key = this._key.substring(0,this._key.length()-1) + "," + role + ")"; 
 		}
