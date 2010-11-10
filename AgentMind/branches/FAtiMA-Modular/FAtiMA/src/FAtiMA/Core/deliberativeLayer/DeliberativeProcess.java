@@ -181,7 +181,6 @@ public class DeliberativeProcess implements IComponent, IOptionsStrategy, IExpec
 	private static final float MINIMUMUTILITY = 8;
 	private static final float SELECTIONTHRESHOLD = 1.2f; 
 	public static final String NAME = "Deliberative";
-	
 	private ArrayList<Goal> _goals;
 	
 	private GoalLibrary _goalLibrary;
