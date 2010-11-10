@@ -56,6 +56,7 @@ package FAtiMA.Core.deliberativeLayer.goals;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.ListIterator;
 
 import FAtiMA.Core.AgentModel;
@@ -98,6 +99,8 @@ public abstract class Goal implements IGroundable, Cloneable, Serializable {
 	protected static int goalCounter = 1;
 
 	protected Name _name;
+	protected String _key;
+	protected ArrayList<Substitution> _appliedSubstitutions;
 	protected int _goalID;
 	protected int _baseIOF;
 	protected int _baseIOS;
@@ -115,6 +118,8 @@ public abstract class Goal implements IGroundable, Cloneable, Serializable {
 	 * @param description - the goal's name
 	 */
 	public Goal(Name description) {
+		_key = description.toString();
+		_appliedSubstitutions = new ArrayList<Substitution>();
 		_goalID = goalCounter++;
 		_name = description;
 		_baseIOF = 0;
@@ -122,6 +127,12 @@ public abstract class Goal implements IGroundable, Cloneable, Serializable {
 		_dynamicIOF = Name.ParseName(IMPORTANCEOFFAILURE + "(" + _goalID + ")");
 		_dynamicIOS = Name.ParseName(IMPORTANCEOFSUCCESS + "(" + _goalID + ")");
 	}
+	
+	public ArrayList<Substitution> getAppliedSubstitutions()
+	{
+		return _appliedSubstitutions;
+	}
+	
 	
 	/**
 	 * Generates a status description of goal according to
@@ -188,6 +199,10 @@ public abstract class Goal implements IGroundable, Cloneable, Serializable {
 		else iof = new Float(0 - _baseIOF);
 		
 		am.getMemory().getSemanticMemory().Tell(_dynamicIOF,iof);
+	}
+	
+	public String getKey(){
+		return this._key;
 	}
 	
 	/**

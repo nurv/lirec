@@ -69,6 +69,7 @@ public class Ritual extends ActivePursuitGoal {
 	private ArrayList<Step> _steps;
 	private ArrayList<OrderingConstraint> _links;
 	
+	
 	private Ritual()
 	{
 		
@@ -77,8 +78,7 @@ public class Ritual extends ActivePursuitGoal {
 	public Ritual(Name description)
 	{
 		super(description);
-		
-		//this.SetExpectedEffectOnDrive("OnIgnore","Affiliation","[SELF]",EXPECTED_AFFILIATION_ONIGNORE_VALUE);
+				//this.SetExpectedEffectOnDrive("OnIgnore","Affiliation","[SELF]",EXPECTED_AFFILIATION_ONIGNORE_VALUE);
 		_steps = new ArrayList<Step>(5);
 		_links = new ArrayList<OrderingConstraint>();
 		_roles = new ArrayList<Symbol>(3);
@@ -145,6 +145,16 @@ public class Ritual extends ActivePursuitGoal {
 			_agent = role;
 		}
 		_roles.add(role);
+		
+		addRoleToRitualKey(role);  //The key of a ritual is composed by the ritual's name plus the name of the roles		
+	}
+	
+	private void addRoleToRitualKey(Symbol role){
+		if(_roles.size() == 1){
+			this._key = this._key + "(" + role + ",";
+		}else{
+			this._key = this._key.substring(0,this._key.length()-1) + "," + role + ")"; 
+		}
 	}
 	
 	public ArrayList<Symbol> GetRoles()
@@ -417,6 +427,7 @@ public class Ritual extends ActivePursuitGoal {
 	{
 		Ritual r = new Ritual();
 		r._goalID = this._goalID;
+		r._id = this._id;
 		r._active = this._active;
 		r._name = (Name) this._name.clone();
 		r._baseIOF = this._baseIOF;
@@ -426,7 +437,7 @@ public class Ritual extends ActivePursuitGoal {
 		
 		r._numberOfTries = this._numberOfTries;
 		
-		r._expectedEffects = new Hashtable<String,Float>(this._expectedEffects);
+		r._key = this._key;
 		
 		if(this._preConditions != null)
 		{

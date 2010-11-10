@@ -243,64 +243,6 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
 		return false;
 	}
 	
-	
-	//TODO: Throw an exception instead of System.exit
-	public void SetExpectedEffectOnDrive(String type, String driveName, String target, float value){
-
-		if(!type.equalsIgnoreCase("OnSelect") && !type.equalsIgnoreCase("OnIgnore")){
-			AgentLogger.GetInstance().logAndPrint("ERROR: Goal '"+ this +"' has an expected effect different from OnSelect or OnIgnore");
-			AgentLogger.GetInstance().close();
-			System.exit(1);
-		}
-		
-		if(!driveName.equalsIgnoreCase("Affiliation") && !driveName.equalsIgnoreCase("Integrity") && !driveName.equalsIgnoreCase("Energy")){
-			AgentLogger.GetInstance().logAndPrint("ERROR: Goal '"+ this +"' has an expected effect different from OnSelect or OnIgnore");
-			AgentLogger.GetInstance().close();
-			System.exit(1);			
-		}
-		
-		if(!target.equalsIgnoreCase("[SELF]") && !target.equalsIgnoreCase("[target]")){
-			AgentLogger.GetInstance().logAndPrint("ERROR: Goal '"+ this +"' has an expected effect different from OnSelect or OnIgnore");
-			AgentLogger.GetInstance().close();
-			System.exit(1);			
-		}
-		
-		this._expectedEffects.put(new String(type+driveName+target), new Float(value));
-	}
-	
-	//TODO: Throw an exception instead of System.exit
-	public Float GetExpectedEffectOnDrive(String type, String driveName, String target){
-		
-		
-		if(!type.equalsIgnoreCase("OnSelect") && !type.equalsIgnoreCase("OnIgnore")){
-			AgentLogger.GetInstance().logAndPrint("ERROR: Goal '"+ this +"' has an expected effect different from OnSelect or OnIgnore");
-			AgentLogger.GetInstance().close();
-			System.exit(1);			
-		}
-		
-		if(!driveName.equalsIgnoreCase("Affiliation") && !driveName.equalsIgnoreCase("Integrity")  &&  !driveName.equalsIgnoreCase("Energy")){
-			AgentLogger.GetInstance().logAndPrint("ERROR: Goal '"+ this +"' has an expected effect different from OnSelect or OnIgnore");
-			AgentLogger.GetInstance().close();
-			System.exit(1);			
-		}
-		
-		if(!target.equalsIgnoreCase("[SELF]") && !target.equalsIgnoreCase("[target]")){
-			AgentLogger.GetInstance().logAndPrint("ERROR: Goal '"+ this +"' has an expected effect different from OnSelect or OnIgnore");
-			AgentLogger.GetInstance().close();
-			System.exit(1);			
-		}
-		
-		Float res =(Float)this._expectedEffects.get(type+driveName+target);
-		
-		if(res == null){
-			return new Float(0);	
-		}else{
-			return res;
-		}
-	}
-	
-	
-	
 	public int GetNumberOfTries()
 	{
 		return this._numberOfTries;
@@ -375,62 +317,6 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
 	{	
 		am.getMemory().getSemanticMemory().Tell(this.getName(), new Float(uncertainty));
 	}
-	
-	
-	/*public float getContributionToTargetNeeds(AgentModel am)
-	{
-		float result = 0;		
-		
-		List<Symbol> goalTargets = _name.GetLiteralList();
-		Iterator<Symbol> it = goalTargets.iterator();
-		it.next();// first literal is the name of the goal;
-		
-		while(it.hasNext()){
-			String target = ((Symbol)it.next()).toString();
-			result += this.getContributionToNeeds(am, target);			
-		}
-		return result;
-	}
-
-	
-	public float getContributionToPersonalNeeds(AgentModel am)
-	{
-		return this.getContributionToNeeds(am, "SELF");
-	}*/
-	
-	
-	
-	/*public float getContributionToPersonalNeeds(){
-		float result = 0;
-		float expectedAffiliationOnSelect = this.GetExpectedEffectOnDrive("OnSelect", "Affiliation", "[SELF]").floatValue();
-		float expectedEnergyOnSelect = this.GetExpectedEffectOnDrive("OnSelect", "Energy", "[SELF]").floatValue();
-		float expectedIntegrityOnSelect = this.GetExpectedEffectOnDrive("OnSelect", "Integrity", "[SELF]").floatValue();
-		
-		
-		
-		
-		result += this.GetExpectedEffectOnDrive("OnSelect", "Affiliation", "[SELF]").floatValue() * MotivationalState.GetInstance().GetNeedUrgency(_agent.getName(),MotivatorType.AFFILIATION); 
-		result += this.GetExpectedEffectOnDrive("OnSelect", "Energy", "[SELF]").floatValue() *  MotivationalState.GetInstance().GetNeedUrgency(_agent.getName(),MotivatorType.ENERGY);
-		result += this.GetExpectedEffectOnDrive("OnSelect", "Integrity", "[SELF]").floatValue() * MotivationalState.GetInstance().GetNeedUrgency(_agent.getName(),MotivatorType.INTEGRITY);
-		
-		result += (-1) * this.GetExpectedEffectOnDrive("OnIgnore", "Affiliation", "[SELF]").floatValue(); 
-		result += (-1) * this.GetExpectedEffectOnDrive("OnIgnore", "Energy", "[SELF]").floatValue();
-		result += (-1) * this.GetExpectedEffectOnDrive("OnIgnore", "Integrity", "[SELF]").floatValue();
-		
-		
-	    if(GetProbability() == null){
-	    	// if the probability is null it means that the agent never tried to achieve this goal
-	    	// so we cannot determine the contribution to competence (hence it's zero). However, in this case
-	    	// the contribution to certainty will be the highest possible
-	    	result += 10 * MotivationalState.GetInstance().GetNeedUrgency(_agent.getName(),MotivatorType.CERTAINTY);
-	    }else{
-		    result += 10 * getCompetence() * MotivationalState.GetInstance().GetNeedUrgency(_agent.getName(),MotivatorType.COMPETENCE);
-		    result += 10 * getUncertainty() * MotivationalState.GetInstance().GetNeedUrgency(_agent.getName(),MotivatorType.CERTAINTY);
-	    }
-		
-		return result;		
-	}*/
-	
 	
 	
 	
@@ -545,6 +431,8 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
     {
     	ListIterator<Condition> li;
     	
+    	this._appliedSubstitutions.addAll(bindings);
+    	
     	this._name.MakeGround(bindings);
     	
     	li = this._preConditions.listIterator();
@@ -569,15 +457,6 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
     	{
     		e.MakeGround(bindings);
     	}
-    	
-    	Iterator<String> it = this._expectedEffects.keySet().iterator();
-    	
-    	while(it.hasNext())
-    	{
-    		
-    	}
-    	
-    	for(this._expectedEffects.v)
     }
     
     
@@ -641,6 +520,8 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
     {
     	ListIterator<Condition> li;
     	
+    	this._appliedSubstitutions.add(subst);
+    	
     	this._name.MakeGround(subst);
     	
     	li = this._preConditions.listIterator();
@@ -665,8 +546,6 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
     	{
     		e.MakeGround(subst);
     	}
-    	
-    	for(_)
     }
 	
 	/**
@@ -679,6 +558,7 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
 		ListIterator<Condition> li;
 		ActivePursuitGoal g = new ActivePursuitGoal();
 		g._goalID = this._goalID;
+		g._id = this._id;
 		g._active = this._active;
 		g._name = (Name) this._name.clone();
 		g._baseIOF = this._baseIOF;
@@ -687,8 +567,12 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
 		g._dynamicIOS = (Name) this._dynamicIOS.clone();
 		
 		g._numberOfTries = this._numberOfTries;
-	
-		g._expectedEffects = new Hashtable<String,Float>(this._expectedEffects);
+		
+		g._appliedSubstitutions = new ArrayList<Substitution>(this._appliedSubstitutions.size());
+		for(Substitution s : this._appliedSubstitutions)
+		{
+			g._appliedSubstitutions.add((Substitution) s.clone());
+		}
 		
 		if(this._preConditions != null)
 		{

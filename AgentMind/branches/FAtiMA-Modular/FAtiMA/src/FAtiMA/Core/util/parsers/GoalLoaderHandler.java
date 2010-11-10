@@ -220,33 +220,6 @@ public class GoalLoaderHandler extends ReflectXMLHandler {
       _conditionType = "FailureConditions";
     }
     
-    
-	public void Motivator(Attributes attributes)
-	{
-    	AgentLogger.GetInstance().logAndPrint("ERROR! The use of the keyword 'Motivator' on a goal's expected effects has been deprecated.");
-    	AgentLogger.GetInstance().logAndPrint("Instead use 'OnSelect' or 'OnIgnore' accordingly.");
-		System.exit(-1);
-	}
-    
-    public void OnSelect(Attributes attributes)
-	{
-		String driveName = attributes.getValue("drive");
-		String value = attributes.getValue("value");
-		String target = attributes.getValue("target");
-
-		if(driveName != null && _currentGoal != null){
-			((ActivePursuitGoal)_currentGoal).SetExpectedEffectOnDrive("OnSelect", driveName, target, Float.parseFloat(value));					
-		}
-	}
-
-	public void OnIgnore(Attributes attributes)
-	{
-		String driveName = attributes.getValue("drive");
-		String value = attributes.getValue("value");
-		String target = attributes.getValue("target");
-		
-		if(driveName != null && _currentGoal != null){
-			((ActivePursuitGoal)_currentGoal).SetExpectedEffectOnDrive("OnIgnore", driveName, target, Float.parseFloat(value));					
-		}
-	}   
+  
+       
 }

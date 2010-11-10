@@ -30,6 +30,7 @@ import FAtiMA.Core.emotionalState.AppraisalStructure;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.util.AgentLogger;
 import FAtiMA.Core.util.Constants;
+import FAtiMA.Core.util.enumerables.ExpectedEffectType;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Substitution;
 import FAtiMA.Core.wellFormedNames.Symbol;
@@ -49,6 +50,7 @@ public class MotivationalState implements Serializable, Cloneable, IComponent, I
 	
 	public static final String NAME ="MotivationalState";
 	
+	
 	protected Motivator[]  _motivators;
 	
 	//protected Hashtable<String,Motivator[]> _otherAgentsMotivators;
@@ -57,6 +59,7 @@ public class MotivationalState implements Serializable, Cloneable, IComponent, I
 	protected int _goalSucceeded;
 	
 	protected HashMap<String,Float> _appraisals;
+	protected HashMap<String,ExpectedEffectOnDrives> _goalEffectsOnDrives;
 
 	public static double determineQuadraticNeedVariation(float currentLevel, float deviation){
 		final float MAX_INTENSITY = 10;
@@ -88,8 +91,24 @@ public class MotivationalState implements Serializable, Cloneable, IComponent, I
 		_goalSucceeded = 0;
 		_lastTime = AgentSimulationTime.GetInstance().Time();
 		_appraisals = new HashMap<String,Float>();
+		_goalEffectsOnDrives = new HashMap<String,ExpectedEffectOnDrives>();
 	}
-
+	
+	public void addEffectOnDrive(String goal, short effectType, String driveName, Symbol target, float value)
+	{
+		ExpectedEffectOnDrives effects;
+		if(!_goalEffectsOnDrives.containsKey(goal))
+		{
+			effects = new ExpectedEffectOnDrives(goal);
+			_goalEffectsOnDrives.put(goal, effects);
+		}
+		else
+		{
+			effects = _goalEffectsOnDrives.get(goal);
+		}
+		
+		effects.AddEffect(new FAtiMA.motivationalSystem.EffectOnDrive(effectType, driveName, target, value));
+	}
 	
 	public Motivator[] getMotivators(){
 		return _motivators;
@@ -178,20 +197,34 @@ public class MotivationalState implements Serializable, Cloneable, IComponent, I
 		float expectedContribution;
 		float currentIntensity = 0;
 		float auxMultiplier; // this is used for the effects that are OnIgnore
-			
+		
+		
+		
+		
 		try {		
+			result = 0;
 			auxMultiplier = 1;
-			//Calculate the effect on Non-Cognitive Needs
-			for (int c = 0; c < effectTypes.length; c++ ){
-				
-				for(int i = 0; i < nonCognitiveDrives.length; i++){
-					expectedContribution = g.GetExpectedEffectOnDrive(effectTypes[c], nonCognitiveDrives[i], "[SELF]").floatValue();
-					currentIntensity =  GetIntensity(MotivatorType.ParseType(nonCognitiveDrives[i]));
-					result +=  auxMultiplier * MotivationalState.determineQuadraticNeedVariation(currentIntensity, expectedContribution); 
+			
+			ExpectedEffectOnDrives effects = _goalEffectsOnDrives.get(g.getKey());
+			for(FAtiMA.motivationalSystem.EffectOnDrive e : effects.getEffects())
+			{
+				Symbol target = (Symbol) e.getTarget().clone();
+				target.MakeGround(g.getAppliedSubstitutions());
+				if(target.toString().equals(am.getName()))
+				{
+					expectedContribution = e.getValue();
+					currentIntensity = GetIntensity(MotivatorType.ParseType(e.getDriveName()));
+					if(e.getType() == ExpectedEffectType.ON_SELECT)
+					{
+						auxMultiplier = 1;
+					}
+					else if(e.getType() == ExpectedEffectType.ON_IGNORE)
+					{
+						auxMultiplier = -1;
+					}
+					result +=  auxMultiplier * MotivationalState.determineQuadraticNeedVariation(currentIntensity, expectedContribution);
 				}
-				auxMultiplier = -1;
-
-			}
+			}	
 				
 			float currentCompetenceIntensity = GetIntensity(MotivatorType.COMPETENCE);
 			float expectedCompetenceContribution = PredictCompetenceChange(true);

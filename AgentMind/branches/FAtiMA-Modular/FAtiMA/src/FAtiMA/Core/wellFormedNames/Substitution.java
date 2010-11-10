@@ -46,7 +46,7 @@ import java.io.Serializable;
  * @author João Dias
  */
 
-public class Substitution implements Serializable {
+public class Substitution implements Serializable, Cloneable {
 	/**
 	 * 
 	 */
@@ -107,5 +107,11 @@ public class Substitution implements Serializable {
 
         return (this._value.equals(aux._value) &&
             this._variable.equals(aux._variable));
+    }
+    
+    @Override
+    public Object clone()
+    {
+    	return new Substitution(this._variable, this._value);
     }
 }

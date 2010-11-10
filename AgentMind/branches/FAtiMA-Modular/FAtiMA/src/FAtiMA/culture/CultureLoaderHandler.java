@@ -193,28 +193,6 @@ public class CultureLoaderHandler extends ReflectXMLHandler {
 		System.exit(-1);
 	}
 	
-	
-	public void OnSelect(Attributes attributes)
-	{
-		String driveName = attributes.getValue("drive");
-		String value = attributes.getValue("value");
-		String target = attributes.getValue("target");
-
-		if(driveName != null && _ritual != null){
-			_ritual.SetExpectedEffectOnDrive("OnSelect", driveName, target, Float.parseFloat(value));					
-		}
-	}
-
-	public void OnIgnore(Attributes attributes)
-	{
-		String driveName = attributes.getValue("drive");
-		String value = attributes.getValue("value");
-		String target = attributes.getValue("target");
-
-		if(driveName != null && _ritual != null){
-			_ritual.SetExpectedEffectOnDrive("OnIgnore", driveName, target, Float.parseFloat(value));					
-		}
-	}
 
 	public void Role(Attributes attributes) {
 		Symbol role;

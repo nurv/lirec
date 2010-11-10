@@ -174,6 +174,9 @@ public class InterestGoal extends Goal {
 	 */
     public void MakeGround(ArrayList<Substitution> bindings)
     {
+    	
+    	this._appliedSubstitutions.addAll(bindings);
+    	
     	ListIterator<Condition> li;
     	
     	this._name.MakeGround(bindings);
@@ -211,8 +214,10 @@ public class InterestGoal extends Goal {
 	 * @see Substitution
 	 */
     public void MakeGround(Substitution subst)
-    {
+    {	
     	ListIterator<Condition> li;
+    	
+    	this._appliedSubstitutions.add(subst);
     	
     	this._name.MakeGround(subst);
     	
@@ -234,11 +239,19 @@ public class InterestGoal extends Goal {
 		InterestGoal g = new InterestGoal();
 		
 		g._goalID = this._goalID;
+		g._key = this._key;
 		g._name = (Name) this._name.clone();
 		g._baseIOF = this._baseIOF;
 		g._baseIOS = this._baseIOS;
 		g._dynamicIOF = (Name) this._dynamicIOF.clone();
 		g._dynamicIOS = (Name) this._dynamicIOS.clone();
+		
+		g._appliedSubstitutions = new ArrayList<Substitution>(this._appliedSubstitutions.size());
+		for(Substitution s : this._appliedSubstitutions)
+		{
+			g._appliedSubstitutions.add((Substitution) s.clone());
+		}
+		
 		
 		if(this._protectionConstraints != null)
 		{

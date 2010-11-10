@@ -2,24 +2,25 @@ package FAtiMA.Core.util.parsers;
 
 import org.xml.sax.Attributes;
 
-import FAtiMA.Core.AgentModel;
-import FAtiMA.Core.deliberativeLayer.DeliberativeProcess;
-import FAtiMA.Core.emotionalState.EmotionalState;
-import FAtiMA.Core.reactiveLayer.ReactiveProcess;
+import FAtiMA.Core.AgentCore;
 import FAtiMA.Core.util.AgentLogger;
-import FAtiMA.Core.util.Constants;
-import FAtiMA.Core.wellFormedNames.Substitution;
+import FAtiMA.Core.util.enumerables.ExpectedEffectType;
+import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Symbol;
 import FAtiMA.motivationalSystem.InvalidMotivatorTypeException;
+import FAtiMA.motivationalSystem.MotivationalState;
 import FAtiMA.motivationalSystem.Motivator;
 import FAtiMA.motivationalSystem.MotivatorType;
 
 public class NeedsLoaderHandler  extends ReflectXMLHandler {
-	AgentModel _am;
+	
+	
+	AgentCore _agent;
+	String _currentGoalKey;
+		
 
-
-	public NeedsLoaderHandler(AgentModel am){
-		this._am = am;
+	public NeedsLoaderHandler(AgentCore agent, MotivationalState motivationalState){
+		this._agent = agent;
 	}
 
 	public void MotivationalParameter(Attributes attributes) throws InvalidMotivatorTypeException {
@@ -28,10 +29,41 @@ public class NeedsLoaderHandler  extends ReflectXMLHandler {
 
 		motivatorName = attributes.getValue("motivator");
 		type = MotivatorType.ParseType(motivatorName);
-		_am.getMotivationalState().AddMotivator(new Motivator(type,
+		MotivationalState ms = (MotivationalState)_agent.GetComponent(MotivationalState.NAME);
+		
+		ms.AddMotivator(new Motivator(type,
 				new Float(attributes.getValue("decayFactor")).floatValue(),
 				new Float(attributes.getValue("weight")).floatValue(),
 				new Float(attributes.getValue("intensity")).floatValue()));
+		
+		
 		AgentLogger.GetInstance().logAndPrint("Motivator found: " + type);
+	}
+	
+	public void Goal(Attributes attributes) {
+    	_currentGoalKey = attributes.getValue("key");
+    }
+	
+	
+	public void OnSelect(Attributes attributes)
+	{
+		this.setGoalExpectedEffectOnDrive(attributes, ExpectedEffectType.ON_SELECT);
+	}
+
+	public void OnIgnore(Attributes attributes)
+	{
+		this.setGoalExpectedEffectOnDrive(attributes, ExpectedEffectType.ON_IGNORE);
+	}
+	
+	private void setGoalExpectedEffectOnDrive(Attributes attributes, short effectType){
+		MotivationalState ms = (MotivationalState)_agent.GetComponent(MotivationalState.NAME);
+		
+		String driveName = attributes.getValue("drive");
+		String value = attributes.getValue("value");
+		String target = attributes.getValue("target");
+
+		if(driveName != null && _currentGoalKey != null){
+			ms.addEffectOnDrive(_currentGoalKey, effectType, driveName, new Symbol(target), Float.parseFloat(value));
+		}
 	}
 }
