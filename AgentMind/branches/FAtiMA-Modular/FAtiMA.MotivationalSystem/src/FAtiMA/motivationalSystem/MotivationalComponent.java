@@ -105,7 +105,7 @@ public class MotivationalComponent implements Serializable, Cloneable, IComponen
 			effects = _goalEffectsOnDrives.get(goal);
 		}
 		
-		effects.AddEffect(new EffectOnDrive2(effectType, driveName, target, value));
+		effects.AddEffect(new EffectOnDrive(effectType, driveName, target, value));
 	}
 	
 	public void addActionEffectsOnDrive(String action, String driveName, Symbol target, float value)
@@ -121,7 +121,7 @@ public class MotivationalComponent implements Serializable, Cloneable, IComponen
 			effects = _actionEffectsOnDrives.get(action);
 		}
 		
-		effects.AddEffect(new EffectOnDrive2(EffectType.ON_PERFORMANCE, driveName, target, value));
+		effects.AddEffect(new EffectOnDrive(EffectType.ON_PERFORMANCE, driveName, target, value));
 		}
 	
 	public Motivator[] getMotivators(){
@@ -164,7 +164,7 @@ public class MotivationalComponent implements Serializable, Cloneable, IComponen
 			if(substitutions != null)
 			{
 				substitutions.add(new Substitution(new Symbol("[AGENT]"),new Symbol(e.GetSubject())));
-				for(EffectOnDrive2 eff : actionEffects.getEffects())
+				for(EffectOnDrive eff : actionEffects.getEffects())
 				{
 					target = (Symbol) eff.getTarget().clone();
 					target.MakeGround(substitutions);
@@ -201,7 +201,7 @@ public class MotivationalComponent implements Serializable, Cloneable, IComponen
 			result = 0;
 			
 			ExpectedGoalEffectsOnDrives effects = _goalEffectsOnDrives.get(g.getKey());
-			for(EffectOnDrive2 e : effects.getEffects())
+			for(EffectOnDrive e : effects.getEffects())
 			{
 				Symbol target = (Symbol) e.getTarget().clone();
 				target.MakeGround(g.getAppliedSubstitutions());

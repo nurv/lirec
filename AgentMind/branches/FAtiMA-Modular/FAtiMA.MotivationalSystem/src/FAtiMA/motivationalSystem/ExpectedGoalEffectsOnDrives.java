@@ -6,12 +6,12 @@ import java.util.Collection;
 public class ExpectedGoalEffectsOnDrives {
 	
 	private String _goalName;
-	private ArrayList<EffectOnDrive2> _effects;
+	private ArrayList<EffectOnDrive> _effects;
 	
 	public ExpectedGoalEffectsOnDrives(String goalName)
 	{
 		this._goalName = goalName;
-		_effects = new ArrayList<EffectOnDrive2>();
+		_effects = new ArrayList<EffectOnDrive>();
 	}
 	
 	public String getGoalName()
@@ -19,12 +19,12 @@ public class ExpectedGoalEffectsOnDrives {
 		return _goalName;
 	}
 	
-	public void AddEffect(EffectOnDrive2 e)
+	public void AddEffect(EffectOnDrive e)
 	{
 		_effects.add(e);
 	}
 	
-	public Collection<EffectOnDrive2> getEffects()
+	public Collection<EffectOnDrive> getEffects()
 	{
 		return _effects;
 	}
