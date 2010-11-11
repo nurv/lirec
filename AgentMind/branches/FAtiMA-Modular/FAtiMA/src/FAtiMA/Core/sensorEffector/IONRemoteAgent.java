@@ -63,7 +63,6 @@ import FAtiMA.Core.util.Constants;
 import FAtiMA.Core.util.enumerables.ActionEvent;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Symbol;
-import FAtiMA.culture.SymbolTranslator;
 
 /**
  * Connection to the ION Framework's virtual world as a RemoteAgent. Implements 
@@ -97,7 +96,8 @@ public class IONRemoteAgent extends RemoteAgent {
 		
 	protected boolean SendAction(RemoteAction ra)
 	{
-		ra.setActionType(SymbolTranslator.GetInstance().translateActionToSymbol(ra.getActionType()));
+		ra = _processActionStrategy.ProcessActionToWorld(ra);
+		
 		String msg = ra.toXML();
 		
 		
@@ -293,7 +293,9 @@ public class IONRemoteAgent extends RemoteAgent {
 	    {
 	    	RemoteAction rmAction = RemoteAction.ParseFromXml(perc);
 	    	
-	    	rmAction.setActionType(SymbolTranslator.GetInstance().translateSymbolToAction(rmAction.getActionType()));
+	    	
+	    	rmAction = _processActionStrategy.ProcessActionFromWorld(rmAction);
+	    	
 	    	if(rmAction.getActionType().equals("look-at"))
 	    	{
 	    		_agent.PerceiveLookAt(rmAction.getSubject(), rmAction.getTarget());
@@ -327,7 +329,7 @@ public class IONRemoteAgent extends RemoteAgent {
 	    }
 		else{
 			rmAction = RemoteAction.ParseFromXml(perc);
-		 	rmAction.setActionType(SymbolTranslator.GetInstance().translateSymbolToAction(rmAction.getActionType()));
+			rmAction = _processActionStrategy.ProcessActionFromWorld(rmAction);
 		}
 		
 		//the agent last action failed

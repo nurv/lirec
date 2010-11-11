@@ -126,10 +126,10 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 
 			//For efficiency reasons these two are not real processes
 			_reactiveLayer = new ReactiveProcess();
-			AddComponent(_reactiveLayer);
+			addComponent(_reactiveLayer);
 
 			_deliberativeLayer = new DeliberativeProcess(goalLibrary,planner);
-			AddComponent(_deliberativeLayer);
+			addComponent(_deliberativeLayer);
 
 			//TODO:PARSETHEGOALS
 			loadPersonality(ConfigurationManager.getPersonalityFile(),ConfigurationManager.getPlatform(),new ArrayList<String>());
@@ -201,7 +201,7 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 	}
 
 
-	public void AddComponent(IComponent c)
+	public void addComponent(IComponent c)
 	{
 		this._components.put(c.name(), c);
 		c.initialize(this);
@@ -211,8 +211,13 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 			this._agentDisplay.AddPanel(panel, c.name(),"");
 		}
 	}
+	
+	public RemoteAgent getRemoteAgent()
+	{
+		return this._remoteAgent;
+	}
 
-	public IComponent GetComponent(String name)
+	public IComponent getComponent(String name)
 	{
 		return this._components.get(name);
 	}

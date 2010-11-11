@@ -16,7 +16,6 @@ import FAtiMA.Core.util.enumerables.ActionEvent;
 import FAtiMA.Core.util.enumerables.EventType;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Symbol;
-import FAtiMA.culture.SymbolTranslator;
 
 public class WorldSimulatorRemoteAgent extends RemoteAgent {
 
@@ -50,6 +49,7 @@ public class WorldSimulatorRemoteAgent extends RemoteAgent {
 	@SuppressWarnings("deprecation")
 	protected boolean SendAction(RemoteAction ra) {
 		
+		ra = _processActionStrategy.ProcessActionToWorld(ra);
 		String msg = ra.toPlainStringMessage();	
 		AgentLogger.GetInstance().log("Sending action for execution: " + msg);
 		return Send(msg);
@@ -157,8 +157,11 @@ public class WorldSimulatorRemoteAgent extends RemoteAgent {
 		
 		subject = st.nextToken();
 		symbol = st.nextToken();
-
-		action = SymbolTranslator.GetInstance().translateSymbolToAction(symbol);
+		
+		RemoteAction ra = new RemoteAction();
+		ra.setActionType(symbol);
+		ra = _processActionStrategy.ProcessActionFromWorld(ra);
+		action = ra.getActionType();
 
 
 		if(st.hasMoreTokens()) {
@@ -294,8 +297,11 @@ public class WorldSimulatorRemoteAgent extends RemoteAgent {
 		
 		subject = st.nextToken();
 		symbol = st.nextToken();
-
-		action = SymbolTranslator.GetInstance().translateSymbolToAction(symbol);
+		
+		RemoteAction ra = new RemoteAction();
+		ra.setActionType(symbol);
+		ra = _processActionStrategy.ProcessActionFromWorld(ra);
+		action = ra.getActionType();
 
 		if(st.hasMoreTokens()) {
 			target = st.nextToken();

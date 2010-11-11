@@ -60,6 +60,7 @@ public class CulturalDimensionsComponent implements IComponent, IOptionsStrategy
 		this.loadCulture(aM);
 		aM.getDeliberativeLayer().AddOptionsStrategy(this);
 		aM.getDeliberativeLayer().setExpectedUtilityStrategy(this);
+		aM.getRemoteAgent().setProcessActionStrategy(new CultureProcessActionStrategy());
 	}
 	
 	public void update(Event e, AgentModel am)
@@ -70,8 +71,14 @@ public class CulturalDimensionsComponent implements IComponent, IOptionsStrategy
 	@Override
 	public void appraisal(Event e, AppraisalStructure as, AgentModel am)
 	{
+		float desirabilityForOther = 0;
+		AppraisalStructure appraisalOfOther;
 		float desirability = as.getAppraisalVariable(AppraisalStructure.DESIRABILITY);
-		float desirabilityForOther = as.getAppraisalVariable(AppraisalStructure.DESIRABILITY_FOR_OTHER);
+		for(String other : as.getOthers())
+		{
+			appraisalOfOther = as.getAppraisalOfOther(other);
+			desirabilityForOther += appraisalOfOther.getAppraisalVariable(AppraisalStructure.DESIRABILITY);
+		}
 			
 		float praiseWorthiness = this.determinePraiseWorthiness(
 				desirability,

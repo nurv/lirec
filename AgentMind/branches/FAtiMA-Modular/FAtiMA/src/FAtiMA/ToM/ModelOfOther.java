@@ -19,6 +19,7 @@ import FAtiMA.Core.emotionalState.EmotionalState;
 import FAtiMA.Core.memory.Memory;
 import FAtiMA.Core.reactiveLayer.ReactiveProcess;
 import FAtiMA.Core.sensorEffector.Event;
+import FAtiMA.Core.sensorEffector.RemoteAgent;
 import FAtiMA.Core.wellFormedNames.Symbol;
 
 public class ModelOfOther implements AgentModel, Serializable {
@@ -45,6 +46,11 @@ public class ModelOfOther implements AgentModel, Serializable {
 		{
 			_es.AddEmotionDisposition(ed);
 		}		
+	}
+	
+	public RemoteAgent getRemoteAgent()
+	{
+		return null;
 	}
 
 	public EmotionalState getEmotionalState() {

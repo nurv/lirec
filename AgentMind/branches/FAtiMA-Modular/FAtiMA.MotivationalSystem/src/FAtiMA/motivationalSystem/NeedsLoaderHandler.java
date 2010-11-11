@@ -27,7 +27,7 @@ public class NeedsLoaderHandler  extends ReflectXMLHandler {
 
 		motivatorName = attributes.getValue("motivator");
 		type = MotivatorType.ParseType(motivatorName);
-		MotivationalComponent ms = (MotivationalComponent)_agent.GetComponent(MotivationalComponent.NAME);
+		MotivationalComponent ms = (MotivationalComponent)_agent.getComponent(MotivationalComponent.NAME);
 		
 		ms.AddMotivator(new Motivator(type,
 				new Float(attributes.getValue("decayFactor")).floatValue(),
@@ -48,7 +48,7 @@ public class NeedsLoaderHandler  extends ReflectXMLHandler {
 	
 	public void Motivator(Attributes attributes)
 	{
-		MotivationalComponent motivComp = (MotivationalComponent)_agent.GetComponent(MotivationalComponent.NAME);
+		MotivationalComponent motivComp = (MotivationalComponent)_agent.getComponent(MotivationalComponent.NAME);
 		
 		String driveName = attributes.getValue("drive");
 		String value = attributes.getValue("value");
@@ -70,7 +70,7 @@ public class NeedsLoaderHandler  extends ReflectXMLHandler {
 	}
 	
 	private void setGoalExpectedEffectOnDrive(Attributes attributes, short effectType){
-		MotivationalComponent ms = (MotivationalComponent)_agent.GetComponent(MotivationalComponent.NAME);
+		MotivationalComponent ms = (MotivationalComponent)_agent.getComponent(MotivationalComponent.NAME);
 		
 		String driveName = attributes.getValue("drive");
 		String value = attributes.getValue("value");

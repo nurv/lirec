@@ -146,10 +146,8 @@ public abstract class RemoteAgent extends SocketListener {
 	protected ArrayList<String> _lookAtList;
 	protected boolean _running;
 	protected String _userName;
-	//protected LanguageEngine _languageEngine;
-	//protected String _userLanguageDataBase;
-	//protected LanguageEngine _userLanguageEngine;
 	
+	protected IProcessActionStrategy _processActionStrategy;
 	
 	
 	protected RemoteAgent(String host, int port, AgentCore agent, Map<String,String> arguments) throws UnknownHostException, IOException
@@ -159,6 +157,7 @@ public abstract class RemoteAgent extends SocketListener {
 		_actions = new ArrayList<ValuedAction>();
 		_canAct = true;
 		_running = true;
+		_processActionStrategy = new DefaultProcessActionStrategy();
 		
 		
 		AgentLogger.GetInstance().log("Connecting to " + host + ":" + port);
@@ -232,6 +231,11 @@ public abstract class RemoteAgent extends SocketListener {
 	 */
 	public final boolean isRunning() {
 	    return _running;
+	}
+	
+	public void setProcessActionStrategy(IProcessActionStrategy strat)
+	{
+		_processActionStrategy = strat;
 	}
 		
 	public void processMessage(String msg) {
