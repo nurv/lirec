@@ -7,7 +7,6 @@ import org.xml.sax.Attributes;
 
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.conditions.Condition;
-import FAtiMA.Core.conditions.Context;
 import FAtiMA.Core.exceptions.ContextParsingException;
 import FAtiMA.Core.exceptions.InvalidEmotionTypeException;
 import FAtiMA.Core.util.Constants;

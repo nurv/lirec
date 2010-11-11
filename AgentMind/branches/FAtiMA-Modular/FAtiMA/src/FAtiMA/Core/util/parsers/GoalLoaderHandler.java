@@ -60,7 +60,6 @@ import FAtiMA.Core.util.Constants;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Substitution;
 import FAtiMA.Core.wellFormedNames.Symbol;
-import FAtiMA.culture.RitualCondition;
 import FAtiMA.socialRelations.LikeCondition;
 
 
@@ -98,17 +97,7 @@ public class GoalLoaderHandler extends ReflectXMLHandler {
       _conditionType = "PreConditions";
     }
     
-    public void RitualCondition(Attributes attributes)
-	{
-		RitualCondition cond;
-
-		cond = RitualCondition.ParseRitualCondition(attributes);
-		cond.MakeGround(this._self);
-
-		cond.setRepeat(Boolean.parseBoolean(attributes.getValue("repeat")));
-		
-		_currentGoal.AddCondition(_conditionType, cond);	
-	}
+    
     
     public void Predicate(Attributes attributes) {
     	PredicateCondition cond;
