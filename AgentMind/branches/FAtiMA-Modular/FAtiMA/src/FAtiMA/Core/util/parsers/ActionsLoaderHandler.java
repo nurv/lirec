@@ -80,7 +80,7 @@ public class ActionsLoaderHandler extends ReflectXMLHandler {
 	private ArrayList<Step> _operators; 
 	private boolean _precondition;
 	private float _probability;
-	private Substitution _self;
+	//private Substitution _self;
 	private AgentModel _am;
 	private SACondition _sac;	
 	
@@ -88,7 +88,7 @@ public class ActionsLoaderHandler extends ReflectXMLHandler {
 		_operators = new ArrayList<Step>();
 		_precondition = true;
 		_am = am;
-		_self = new Substitution(new Symbol("[SELF]"), new Symbol(Constants.SELF));
+		//_self = new Substitution(new Symbol("[SELF]"), new Symbol(Constants.SELF));
 	}
 	
 	
@@ -113,7 +113,7 @@ public class ActionsLoaderHandler extends ReflectXMLHandler {
 		_currentOperator = new Step(new Symbol("[AGENT]"),action,probability);
 		_operators.add(_currentOperator);
 		
-		action.MakeGround(this._self);
+		//action.MakeGround(this._self);
 		if(action.toString().startsWith("Inference"))
 		{
 			//inference operator, we must add it to the KnowledgeBase
@@ -158,7 +158,7 @@ public class ActionsLoaderHandler extends ReflectXMLHandler {
 		
 		p = PredicateCondition.ParsePredicate(attributes);
 	
-		p.MakeGround(this._self);
+		//p.MakeGround(this._self);
 		
 		if(_precondition) 
 			_currentOperator.AddPrecondition(p);
@@ -172,7 +172,6 @@ public class ActionsLoaderHandler extends ReflectXMLHandler {
 	  PropertyCondition p;
 	  
 	  p = PropertyCondition.ParseProperty(attributes);
-	  p.MakeGround(_self);
 
 	  if(_precondition) 
 	  	_currentOperator.AddPrecondition(p);
@@ -186,7 +185,7 @@ public class ActionsLoaderHandler extends ReflectXMLHandler {
 	  LikeCondition l;
 		  
 	  l = LikeCondition.ParseSocialCondition(attributes);
-	  l.MakeGround(_self);
+	  //l.MakeGround(_self);
 
 	  if(_precondition) 
 	  	_currentOperator.AddPrecondition(l);
@@ -200,7 +199,7 @@ public class ActionsLoaderHandler extends ReflectXMLHandler {
 	{
 		RecentEventCondition event;
 		event = new RecentEventCondition(PastEventCondition.ParseEvent(attributes));
-		event.MakeGround(_self);
+		//event.MakeGround(_self);
 		
 		if(_precondition) 
 		  	_currentOperator.AddPrecondition(event);
@@ -214,7 +213,7 @@ public class ActionsLoaderHandler extends ReflectXMLHandler {
 	{
 		RecentEventCondition event;
 		event = new NewEventCondition(PastEventCondition.ParseEvent(attributes));
-		event.MakeGround(_self);
+		//event.MakeGround(_self);
 		
 		if(_precondition) 
 		  	_currentOperator.AddPrecondition(event);
@@ -230,7 +229,7 @@ public class ActionsLoaderHandler extends ReflectXMLHandler {
 		try
 		{
 			ec = EmotionCondition.ParseEmotionCondition(attributes);
-			ec.MakeGround(_self);
+			//ec.MakeGround(_self);
 			if(_precondition) 
 			  	_currentOperator.AddPrecondition(ec);
 			else {
@@ -244,20 +243,7 @@ public class ActionsLoaderHandler extends ReflectXMLHandler {
 		}
 	}
 	
-	public void Motivator(Attributes attributes)
-	{
-		MotivatorCondition mc;
-		mc = MotivatorCondition.ParseMotivator(attributes);
-
-		
-		mc.MakeGround(_self);
-		if(_precondition) 
-			_currentOperator.AddPrecondition(mc);
-		else {
-			//String operatorName = _currentOperator.getName().GetFirstLiteral().toString();
-			_currentOperator.AddEffectOnDrive(new EffectOnDrive(mc));	
-		}
-	}
+	
 	
 	public void MoodCondition(Attributes attributes)
     {
@@ -266,7 +252,7 @@ public class ActionsLoaderHandler extends ReflectXMLHandler {
     	try
     	{
     		mc = MoodCondition.ParseMoodCondition(attributes);
-        	mc.MakeGround(_self);
+        	//mc.MakeGround(_self);
         	if(_precondition) 
     		  	_currentOperator.AddPrecondition(mc);
     		else {
@@ -285,7 +271,7 @@ public class ActionsLoaderHandler extends ReflectXMLHandler {
 		try
     	{
     		_sac = SACondition.ParseSA(attributes);
-    		_sac.MakeGround(_self);
+    		//_sac.MakeGround(_self);
     		if(_precondition) 
     		  	_currentOperator.AddPrecondition(_sac);
     		else {

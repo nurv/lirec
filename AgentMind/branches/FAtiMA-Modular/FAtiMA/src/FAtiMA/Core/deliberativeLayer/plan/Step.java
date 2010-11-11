@@ -88,6 +88,7 @@ public class Step implements IPlanningOperator, Cloneable, Serializable {
 	private Integer _id;
 	
 	private Name _name;
+	private String _key;
 	private Symbol _agent;
 	private ArrayList<Condition> _preconditions;
 	private ArrayList<Effect> _effects;
@@ -107,6 +108,7 @@ public class Step implements IPlanningOperator, Cloneable, Serializable {
 	public Step(Symbol agent, Name action, float probability) {
 		_agent = agent;
 		_name = action;
+		_key = action.toString();
 		_effects = new ArrayList<Effect>(3);
 		_effectsOnDrives = new ArrayList<EffectOnDrive>(3);
 		_preconditions = new ArrayList<Condition>(3);
@@ -129,6 +131,7 @@ public class Step implements IPlanningOperator, Cloneable, Serializable {
 	public Step(Symbol agent, Name action, float probability, ArrayList<Condition> preconditions, ArrayList<Effect> effects, ArrayList<EffectOnDrive> effectsOnDrives) {
 		_agent = agent;
 		_name = action;
+		_key = action.toString();
 		_effects = effects;
 		_effectsOnDrives = effectsOnDrives;
 		_preconditions = preconditions;
@@ -139,6 +142,10 @@ public class Step implements IPlanningOperator, Cloneable, Serializable {
 	}
 
 	private Step() {
+	}
+	
+	public String getKey(){
+		return this._key;
 	}
 
 	/**
@@ -474,6 +481,7 @@ public class Step implements IPlanningOperator, Cloneable, Serializable {
 		Step op = new Step();
 		op._agent = (Symbol) this._agent.clone();
 		op._name = (Name) this._name.clone();
+		op._key = new String(this._key);
 		op._id = this._id;
 		op._baseprob = this._baseprob;
 		op._selfExecutable = this._selfExecutable;
