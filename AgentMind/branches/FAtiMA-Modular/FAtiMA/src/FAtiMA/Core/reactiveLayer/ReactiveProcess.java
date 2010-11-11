@@ -60,8 +60,6 @@
 
 package FAtiMA.Core.reactiveLayer;
 
-import java.util.ArrayList;
-import java.util.ListIterator;
 
 import FAtiMA.Core.AgentCore;
 import FAtiMA.Core.AgentModel;
@@ -69,15 +67,11 @@ import FAtiMA.Core.IComponent;
 import FAtiMA.Core.ValuedAction;
 import FAtiMA.Core.Display.AgentDisplayPanel;
 import FAtiMA.Core.emotionalState.ActiveEmotion;
-import FAtiMA.Core.emotionalState.Appraisal;
+
 import FAtiMA.Core.emotionalState.AppraisalStructure;
-import FAtiMA.Core.emotionalState.BaseEmotion;
-import FAtiMA.Core.memory.episodicMemory.ActionDetail;
 import FAtiMA.Core.sensorEffector.Event;
-import FAtiMA.Core.util.Constants;
 import FAtiMA.Core.wellFormedNames.Name;
-import FAtiMA.ToM.ModelOfOther;
-import FAtiMA.socialRelations.LikeRelation;
+
 
 /**
  * Implements FearNot's Agent Reactive Layer (appraisal and coping processes)
@@ -178,7 +172,7 @@ public class ReactiveProcess implements IComponent {
 		}
 		if(selfEvaluation._desirabilityForOther != null)
 		{
-			as.SetAppraisalVariable(NAME, (short)5, AppraisalStructure.DESIRABILITY_FOR_OTHER, selfEvaluation._desirabilityForOther.intValue());
+			as.SetAppraisalVariableOfOther(selfEvaluation._other.toString(), NAME, (short)5, AppraisalStructure.DESIRABILITY, selfEvaluation._desirabilityForOther.intValue());
 		}
 		if(selfEvaluation._praiseworthiness != null)
 		{

@@ -41,16 +41,17 @@ import FAtiMA.socialRelations.LikeRelation;
 
 public abstract class Appraisal {
 	
-	public static ArrayList<BaseEmotion> GenerateSelfEmotions(AgentModel am, Event event, AppraisalStructure vector)
+	public static ArrayList<BaseEmotion> GenerateEmotions(AgentModel am, Event event, AppraisalStructure as)
 	{
+		AppraisalStructure appraisalOfOther;
 		ArrayList<BaseEmotion> emotions = new ArrayList<BaseEmotion>();
 		float desirability;
 		float praiseworthiness;
 		float like;
 		
-		desirability = vector.getAppraisalVariable(AppraisalStructure.DESIRABILITY);
-		praiseworthiness = vector.getAppraisalVariable(AppraisalStructure.PRAISEWORTHINESS);
-		like = vector.getAppraisalVariable(AppraisalStructure.LIKE);
+		desirability = as.getAppraisalVariable(AppraisalStructure.DESIRABILITY);
+		praiseworthiness = as.getAppraisalVariable(AppraisalStructure.PRAISEWORTHINESS);
+		like = as.getAppraisalVariable(AppraisalStructure.LIKE);
 		
 		
 		if(like!=0)
@@ -61,6 +62,12 @@ public abstract class Appraisal {
 		//WellBeingEmotions: Joy, Distress
 		if (desirability != 0) {
 			emotions.add(OCCAppraiseWellBeing(event, desirability));
+			
+			for(String other : as.getOthers())
+			{
+				appraisalOfOther = as.getAppraisalOfOther(other);
+				emotions.add(Appraisal.GenerateEmotionForOther(am, event, desirability, appraisalOfOther, other));
+			}
 		}
 		
 		if (praiseworthiness != 0) {
@@ -188,10 +195,9 @@ public abstract class Appraisal {
 		return em;
 	}
 	
-	public static BaseEmotion GenerateEmotionForOther(AgentModel am, Event event, AppraisalStructure v, String other)
+	private static BaseEmotion GenerateEmotionForOther(AgentModel am, Event event, float desirability, AppraisalStructure appraisalOfOther, String other)
 	{
-		float desirabilityForOther = v.getAppraisalVariable(AppraisalStructure.DESIRABILITY_FOR_OTHER);
-		float desirability = v.getAppraisalVariable(AppraisalStructure.DESIRABILITY);
+		float desirabilityForOther = appraisalOfOther.getAppraisalVariable(AppraisalStructure.DESIRABILITY);
 		float targetBias = 0;
 		float subjectBias = 0;
 		float bias;

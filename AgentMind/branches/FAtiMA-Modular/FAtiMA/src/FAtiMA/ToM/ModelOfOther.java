@@ -1,6 +1,7 @@
 package FAtiMA.ToM;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
@@ -9,6 +10,10 @@ import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.IComponent;
 import FAtiMA.Core.IGetModelStrategy;
 import FAtiMA.Core.deliberativeLayer.DeliberativeProcess;
+import FAtiMA.Core.emotionalState.ActiveEmotion;
+import FAtiMA.Core.emotionalState.Appraisal;
+import FAtiMA.Core.emotionalState.AppraisalStructure;
+import FAtiMA.Core.emotionalState.BaseEmotion;
 import FAtiMA.Core.emotionalState.EmotionDisposition;
 import FAtiMA.Core.emotionalState.EmotionalState;
 import FAtiMA.Core.memory.Memory;
@@ -55,6 +60,16 @@ public class ModelOfOther implements AgentModel, Serializable {
 		return _name;
 	}
 	
+	public void decay(long time)
+	{
+		_es.Decay();
+		
+		for(IComponent c : _components.values())
+		{
+			c.decay(time);
+		}
+	}
+	
 	public void update()
 	{
 		for(IComponent c : _components.values())
@@ -70,6 +85,32 @@ public class ModelOfOther implements AgentModel, Serializable {
 			c.update(e,this);
 		}
 	}
+	
+	public void appraisal(Event e, AppraisalStructure as) 
+	{
+		ArrayList<BaseEmotion> emotions;
+		ActiveEmotion activeEmotion;
+		
+		for(IComponent c : this._components.values())
+		{
+			c.appraisal(e,as,this);
+		}
+
+		emotions = Appraisal.GenerateEmotions(this, e, as);
+
+		for(BaseEmotion em : emotions)
+		{
+			activeEmotion = _es.AddEmotion(em, this);
+			if(activeEmotion != null)
+			{
+				for(IComponent c : this._components.values())
+				{
+					c.emotionActivation(e,activeEmotion,this);
+				}
+			}
+		}
+	}
+	
 	
 	public void addComponent(IComponent c)
 	{
@@ -99,13 +140,13 @@ public class ModelOfOther implements AgentModel, Serializable {
 
 	@Override
 	public DeliberativeProcess getDeliberativeLayer() {
-		return null;
+		return _deliberativeProcess;
 	}
 
 	@Override
 	public ReactiveProcess getReactiveLayer() {
-		// TODO Auto-generated method stub
-		return null;
+		
+		return _reactiveProcess;
 	}
 
 	@Override

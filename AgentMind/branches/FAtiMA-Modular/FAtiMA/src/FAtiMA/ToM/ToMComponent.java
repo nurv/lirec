@@ -96,13 +96,11 @@ public class ToMComponent implements IComponent, IGetModelStrategy, IGetUtilityF
 
 	@Override
 	public void decay(long time) {
+		
 		for(String s : _nearbyAgents)
 		{
 			ModelOfOther m = _ToM.get(s);
-			for(IComponent c : m.getComponents())
-			{
-				c.decay(time);
-			}
+			m.decay(time);
 		}
 	}
 
@@ -137,13 +135,12 @@ public class ToMComponent implements IComponent, IGetModelStrategy, IGetUtilityF
 		}
 		
 		AppraisalStructure otherAS;
-		float desirabilityForOther;
 		
 		for(String s : _nearbyAgents)
 		{
 			otherAS = new AppraisalStructure();
 			ModelOfOther m = _ToM.get(s);
-			m.Appraisal(e, otherAS, m);
+			m.appraisal(e, otherAS);
 			
 			as.SetAppraisalOfOther(s, otherAS);
 		}

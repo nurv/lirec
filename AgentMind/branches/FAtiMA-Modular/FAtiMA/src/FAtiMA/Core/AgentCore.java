@@ -493,6 +493,8 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 					//self
 
 					long time = AgentSimulationTime.GetInstance().Time();
+					
+					_emotionalState.Decay();
 
 					for(IComponent c : this._components.values())
 					{
@@ -528,10 +530,8 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 								}
 							}
 
-							emotions = Appraisal.GenerateSelfEmotions(this, e, appraisal);
+							emotions = Appraisal.GenerateEmotions(this, e, appraisal);
 
-							//TODO emotions for others
-							//emotions.addAll(Appraisal.GenerateEmotionForOther(am, event, v, other))
 							for(BaseEmotion em : emotions)
 							{
 								activeEmotion = _emotionalState.AddEmotion(em, this);
