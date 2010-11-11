@@ -42,6 +42,7 @@ import FAtiMA.Core.conditions.PredicateCondition;
 import FAtiMA.Core.conditions.PropertyCondition;
 import FAtiMA.Core.conditions.RecentEventCondition;
 import FAtiMA.Core.deliberativeLayer.DeliberativeProcess;
+import FAtiMA.Core.deliberativeLayer.goals.Goal;
 import FAtiMA.Core.exceptions.ContextParsingException;
 import FAtiMA.Core.exceptions.DuplicateSymbolTranslatorEntry;
 import FAtiMA.Core.exceptions.InvalidDimensionTypeException;
@@ -66,6 +67,7 @@ public class CultureLoaderHandler extends ReflectXMLHandler {
 	private Substitution _self;
 	private AgentModel _am;
 	private CulturalDimensionsComponent _culturalComponent;
+	private String _currentGoalKey;
 	
 	ReactiveProcess _reactiveLayer;
 	DeliberativeProcess _deliberativeLayer;
@@ -80,6 +82,8 @@ public class CultureLoaderHandler extends ReflectXMLHandler {
 		_deliberativeLayer = aM.getDeliberativeLayer();
 		_am = aM;
 		_culturalComponent = cDM;
+		
+		_currentGoalKey = null;
 	}
 
 
@@ -145,6 +149,7 @@ public class CultureLoaderHandler extends ReflectXMLHandler {
 		_ritual = new Ritual(description);
 		_rituals.add(_ritual);
 		_conditionType = "PreConditions";
+		_currentGoalKey = null;
 	}
 
 	public void Symbol(Attributes attributes)  {
@@ -177,8 +182,7 @@ public class CultureLoaderHandler extends ReflectXMLHandler {
 	
 	public void ActivePursuitGoal(Attributes attributes)
 	{
-		AgentLogger.GetInstance().logAndPrint("ERROR! Culture file has an 'ActivePursuitGoal' defined in it.");
-		System.exit(-1);
+		_currentGoalKey = attributes.getValue("name");
 	}
 
 	public void Motivator(Attributes attributes)
@@ -252,6 +256,9 @@ public class CultureLoaderHandler extends ReflectXMLHandler {
 		if(_ritual != null)
 		{	
 			_ritual.AddCondition(_conditionType, cond);
+		}else if (_currentGoalKey != null){
+			Goal g = _deliberativeLayer.getGoalLibrary().GetGoal(Name.ParseName(_currentGoalKey));
+			g.AddCondition(_conditionType, cond);
 		}
 	}
 
