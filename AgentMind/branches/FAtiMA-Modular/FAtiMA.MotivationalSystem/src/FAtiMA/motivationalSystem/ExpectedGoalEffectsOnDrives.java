@@ -3,15 +3,15 @@ package FAtiMA.motivationalSystem;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class ExpectedEffectOnDrives {
+public class ExpectedGoalEffectsOnDrives {
 	
 	private String _goalName;
-	private ArrayList<EffectOnDrive> _effects;
+	private ArrayList<EffectOnDrive2> _effects;
 	
-	public ExpectedEffectOnDrives(String goalName)
+	public ExpectedGoalEffectsOnDrives(String goalName)
 	{
 		this._goalName = goalName;
-		_effects = new ArrayList<EffectOnDrive>();
+		_effects = new ArrayList<EffectOnDrive2>();
 	}
 	
 	public String getGoalName()
@@ -19,12 +19,12 @@ public class ExpectedEffectOnDrives {
 		return _goalName;
 	}
 	
-	public void AddEffect(EffectOnDrive e)
+	public void AddEffect(EffectOnDrive2 e)
 	{
 		_effects.add(e);
 	}
 	
-	public Collection<EffectOnDrive> getEffects()
+	public Collection<EffectOnDrive2> getEffects()
 	{
 		return _effects;
 	}

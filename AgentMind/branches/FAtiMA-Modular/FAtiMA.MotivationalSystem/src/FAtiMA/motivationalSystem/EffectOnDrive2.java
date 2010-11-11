@@ -4,14 +4,14 @@ import FAtiMA.Core.wellFormedNames.Symbol;
 
 
 
-public class EffectOnDrive {
+public class EffectOnDrive2 {
 	
 	private float _value;
 	private short _type;
 	private String _driveName;
 	private Symbol _target;
 	
-	public EffectOnDrive(Short type, String driveName, Symbol target, float value)
+	public EffectOnDrive2(Short type, String driveName, Symbol target, float value)
 	{
 		this._type = type;
 		this._target = target;

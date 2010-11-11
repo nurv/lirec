@@ -3,10 +3,7 @@ package FAtiMA.motivationalSystem;
 import org.xml.sax.Attributes;
 
 import FAtiMA.Core.AgentCore;
-import FAtiMA.Core.deliberativeLayer.plan.EffectOnDrive;
 import FAtiMA.Core.util.AgentLogger;
-import FAtiMA.Core.util.enumerables.ExpectedEffectType;
-import FAtiMA.Core.util.parsers.MotivatorCondition;
 import FAtiMA.Core.util.parsers.ReflectXMLHandler;
 import FAtiMA.Core.wellFormedNames.Symbol;
 
@@ -51,23 +48,25 @@ public class NeedsLoaderHandler  extends ReflectXMLHandler {
 	
 	public void Motivator(Attributes attributes)
 	{
-		MotivationalComponent ms = (MotivationalComponent)_agent.GetComponent(MotivationalComponent.NAME);
+		MotivationalComponent motivComp = (MotivationalComponent)_agent.GetComponent(MotivationalComponent.NAME);
 		
-		MotivatorCondition mc;
-		mc = MotivatorCondition.ParseMotivator(attributes);
-		
-		//String operatorName = _currentOperator.getName().GetFirstLiteral().toString();
-			_currentOperator.AddEffectOnDrive(new EffectOnDrive(mc));	
+		String driveName = attributes.getValue("drive");
+		String value = attributes.getValue("value");
+		String target = attributes.getValue("target");
+
+		if(driveName != null && _currentGoalKey != null){
+			motivComp.addActionEffectsOnDrive(_currentStepKey, driveName, new Symbol(target), Float.parseFloat(value));
+		}
 	}
 	
 	public void OnSelect(Attributes attributes)
 	{
-		this.setGoalExpectedEffectOnDrive(attributes, ExpectedEffectType.ON_SELECT);
+		this.setGoalExpectedEffectOnDrive(attributes, EffectType.ON_SELECT);
 	}
 
 	public void OnIgnore(Attributes attributes)
 	{
-		this.setGoalExpectedEffectOnDrive(attributes, ExpectedEffectType.ON_IGNORE);
+		this.setGoalExpectedEffectOnDrive(attributes, EffectType.ON_IGNORE);
 	}
 	
 	private void setGoalExpectedEffectOnDrive(Attributes attributes, short effectType){
@@ -78,7 +77,7 @@ public class NeedsLoaderHandler  extends ReflectXMLHandler {
 		String target = attributes.getValue("target");
 
 		if(driveName != null && _currentGoalKey != null){
-			ms.addEffectOnDrive(_currentGoalKey, effectType, driveName, new Symbol(target), Float.parseFloat(value));
+			ms.addExpectedGoalEffectOnDrive(_currentGoalKey, effectType, driveName, new Symbol(target), Float.parseFloat(value));
 		}
 	}
 }

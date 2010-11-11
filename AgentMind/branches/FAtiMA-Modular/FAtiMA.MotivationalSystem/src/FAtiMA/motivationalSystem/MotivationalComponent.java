@@ -22,7 +22,6 @@ import FAtiMA.Core.deliberativeLayer.IGoalSuccessStrategy;
 import FAtiMA.Core.deliberativeLayer.IProbabilityStrategy;
 import FAtiMA.Core.deliberativeLayer.IUtilityStrategy;
 import FAtiMA.Core.deliberativeLayer.goals.ActivePursuitGoal;
-import FAtiMA.Core.deliberativeLayer.plan.EffectOnDrive;
 import FAtiMA.Core.deliberativeLayer.plan.IPlanningOperator;
 import FAtiMA.Core.deliberativeLayer.plan.Step;
 import FAtiMA.Core.emotionalState.ActiveEmotion;
@@ -30,7 +29,6 @@ import FAtiMA.Core.emotionalState.AppraisalStructure;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.util.AgentLogger;
 import FAtiMA.Core.util.Constants;
-import FAtiMA.Core.util.enumerables.ExpectedEffectType;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Substitution;
 import FAtiMA.Core.wellFormedNames.Symbol;
@@ -60,8 +58,8 @@ public class MotivationalComponent implements Serializable, Cloneable, IComponen
 	protected int _goalSucceeded;
 	
 	protected HashMap<String,Float> _appraisals;
-	protected HashMap<String,ExpectedEffectOnDrives> _goalEffectsOnDrives;
-	protected HashMap<String>
+	protected HashMap<String,ExpectedGoalEffectsOnDrives> _goalEffectsOnDrives;
+	protected HashMap<String,ActionEffectsOnDrives> _actionEffectsOnDrives;
 
 	public static double determineQuadraticNeedVariation(float currentLevel, float deviation){
 		double result = 0;
@@ -90,15 +88,16 @@ public class MotivationalComponent implements Serializable, Cloneable, IComponen
 		_goalSucceeded = 0;
 		_lastTime = AgentSimulationTime.GetInstance().Time();
 		_appraisals = new HashMap<String,Float>();
-		_goalEffectsOnDrives = new HashMap<String,ExpectedEffectOnDrives>();
+		_goalEffectsOnDrives = new HashMap<String,ExpectedGoalEffectsOnDrives>();
 	}
 	
-	public void addEffectOnDrive(String goal, short effectType, String driveName, Symbol target, float value)
+	
+	public void addExpectedGoalEffectOnDrive(String goal, short effectType, String driveName, Symbol target, float value)
 	{
-		ExpectedEffectOnDrives effects;
+		ExpectedGoalEffectsOnDrives effects;
 		if(!_goalEffectsOnDrives.containsKey(goal))
 		{
-			effects = new ExpectedEffectOnDrives(goal);
+			effects = new ExpectedGoalEffectsOnDrives(goal);
 			_goalEffectsOnDrives.put(goal, effects);
 		}
 		else
@@ -106,8 +105,24 @@ public class MotivationalComponent implements Serializable, Cloneable, IComponen
 			effects = _goalEffectsOnDrives.get(goal);
 		}
 		
-		effects.AddEffect(new FAtiMA.motivationalSystem.EffectOnDrive(effectType, driveName, target, value));
+		effects.AddEffect(new EffectOnDrive2(effectType, driveName, target, value));
 	}
+	
+	public void addActionEffectsOnDrive(String action, String driveName, Symbol target, float value)
+	{
+		ActionEffectsOnDrives effects;
+		if(!_actionEffectsOnDrives.containsKey(action))
+		{
+			effects = new ActionEffectsOnDrives(action);
+			_actionEffectsOnDrives.put(action, effects);
+		}
+		else
+		{
+			effects = _actionEffectsOnDrives.get(action);
+		}
+		
+		effects.AddEffect(new EffectOnDrive2(EffectType.ON_PERFORMANCE, driveName, target, value));
+		}
 	
 	public Motivator[] getMotivators(){
 		return _motivators;
@@ -133,60 +148,47 @@ public class MotivationalComponent implements Serializable, Cloneable, IComponen
 	 * Updates the intensity of the motivators based on the event received
 	 * @throws InvalidMotivatorTypeException 
 	 */
-	public float UpdateMotivators(AgentModel am, Event e, ArrayList<? extends IPlanningOperator> operators)
+	public float UpdateMotivators(AgentModel am, Event e)
 	{
 		ArrayList<Substitution> substitutions;
-		IPlanningOperator operator;
-		Step action;
-		EffectOnDrive effectOnDrive;
-		MotivatorCondition motCondition;
+		Symbol target;
 		float deviation = 0;
 		double contributionToNeed =0f;
 	    float contributionToSelfNeeds = 0f;  //used for events performed by the agent
 		
 		
-		
-		//Other Events Update The Motivators According to The Effects Specified By the Author in The Actions.xml 
-		for(ListIterator<? extends IPlanningOperator> li = operators.listIterator(); li.hasNext();)
+		for(ActionEffectsOnDrives actionEffects : _actionEffectsOnDrives.values())
 		{
-			
-			operator = li.next();
-			if(operator instanceof Step)
+			Name actionName = actionEffects.getActionName();
+			substitutions = Unifier.Unify(e.toStepName(),actionName);
+			if(substitutions != null)
 			{
-				action = (Step) operator;
-				substitutions = Unifier.Unify(e.toStepName(),action.getName());
-				if(substitutions != null)
+				substitutions.add(new Substitution(new Symbol("[AGENT]"),new Symbol(e.GetSubject())));
+				for(EffectOnDrive2 eff : actionEffects.getEffects())
 				{
-
-					substitutions.add(new Substitution(new Symbol("[AGENT]"),new Symbol(e.GetSubject())));
-					action = (Step) action.clone();
-					action.MakeGround(substitutions);
-
-					for(ListIterator<EffectOnDrive> li2 = action.getEffectsOnDrives().listIterator(); li2.hasNext();)
+					target = (Symbol) eff.getTarget().clone();
+					target.MakeGround(substitutions);
+					if(target.toString().equals(am.getName()))
 					{
-						effectOnDrive = (EffectOnDrive) li2.next();
-						motCondition = (MotivatorCondition) effectOnDrive.GetEffectOnDrive();
-						Name target = motCondition.GetTarget();
-
-						if (target.toString().equalsIgnoreCase(Constants.SELF))
-						{
-							AgentLogger.GetInstance().log("Updating self motivator " + motCondition.GetDrive());
-							try {
-								short driveType = MotivatorType.ParseType(motCondition.GetDrive());
-								float oldLevel = _motivators[driveType].GetIntensity();
-								deviation = _motivators[driveType].UpdateIntensity(motCondition.GetEffect());
-								contributionToNeed = determineQuadraticNeedVariation(oldLevel, deviation)*0.1f;
-								contributionToSelfNeeds += contributionToNeed;
-							} catch (InvalidMotivatorTypeException e1) {
-								e1.printStackTrace();
-							}
+						AgentLogger.GetInstance().log("Updating motivator " + eff.getDriveName());
+						try {
+							short driveType = MotivatorType.ParseType(eff.getDriveName());
+							float oldLevel = _motivators[driveType].GetIntensity();
+							deviation = _motivators[driveType].UpdateIntensity(eff.getValue());
+							contributionToNeed = determineQuadraticNeedVariation(oldLevel, deviation)*0.1f;
+							contributionToSelfNeeds += contributionToNeed;
+						} catch (InvalidMotivatorTypeException e1) {
+							e1.printStackTrace();
 						}
-					}			
-				}	
-			}			
+						
+					}
+				}
+				
+				return contributionToSelfNeeds; //finishes after finding the action that unifies with the event 
+			}
 		}
-		
-		return contributionToSelfNeeds;
+	    
+		return 0; //no action was found that unified with the event
 	}
 	
 	public float getContributionToNeeds(AgentModel am, ActivePursuitGoal g){
@@ -198,8 +200,8 @@ public class MotivationalComponent implements Serializable, Cloneable, IComponen
 		try {		
 			result = 0;
 			
-			ExpectedEffectOnDrives effects = _goalEffectsOnDrives.get(g.getKey());
-			for(FAtiMA.motivationalSystem.EffectOnDrive e : effects.getEffects())
+			ExpectedGoalEffectsOnDrives effects = _goalEffectsOnDrives.get(g.getKey());
+			for(EffectOnDrive2 e : effects.getEffects())
 			{
 				Symbol target = (Symbol) e.getTarget().clone();
 				target.MakeGround(g.getAppliedSubstitutions());
@@ -207,11 +209,11 @@ public class MotivationalComponent implements Serializable, Cloneable, IComponen
 				{
 					expectedContribution = e.getValue();
 					currentIntensity = GetIntensity(MotivatorType.ParseType(e.getDriveName()));
-					if(e.getType() == ExpectedEffectType.ON_SELECT)
+					if(e.getType() == EffectType.ON_SELECT)
 					{
 						auxMultiplier = 1;
 					}
-					else if(e.getType() == ExpectedEffectType.ON_IGNORE)
+					else if(e.getType() == EffectType.ON_IGNORE)
 					{
 						auxMultiplier = -1;
 					}
@@ -418,7 +420,7 @@ public class MotivationalComponent implements Serializable, Cloneable, IComponen
 	public void update(Event e, AgentModel am)
 	{
 		Event event2 = e.ApplyPerspective(am.getName());
-		float result =  UpdateMotivators(am, event2, am.getDeliberativeLayer().getEmotionalPlanner().GetOperators());
+		float result =  UpdateMotivators(am, event2);
 		_appraisals.put(e.toString(), new Float(result));
 	}
 
