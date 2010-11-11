@@ -29,6 +29,9 @@
 
 package FAtiMA.culture;
 
+
+
+
 import java.util.ArrayList;
 
 import org.xml.sax.Attributes;
