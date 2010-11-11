@@ -1,4 +1,4 @@
-package FAtiMA.Core.conditions;
+package FAtiMA.Core.memory;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -7,6 +7,7 @@ import java.util.Iterator;
 import org.xml.sax.Attributes;
 
 import FAtiMA.Core.AgentModel;
+import FAtiMA.Core.conditions.Condition;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Substitution;
 import FAtiMA.Core.wellFormedNames.SubstitutionSet;

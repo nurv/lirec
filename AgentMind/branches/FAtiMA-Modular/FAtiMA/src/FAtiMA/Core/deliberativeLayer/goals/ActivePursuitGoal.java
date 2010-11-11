@@ -81,7 +81,6 @@ import FAtiMA.Core.conditions.Condition;
 import FAtiMA.Core.conditions.NewEventCondition;
 import FAtiMA.Core.conditions.RecentEventCondition;
 import FAtiMA.Core.deliberativeLayer.plan.Effect;
-import FAtiMA.Core.deliberativeLayer.plan.EffectOnDrive;
 import FAtiMA.Core.deliberativeLayer.plan.IPlanningOperator;
 import FAtiMA.Core.deliberativeLayer.plan.Plan;
 import FAtiMA.Core.exceptions.UnreachableGoalException;
@@ -709,10 +708,5 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
 
 	public void updateEffectsProbability(AgentModel am) {
 		//this method is not applied to Goals!
-	}
-
-	public ArrayList<EffectOnDrive> getEffectsOnDrives() {
-		//TODO return the appropriate effects on drives
-		return new ArrayList<EffectOnDrive>();
 	}
 }

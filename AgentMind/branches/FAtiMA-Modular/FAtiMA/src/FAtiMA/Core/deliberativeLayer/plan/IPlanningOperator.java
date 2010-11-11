@@ -74,12 +74,6 @@ public interface IPlanningOperator extends Cloneable, IGroundable {
 	
 	
 	/**
-	 * Gets the operator effects on the drives of the motivational system
-	 * @return an ArrayList with all the step's effects on drives
-	 */
-	public ArrayList<EffectOnDrive> getEffectsOnDrives();
-	
-	/**
 	 * Gets the ID of the Operator in the plan
 	 * @return - the Operator's ID
 	 */

@@ -92,7 +92,6 @@ public class Step implements IPlanningOperator, Cloneable, Serializable {
 	private Symbol _agent;
 	private ArrayList<Condition> _preconditions;
 	private ArrayList<Effect> _effects;
-	private ArrayList<EffectOnDrive> _effectsOnDrives;
 	
 	private float _baseprob;
 	
@@ -110,7 +109,6 @@ public class Step implements IPlanningOperator, Cloneable, Serializable {
 		_name = action;
 		_key = action.toString();
 		_effects = new ArrayList<Effect>(3);
-		_effectsOnDrives = new ArrayList<EffectOnDrive>(3);
 		_preconditions = new ArrayList<Condition>(3);
 		
 		_selfExecutable = (!_agent.isGrounded()) || 
@@ -128,12 +126,11 @@ public class Step implements IPlanningOperator, Cloneable, Serializable {
 	 * @param probability - the likelihood of the action's execution
 	 * 						by another agent 
 	 */
-	public Step(Symbol agent, Name action, float probability, ArrayList<Condition> preconditions, ArrayList<Effect> effects, ArrayList<EffectOnDrive> effectsOnDrives) {
+	public Step(Symbol agent, Name action, float probability, ArrayList<Condition> preconditions, ArrayList<Effect> effects) {
 		_agent = agent;
 		_name = action;
 		_key = action.toString();
 		_effects = effects;
-		_effectsOnDrives = effectsOnDrives;
 		_preconditions = preconditions;
 		_baseprob = probability;
 		
@@ -156,13 +153,6 @@ public class Step implements IPlanningOperator, Cloneable, Serializable {
 		_effects.add(effect);
 	}
 	
-	/**
-	 * Adds an effect on drive to the Step
-	 * @param effect - the Effect to Add
-	 */
-	public void AddEffectOnDrive(EffectOnDrive effectOnDrive) {
-		_effectsOnDrives.add(effectOnDrive);
-	}
 
 	/**
 	 * Adds a precondition to the Step
@@ -400,15 +390,7 @@ public class Step implements IPlanningOperator, Cloneable, Serializable {
 		return _effects;
 	}
 	
-	/**
-	 * Added by Meiyii
-	 * Gets the step's effects on drives
-	 * @return an ArrayList with all the step's effects on drives
-	 */
-	public ArrayList<EffectOnDrive> getEffectsOnDrives() {
-		return _effectsOnDrives;
-	}
-	
+
 	/**
 	 * Gets the ID of the Step in the plan
 	 * @return - the Step's ID
@@ -502,16 +484,6 @@ public class Step implements IPlanningOperator, Cloneable, Serializable {
 			}	
 		}
 		
-		// by Meiyii
-		if(_effectsOnDrives != null) {
-			op._effectsOnDrives = new ArrayList<EffectOnDrive>(_effectsOnDrives.size());
-			
-			for(EffectOnDrive effOnDrive : _effectsOnDrives)
-			{
-				op._effectsOnDrives.add((EffectOnDrive)effOnDrive.clone());
-			}
-		}
-		
 		return op;
 	}
 	
@@ -561,15 +533,6 @@ public class Step implements IPlanningOperator, Cloneable, Serializable {
 	       	 
     	 	}
     	 }
-    	 
-    	 //by Meiyii
-    	 if(this._effectsOnDrives != null)
-    	 {
-    		for(EffectOnDrive e : this._effectsOnDrives)
-     	 	{
-     			e.ReplaceUnboundVariables(variableID);
-     	 	}
-    	 }
     }
     
     /**
@@ -616,16 +579,7 @@ public class Step implements IPlanningOperator, Cloneable, Serializable {
     		{
     			e.MakeGround(bindings);
     		}
-    	 }
-    	 
-    	 if(this._effectsOnDrives != null)
-    	 {
-    		for(EffectOnDrive e : _effectsOnDrives)
-    		{
-    			e.MakeGround(bindings);
-    		}
-    	 }
-    	 	    	 
+    	 }   	 	    	 
     	 UpdateSelfExecutable();
     }
     
@@ -675,15 +629,7 @@ public class Step implements IPlanningOperator, Cloneable, Serializable {
    	 			e.MakeGround(subst);
    	 		}
    	 	}
-   	 
-   	 	if(this._effectsOnDrives != null)
-   	 	{
-   	 		for(EffectOnDrive e : _effectsOnDrives)
-   	 		{
-   	 			e.MakeGround(subst);
-   	 		}
-   	 	}
-    	
+      	
     	UpdateSelfExecutable();
     }
 
@@ -716,14 +662,6 @@ public class Step implements IPlanningOperator, Cloneable, Serializable {
         	}    	
     	}
    	 	  
-    	 //by Meiyii
-	   	 if(this._effectsOnDrives != null)
-	   	 {
-	   		for(EffectOnDrive e : _effectsOnDrives)
-	    	{
-	    		if(!e.isGrounded()) return false;
-	    	}
-	   	 }
     	
         return true;
     }

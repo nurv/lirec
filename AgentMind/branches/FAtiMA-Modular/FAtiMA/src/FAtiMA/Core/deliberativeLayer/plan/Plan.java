@@ -247,16 +247,16 @@ public class Plan implements Cloneable, Serializable
         		new Symbol("Start"),
         		1,
         		null,
-        		null,
-        		null);
+        		null
+        		);
         _start.setID(new Integer(_stepCounter++));
         _finish = new Step(
         		new Symbol(Constants.SELF),
         		new Symbol("Finish"),
         		1,
         		finishConditions,
-                null,
-                null);
+                null
+                );
         _finish.setID(new Integer(_stepCounter++));
 
         for (int i = 0; i < finishConditions.size(); i++)

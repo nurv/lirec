@@ -56,17 +56,14 @@ import FAtiMA.Core.conditions.PastEventCondition;
 import FAtiMA.Core.conditions.PredicateCondition;
 import FAtiMA.Core.conditions.PropertyCondition;
 import FAtiMA.Core.conditions.RecentEventCondition;
-import FAtiMA.Core.conditions.SACondition;
 import FAtiMA.Core.deliberativeLayer.plan.Effect;
-import FAtiMA.Core.deliberativeLayer.plan.EffectOnDrive;
 import FAtiMA.Core.deliberativeLayer.plan.Step;
 import FAtiMA.Core.exceptions.ContextParsingException;
 import FAtiMA.Core.exceptions.InvalidEmotionTypeException;
-import FAtiMA.Core.util.Constants;
+import FAtiMA.Core.memory.SACondition;
 import FAtiMA.Core.util.enumerables.ActionEvent;
 import FAtiMA.Core.util.enumerables.EventType;
 import FAtiMA.Core.wellFormedNames.Name;
-import FAtiMA.Core.wellFormedNames.Substitution;
 import FAtiMA.Core.wellFormedNames.Symbol;
 import FAtiMA.socialRelations.LikeCondition;
 
