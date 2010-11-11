@@ -25,11 +25,14 @@ public class ToMComponent implements IComponent, IGetModelStrategy, IGetUtilityF
 	protected String _name;
 	protected HashMap<String,ModelOfOther> _ToM;
 	protected ArrayList<String> _nearbyAgents;
+	protected HashMap<Event,AppraisalStructure> _appraisalsOfOthers;
+	
 	
 	public ToMComponent(String name)
 	{
 		this._name = name;
 		this._nearbyAgents = new ArrayList<String>();
+		this._appraisalsOfOthers = new HashMap<Event,AppraisalStructure>();
 	}
 	
 	private void addNearbyAgent(String agent)
@@ -105,6 +108,8 @@ public class ToMComponent implements IComponent, IGetModelStrategy, IGetUtilityF
 
 	@Override
 	public void update(AgentModel am) {
+		_appraisalsOfOthers.clear();
+		
 		for(String s : _nearbyAgents)
 		{
 			ModelOfOther m = _ToM.get(s);
@@ -125,10 +130,32 @@ public class ToMComponent implements IComponent, IGetModelStrategy, IGetUtilityF
 	@Override
 	public void appraisal(Event e, AppraisalStructure as, AgentModel am) {
 		
+		//one time appraisal for each event, so if the event was already appraised this cycle, just return
+		if(_appraisalsOfOthers.containsKey(e))
+		{
+			return;
+		}
+		
+		AppraisalStructure otherAS;
+		float desirabilityForOther;
+		
+		for(String s : _nearbyAgents)
+		{
+			otherAS = new AppraisalStructure();
+			ModelOfOther m = _ToM.get(s);
+			m.Appraisal(e, otherAS, m);
+			
+			desirabilityForOther = otherAS.getAppraisalVariable(AppraisalStructure.DESIRABILITY);
+			if(desirabilityForOther != 0)
+			{
+				as.SetAppraisalVariable(NAME, (short)8, AppraisalStructure.DESIRABILITY_FOR_OTHER, desirabilityForOther);
+			}
+		}
 	}
 
 	@Override
 	public void emotionActivation(Event e, ActiveEmotion em, AgentModel am) {
+
 	}
 
 	@Override
