@@ -28,6 +28,7 @@
 package FAtiMA.Core.emotionalState;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 
 public class AppraisalStructure {
@@ -47,22 +48,25 @@ public class AppraisalStructure {
 	
 	public static final short LIKE = 0;
 	public static final short DESIRABILITY = 1;
-	public static final short DESIRABILITY_FOR_OTHER = 2;
-	public static final short PRAISEWORTHINESS = 3;
+	public static final short PRAISEWORTHINESS = 2;
 	
-	private short[] _weights = {0,0,0,0};
+	private short[] _weights = {0,0,0};
 	private ArrayList<HashMap<String,Pair>> _appraisal;
+	private HashMap<String,AppraisalStructure> _appraisalOfOthers;
 	
 	
 	private boolean _changed;
+	private boolean _empty;
 	
 	public AppraisalStructure()
 	{
 		_changed = true;
-		_appraisal = new ArrayList<HashMap<String,Pair>>(4);
+		_empty = true;
+		_appraisal = new ArrayList<HashMap<String,Pair>>(3);
+		_appraisalOfOthers = new HashMap<String,AppraisalStructure>();
 	}
 	
-	public void SetAppraisalVariable(String component, short weight, short appraisalVariable, float value)
+	public boolean SetAppraisalVariable(String component, short weight, short appraisalVariable, float value)
 	{
 		HashMap<String,Pair> a = _appraisal.get(appraisalVariable);
 		//replacing or setting up a new value?
@@ -77,12 +81,61 @@ public class AppraisalStructure {
 				_changed = true;
 				//nothing else needs to be done in this case
 			}
-			return;
+			return _changed;
 		}
+		//setting up a new value
 		Pair p = new Pair(weight, value);
 		_weights[appraisalVariable] += weight;
 		a.put(component,p);
+		_empty = false;
 		_changed = true;
+		return _changed;
+	}
+	
+	public void SetAppraisalVariableOfOther(String other, String component, short weight, short appraisalVariable, float value)
+	{
+		AppraisalStructure as;
+		if(_appraisalOfOthers.containsKey(other))
+		{
+			as = _appraisalOfOthers.get(other);
+		}
+		else
+		{
+			as = new AppraisalStructure();
+			_appraisalOfOthers.put(other, as);
+		}
+		
+		_empty = false;
+		_changed = as.SetAppraisalVariable(component, weight, appraisalVariable, value);
+	}
+	
+	public void SetAppraisalOfOther(String other, AppraisalStructure as)
+	{
+		if(as.isEmpty())
+		{
+			return;
+		}
+		_empty = false;
+		
+		//this completely overrides 
+		if(_appraisalOfOthers.containsKey(other))
+		{
+			_appraisalOfOthers.remove(other);
+		}
+		
+		_appraisalOfOthers.put(other, as);
+		
+		_changed = true;
+	}
+	
+	public AppraisalStructure getAppraisalOfOther(String other)
+	{
+		return _appraisalOfOthers.get(other);
+	}
+	
+	public Collection<String> getOthers()
+	{
+		return _appraisalOfOthers.keySet();
 	}
 	
 	
@@ -109,5 +162,10 @@ public class AppraisalStructure {
 		boolean aux = _changed;
 		_changed = false;
 		return aux;
+	}
+	
+	public boolean isEmpty()
+	{
+		return _empty;
 	}
 }

@@ -145,11 +145,7 @@ public class ToMComponent implements IComponent, IGetModelStrategy, IGetUtilityF
 			ModelOfOther m = _ToM.get(s);
 			m.Appraisal(e, otherAS, m);
 			
-			desirabilityForOther = otherAS.getAppraisalVariable(AppraisalStructure.DESIRABILITY);
-			if(desirabilityForOther != 0)
-			{
-				as.SetAppraisalVariable(NAME, (short)8, AppraisalStructure.DESIRABILITY_FOR_OTHER, desirabilityForOther);
-			}
+			as.SetAppraisalOfOther(s, otherAS);
 		}
 	}
 
