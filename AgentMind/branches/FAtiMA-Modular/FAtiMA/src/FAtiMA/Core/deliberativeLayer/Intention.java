@@ -48,7 +48,6 @@ import FAtiMA.Core.emotionalState.BaseEmotion;
 import FAtiMA.Core.emotionalState.EmotionalState;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.util.AgentLogger;
-import FAtiMA.culture.Ritual;
 
 
 /**
@@ -122,7 +121,7 @@ public class Intention implements Serializable {
 		i.setMainIntention(this);
 	}
 	
-	public boolean containsIntention(String goalName)
+	/*public boolean containsIntention(String goalName)
 	{
 		
 		if(this._goal instanceof Ritual){
@@ -140,9 +139,7 @@ public class Intention implements Serializable {
 			}
 			return false;			
 		}
-		
-		
-	}
+	}*/
 	
 	public void RemoveSubIntention()
 	{
