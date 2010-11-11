@@ -69,7 +69,7 @@ public class DrivesDisplay {
 
 	
 	 
-    public boolean Update(MotivationalState ms) {
+    public boolean Update(MotivationalComponent ms) {
         Float aux;
         
         aux = new Float(ms.GetIntensity(MotivatorType.ENERGY));

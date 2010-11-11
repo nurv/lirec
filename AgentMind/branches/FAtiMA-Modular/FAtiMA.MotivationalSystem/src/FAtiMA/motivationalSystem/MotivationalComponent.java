@@ -43,12 +43,13 @@ import FAtiMA.Core.wellFormedNames.Unifier;
  * @author Meiyii Lim, Samuel Mascarenhas 
  */
 
-public class MotivationalState implements Serializable, Cloneable, IComponent, IExpectedUtilityStrategy, IProbabilityStrategy, IUtilityStrategy, IGoalSuccessStrategy, IGoalFailureStrategy, IActionFailureStrategy {
-	
+public class MotivationalComponent implements Serializable, Cloneable, IComponent, IExpectedUtilityStrategy, IProbabilityStrategy, IUtilityStrategy, IGoalSuccessStrategy, IGoalFailureStrategy, IActionFailureStrategy {
 	
 	private static final long serialVersionUID = 1L;
-	
 	public static final String NAME ="MotivationalState";
+	private static final float MAX_INTENSITY = 10;
+	private static final float MIN_INTENSITY = 0;
+
 	
 	
 	protected Motivator[]  _motivators;
@@ -60,10 +61,9 @@ public class MotivationalState implements Serializable, Cloneable, IComponent, I
 	
 	protected HashMap<String,Float> _appraisals;
 	protected HashMap<String,ExpectedEffectOnDrives> _goalEffectsOnDrives;
+	protected HashMap<String>
 
 	public static double determineQuadraticNeedVariation(float currentLevel, float deviation){
-		final float MAX_INTENSITY = 10;
-		final float MIN_INTENSITY = 0;
 		double result = 0;
 		float finalLevel;
 		double currentLevelStr;
@@ -84,9 +84,8 @@ public class MotivationalState implements Serializable, Cloneable, IComponent, I
 	/**
 	 * Creates an empty MotivationalState
 	 */
-	public MotivationalState() {
+	public MotivationalComponent() {
 		_motivators = new Motivator[MotivatorType.numberOfTypes()];
-		//_otherAgentsMotivators = new Hashtable<String,Motivator[]>();
 		_goalTried = 0;
 		_goalSucceeded = 0;
 		_lastTime = AgentSimulationTime.GetInstance().Time();
@@ -192,18 +191,12 @@ public class MotivationalState implements Serializable, Cloneable, IComponent, I
 	
 	public float getContributionToNeeds(AgentModel am, ActivePursuitGoal g){
 		float result = 0;
-		String[] effectTypes = {"OnSelect","OnIgnore"};
-		String[] nonCognitiveDrives = {"Affiliation","Integrity","Energy"};
 		float expectedContribution;
 		float currentIntensity = 0;
-		float auxMultiplier; // this is used for the effects that are OnIgnore
-		
-		
-		
+		float auxMultiplier = 1; 
 		
 		try {		
 			result = 0;
-			auxMultiplier = 1;
 			
 			ExpectedEffectOnDrives effects = _goalEffectsOnDrives.get(g.getKey());
 			for(FAtiMA.motivationalSystem.EffectOnDrive e : effects.getEffects())
@@ -222,20 +215,21 @@ public class MotivationalState implements Serializable, Cloneable, IComponent, I
 					{
 						auxMultiplier = -1;
 					}
-					result +=  auxMultiplier * MotivationalState.determineQuadraticNeedVariation(currentIntensity, expectedContribution);
+					
+					result +=  auxMultiplier * MotivationalComponent.determineQuadraticNeedVariation(currentIntensity, expectedContribution);
 				}
 			}	
 				
 			float currentCompetenceIntensity = GetIntensity(MotivatorType.COMPETENCE);
 			float expectedCompetenceContribution = PredictCompetenceChange(true);
-			result += MotivationalState.determineQuadraticNeedVariation(currentCompetenceIntensity, expectedCompetenceContribution);
+			result += MotivationalComponent.determineQuadraticNeedVariation(currentCompetenceIntensity, expectedCompetenceContribution);
 				
 			float currentUncertaintyIntensity = GetIntensity(MotivatorType.CERTAINTY);
 			//expected error assuming that the goal is successful
 			float expectedError = 1 - g.getProbability(am);
 			float currentError = g.getUncertainty(am);
 			float expectedUncertaintyContribution = 10*(currentError - expectedError); 
-			result += MotivationalState.determineQuadraticNeedVariation(currentUncertaintyIntensity,expectedUncertaintyContribution);	
+			result += MotivationalComponent.determineQuadraticNeedVariation(currentUncertaintyIntensity,expectedUncertaintyContribution);	
 								
 	
 		} catch (InvalidMotivatorTypeException e) {
@@ -284,27 +278,7 @@ public class MotivationalState implements Serializable, Cloneable, IComponent, I
 		}
 	}
 	
-	
 
-	/**
-	 * Gets the current motivator with the highest need (i.e. the one with the lowest intensity)
-	 * in the character's motivational state
-	 * @return the motivator with the highest need or null if motivational state is empty
-	 */
-	// CURRENTLY NOT BEING USED
-	public Motivator GetHighestNeedMotivator() {
-		float maxNeed = 0;
-		Motivator maxMotivator=null;
-		
-		for(int i = 0; i < _motivators.length; i++){
-			if(_motivators[i].GetNeed() > maxNeed) {
-				maxMotivator = _motivators[i];
-				maxNeed = _motivators[i].GetNeed();
-			}
-		}
-		
-		return maxMotivator;
-	}
 	
 	/**
 	 * Gets the received motivator's intensity, i.e. the current level of the motivator
@@ -313,43 +287,9 @@ public class MotivationalState implements Serializable, Cloneable, IComponent, I
 	public float GetIntensity(short type)
 	{
 		return _motivators[type].GetIntensity();
-		
-		/*if(agentName.equalsIgnoreCase(Constants.SELF)){
-			return _selfMotivators[type].GetIntensity();
-		}else{
-
-			Motivator[] otherAgentMotivator = (Motivator[])_otherAgentsMotivators.get(agentName);
-			
-			if(otherAgentMotivator != null){
-				return otherAgentMotivator[type].GetIntensity();
-			}else{
-				return 0;
-			}
-		}*/
 	}
 	
-	/**
-	 * Gets the received motivator's need
-	 * @return a float value corresponding to the motivator's intensity
-	 */
-	/*public float GetNeed(String agentName, short type)
-	{
-		if(agentName.equalsIgnoreCase(_selfName)){
-			return _selfMotivators[type].GetNeed();
-		}else{
-		
-			
-			Motivator[] otherAgentMotivator = (Motivator[])_otherAgentsMotivators.get(agentName);
-		
-			
-			if(otherAgentMotivator != null){
-				return otherAgentMotivator[type].GetNeed();
-			}else{
-				return 0;
-			}
-			
-		}
-	}*/
+	
 	
 	/**
 	 * Gets the motivator's urgency
@@ -361,7 +301,6 @@ public class MotivationalState implements Serializable, Cloneable, IComponent, I
 	{
 		return _motivators[type].GetNeedUrgency();
 	}
-	
 	
 	
 	/**
@@ -466,7 +405,7 @@ public class MotivationalState implements Serializable, Cloneable, IComponent, I
 
 	@Override
 	public String name() {
-		return MotivationalState.NAME;
+		return MotivationalComponent.NAME;
 	}
 
 
@@ -533,15 +472,13 @@ public class MotivationalState implements Serializable, Cloneable, IComponent, I
 
 
 	@Override
-	public void entityRemovedPerception(String entity) {
-		// TODO Auto-generated method stub
-		
+	public void entityRemovedPerception(String entity) {	
 	}
 
 
 	@Override
 	public IComponent createModelOfOther() {
-		MotivationalState ms = new MotivationalState();
+		MotivationalComponent ms = new MotivationalComponent();
 		Motivator m2;
 		
 		for(Motivator m : _motivators)

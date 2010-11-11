@@ -19,9 +19,9 @@ public class NeedsPanel extends AgentDisplayPanel {
 	private Hashtable<String,DrivesDisplay> _drivesDisplays;
 	 
 	private JPanel _needs;
-	private MotivationalState _motivationalState; 
+	private MotivationalComponent _motivationalState; 
 
-	public NeedsPanel(MotivationalState ms) {
+	public NeedsPanel(MotivationalComponent ms) {
 		
 		super();
 		
