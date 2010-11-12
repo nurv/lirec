@@ -65,7 +65,6 @@ import FAtiMA.Core.util.enumerables.ActionEvent;
 import FAtiMA.Core.util.enumerables.EventType;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Symbol;
-import FAtiMA.socialRelations.LikeCondition;
 
 
 /**
@@ -175,20 +174,6 @@ public class ActionsLoaderHandler extends ReflectXMLHandler {
 	  else {
 	  	String operatorName = _currentOperator.getName().GetFirstLiteral().toString();
 	  	_currentOperator.AddEffect(new Effect(_am, operatorName,_probability, p));	
-	  }
-	}
-	
-	public void LikeCondition(Attributes attributes) throws InvalidEmotionTypeException, ContextParsingException {
-	  LikeCondition l;
-		  
-	  l = LikeCondition.ParseSocialCondition(attributes);
-	  //l.MakeGround(_self);
-
-	  if(_precondition) 
-	  	_currentOperator.AddPrecondition(l);
-	  else {
-	  	String operatorName = _currentOperator.getName().GetFirstLiteral().toString();
-	  	_currentOperator.AddEffect(new Effect(_am, operatorName,_probability, l));	
 	  }
 	}
 	

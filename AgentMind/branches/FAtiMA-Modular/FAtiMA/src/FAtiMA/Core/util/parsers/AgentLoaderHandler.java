@@ -73,8 +73,6 @@ import FAtiMA.Core.util.enumerables.EmotionType;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Substitution;
 import FAtiMA.Core.wellFormedNames.Symbol;
-import FAtiMA.socialRelations.LikeRelation;
-import FAtiMA.socialRelations.RespectRelation;
 
 public class AgentLoaderHandler extends ReflectXMLHandler {
 	
@@ -266,22 +264,5 @@ public class AgentLoaderHandler extends ReflectXMLHandler {
     	}
     }
     
-    public void Relation(Attributes attributes)
-    {
-    	float respect;
-    	String target = attributes.getValue("target");
-    	float like = Float.parseFloat(attributes.getValue("like"));
-    	LikeRelation.getRelation(Constants.SELF, target).setValue(_am.getMemory(),like);
-    	
-    	String auxRespect = attributes.getValue("respect");
-    	if(auxRespect == null)
-    	{
-    		respect = 0;
-    	}
-    	else 
-    	{
-    		respect = Float.parseFloat(auxRespect);
-    	}
-    	RespectRelation.getRelation(Constants.SELF, target).setValue(_am.getMemory(),respect);
-    }
+   
 }

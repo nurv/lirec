@@ -60,8 +60,6 @@ import FAtiMA.Core.util.Constants;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Substitution;
 import FAtiMA.Core.wellFormedNames.Symbol;
-import FAtiMA.socialRelations.LikeCondition;
-
 
 public class GoalLoaderHandler extends ReflectXMLHandler {
     protected String _conditionType;
@@ -179,23 +177,6 @@ public class GoalLoaderHandler extends ReflectXMLHandler {
     	}
     }
     
-    public void LikeRelation(Attributes attributes)
-    {
-    	LikeCondition lc;
-    	
-    	try
-    	{
-    		lc = LikeCondition.ParseSocialCondition(attributes);
-    			
-        	lc.MakeGround(_self);
-        	_currentGoal.AddCondition(_conditionType, lc);
-    	}
-    	catch(Exception e)
-    	{
-    		e.printStackTrace();
-    	}
-    }
-
     public void SucessConditions(Attributes attributes)
     {
     	SuccessConditions(attributes);
