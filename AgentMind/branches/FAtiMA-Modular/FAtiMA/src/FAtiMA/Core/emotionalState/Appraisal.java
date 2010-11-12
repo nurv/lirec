@@ -36,7 +36,6 @@ import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.util.Constants;
 import FAtiMA.Core.util.enumerables.EmotionType;
 import FAtiMA.Core.wellFormedNames.Name;
-import FAtiMA.socialRelations.LikeRelation;
 
 
 public abstract class Appraisal {
@@ -206,9 +205,11 @@ public abstract class Appraisal {
 		
 		String subject = event.GetSubject();
 		
+		
 		if(desirabilityForOther == 0) return null;
 		
-		targetBias = LikeRelation.getRelation(Constants.SELF,other).getValue(am.getMemory()) * desirabilityForOther/10;
+		//TODO move this code to the social relations component appraisal 
+		/*targetBias = LikeRelation.getRelation(Constants.SELF,other).getValue(am.getMemory()) * desirabilityForOther/10;
 		bias = targetBias;
 		if(!subject.equals(Constants.SELF))
 		{
@@ -216,10 +217,10 @@ public abstract class Appraisal {
 				bias = (bias + subjectBias)/2;
 		}
 		
-		newDesirability = (desirability + bias)/2;
+		newDesirability = (desirability + bias)/2;*/
 
 		
-		return OCCAppraiseFortuneOfOthers(event, newDesirability, desirabilityForOther, other);
+		return OCCAppraiseFortuneOfOthers(event, desirability, desirabilityForOther, other);
 					
 	}
 	

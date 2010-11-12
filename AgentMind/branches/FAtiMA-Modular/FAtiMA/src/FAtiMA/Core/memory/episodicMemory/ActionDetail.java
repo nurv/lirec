@@ -49,14 +49,12 @@ import FAtiMA.Core.memory.Memory;
 import FAtiMA.Core.memory.semanticMemory.KnowledgeSlot;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.sensorEffector.Parameter;
-import FAtiMA.Core.util.Constants;
 import FAtiMA.Core.util.enumerables.ActionEvent;
 import FAtiMA.Core.util.enumerables.EmotionType;
 import FAtiMA.Core.util.enumerables.EmotionValence;
 import FAtiMA.Core.util.enumerables.EventType;
 import FAtiMA.Core.util.enumerables.GoalEvent;
-import FAtiMA.socialRelations.LikeRelation;
-import FAtiMA.socialRelations.RespectRelation;
+
 
 
 /**

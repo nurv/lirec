@@ -96,8 +96,6 @@ import FAtiMA.Core.util.AgentLogger;
 import FAtiMA.Core.util.parsers.SocketListener;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.SubstitutionSet;
-import FAtiMA.socialRelations.LikeRelation;
-import FAtiMA.socialRelations.RespectRelation;
 
 
 /**
@@ -445,7 +443,7 @@ public abstract class RemoteAgent extends SocketListener {
 		String msg = es.toXml();
 		Send(msg);
 		
-		LikeRelation like;
+		/*LikeRelation like;
 		RespectRelation respect;
 		ArrayList<LikeRelation> relations = LikeRelation.getAllRelations(this._agent.getMemory(), this._agent.getName());
 		msg="<Relations>";
@@ -473,6 +471,7 @@ public abstract class RemoteAgent extends SocketListener {
 		
 		msg += "</Relations>";
 		Send(msg);
+		*/
 	}
 	
 	/**

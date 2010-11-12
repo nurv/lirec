@@ -7,7 +7,6 @@ import FAtiMA.Core.conditions.Condition;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Substitution;
 import FAtiMA.Core.wellFormedNames.SubstitutionSet;
-import FAtiMA.socialRelations.LikeCondition;
 
 /**
  * Context of a Ritual.
@@ -22,12 +21,12 @@ public class Context extends Condition{
 	private static final long serialVersionUID = 1L;
 	private TimeCondition _timeCondition;
 	private PlaceCondition _placeCondition;
-	private ArrayList<LikeCondition> _socialConditions;
+	private ArrayList<SocialCondition> _socialConditions;
 	
 	public Context(){
 		_timeCondition = NullTimeCondition.GetInstance();
 		_placeCondition = NullPlaceCondition.GetInstance();
-		_socialConditions = new ArrayList<LikeCondition>();
+		_socialConditions = new ArrayList<SocialCondition>();
 	}
 	
 	public void SetTimeCondition( TimeCondition timeCondition ){
@@ -46,11 +45,11 @@ public class Context extends Condition{
 		return _placeCondition;
 	}
 	
-	public void SetSocialConditions( ArrayList<LikeCondition> socialConditions ){
+	public void SetSocialConditions( ArrayList<SocialCondition> socialConditions ){
 		_socialConditions = socialConditions;
 	}
 	
-	public void AddSocialCondition( LikeCondition socialCondition ){
+	public void AddSocialCondition(SocialCondition socialCondition ){
 		_socialConditions.add(socialCondition);
 	}
 
@@ -69,7 +68,7 @@ public class Context extends Condition{
 		aux._timeCondition = (TimeCondition)_timeCondition.clone();
 		aux._placeCondition = (PlaceCondition)_placeCondition.clone();
 		for( int i = 0, limit = _socialConditions.size(); i != limit; ++i )
-			aux._socialConditions.add((LikeCondition)_socialConditions.get(i).clone() );
+			aux._socialConditions.add((SocialCondition)_socialConditions.get(i).clone() );
 		return aux;
 	}
 
@@ -102,7 +101,7 @@ public class Context extends Condition{
 		_timeCondition.MakeGround(bindings);
 		_placeCondition.MakeGround(bindings);
 		for( int i = 0, limit = _socialConditions.size(); i != limit; ++i ){
-			((LikeCondition)_socialConditions.get(i)).MakeGround(bindings);
+			((SocialCondition)_socialConditions.get(i)).MakeGround(bindings);
 		}
     	//this._name.MakeGround(bindings);
     	//this._value.MakeGround(bindings);
@@ -113,7 +112,7 @@ public class Context extends Condition{
 		_timeCondition.MakeGround(subst);
 		_placeCondition.MakeGround(subst);
 		for( int i = 0, limit = _socialConditions.size(); i != limit; ++i ){
-			((LikeCondition)_socialConditions.get(i)).MakeGround(subst);
+			((SocialCondition)_socialConditions.get(i)).MakeGround(subst);
 		}
     }
 
@@ -121,7 +120,7 @@ public class Context extends Condition{
 		_timeCondition.ReplaceUnboundVariables(variableID);
 		_placeCondition.ReplaceUnboundVariables(variableID);
 		for( int i = 0, limit = _socialConditions.size(); i != limit; ++i ){
-			((LikeCondition)_socialConditions.get(i)).ReplaceUnboundVariables(variableID);
+			((SocialCondition)_socialConditions.get(i)).ReplaceUnboundVariables(variableID);
 		}
 	}
 
@@ -130,7 +129,7 @@ public class Context extends Condition{
 			return false;
 		boolean grounded = true;
 		for( int i = 0, limit = _socialConditions.size(); i != limit; ++i ){
-			if( !((LikeCondition)_socialConditions.get(i)).isGrounded() ){
+			if( !((SocialCondition)_socialConditions.get(i)).isGrounded() ){
 				grounded = false;
 				break;
 			}
