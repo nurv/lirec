@@ -7,7 +7,6 @@ import FAtiMA.Core.Display.AgentDisplayPanel;
 import FAtiMA.Core.emotionalState.ActiveEmotion;
 import FAtiMA.Core.emotionalState.AppraisalStructure;
 import FAtiMA.Core.memory.Memory;
-import FAtiMA.Core.reactiveLayer.Reaction;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.util.Constants;
 import FAtiMA.Core.util.enumerables.EmotionType;
