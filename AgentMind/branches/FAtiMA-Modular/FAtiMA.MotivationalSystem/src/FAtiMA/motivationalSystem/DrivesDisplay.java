@@ -8,7 +8,6 @@ import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 
-import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.util.Constants;
 
 public class DrivesDisplay {

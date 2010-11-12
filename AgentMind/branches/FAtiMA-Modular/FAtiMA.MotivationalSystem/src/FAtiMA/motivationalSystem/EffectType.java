@@ -1,7 +1,4 @@
-
 package FAtiMA.motivationalSystem;
-
-import FAtiMA.Core.exceptions.InvalidEmotionTypeException;
 
 public abstract class EffectType {
 
