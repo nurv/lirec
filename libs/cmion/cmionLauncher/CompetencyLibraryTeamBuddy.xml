@@ -10,6 +10,22 @@ b) optional parameters that should be passed to the competency during
 construction (assumed parameter type is String, parameters are seperated by comma).
 " -->
 
+<SamgarCompetency ClassName="cmion.TeamBuddy.competencies.DeskMonitor" 
+ConstructorParameters="User1" Port="D1" />
+<SamgarCompetency ClassName="cmion.TeamBuddy.competencies.DeskMonitor"
+ConstructorParameters="User2" Port="D2" />
+
+<Competency ClassName="cmion.level2.competencies.Migration" 
+			ConstructorParameters="MigrationConfigTeamBuddy.xml" />
+
+
+<!--
+
+<Competency ClassName="cmion.TeamBuddy.competencies.RobotFaceControl" 
+	ConstructorParameters="192.168.1.1"/>
+
+
+			
 <Competency ClassName="cmion.TeamBuddy.competencies.Speak"></Competency>
 
 <Competency ClassName="cmion.TeamBuddy.competencies.MoveToUser" />
@@ -17,7 +33,9 @@ construction (assumed parameter type is String, parameters are seperated by comm
 <SamgarCompetency ClassName="cmion.TeamBuddy.competencies.FaceDetect" Port="FaceDetect"/>
 				  
 <SamgarCompetency ClassName="cmion.TeamBuddy.competencies.Motion" Port="Motion"/>
-		
+
+-->
+
 </CompetencyLibrary>
 
 
