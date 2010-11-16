@@ -8,12 +8,13 @@ import FAtiMA.Core.AgentCore;
 import FAtiMA.Core.exceptions.ActionsParsingException;
 import FAtiMA.Core.exceptions.GoalLibParsingException;
 import FAtiMA.Core.exceptions.UnknownGoalException;
+import FAtiMA.motivationalSystem.MotivationalComponent;
 
 
 public class AgentWithNeedsLauncher extends AgentLauncher{
-
 	static public void main(String args[]) throws ParserConfigurationException, SAXException, IOException, UnknownGoalException, ActionsParsingException, GoalLibParsingException  {
 		AgentCore aG = initializeAgentCore(args);
-		//aG.AddComponent()
+		aG.addComponent(new MotivationalComponent());
+		aG.StartAgent();
 	}
 }

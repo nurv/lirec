@@ -28,6 +28,7 @@ public class AgentLauncher {
 		aG.StartAgent();
 	}
 	
+	
 	static protected AgentCore initializeAgentCore(String args[]) throws ParserConfigurationException, SAXException, IOException, UnknownGoalException, ActionsParsingException, GoalLibParsingException{
 		if(args.length != 2){
 			System.err.println("ERROR: It is now required to use the xml file to launch the agent.");
