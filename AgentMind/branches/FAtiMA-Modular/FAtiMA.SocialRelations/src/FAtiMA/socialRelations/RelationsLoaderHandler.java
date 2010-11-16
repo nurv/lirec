@@ -79,7 +79,7 @@ public class RelationsLoaderHandler  extends ReflectXMLHandler{
 		l = LikeCondition.ParseSocialCondition(attributes);
 		l.MakeGround(_self);
 
-		Step action = _aM.getDeliberativeLayer().getEmotionalPlanner().GetStep(Name.ParseName(_currentActionKey));
+		Step action = _aM.getDeliberativeLayer().getEmotionalPlanner().GetStep(_currentActionKey);
 		if(_precondition)
 			action.AddPrecondition(l);
 		else {
