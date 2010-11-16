@@ -17,9 +17,6 @@ public class NeedsLoaderHandler  extends ReflectXMLHandler {
 	public NeedsLoaderHandler(AgentCore agent, MotivationalComponent motivationalState){
 		this._agent = agent;
 	}
-
-	
-	
 	
 	public void MotivationalParameter(Attributes attributes) throws InvalidMotivatorTypeException {
 		String motivatorName;
