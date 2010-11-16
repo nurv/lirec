@@ -7,11 +7,11 @@
 # exact same matching values, if yes, a common event structure is formed. A set of common 
 # structures is return as a result of the query
  
-package RetrievalProcesses
+package FAtiMA.advancedMemoryComponent;
 
 #list any import classes here.
 
-import FAtiMA.memory.episodicMemory.ActionDetail;
+import FAtiMA.Core.memory.episodicMemory.ActionDetail;
 #declare any global variables here
 
 rule "create pair"

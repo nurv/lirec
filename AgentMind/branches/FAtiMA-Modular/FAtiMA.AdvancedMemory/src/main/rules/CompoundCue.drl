@@ -1,10 +1,10 @@
 #created on: 19-Nov-2009
 #author	: Mei Yii Lim
 
-package RetrievalProcesses
+package FAtiMA.advancedMemoryComponent
 
 #list any import classes here.
-import FAtiMA.memory.episodicMemory.ActionDetail;
+import FAtiMA.Core.memory.episodicMemory.ActionDetail;
 
 #declare any global variables here
 
