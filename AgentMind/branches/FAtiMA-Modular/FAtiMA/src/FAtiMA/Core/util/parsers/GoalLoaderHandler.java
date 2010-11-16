@@ -55,7 +55,6 @@ import FAtiMA.Core.deliberativeLayer.goals.ActivePursuitGoal;
 import FAtiMA.Core.deliberativeLayer.goals.Goal;
 import FAtiMA.Core.deliberativeLayer.goals.InterestGoal;
 import FAtiMA.Core.exceptions.InvalidEmotionTypeException;
-import FAtiMA.Core.util.AgentLogger;
 import FAtiMA.Core.util.Constants;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Substitution;
