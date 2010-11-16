@@ -17,13 +17,13 @@ import javax.swing.JTextArea;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import FAtiMA.conditions.Condition;
-import FAtiMA.deliberativeLayer.plan.Effect;
-import FAtiMA.deliberativeLayer.plan.Step;
-import FAtiMA.wellFormedNames.Name;
-import FAtiMA.wellFormedNames.Substitution;
-import FAtiMA.wellFormedNames.Symbol;
-import FAtiMA.wellFormedNames.Unifier;
+import FAtiMA.Core.conditions.Condition;
+import FAtiMA.Core.deliberativeLayer.plan.Effect;
+import FAtiMA.Core.deliberativeLayer.plan.Step;
+import FAtiMA.Core.wellFormedNames.Name;
+import FAtiMA.Core.wellFormedNames.Substitution;
+import FAtiMA.Core.wellFormedNames.Symbol;
+import FAtiMA.Core.wellFormedNames.Unifier;
 
 import java.awt.event.*;
 

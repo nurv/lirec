@@ -6,10 +6,10 @@ import java.util.ArrayList;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import FAtiMA.deliberativeLayer.plan.Step;
-import FAtiMA.sensorEffector.SpeechAct;
-import FAtiMA.util.parsers.ScenarioLoaderHandler;
-import FAtiMA.util.parsers.ActionsLoaderHandler;
+import FAtiMA.Core.deliberativeLayer.plan.Step;
+import FAtiMA.Core.sensorEffector.SpeechAct;
+import FAtiMA.Core.util.parsers.ScenarioLoaderHandler;
+import FAtiMA.Core.util.parsers.ActionsLoaderHandler;
 import Language.LanguageEngine;
 
 

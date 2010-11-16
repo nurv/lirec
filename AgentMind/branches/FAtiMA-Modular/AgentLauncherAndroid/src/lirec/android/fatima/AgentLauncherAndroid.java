@@ -9,10 +9,10 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 
-import FAtiMA.Agent;
-import FAtiMA.util.VersionChecker;
-import FAtiMA.util.enumerables.AgentPlatform;
-import FAtiMA.util.parsers.ScenarioLoaderHandler;
+import FAtiMA.Core.AgentCore;
+import FAtiMA.Core.util.VersionChecker;
+import FAtiMA.Core.util.enumerables.AgentPlatform;
+import FAtiMA.Core.util.parsers.ScenarioLoaderHandler;
 
 public class AgentLauncherAndroid extends Thread {
 		
@@ -37,7 +37,7 @@ public class AgentLauncherAndroid extends Thread {
 
 			short agentPlatform = 0;
 			String platform;
-			Agent agent = null;
+			AgentCore agent = null;
 			String args2[] = null;
 
 
@@ -51,7 +51,7 @@ public class AgentLauncherAndroid extends Thread {
 				ScenarioLoaderHandler scenHandler = new ScenarioLoaderHandler(args[0],args[1]);
 				SAXParserFactory factory = SAXParserFactory.newInstance();
 				SAXParser parser = factory.newSAXParser();
-				parser.parse(new File(Agent.MIND_PATH_ANDROID + "LirecScenarios.xml"), scenHandler);
+				parser.parse(new File(AgentCore.MIND_PATH_ANDROID + "LirecScenarios.xml"), scenHandler);
 				args2 = scenHandler.getAgentArguments();
 			}
 

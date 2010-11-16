@@ -33,7 +33,7 @@ import java.io.OutputStream;
 import java.net.Socket;
 
 
-import FAtiMA.util.parsers.SocketListener;
+import FAtiMA.Core.util.parsers.SocketListener;
 
 
 public class GretaAgent extends SocketListener{

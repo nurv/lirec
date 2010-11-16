@@ -5,6 +5,5 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="DROOLS/Drools"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/FAtiMA"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/FAtiMA.GeneralMemory"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

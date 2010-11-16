@@ -5,15 +5,15 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.StringTokenizer;
 
-import FAtiMA.conditions.Condition;
-import FAtiMA.deliberativeLayer.plan.Effect;
-import FAtiMA.deliberativeLayer.plan.Step;
-import FAtiMA.sensorEffector.SpeechAct;
-import FAtiMA.util.parsers.SocketListener;
-import FAtiMA.wellFormedNames.Name;
-import FAtiMA.wellFormedNames.Substitution;
-import FAtiMA.wellFormedNames.Symbol;
-import FAtiMA.wellFormedNames.Unifier;
+import FAtiMA.Core.conditions.Condition;
+import FAtiMA.Core.deliberativeLayer.plan.Effect;
+import FAtiMA.Core.deliberativeLayer.plan.Step;
+import FAtiMA.Core.sensorEffector.SpeechAct;
+import FAtiMA.Core.util.parsers.SocketListener;
+import FAtiMA.Core.wellFormedNames.Name;
+import FAtiMA.Core.wellFormedNames.Substitution;
+import FAtiMA.Core.wellFormedNames.Symbol;
+import FAtiMA.Core.wellFormedNames.Unifier;
 
 /*
  * Created on 4/Fev/2006
