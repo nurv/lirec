@@ -538,4 +538,11 @@ public class MotivationalComponent implements Serializable, Cloneable, IComponen
 		//System.out.println("Calling UpdateCertainty (other's action: step completed)");
 		UpdateCertainty(-a.getProbability(am));
 	}
+
+
+	@Override
+	public void processExternalRequest(String requestMsg) {
+		// TODO Auto-generated method stub
+		
+	}
 }
