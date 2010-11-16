@@ -89,6 +89,7 @@ import java.util.Hashtable;
 import FAtiMA.Core.AgentCore;
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.AgentSimulationTime;
+import FAtiMA.Core.IComponent;
 import FAtiMA.Core.ValuedAction;
 import FAtiMA.Core.emotionalState.ActiveEmotion;
 import FAtiMA.Core.emotionalState.EmotionalState;
@@ -127,9 +128,6 @@ public abstract class RemoteAgent extends SocketListener {
 	protected static final String ADVANCE_TIME = "ADVANCE-TIME";
 	protected static final String STOP_TIME = "STOP-TIME";
 	protected static final String RESUME_TIME = "RESUME-TIME";
-	protected static final String SA_MEMORY = "SA-MEMORY";
-	protected static final String CC_MEMORY = "CC-MEMORY";
-	protected static final String G_MEMORY = "G-MEMORY";
 	protected static final String GET_STATE = "GET-STATE";
 	protected static final String SET_STATE = "SET-STATE";
 	
@@ -325,62 +323,15 @@ public abstract class RemoteAgent extends SocketListener {
 			{
 				ResumeTimePerception(perception);
 			}
-			else if(msgType.equals(SA_MEMORY))
+			else
 			{
-				//TODO ver isto depois com a refactorização
-				/*st = new StringTokenizer(perception, "$");
-				String question = st.nextToken();
-				String known = "";
-				while(st.hasMoreTokens())
+				for(IComponent c : _agent.getComponents())
 				{
-					known = known + st.nextToken();
-				}					
-				System.out.println("question " + question);
-				ArrayList<String> knownInfo = ExtractKnownInfo(known);
-				_agent.getSpreadActivate().Spread(question, knownInfo, _agent.getMemory().getEpisodicMemory());
-				
-				Hashtable<String, Integer> saResult = _agent.getSpreadActivate().getSAResults();
-				
-				for(String result : saResult.keySet())
-				{
-					System.out.println(question + " " + result + " frequency " + saResult.get(result));
-				}
-				
-				/*_agent.getCommonalities().eventCommonalities(_agent.getSpreadActivate().getDetails());
-				Hashtable<ArrayList<Integer>, Hashtable<String, String>> gResult = _agent.getCommonalities().getMatch();
-			
-				for(ArrayList<Integer> result : gResult.keySet())
-				{
-					System.out.println("id " + result);
-					Hashtable<String, String> match = gResult.get(result);
-					
-					for(String matchingValues : match.keySet())
+					if(msgType.equals(c.name()))
 					{
-						System.out.println("match in Remote Agent " + matchingValues);
+						c.processExternalRequest(perception);
 					}
-				}*/
-				
-				System.out.println("\n\n");
-			}
-			else if(msgType.equals(CC_MEMORY))
-			{
-				/*int index = Math.min(8, (int) (Math.random()*10));
-				ActionDetail event = _agent.getMemory().getEpisodicMemory().getDetails().get(index);
-				_agent.getCompoundCue().Match(event, _agent.getMemory().getEpisodicMemory());
-				System.out.println("\nEvent ID to match on " + event.getID());
-				
-				Hashtable<Integer, Float>  results = _agent.getCompoundCue().getCCResults();
-				Iterator it = results.keySet().iterator();
-				while (it.hasNext())
-				{
-					int id = (Integer) it.next();
-					System.out.println("ID " + id + " evaluation " + results.get(id));
 				}
-				System.out.println("\n\n");*/
-			}
-			else if(msgType.equals(G_MEMORY))
-			{
-				_agent.getMemory().getGeneralMemory().generalise(_agent.getMemory().getEpisodicMemory());
 			}
 			
 			while(_lookAtList.size() > 0)

@@ -164,4 +164,8 @@ public class SocialRelationsComponent implements IComponent {
 		return new SocialRelationsPanel();
 	}
 
+	@Override
+	public void processExternalRequest(String requestMsg) {		
+	}
+
 }

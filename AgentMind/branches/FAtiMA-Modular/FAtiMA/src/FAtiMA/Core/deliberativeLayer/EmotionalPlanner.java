@@ -352,7 +352,7 @@ public class EmotionalPlanner implements Serializable {
 	
 	
 	/**
-	 * Gets the planner's operators/sets/actions
+	 * Gets the planner's operators/steps/actions
 	 * @return a list with Steps
 	 */
 	public ArrayList<Step> GetOperators() {
@@ -369,33 +369,17 @@ public class EmotionalPlanner implements Serializable {
 	 * @param name - the name of the step to get
 	 * @return the searched step if it is found, null otherwise
 	 */
-	public Step GetStep(Name name) {
-		ListIterator<Step> li;
-		Step s;
-		ArrayList<Substitution> substs;
-		ArrayList<Substitution> bestSubsts=null;
-		Step bestStep=null;
+	public Step GetStep(String name) {
 		
-		li = _actions.listIterator();
-		while(li.hasNext()) {
-			s = (Step) li.next();
-			substs = new ArrayList<Substitution>();
-			if(Unifier.Unify(s.getName(),name, substs)) {
-			    if(bestSubsts != null) {
-			        if(substs.size() < bestSubsts.size()) {
-			            bestSubsts = substs;
-			            bestStep = (Step) s.clone();
-			            bestStep.MakeGround(substs);
-			        }
-			    }
-				else {
-				    bestSubsts = substs;
-				    bestStep = (Step) s.clone();
-				    bestStep.MakeGround(substs);
-				}
+		for(Step s : _actions)
+		{
+			if(s.getName().toString().equals(name))
+			{
+				return s;
 			}
 		}
-		return bestStep;
+		
+		return null;
 	}
 
 	/**

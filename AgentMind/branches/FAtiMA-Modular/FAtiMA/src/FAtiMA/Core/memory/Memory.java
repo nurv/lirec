@@ -35,7 +35,6 @@ package FAtiMA.Core.memory;
 import java.io.Serializable;
 
 import FAtiMA.Core.memory.episodicMemory.EpisodicMemory;
-import FAtiMA.Core.memory.generalMemory.GeneralMemory;
 import FAtiMA.Core.memory.semanticMemory.SemanticMemory;
 
 
@@ -57,13 +56,11 @@ public class Memory implements Serializable {
 	
 	private SemanticMemory _sm;
 	private EpisodicMemory _em;
-	private GeneralMemory _gm;
 	
 	public Memory()
 	{
 		_sm = new SemanticMemory();
 		_em = new EpisodicMemory();
-		_gm = new GeneralMemory();
 	}
 	
 	public SemanticMemory getSemanticMemory()
@@ -74,11 +71,6 @@ public class Memory implements Serializable {
 	public EpisodicMemory getEpisodicMemory()
 	{
 		return _em;
-	}
-	
-	public GeneralMemory getGeneralMemory()
-	{
-		return _gm;
 	}
 	
 }

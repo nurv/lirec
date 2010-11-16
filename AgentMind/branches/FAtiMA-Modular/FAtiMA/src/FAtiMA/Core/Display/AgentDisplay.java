@@ -77,9 +77,6 @@ public class AgentDisplay {
 		panel = new ShortTermMemoryPanel();
 		_displayPane.addTab("Short Term Memory", null, panel, "displays all the records in the character's short term memory");
 		
-		panel = new GeneralMemoryPanel();
-		_displayPane.addTab("General Memory", null, panel, "displays all the records in the character's general memory");
-		
 		JButton teste = new JButton("Save");
 		teste.addActionListener(new TestAction(ag));
 		teste.setText("Save");

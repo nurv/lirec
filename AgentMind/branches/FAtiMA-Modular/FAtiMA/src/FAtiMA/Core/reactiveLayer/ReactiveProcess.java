@@ -372,4 +372,8 @@ public class ReactiveProcess implements IComponent {
 	public AgentDisplayPanel createComponentDisplayPanel(AgentModel am) {
 		return null;
 	}
+
+	@Override
+	public void processExternalRequest(String requestMsg) {		
+	}
 }

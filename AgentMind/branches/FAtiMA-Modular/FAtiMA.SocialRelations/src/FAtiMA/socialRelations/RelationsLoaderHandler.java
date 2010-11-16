@@ -2,6 +2,7 @@ package FAtiMA.socialRelations;
 
 import org.xml.sax.Attributes;
 
+import FAtiMA.Core.AgentCore;
 import FAtiMA.Core.deliberativeLayer.plan.Effect;
 import FAtiMA.Core.exceptions.ContextParsingException;
 import FAtiMA.Core.exceptions.InvalidEmotionTypeException;
@@ -10,6 +11,13 @@ import FAtiMA.Core.util.parsers.LikeCondition;
 import FAtiMA.Core.util.parsers.ReflectXMLHandler;
 
 public class RelationsLoaderHandler  extends ReflectXMLHandler{
+	
+	private AgentCore _ag;
+	
+	public RelationsLoaderHandler(AgentCore ag)
+	{
+		this._ag = ag;
+	}
 
 	//parsed from the role file
 	public void Relation(Attributes attributes)
@@ -17,7 +25,7 @@ public class RelationsLoaderHandler  extends ReflectXMLHandler{
 		float respect;
 		String target = attributes.getValue("target");
 		float like = Float.parseFloat(attributes.getValue("like"));
-		LikeRelation.getRelation(Constants.SELF, target).setValue(_am.getMemory(),like);
+		LikeRelation.getRelation(Constants.SELF, target).setValue(_ag.getMemory(),like);
 
 		String auxRespect = attributes.getValue("respect");
 		if(auxRespect == null)
@@ -28,7 +36,7 @@ public class RelationsLoaderHandler  extends ReflectXMLHandler{
 		{
 			respect = Float.parseFloat(auxRespect);
 		}
-		RespectRelation.getRelation(Constants.SELF, target).setValue(_am.getMemory(),respect);
+		RespectRelation.getRelation(Constants.SELF, target).setValue(_ag.getMemory(),respect);
 	}
 
 

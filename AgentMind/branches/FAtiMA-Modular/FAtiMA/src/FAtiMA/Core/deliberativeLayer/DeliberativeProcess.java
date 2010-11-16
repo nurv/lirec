@@ -1312,4 +1312,8 @@ public class DeliberativeProcess implements IComponent, IOptionsStrategy, IExpec
 	public AgentDisplayPanel createComponentDisplayPanel(AgentModel am) {
 		return null;
 	}
+
+	@Override
+	public void processExternalRequest(String requestMsg) {
+	}
 }

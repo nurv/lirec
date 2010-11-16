@@ -36,4 +36,6 @@ public interface IComponent {
 	
 	public AgentDisplayPanel createComponentDisplayPanel(AgentModel am);
 	
+	public void processExternalRequest(String requestMsg);
+	
 }

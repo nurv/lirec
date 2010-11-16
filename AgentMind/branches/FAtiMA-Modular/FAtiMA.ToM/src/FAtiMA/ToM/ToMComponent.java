@@ -254,4 +254,8 @@ public class ToMComponent implements IComponent, IGetModelStrategy, IGetUtilityF
 		
 		return utility;
 	}
+
+	@Override
+	public void processExternalRequest(String requestMsg) {		
+	}
 }

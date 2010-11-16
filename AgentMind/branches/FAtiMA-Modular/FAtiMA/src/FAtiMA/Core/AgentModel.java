@@ -25,4 +25,6 @@ public interface AgentModel {
 	
 	public RemoteAgent getRemoteAgent();
 	
+	public IComponent getComponent(String name);
+	
 }

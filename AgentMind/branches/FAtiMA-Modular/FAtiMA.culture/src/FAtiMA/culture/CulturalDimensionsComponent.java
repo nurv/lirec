@@ -335,5 +335,9 @@ public class CulturalDimensionsComponent implements IComponent, IOptionsStrategy
 	@Override
 	public AgentDisplayPanel createComponentDisplayPanel(AgentModel am) {
 		return null;
+	}
+
+	@Override
+	public void processExternalRequest(String requestMsg) {
 	}	
 }

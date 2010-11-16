@@ -4,11 +4,10 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
 
-import FAtiMA.AgentCore;
-import FAtiMA.exceptions.ActionsParsingException;
-import FAtiMA.exceptions.GoalLibParsingException;
-import FAtiMA.exceptions.UnknownGoalException;
-import FAtiMA.util.enumerables.AgentPlatform;
+import FAtiMA.Core.AgentCore;
+import FAtiMA.Core.exceptions.ActionsParsingException;
+import FAtiMA.Core.exceptions.GoalLibParsingException;
+import FAtiMA.Core.exceptions.UnknownGoalException;
 
 public class AgentLauncher {
 	
@@ -25,18 +24,6 @@ public class AgentLauncher {
 			
 		
 		AgentCore aG = initializeAgentCore(args);	
-		// setting the memory mechanisms
-		//if (agent != null)
-		//{
-			//agent.setCompoundCue(new CompoundCue());
-			//System.out.println("Compound cue set ");
-			//agent.setSpreadActivate(new SpreadActivate());
-			//System.out.println("Spread activate set ");
-			//agent.setCommonalities(new Commonalities());
-			//System.out.println("Commonalities set ");
-			//agent.setGeneralisation(new Generalisation());
-			//System.out.println("Generalisation set ");
-		//}
 		
 		aG.StartAgent();
 	}
@@ -50,7 +37,7 @@ public class AgentLauncher {
 		String scenarioName = args[0];
 		String agentName = args[1];	
 		
-		AgentCore agent = new AgentCore();
+		FAtiMA.Core.AgentCore agent = new AgentCore();
 		agent.initialize(scenarioName,agentName);
 		
 		return agent;

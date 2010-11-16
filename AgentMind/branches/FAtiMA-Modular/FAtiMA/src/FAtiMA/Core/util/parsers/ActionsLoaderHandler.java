@@ -58,9 +58,7 @@ import FAtiMA.Core.conditions.PropertyCondition;
 import FAtiMA.Core.conditions.RecentEventCondition;
 import FAtiMA.Core.deliberativeLayer.plan.Effect;
 import FAtiMA.Core.deliberativeLayer.plan.Step;
-import FAtiMA.Core.exceptions.ContextParsingException;
 import FAtiMA.Core.exceptions.InvalidEmotionTypeException;
-import FAtiMA.Core.memory.SACondition;
 import FAtiMA.Core.util.enumerables.ActionEvent;
 import FAtiMA.Core.util.enumerables.EventType;
 import FAtiMA.Core.wellFormedNames.Name;
@@ -78,7 +76,6 @@ public class ActionsLoaderHandler extends ReflectXMLHandler {
 	private float _probability;
 	//private Substitution _self;
 	private AgentModel _am;
-	private SACondition _sac;	
 	
 	public ActionsLoaderHandler(AgentModel am) {
 		_operators = new ArrayList<Step>();
@@ -247,40 +244,4 @@ public class ActionsLoaderHandler extends ReflectXMLHandler {
     		e.printStackTrace();
     	}
     }
-	
-	public void SACondition(Attributes attributes) {
-				
-		try
-    	{
-    		_sac = SACondition.ParseSA(attributes);
-    		//_sac.MakeGround(_self);
-    		if(_precondition) 
-    		  	_currentOperator.AddPrecondition(_sac);
-    		else {
-    		  	String operatorName = _currentOperator.getName().GetFirstLiteral().toString();
-    		  	_currentOperator.AddEffect(new Effect(_am, operatorName,_probability, _sac));	
-    		}
-    	}
-    	catch(Exception e)
-    	{
-    		e.printStackTrace();
-    	}
-	}
-	
-	public void SAKnown(Attributes attributes) {
-		String name;
-		Symbol value;
-
-		try
-    	{
-    		name = attributes.getValue("name");		
-    		value = new Symbol(attributes.getValue("value"));
-    		System.out.println("known " + name + " " + value);
-    		_sac.AddKnownVariables(name, value);
-    	}
-    	catch(Exception e)
-    	{
-    		e.printStackTrace();
-    	}		
-	}
 }
