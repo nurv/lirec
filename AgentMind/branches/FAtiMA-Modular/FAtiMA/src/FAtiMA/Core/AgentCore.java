@@ -304,13 +304,11 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 
 		FileInputStream in = new FileInputStream(fileName);
 		ObjectInputStream s = new ObjectInputStream(in);
-		//this._ToM = (HashMap<String, ModelOfOther>) s.readObject();
-		//this._nearbyAgents = (ArrayList<String>) s.readObject();
+	
 		this._deliberativeLayer = (DeliberativeProcess) s.readObject();
 		this._reactiveLayer = (ReactiveProcess) s.readObject();
 		this._emotionalState = (EmotionalState) s.readObject();
 		this._memory = (Memory) s.readObject();
-		//this._motivationalState = (MotivationalState) s.readObject();
 		//this._dialogManager = (DialogManager) s.readObject();
 		this._role = (String) s.readObject();
 		this._name = (String) s.readObject();
@@ -322,6 +320,10 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 		this._actionsForExecution = (ArrayList<ValuedAction>) s.readObject();
 		this._perceivedEvents = (ArrayList<Event>) s.readObject();
 		this._saveDirectory = (String) s.readObject();
+		
+		this._strat = (IGetModelStrategy) s.readObject();
+		this._components = (HashMap<String,IComponent>) s.readObject();
+		
 		s.close();
 		in.close();
 
@@ -669,7 +671,7 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 		// a new episode will be started. This is to prevent the rest of the STEM events
 		// being stored in the wrong episode
 		// Meiyii 13/09/10
-		//_memory.getEpisodicMemory().MoveSTEMtoAM();
+		_memory.getEpisodicMemory().MoveSTEMtoAM();
 
 		AgentSimulationTime.SaveState(fileName+"-Timer.dat");
 		ActionLibrary.SaveState(fileName+"-ActionLibrary.dat");
@@ -680,13 +682,11 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 			FileOutputStream out = new FileOutputStream(fileName);
 			ObjectOutputStream s = new ObjectOutputStream(out);
 
-			//s.writeObject(_ToM);
-			//s.writeObject(_nearbyAgents);
+			
 			s.writeObject(_deliberativeLayer);
 			s.writeObject(_reactiveLayer);
 			s.writeObject(_emotionalState);
 			s.writeObject(_memory);
-			//s.writeObject(_motivationalState);
 			//s.writeObject(_dialogManager);
 			s.writeObject(_role);
 			s.writeObject(_name);
@@ -698,6 +698,10 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 			s.writeObject(_actionsForExecution);
 			s.writeObject(_perceivedEvents);
 			s.writeObject(_saveDirectory);
+			
+			s.writeObject(_strat);
+			s.writeObject(_components);
+			
 			s.flush();
 			s.close();
 			out.close();
@@ -794,6 +798,10 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 			//s.writeObject(new Boolean(_showStateWindow));
 			s.writeObject(_actionsForExecution);
 			s.writeObject(_perceivedEvents);
+			
+			s.writeObject(_strat);
+			s.writeObject(_components);
+			
 			//s.writeObject(_saveDirectory);
 			AgentSimulationTime.SaveState(s);
 			s.flush();
@@ -829,13 +837,10 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 					BinaryStringConverter.decodeStringToBinary(state));
 
 			ObjectInputStream s = new ObjectInputStream(in);
-			//this._ToM = (HashMap<String, ModelOfOther>) s.readObject();
-			//this._nearbyAgents = (ArrayList<String>) s.readObject();
 			this._deliberativeLayer = (DeliberativeProcess) s.readObject();
 			this._reactiveLayer = (ReactiveProcess) s.readObject();
 			this._emotionalState = (EmotionalState) s.readObject();
 			this._memory = (Memory) s.readObject();
-			//this._motivationalState = (MotivationalState) s.readObject();
 			//this._dialogManager = (DialogManager) s.readObject();
 			//this._role = (String) s.readObject();
 			//this._name = (String) s.readObject();
@@ -846,6 +851,10 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 			//this._showStateWindow = ((Boolean) s.readObject()).booleanValue();
 			this._actionsForExecution = (ArrayList<ValuedAction>) s.readObject();
 			this._perceivedEvents = (ArrayList<Event>) s.readObject();
+			
+			this._strat = (IGetModelStrategy) s.readObject();
+			this._components = (HashMap<String,IComponent>) s.readObject();
+			
 			AgentSimulationTime.LoadState(s);
 			//this._saveDirectory = (String) s.readObject();
 		}
