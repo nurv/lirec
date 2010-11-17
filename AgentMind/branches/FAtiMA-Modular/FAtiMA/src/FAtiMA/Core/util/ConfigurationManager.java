@@ -62,6 +62,8 @@ public class ConfigurationManager {
 		SAXParser parser = factory.newSAXParser();
 		parser.parse(new File(scenarioFileName), scenHandler);
 		//side-effects
+		scenHandler.checkForAgent();
+		
 		getInstance().agentProperties = scenHandler.getAgentProperties();
 		getInstance().agentConfiguration = scenHandler.getAgentConfiguration();
 	}

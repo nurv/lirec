@@ -166,81 +166,25 @@ public class ReactiveProcess implements IComponent {
 		event2 = event.ApplyPerspective(ag.getName());
 		selfEvaluation = Evaluate(ag, event2);
 		
-		if(selfEvaluation._desirability != null)
+		if(selfEvaluation != null)
 		{
-			as.SetAppraisalVariable(NAME, (short)5, AppraisalStructure.DESIRABILITY, selfEvaluation._desirability.intValue());
-		}
-		if(selfEvaluation._desirabilityForOther != null)
-		{
-			as.SetAppraisalVariableOfOther(selfEvaluation._other.toString(), NAME, (short)5, AppraisalStructure.DESIRABILITY, selfEvaluation._desirabilityForOther.intValue());
-		}
-		if(selfEvaluation._praiseworthiness != null)
-		{
-			as.SetAppraisalVariable(NAME, (short)5, AppraisalStructure.PRAISEWORTHINESS, selfEvaluation._praiseworthiness.intValue());
-		}
-		if(selfEvaluation._like != null)
-		{
-			as.SetAppraisalVariable(NAME, (short)5, AppraisalStructure.LIKE, selfEvaluation._like.intValue());
-		}
-		
-		
-		//TODO move this code to the memory appraisal
-		/*if(ag.getCompoundCue() != null)
-		{
-			//appraisal from memory
-			ActionDetail ad = new ActionDetail(0,event2.GetSubject(),
-					event2.GetAction(), 
-					event2.GetTarget(),
-					event2.GetParameters(),null,null,null,null);
-			
-			ag.getCompoundCue().Match(ad,ag.getMemory().getEpisodicMemory());
-			
-			ActionDetail result = ag.getCompoundCue().getStrongestResult();
-			float eval = ag.getCompoundCue().getEvaluation();
-			if(result != null)
+			if(selfEvaluation._desirability != null)
 			{
-				float desirability = result.getDesirability();
-				if(desirability != 0)
-				{
-					v = new AppraisalVector();
-					v.setAppraisalVariable(AppraisalVector.DESIRABILITY, desirability*eval);
-				}
-			}	
-		}*/
-		
-		//TODO do this in the ToM component
-		/*if(ag.getToM() != null)
-		{
-			
-			// generating fortune of others emotions
-			for(String other : ag.getNearByAgents())
-			{
-				event3 = event.ApplyPerspective(other);
-				ModelOfOther m = ag.getToM().get(other);
-				otherEvaluation = Evaluate(m, event3);
-				v = new AppraisalVector();
-				if(selfEvaluation != null && selfEvaluation.getDesirability() != null)
-				{
-					v.setAppraisalVariable(AppraisalVector.DESIRABILITY, selfEvaluation.getDesirability());
-				}
-				
-				if(otherEvaluation != null && otherEvaluation.getDesirability() != null)
-				{
-					v.setAppraisalVariable(AppraisalVector.DESIRABILITY_FOR_OTHER, otherEvaluation.getDesirability());
-				}
-				
-				
-				emotionForOther = FAtiMA.emotionalState.Appraisal.GenerateEmotionForOther(
-						ag,
-						event2, 
-						v,
-						other);
-				if(emotionForOther != null)
-				{
-					ag.getEmotionalState().AddEmotion(emotionForOther, ag);
-				}
+				as.SetAppraisalVariable(NAME, (short)5, AppraisalStructure.DESIRABILITY, selfEvaluation._desirability.intValue());
 			}
-		}*/
+			if(selfEvaluation._desirabilityForOther != null && selfEvaluation._other != null)
+			{
+				as.SetAppraisalVariableOfOther(selfEvaluation._other.toString(), NAME, (short)5, AppraisalStructure.DESIRABILITY, selfEvaluation._desirabilityForOther.intValue());
+			}
+			if(selfEvaluation._praiseworthiness != null)
+			{
+				as.SetAppraisalVariable(NAME, (short)5, AppraisalStructure.PRAISEWORTHINESS, selfEvaluation._praiseworthiness.intValue());
+			}
+			if(selfEvaluation._like != null)
+			{
+				as.SetAppraisalVariable(NAME, (short)5, AppraisalStructure.LIKE, selfEvaluation._like.intValue());
+			}
+		}
 	}
 	
 	/**

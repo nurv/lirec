@@ -17,6 +17,8 @@ public class ScenarioLoaderHandler extends ReflectXMLHandler{
 	private ArrayList<String> _worldSimArgs;
 	private HashMap<String,String> _agentProperties;	
 	private HashMap<String,String> _agentConfiguration;
+	private boolean _foundScenario;
+	private boolean _foundAgent;
 	
 	
 	public ScenarioLoaderHandler(String scenarioName){
@@ -24,7 +26,8 @@ public class ScenarioLoaderHandler extends ReflectXMLHandler{
 		this._characterName = "";
 		this._worldSimArgs = new ArrayList<String>();
 		this._agentConfiguration = new HashMap<String,String>();
-		this._isPretendedScenario = false;	
+		this._isPretendedScenario = false;
+		this._foundScenario = false;
 	}	
 	
 	public ScenarioLoaderHandler(String scenarioName, String characterName){
@@ -36,6 +39,8 @@ public class ScenarioLoaderHandler extends ReflectXMLHandler{
 		this._agentConfiguration.put("saveDirectory", ""); //default value
 		this._isPretendedScenario = false;
 		this._isPretendedCharacter = false;
+		this._foundAgent = false;
+		this._foundScenario = false;
 		
 	}
 	
@@ -55,6 +60,7 @@ public class ScenarioLoaderHandler extends ReflectXMLHandler{
 	public void Scenario(Attributes attributes){
 		if(_scenarioName.equalsIgnoreCase(attributes.getValue("name"))){
 			this._isPretendedScenario = true;
+			this._foundScenario = true;
 		}else{
 			this._isPretendedScenario = false;
 		}
@@ -72,6 +78,23 @@ public class ScenarioLoaderHandler extends ReflectXMLHandler{
     	}
     }
     
+    public void checkForAgent() 
+    {
+    	checkScenario();
+    	if(_foundAgent == false)
+    	{
+    		throw new RuntimeException("Could not find agent: " + this._characterName);
+    	}
+    }
+    
+    public void checkScenario()
+    {
+    	if(_foundScenario == false)
+    	{
+    		throw new RuntimeException("Could not find scenario: " + this._scenarioName);
+    	}
+    }
+    
     
     public void Object(Attributes attributes){
     	if(_isPretendedScenario){
@@ -83,6 +106,7 @@ public class ScenarioLoaderHandler extends ReflectXMLHandler{
 		if(_isPretendedScenario){
 			if(_characterName.equalsIgnoreCase(attributes.getValue("name"))){
 				this._isPretendedCharacter = true;
+				this._foundAgent = true;
 				
 				for(int i=0; i < attributes.getLength(); i++ ){
 					_agentConfiguration.put(attributes.getLocalName(i), attributes.getValue(i));

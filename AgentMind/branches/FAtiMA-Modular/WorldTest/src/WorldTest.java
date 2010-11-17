@@ -55,6 +55,8 @@ public class WorldTest {
 			SAXParserFactory factory = SAXParserFactory.newInstance();
 			SAXParser parser = factory.newSAXParser();
 			parser.parse(new File(SCENARIOS_PATH), scenHandler);
+			
+			scenHandler.checkScenario();
 			args = scenHandler.getWorldSimArguments();
 		}
 		

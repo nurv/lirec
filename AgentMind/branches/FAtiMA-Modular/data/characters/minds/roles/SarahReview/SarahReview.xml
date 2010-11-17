@@ -40,4 +40,11 @@ xsi:noNamespaceSchemaLocation="../../schemas/Character.xsd">
 	<InterpersonalRelations>
 		<Relation target="User" like="2" respect="1"/>
 	</InterpersonalRelations>
+
+	<EventReactions>
+
+		<EmotionalReaction desirability="2" desirabilityForOther="5" praiseworthiness="-2" other="[Target]">
+            		<Event action="GreetBack"/>
+        	</EmotionalReaction>
+	</EventReactions>
 </Character>

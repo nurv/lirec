@@ -44,6 +44,7 @@ import FAtiMA.Core.IComponent;
 import FAtiMA.Core.Display.AgentDisplayPanel;
 import FAtiMA.Core.emotionalState.ActiveEmotion;
 import FAtiMA.Core.emotionalState.AppraisalStructure;
+import FAtiMA.Core.memory.episodicMemory.ActionDetail;
 import FAtiMA.Core.memory.episodicMemory.EpisodicMemory;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.util.AgentLogger;
@@ -200,8 +201,30 @@ public class AdvancedMemoryComponent implements Serializable, IComponent {
 
 	@Override
 	public void appraisal(Event e, AppraisalStructure as, AgentModel am) {
-		// TODO Auto-generated method stub
 		
+		Event event2;
+				
+		//self evaluation
+		event2 = e.ApplyPerspective(am.getName());
+		
+		//appraisal from memory
+		ActionDetail ad = new ActionDetail(0,event2.GetSubject(),
+					event2.GetAction(), 
+					event2.GetTarget(),
+					event2.GetParameters(),null,null,null,null);
+			
+		_compoundCue.Match(ad,am.getMemory().getEpisodicMemory());
+			
+		ActionDetail result = _compoundCue.getStrongestResult();
+		//float eval = _compoundCue.getEvaluation();
+		if(result != null)
+		{
+			float desirability = result.getDesirability();
+			if(desirability != 0)
+			{
+				as.SetAppraisalVariable(AdvancedMemoryComponent.NAME, (short)3, AppraisalStructure.DESIRABILITY, desirability);
+			}	
+		}
 	}
 
 	@Override

@@ -8,6 +8,7 @@ import FAtiMA.Core.AgentCore;
 import FAtiMA.Core.exceptions.ActionsParsingException;
 import FAtiMA.Core.exceptions.GoalLibParsingException;
 import FAtiMA.Core.exceptions.UnknownGoalException;
+import FAtiMA.socialRelations.SocialRelationsComponent;
 
 public class AgentLauncher {
 	
@@ -23,7 +24,8 @@ public class AgentLauncher {
 	static public void main(String args[]) throws ParserConfigurationException, SAXException, IOException, UnknownGoalException, ActionsParsingException, GoalLibParsingException  {
 			
 		
-		AgentCore aG = initializeAgentCore(args);	
+		AgentCore aG = initializeAgentCore(args);
+		aG.addComponent(new SocialRelationsComponent());
 		
 		aG.StartAgent();
 	}
@@ -38,7 +40,7 @@ public class AgentLauncher {
 		String scenarioName = args[0];
 		String agentName = args[1];	
 		
-		FAtiMA.Core.AgentCore agent = new AgentCore();
+		FAtiMA.Core.AgentCore agent = new AgentCore(agentName);
 		agent.initialize(scenarioName,agentName);
 		
 		return agent;

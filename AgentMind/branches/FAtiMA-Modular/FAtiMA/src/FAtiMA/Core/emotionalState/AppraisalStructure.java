@@ -63,6 +63,9 @@ public class AppraisalStructure {
 		_changed = true;
 		_empty = true;
 		_appraisal = new ArrayList<HashMap<String,Pair>>(3);
+		_appraisal.add(new HashMap<String,Pair>());
+		_appraisal.add(new HashMap<String,Pair>());
+		_appraisal.add(new HashMap<String,Pair>());
 		_appraisalOfOthers = new HashMap<String,AppraisalStructure>();
 	}
 	
@@ -161,6 +164,10 @@ public class AppraisalStructure {
 	{
 		boolean aux = _changed;
 		_changed = false;
+		for(AppraisalStructure as : _appraisalOfOthers.values())
+		{
+			as.hasChanged();
+		}
 		return aux;
 	}
 	

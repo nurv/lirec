@@ -59,6 +59,7 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 	public static final String MIND_PATH = "data/characters/minds/";
 	public static final String MIND_PATH_ANDROID = "sdcard/data/characters/minds/";
 	public static final String SCENARIO_FILENAME = "LIRECScenarios.xml";
+	
 	private static final Name ACTION_CONTEXT = Name.ParseName("ActionContext()");
 
 	protected HashMap<String, IComponent> _components;
@@ -89,7 +90,8 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 	private IGetModelStrategy _strat;
 
 
-	public AgentCore(){
+	public AgentCore(String name){
+		_name = name;
 		_shutdown = false;
 		_numberOfCycles = 0;
 		_currentEmotion = EmotionType.NEUTRAL; //neutral emotion - no emotion
@@ -101,6 +103,7 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 		// creating a new episode when the agent starts 13/09/10
 		_memory.getEpisodicMemory().StartEpisode(_memory);
 		_strat = this;
+		_components = new HashMap<String,IComponent>();
 		AgentSimulationTime.GetInstance(); //This call will initialize the timer for the agent's simulation time
 	}
 
@@ -115,7 +118,15 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 				
 		try{
 			AgentLogger.GetInstance().initialize(_name,_showStateWindow);
-
+			
+			_showStateWindow = ConfigurationManager.getDisplayMode();
+			_displayName = ConfigurationManager.getDisplayName();
+			_role = ConfigurationManager.getRole();
+			_sex = ConfigurationManager.getSex();
+			
+			if(_showStateWindow && !VersionChecker.runningOnAndroid()){
+				_agentDisplay = new AgentDisplay(this);
+			}
 
 			// Load Plan Operators
 			ActionLibrary.GetInstance().LoadActionsFile(ConfigurationManager.getActionsFile(), this);
@@ -753,10 +764,6 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 	{
 		try{
 			_remoteAgent.start();
-
-			if(_showStateWindow && !VersionChecker.runningOnAndroid()){
-				_agentDisplay = new AgentDisplay(this);
-			}
 
 			this.Run();
 		}
