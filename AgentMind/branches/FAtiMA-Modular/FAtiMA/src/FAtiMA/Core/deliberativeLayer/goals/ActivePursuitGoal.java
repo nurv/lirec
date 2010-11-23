@@ -72,7 +72,6 @@ package FAtiMA.Core.deliberativeLayer.goals;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.ListIterator;
 
 import FAtiMA.Core.AgentModel;
@@ -84,7 +83,6 @@ import FAtiMA.Core.deliberativeLayer.plan.Effect;
 import FAtiMA.Core.deliberativeLayer.plan.IPlanningOperator;
 import FAtiMA.Core.deliberativeLayer.plan.Plan;
 import FAtiMA.Core.exceptions.UnreachableGoalException;
-import FAtiMA.Core.util.AgentLogger;
 import FAtiMA.Core.util.Constants;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Substitution;

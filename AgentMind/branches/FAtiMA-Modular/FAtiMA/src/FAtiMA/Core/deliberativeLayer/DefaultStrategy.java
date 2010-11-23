@@ -2,7 +2,6 @@ package FAtiMA.Core.deliberativeLayer;
 
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.deliberativeLayer.goals.ActivePursuitGoal;
-import FAtiMA.Core.util.Constants;
 
 public class DefaultStrategy implements IUtilityStrategy, IProbabilityStrategy, IGetUtilityForOthers
 {	

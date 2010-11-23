@@ -56,7 +56,6 @@ package FAtiMA.Core.deliberativeLayer.goals;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.ListIterator;
 
 import FAtiMA.Core.AgentModel;

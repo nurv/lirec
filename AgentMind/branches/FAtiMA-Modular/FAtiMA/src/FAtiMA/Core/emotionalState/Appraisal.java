@@ -33,7 +33,6 @@ import java.util.ArrayList;
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.deliberativeLayer.goals.Goal;
 import FAtiMA.Core.sensorEffector.Event;
-import FAtiMA.Core.util.Constants;
 import FAtiMA.Core.util.enumerables.EmotionType;
 import FAtiMA.Core.wellFormedNames.Name;
 
