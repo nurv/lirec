@@ -84,14 +84,12 @@ import java.util.ArrayList;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.StringTokenizer;
-import java.util.Hashtable;
 
 import FAtiMA.Core.AgentCore;
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.AgentSimulationTime;
 import FAtiMA.Core.IComponent;
 import FAtiMA.Core.ValuedAction;
-import FAtiMA.Core.emotionalState.ActiveEmotion;
 import FAtiMA.Core.emotionalState.EmotionalState;
 import FAtiMA.Core.util.AgentLogger;
 import FAtiMA.Core.util.parsers.SocketListener;
