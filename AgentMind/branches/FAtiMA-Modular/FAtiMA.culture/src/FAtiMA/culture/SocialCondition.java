@@ -6,7 +6,6 @@ import org.xml.sax.Attributes;
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.conditions.PropertyCondition;
 import FAtiMA.Core.exceptions.ContextParsingException;
-import FAtiMA.Core.memory.semanticMemory.KnowledgeBase;
 import FAtiMA.Core.util.AgentLogger;
 import FAtiMA.Core.wellFormedNames.Name;
 
@@ -52,7 +51,7 @@ public class SocialCondition extends PropertyCondition {
 			throw createException("Missing attribute '"+RELATION_NAME_STR+"'");
 		
 		String targetStr = attributes.getValue(TARGET_STR);
-		if( nameStr == null )
+		if( targetStr == null )
 			throw createException("Missing attribute '"+TARGET_STR+"'");
 		
 		socialRel._operator = parseOperator( attributes.getValue(OPERATOR_STR) );

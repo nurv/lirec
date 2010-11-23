@@ -33,7 +33,6 @@ package FAtiMA.culture;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Hashtable;
 import java.util.ListIterator;
 
 import FAtiMA.Core.ActionLibrary;
