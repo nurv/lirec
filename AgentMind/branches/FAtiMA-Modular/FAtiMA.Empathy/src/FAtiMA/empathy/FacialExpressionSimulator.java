@@ -1,11 +1,10 @@
 package FAtiMA.empathy;
 
-import FAtiMA.emotionalState.ActiveEmotion;
-import FAtiMA.emotionalState.EmotionalState;
-import FAtiMA.knowledgeBase.KnowledgeBase;
-import FAtiMA.util.enumerables.EmotionType;
-import FAtiMA.util.enumerables.FacialExpressionType;
-import FAtiMA.wellFormedNames.Name;
+import FAtiMA.Core.emotionalState.ActiveEmotion;
+import FAtiMA.Core.emotionalState.EmotionalState;
+import FAtiMA.Core.memory.semanticMemory.KnowledgeBase;
+import FAtiMA.Core.util.enumerables.EmotionType;
+import FAtiMA.Core.wellFormedNames.Name;
 
 public class FacialExpressionSimulator {
 	

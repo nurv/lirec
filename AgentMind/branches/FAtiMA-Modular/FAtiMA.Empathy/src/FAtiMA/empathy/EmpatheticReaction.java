@@ -3,12 +3,10 @@ package FAtiMA.empathy;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import FAtiMA.emotionalState.ActiveEmotion;
-import FAtiMA.emotionalState.BaseEmotion;
-import FAtiMA.emotionalState.EmotionalState;
-import FAtiMA.sensorEffector.Event;
-import FAtiMA.util.enumerables.EmotionType;
-import FAtiMA.util.enumerables.FacialExpressionType;
+import FAtiMA.Core.emotionalState.ActiveEmotion;
+import FAtiMA.Core.emotionalState.BaseEmotion;
+import FAtiMA.Core.emotionalState.EmotionalState;
+import FAtiMA.Core.sensorEffector.Event;
 
 public abstract class EmpatheticReaction extends Thread{
 	

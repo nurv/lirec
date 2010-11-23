@@ -2,10 +2,10 @@ package FAtiMA.empathy;
 
 import java.util.ArrayList;
 
-import FAtiMA.autobiographicalMemory.AutobiographicalMemory;
-import FAtiMA.knowledgeBase.KnowledgeBase;
-import FAtiMA.sensorEffector.Event;
-import FAtiMA.wellFormedNames.Name;
+import FAtiMA.Core.memory.episodicMemory.AutobiographicalMemory;
+import FAtiMA.Core.memory.semanticMemory.KnowledgeBase;
+import FAtiMA.Core.sensorEffector.Event;
+import FAtiMA.Core.wellFormedNames.Name;
 
 public class SubjectEmpathicReaction extends EmpatheticReaction{
 

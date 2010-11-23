@@ -2,10 +2,10 @@ package FAtiMA.empathy;
 
 import java.util.Iterator;
 
-import FAtiMA.ValuedAction;
-import FAtiMA.emotionalState.EmotionalState;
-import FAtiMA.reactiveLayer.Action;
-import FAtiMA.reactiveLayer.ActionTendencies;
+import FAtiMA.Core.ValuedAction;
+import FAtiMA.Core.emotionalState.EmotionalState;
+import FAtiMA.Core.reactiveLayer.Action;
+import FAtiMA.Core.reactiveLayer.ActionTendencies;
 
 public class EmpatheticActions extends ActionTendencies{
 	
