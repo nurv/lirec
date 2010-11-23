@@ -48,6 +48,11 @@ public class ModelOfOther implements AgentModel, Serializable {
 		}		
 	}
 	
+	public boolean isSelf()
+	{
+		return false;
+	}
+	
 	public RemoteAgent getRemoteAgent()
 	{
 		return null;

@@ -202,16 +202,11 @@ public class AdvancedMemoryComponent implements Serializable, IComponent {
 	@Override
 	public void appraisal(Event e, AppraisalStructure as, AgentModel am) {
 		
-		Event event2;
-				
-		//self evaluation
-		event2 = e.ApplyPerspective(am.getName());
-		
 		//appraisal from memory
-		ActionDetail ad = new ActionDetail(0,event2.GetSubject(),
-					event2.GetAction(), 
-					event2.GetTarget(),
-					event2.GetParameters(),null,null,null,null);
+		ActionDetail ad = new ActionDetail(0,e.GetSubject(),
+					e.GetAction(), 
+					e.GetTarget(),
+					e.GetParameters(),null,null,null,null);
 			
 		_compoundCue.Match(ad,am.getMemory().getEpisodicMemory());
 			

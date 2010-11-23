@@ -693,34 +693,20 @@ public class DeliberativeProcess implements IComponent, IOptionsStrategy, IExpec
 	}
 	*/
 	
-	/**
-	 * Deliberative appraisal process. Checks goal activation and 
-	 * inserts intentions to achieve recently activated goals. Generates
-	 * initial Hope/Fear emotions for each activated goal.
-	 * @throws InvalidMotivatorTypeException 
-	 */
-	
-	/*public void AppraiseForOthers(Event event, AgentModel am)
-	{
-		Event event2 = event.ApplyPerspective(am.getName());
-		am.getMotivationalState().UpdateMotivators(am, event2, _planner.GetOperators());
-	}*/
 	
 	public void update(Event event, AgentModel am) {
 		
 		CheckLinks(am);
+	
 		
-		//updating selfMotivators
-		Event event2 = event.ApplyPerspective(am.getName());
-		
-		if(_actionMonitor != null && _actionMonitor.MatchEvent(event2)) {
+		if(_actionMonitor != null && _actionMonitor.MatchEvent(event)) {
 		    if(_actionMonitor.GetStep().getAgent().isGrounded() &&  
 		    		!_actionMonitor.GetStep().getAgent().toString().equals("SELF"))
 		    {
 		    	//the agent was waiting for an action of other agent to be complete
 		    	//since the step of another agent may contain unbound variables,
 		    	//we cannot just compare the names, we need to try to unify them
-		    	if(Unifier.Unify(event2.toStepName(), 
+		    	if(Unifier.Unify(event.toStepName(), 
 		    			_actionMonitor.GetStep().getName()) != null)
 		    	{
 		    		_actionMonitor.GetStep().IncreaseProbability(am);

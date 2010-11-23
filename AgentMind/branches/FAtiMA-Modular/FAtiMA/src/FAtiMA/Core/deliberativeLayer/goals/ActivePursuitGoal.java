@@ -556,6 +556,7 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
 		ActivePursuitGoal g = new ActivePursuitGoal();
 		g._goalID = this._goalID;
 		g._id = this._id;
+		g._key = this._key;
 		g._active = this._active;
 		g._name = (Name) this._name.clone();
 		g._baseIOF = this._baseIOF;

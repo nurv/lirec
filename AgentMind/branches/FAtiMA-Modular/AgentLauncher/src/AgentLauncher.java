@@ -8,6 +8,7 @@ import FAtiMA.Core.AgentCore;
 import FAtiMA.Core.exceptions.ActionsParsingException;
 import FAtiMA.Core.exceptions.GoalLibParsingException;
 import FAtiMA.Core.exceptions.UnknownGoalException;
+import FAtiMA.motivationalSystem.MotivationalComponent;
 import FAtiMA.socialRelations.SocialRelationsComponent;
 
 public class AgentLauncher {
@@ -26,6 +27,7 @@ public class AgentLauncher {
 		
 		AgentCore aG = initializeAgentCore(args);
 		aG.addComponent(new SocialRelationsComponent());
+		aG.addComponent(new MotivationalComponent());
 		
 		aG.StartAgent();
 	}

@@ -2,19 +2,21 @@ package FAtiMA.motivationalSystem;
 
 import org.xml.sax.Attributes;
 
-import FAtiMA.Core.AgentCore;
+import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.util.AgentLogger;
+import FAtiMA.Core.util.Constants;
 import FAtiMA.Core.util.parsers.ReflectXMLHandler;
+import FAtiMA.Core.wellFormedNames.Substitution;
 import FAtiMA.Core.wellFormedNames.Symbol;
 
 public class NeedsLoaderHandler  extends ReflectXMLHandler {
 	
-	AgentCore _agent;
+	AgentModel _agent;
 	String _currentGoalKey;
 	String _currentStepKey;
 		
 
-	public NeedsLoaderHandler(AgentCore agent, MotivationalComponent motivationalState){
+	public NeedsLoaderHandler(AgentModel agent, MotivationalComponent motivationalState){
 		this._agent = agent;
 	}
 	
@@ -39,6 +41,14 @@ public class NeedsLoaderHandler  extends ReflectXMLHandler {
     	_currentGoalKey = attributes.getValue("key");
     }
 	
+	public void ActivePursuitGoal(Attributes attributes) {
+    	_currentGoalKey = attributes.getValue("name");
+    }
+	public void InterestGoal(Attributes attributes)
+	{
+		_currentGoalKey = attributes.getValue("name");
+	}
+	
 	public void Action(Attributes attributes){
 	 	_currentStepKey = attributes.getValue("name");	
 	}
@@ -51,7 +61,7 @@ public class NeedsLoaderHandler  extends ReflectXMLHandler {
 		String value = attributes.getValue("value");
 		String target = attributes.getValue("target");
 
-		if(driveName != null && _currentGoalKey != null){
+		if(driveName != null && _currentStepKey != null){
 			motivComp.addActionEffectsOnDrive(_currentStepKey, driveName, new Symbol(target), Float.parseFloat(value));
 		}
 	}
@@ -72,9 +82,12 @@ public class NeedsLoaderHandler  extends ReflectXMLHandler {
 		String driveName = attributes.getValue("drive");
 		String value = attributes.getValue("value");
 		String target = attributes.getValue("target");
+		Symbol t = new Symbol(target);
+		Substitution self = new Substitution(new Symbol("[SELF]"), new Symbol(Constants.SELF));
+		t.MakeGround(self);
 
 		if(driveName != null && _currentGoalKey != null){
-			ms.addExpectedGoalEffectOnDrive(_currentGoalKey, effectType, driveName, new Symbol(target), Float.parseFloat(value));
+			ms.addExpectedGoalEffectOnDrive(_currentGoalKey, effectType, driveName, t, Float.parseFloat(value));
 		}
 	}
 }

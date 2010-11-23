@@ -27,4 +27,6 @@ public interface AgentModel {
 	
 	public IComponent getComponent(String name);
 	
+	public boolean isSelf();
+	
 }

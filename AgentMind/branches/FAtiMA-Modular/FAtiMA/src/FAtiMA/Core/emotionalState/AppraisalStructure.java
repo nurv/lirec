@@ -69,7 +69,7 @@ public class AppraisalStructure {
 		_appraisalOfOthers = new HashMap<String,AppraisalStructure>();
 	}
 	
-	public boolean SetAppraisalVariable(String component, short weight, short appraisalVariable, float value)
+	public void SetAppraisalVariable(String component, short weight, short appraisalVariable, float value)
 	{
 		HashMap<String,Pair> a = _appraisal.get(appraisalVariable);
 		//replacing or setting up a new value?
@@ -84,15 +84,16 @@ public class AppraisalStructure {
 				_changed = true;
 				//nothing else needs to be done in this case
 			}
-			return _changed;
 		}
-		//setting up a new value
-		Pair p = new Pair(weight, value);
-		_weights[appraisalVariable] += weight;
-		a.put(component,p);
-		_empty = false;
-		_changed = true;
-		return _changed;
+		else
+		{
+			//setting up a new value
+			Pair p = new Pair(weight, value);
+			_weights[appraisalVariable] += weight;
+			a.put(component,p);
+			_empty = false;
+			_changed = true;	
+		}
 	}
 	
 	public void SetAppraisalVariableOfOther(String other, String component, short weight, short appraisalVariable, float value)
@@ -109,7 +110,7 @@ public class AppraisalStructure {
 		}
 		
 		_empty = false;
-		_changed = as.SetAppraisalVariable(component, weight, appraisalVariable, value);
+		_changed = as.hasChanged(); 
 	}
 	
 	public void SetAppraisalOfOther(String other, AppraisalStructure as)
@@ -164,10 +165,7 @@ public class AppraisalStructure {
 	{
 		boolean aux = _changed;
 		_changed = false;
-		for(AppraisalStructure as : _appraisalOfOthers.values())
-		{
-			as.hasChanged();
-		}
+		
 		return aux;
 	}
 	

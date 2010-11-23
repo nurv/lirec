@@ -192,9 +192,6 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 		}
 	}
 
-
-
-
 	public static Name applyPerspective(Name n, String agentName)
 	{
 		Name newName = (Name) n.clone();
@@ -209,6 +206,27 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 		}
 
 		return newName;
+	}
+	
+	public static Name removePerspective(Name n, String agentName)
+	{
+		Name newName = (Name) n.clone();
+		ArrayList<Symbol> symbols = newName.GetLiteralList();
+
+		for(int i = 0; i < symbols.size(); i++)
+		{
+			if(symbols.get(i).getName().equals(Constants.SELF))
+			{
+				symbols.set(i, new Symbol(agentName));
+			}
+		}
+
+		return newName;
+	}
+	
+	public boolean isSelf()
+	{
+		return true;
 	}
 
 
@@ -534,7 +552,7 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 							
 							for(IComponent c : this._components.values())
 							{
-								c.update(e,this);
+								c.update(e2,this);
 							}
 
 							appraisal = new AppraisalStructure();
@@ -543,12 +561,12 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 							{
 								for(IComponent c : this._components.values())
 								{
-									c.appraisal(e,appraisal,this);
+									c.appraisal(e2,appraisal,this);
 
 								}
 							}
 
-							emotions = Appraisal.GenerateEmotions(this, e, appraisal);
+							emotions = Appraisal.GenerateEmotions(this, e2, appraisal);
 
 							for(BaseEmotion em : emotions)
 							{
@@ -557,7 +575,7 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 								{
 									for(IComponent c : this._components.values())
 									{
-										c.emotionActivation(e,activeEmotion,this);
+										c.emotionActivation(e2,activeEmotion,this);
 									}
 								}
 							}

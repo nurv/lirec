@@ -159,12 +159,10 @@ public class ReactiveProcess implements IComponent {
 	 * reaction rules
 	 */
 	public void appraisal(Event event, AppraisalStructure as, AgentModel ag) {
-		Event event2;
 		Reaction selfEvaluation;	
 			
-		//self evaluation
-		event2 = event.ApplyPerspective(ag.getName());
-		selfEvaluation = Evaluate(ag, event2);
+		
+		selfEvaluation = Evaluate(ag, event);
 		
 		if(selfEvaluation != null)
 		{

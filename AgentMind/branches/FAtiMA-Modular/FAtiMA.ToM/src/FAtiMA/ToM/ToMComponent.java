@@ -28,9 +28,9 @@ public class ToMComponent implements IComponent, IGetModelStrategy, IGetUtilityF
 	protected HashMap<Event,AppraisalStructure> _appraisalsOfOthers;
 	
 	
-	public ToMComponent(String name)
+	public ToMComponent(String agentName)
 	{
-		this._name = name;
+		this._name = agentName;
 		this._nearbyAgents = new ArrayList<String>();
 		this._appraisalsOfOthers = new HashMap<Event,AppraisalStructure>();
 	}
@@ -128,8 +128,11 @@ public class ToMComponent implements IComponent, IGetModelStrategy, IGetUtilityF
 	@Override
 	public void appraisal(Event e, AppraisalStructure as, AgentModel am) {
 		
+		Event e2 = e.RemovePerspective(_name);
+		Event e3;
+		
 		//one time appraisal for each event, so if the event was already appraised this cycle, just return
-		if(_appraisalsOfOthers.containsKey(e))
+		if(_appraisalsOfOthers.containsKey(e2))
 		{
 			return;
 		}
@@ -140,7 +143,8 @@ public class ToMComponent implements IComponent, IGetModelStrategy, IGetUtilityF
 		{
 			otherAS = new AppraisalStructure();
 			ModelOfOther m = _ToM.get(s);
-			m.appraisal(e, otherAS);
+			e3 = e2.ApplyPerspective(s);
+			m.appraisal(e3, otherAS);
 			
 			as.SetAppraisalOfOther(s, otherAS);
 		}
@@ -148,7 +152,7 @@ public class ToMComponent implements IComponent, IGetModelStrategy, IGetUtilityF
 
 	@Override
 	public void emotionActivation(Event e, ActiveEmotion em, AgentModel am) {
-
+		//don't forget to removePerspective if u want to do something here.
 	}
 
 	@Override
@@ -170,12 +174,15 @@ public class ToMComponent implements IComponent, IGetModelStrategy, IGetUtilityF
 	@Override
 	public void propertyChangedPerception(String ToM, Name propertyName, String value) 
 	{
+		Name propertyName2 = AgentCore.removePerspective(propertyName, _name);
+		
+		
 		if(ToM.equals(Constants.UNIVERSAL.toString()))
 		{
 			for(String other : _nearbyAgents)
 			{
 				ModelOfOther m = _ToM.get(other);
-				m.getMemory().getSemanticMemory().Tell(AgentCore.applyPerspective(propertyName,other), value);
+				m.getMemory().getSemanticMemory().Tell(AgentCore.applyPerspective(propertyName2,other), value);
 			}
 		}
 		else if(!ToM.equals(_name))
@@ -183,7 +190,7 @@ public class ToMComponent implements IComponent, IGetModelStrategy, IGetUtilityF
 			ModelOfOther m = _ToM.get(ToM);
 			if(m != null)
 			{
-				m.getMemory().getSemanticMemory().Tell(AgentCore.applyPerspective(propertyName,ToM), value);
+				m.getMemory().getSemanticMemory().Tell(AgentCore.applyPerspective(propertyName2,ToM), value);
 			}
 		}
 		

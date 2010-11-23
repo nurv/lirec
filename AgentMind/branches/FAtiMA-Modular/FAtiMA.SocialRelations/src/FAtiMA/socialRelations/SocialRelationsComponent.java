@@ -1,5 +1,10 @@
 package FAtiMA.socialRelations;
 
+import java.io.File;
+
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+
 import FAtiMA.Core.AgentCore;
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.IComponent;
@@ -8,9 +13,12 @@ import FAtiMA.Core.emotionalState.ActiveEmotion;
 import FAtiMA.Core.emotionalState.AppraisalStructure;
 import FAtiMA.Core.memory.Memory;
 import FAtiMA.Core.sensorEffector.Event;
+import FAtiMA.Core.util.AgentLogger;
+import FAtiMA.Core.util.ConfigurationManager;
 import FAtiMA.Core.util.Constants;
 import FAtiMA.Core.util.enumerables.EmotionType;
 import FAtiMA.Core.wellFormedNames.Name;
+
 
 public class SocialRelationsComponent implements IComponent {
 	
@@ -19,6 +27,24 @@ public class SocialRelationsComponent implements IComponent {
 	public SocialRelationsComponent()
 	{	
 	}
+	
+	private void loadRelations(AgentModel aM){
+
+		AgentLogger.GetInstance().log("LOADING Social Relations: ");
+		RelationsLoaderHandler relationsLoader = new RelationsLoaderHandler(aM);
+		
+		try{
+			SAXParserFactory factory = SAXParserFactory.newInstance();
+			SAXParser parser = factory.newSAXParser();
+			parser.parse(new File(ConfigurationManager.getActionsFile()),relationsLoader);
+			parser.parse(new File(ConfigurationManager.getGoalsFile()),relationsLoader);
+			parser.parse(new File(ConfigurationManager.getPersonalityFile()),relationsLoader);
+			
+
+		}catch(Exception e){
+			throw new RuntimeException("Error on Loading the Social Relations XML Files:" + e);
+		}
+	}
 
 	@Override
 	public String name() {
@@ -26,7 +52,8 @@ public class SocialRelationsComponent implements IComponent {
 	}
 
 	@Override
-	public void initialize(AgentModel am) {			
+	public void initialize(AgentModel am) {
+		this.loadRelations(am);
 	}
 
 	@Override
@@ -51,7 +78,10 @@ public class SocialRelationsComponent implements IComponent {
 		if(e.GetSubject().equals(Constants.SELF) && e.GetAction().equals("look-at"))
 		{
 			int relationShip = Math.round(LikeRelation.getRelation(Constants.SELF, e.GetTarget()).getValue(am.getMemory()));
-			as.SetAppraisalVariable(NAME, (short)7, AppraisalStructure.LIKE, relationShip);
+			if(relationShip != 0)
+			{
+				as.SetAppraisalVariable(NAME, (short)7, AppraisalStructure.LIKE, relationShip);
+			}	
 		}
 	}
 
@@ -128,6 +158,8 @@ public class SocialRelationsComponent implements IComponent {
 			}
 		}
 	}
+	
+	
 
 	@Override
 	public void coping(AgentModel am) {

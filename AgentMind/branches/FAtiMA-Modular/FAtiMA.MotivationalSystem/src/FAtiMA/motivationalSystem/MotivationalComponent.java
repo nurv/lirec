@@ -5,9 +5,13 @@
 package FAtiMA.motivationalSystem;
 
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 
 import FAtiMA.Core.AgentCore;
 import FAtiMA.Core.AgentModel;
@@ -26,6 +30,8 @@ import FAtiMA.Core.emotionalState.ActiveEmotion;
 import FAtiMA.Core.emotionalState.AppraisalStructure;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.util.AgentLogger;
+import FAtiMA.Core.util.ConfigurationManager;
+import FAtiMA.Core.util.Constants;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Substitution;
 import FAtiMA.Core.wellFormedNames.Symbol;
@@ -86,6 +92,7 @@ public class MotivationalComponent implements Serializable, Cloneable, IComponen
 		_lastTime = AgentSimulationTime.GetInstance().Time();
 		_appraisals = new HashMap<String,Float>();
 		_goalEffectsOnDrives = new HashMap<String,ExpectedGoalEffectsOnDrives>();
+		_actionEffectsOnDrives = new HashMap<String,ActionEffectsOnDrives>();
 	}
 	
 	
@@ -165,7 +172,7 @@ public class MotivationalComponent implements Serializable, Cloneable, IComponen
 				{
 					target = (Symbol) eff.getTarget().clone();
 					target.MakeGround(substitutions);
-					if(target.toString().equals(am.getName()))
+					if(target.toString().equals(Constants.SELF))
 					{
 						AgentLogger.GetInstance().log("Updating motivator " + eff.getDriveName());
 						try {
@@ -193,16 +200,27 @@ public class MotivationalComponent implements Serializable, Cloneable, IComponen
 		float expectedContribution;
 		float currentIntensity = 0;
 		float auxMultiplier = 1; 
+		boolean test;
 		
 		try {		
 			result = 0;
 			
 			ExpectedGoalEffectsOnDrives effects = _goalEffectsOnDrives.get(g.getKey());
+			if(effects == null) return 0;
 			for(EffectOnDrive e : effects.getEffects())
 			{
-				Symbol target = (Symbol) e.getTarget().clone();
-				target.MakeGround(g.getAppliedSubstitutions());
-				if(target.toString().equals(am.getName()))
+				if(am.isSelf())
+				{
+					test = e.getTarget().toString().equals(Constants.SELF);
+				}
+				else
+				{
+					Symbol target = (Symbol) e.getTarget().clone();
+					target.MakeGround(g.getAppliedSubstitutions());
+					test = target.toString().equals(am.getName());
+				}
+				
+				if(test)
 				{
 					expectedContribution = e.getValue();
 					currentIntensity = GetIntensity(MotivatorType.ParseType(e.getDriveName()));
@@ -416,8 +434,7 @@ public class MotivationalComponent implements Serializable, Cloneable, IComponen
 	
 	public void update(Event e, AgentModel am)
 	{
-		Event event2 = e.ApplyPerspective(am.getName());
-		float result =  UpdateMotivators(am, event2);
+		float result =  UpdateMotivators(am, e);
 		_appraisals.put(e.toString(), new Float(result));
 	}
 
@@ -451,6 +468,25 @@ public class MotivationalComponent implements Serializable, Cloneable, IComponen
 		am.getDeliberativeLayer().addActionFailureStrategy(this);
 		am.getDeliberativeLayer().addGoalFailureStrategy(this);
 		am.getDeliberativeLayer().addGoalSuccessStrategy(this);
+		LoadNeeds(am);
+	}
+	
+	private void LoadNeeds(AgentModel am)
+	{
+		AgentLogger.GetInstance().log("LOADING Social Relations: ");
+		NeedsLoaderHandler needsLoader = new NeedsLoaderHandler(am,this);
+		
+		try{
+			SAXParserFactory factory = SAXParserFactory.newInstance();
+			SAXParser parser = factory.newSAXParser();
+			parser.parse(new File(ConfigurationManager.getActionsFile()), needsLoader);
+			parser.parse(new File(ConfigurationManager.getGoalsFile()), needsLoader);
+			parser.parse(new File(ConfigurationManager.getPersonalityFile()), needsLoader);
+			
+
+		}catch(Exception e){
+			throw new RuntimeException("Error on Loading Needs from XML Files:" + e);
+		}
 	}
 
 
