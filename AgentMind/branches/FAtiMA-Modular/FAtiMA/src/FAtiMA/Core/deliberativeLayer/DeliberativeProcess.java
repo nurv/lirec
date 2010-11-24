@@ -123,26 +123,13 @@ import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.Set;
 
-import FAtiMA.Core.AgentCore;
 import FAtiMA.Core.AgentModel;
+import FAtiMA.Core.IBehaviourComponent;
 import FAtiMA.Core.IComponent;
+import FAtiMA.Core.IModelOfOtherComponent;
 import FAtiMA.Core.ValuedAction;
 import FAtiMA.Core.Display.AgentDisplayPanel;
 import FAtiMA.Core.conditions.Condition;
-import FAtiMA.Core.deliberativeLayer.ActionMonitor;
-import FAtiMA.Core.deliberativeLayer.DefaultDetectThreatStrategy;
-import FAtiMA.Core.deliberativeLayer.DefaultStrategy;
-import FAtiMA.Core.deliberativeLayer.EmotionalPlanner;
-import FAtiMA.Core.deliberativeLayer.ExpirableActionMonitor;
-import FAtiMA.Core.deliberativeLayer.IActionFailureStrategy;
-import FAtiMA.Core.deliberativeLayer.IActionSuccessStrategy;
-import FAtiMA.Core.deliberativeLayer.IDetectThreatStrategy;
-import FAtiMA.Core.deliberativeLayer.IExpectedUtilityStrategy;
-import FAtiMA.Core.deliberativeLayer.IGoalFailureStrategy;
-import FAtiMA.Core.deliberativeLayer.IGoalSuccessStrategy;
-import FAtiMA.Core.deliberativeLayer.IOptionsStrategy;
-import FAtiMA.Core.deliberativeLayer.IProbabilityStrategy;
-import FAtiMA.Core.deliberativeLayer.Intention;
 import FAtiMA.Core.deliberativeLayer.goals.ActivePursuitGoal;
 import FAtiMA.Core.deliberativeLayer.goals.Goal;
 import FAtiMA.Core.deliberativeLayer.goals.GoalLibrary;
@@ -171,7 +158,7 @@ import FAtiMA.Core.wellFormedNames.Unifier;
  * 
  * @author João Dias
  */
-public class DeliberativeProcess implements IComponent, IOptionsStrategy, IExpectedUtilityStrategy {
+public class DeliberativeProcess implements IComponent, IBehaviourComponent, IModelOfOtherComponent, IOptionsStrategy, IExpectedUtilityStrategy {
 	
 	/**
 	 * 
@@ -693,8 +680,8 @@ public class DeliberativeProcess implements IComponent, IOptionsStrategy, IExpec
 	}
 	*/
 	
-	
-	public void update(Event event, AgentModel am) {
+	@Override
+	public void perceiveEvent(AgentModel am, Event event) {
 		
 		CheckLinks(am);
 	
@@ -894,6 +881,7 @@ public class DeliberativeProcess implements IComponent, IOptionsStrategy, IExpec
 	 * for one reasoning cycle (planning) and if possible selects an action for 
 	 * execution.
 	 */
+	@Override
 	public void coping(AgentModel am) {
 		Intention i = null;
 		ActiveEmotion fear;
@@ -1180,7 +1168,9 @@ public class DeliberativeProcess implements IComponent, IOptionsStrategy, IExpec
 	 * Resets the deliberative layer. Clears the events to be appraised,
 	 * the current intentions and actions.
 	 */
+	@Override
 	public void reset() {
+		//TODO incomplete
 		_options.clear();
 		_intentions.clear();
 		_actionMonitor = null;
@@ -1218,10 +1208,6 @@ public class DeliberativeProcess implements IComponent, IOptionsStrategy, IExpec
 			((Intention) it.next()).UpdateProbabilities();
 		}
 	}
-	
-	/**
-	 * Prepares the deliberative layer for a shutdown
-	 */
 
 
 	public float getExpectedUtility(AgentModel am, ActivePursuitGoal g) {
@@ -1236,14 +1222,9 @@ public class DeliberativeProcess implements IComponent, IOptionsStrategy, IExpec
 	@Override
 	public void initialize(AgentModel ag) {	
 	}
-
-	@Override
-	public void decay(long time) {
-		// TODO Auto-generated method stub
-		
-	}
 	
-	public void update(AgentModel am)
+	@Override
+	public void updateCycle(AgentModel am, long time)
 	{
 		if(_actionMonitor != null && _actionMonitor.Expired()) {
 			AgentLogger.GetInstance().logAndPrint("Action monitor expired: " + _actionMonitor.toString());
@@ -1264,26 +1245,6 @@ public class DeliberativeProcess implements IComponent, IOptionsStrategy, IExpec
 		}
 	}
 
-	@Override
-	public void propertyChangedPerception(String ToM, Name propertyName,
-			String value) {
-	}
-
-	@Override
-	public void lookAtPerception(AgentCore ag, String subject, String target) {
-	}
-
-	@Override
-	public void emotionActivation(Event e, ActiveEmotion em, AgentModel am) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void entityRemovedPerception(String entity) {
-		// TODO Auto-generated method stub
-		
-	}
 
 	@Override
 	public IComponent createModelOfOther() {
@@ -1291,15 +1252,11 @@ public class DeliberativeProcess implements IComponent, IOptionsStrategy, IExpec
 	}
 
 	@Override
-	public void appraisal(Event e, AppraisalStructure as, AgentModel am) {
+	public void appraisal(AgentModel am, Event e, AppraisalStructure as) {
 	}
 
 	@Override
-	public AgentDisplayPanel createComponentDisplayPanel(AgentModel am) {
+	public AgentDisplayPanel createDisplayPanel(AgentModel am) {
 		return null;
-	}
-
-	@Override
-	public void processExternalRequest(String requestMsg) {
 	}
 }

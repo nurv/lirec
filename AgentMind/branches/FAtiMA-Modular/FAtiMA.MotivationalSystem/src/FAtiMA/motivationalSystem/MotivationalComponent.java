@@ -13,10 +13,10 @@ import java.util.HashMap;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import FAtiMA.Core.AgentCore;
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.AgentSimulationTime;
 import FAtiMA.Core.IComponent;
+import FAtiMA.Core.IModelOfOtherComponent;
 import FAtiMA.Core.Display.AgentDisplayPanel;
 import FAtiMA.Core.deliberativeLayer.IActionFailureStrategy;
 import FAtiMA.Core.deliberativeLayer.IExpectedUtilityStrategy;
@@ -26,7 +26,6 @@ import FAtiMA.Core.deliberativeLayer.IProbabilityStrategy;
 import FAtiMA.Core.deliberativeLayer.IUtilityStrategy;
 import FAtiMA.Core.deliberativeLayer.goals.ActivePursuitGoal;
 import FAtiMA.Core.deliberativeLayer.plan.Step;
-import FAtiMA.Core.emotionalState.ActiveEmotion;
 import FAtiMA.Core.emotionalState.AppraisalStructure;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.util.AgentLogger;
@@ -44,7 +43,7 @@ import FAtiMA.Core.wellFormedNames.Unifier;
  * @author Meiyii Lim, Samuel Mascarenhas 
  */
 
-public class MotivationalComponent implements Serializable, Cloneable, IComponent, IExpectedUtilityStrategy, IProbabilityStrategy, IUtilityStrategy, IGoalSuccessStrategy, IGoalFailureStrategy, IActionFailureStrategy {
+public class MotivationalComponent implements Serializable, Cloneable, IComponent, IModelOfOtherComponent, IExpectedUtilityStrategy, IProbabilityStrategy, IUtilityStrategy, IGoalSuccessStrategy, IGoalFailureStrategy, IActionFailureStrategy {
 	
 	private static final long serialVersionUID = 1L;
 	public static final String NAME ="MotivationalState";
@@ -63,6 +62,8 @@ public class MotivationalComponent implements Serializable, Cloneable, IComponen
 	protected HashMap<String,Float> _appraisals;
 	protected HashMap<String,ExpectedGoalEffectsOnDrives> _goalEffectsOnDrives;
 	protected HashMap<String,ActionEffectsOnDrives> _actionEffectsOnDrives;
+	
+	private ArrayList<String> _parsingFiles;
 
 	public static double determineQuadraticNeedVariation(float currentLevel, float deviation){
 		double result = 0;
@@ -85,7 +86,7 @@ public class MotivationalComponent implements Serializable, Cloneable, IComponen
 	/**
 	 * Creates an empty MotivationalState
 	 */
-	public MotivationalComponent() {
+	public MotivationalComponent(ArrayList<String> extraFiles) {
 		_motivators = new Motivator[MotivatorType.numberOfTypes()];
 		_goalTried = 0;
 		_goalSucceeded = 0;
@@ -93,6 +94,12 @@ public class MotivationalComponent implements Serializable, Cloneable, IComponen
 		_appraisals = new HashMap<String,Float>();
 		_goalEffectsOnDrives = new HashMap<String,ExpectedGoalEffectsOnDrives>();
 		_actionEffectsOnDrives = new HashMap<String,ActionEffectsOnDrives>();
+		
+		_parsingFiles = new ArrayList<String>();
+		_parsingFiles.add(ConfigurationManager.getGoalsFile());
+		_parsingFiles.add(ConfigurationManager.getPersonalityFile());
+		_parsingFiles.add(ConfigurationManager.getActionsFile());
+		_parsingFiles.addAll(extraFiles);
 	}
 	
 	
@@ -432,31 +439,20 @@ public class MotivationalComponent implements Serializable, Cloneable, IComponen
 	
 	}
 	
-	public void update(Event e, AgentModel am)
+	@Override
+	public void perceiveEvent(AgentModel am, Event e)
 	{
 		float result =  UpdateMotivators(am, e);
 		_appraisals.put(e.toString(), new Float(result));
 	}
 
 	@Override
-	public void appraisal(Event e, AppraisalStructure as, AgentModel am) {
+	public void appraisal(AgentModel am, Event e, AppraisalStructure as) {
 		Float desirability = _appraisals.get(e.toString());
 		if(desirability != null)
 		{
 			as.SetAppraisalVariable(NAME, (short) 8, AppraisalStructure.DESIRABILITY, desirability.floatValue());
 		}
-	}
-
-
-	@Override
-	public void propertyChangedPerception(String ToM, Name propertyName,
-			String value) {
-		
-	}
-
-
-	@Override
-	public void lookAtPerception(AgentCore ag, String subject, String target) {
 	}
 
 
@@ -479,10 +475,11 @@ public class MotivationalComponent implements Serializable, Cloneable, IComponen
 		try{
 			SAXParserFactory factory = SAXParserFactory.newInstance();
 			SAXParser parser = factory.newSAXParser();
-			parser.parse(new File(ConfigurationManager.getActionsFile()), needsLoader);
-			parser.parse(new File(ConfigurationManager.getGoalsFile()), needsLoader);
-			parser.parse(new File(ConfigurationManager.getPersonalityFile()), needsLoader);
 			
+			for(String file : _parsingFiles)
+			{
+				parser.parse(new File(file), needsLoader);
+			}	
 
 		}catch(Exception e){
 			throw new RuntimeException("Error on Loading Needs from XML Files:" + e);
@@ -491,29 +488,14 @@ public class MotivationalComponent implements Serializable, Cloneable, IComponen
 
 
 	@Override
-	public void update(AgentModel am) {
+	public void updateCycle(AgentModel am, long time) {
 		_appraisals.clear();
 	}
 
 
 	@Override
-	public void coping(AgentModel am) {
-	}
-
-
-	@Override
-	public void emotionActivation(Event e, ActiveEmotion em, AgentModel am) {
-	}
-
-
-	@Override
-	public void entityRemovedPerception(String entity) {	
-	}
-
-
-	@Override
 	public IComponent createModelOfOther() {
-		MotivationalComponent ms = new MotivationalComponent();
+		MotivationalComponent ms = new MotivationalComponent(null);
 		Motivator m2;
 		
 		for(Motivator m : _motivators)
@@ -528,7 +510,7 @@ public class MotivationalComponent implements Serializable, Cloneable, IComponen
 
 
 	@Override
-	public AgentDisplayPanel createComponentDisplayPanel(AgentModel am) {
+	public AgentDisplayPanel createDisplayPanel(AgentModel am) {
 		return new NeedsPanel(this);
 	}
 
@@ -573,12 +555,5 @@ public class MotivationalComponent implements Serializable, Cloneable, IComponen
 	public void perceiveActionFailure(AgentModel am, Step a) {
 		//System.out.println("Calling UpdateCertainty (other's action: step completed)");
 		UpdateCertainty(-a.getProbability(am));
-	}
-
-
-	@Override
-	public void processExternalRequest(String requestMsg) {
-		// TODO Auto-generated method stub
-		
 	}
 }

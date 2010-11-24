@@ -61,23 +61,21 @@
 package FAtiMA.Core.reactiveLayer;
 
 
-import FAtiMA.Core.AgentCore;
 import FAtiMA.Core.AgentModel;
+import FAtiMA.Core.IBehaviourComponent;
 import FAtiMA.Core.IComponent;
+import FAtiMA.Core.IModelOfOtherComponent;
 import FAtiMA.Core.ValuedAction;
 import FAtiMA.Core.Display.AgentDisplayPanel;
-import FAtiMA.Core.emotionalState.ActiveEmotion;
-
 import FAtiMA.Core.emotionalState.AppraisalStructure;
 import FAtiMA.Core.sensorEffector.Event;
-import FAtiMA.Core.wellFormedNames.Name;
 
 
 /**
  * Implements FearNot's Agent Reactive Layer (appraisal and coping processes)
  * @author João Dias
  */
-public class ReactiveProcess implements IComponent {
+public class ReactiveProcess implements IComponent, IBehaviourComponent, IModelOfOtherComponent {
 	
     /**
 	 * 
@@ -158,7 +156,8 @@ public class ReactiveProcess implements IComponent {
 	 * Reactive appraisal. Appraises received events according to the emotional
 	 * reaction rules
 	 */
-	public void appraisal(Event event, AppraisalStructure as, AgentModel ag) {
+	@Override
+	public void appraisal(AgentModel ag, Event event, AppraisalStructure as) {
 		Reaction selfEvaluation;	
 			
 		
@@ -189,6 +188,7 @@ public class ReactiveProcess implements IComponent {
 	 * Reactive Coping. Consists in selecting the most relevant action (reaction)
 	 * according to the emotional state.
 	 */
+	@Override
 	public void coping(AgentModel am) {
 		ValuedAction action;
 		action = _actionTendencies.SelectAction(am);
@@ -266,39 +266,15 @@ public class ReactiveProcess implements IComponent {
 	}
 
 	@Override
-	public void decay(long time) {
-	}
-
-	@Override
-	public void update(AgentModel am) {
+	public void updateCycle(AgentModel am,long time) {
 	}
 	
 	@Override
-	public void update(Event e, AgentModel am)
+	public void perceiveEvent(AgentModel am, Event e)
 	{
 	}
 
-	@Override
-	public void propertyChangedPerception(String ToM, Name propertyName,
-			String value) {
-	}
-
-	@Override
-	public void lookAtPerception(AgentCore ag, String subject, String target) {
-	}
-
-	@Override
-	public void emotionActivation(Event e, ActiveEmotion em, AgentModel am) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void entityRemovedPerception(String entity) {
-		// TODO Auto-generated method stub
-		
-	}
-
+	
 	@Override
 	public IComponent createModelOfOther() {
 		ReactiveProcess reactive = new ReactiveProcess();
@@ -311,11 +287,7 @@ public class ReactiveProcess implements IComponent {
 	}
 
 	@Override
-	public AgentDisplayPanel createComponentDisplayPanel(AgentModel am) {
+	public AgentDisplayPanel createDisplayPanel(AgentModel am) {
 		return null;
-	}
-
-	@Override
-	public void processExternalRequest(String requestMsg) {		
 	}
 }

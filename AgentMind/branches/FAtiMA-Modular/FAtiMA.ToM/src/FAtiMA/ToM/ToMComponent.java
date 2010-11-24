@@ -7,10 +7,11 @@ import FAtiMA.Core.AgentCore;
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.IComponent;
 import FAtiMA.Core.IGetModelStrategy;
+import FAtiMA.Core.IModelOfOtherComponent;
+import FAtiMA.Core.IProcessPerceptionsComponent;
 import FAtiMA.Core.Display.AgentDisplayPanel;
 import FAtiMA.Core.deliberativeLayer.IGetUtilityForOthers;
 import FAtiMA.Core.deliberativeLayer.goals.ActivePursuitGoal;
-import FAtiMA.Core.emotionalState.ActiveEmotion;
 import FAtiMA.Core.emotionalState.AppraisalStructure;
 import FAtiMA.Core.memory.semanticMemory.KnowledgeSlot;
 import FAtiMA.Core.sensorEffector.Event;
@@ -18,7 +19,7 @@ import FAtiMA.Core.util.Constants;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Symbol;
 
-public class ToMComponent implements IComponent, IGetModelStrategy, IGetUtilityForOthers {
+public class ToMComponent implements IComponent, IProcessPerceptionsComponent, IGetModelStrategy, IGetUtilityForOthers {
 	
 	public static final String NAME = "ToM";
 	
@@ -73,10 +74,13 @@ public class ToMComponent implements IComponent, IGetModelStrategy, IGetUtilityF
 			ModelOfOther model = new ModelOfOther(name, ag);
 			for(IComponent c : ag.getComponents())
 			{
-				IComponent componentOfOther = c.createModelOfOther();
-				if(componentOfOther != null)
+				if(c instanceof IModelOfOtherComponent)
 				{
-					model.addComponent(componentOfOther);
+					IComponent componentOfOther = ((IModelOfOtherComponent)c).createModelOfOther();
+					if(componentOfOther != null)
+					{
+						model.addComponent(componentOfOther);
+					}
 				}
 			}
 			_ToM.put(name, model);
@@ -95,38 +99,28 @@ public class ToMComponent implements IComponent, IGetModelStrategy, IGetUtilityF
 	}
 
 	@Override
-	public void decay(long time) {
-		
-		for(String s : _nearbyAgents)
-		{
-			ModelOfOther m = _ToM.get(s);
-			m.decay(time);
-		}
-	}
-
-	@Override
-	public void update(AgentModel am) {
+	public void updateCycle(AgentModel am,long time) {
 		_appraisalsOfOthers.clear();
 		
 		for(String s : _nearbyAgents)
 		{
 			ModelOfOther m = _ToM.get(s);
-			m.update();
+			m.updateCycle(time);
 		}		
 	}
 	
 	@Override
-	public void update(Event e, AgentModel am)
+	public void perceiveEvent(AgentModel am, Event e)
 	{
 		for(String s : _nearbyAgents)
 		{
 			ModelOfOther m = _ToM.get(s);
-			m.update(e);
+			m.perceiveEvent(e);
 		}	
 	}
 
 	@Override
-	public void appraisal(Event e, AppraisalStructure as, AgentModel am) {
+	public void appraisal(AgentModel am, Event e, AppraisalStructure as) {
 		
 		Event e2 = e.RemovePerspective(_name);
 		Event e3;
@@ -148,15 +142,6 @@ public class ToMComponent implements IComponent, IGetModelStrategy, IGetUtilityF
 			
 			as.SetAppraisalOfOther(s, otherAS);
 		}
-	}
-
-	@Override
-	public void emotionActivation(Event e, ActiveEmotion em, AgentModel am) {
-		//don't forget to removePerspective if u want to do something here.
-	}
-
-	@Override
-	public void coping(AgentModel am) {
 	}
 	
 	public AgentModel execute(Symbol ToM)
@@ -240,12 +225,7 @@ public class ToMComponent implements IComponent, IGetModelStrategy, IGetUtilityF
 	}
 
 	@Override
-	public IComponent createModelOfOther() {
-		return null;
-	}
-
-	@Override
-	public AgentDisplayPanel createComponentDisplayPanel(AgentModel am) {
+	public AgentDisplayPanel createDisplayPanel(AgentModel am) {
 		return new ToMPanel(this);
 	}
 
@@ -260,9 +240,5 @@ public class ToMComponent implements IComponent, IGetModelStrategy, IGetUtilityF
 		}
 		
 		return utility;
-	}
-
-	@Override
-	public void processExternalRequest(String requestMsg) {		
 	}
 }

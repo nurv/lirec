@@ -62,7 +62,13 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 	
 	private static final Name ACTION_CONTEXT = Name.ParseName("ActionContext()");
 
-	protected HashMap<String, IComponent> _components;
+	protected HashMap<String, IComponent> _generalComponents;
+	protected ArrayList<IProccessEmotionComponent> _processEmotionComponents;
+	protected ArrayList<IBehaviourComponent> _behaviourComponents;
+	protected ArrayList<IModelOfOtherComponent> _modelOfOtherComponents;
+	protected ArrayList<IProcessExternalRequestComponent> _processExternalRequestComponents;
+	protected ArrayList<IProcessPerceptionsComponent> _processPerceptionsComponents;
+	
 	protected EmotionalState _emotionalState;
 	protected Memory _memory;
 	protected boolean _shutdown;
@@ -103,7 +109,14 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 		// creating a new episode when the agent starts 13/09/10
 		_memory.getEpisodicMemory().StartEpisode(_memory);
 		_strat = this;
-		_components = new HashMap<String,IComponent>();
+		
+		_generalComponents = new HashMap<String,IComponent>();
+		_processEmotionComponents = new ArrayList<IProccessEmotionComponent>();
+		_behaviourComponents = new ArrayList<IBehaviourComponent>();
+		_modelOfOtherComponents = new ArrayList<IModelOfOtherComponent>();
+		_processExternalRequestComponents = new ArrayList<IProcessExternalRequestComponent>();
+		_processPerceptionsComponents = new ArrayList<IProcessPerceptionsComponent>();
+		
 		AgentSimulationTime.GetInstance(); //This call will initialize the timer for the agent's simulation time
 	}
 
@@ -232,9 +245,30 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 
 	public void addComponent(IComponent c)
 	{
-		this._components.put(c.name(), c);
+		this._generalComponents.put(c.name(), c);
+		if(c instanceof IProccessEmotionComponent)
+		{
+			_processEmotionComponents.add((IProccessEmotionComponent) c);
+		}
+		if(c instanceof IBehaviourComponent)
+		{
+			_behaviourComponents.add((IBehaviourComponent) c);
+		}
+		if(c instanceof IModelOfOtherComponent)
+		{
+			_modelOfOtherComponents.add((IModelOfOtherComponent) c);
+		}
+		if(c instanceof IProcessExternalRequestComponent)
+		{
+			_processExternalRequestComponents.add((IProcessExternalRequestComponent) c);
+		}
+		if(c instanceof IProcessPerceptionsComponent)
+		{
+			_processPerceptionsComponents.add((IProcessPerceptionsComponent) c);
+		}
+		
 		c.initialize(this);
-		AgentDisplayPanel panel = c.createComponentDisplayPanel(this);
+		AgentDisplayPanel panel = c.createDisplayPanel(this);
 		if(panel != null)
 		{
 			this._agentDisplay.AddPanel(panel, c.name(),"");
@@ -248,18 +282,23 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 
 	public IComponent getComponent(String name)
 	{
-		return this._components.get(name);
+		return this._generalComponents.get(name);
 	}
 
 	public Collection<IComponent> getComponents()
 	{
-		return this._components.values();
+		return this._generalComponents.values();
+	}
+	
+	public Collection<IProcessExternalRequestComponent> getProcessExternalRequestComponents()
+	{
+		return this._processExternalRequestComponents;
 	}
 
-	public void RemoveComponent(IComponent c)
+	/*public void RemoveComponent(IComponent c)
 	{
 		this._components.remove(c.name());
-	}
+	}*/
 
 
 	public void AppraiseSelfActionFailed(Event e)
@@ -351,7 +390,12 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 		this._saveDirectory = (String) s.readObject();
 		
 		this._strat = (IGetModelStrategy) s.readObject();
-		this._components = (HashMap<String,IComponent>) s.readObject();
+		this._generalComponents = (HashMap<String,IComponent>) s.readObject();
+		this._processEmotionComponents = (ArrayList<IProccessEmotionComponent>) s.readObject();
+		this._behaviourComponents = (ArrayList<IBehaviourComponent>) s.readObject();
+		this._modelOfOtherComponents = (ArrayList<IModelOfOtherComponent>) s.readObject();
+		this._processExternalRequestComponents = (ArrayList<IProcessExternalRequestComponent>) s.readObject();
+		this._processPerceptionsComponents = (ArrayList<IProcessPerceptionsComponent>) s.readObject();
 		
 		s.close();
 		in.close();
@@ -423,7 +467,7 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 			auxTarget = target;
 		}
 
-		for(IComponent c : this._components.values())
+		for(IProcessPerceptionsComponent c : this._processPerceptionsComponents)
 		{
 			c.lookAtPerception(this, subject, auxTarget);
 		}
@@ -435,7 +479,7 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 		
 		_memory.getSemanticMemory().Tell(applyPerspective(propertyName, _name), value);
 		
-		for(IComponent c : this._components.values())
+		for(IProcessPerceptionsComponent c : this._processPerceptionsComponents)
 		{
 			c.propertyChangedPerception(ToM, applyPerspective(propertyName, _name), value);
 		}
@@ -474,7 +518,7 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 
 	public void PerceiveEntityRemoved(String entity)
 	{
-		for(IComponent c : this._components.values())
+		for(IProcessPerceptionsComponent c : this._processPerceptionsComponents)
 		{
 			c.entityRemovedPerception(entity);
 		}
@@ -485,7 +529,7 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 	 *
 	 */
 	public void Reset() {
-		for(IComponent c : this._components.values())
+		for(IComponent c : this._generalComponents.values())
 		{
 			c.reset();
 		}
@@ -532,10 +576,9 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 					
 					_emotionalState.Decay();
 
-					for(IComponent c : this._components.values())
+					for(IComponent c : this._generalComponents.values())
 					{
-						c.decay(time);
-						c.update(this);
+						c.updateCycle(this, time);
 					}
 
 					//perceives new events
@@ -550,18 +593,18 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 							_memory.getSemanticMemory().Tell(ACTION_CONTEXT, e2.toName().toString());
 							
 							
-							for(IComponent c : this._components.values())
+							for(IComponent c : this._generalComponents.values())
 							{
-								c.update(e2,this);
+								c.perceiveEvent(this,e2);
 							}
 
 							appraisal = new AppraisalStructure();
 
 							while(appraisal.hasChanged())
 							{
-								for(IComponent c : this._components.values())
+								for(IComponent c : this._generalComponents.values())
 								{
-									c.appraisal(e2,appraisal,this);
+									c.appraisal(this,e2,appraisal);
 
 								}
 							}
@@ -573,9 +616,9 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 								activeEmotion = _emotionalState.AddEmotion(em, this);
 								if(activeEmotion != null)
 								{
-									for(IComponent c : this._components.values())
+									for(IProccessEmotionComponent c : this._processEmotionComponents)
 									{
-										c.emotionActivation(e2,activeEmotion,this);
+										c.emotionActivation(this,e2,activeEmotion);
 									}
 								}
 							}
@@ -611,7 +654,7 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 					}
 
 
-					for(IComponent c : this._components.values())
+					for(IBehaviourComponent c : this._behaviourComponents)
 					{
 						c.coping(this);
 					}
@@ -729,7 +772,12 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 			s.writeObject(_saveDirectory);
 			
 			s.writeObject(_strat);
-			s.writeObject(_components);
+			s.writeObject(_generalComponents);
+			s.writeObject(_processEmotionComponents);
+			s.writeObject(_behaviourComponents);
+			s.writeObject(_modelOfOtherComponents);
+			s.writeObject(_processExternalRequestComponents);
+			s.writeObject(_processPerceptionsComponents);
 			
 			s.flush();
 			s.close();
@@ -825,7 +873,12 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 			s.writeObject(_perceivedEvents);
 			
 			s.writeObject(_strat);
-			s.writeObject(_components);
+			s.writeObject(_generalComponents);
+			s.writeObject(_processEmotionComponents);
+			s.writeObject(_behaviourComponents);
+			s.writeObject(_modelOfOtherComponents);
+			s.writeObject(_processExternalRequestComponents);
+			s.writeObject(_processPerceptionsComponents);
 			
 			//s.writeObject(_saveDirectory);
 			AgentSimulationTime.SaveState(s);
@@ -878,7 +931,12 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 			this._perceivedEvents = (ArrayList<Event>) s.readObject();
 			
 			this._strat = (IGetModelStrategy) s.readObject();
-			this._components = (HashMap<String,IComponent>) s.readObject();
+			this._generalComponents = (HashMap<String,IComponent>) s.readObject();
+			this._processEmotionComponents = (ArrayList<IProccessEmotionComponent>) s.readObject();
+			this._behaviourComponents = (ArrayList<IBehaviourComponent>) s.readObject();
+			this._modelOfOtherComponents = (ArrayList<IModelOfOtherComponent>) s.readObject();
+			this._processExternalRequestComponents = (ArrayList<IProcessExternalRequestComponent>) s.readObject();
+			this._processPerceptionsComponents = (ArrayList<IProcessPerceptionsComponent>) s.readObject();
 			
 			AgentSimulationTime.LoadState(s);
 			//this._saveDirectory = (String) s.readObject();

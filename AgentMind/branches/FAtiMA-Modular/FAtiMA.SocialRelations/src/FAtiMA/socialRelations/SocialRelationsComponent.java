@@ -1,13 +1,15 @@
 package FAtiMA.socialRelations;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import FAtiMA.Core.AgentCore;
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.IComponent;
+import FAtiMA.Core.IModelOfOtherComponent;
+import FAtiMA.Core.IProccessEmotionComponent;
 import FAtiMA.Core.Display.AgentDisplayPanel;
 import FAtiMA.Core.emotionalState.ActiveEmotion;
 import FAtiMA.Core.emotionalState.AppraisalStructure;
@@ -17,15 +19,20 @@ import FAtiMA.Core.util.AgentLogger;
 import FAtiMA.Core.util.ConfigurationManager;
 import FAtiMA.Core.util.Constants;
 import FAtiMA.Core.util.enumerables.EmotionType;
-import FAtiMA.Core.wellFormedNames.Name;
 
 
-public class SocialRelationsComponent implements IComponent {
+public class SocialRelationsComponent implements IComponent, IModelOfOtherComponent, IProccessEmotionComponent {
 	
 	public static final String NAME = "SocialRelations";
+	private ArrayList<String> _parsingFiles;
 	
-	public SocialRelationsComponent()
-	{	
+	public SocialRelationsComponent(ArrayList<String> extraParsingFiles)
+	{
+		_parsingFiles = new ArrayList<String>();
+		_parsingFiles.add(ConfigurationManager.getGoalsFile());
+		_parsingFiles.add(ConfigurationManager.getPersonalityFile());
+		_parsingFiles.add(ConfigurationManager.getActionsFile());
+		_parsingFiles.addAll(extraParsingFiles);
 	}
 	
 	private void loadRelations(AgentModel aM){
@@ -36,10 +43,11 @@ public class SocialRelationsComponent implements IComponent {
 		try{
 			SAXParserFactory factory = SAXParserFactory.newInstance();
 			SAXParser parser = factory.newSAXParser();
-			parser.parse(new File(ConfigurationManager.getActionsFile()),relationsLoader);
-			parser.parse(new File(ConfigurationManager.getGoalsFile()),relationsLoader);
-			parser.parse(new File(ConfigurationManager.getPersonalityFile()),relationsLoader);
 			
+			for(String file : _parsingFiles)
+			{
+				parser.parse(new File(file), relationsLoader);
+			}			
 
 		}catch(Exception e){
 			throw new RuntimeException("Error on Loading the Social Relations XML Files:" + e);
@@ -61,20 +69,16 @@ public class SocialRelationsComponent implements IComponent {
 	}
 
 	@Override
-	public void decay(long time) {	
-	}
-
-	@Override
-	public void update(AgentModel am) {
+	public void updateCycle(AgentModel am, long time) {
 	}
 	
 	@Override
-	public void update(Event e, AgentModel am)
+	public void perceiveEvent(AgentModel am, Event e)
 	{
 	}
 
 	@Override
-	public void appraisal(Event e, AppraisalStructure as, AgentModel am) {
+	public void appraisal(AgentModel am, Event e, AppraisalStructure as) {
 		if(e.GetSubject().equals(Constants.SELF) && e.GetAction().equals("look-at"))
 		{
 			int relationShip = Math.round(LikeRelation.getRelation(Constants.SELF, e.GetTarget()).getValue(am.getMemory()));
@@ -86,7 +90,7 @@ public class SocialRelationsComponent implements IComponent {
 	}
 
 	@Override
-	public void emotionActivation(Event e, ActiveEmotion em, AgentModel am) {
+	public void emotionActivation(AgentModel am, Event e, ActiveEmotion em) {
 		Memory m = am.getMemory();
 		switch(em.GetType())
 		{
@@ -159,45 +163,14 @@ public class SocialRelationsComponent implements IComponent {
 		}
 	}
 	
-	
-
-	@Override
-	public void coping(AgentModel am) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void propertyChangedPerception(String ToM, Name propertyName,
-			String value) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void lookAtPerception(AgentCore ag, String subject, String target) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void entityRemovedPerception(String entity) {
-		// TODO Auto-generated method stub
-		
-	}
 
 	@Override
 	public IComponent createModelOfOther() {
-		return new SocialRelationsComponent();
+		return new SocialRelationsComponent(null);
 	}
 
 	@Override
-	public AgentDisplayPanel createComponentDisplayPanel(AgentModel am) {
+	public AgentDisplayPanel createDisplayPanel(AgentModel am) {
 		return new SocialRelationsPanel();
 	}
-
-	@Override
-	public void processExternalRequest(String requestMsg) {		
-	}
-
 }

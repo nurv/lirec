@@ -41,7 +41,7 @@ public class ModelOfOtherPanel extends AgentDisplayPanel {
 	     
 	     for(IComponent c: m.getComponents())
 	     {
-	    	 panel = c.createComponentDisplayPanel(m);
+	    	 panel = c.createDisplayPanel(m);
 	    	 if(panel != null)
 	    	 {
 	    		 _components.addTab(c.name(),null,panel);

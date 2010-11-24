@@ -109,6 +109,18 @@ public class ConfigurationManager {
 		return getInstance().getConfigurationValue(SEX);	
 	}
 	
+	public static String getMindPath()
+	{
+		if(VersionChecker.runningOnAndroid())
+		{
+			return AgentCore.MIND_PATH_ANDROID;
+		}
+		else
+		{
+			return AgentCore.MIND_PATH_ANDROID;
+		}
+	}
+	
 	public static String getName(){ 
 		return getInstance().getConfigurationValue(NAME);	
 	}

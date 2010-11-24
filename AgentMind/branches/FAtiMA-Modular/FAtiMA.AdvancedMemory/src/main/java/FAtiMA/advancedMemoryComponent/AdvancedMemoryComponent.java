@@ -38,21 +38,19 @@ import java.util.StringTokenizer;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import FAtiMA.Core.AgentCore;
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.IComponent;
+import FAtiMA.Core.IProcessExternalRequestComponent;
 import FAtiMA.Core.Display.AgentDisplayPanel;
-import FAtiMA.Core.emotionalState.ActiveEmotion;
 import FAtiMA.Core.emotionalState.AppraisalStructure;
 import FAtiMA.Core.memory.episodicMemory.ActionDetail;
 import FAtiMA.Core.memory.episodicMemory.EpisodicMemory;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.util.AgentLogger;
 import FAtiMA.Core.util.ConfigurationManager;
-import FAtiMA.Core.wellFormedNames.Name;
 
 
-public class AdvancedMemoryComponent implements Serializable, IComponent {
+public class AdvancedMemoryComponent implements Serializable, IComponent, IProcessExternalRequestComponent {
 
 	private static final long serialVersionUID = 1L;
 	public static final String NAME = "AdvancedMemory";
@@ -180,27 +178,17 @@ public class AdvancedMemoryComponent implements Serializable, IComponent {
 	}
 
 	@Override
-	public void decay(long time) {
-	}
-
-	@Override
-	public void update(AgentModel am) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void update(Event e, AgentModel am) {
+	public void updateCycle(AgentModel am, long time) {
 		// TODO Auto-generated method stub
 	}
 
 	@Override
-	public IComponent createModelOfOther() {
-		return null;
+	public void perceiveEvent(AgentModel am, Event e) {
+		// TODO Auto-generated method stub
 	}
 
 	@Override
-	public void appraisal(Event e, AppraisalStructure as, AgentModel am) {
+	public void appraisal(AgentModel am, Event e, AppraisalStructure as) {
 		
 		//appraisal from memory
 		ActionDetail ad = new ActionDetail(0,e.GetSubject(),
@@ -223,38 +211,7 @@ public class AdvancedMemoryComponent implements Serializable, IComponent {
 	}
 
 	@Override
-	public void emotionActivation(Event e, ActiveEmotion em, AgentModel am) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void coping(AgentModel am) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void propertyChangedPerception(String ToM, Name propertyName,
-			String value) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void lookAtPerception(AgentCore ag, String subject, String target) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void entityRemovedPerception(String entity) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public AgentDisplayPanel createComponentDisplayPanel(AgentModel am) {
+	public AgentDisplayPanel createDisplayPanel(AgentModel am) {
 		return new GeneralMemoryPanel(this);
 	}
 

@@ -9,7 +9,6 @@ import java.util.Iterator;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import FAtiMA.Core.AgentCore;
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.IComponent;
 import FAtiMA.Core.Display.AgentDisplayPanel;
@@ -19,12 +18,10 @@ import FAtiMA.Core.deliberativeLayer.IGetUtilityForOthers;
 import FAtiMA.Core.deliberativeLayer.IOptionsStrategy;
 import FAtiMA.Core.deliberativeLayer.IUtilityStrategy;
 import FAtiMA.Core.deliberativeLayer.goals.ActivePursuitGoal;
-import FAtiMA.Core.emotionalState.ActiveEmotion;
 import FAtiMA.Core.emotionalState.AppraisalStructure;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.util.AgentLogger;
 import FAtiMA.Core.util.Constants;
-import FAtiMA.Core.util.VersionChecker;
 import FAtiMA.Core.util.enumerables.CulturalDimensionType;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.SubstitutionSet;
@@ -37,14 +34,14 @@ public class CulturalDimensionsComponent implements IComponent, IOptionsStrategy
 	final float ALPHA = 0.3f;
 	final float POWER_DISTANCE_K = 1.2f;
 	
-	private String cultureName;
+	private String cultureFile;
 	private int[] _dimensionalValues;	
 	private ArrayList<Ritual> _rituals;
 	private HashMap<String,Ritual> _ritualOptions;
 	
 
-	public CulturalDimensionsComponent(String cultureName){
-		this.cultureName = cultureName;
+	public CulturalDimensionsComponent(String cultureFile){
+		this.cultureFile = cultureFile;
 		_rituals = new ArrayList<Ritual>();
 		_ritualOptions = new HashMap<String,Ritual>();
 		_dimensionalValues = new int[CulturalDimensionType.numberOfTypes()];
@@ -63,13 +60,13 @@ public class CulturalDimensionsComponent implements IComponent, IOptionsStrategy
 		aM.getRemoteAgent().setProcessActionStrategy(new CultureProcessActionStrategy());
 	}
 	
-	public void update(Event e, AgentModel am)
+	public void perceiveEvent(AgentModel am, Event e)
 	{
 		this.addRitualOptions(e,am);
 	}
 	
 	@Override
-	public void appraisal(Event e, AppraisalStructure as, AgentModel am)
+	public void appraisal(AgentModel am, Event e, AppraisalStructure as)
 	{
 		float desirabilityForOther = 0;
 		AppraisalStructure appraisalOfOther;
@@ -141,16 +138,14 @@ public class CulturalDimensionsComponent implements IComponent, IOptionsStrategy
 	
 	private void loadCulture(AgentModel aM){
 
-		AgentLogger.GetInstance().log("LOADING Culture: " + this.cultureName);
+		AgentLogger.GetInstance().log("LOADING Culture: " + this.cultureFile);
 		CultureLoaderHandler cultureLoader = new CultureLoaderHandler(aM,this);
 		
 		try{
 			SAXParserFactory factory = SAXParserFactory.newInstance();
 			SAXParser parser = factory.newSAXParser();
-			if (VersionChecker.runningOnAndroid())
-				parser.parse(new File(AgentCore.MIND_PATH_ANDROID + cultureName + ".xml"), cultureLoader);		
-			else	
-				parser.parse(new File(AgentCore.MIND_PATH + cultureName + ".xml"), cultureLoader);
+				
+				parser.parse(new File(this.cultureFile), cultureLoader);
 
 			for(Ritual r : cultureLoader.GetRituals(aM)){
 				this._rituals.add(r);
@@ -254,12 +249,6 @@ public class CulturalDimensionsComponent implements IComponent, IOptionsStrategy
 	@Override
 	public void reset(){}
 	
-	@Override
-	public void decay(long time){}	
-	@Override
-	public void lookAtPerception(AgentCore ag, String subject, String target) {}	
-	@Override
-	public void propertyChangedPerception(String ToM, Name propertyName,String value) {}
 
 	@Override
 	public Collection<? extends ActivePursuitGoal> options(AgentModel am) {
@@ -306,38 +295,13 @@ public class CulturalDimensionsComponent implements IComponent, IOptionsStrategy
 	}
 
 	@Override
-	public void update(AgentModel am) {
+	public void updateCycle(AgentModel am,long time) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void coping(AgentModel am) {
-	}
-
-	@Override
-	public void emotionActivation(Event e, ActiveEmotion em, AgentModel am) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void entityRemovedPerception(String entity) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public IComponent createModelOfOther() {
+	public AgentDisplayPanel createDisplayPanel(AgentModel am) {
 		return null;
-	}
-
-	@Override
-	public AgentDisplayPanel createComponentDisplayPanel(AgentModel am) {
-		return null;
-	}
-
-	@Override
-	public void processExternalRequest(String requestMsg) {
 	}	
 }

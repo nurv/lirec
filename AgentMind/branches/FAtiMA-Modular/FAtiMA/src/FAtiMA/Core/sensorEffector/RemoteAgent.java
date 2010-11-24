@@ -89,6 +89,7 @@ import FAtiMA.Core.AgentCore;
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.AgentSimulationTime;
 import FAtiMA.Core.IComponent;
+import FAtiMA.Core.IProcessExternalRequestComponent;
 import FAtiMA.Core.ValuedAction;
 import FAtiMA.Core.emotionalState.EmotionalState;
 import FAtiMA.Core.util.AgentLogger;
@@ -323,9 +324,9 @@ public abstract class RemoteAgent extends SocketListener {
 			}
 			else
 			{
-				for(IComponent c : _agent.getComponents())
+				for(IProcessExternalRequestComponent c : _agent.getProcessExternalRequestComponents())
 				{
-					if(msgType.equals(c.name()))
+					if(msgType.equals(((IComponent)c).name()))
 					{
 						c.processExternalRequest(perception);
 					}
