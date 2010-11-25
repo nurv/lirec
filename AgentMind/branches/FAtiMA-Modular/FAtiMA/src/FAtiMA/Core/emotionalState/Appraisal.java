@@ -196,14 +196,7 @@ public abstract class Appraisal {
 	private static BaseEmotion GenerateEmotionForOther(AgentModel am, Event event, float desirability, AppraisalStructure appraisalOfOther, String other)
 	{
 		float desirabilityForOther = appraisalOfOther.getAppraisalVariable(AppraisalStructure.DESIRABILITY);
-		float targetBias = 0;
-		float subjectBias = 0;
-		float bias;
-		float newDesirability = 0;
-	
-		
-		String subject = event.GetSubject();
-		
+			
 		
 		if(desirabilityForOther == 0) return null;
 		

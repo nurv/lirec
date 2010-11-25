@@ -9,7 +9,7 @@ import FAtiMA.Core.AgentCore;
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.IComponent;
 import FAtiMA.Core.IGetModelStrategy;
-import FAtiMA.Core.IProccessEmotionComponent;
+import FAtiMA.Core.IProcessEmotionComponent;
 import FAtiMA.Core.deliberativeLayer.DeliberativeProcess;
 import FAtiMA.Core.emotionalState.ActiveEmotion;
 import FAtiMA.Core.emotionalState.Appraisal;
@@ -33,7 +33,7 @@ public class ModelOfOther implements AgentModel, Serializable {
 	private EmotionalState _es;
 	private Memory _mem;
 	private HashMap<String,IComponent> _components;
-	private ArrayList<IProccessEmotionComponent> _processEmotionComponents;
+	private ArrayList<IProcessEmotionComponent> _processEmotionComponents;
 	private ReactiveProcess _reactiveProcess;
 	private DeliberativeProcess _deliberativeProcess;
 	
@@ -43,7 +43,7 @@ public class ModelOfOther implements AgentModel, Serializable {
 		_es = new EmotionalState();
 		_mem = new Memory();
 		_components = new HashMap<String,IComponent>();
-		_processEmotionComponents = new ArrayList<IProccessEmotionComponent>();
+		_processEmotionComponents = new ArrayList<IProcessEmotionComponent>();
 		
 		for(EmotionDisposition ed : ag.getEmotionalState().getEmotionDispositions())
 		{
@@ -76,6 +76,8 @@ public class ModelOfOther implements AgentModel, Serializable {
 	
 	public void updateCycle(long time)
 	{
+		_es.Decay();
+		
 		for(IComponent c : _components.values())
 		{
 			c.updateCycle(this,time);
@@ -84,6 +86,9 @@ public class ModelOfOther implements AgentModel, Serializable {
 	
 	public void perceiveEvent(Event e)
 	{
+		_mem.getEpisodicMemory().StoreAction(_mem, e);
+		_mem.getSemanticMemory().Tell(AgentCore.ACTION_CONTEXT, e.toName().toString());
+		
 		for(IComponent c : _components.values())
 		{
 			c.perceiveEvent(this,e);
@@ -107,7 +112,7 @@ public class ModelOfOther implements AgentModel, Serializable {
 			activeEmotion = _es.AddEmotion(em, this);
 			if(activeEmotion != null)
 			{
-				for(IProccessEmotionComponent c : this._processEmotionComponents)
+				for(IProcessEmotionComponent c : this._processEmotionComponents)
 				{
 					c.emotionActivation(this,e,activeEmotion);
 				}
@@ -118,7 +123,6 @@ public class ModelOfOther implements AgentModel, Serializable {
 	
 	public void addComponent(IComponent c)
 	{
-		c.initialize(this);
 		if(c.name().equals(ReactiveProcess.NAME))
 		{
 			_reactiveProcess = (ReactiveProcess) c;
@@ -129,9 +133,9 @@ public class ModelOfOther implements AgentModel, Serializable {
 			return;
 		}
 		
-		if(c instanceof IProccessEmotionComponent)
+		if(c instanceof IProcessEmotionComponent)
 		{
-			_processEmotionComponents.add((IProccessEmotionComponent)c);
+			_processEmotionComponents.add((IProcessEmotionComponent)c);
 		}
 		
 		_components.put(c.name(),c);

@@ -9,7 +9,7 @@ import javax.xml.parsers.SAXParserFactory;
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.IComponent;
 import FAtiMA.Core.IModelOfOtherComponent;
-import FAtiMA.Core.IProccessEmotionComponent;
+import FAtiMA.Core.IProcessEmotionComponent;
 import FAtiMA.Core.Display.AgentDisplayPanel;
 import FAtiMA.Core.emotionalState.ActiveEmotion;
 import FAtiMA.Core.emotionalState.AppraisalStructure;
@@ -21,7 +21,7 @@ import FAtiMA.Core.util.Constants;
 import FAtiMA.Core.util.enumerables.EmotionType;
 
 
-public class SocialRelationsComponent implements IComponent, IModelOfOtherComponent, IProccessEmotionComponent {
+public class SocialRelationsComponent implements IComponent, IModelOfOtherComponent, IProcessEmotionComponent {
 	
 	public static final String NAME = "SocialRelations";
 	private ArrayList<String> _parsingFiles;
@@ -166,7 +166,7 @@ public class SocialRelationsComponent implements IComponent, IModelOfOtherCompon
 
 	@Override
 	public IComponent createModelOfOther() {
-		return new SocialRelationsComponent(null);
+		return new SocialRelationsComponent(new ArrayList<String>());
 	}
 
 	@Override

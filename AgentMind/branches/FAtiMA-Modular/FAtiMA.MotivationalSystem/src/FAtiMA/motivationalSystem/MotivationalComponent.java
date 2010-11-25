@@ -391,24 +391,6 @@ public class MotivationalComponent implements Serializable, Cloneable, IComponen
 		//System.out.println("Certainty after update" + _selfMotivators[MotivatorType.CERTAINTY].GetIntensity());
 	}
 	
-	
-	/**TODO find a decay formula
-	 * Decays all needs according to the System Time
-	 */
-	public void decay(long currentTime) {
-
-		if (currentTime >= _lastTime + 1000) {
-			_lastTime = currentTime;
-			
-			
-			//decay self motivators
-			for(int i = 0; i < _motivators.length; i++){
-				_motivators[i].DecayMotivator();
-			}
-			
-		}
-	}
-	
 
 	/**
 	 * Converts the motivational state to XML
@@ -490,12 +472,21 @@ public class MotivationalComponent implements Serializable, Cloneable, IComponen
 	@Override
 	public void updateCycle(AgentModel am, long time) {
 		_appraisals.clear();
+		if (time >= _lastTime + 1000) {
+			_lastTime = time;
+			
+			//decay self motivators
+			for(int i = 0; i < _motivators.length; i++){
+				_motivators[i].DecayMotivator();
+			}
+			
+		}
 	}
 
 
 	@Override
 	public IComponent createModelOfOther() {
-		MotivationalComponent ms = new MotivationalComponent(null);
+		MotivationalComponent ms = new MotivationalComponent(new ArrayList<String>());
 		Motivator m2;
 		
 		for(Motivator m : _motivators)

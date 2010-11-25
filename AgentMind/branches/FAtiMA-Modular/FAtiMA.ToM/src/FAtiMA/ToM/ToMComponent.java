@@ -26,14 +26,15 @@ public class ToMComponent implements IComponent, IProcessPerceptionsComponent, I
 	protected String _name;
 	protected HashMap<String,ModelOfOther> _ToM;
 	protected ArrayList<String> _nearbyAgents;
-	protected HashMap<Event,AppraisalStructure> _appraisalsOfOthers;
+	protected HashMap<String,AppraisalStructure> _appraisalsOfOthers;
 	
 	
 	public ToMComponent(String agentName)
 	{
 		this._name = agentName;
 		this._nearbyAgents = new ArrayList<String>();
-		this._appraisalsOfOthers = new HashMap<Event,AppraisalStructure>();
+		this._appraisalsOfOthers = new HashMap<String,AppraisalStructure>();
+		this._ToM = new HashMap<String,ModelOfOther>();
 	}
 	
 	private void addNearbyAgent(String agent)
@@ -95,7 +96,6 @@ public class ToMComponent implements IComponent, IProcessPerceptionsComponent, I
 	@Override
 	public void reset() {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
@@ -112,10 +112,13 @@ public class ToMComponent implements IComponent, IProcessPerceptionsComponent, I
 	@Override
 	public void perceiveEvent(AgentModel am, Event e)
 	{
+		Event e2 = e.RemovePerspective(_name);
+		Event e3;
 		for(String s : _nearbyAgents)
 		{
 			ModelOfOther m = _ToM.get(s);
-			m.perceiveEvent(e);
+			e3 = e2.ApplyPerspective(s);
+			m.perceiveEvent(e3);
 		}	
 	}
 
@@ -126,7 +129,7 @@ public class ToMComponent implements IComponent, IProcessPerceptionsComponent, I
 		Event e3;
 		
 		//one time appraisal for each event, so if the event was already appraised this cycle, just return
-		if(_appraisalsOfOthers.containsKey(e2))
+		if(_appraisalsOfOthers.containsKey(e2.toString()))
 		{
 			return;
 		}
@@ -142,6 +145,8 @@ public class ToMComponent implements IComponent, IProcessPerceptionsComponent, I
 			
 			as.SetAppraisalOfOther(s, otherAS);
 		}
+		
+		_appraisalsOfOthers.put(e2.toString(), as);
 	}
 	
 	public AgentModel execute(Symbol ToM)
@@ -193,8 +198,8 @@ public class ToMComponent implements IComponent, IProcessPerceptionsComponent, I
 			{
 				if(isPerson(ag, target))
 				{
-					addNearbyAgent(target);
 					initializeModelOfOther(ag, target);
+					addNearbyAgent(target);
 				}
 			}
 			return;

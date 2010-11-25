@@ -60,10 +60,10 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 	public static final String MIND_PATH_ANDROID = "sdcard/data/characters/minds/";
 	public static final String SCENARIO_FILENAME = "LIRECScenarios.xml";
 	
-	private static final Name ACTION_CONTEXT = Name.ParseName("ActionContext()");
+	public static final Name ACTION_CONTEXT = Name.ParseName("ActionContext()");
 
 	protected HashMap<String, IComponent> _generalComponents;
-	protected ArrayList<IProccessEmotionComponent> _processEmotionComponents;
+	protected ArrayList<IProcessEmotionComponent> _processEmotionComponents;
 	protected ArrayList<IBehaviourComponent> _behaviourComponents;
 	protected ArrayList<IModelOfOtherComponent> _modelOfOtherComponents;
 	protected ArrayList<IProcessExternalRequestComponent> _processExternalRequestComponents;
@@ -111,7 +111,7 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 		_strat = this;
 		
 		_generalComponents = new HashMap<String,IComponent>();
-		_processEmotionComponents = new ArrayList<IProccessEmotionComponent>();
+		_processEmotionComponents = new ArrayList<IProcessEmotionComponent>();
 		_behaviourComponents = new ArrayList<IBehaviourComponent>();
 		_modelOfOtherComponents = new ArrayList<IModelOfOtherComponent>();
 		_processExternalRequestComponents = new ArrayList<IProcessExternalRequestComponent>();
@@ -246,9 +246,9 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 	public void addComponent(IComponent c)
 	{
 		this._generalComponents.put(c.name(), c);
-		if(c instanceof IProccessEmotionComponent)
+		if(c instanceof IProcessEmotionComponent)
 		{
-			_processEmotionComponents.add((IProccessEmotionComponent) c);
+			_processEmotionComponents.add((IProcessEmotionComponent) c);
 		}
 		if(c instanceof IBehaviourComponent)
 		{
@@ -391,7 +391,7 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 		
 		this._strat = (IGetModelStrategy) s.readObject();
 		this._generalComponents = (HashMap<String,IComponent>) s.readObject();
-		this._processEmotionComponents = (ArrayList<IProccessEmotionComponent>) s.readObject();
+		this._processEmotionComponents = (ArrayList<IProcessEmotionComponent>) s.readObject();
 		this._behaviourComponents = (ArrayList<IBehaviourComponent>) s.readObject();
 		this._modelOfOtherComponents = (ArrayList<IModelOfOtherComponent>) s.readObject();
 		this._processExternalRequestComponents = (ArrayList<IProcessExternalRequestComponent>) s.readObject();
@@ -457,6 +457,16 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 	public void PerceiveLookAt(String subject, String target)
 	{
 		String auxTarget;
+		String auxSubject;
+		
+		if(subject.equals(_name))
+		{
+			auxSubject = Constants.SELF;
+		}
+		else
+		{
+			auxSubject = subject;
+		}
 
 		if(target.equals(_name))
 		{
@@ -469,7 +479,7 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 
 		for(IProcessPerceptionsComponent c : this._processPerceptionsComponents)
 		{
-			c.lookAtPerception(this, subject, auxTarget);
+			c.lookAtPerception(this, auxSubject, auxTarget);
 		}
 	}
 
@@ -549,7 +559,6 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 	public void Run() {
 		ValuedAction action;
 		AppraisalStructure appraisal;
-		AppraisalStructure a2;
 		ArrayList<BaseEmotion> emotions;
 		ActiveEmotion activeEmotion;
 
@@ -616,7 +625,7 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 								activeEmotion = _emotionalState.AddEmotion(em, this);
 								if(activeEmotion != null)
 								{
-									for(IProccessEmotionComponent c : this._processEmotionComponents)
+									for(IProcessEmotionComponent c : this._processEmotionComponents)
 									{
 										c.emotionActivation(this,e2,activeEmotion);
 									}
@@ -932,7 +941,7 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 			
 			this._strat = (IGetModelStrategy) s.readObject();
 			this._generalComponents = (HashMap<String,IComponent>) s.readObject();
-			this._processEmotionComponents = (ArrayList<IProccessEmotionComponent>) s.readObject();
+			this._processEmotionComponents = (ArrayList<IProcessEmotionComponent>) s.readObject();
 			this._behaviourComponents = (ArrayList<IBehaviourComponent>) s.readObject();
 			this._modelOfOtherComponents = (ArrayList<IModelOfOtherComponent>) s.readObject();
 			this._processExternalRequestComponents = (ArrayList<IProcessExternalRequestComponent>) s.readObject();
