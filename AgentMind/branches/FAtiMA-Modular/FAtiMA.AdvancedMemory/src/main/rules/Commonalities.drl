@@ -7,7 +7,7 @@
 # exact same matching values, if yes, a common event structure is formed. A set of common 
 # structures is return as a result of the query
  
-package FAtiMA.advancedMemoryComponent;
+package FAtiMA.advancedMemoryComponent; 
 
 #list any import classes here.
 
@@ -18,7 +18,7 @@ rule "create pair"
 	no-loop true
 	salience 100
 	when
-		$q: GQuery()
+		$q: CommonQuery()
 		$ad1: ActionDetail($id1 : ID) 
 		$ad2: ActionDetail($id2 : ID > $id1)
 		not ( exists EventPair(actionDetail == $ad1, ID2 == $id2))
@@ -184,7 +184,7 @@ rule "max match"
 	no-loop true
 	salience 25
 	when 
-		$q: GQuery($m : maxNumMatch)
+		$q: CommonQuery($m : maxNumMatch)
 		$ep: EventPair($n : numMatch > $m)
 	then
 		modify ($q)
@@ -197,7 +197,7 @@ rule "not max match"
 	no-loop true
 	salience 25
 	when 
-		$q: GQuery($m : maxNumMatch)
+		$q: CommonQuery($m : maxNumMatch)
 		$ep: EventPair($n : numMatch < $m)
 	then
 		retract ($ep);
@@ -232,7 +232,7 @@ end
 rule "end match" 
 	no-loop true
 	when 
-		$q: GQuery()
+		$q: CommonQuery()
 		$ce: CommonEvents($ids: IDs, $mv : matchingValues)
 	then
 		modify ($q)

@@ -35,7 +35,7 @@ import java.util.Hashtable;
 
 import FAtiMA.Core.memory.episodicMemory.ActionDetail;
 
-public class Commonalities extends RuleEngine implements ICommonalities {
+public class Commonalities extends RuleEngine {
 	/**
 	 * for serialization purposes
 	 */
@@ -44,12 +44,12 @@ public class Commonalities extends RuleEngine implements ICommonalities {
 	private static final String _gRulePath = "Commonalities.drl";
 	
 	private Hashtable<String, Float> _results;
-	private GQuery _gQuery;
+	private CommonQuery _gQuery;
 	
 	public Commonalities()
 	{
 		super(_gRulePath);
-		_gQuery = new GQuery();		
+		_gQuery = new CommonQuery();		
 	}
 	
 	/**

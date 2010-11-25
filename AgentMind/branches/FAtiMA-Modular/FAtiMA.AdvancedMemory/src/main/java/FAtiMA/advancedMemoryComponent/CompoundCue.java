@@ -35,7 +35,7 @@ import FAtiMA.Core.memory.episodicMemory.ActionDetail;
 import FAtiMA.Core.memory.episodicMemory.EpisodicMemory;
 
 
-public class CompoundCue extends RuleEngine implements ICompoundCue {
+public class CompoundCue extends RuleEngine {
 	
 	/**
 	 * for serialization purposes

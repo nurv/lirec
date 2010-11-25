@@ -32,6 +32,7 @@ package FAtiMA.advancedMemoryComponent;
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.ListIterator;
 import java.util.StringTokenizer;
 
@@ -39,6 +40,7 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import FAtiMA.Core.AgentModel;
+import FAtiMA.Core.AgentSimulationTime;
 import FAtiMA.Core.IComponent;
 import FAtiMA.Core.IProcessExternalRequestComponent;
 import FAtiMA.Core.Display.AgentDisplayPanel;
@@ -48,6 +50,7 @@ import FAtiMA.Core.memory.episodicMemory.EpisodicMemory;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.util.AgentLogger;
 import FAtiMA.Core.util.ConfigurationManager;
+
 
 
 public class AdvancedMemoryComponent implements Serializable, IComponent, IProcessExternalRequestComponent {
@@ -65,6 +68,9 @@ public class AdvancedMemoryComponent implements Serializable, IComponent, IProce
 	private Generalisation _generalisation;
 	private CompoundCue _compoundCue;
 	private SpreadActivate _spreadActivate;
+	private Commonalities _commonalities;
+	private EpisodicMemory _episodicMemory;
+	private long _lastTime;
 	
 	public AdvancedMemoryComponent()
 	{
@@ -72,6 +78,8 @@ public class AdvancedMemoryComponent implements Serializable, IComponent, IProce
 		this._generalisation = new Generalisation();
 		this._compoundCue = new CompoundCue();
 		this._spreadActivate = new SpreadActivate();
+		this._commonalities = new Commonalities();
+		this._lastTime = AgentSimulationTime.GetInstance().Time();
 	}
 	
 	public CompoundCue getCompoundCue()
@@ -89,11 +97,11 @@ public class AdvancedMemoryComponent implements Serializable, IComponent, IProce
 	 */
 	public void generalise(EpisodicMemory episodicMemory)
 	{
-		ArrayList<AttributeItemSet> itemSet = this._generalisation.generalise(episodicMemory);
+		ArrayList<AttributeItemSet> itemSet = this._generalisation.generalise(_episodicMemory);
 		this.AddGER(itemSet);		
 	}
 	
-	private void loadGeneralMemoryConditions(AgentModel ag){
+	private void loadMemoryProcessesConditions(AgentModel ag){
 
 		AgentLogger.GetInstance().log("LOADING GeneralMemory: ");
 		
@@ -141,6 +149,26 @@ public class AdvancedMemoryComponent implements Serializable, IComponent, IProce
 		}
 	}
 	
+	/**
+	 * Extract known information
+	 * @param 
+	 * @return
+	 * added by Meiyii 19/11/09
+	 */
+	private ArrayList<String> ExtractKnownInfo(String known)
+	{
+		ArrayList<String> knownInfo = new ArrayList<String>();
+			
+		StringTokenizer st = new StringTokenizer(known, "*");
+		while(st.hasMoreTokens())
+		{
+			String knownStr = st.nextToken();
+			knownInfo.add(knownStr);
+			System.out.println("Known String " + knownStr);
+		}
+		return knownInfo;
+	}
+	
 	public ArrayList<GER> getAllGERs()
 	{
 		return this._gers;
@@ -167,19 +195,22 @@ public class AdvancedMemoryComponent implements Serializable, IComponent, IProce
 
 	@Override
 	public void initialize(AgentModel am) {
-		loadGeneralMemoryConditions(am);
-		
+		_episodicMemory = am.getMemory().getEpisodicMemory();
+		loadMemoryProcessesConditions(am);
 	}
 
 	@Override
 	public void reset() {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void updateCycle(AgentModel am, long time) {
-		// TODO Auto-generated method stub
+		if (time >= _lastTime + 86400000) {
+			_lastTime = time;
+			
+			generalise(am.getMemory().getEpisodicMemory());
+		}
 	}
 
 	@Override
@@ -232,8 +263,8 @@ public class AdvancedMemoryComponent implements Serializable, IComponent, IProce
 		
 	    if(msgType.equals(SA_MEMORY))
 		{
-			//TODO ver isto depois com a refactorização
-			/*st = new StringTokenizer(perception, "$");
+			
+			st = new StringTokenizer(perception, "$");
 			String question = st.nextToken();
 			String known = "";
 			while(st.hasMoreTokens())
@@ -242,17 +273,18 @@ public class AdvancedMemoryComponent implements Serializable, IComponent, IProce
 			}					
 			System.out.println("question " + question);
 			ArrayList<String> knownInfo = ExtractKnownInfo(known);
-			_agent.getSpreadActivate().Spread(question, knownInfo, _agent.getMemory().getEpisodicMemory());
+			_spreadActivate.Spread(question, knownInfo, _episodicMemory);
 			
-			Hashtable<String, Integer> saResult = _agent.getSpreadActivate().getSAResults();
+			
+			Hashtable<String, Integer> saResult = _spreadActivate.getSAResults();
 			
 			for(String result : saResult.keySet())
 			{
 				System.out.println(question + " " + result + " frequency " + saResult.get(result));
 			}
 			
-			/*_agent.getCommonalities().eventCommonalities(_agent.getSpreadActivate().getDetails());
-			Hashtable<ArrayList<Integer>, Hashtable<String, String>> gResult = _agent.getCommonalities().getMatch();
+			_commonalities.eventCommonalities(_spreadActivate.getDetails());
+			Hashtable<ArrayList<Integer>,Hashtable<String, String>> gResult = _commonalities.getMatch();
 		
 			for(ArrayList<Integer> result : gResult.keySet())
 			{
@@ -263,19 +295,19 @@ public class AdvancedMemoryComponent implements Serializable, IComponent, IProce
 				{
 					System.out.println("match in Remote Agent " + matchingValues);
 				}
-			}*/
+			}
 			
 			System.out.println("\n\n");
 		}
 		else if(msgType.equals(CC_MEMORY))
 		{
 			/*int index = Math.min(8, (int) (Math.random()*10));
-			ActionDetail event = _agent.getMemory().getEpisodicMemory().getDetails().get(index);
-			_agent.getCompoundCue().Match(event, _agent.getMemory().getEpisodicMemory());
+			ActionDetail event = _episodicMemory.getDetails().get(index);
+			_compoundCue.Match(event, _episodicMemory);
 			System.out.println("\nEvent ID to match on " + event.getID());
 			
-			Hashtable<Integer, Float>  results = _agent.getCompoundCue().getCCResults();
-			Iterator it = results.keySet().iterator();
+			Hashtable<Integer, Float>  results = _compoundCue.getCCResults();
+			Iterator<E> it = results.keySet().iterator();
 			while (it.hasNext())
 			{
 				int id = (Integer) it.next();
@@ -285,7 +317,7 @@ public class AdvancedMemoryComponent implements Serializable, IComponent, IProce
 		}
 		else if(msgType.equals(G_MEMORY))
 		{
-			//generalise();
+			generalise(_episodicMemory);
 		}
 	}
 	
