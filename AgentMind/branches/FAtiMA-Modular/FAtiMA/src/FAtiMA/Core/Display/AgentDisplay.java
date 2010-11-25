@@ -64,7 +64,6 @@ public class AgentDisplay {
 		panel = new EmotionalStatePanel();
 		_displayPane.addTab("Emotional State",null,panel,"displays the character's emotional state");
 		
-		
 		panel = new KnowledgeBasePanel();
 		_displayPane.addTab("Knowledge Base",null,panel,"displays all information stored in the KB");
 		

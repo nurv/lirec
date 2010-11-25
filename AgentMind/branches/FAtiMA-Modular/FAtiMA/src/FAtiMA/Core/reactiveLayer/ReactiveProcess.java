@@ -82,7 +82,7 @@ public class ReactiveProcess implements IComponent, IBehaviourComponent, IModelO
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private static final long IGNOREDURATION = 30000;
+	public static final long IGNOREDURATION = 30000;
 	public static final String NAME = "Reactive";
 	
 	private ActionTendencies _actionTendencies;

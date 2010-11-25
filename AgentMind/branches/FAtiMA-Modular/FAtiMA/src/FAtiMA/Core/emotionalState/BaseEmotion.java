@@ -173,6 +173,13 @@ public class BaseEmotion implements Serializable {
 		_cause = cause;
 	}
 	
+	public void increasePotential(float delta){
+		this._potential += delta;
+		if(this._potential < 0){
+			this._potential = 0;
+		}
+	}
+	
 	/**
 	 * Converts the BaseEmotion to a String
 	 * @return the converted String

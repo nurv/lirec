@@ -66,7 +66,7 @@ public class ActionTendencies implements Serializable, Cloneable {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private ArrayList<Action> _actions;
+	protected ArrayList<Action> _actions;
 	private HashMap<String,Long> _filteredActions;
 	
 	/**
@@ -123,7 +123,7 @@ public class ActionTendencies implements Serializable, Cloneable {
 		_filteredActions.clear();
 	}
 	
-	private boolean isIgnored(ValuedAction va) {
+	protected boolean isIgnored(ValuedAction va) {
 		String actionName = va.GetAction().toString();
 		if(_filteredActions.containsKey(actionName)) {
 			Long wakeUpTime = (Long)_filteredActions.get(actionName);

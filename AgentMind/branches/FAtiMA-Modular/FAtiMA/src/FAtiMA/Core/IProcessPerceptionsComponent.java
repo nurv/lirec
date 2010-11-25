@@ -2,7 +2,7 @@ package FAtiMA.Core;
 
 import FAtiMA.Core.wellFormedNames.Name;
 
-public interface IProcessPerceptionsComponent {
+public interface IProcessPerceptionsComponent extends IComponent{
 	
 	public void propertyChangedPerception(String ToM, Name propertyName, String value);
 	
