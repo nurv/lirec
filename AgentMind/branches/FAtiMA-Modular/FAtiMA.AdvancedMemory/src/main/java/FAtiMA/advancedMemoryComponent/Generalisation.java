@@ -50,20 +50,30 @@ public class Generalisation implements Serializable {
 	private ArrayList<AttributeItemSet> _itemSet;
 	private EpisodicMemory _episodicMemory;	
 	private static final int MIN_THRESHOLD = 3;
-	private static final int ITEMSET_SIZE = 6;
+	private int _itemSize;
+	
+	private ArrayList<String> _gAttributes;
+	private ArrayList<GER> _gers;
 	
 	public Generalisation()
-	{
+	{	
 		this._itemSet = new ArrayList<AttributeItemSet>();
 		this._episodicMemory = null;		
+		this._gAttributes = new ArrayList<String>();
+		this._gers = new ArrayList<GER>();
+		this._itemSize = 0;
 	}
 	
 	/*
 	 * Applying the Apriori algorithm to events in EM to generate an abstraction
 	 * of the agent's experiences
 	 */
-	public ArrayList<AttributeItemSet> generalise(EpisodicMemory episodicMemory)
+	public void generalise(ArrayList<String> gAttributes, EpisodicMemory episodicMemory)
 	{
+		//Setting the attributes to generalise on
+		this._gAttributes = gAttributes;
+		this._itemSize = gAttributes.size();
+		
 		this._episodicMemory = episodicMemory;
 		this._itemSet.clear();
 		
@@ -73,8 +83,8 @@ public class Generalisation implements Serializable {
 		// Generate frequent item sets - sets of attribute items with more than 3 occurrences
 		this.combineItemSet();
 		
-		// Return the frequent item sets
-		return this._itemSet;
+		// Create GERs from the frequent item sets
+		this.createGER(this._itemSet);
 	}
 	
 	
@@ -90,11 +100,11 @@ public class Generalisation implements Serializable {
 		{
 			MemoryEpisode event = it.next();
 			ArrayList<ActionDetail> details = event.getDetails();
-			this.identityItems(details);						
+			this.identifyItems(details);						
 		}
 		
 		ArrayList<ActionDetail> records = _episodicMemory.getDetails();
-		this.identityItems(records);
+		this.identifyItems(records);
 			
 		// discard the non-frequent items from the itemSet
 		for (int j = 0; j < _itemSet.size(); j++)
@@ -108,49 +118,74 @@ public class Generalisation implements Serializable {
 		
 		Collections.sort(_itemSet);
 		
+		/*System.out.println("Frequent item sets");
 		for (int j = 0; j < _itemSet.size(); j++)
 		{
 			System.out.println(_itemSet.get(j).toString());
-		}		
+		}	*/	
 	}
 	
 	/*
 	 * Obtain all attribute items from the action details list
 	 */
-	private void identityItems(ArrayList<ActionDetail> details)
+	private void identifyItems(ArrayList<ActionDetail> details)
 	{
 		for (int i = 0; i < details.size(); i++)
 		{
 			ActionDetail ad = details.get(i);
 			
-			if (ad.getSubject() != null)
+			if (_gAttributes.contains("subject") && (ad.getSubject() != null))
 			{	
 				// subject field
 				AttributeItem subject = new AttributeItem("subject", ad.getSubject());
 				this.candidateFrequentItems(subject);
 			}
-			if (ad.getAction() != null)
+			if (_gAttributes.contains("action") && (ad.getAction() != null))
 			{
 				// action field
 				AttributeItem action = new AttributeItem("action", ad.getAction());
 				this.candidateFrequentItems(action);
 			}
-			if (ad.getTarget() != null)
+			if (_gAttributes.contains("intention") && (ad.getIntention() != null))
+			{
+				// intention field
+				AttributeItem intention = new AttributeItem("intention", ad.getAction());
+				this.candidateFrequentItems(intention);
+			}
+			if (_gAttributes.contains("target") && (ad.getTarget() != null))
 			{
 				// target field
 				AttributeItem target = new AttributeItem("target", ad.getTarget());
 				this.candidateFrequentItems(target);
 			}
+			if (_gAttributes.contains("object") && (ad.getObject() != null))
+			{
+				// object field
+				AttributeItem object = new AttributeItem("object", ad.getAction());
+				this.candidateFrequentItems(object);
+			}
 			
-			// desirability				
-			AttributeItem desirability = new AttributeItem("desirability", ad.getDesirability()>=0 ? "positive":"negative");
-			this.candidateFrequentItems(desirability);
+			if (_gAttributes.contains("desirability"))
+			{
+				// desirability				
+				AttributeItem desirability = new AttributeItem("desirability", ad.getDesirability()>=0 ? "positive":"negative");
+				this.candidateFrequentItems(desirability);
+			}
 			
-			// praiseworthiness
-			AttributeItem praiseworthiness = new AttributeItem("praiseworthiness", ad.getPraiseworthiness()>=0 ? "positive":"negative");					
-			this.candidateFrequentItems(praiseworthiness);	
+			if (_gAttributes.contains("praiseworthiness"))
+			{
+				// praiseworthiness
+				AttributeItem praiseworthiness = new AttributeItem("praiseworthiness", ad.getPraiseworthiness()>=0 ? "positive":"negative");					
+				this.candidateFrequentItems(praiseworthiness);	
+			}
 			
-			if (ad.getTime() != null)
+			if (_gAttributes.contains("location") && (ad.getLocation() != null))
+			{
+				// location field
+				AttributeItem location = new AttributeItem("location", ad.getLocation());
+				this.candidateFrequentItems(location);
+			}
+			if (_gAttributes.contains("time") && (ad.getTime() != null))
 			{	
 				// subject field
 				AttributeItem time = new AttributeItem("time", ad.getTime().getStrRealTime());
@@ -186,7 +221,7 @@ public class Generalisation implements Serializable {
 	{
 		ArrayList<AttributeItemSet> tempItemSet = new ArrayList<AttributeItemSet>();
 		
-		for (int k = 1; k < Generalisation.ITEMSET_SIZE ; k++)
+		for (int k = 1; k < _itemSize ; k++)
 		{
 			for (int i = 0; i < this._itemSet.size()-1; i++)
 			{
@@ -195,9 +230,7 @@ public class Generalisation implements Serializable {
 					if (this._itemSet.get(i).differentInLastAttribute(this._itemSet.get(j)))
 					{
 						AttributeItemSet tempAttrItemSet1 = (AttributeItemSet) this._itemSet.get(i).clone();
-						System.out.println(tempAttrItemSet1.toString());
 						AttributeItemSet tempAttrItemSet2 = (AttributeItemSet) this._itemSet.get(j).clone();
-						System.out.println(tempAttrItemSet2.toString());
 						tempAttrItemSet1.addCandidateItemSet(tempAttrItemSet2.getCandidateItemSet().get(tempAttrItemSet2.getCandidateItemSet().size()-1));
 						tempAttrItemSet1.resetCoverage();
 						tempItemSet.add((AttributeItemSet) tempAttrItemSet1);
@@ -247,13 +280,11 @@ public class Generalisation implements Serializable {
 			}
 		}	
 		
-		//Collections.sort(_itemSet);
-		
-		System.out.println("item sets");
+		/*System.out.println("item sets with frequency > 3");
 		for (int j = 0; j < tempItemSet.size(); j++)
 		{
 			System.out.println(tempItemSet.get(j).toString());
-		}	
+		}*/	
 	}
 	
 	/*
@@ -277,12 +308,18 @@ public class Generalisation implements Serializable {
 						match = attrItem.getAttrValue().equals(ad.getSubject());
 					else if (attrItem.getAttrName() == "action")
 						match = attrItem.getAttrValue().equals(ad.getAction());
+					else if (attrItem.getAttrName() == "intention")
+						match = attrItem.getAttrValue().equals(ad.getIntention());
 					else if (attrItem.getAttrName() == "target")
 						match = attrItem.getAttrValue().equals(ad.getTarget());
+					else if (attrItem.getAttrName() == "object")
+						match = attrItem.getAttrValue().equals(ad.getObject());
 					else if (attrItem.getAttrName() == "desirability")
 						match = attrItem.getAttrValue().equals(ad.getDesirability()>=0 ? "positive":"negative");
 					else if (attrItem.getAttrName() == "praiseworthiness")
 						match = attrItem.getAttrValue().equals(ad.getPraiseworthiness()>=0 ? "positive":"negative");
+					else if (attrItem.getAttrName() == "location")
+						match = attrItem.getAttrValue().equals(ad.getLocation());
 					else if (attrItem.getAttrName() == "time")
 						match = attrItem.getAttrValue().equals(ad.getTime().getStrRealTime());
 				}	
@@ -295,6 +332,51 @@ public class Generalisation implements Serializable {
 			}
 		}	
 	}	
+	
+	private void createGER(ArrayList<AttributeItemSet> itemSet)
+	{
+		// clearing the list before generalising
+		this._gers.clear();
+		
+		for (int i = 0; i < itemSet.size(); i++)
+		{
+			AttributeItemSet attrItemSet = itemSet.get(i);
+			GER ger = new GER();
+			
+			// set the coverage (frequency of occurrence) of the item set
+			ger.setCoverage(attrItemSet.getCoverage());			
+			for (int j = 0; j < attrItemSet.getCandidateItemSet().size(); j++)
+			{
+				AttributeItem attrItem = attrItemSet.getCandidateItemSet().get(j);				
+				
+				if (attrItem.getAttrName() == "subject")
+					ger.setSubject(attrItem.getAttrValue());
+				else if (attrItem.getAttrName() == "action")
+					ger.setAction(attrItem.getAttrValue());
+				else if (attrItem.getAttrName() == "intention")
+					ger.setIntention(attrItem.getAttrValue());
+				else if (attrItem.getAttrName() == "target")
+					ger.setTarget(attrItem.getAttrValue());
+				else if (attrItem.getAttrName() == "object")
+					ger.setObject(attrItem.getAttrValue());
+				else if (attrItem.getAttrName() == "desirability")
+					ger.setDesirability(attrItem.getAttrValue());
+				else if (attrItem.getAttrName() == "praiseworthiness")
+					ger.setPraiseworthiness(attrItem.getAttrValue());
+				else if (attrItem.getAttrName() == "location")
+					ger.setLocation(attrItem.getAttrValue());
+				else if (attrItem.getAttrName() == "time")
+					ger.setTime(attrItem.getAttrValue());
+				
+			}		
+			this._gers.add(ger);
+		}
+	}
+	
+	public ArrayList<GER> getAllGERs()
+	{
+		return this._gers;
+	}
 	
 	public Object clone()
 	{
@@ -309,4 +391,17 @@ public class Generalisation implements Serializable {
 		return attrItemSetList;
 	}
 	
+	/*
+	 * TODO
+	 */
+	public String toXML()
+	{
+		String gm  = "<GeneralMemory>\n";
+		for(ListIterator<GER> li = this._gers.listIterator();li.hasNext();)
+		{
+			gm += li.next().toXML();
+		}
+		gm += "</GeneralMemory>";
+		return gm; 
+	}
 }

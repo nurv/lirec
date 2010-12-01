@@ -398,16 +398,23 @@ public class WorldTest {
 	}
 	
 	public void CCMemory(){
-		SendPerceptionToAll("CC-MEMORY");
+		SendPerceptionToAll("AdvancedMemory CC-MEMORY");
 	}
 	
 	public void SAMemory(String question){
-		SendPerceptionToAll( "SA-MEMORY " + question + "$" + knownInfo );
+		SendPerceptionToAll("AdvancedMemory SA-MEMORY " + question + "$" + knownInfo );
 		knownInfo = "";
 	}
 	
+	String gAttributes = "";
+	public void AddGAttributes( String attribute ){
+		gAttributes = gAttributes + attribute + "*";
+	}
+	
 	public void GMemory(){
-		SendPerceptionToAll("G-MEMORY");
+		SendPerceptionToAll("AdvancedMemory G-MEMORY " + gAttributes);
+		System.out.println("WorldTest gAttributes " + gAttributes);
+		gAttributes = "";
 	}
 		
 	public synchronized void removeAgent(RemoteAgent ra){

@@ -39,10 +39,12 @@ public class GER implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private String _subject;
 	private String _action;
-	private String _target;	
+	private String _intention;
+	private String _target;
+	private String _object;
 
 	private String _time;
-	//private String _location;
+	private String _location;
 	
 	private String _desirability;
 	private String _praiseworthiness;
@@ -52,21 +54,14 @@ public class GER implements Serializable {
 	{
 		this._subject = "";
 		this._action = "";
+		this._intention = "";
 		this._target = "";
+		this._object = "";
 		this._desirability = "";
 		this._praiseworthiness = "";
+		this._location = "";
 		this._time = "";
 		this._coverage = 0;
-	}
-	
-	public GER(String subject, String action, String target, String desirability, String praiseworthiness, String time)
-	{
-		this._subject = subject;
-		this._action = action;
-		this._target = target;
-		this._desirability = desirability;
-		this._praiseworthiness = praiseworthiness;
-		this._time = time;
 	}
 	
 	public void setSubject(String subject)
@@ -79,9 +74,19 @@ public class GER implements Serializable {
 		this._action = action;
 	}
 	
+	public void setIntention(String intention)
+	{
+		this._intention = intention;
+	}
+	
 	public void setTarget(String target)
 	{
 		this._target = target;
+	}
+	
+	public void setObject(String object)
+	{
+		this._object = object;
 	}
 	
 	public void setDesirability(String desirability)
@@ -93,6 +98,11 @@ public class GER implements Serializable {
 	{
 		this._praiseworthiness = praiseworthiness;
 	}	
+	
+	public void setLocation(String location)
+	{
+		this._location = location;
+	}
 	
 	public void setTime(String time)
 	{
@@ -114,9 +124,19 @@ public class GER implements Serializable {
 		return this._action;
 	}
 	
+	public String getIntention()
+	{
+		return this._intention;
+	}
+	
 	public String getTarget()
 	{
 		return this._target;
+	}
+	
+	public String getObject()
+	{
+		return this._object;
 	}
 	
 	public String getDesirability()
@@ -129,6 +149,11 @@ public class GER implements Serializable {
 		return this._praiseworthiness;
 	}
 	
+	public String getLocation()
+	{
+		return this._location;
+	}
+	
 	public String getTime()
 	{
 		return this._time;
@@ -137,5 +162,96 @@ public class GER implements Serializable {
 	public int getCoverage()
 	{
 		return this._coverage;
+	}
+	
+	public String toString()
+	{
+		String ger = "";
+		
+		if(this._subject != "")
+		{
+			ger += "subject " + this._subject + " ";
+		}		
+		if(this._action != "")
+		{
+			ger += "action " + this._action + " ";
+		}		
+		if(this._intention != "")
+		{
+			ger += "intention " + this._intention + " ";
+		}		
+		if(this._target != "")
+		{
+			ger += "target " + this._target + " ";
+		}		
+		if(this._object != "")
+		{
+			ger += "object " + this._object + " ";
+		}		
+		if(this._desirability != "")
+		{
+			ger += "desirability " + this._desirability + " ";
+		}		
+		if(this._praiseworthiness != "")
+		{
+			ger += "praiseworthiness " + this._praiseworthiness + " ";
+		}		
+		if(this._location != "")
+		{
+			ger += "location " + this._location + " ";
+		}		
+		if(this._time != "")
+		{
+			ger += "time " + this._time + " ";
+		}		
+		ger += "coverage " + String.valueOf(this._coverage);
+		
+		return ger;
+	}
+	
+	public String toXML()
+	{
+		String ger = "<GER>\n";
+		
+		if(this._subject != "")
+		{
+			ger += "<subject>" + this._subject + "</subject>\n";
+		}		
+		if(this._action != "")
+		{
+			ger += "<action>" + this._action + "</action>\n";
+		}		
+		if(this._intention != "")
+		{
+			ger += "<intention>" + this._intention + "</intention>\n";
+		}		
+		if(this._target != "")
+		{
+			ger += "<target>" + this._target + "</target>\n";
+		}		
+		if(this._object != "")
+		{
+			ger += "<object>" + this._object + "</object>\n";
+		}		
+		if(this._desirability != "")
+		{
+			ger += "<desirability>" + this._desirability + "</desirability>\n";
+		}		
+		if(this._praiseworthiness != "")
+		{
+			ger += "<praiseworthiness>" + this._praiseworthiness + "</praiseworthiness>\n";
+		}		
+		if(this._location != "")
+		{
+			ger += "<location>" + this._location + "</location>\n";
+		}		
+		if(this._time != "")
+		{
+			ger += "<time>" + this._time + "</time>\n";
+		}		
+		ger += "<coverage>" + String.valueOf(this._coverage) + "</coverage>\n";
+		
+		ger += "</GER>\n";
+		return ger;
 	}
 }

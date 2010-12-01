@@ -44,6 +44,7 @@ public class UserInterface implements ActionListener {
 	JComboBox _infoOptions;
 	JComboBox _queryOptions;
 	JComboBox _eventOptions;
+	JComboBox _attributeOptions;
 	JTextField _userSpeech;
 	WorldTest _world;
 	
@@ -236,7 +237,26 @@ public class UserInterface implements ActionListener {
 		Box queryBox = new Box(BoxLayout.X_AXIS);
         queryBox.add(new JLabel("Query: "));
         queryBox.add(_queryOptions );
-        
+                
+        _attributeOptions = new JComboBox();
+        _attributeOptions.addItem("subject");
+        _attributeOptions.addItem("target");
+        _attributeOptions.addItem("location");
+        _attributeOptions.addItem("action");
+        _attributeOptions.addItem("intention");
+        _attributeOptions.addItem("object");
+        _attributeOptions.addItem("desirability");
+        _attributeOptions.addItem("praiseworthiness");
+        _attributeOptions.addItem("time");
+		_attributeOptions.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent arg0) {
+				_world.AddGAttributes(_attributeOptions.getSelectedItem().toString());
+		    	WriteLine("=> Add G attribute: " + _attributeOptions.getSelectedItem().toString());
+			}
+		});
+		Box attributeBox = new Box(BoxLayout.X_AXIS);
+        queryBox.add(new JLabel("G Attributes: "));
+        queryBox.add(_attributeOptions );
         
         _userSpeech = new JTextField();
         

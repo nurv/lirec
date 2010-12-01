@@ -62,9 +62,6 @@ public class AdvancedMemoryComponent implements Serializable, IComponent, IProce
 	private static final String CC_MEMORY = "CC-MEMORY";
 	private static final String G_MEMORY = "G-MEMORY";
 	
-	
-	
-	private ArrayList<GER> _gers;
 	private Generalisation _generalisation;
 	private CompoundCue _compoundCue;
 	private SpreadActivate _spreadActivate;
@@ -72,14 +69,18 @@ public class AdvancedMemoryComponent implements Serializable, IComponent, IProce
 	private EpisodicMemory _episodicMemory;
 	private long _lastTime;
 	
+	private ArrayList<String> _gAttributes;
+	private GeneralMemoryPanel _gmPanel;
+	
 	public AdvancedMemoryComponent()
 	{
-		this._gers = new ArrayList<GER>();
 		this._generalisation = new Generalisation();
 		this._compoundCue = new CompoundCue();
 		this._spreadActivate = new SpreadActivate();
 		this._commonalities = new Commonalities();
 		this._lastTime = AgentSimulationTime.GetInstance().Time();
+		
+		this._gAttributes = new ArrayList<String>();
 	}
 	
 	public CompoundCue getCompoundCue()
@@ -92,13 +93,9 @@ public class AdvancedMemoryComponent implements Serializable, IComponent, IProce
 		return _spreadActivate;
 	}
 	
-	/*
-	 * Performs generalisation and update the GeneralMemory with frequent item sets
-	 */
-	public void generalise(EpisodicMemory episodicMemory)
+	public Generalisation getGeneralisation()
 	{
-		ArrayList<AttributeItemSet> itemSet = this._generalisation.generalise(_episodicMemory);
-		this.AddGER(itemSet);		
+		return _generalisation;
 	}
 	
 	private void loadMemoryProcessesConditions(AgentModel ag){
@@ -118,47 +115,13 @@ public class AdvancedMemoryComponent implements Serializable, IComponent, IProce
 		}
 	}
 	
-	public void AddGER(ArrayList<AttributeItemSet> itemSet)
-	{
-		// clearing the list before generalising
-		this._gers.clear();
-		
-		for (int i = 0; i < itemSet.size(); i++)
-		{
-			AttributeItemSet attrItemSet = itemSet.get(i);
-			GER ger = new GER();
-			
-			// set the coverage (frequency of occurrence) of the item set
-			ger.setCoverage(attrItemSet.getCoverage());			
-			for (int j = 0; j < attrItemSet.getCandidateItemSet().size(); j++)
-			{
-				AttributeItem attrItem = attrItemSet.getCandidateItemSet().get(j);				
-				
-				if (attrItem.getAttrName() == "subject")
-					ger.setSubject(attrItem.getAttrValue());
-				else if (attrItem.getAttrName() == "action")
-					ger.setAction(attrItem.getAttrValue());
-				else if (attrItem.getAttrName() == "target")
-					ger.setTarget(attrItem.getAttrValue());
-				else if (attrItem.getAttrName() == "desirability")
-					ger.setDesirability(attrItem.getAttrValue());
-				else if (attrItem.getAttrName() == "praiseworthiness")
-					ger.setPraiseworthiness(attrItem.getAttrValue());
-				else if (attrItem.getAttrName() == "time")
-					ger.setTime(attrItem.getAttrValue());
-				
-			}		
-			this._gers.add(ger);
-		}
-	}
-	
 	/**
 	 * Extract known information
 	 * @param 
 	 * @return
 	 * added by Meiyii 19/11/09
 	 */
-	private ArrayList<String> ExtractKnownInfo(String known)
+	private ArrayList<String> extractKnownInfo(String known)
 	{
 		ArrayList<String> knownInfo = new ArrayList<String>();
 			
@@ -172,23 +135,24 @@ public class AdvancedMemoryComponent implements Serializable, IComponent, IProce
 		return knownInfo;
 	}
 	
-	public ArrayList<GER> getAllGERs()
-	{
-		return this._gers;
-	}
-	
-	/*
-	 * TODO
+	/**
+	 * Extract generalisation attributes
+	 * @param 
+	 * @return
+	 * added by Meiyii 1/12/10
 	 */
-	public String toXML()
-	{
-		String gm  = "<GeneralMemory>";
-		for(ListIterator<GER> li = this._gers.listIterator();li.hasNext();)
+	private void extractGAttributes(String attributes)
+	{			
+		this._gAttributes.clear();
+		
+		StringTokenizer st = new StringTokenizer(attributes, "*");
+		while(st.hasMoreTokens())
 		{
-			
+			String attributeStr = st.nextToken();
+			_gAttributes.add(attributeStr);
+			System.out.println("gAttribute " + attributeStr);
 		}
-		gm += "</GeneralMemory>";
-		return gm; 
+		this._gmPanel.PanelAttributes(_gAttributes);
 	}
 
 	@Override
@@ -209,11 +173,19 @@ public class AdvancedMemoryComponent implements Serializable, IComponent, IProce
 
 	@Override
 	public void updateCycle(AgentModel am, long time) {
-		if (time >= _lastTime + 86400000) {
+		/*if (time >= _lastTime + 86400000) {
 			_lastTime = time;
 			
-			generalise(am.getMemory().getEpisodicMemory());
-		}
+			_gAttributes.clear();
+			_gAttributes.add("subject");
+			_gAttributes.add("target");
+			_gAttributes.add("action");
+			_gAttributes.add("desirability");
+			_gAttributes.add("praiseworthiness");
+			_gAttributes.add("time");
+			
+			this._generalisation.generalise(_gAttributes, _episodicMemory);		
+		}*/
 	}
 
 	@Override
@@ -246,7 +218,9 @@ public class AdvancedMemoryComponent implements Serializable, IComponent, IProce
 
 	@Override
 	public AgentDisplayPanel createDisplayPanel(AgentModel am) {
-		return new GeneralMemoryPanel(this);
+		
+		this._gmPanel = new GeneralMemoryPanel(this);
+		return this._gmPanel;
 	}
 
 	@Override
@@ -275,7 +249,7 @@ public class AdvancedMemoryComponent implements Serializable, IComponent, IProce
 				known = known + st.nextToken();
 			}					
 			System.out.println("question " + question);
-			ArrayList<String> knownInfo = ExtractKnownInfo(known);
+			ArrayList<String> knownInfo = extractKnownInfo(known);
 			_spreadActivate.Spread(question, knownInfo, _episodicMemory);
 			
 			
@@ -315,14 +289,21 @@ public class AdvancedMemoryComponent implements Serializable, IComponent, IProce
 				System.out.println("ID " + id + " evaluation " + results.get(id));
 			}
 			ActionDetail ad = _compoundCue.getStrongestResult();
-			System.out.println("ID " + ad.getID() + "max evaluation " + _compoundCue.getEvaluation());
+			System.out.println("max ID " + ad.getID());
 			System.out.println("\n\n");
 		}
 		else if(msgType.equals(G_MEMORY))
 		{
-			generalise(_episodicMemory);
+			extractGAttributes(perception);
+			
+			//Performs generalisation and update the GeneralMemory with frequent item sets
+			_generalisation.generalise(_gAttributes, _episodicMemory);	
+			
+			ArrayList<GER> gers = _generalisation.getAllGERs();
+			for (GER ger : gers)
+			{
+				System.out.println("GER : " + ger.toString());
+			}
 		}
-	}
-	
-	
+	}	
 }
