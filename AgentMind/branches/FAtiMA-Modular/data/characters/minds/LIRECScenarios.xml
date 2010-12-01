@@ -55,7 +55,8 @@
 	</Scenario>	
 	<Scenario name="Remembering">
 		<WorldSimulator port="46874" scenery="AmyHouse" actionsFile="data/characters/minds/LIRECActions.xml" 
-						agentLanguageFile="data/characters/minds/language/agent/en/language-set-1" 
+						agentLanguageFile="data/characters/minds/language/agent/en/language-set-1"
+						userLanguageFile="data/characters/minds/language/user/en/language-set-1" 
 						userOptionsFile="LIRECOptions">		
 			<Objects>
 				<Object name="Amy"/>

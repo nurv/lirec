@@ -42,7 +42,7 @@ public class CCQuery {
 	
 	private ActionDetail _result;
 	private float _eval;
-	private ArrayList<ActionDetail> _results;
+	//private ArrayList<ActionDetail> _results;
 	private Hashtable<Integer, Float> _evaluations;
 	private ActionDetail _actionDetail;
 
@@ -50,7 +50,7 @@ public class CCQuery {
 	 
 	public CCQuery(){
 		this._eval = 0;
-		this._results = new ArrayList<ActionDetail>();
+		this._result = null;
 		this._evaluations = new Hashtable<Integer, Float>();
 	}
 	
@@ -67,26 +67,27 @@ public class CCQuery {
     	return this._evaluations;
 	}
     
-    public ArrayList<ActionDetail> getCCResults()
-    {
-    	return this._results;
-    }
-    
 	public void setQuery(ActionDetail actionDetail){
 		this._result = null;
 		this._eval = 0;
-		this._results.clear();
 		this._evaluations.clear();
 		this._actionDetail = actionDetail;
 	}
 	
 	public void setResults(ActionDetail ad, float evaluation)
 	{
+		// getting the event with the highest match
 		if(_result == null || (_result.getID() != ad.getID() && evaluation > _eval))
 		{
 			_result = ad;
 			_eval = evaluation;
 		}
+
+		// saving all evaluation results
+		if (this._evaluations == null || !this._evaluations.containsKey(ad.getID()))
+	  	{
+	  		this._evaluations.put(ad.getID(), evaluation);
+	  	}
 	}
 	
 	public ActionDetail getStrongestResult()
@@ -98,13 +99,6 @@ public class CCQuery {
 	{
 		return _eval/210;
 	}
-	
-    /*public void setResults(int id, float evaluation){
-    	if (this._results == null || !this._results.containsKey(id))
-	  	{
-	  		this._results.put(id, evaluation);
-	  	}
-    }*/
     
 	public void addPropertyChangeListener(final PropertyChangeListener l) {
         this.changes.addPropertyChangeListener( l );

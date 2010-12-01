@@ -31,6 +31,8 @@ package FAtiMA.advancedMemoryComponent;
  * **/
 
 
+import java.util.Hashtable;
+
 import FAtiMA.Core.memory.episodicMemory.ActionDetail;
 import FAtiMA.Core.memory.episodicMemory.EpisodicMemory;
 
@@ -58,7 +60,7 @@ public class CompoundCue extends RuleEngine {
 	public void Match(ActionDetail queryEvent, EpisodicMemory episodicMemory)
 	{			
 		try {		
-			System.out.println("Compound Cue");
+			//System.out.println("Compound Cue");
 			
 			// assert events from memory
 			this.AssertData(episodicMemory);
@@ -81,10 +83,10 @@ public class CompoundCue extends RuleEngine {
 	 * Return the result of matching
 	 * @return a list of answer to the query
 	 */
-	/*public Hashtable<Integer, Float> getCCResults()
+	public Hashtable<Integer, Float> getCCEvaluations()
 	{
-		return _ccQuery.getCCResults();
-	}*/
+		return _ccQuery.getCCEvaluations();
+	}
 	
 	public ActionDetail getStrongestResult()
 	{

@@ -281,8 +281,8 @@ public class UserInterface implements ActionListener {
         buttonsPanel.add(okButton);
         buttonsPanel.add(stepButton);
         //buttonsPanel.add(usButton);
-        //buttonsPanel.add(saButton);
-        //buttonsPanel.add(ccButton);
+        buttonsPanel.add(saButton);
+        buttonsPanel.add(ccButton);
         buttonsPanel.add(gButton);
         
         _frame.getContentPane().add(_userSpeech);

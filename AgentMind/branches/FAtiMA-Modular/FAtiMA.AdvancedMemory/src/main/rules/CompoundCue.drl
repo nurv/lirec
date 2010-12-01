@@ -639,7 +639,7 @@ rule "end match"
 		{
 			setResults($ad, $cad.getEvaluation())
 		}
-		System.out.println("Evaluation " + $cad.getEvaluation());
-		System.out.println("end match " + $ad.getID());
+		#System.out.println("Evaluation " + $cad.getEvaluation());
+		#System.out.println("end match " + $ad.getID());
 		retract ($cad);
 end

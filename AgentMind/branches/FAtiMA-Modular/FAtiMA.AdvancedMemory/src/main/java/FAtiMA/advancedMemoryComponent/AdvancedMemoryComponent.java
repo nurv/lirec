@@ -120,6 +120,9 @@ public class AdvancedMemoryComponent implements Serializable, IComponent, IProce
 	
 	public void AddGER(ArrayList<AttributeItemSet> itemSet)
 	{
+		// clearing the list before generalising
+		this._gers.clear();
+		
 		for (int i = 0; i < itemSet.size(); i++)
 		{
 			AttributeItemSet attrItemSet = itemSet.get(i);
@@ -301,19 +304,19 @@ public class AdvancedMemoryComponent implements Serializable, IComponent, IProce
 		}
 		else if(msgType.equals(CC_MEMORY))
 		{
-			/*int index = Math.min(8, (int) (Math.random()*10));
+			int index = Math.min(8, (int) (Math.random()*10));
 			ActionDetail event = _episodicMemory.getDetails().get(index);
 			_compoundCue.Match(event, _episodicMemory);
 			System.out.println("\nEvent ID to match on " + event.getID());
 			
-			Hashtable<Integer, Float>  results = _compoundCue.getCCResults();
-			Iterator<E> it = results.keySet().iterator();
-			while (it.hasNext())
+			Hashtable<Integer, Float>  results = _compoundCue.getCCEvaluations();
+			for(Integer id: results.keySet())
 			{
-				int id = (Integer) it.next();
 				System.out.println("ID " + id + " evaluation " + results.get(id));
 			}
-			System.out.println("\n\n");*/
+			ActionDetail ad = _compoundCue.getStrongestResult();
+			System.out.println("ID " + ad.getID() + "max evaluation " + _compoundCue.getEvaluation());
+			System.out.println("\n\n");
 		}
 		else if(msgType.equals(G_MEMORY))
 		{
