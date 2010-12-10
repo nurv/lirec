@@ -42,9 +42,11 @@ import javax.xml.parsers.SAXParserFactory;
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.AgentSimulationTime;
 import FAtiMA.Core.IComponent;
+import FAtiMA.Core.IAppraisalComponent;
 import FAtiMA.Core.IProcessExternalRequestComponent;
 import FAtiMA.Core.Display.AgentDisplayPanel;
-import FAtiMA.Core.emotionalState.AppraisalStructure;
+import FAtiMA.Core.OCCAffectDerivation.OCCComponent;
+import FAtiMA.Core.emotionalState.AppraisalFrame;
 import FAtiMA.Core.memory.episodicMemory.ActionDetail;
 import FAtiMA.Core.memory.episodicMemory.EpisodicMemory;
 import FAtiMA.Core.sensorEffector.Event;
@@ -53,7 +55,7 @@ import FAtiMA.Core.util.ConfigurationManager;
 
 
 
-public class AdvancedMemoryComponent implements Serializable, IComponent, IProcessExternalRequestComponent {
+public class AdvancedMemoryComponent implements Serializable, IAppraisalComponent, IProcessExternalRequestComponent {
 
 	private static final long serialVersionUID = 1L;
 	public static final String NAME = "AdvancedMemory";
@@ -194,7 +196,7 @@ public class AdvancedMemoryComponent implements Serializable, IComponent, IProce
 	}
 
 	@Override
-	public void appraisal(AgentModel am, Event e, AppraisalStructure as) {
+	public void startAppraisal(AgentModel am, Event e, AppraisalFrame as) {
 		
 		//appraisal from memory
 		ActionDetail ad = new ActionDetail(0,e.GetSubject(),
@@ -211,7 +213,7 @@ public class AdvancedMemoryComponent implements Serializable, IComponent, IProce
 			float desirability = result.getDesirability();
 			if(desirability != 0)
 			{
-				as.SetAppraisalVariable(AdvancedMemoryComponent.NAME, (short)3, AppraisalStructure.DESIRABILITY, desirability);
+				as.SetAppraisalVariable(AdvancedMemoryComponent.NAME, (short)3, OCCComponent.DESIRABILITY, desirability);
 			}	
 		}
 	}
@@ -305,5 +307,11 @@ public class AdvancedMemoryComponent implements Serializable, IComponent, IProce
 				System.out.println("GER : " + ger.toString());
 			}
 		}
-	}	
+	}
+
+	@Override
+	public void continueAppraisal(AgentModel am) {
+	}
+	
+	
 }
