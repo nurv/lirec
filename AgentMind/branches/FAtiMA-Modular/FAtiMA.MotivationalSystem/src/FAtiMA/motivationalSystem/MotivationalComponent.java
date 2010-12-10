@@ -15,9 +15,11 @@ import javax.xml.parsers.SAXParserFactory;
 
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.AgentSimulationTime;
+import FAtiMA.Core.IAppraisalComponent;
 import FAtiMA.Core.IComponent;
 import FAtiMA.Core.IModelOfOtherComponent;
 import FAtiMA.Core.Display.AgentDisplayPanel;
+import FAtiMA.Core.OCCAffectDerivation.OCCComponent;
 import FAtiMA.Core.deliberativeLayer.IActionFailureStrategy;
 import FAtiMA.Core.deliberativeLayer.IExpectedUtilityStrategy;
 import FAtiMA.Core.deliberativeLayer.IGoalFailureStrategy;
@@ -26,7 +28,7 @@ import FAtiMA.Core.deliberativeLayer.IProbabilityStrategy;
 import FAtiMA.Core.deliberativeLayer.IUtilityStrategy;
 import FAtiMA.Core.deliberativeLayer.goals.ActivePursuitGoal;
 import FAtiMA.Core.deliberativeLayer.plan.Step;
-import FAtiMA.Core.emotionalState.AppraisalStructure;
+import FAtiMA.Core.emotionalState.AppraisalFrame;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.util.AgentLogger;
 import FAtiMA.Core.util.ConfigurationManager;
@@ -43,7 +45,7 @@ import FAtiMA.Core.wellFormedNames.Unifier;
  * @author Meiyii Lim, Samuel Mascarenhas 
  */
 
-public class MotivationalComponent implements Serializable, Cloneable, IComponent, IModelOfOtherComponent, IExpectedUtilityStrategy, IProbabilityStrategy, IUtilityStrategy, IGoalSuccessStrategy, IGoalFailureStrategy, IActionFailureStrategy {
+public class MotivationalComponent implements Serializable, Cloneable, IAppraisalComponent, IModelOfOtherComponent, IExpectedUtilityStrategy, IProbabilityStrategy, IUtilityStrategy, IGoalSuccessStrategy, IGoalFailureStrategy, IActionFailureStrategy {
 	
 	private static final long serialVersionUID = 1L;
 	public static final String NAME ="MotivationalState";
@@ -281,7 +283,7 @@ public class MotivationalComponent implements Serializable, Cloneable, IComponen
 	
 	public float getUtility(AgentModel am, ActivePursuitGoal g)
 	{
-		return getContributionToNeeds(am,g);
+		return getContributionToNeeds(am,g)*0.2f;
 	}
 	
 	public float getProbability(AgentModel am, ActivePursuitGoal g)
@@ -381,7 +383,7 @@ public class MotivationalComponent implements Serializable, Cloneable, IComponen
 	/**
 	 * Update the agent's certainty value
 	 * @param expectation - ranges from -1 to 1, -1 means complete violation of expectation while
-	 * 						1 means complete fulfilment of expectation
+	 * 						1 means complete fulfillment of expectation
 	 * Changed the factor from 10 to 3 (Meiyii)
 	 */
 	public void UpdateCertainty(float expectation)
@@ -425,16 +427,17 @@ public class MotivationalComponent implements Serializable, Cloneable, IComponen
 	public void perceiveEvent(AgentModel am, Event e)
 	{
 		float result =  UpdateMotivators(am, e);
-		_appraisals.put(e.toString(), new Float(result));
+		_appraisals.put(e.toString(), new Float(result*0.5));
 	}
 
 	@Override
-	public void appraisal(AgentModel am, Event e, AppraisalStructure as) {
+	public void startAppraisal(AgentModel am, Event e, AppraisalFrame as) {
 		Float desirability = _appraisals.get(e.toString());
 		if(desirability != null)
 		{
-			as.SetAppraisalVariable(NAME, (short) 8, AppraisalStructure.DESIRABILITY, desirability.floatValue());
+			as.SetAppraisalVariable(NAME, (short) 8, OCCComponent.DESIRABILITY, desirability.floatValue());
 		}
+		_appraisals.remove(e.toString());
 	}
 
 
@@ -496,6 +499,9 @@ public class MotivationalComponent implements Serializable, Cloneable, IComponen
 			ms.AddMotivator(m2);
 		}
 		
+		ms._actionEffectsOnDrives =  (HashMap<String,ActionEffectsOnDrives>)_actionEffectsOnDrives.clone();
+		ms._goalEffectsOnDrives =  (HashMap<String,ExpectedGoalEffectsOnDrives>)_goalEffectsOnDrives.clone();
+		
 		return ms;
 	}
 
@@ -546,5 +552,12 @@ public class MotivationalComponent implements Serializable, Cloneable, IComponen
 	public void perceiveActionFailure(AgentModel am, Step a) {
 		//System.out.println("Calling UpdateCertainty (other's action: step completed)");
 		UpdateCertainty(-a.getProbability(am));
+	}
+
+
+	@Override
+	public void continueAppraisal(AgentModel am) {
+		// TODO Auto-generated method stub
+		
 	}
 }
