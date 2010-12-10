@@ -10,15 +10,16 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import FAtiMA.Core.AgentModel;
-import FAtiMA.Core.IComponent;
+import FAtiMA.Core.IAppraisalComponent;
 import FAtiMA.Core.Display.AgentDisplayPanel;
+import FAtiMA.Core.OCCAffectDerivation.OCCComponent;
 import FAtiMA.Core.conditions.Condition;
 import FAtiMA.Core.deliberativeLayer.IExpectedUtilityStrategy;
 import FAtiMA.Core.deliberativeLayer.IGetUtilityForOthers;
 import FAtiMA.Core.deliberativeLayer.IOptionsStrategy;
 import FAtiMA.Core.deliberativeLayer.IUtilityStrategy;
 import FAtiMA.Core.deliberativeLayer.goals.ActivePursuitGoal;
-import FAtiMA.Core.emotionalState.AppraisalStructure;
+import FAtiMA.Core.emotionalState.AppraisalFrame;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.util.AgentLogger;
 import FAtiMA.Core.util.Constants;
@@ -28,7 +29,7 @@ import FAtiMA.Core.wellFormedNames.SubstitutionSet;
 import FAtiMA.Core.wellFormedNames.Symbol;
 
 
-public class CulturalDimensionsComponent implements IComponent, IOptionsStrategy, IExpectedUtilityStrategy {
+public class CulturalDimensionsComponent implements IAppraisalComponent, IOptionsStrategy, IExpectedUtilityStrategy {
 	final String NAME = "CulturalDimensionsComponent";
 	
 	final float ALPHA = 0.3f;
@@ -66,22 +67,25 @@ public class CulturalDimensionsComponent implements IComponent, IOptionsStrategy
 	}
 	
 	@Override
-	public void appraisal(AgentModel am, Event e, AppraisalStructure as)
+	public void startAppraisal(AgentModel am, Event e, AppraisalFrame af)
 	{
 		float desirabilityForOther = 0;
-		AppraisalStructure appraisalOfOther;
-		float desirability = as.getAppraisalVariable(AppraisalStructure.DESIRABILITY);
-		for(String other : as.getOthers())
+		float desirability = af.getAppraisalVariable(OCCComponent.DESIRABILITY);
+		
+		
+		for(String variable : af.getAppraisalVariables())
 		{
-			appraisalOfOther = as.getAppraisalOfOther(other);
-			desirabilityForOther += appraisalOfOther.getAppraisalVariable(AppraisalStructure.DESIRABILITY);
+			if(variable.startsWith(OCCComponent.DESFOROTHER))
+			{
+				desirabilityForOther += af.getAppraisalVariable(variable);
+			}
 		}
 			
 		float praiseWorthiness = this.determinePraiseWorthiness(
 				desirability,
 				desirabilityForOther);
 		
-		as.SetAppraisalVariable(NAME, (short)4, AppraisalStructure.PRAISEWORTHINESS, praiseWorthiness);	
+		af.SetAppraisalVariable(NAME, (short)4, OCCComponent.PRAISEWORTHINESS, praiseWorthiness);	
 		
 	}
 	
@@ -303,5 +307,11 @@ public class CulturalDimensionsComponent implements IComponent, IOptionsStrategy
 	@Override
 	public AgentDisplayPanel createDisplayPanel(AgentModel am) {
 		return null;
+	}
+
+	@Override
+	public void continueAppraisal(AgentModel am) {
+		// TODO Auto-generated method stub
+		
 	}	
 }
