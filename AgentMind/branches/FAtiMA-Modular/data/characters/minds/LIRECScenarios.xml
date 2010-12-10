@@ -60,7 +60,7 @@
 						userOptionsFile="LIRECOptions">		
 			<Objects>
 				<Object name="Amy"/>
-				<Object name="apple"/>
+				<Object name="Tom"/>
 				<Object name="orange"/>
 				<Object name="banana"/>
 				<Object name="cake"/>
