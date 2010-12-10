@@ -7,12 +7,14 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import FAtiMA.Core.AgentModel;
+import FAtiMA.Core.IAppraisalComponent;
 import FAtiMA.Core.IComponent;
 import FAtiMA.Core.IModelOfOtherComponent;
 import FAtiMA.Core.IProcessEmotionComponent;
 import FAtiMA.Core.Display.AgentDisplayPanel;
+import FAtiMA.Core.OCCAffectDerivation.OCCComponent;
 import FAtiMA.Core.emotionalState.ActiveEmotion;
-import FAtiMA.Core.emotionalState.AppraisalStructure;
+import FAtiMA.Core.emotionalState.AppraisalFrame;
 import FAtiMA.Core.memory.Memory;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.util.AgentLogger;
@@ -21,7 +23,7 @@ import FAtiMA.Core.util.Constants;
 import FAtiMA.Core.util.enumerables.EmotionType;
 
 
-public class SocialRelationsComponent implements IComponent, IModelOfOtherComponent, IProcessEmotionComponent {
+public class SocialRelationsComponent implements IAppraisalComponent, IModelOfOtherComponent, IProcessEmotionComponent {
 	
 	public static final String NAME = "SocialRelations";
 	private ArrayList<String> _parsingFiles;
@@ -78,19 +80,19 @@ public class SocialRelationsComponent implements IComponent, IModelOfOtherCompon
 	}
 
 	@Override
-	public void appraisal(AgentModel am, Event e, AppraisalStructure as) {
+	public void startAppraisal(AgentModel am, Event e, AppraisalFrame as) {
 		if(e.GetSubject().equals(Constants.SELF) && e.GetAction().equals("look-at"))
 		{
 			int relationShip = Math.round(LikeRelation.getRelation(Constants.SELF, e.GetTarget()).getValue(am.getMemory()));
 			if(relationShip != 0)
 			{
-				as.SetAppraisalVariable(NAME, (short)7, AppraisalStructure.LIKE, relationShip);
+				as.SetAppraisalVariable(NAME, (short)7, OCCComponent.LIKE, relationShip);
 			}	
 		}
 	}
 
 	@Override
-	public void emotionActivation(AgentModel am, Event e, ActiveEmotion em) {
+	public void emotionActivation(AgentModel am, ActiveEmotion em) {
 		Memory m = am.getMemory();
 		switch(em.GetType())
 		{
@@ -146,17 +148,17 @@ public class SocialRelationsComponent implements IComponent, IModelOfOtherCompon
 			}			
 			case EmotionType.JOY:
 			{
-				if(e.GetTarget() != null && e.GetTarget().equals(Constants.SELF))
+				if(em.GetCause().GetTarget() != null && em.GetCause().GetTarget().equals(Constants.SELF))
 				{
-					LikeRelation.getRelation(Constants.SELF,e.GetSubject()).increment(m, em.GetIntensity());
+					LikeRelation.getRelation(Constants.SELF,em.GetCause().GetSubject()).increment(m, em.GetIntensity());
 				}
 				break;
 			}
 			case EmotionType.DISTRESS:
 			{
-				if(e.GetTarget() != null && e.GetTarget().equals(Constants.SELF))
+				if(em.GetCause().GetTarget() != null && em.GetCause().GetTarget().equals(Constants.SELF))
 				{
-					LikeRelation.getRelation(Constants.SELF,e.GetSubject()).decrement(m, em.GetIntensity());
+					LikeRelation.getRelation(Constants.SELF,em.GetCause().GetSubject()).decrement(m, em.GetIntensity());
 				}
 				break;
 			}
@@ -172,5 +174,11 @@ public class SocialRelationsComponent implements IComponent, IModelOfOtherCompon
 	@Override
 	public AgentDisplayPanel createDisplayPanel(AgentModel am) {
 		return new SocialRelationsPanel();
+	}
+
+	@Override
+	public void continueAppraisal(AgentModel am) {
+		// TODO Auto-generated method stub
+		
 	}
 }
