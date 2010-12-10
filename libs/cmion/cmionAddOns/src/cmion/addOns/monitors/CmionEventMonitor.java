@@ -36,6 +36,7 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -137,8 +138,8 @@ public class CmionEventMonitor extends CmionComponent {
 
 		private static final long serialVersionUID = 1L;
 
-		private ArrayList<String> eventTexts;
-		private ArrayList<CmionEvent> events;
+		private LinkedList<String> eventTexts;
+		private LinkedList<CmionEvent> events;
 		
 	    protected JTextArea textArea;
 	    protected JPanel toolBar;
@@ -155,8 +156,8 @@ public class CmionEventMonitor extends CmionComponent {
 	    public MonitorWindow() {
 	        super(new BorderLayout());
 
-	        eventTexts = new ArrayList<String>();
-	        events = new ArrayList<CmionEvent>();
+	        eventTexts = new LinkedList<String>();
+	        events = new LinkedList<CmionEvent>();
 	            
 	        textArea = new JTextArea(5, 20);
 	        toolBar = new JPanel();
@@ -212,10 +213,24 @@ public class CmionEventMonitor extends CmionComponent {
 	    {
 			eventTexts.add(text);
 			events.add(evt);
+	    	
 	    	if (!isFiltered(evt))
 	    	{
 	    		textArea.append(text + "\n");
 	    	}
+			
+			// limit size, when size reaches 600, delete first 100 entries
+			// and redisplay text area
+			if (eventTexts.size() > 600)
+			{
+				for (int i=0; i<100; i++)
+				{
+					eventTexts.removeFirst();
+					events.removeFirst();
+				}
+				updateList();			
+			}
+
 	    }
 
 	    /** determines wether a certain event should be filtered or displayed 
