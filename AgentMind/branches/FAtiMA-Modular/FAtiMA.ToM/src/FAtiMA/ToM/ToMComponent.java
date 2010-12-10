@@ -5,35 +5,35 @@ import java.util.HashMap;
 
 import FAtiMA.Core.AgentCore;
 import FAtiMA.Core.AgentModel;
+import FAtiMA.Core.IAppraisalComponent;
 import FAtiMA.Core.IComponent;
 import FAtiMA.Core.IGetModelStrategy;
 import FAtiMA.Core.IModelOfOtherComponent;
 import FAtiMA.Core.IProcessPerceptionsComponent;
 import FAtiMA.Core.Display.AgentDisplayPanel;
+import FAtiMA.Core.OCCAffectDerivation.OCCComponent;
 import FAtiMA.Core.deliberativeLayer.IGetUtilityForOthers;
 import FAtiMA.Core.deliberativeLayer.goals.ActivePursuitGoal;
-import FAtiMA.Core.emotionalState.AppraisalStructure;
+import FAtiMA.Core.emotionalState.AppraisalFrame;
 import FAtiMA.Core.memory.semanticMemory.KnowledgeSlot;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.util.Constants;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Symbol;
 
-public class ToMComponent implements IComponent, IProcessPerceptionsComponent, IGetModelStrategy, IGetUtilityForOthers {
+public class ToMComponent implements IAppraisalComponent, IProcessPerceptionsComponent, IGetModelStrategy, IGetUtilityForOthers {
 	
 	public static final String NAME = "ToM";
 	
 	protected String _name;
 	protected HashMap<String,ModelOfOther> _ToM;
 	protected ArrayList<String> _nearbyAgents;
-	protected HashMap<String,AppraisalStructure> _appraisalsOfOthers;
 	
 	
 	public ToMComponent(String agentName)
 	{
 		this._name = agentName;
 		this._nearbyAgents = new ArrayList<String>();
-		this._appraisalsOfOthers = new HashMap<String,AppraisalStructure>();
 		this._ToM = new HashMap<String,ModelOfOther>();
 	}
 	
@@ -100,7 +100,6 @@ public class ToMComponent implements IComponent, IProcessPerceptionsComponent, I
 
 	@Override
 	public void updateCycle(AgentModel am,long time) {
-		_appraisalsOfOthers.clear();
 		
 		for(String s : _nearbyAgents)
 		{
@@ -123,30 +122,30 @@ public class ToMComponent implements IComponent, IProcessPerceptionsComponent, I
 	}
 
 	@Override
-	public void appraisal(AgentModel am, Event e, AppraisalStructure as) {
+	public void startAppraisal(AgentModel am, Event e, AppraisalFrame as) {
 		
 		Event e2 = e.RemovePerspective(_name);
 		Event e3;
+		float desirability;
 		
-		//one time appraisal for each event, so if the event was already appraised this cycle, just return
-		if(_appraisalsOfOthers.containsKey(e2.toString()))
-		{
-			return;
-		}
-		
-		AppraisalStructure otherAS;
+		AppraisalFrame otherAF;
 		
 		for(String s : _nearbyAgents)
 		{
-			otherAS = new AppraisalStructure();
 			ModelOfOther m = _ToM.get(s);
 			e3 = e2.ApplyPerspective(s);
-			m.appraisal(e3, otherAS);
+			otherAF = new AppraisalFrame(m,e3);
+			m.appraisal(e3, otherAF);
 			
-			as.SetAppraisalOfOther(s, otherAS);
+			desirability = otherAF.getAppraisalVariable(OCCComponent.DESIRABILITY);
+			if(desirability != 0)
+			{
+				as.SetAppraisalVariable(NAME, 
+						(short)7,
+						OCCComponent.DESFOROTHER+s,
+						otherAF.getAppraisalVariable(OCCComponent.DESIRABILITY));
+			} 
 		}
-		
-		_appraisalsOfOthers.put(e2.toString(), as);
 	}
 	
 	public AgentModel execute(Symbol ToM)
@@ -245,5 +244,9 @@ public class ToMComponent implements IComponent, IProcessPerceptionsComponent, I
 		}
 		
 		return utility;
+	}
+
+	@Override
+	public void continueAppraisal(AgentModel am) {
 	}
 }

@@ -7,13 +7,14 @@ import java.util.HashMap;
 
 import FAtiMA.Core.AgentCore;
 import FAtiMA.Core.AgentModel;
+import FAtiMA.Core.IAffectDerivationComponent;
+import FAtiMA.Core.IAppraisalComponent;
 import FAtiMA.Core.IComponent;
 import FAtiMA.Core.IGetModelStrategy;
 import FAtiMA.Core.IProcessEmotionComponent;
 import FAtiMA.Core.deliberativeLayer.DeliberativeProcess;
 import FAtiMA.Core.emotionalState.ActiveEmotion;
-import FAtiMA.Core.emotionalState.Appraisal;
-import FAtiMA.Core.emotionalState.AppraisalStructure;
+import FAtiMA.Core.emotionalState.AppraisalFrame;
 import FAtiMA.Core.emotionalState.BaseEmotion;
 import FAtiMA.Core.emotionalState.EmotionDisposition;
 import FAtiMA.Core.emotionalState.EmotionalState;
@@ -34,6 +35,8 @@ public class ModelOfOther implements AgentModel, Serializable {
 	private Memory _mem;
 	private HashMap<String,IComponent> _components;
 	private ArrayList<IProcessEmotionComponent> _processEmotionComponents;
+	private ArrayList<IAppraisalComponent> _appraisalComponents;
+	private ArrayList<IAffectDerivationComponent> _affectDerivationComponents;
 	private ReactiveProcess _reactiveProcess;
 	private DeliberativeProcess _deliberativeProcess;
 	
@@ -44,6 +47,8 @@ public class ModelOfOther implements AgentModel, Serializable {
 		_mem = new Memory();
 		_components = new HashMap<String,IComponent>();
 		_processEmotionComponents = new ArrayList<IProcessEmotionComponent>();
+		_appraisalComponents = new ArrayList<IAppraisalComponent>();
+		_affectDerivationComponents = new ArrayList<IAffectDerivationComponent>();
 		
 		for(EmotionDisposition ed : ag.getEmotionalState().getEmotionDispositions())
 		{
@@ -89,34 +94,17 @@ public class ModelOfOther implements AgentModel, Serializable {
 		_mem.getEpisodicMemory().StoreAction(_mem, e);
 		_mem.getSemanticMemory().Tell(AgentCore.ACTION_CONTEXT, e.toName().toString());
 		
-		for(IComponent c : _components.values())
+		for(IAppraisalComponent c : _appraisalComponents)
 		{
 			c.perceiveEvent(this,e);
 		}
 	}
 	
-	public void appraisal(Event e, AppraisalStructure as) 
-	{
-		ArrayList<BaseEmotion> emotions;
-		ActiveEmotion activeEmotion;
-		
-		for(IComponent c : this._components.values())
+	public void appraisal(Event e, AppraisalFrame as) 
+	{	
+		for(IAppraisalComponent ac : _appraisalComponents)
 		{
-			c.appraisal(this,e,as);
-		}
-
-		emotions = Appraisal.GenerateEmotions(this, e, as);
-
-		for(BaseEmotion em : emotions)
-		{
-			activeEmotion = _es.AddEmotion(em, this);
-			if(activeEmotion != null)
-			{
-				for(IProcessEmotionComponent c : this._processEmotionComponents)
-				{
-					c.emotionActivation(this,e,activeEmotion);
-				}
-			}
+			ac.startAppraisal(this,e,as);
 		}
 	}
 	
@@ -136,6 +124,15 @@ public class ModelOfOther implements AgentModel, Serializable {
 		if(c instanceof IProcessEmotionComponent)
 		{
 			_processEmotionComponents.add((IProcessEmotionComponent)c);
+		}
+		
+		if(c instanceof IAppraisalComponent)
+		{
+			_appraisalComponents.add((IAppraisalComponent) c);
+		}
+		if(c instanceof IAffectDerivationComponent)
+		{
+			_affectDerivationComponents.add((IAffectDerivationComponent) c);
 		}
 		
 		_components.put(c.name(),c);
@@ -169,6 +166,28 @@ public class ModelOfOther implements AgentModel, Serializable {
 
 	@Override
 	public void setModelStrategy(IGetModelStrategy strat) {
+	}
+
+	@Override
+	public void updateEmotions(String appraisalVariable, AppraisalFrame af) {
+		ArrayList<BaseEmotion> emotions;
+		ActiveEmotion activeEmotion;
+		
+		for(IAffectDerivationComponent ac : this._affectDerivationComponents)
+		{
+			emotions = ac.deriveEmotions(this, appraisalVariable, af);
+			for(BaseEmotion em : emotions)
+			{
+				activeEmotion =  _es.AddEmotion(em, this);
+				if(activeEmotion != null)
+				{
+					for(IProcessEmotionComponent pec : this._processEmotionComponents)
+					{
+						pec.emotionActivation(this,activeEmotion);
+					}
+				}
+			}
+		}
 	}
 
 }
