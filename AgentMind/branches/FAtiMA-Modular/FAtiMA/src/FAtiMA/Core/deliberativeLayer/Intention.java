@@ -39,12 +39,12 @@ import java.util.ArrayList;
 import java.util.ListIterator;
 
 import FAtiMA.Core.AgentModel;
+import FAtiMA.Core.OCCAffectDerivation.OCCComponent;
 import FAtiMA.Core.deliberativeLayer.goals.ActivePursuitGoal;
 import FAtiMA.Core.deliberativeLayer.goals.Goal;
 import FAtiMA.Core.deliberativeLayer.plan.Plan;
 import FAtiMA.Core.emotionalState.ActiveEmotion;
-import FAtiMA.Core.emotionalState.Appraisal;
-import FAtiMA.Core.emotionalState.BaseEmotion;
+import FAtiMA.Core.emotionalState.AppraisalFrame;
 import FAtiMA.Core.emotionalState.EmotionalState;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.util.AgentLogger;
@@ -71,6 +71,7 @@ public class Intention implements Serializable {
 	private Intention _subIntention = null;
 	private Intention _parentIntention = null;
 	private boolean _strongCommitment;
+	private AppraisalFrame _appraisalFrame;
 
 
 	/**
@@ -80,12 +81,14 @@ public class Intention implements Serializable {
 	 * @see Plan
 	 * @see Goal
 	 */
-	public Intention(ActivePursuitGoal g) {
+	public Intention(AgentModel am, ActivePursuitGoal g) {
 		_goal = g;
 		_planConstruction = new ArrayList<Plan>();
 		_fearEmotionID = null;
 		_hopeEmotionID = null;
 		_strongCommitment = false;
+		_appraisalFrame = new AppraisalFrame(am, g.GetActivationEvent());
+		_appraisalFrame.SetAppraisalVariable(DeliberativeProcess.NAME, (short) 7, OCCComponent.GOALSTATUS, OCCComponent.GOALUNCONFIRMED);
 	}
 	
 	
@@ -153,6 +156,11 @@ public class Intention implements Serializable {
 			return _subIntention.GetSubIntention();
 		}
 		else return this;
+	}
+	
+	public AppraisalFrame getAppraisalFrame()
+	{
+		return _appraisalFrame; 
 	}
 	
 	public void setMainIntention(Intention i)
@@ -345,20 +353,19 @@ public class Intention implements Serializable {
 	public void ProcessIntentionActivation(AgentModel am) 
 	{
 	    Event e = _goal.GetActivationEvent();
+	    float goalConduciveness = am.getDeliberativeLayer().getUtilityStrategy().getUtility(am, _goal);
+	    float probability = am.getDeliberativeLayer().getProbabilityStrategy().getProbability(am, _goal);
 	    
-	    AgentLogger.GetInstance().logAndPrint("Adding a new Strong Intention: " + _goal.getName().toString());
+	    AgentLogger.GetInstance().logAndPrint("Adding a new Intention: " + _goal.getName().toString());
 	  
 	    am.getMemory().getEpisodicMemory().StoreAction(am.getMemory(), e);
 	    
-	    float probability = GetProbability(am);
-	    BaseEmotion aux = Appraisal.AppraiseGoalSuccessProbability(am, _goal, probability);
-	    ActiveEmotion hope = am.getEmotionalState().UpdateProspectEmotion(aux, am);
-	    
-	    aux = Appraisal.AppraiseGoalFailureProbability(am, _goal, 1- probability);
-		ActiveEmotion fear = am.getEmotionalState().UpdateProspectEmotion(aux, am);
+	    _appraisalFrame.SetAppraisalVariable(DeliberativeProcess.NAME, (short)7, OCCComponent.SUCCESSPROBABILITY, probability);
+	    _appraisalFrame.SetAppraisalVariable(DeliberativeProcess.NAME, (short)7, OCCComponent.FAILUREPROBABILITY, 1-probability);
+	    _appraisalFrame.SetAppraisalVariable(DeliberativeProcess.NAME, (short)7, OCCComponent.GOALCONDUCIVENESS, goalConduciveness);
 		
-		SetHope(hope);
-		SetFear(fear);	
+		//SetHope(hope);
+		//SetFear(fear);	
 	}
 	
 	/**
@@ -366,7 +373,6 @@ public class Intention implements Serializable {
 	 */
 	public void ProcessIntentionFailure(AgentModel am) 
 	{	
-			
 		//mental disengagement consists in lowering the goal's importance
 		_goal.DecreaseImportanceOfFailure(am, 0.5f);
 		
@@ -374,12 +380,9 @@ public class Intention implements Serializable {
 	    
 	    am.getMemory().getEpisodicMemory().StoreAction(am.getMemory(), e);
 	    
-	    ActiveEmotion hope = GetHope(am.getEmotionalState());
-	    ActiveEmotion fear = GetFear(am.getEmotionalState());
-	    BaseEmotion em = Appraisal.AppraiseGoalFailure(am, hope,fear, _goal);
-	    am.getEmotionalState().RemoveEmotion(hope);
-	    am.getEmotionalState().RemoveEmotion(fear);
-	    am.getEmotionalState().AddEmotion(em, am);
+	    AppraisalFrame af = new AppraisalFrame(am, e);
+	    af.SetAppraisalVariable(DeliberativeProcess.NAME,(short)8,OCCComponent.GOALSTATUS, OCCComponent.GOALDISCONFIRMED);
+	    af.SetAppraisalVariable(DeliberativeProcess.NAME, (short)8,OCCComponent.GOALCONDUCIVENESS, am.getDeliberativeLayer().getUtilityStrategy().getUtility(am, _goal));
 	    
 	    if(!isRootIntention())
 	    {
@@ -406,30 +409,17 @@ public class Intention implements Serializable {
 	 */
 	public void ProcessIntentionSuccess(AgentModel am) 
 	{
-		
-		EmotionalState es = am.getEmotionalState();
-		
-	    Event e = _goal.GetSuccessEvent();
-	    
-	    am.getMemory().getEpisodicMemory().StoreAction(am.getMemory(), e);
-	    
-	    ActiveEmotion hope = GetHope(es);
-	    ActiveEmotion fear = GetFear(es);
-	    BaseEmotion em = Appraisal.AppraiseGoalSuccess(am, hope,fear, _goal);
-	    es.RemoveEmotion(hope);
-	    es.RemoveEmotion(fear);
-	    if(em != null)
-	    {
-	    	es.AddEmotion(em, am);
-	    }
-	 
-	    
 	    if(!isRootIntention())
 	    {
 	    	getParentIntention().CheckLinks(am);
 	    }
-	        		
-	    		
+	    
+	    Event e = _goal.GetSuccessEvent();
+	    am.getMemory().getEpisodicMemory().StoreAction(am.getMemory(), e);
+	    AppraisalFrame af = new AppraisalFrame(am, e);
+	    af.SetAppraisalVariable(DeliberativeProcess.NAME,(short)8,OCCComponent.GOALSTATUS, OCCComponent.GOALCONFIRMED);
+	    af.SetAppraisalVariable(DeliberativeProcess.NAME, (short)8,OCCComponent.GOALCONDUCIVENESS, am.getDeliberativeLayer().getUtilityStrategy().getUtility(am, _goal));
+	        		   		
 	    AgentLogger.GetInstance().logAndPrint("Goal SUCCESS - " + getGoal().getName());
 	}
 

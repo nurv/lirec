@@ -49,6 +49,8 @@
 
 package FAtiMA.Core.util.parsers;
 
+import java.util.ArrayList;
+
 import org.xml.sax.Attributes;
 
 import FAtiMA.Core.AgentModel;
@@ -121,7 +123,7 @@ public class AgentLoaderHandler extends ReflectXMLHandler {
     	type = EmotionType.ParseType(emotionName);
     	
     	minIntensity = new Integer(attributes.getValue("minIntensity"));
-    	_elicitingEmotion = new BaseEmotion(type,minIntensity.intValue(),null,null);
+    	_elicitingEmotion = new BaseEmotion(type,minIntensity.intValue(),new ArrayList<String>(),null,null);
     	_action.SetElicitingEmotion(_elicitingEmotion);
     	_reactiveLayer.getActionTendencies().AddAction(_action);
     }

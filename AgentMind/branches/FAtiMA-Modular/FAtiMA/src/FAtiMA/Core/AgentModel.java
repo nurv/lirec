@@ -1,6 +1,7 @@
 package FAtiMA.Core;
 
 import FAtiMA.Core.deliberativeLayer.DeliberativeProcess;
+import FAtiMA.Core.emotionalState.AppraisalFrame;
 import FAtiMA.Core.emotionalState.EmotionalState;
 import FAtiMA.Core.memory.Memory;
 import FAtiMA.Core.reactiveLayer.ReactiveProcess;
@@ -28,5 +29,7 @@ public interface AgentModel {
 	public IComponent getComponent(String name);
 	
 	public boolean isSelf();
+	
+	public void updateEmotions(String appraisalVariable, AppraisalFrame af);
 	
 }

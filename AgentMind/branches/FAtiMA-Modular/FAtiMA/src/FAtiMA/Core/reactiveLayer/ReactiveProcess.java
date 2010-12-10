@@ -62,12 +62,14 @@ package FAtiMA.Core.reactiveLayer;
 
 
 import FAtiMA.Core.AgentModel;
+import FAtiMA.Core.IAppraisalComponent;
 import FAtiMA.Core.IBehaviourComponent;
 import FAtiMA.Core.IComponent;
 import FAtiMA.Core.IModelOfOtherComponent;
 import FAtiMA.Core.ValuedAction;
 import FAtiMA.Core.Display.AgentDisplayPanel;
-import FAtiMA.Core.emotionalState.AppraisalStructure;
+import FAtiMA.Core.OCCAffectDerivation.OCCComponent;
+import FAtiMA.Core.emotionalState.AppraisalFrame;
 import FAtiMA.Core.sensorEffector.Event;
 
 
@@ -75,7 +77,7 @@ import FAtiMA.Core.sensorEffector.Event;
  * Implements FearNot's Agent Reactive Layer (appraisal and coping processes)
  * @author João Dias
  */
-public class ReactiveProcess implements IComponent, IBehaviourComponent, IModelOfOtherComponent {
+public class ReactiveProcess implements IComponent, IBehaviourComponent, IModelOfOtherComponent, IAppraisalComponent {
 	
     /**
 	 * 
@@ -157,7 +159,7 @@ public class ReactiveProcess implements IComponent, IBehaviourComponent, IModelO
 	 * reaction rules
 	 */
 	@Override
-	public void appraisal(AgentModel ag, Event event, AppraisalStructure as) {
+	public void startAppraisal(AgentModel ag, Event event, AppraisalFrame as) {
 		Reaction selfEvaluation;	
 			
 		
@@ -167,19 +169,19 @@ public class ReactiveProcess implements IComponent, IBehaviourComponent, IModelO
 		{
 			if(selfEvaluation._desirability != null)
 			{
-				as.SetAppraisalVariable(NAME, (short)5, AppraisalStructure.DESIRABILITY, selfEvaluation._desirability.intValue());
+				as.SetAppraisalVariable(NAME, (short)5, OCCComponent.DESIRABILITY, selfEvaluation._desirability.intValue());
 			}
 			if(selfEvaluation._desirabilityForOther != null && selfEvaluation._other != null)
 			{
-				as.SetAppraisalVariableOfOther(selfEvaluation._other.toString(), NAME, (short)5, AppraisalStructure.DESIRABILITY, selfEvaluation._desirabilityForOther.intValue());
+				as.SetAppraisalVariable(NAME, (short)5, OCCComponent.DESFOROTHER + selfEvaluation._other, selfEvaluation._desirabilityForOther.intValue());
 			}
 			if(selfEvaluation._praiseworthiness != null)
 			{
-				as.SetAppraisalVariable(NAME, (short)5, AppraisalStructure.PRAISEWORTHINESS, selfEvaluation._praiseworthiness.intValue());
+				as.SetAppraisalVariable(NAME, (short)5, OCCComponent.PRAISEWORTHINESS, selfEvaluation._praiseworthiness.intValue());
 			}
 			if(selfEvaluation._like != null)
 			{
-				as.SetAppraisalVariable(NAME, (short)5, AppraisalStructure.LIKE, selfEvaluation._like.intValue());
+				as.SetAppraisalVariable(NAME, (short)5, OCCComponent.LIKE, selfEvaluation._like.intValue());
 			}
 		}
 	}
@@ -289,5 +291,11 @@ public class ReactiveProcess implements IComponent, IBehaviourComponent, IModelO
 	@Override
 	public AgentDisplayPanel createDisplayPanel(AgentModel am) {
 		return null;
+	}
+
+	@Override
+	public void continueAppraisal(AgentModel am) {
+		
+		return;
 	}
 }

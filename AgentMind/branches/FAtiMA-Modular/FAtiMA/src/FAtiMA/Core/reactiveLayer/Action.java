@@ -154,6 +154,7 @@ public class Action implements IIntegrityTester, Serializable, IGroundable, Clon
 			}
 			_elicitingEmotion = new BaseEmotion(_elicitingEmotion.GetType(),
 					newPotential,
+					new ArrayList<String>(),
 					_elicitingEmotion.GetCause(),
 					_elicitingEmotion.GetDirection());
 		}
@@ -176,6 +177,7 @@ public class Action implements IIntegrityTester, Serializable, IGroundable, Clon
 			}
 			_elicitingEmotion = new BaseEmotion(_elicitingEmotion.GetType(),
 					newPotential,
+					new ArrayList<String>(),
 					_elicitingEmotion.GetCause(),
 					_elicitingEmotion.GetDirection());
 		}

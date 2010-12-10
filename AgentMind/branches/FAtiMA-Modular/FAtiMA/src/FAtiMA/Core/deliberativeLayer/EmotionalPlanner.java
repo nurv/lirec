@@ -114,9 +114,11 @@ import java.util.ListIterator;
 
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.IntegrityValidator;
+import FAtiMA.Core.OCCAffectDerivation.OCCComponent;
 import FAtiMA.Core.conditions.Condition;
 import FAtiMA.Core.conditions.PropertyNotEqual;
 import FAtiMA.Core.deliberativeLayer.goals.ActivePursuitGoal;
+import FAtiMA.Core.deliberativeLayer.goals.Goal;
 import FAtiMA.Core.deliberativeLayer.plan.CausalConflictFlaw;
 import FAtiMA.Core.deliberativeLayer.plan.CausalLink;
 import FAtiMA.Core.deliberativeLayer.plan.Effect;
@@ -127,8 +129,7 @@ import FAtiMA.Core.deliberativeLayer.plan.Plan;
 import FAtiMA.Core.deliberativeLayer.plan.ProtectedCondition;
 import FAtiMA.Core.deliberativeLayer.plan.Step;
 import FAtiMA.Core.emotionalState.ActiveEmotion;
-import FAtiMA.Core.emotionalState.Appraisal;
-import FAtiMA.Core.emotionalState.BaseEmotion;
+import FAtiMA.Core.emotionalState.AppraisalFrame;
 import FAtiMA.Core.exceptions.UnknownSpeechActException;
 import FAtiMA.Core.exceptions.UnspecifiedVariableException;
 import FAtiMA.Core.util.AgentLogger;
@@ -407,6 +408,8 @@ public class EmotionalPlanner implements Serializable {
 		ListIterator<GoalThreat> li;
 		GoalThreat goalThreat;
 		
+		
+		AppraisalFrame af;
 		ActiveEmotion fearEmotion;
 		ActiveEmotion hopeEmotion;
 		ActiveEmotion threatEmotion;
@@ -417,6 +420,7 @@ public class EmotionalPlanner implements Serializable {
 		float prob;
 		
 		
+		af = intention.getAppraisalFrame();
 		p = intention.GetBestPlan(am); //gets the best plan so far to achieve the intention
 		//System.out.println("BEST PLAN: " + p);
 
@@ -430,13 +434,14 @@ public class EmotionalPlanner implements Serializable {
 			return null;
 		}
 		
+		prob = p.getProbability(am);
 		//APPRAISAL/REAPPRAISAL - the plan brought into the agent's mind will generate/update
 		//hope and fear emotions according to the plan probability
-		BaseEmotion auxEmotion = Appraisal.AppraiseGoalSuccessProbability(am, intention.getGoal(),p.getProbability(am));
-		hopeEmotion = am.getEmotionalState().UpdateProspectEmotion(auxEmotion, am);
+		af.SetAppraisalVariable(DeliberativeProcess.NAME, (short)7, OCCComponent.SUCCESSPROBABILITY, prob);
+		af.SetAppraisalVariable(DeliberativeProcess.NAME, (short)7, OCCComponent.FAILUREPROBABILITY, 1-prob);
 		
-		auxEmotion = Appraisal.AppraiseGoalFailureProbability(am, intention.getGoal(),1-p.getProbability(am));
-		fearEmotion = am.getEmotionalState().UpdateProspectEmotion(auxEmotion, am);
+		hopeEmotion = am.getEmotionalState().GetEmotion(OCCComponent.getHopeKey(af.getEvent()));
+		fearEmotion = am.getEmotionalState().GetEmotion(OCCComponent.getFearKey(af.getEvent()));
 		
 		intention.SetHope(hopeEmotion);
 		intention.SetFear(fearEmotion);
@@ -448,7 +453,7 @@ public class EmotionalPlanner implements Serializable {
 		//goals more easily and thus the threshold is higher, character on negative moods will have a lower
 		//threshold. This threshold is ranged between 5% and 15%, it is 10% for characters in a neutral mood
 		float threshold = 0.1f + am.getEmotionalState().GetMood()*0.0167f;
-		if(p.getProbability(am) < threshold) {
+		if(prob < threshold) {
 			//this coping strategy is used in tandem with mental disengagement...
 		    //that consists in lowering the goal importance
 			intention.getGoal().DecreaseImportanceOfFailure(am, 0.5f);
@@ -467,12 +472,17 @@ public class EmotionalPlanner implements Serializable {
 			
 			goalThreat = (GoalThreat) li.next();
 			prob = goalThreat.getEffect().GetProbability(am);
+			Goal tGoal = goalThreat.getCond().getGoal();
 			//threatImportance = goalThreat.getCond().getGoal().GetImportanceOfFailure(am);
 			//aux = prob * threatImportance;
 			failureImportance = intention.getGoal().GetImportanceOfFailure(am);
 			
-			auxEmotion = Appraisal.AppraiseGoalFailureProbability(am, goalThreat.getCond().getGoal(),prob); 
-			threatEmotion = am.getEmotionalState().UpdateProspectEmotion(auxEmotion, am);
+			AppraisalFrame auxFrame = new AppraisalFrame(am, tGoal.GetActivationEvent());
+			auxFrame.SetAppraisalVariable(DeliberativeProcess.NAME, (short)6, OCCComponent.FAILUREPROBABILITY, prob);
+			auxFrame.SetAppraisalVariable(DeliberativeProcess.NAME, (short)6, OCCComponent.GOALCONDUCIVENESS, -tGoal.GetImportanceOfFailure(am));
+			 
+			
+			threatEmotion = am.getEmotionalState().GetEmotion(OCCComponent.getFearKey(tGoal.GetActivationEvent())); 
 			if(threatEmotion != null) { //if does not exist a fear caused by the threat, emotion coping is not necessary
 				threatIntensity = threatEmotion.GetIntensity();
 			}
@@ -677,7 +687,7 @@ public class EmotionalPlanner implements Serializable {
 	public Plan DevelopPlan(AgentModel am, ActivePursuitGoal goal)
     {
 	    Plan p = new Plan(new ArrayList<ProtectedCondition>(),am.getDeliberativeLayer().getDetectThreatStrategy(),goal.GetSuccessConditions());
-        Intention i = new Intention(goal);
+        Intention i = new Intention(am, goal);
         i.AddPlan(p);
         Plan completePlan = null;
         

@@ -108,6 +108,7 @@ public class EmotionalStatePanel extends AgentDisplayPanel {
         Float aux;
         ActiveEmotion em;
         EmotionalState es = am.getEmotionalState();
+        boolean updated = false;
         
         //aux = new Float(es.GetArousal());
         //_arousalBar.setString(aux.toString());
@@ -127,6 +128,7 @@ public class EmotionalStatePanel extends AgentDisplayPanel {
                  em = it.next();     
                  emotionDisplay = (EmotionDisplay) _emotionDisplays.get(em.GetHashKey());
                  emotionDisplay.SetValue(em.GetIntensity());
+                 updated = true;
              }    
         }
         else {
@@ -146,10 +148,11 @@ public class EmotionalStatePanel extends AgentDisplayPanel {
         
                 _emotionDisplays.put(em.GetHashKey(),emotionDisplay);      
            }
-            DisplayStrongestEmotion(es);
+           DisplayStrongestEmotion(es);
+           updated = true;
         }
         
-        return false;
+        return updated;
     }
     
     private void DisplayStrongestEmotion(EmotionalState es) {

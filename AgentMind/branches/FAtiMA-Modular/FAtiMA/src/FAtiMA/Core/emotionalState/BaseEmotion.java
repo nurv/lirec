@@ -33,6 +33,7 @@
 package FAtiMA.Core.emotionalState;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.util.enumerables.EmotionType;
@@ -54,9 +55,9 @@ public class BaseEmotion implements Serializable {
 	
 	protected Event _cause;
 	protected Name _direction;
-
 	protected float _potential;
-	
+	protected ArrayList<String> _appraisalVariables;
+
 	protected final short _type;
 	protected final byte _valence; 
 	
@@ -69,11 +70,12 @@ public class BaseEmotion implements Serializable {
 	 * @param direction - if the emotion is targeted to someone (ex: angry with Luke),
 	 * 				      this parameter specifies the target
 	 */
-	public BaseEmotion(short type, float potential, Event cause, Name direction) {
+	public BaseEmotion(short type, float potential, ArrayList<String> appraisalVariables, Event cause, Name direction) {
 		_type = type;
 		_potential = potential;
 		_cause = cause;
 		_direction = direction;
+		_appraisalVariables = appraisalVariables;
 		
 		if(type == EmotionType.JOY ||
 				type == EmotionType.LOVE ||
@@ -105,6 +107,7 @@ public class BaseEmotion implements Serializable {
 		_cause = em._cause;
 		_direction = em._direction;
 		_valence = em._valence;
+		_appraisalVariables = em._appraisalVariables;
 	}
 	
 	/**
@@ -123,12 +126,22 @@ public class BaseEmotion implements Serializable {
 		return _direction;
 	}
 	
+	public ArrayList<String> GetAppraisalVariables()
+	{
+		return _appraisalVariables;
+	}
+	
 	/**
 	 * Gets an hask key used to index this BaseEmotion
 	 * @return - a String used to index the BaseEMotion
 	 */
 	public String GetHashKey() {
-		return _type + "-" + _direction + "-" + _cause;
+		String aux = _cause.toString();
+		for(String s : _appraisalVariables)
+		{
+			aux += "-" + s;
+		}
+		return aux;
 	}
 	
 	/**

@@ -153,7 +153,7 @@ public class ActionDetail implements Serializable {
 			}
 		}
 		
-		this._emotion = new BaseEmotion(EmotionType.NEUTRAL,0,null,null);
+		this._emotion = new BaseEmotion(EmotionType.NEUTRAL,0,null,null,null);
 		
 		this._evaluation = new ArrayList<String>();
 	}
@@ -289,9 +289,10 @@ public class ActionDetail implements Serializable {
 	public boolean UpdateEmotionValues(Memory m, ActiveEmotion em)
 	{
 		boolean updated = false;
+
 		if(em.GetIntensity() > this._emotion.GetPotential())
 		{
-			this._emotion = new BaseEmotion(em.GetType(),em.GetIntensity(),em.GetCause(),em.GetDirection());
+			this._emotion = new BaseEmotion(em.GetType(),em.GetIntensity(),em.GetAppraisalVariables(), em.GetCause(),em.GetDirection());
 			if(this._emotion.GetValence() == EmotionValence.POSITIVE)
 			{
 				this._desirability = (float) Math.floor(em.GetPotential());

@@ -23,12 +23,12 @@ import org.xml.sax.SAXException;
 
 import FAtiMA.Core.Display.AgentDisplay;
 import FAtiMA.Core.Display.AgentDisplayPanel;
+import FAtiMA.Core.OCCAffectDerivation.OCCComponent;
 import FAtiMA.Core.deliberativeLayer.DeliberativeProcess;
 import FAtiMA.Core.deliberativeLayer.EmotionalPlanner;
 import FAtiMA.Core.deliberativeLayer.goals.GoalLibrary;
 import FAtiMA.Core.emotionalState.ActiveEmotion;
-import FAtiMA.Core.emotionalState.Appraisal;
-import FAtiMA.Core.emotionalState.AppraisalStructure;
+import FAtiMA.Core.emotionalState.AppraisalFrame;
 import FAtiMA.Core.emotionalState.BaseEmotion;
 import FAtiMA.Core.emotionalState.EmotionalState;
 import FAtiMA.Core.exceptions.ActionsParsingException;
@@ -68,6 +68,8 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 	protected ArrayList<IModelOfOtherComponent> _modelOfOtherComponents;
 	protected ArrayList<IProcessExternalRequestComponent> _processExternalRequestComponents;
 	protected ArrayList<IProcessPerceptionsComponent> _processPerceptionsComponents;
+	protected ArrayList<IAffectDerivationComponent> _affectDerivationComponents;
+	protected ArrayList<IAppraisalComponent> _appraisalComponents;
 	
 	protected EmotionalState _emotionalState;
 	protected Memory _memory;
@@ -116,6 +118,8 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 		_modelOfOtherComponents = new ArrayList<IModelOfOtherComponent>();
 		_processExternalRequestComponents = new ArrayList<IProcessExternalRequestComponent>();
 		_processPerceptionsComponents = new ArrayList<IProcessPerceptionsComponent>();
+		_affectDerivationComponents = new ArrayList<IAffectDerivationComponent>();
+		_appraisalComponents = new ArrayList<IAppraisalComponent>();
 		
 		AgentSimulationTime.GetInstance(); //This call will initialize the timer for the agent's simulation time
 	}
@@ -154,6 +158,8 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 
 			_deliberativeLayer = new DeliberativeProcess(goalLibrary,planner);
 			addComponent(_deliberativeLayer);
+			
+			addComponent(new OCCComponent());
 
 			//TODO:PARSETHEGOALS
 			loadPersonality(ConfigurationManager.getPersonalityFile(),ConfigurationManager.getPlatform(),new ArrayList<String>());
@@ -265,6 +271,14 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 		if(c instanceof IProcessPerceptionsComponent)
 		{
 			_processPerceptionsComponents.add((IProcessPerceptionsComponent) c);
+		}
+		if(c instanceof IAffectDerivationComponent)
+		{
+			_affectDerivationComponents.add((IAffectDerivationComponent) c);
+		}
+		if(c instanceof IAppraisalComponent)
+		{
+			_appraisalComponents.add((IAppraisalComponent) c);
 		}
 		
 		c.initialize(this);
@@ -396,6 +410,8 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 		this._modelOfOtherComponents = (ArrayList<IModelOfOtherComponent>) s.readObject();
 		this._processExternalRequestComponents = (ArrayList<IProcessExternalRequestComponent>) s.readObject();
 		this._processPerceptionsComponents = (ArrayList<IProcessPerceptionsComponent>) s.readObject();
+		this._affectDerivationComponents = (ArrayList<IAffectDerivationComponent>) s.readObject();
+		this._appraisalComponents = (ArrayList<IAppraisalComponent>) s.readObject();
 		
 		s.close();
 		in.close();
@@ -558,7 +574,8 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 	 */
 	public void Run() {
 		ValuedAction action;
-		AppraisalStructure appraisal;
+		AppraisalFrame appraisal;
+		ArrayList<AppraisalFrame> resultingAppraisals;
 		ArrayList<BaseEmotion> emotions;
 		ActiveEmotion activeEmotion;
 
@@ -590,7 +607,7 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 						c.updateCycle(this, time);
 					}
 
-					//perceives new events
+					//perceives and appraises new events
 					synchronized (this)
 					{
 						for(Event e : this._perceivedEvents)
@@ -602,41 +619,21 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 							_memory.getSemanticMemory().Tell(ACTION_CONTEXT, e2.toName().toString());
 							
 							
-							for(IComponent c : this._generalComponents.values())
+							appraisal = new AppraisalFrame(this,e2);
+							for(IAppraisalComponent c : this._appraisalComponents)
 							{
 								c.perceiveEvent(this,e2);
+								c.startAppraisal(this,e2, appraisal);
 							}
-
-							appraisal = new AppraisalStructure();
-
-							while(appraisal.hasChanged())
-							{
-								for(IComponent c : this._generalComponents.values())
-								{
-									c.appraisal(this,e2,appraisal);
-
-								}
-							}
-
-							emotions = Appraisal.GenerateEmotions(this, e2, appraisal);
-
-							for(BaseEmotion em : emotions)
-							{
-								activeEmotion = _emotionalState.AddEmotion(em, this);
-								if(activeEmotion != null)
-								{
-									for(IProcessEmotionComponent c : this._processEmotionComponents)
-									{
-										c.emotionActivation(this,e2,activeEmotion);
-									}
-								}
-							}
-
 						}
 						this._perceivedEvents.clear();
 					}
-
-
+					
+					for(IAppraisalComponent c : this._appraisalComponents)
+					{
+						c.continueAppraisal(this);
+					}
+					
 					//if there was new data or knowledge added we must apply inference operators
 					//update any inferred property to the outside and appraise the events
 					if(_memory.getEpisodicMemory().HasNewData() ||
@@ -787,6 +784,8 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 			s.writeObject(_modelOfOtherComponents);
 			s.writeObject(_processExternalRequestComponents);
 			s.writeObject(_processPerceptionsComponents);
+			s.writeObject(_affectDerivationComponents);
+			s.writeObject(_appraisalComponents);
 			
 			s.flush();
 			s.close();
@@ -888,6 +887,8 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 			s.writeObject(_modelOfOtherComponents);
 			s.writeObject(_processExternalRequestComponents);
 			s.writeObject(_processPerceptionsComponents);
+			s.writeObject(_affectDerivationComponents);
+			s.writeObject(_appraisalComponents);
 			
 			//s.writeObject(_saveDirectory);
 			AgentSimulationTime.SaveState(s);
@@ -946,6 +947,8 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 			this._modelOfOtherComponents = (ArrayList<IModelOfOtherComponent>) s.readObject();
 			this._processExternalRequestComponents = (ArrayList<IProcessExternalRequestComponent>) s.readObject();
 			this._processPerceptionsComponents = (ArrayList<IProcessPerceptionsComponent>) s.readObject();
+			this._affectDerivationComponents = (ArrayList<IAffectDerivationComponent>) s.readObject();
+			this._appraisalComponents = (ArrayList<IAppraisalComponent>) s.readObject();
 			
 			AgentSimulationTime.LoadState(s);
 			//this._saveDirectory = (String) s.readObject();
@@ -954,5 +957,29 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 		{
 			e.printStackTrace();
 		}
+	}
+
+
+	@Override
+	public void updateEmotions(String appraisalVariable, AppraisalFrame af) {
+		
+		ArrayList<BaseEmotion> emotions;
+		ActiveEmotion activeEmotion;
+		
+		for(IAffectDerivationComponent ac : this._affectDerivationComponents)
+		{
+			emotions = ac.deriveEmotions(this, appraisalVariable, af);
+			for(BaseEmotion em : emotions)
+			{
+				activeEmotion = _emotionalState.AddEmotion(em, this);
+				if(activeEmotion != null)
+				{
+					for(IProcessEmotionComponent pec : this._processEmotionComponents)
+					{
+						pec.emotionActivation(this,activeEmotion);
+					}
+				}
+			}
+		}	
 	}
 }

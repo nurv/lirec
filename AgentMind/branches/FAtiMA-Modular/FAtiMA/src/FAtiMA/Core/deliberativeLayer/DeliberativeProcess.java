@@ -124,6 +124,7 @@ import java.util.ListIterator;
 import java.util.Set;
 
 import FAtiMA.Core.AgentModel;
+import FAtiMA.Core.IAppraisalComponent;
 import FAtiMA.Core.IBehaviourComponent;
 import FAtiMA.Core.IComponent;
 import FAtiMA.Core.IModelOfOtherComponent;
@@ -140,7 +141,7 @@ import FAtiMA.Core.deliberativeLayer.plan.Plan;
 import FAtiMA.Core.deliberativeLayer.plan.ProtectedCondition;
 import FAtiMA.Core.deliberativeLayer.plan.Step;
 import FAtiMA.Core.emotionalState.ActiveEmotion;
-import FAtiMA.Core.emotionalState.AppraisalStructure;
+import FAtiMA.Core.emotionalState.AppraisalFrame;
 import FAtiMA.Core.exceptions.UnknownGoalException;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.sensorEffector.Parameter;
@@ -158,14 +159,14 @@ import FAtiMA.Core.wellFormedNames.Unifier;
  * 
  * @author João Dias
  */
-public class DeliberativeProcess implements IComponent, IBehaviourComponent, IModelOfOtherComponent, IOptionsStrategy, IExpectedUtilityStrategy {
+public class DeliberativeProcess implements IComponent, IBehaviourComponent, IModelOfOtherComponent, IAppraisalComponent, IOptionsStrategy, IExpectedUtilityStrategy {
 	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	private static final long waitingTime = 30000;
-	private static final float MINIMUMUTILITY = 8;
+	private static final float MINIMUMUTILITY = 1;
 	private static final float SELECTIONTHRESHOLD = 1.2f; 
 	public static final String NAME = "Deliberative";
 	private ArrayList<Goal> _goals;
@@ -493,7 +494,7 @@ public class DeliberativeProcess implements IComponent, IBehaviourComponent, IMo
 		synchronized(this)
 		{
 			AgentLogger.GetInstance().logAndPrint("Adding 1st level intention: " + goal.getName());
-			intention = new Intention(goal);
+			intention = new Intention(am,goal);
 			
 			plans = goal.getPlans(am);
 			if(plans == null)
@@ -507,6 +508,7 @@ public class DeliberativeProcess implements IComponent, IBehaviourComponent, IMo
 			}
 			
 			_intentions.put(goalName,intention);
+			intention.ProcessIntentionActivation(am);
 		}
 	}
 	
@@ -517,7 +519,7 @@ public class DeliberativeProcess implements IComponent, IBehaviourComponent, IMo
 		Intention subIntention;
 		
 		
-		subIntention = new Intention(goal);
+		subIntention = new Intention(am,goal);
 		plans = goal.getPlans(am);
 		if(plans == null)
 		{
@@ -911,12 +913,12 @@ public class DeliberativeProcess implements IComponent, IBehaviourComponent, IMo
 		_currentIntention = Filter2ndLevel(am);
 		if(_currentIntention != null) {
 			i = _currentIntention.GetSubIntention();
-			
+					
 			//TODO adding and removing intentions from memory.
 			// ok, this needs some explaining. If you play close attention to the following
 			// code u'll see that if an intention has no available plans (i.e. failed), I will not
-			// remove the intention unless it has been strongly commited. This is intended. 
-			// If not strongly commited the intention needs to stay in the list of current intentions.
+			// remove the intention unless it has been strongly committed. This is intended. 
+			// If not strongly committed the intention needs to stay in the list of current intentions.
 			// This is because if we would remove it, the agent would immediately select the intention
 			// again not knowing that he would fail to create a plan for it. So he needs to remember that 
 			// the intention is not feasible. What we should do latter is to remove the intention from memory
@@ -924,17 +926,13 @@ public class DeliberativeProcess implements IComponent, IBehaviourComponent, IMo
 			
 			if(i.getGoal().CheckSuccess(am))
 			{
-				if(i.IsStrongCommitment())
+				RemoveIntention(i);
+				_actionMonitor = null;
+				for(IGoalSuccessStrategy s: _goalSuccessStrategies)
 				{
-					RemoveIntention(i);
-					_actionMonitor = null;
-					for(IGoalSuccessStrategy s: _goalSuccessStrategies)
-					{
-						s.perceiveGoalSuccess(am, i.getGoal());
-					}
-					i.ProcessIntentionSuccess(am);
-					
+					s.perceiveGoalSuccess(am, i.getGoal());
 				}
+				i.ProcessIntentionSuccess(am);				
 			}
 			/*else if(!i.getGoal().checkPreconditions(am))
 			{
@@ -948,108 +946,105 @@ public class DeliberativeProcess implements IComponent, IBehaviourComponent, IMo
 			else if(i.getGoal().CheckFailure(am))
 			{
 				RemoveIntention(i);
-				if(i.IsStrongCommitment())
+				
+				_actionMonitor = null;
+				for(IGoalFailureStrategy s: _goalFailureStrategies)
 				{
-					_actionMonitor = null;
-					for(IGoalFailureStrategy s: _goalFailureStrategies)
-					{
-						s.perceiveGoalFailure(am, i.getGoal());
-					}
-					 i.ProcessIntentionFailure(am);
+					s.perceiveGoalFailure(am, i.getGoal());
 				}
+				i.ProcessIntentionFailure(am);
 			}
 			else if(i.NumberOfAlternativePlans() == 0)
 			{
+				for(IGoalFailureStrategy s: _goalFailureStrategies)
+				{
+					s.perceiveGoalFailure(am, i.getGoal());
+				}
+				i.ProcessIntentionFailure(am);
 				if(i.IsStrongCommitment())
 				{
 					RemoveIntention(i);
 					_actionMonitor = null;
-					for(IGoalFailureStrategy s: _goalFailureStrategies)
-					{
-						s.perceiveGoalFailure(am, i.getGoal());
-					}
-					i.ProcessIntentionFailure(am);
 				}
 			}
 			else
 			{
 				_selectedPlan = _planner.ThinkAbout(am, i);
 			}
-		}
-		
-		if(_actionMonitor == null && _selectedPlan != null) {
-			AgentLogger.GetInstance().logAndPrint("Plan Finished: " + _selectedPlan.toString());
-			copingAction = _selectedPlan.UnexecutedAction(am);
 			
-			if(copingAction != null) {
-				if(!i.IsStrongCommitment())
-				{
-					i.SetStrongCommitment(am);
-					i.ProcessIntentionActivation(am);
-					AgentLogger.GetInstance().log("Plan Commited: " + _selectedPlan.toString());
-				}
-				String actionName = copingAction.getName().GetFirstLiteral().toString();
+			if(_actionMonitor == null && _selectedPlan != null) {
+				AgentLogger.GetInstance().logAndPrint("Plan Finished: " + _selectedPlan.toString());
+				copingAction = _selectedPlan.UnexecutedAction(am);
 				
-				if(copingAction instanceof ActivePursuitGoal)
-				{
-					AddSubIntention(am, _currentIntention, (ActivePursuitGoal) copingAction);	
-				}
-				else if(!actionName.startsWith("Inference") && !actionName.endsWith("Appraisal") && !actionName.startsWith("SA"))
-				{
-					fear = i.GetFear(am.getEmotionalState());
-					hope = i.GetHope(am.getEmotionalState());
-					if(hope != null)
+				if(copingAction != null) {
+					if(!i.IsStrongCommitment())
 					{
-						if(fear != null)
+						i.SetStrongCommitment(am);
+						AgentLogger.GetInstance().log("Plan Commited: " + _selectedPlan.toString());
+					}
+					String actionName = copingAction.getName().GetFirstLiteral().toString();
+					
+					if(copingAction instanceof ActivePursuitGoal)
+					{
+						AddSubIntention(am, _currentIntention, (ActivePursuitGoal) copingAction);	
+					}
+					else if(!actionName.startsWith("Inference") && !actionName.endsWith("Appraisal") && !actionName.startsWith("SA"))
+					{
+						fear = i.GetFear(am.getEmotionalState());
+						hope = i.GetHope(am.getEmotionalState());
+						if(hope != null)
 						{
-							if(hope.GetIntensity() >= fear.GetIntensity())
+							if(fear != null)
 							{
-								_selectedActionEmotion = hope;
+								if(hope.GetIntensity() >= fear.GetIntensity())
+								{
+									_selectedActionEmotion = hope;
+								}
+								else
+								{
+									_selectedActionEmotion = fear;
+								}
 							}
 							else
 							{
-								_selectedActionEmotion = fear;
+								_selectedActionEmotion = hope;
 							}
-						}
+						} 
 						else
 						{
-							_selectedActionEmotion = hope;
+							_selectedActionEmotion = fear;
 						}
-					} 
+							
+						
+						_selectedAction = (Step) copingAction;
+						AgentLogger.GetInstance().log("Selecting Action: " + _selectedAction.toString() + "from plan:" +_selectedPlan.toString());
+					}
+					else if(actionName.startsWith("SA"))
+					{
+						Effect eff;
+					
+					    for(ListIterator<Effect> li =  copingAction.getEffects().listIterator(); li.hasNext();)
+					    {
+					      eff = (Effect) li.next();
+					      if(eff.isGrounded())
+					    	  am.getMemory().getSemanticMemory().Tell(eff.GetEffect().getName(), eff.GetEffect().GetValue().toString());
+					    }
+					    this.CheckLinks(am);
+					}
 					else
 					{
-						_selectedActionEmotion = fear;
+						//this should never be selected
+						System.out.println("InferenceOperator selected for execution");
 					}
-						
-					
-					_selectedAction = (Step) copingAction;
-					AgentLogger.GetInstance().log("Selecting Action: " + _selectedAction.toString() + "from plan:" +_selectedPlan.toString());
-				}
-				else if(actionName.startsWith("SA"))
-				{
-					Effect eff;
-				
-				    for(ListIterator<Effect> li =  copingAction.getEffects().listIterator(); li.hasNext();)
-				    {
-				      eff = (Effect) li.next();
-				      if(eff.isGrounded())
-				    	  am.getMemory().getSemanticMemory().Tell(eff.GetEffect().getName(), eff.GetEffect().GetValue().toString());
-				    }
-				    this.CheckLinks(am);
 				}
 				else
 				{
-					//this should never be selected
-					System.out.println("InferenceOperator selected for execution");
+					//If a complete plan does not have a valid next action to execute (ex: the next
+					//action to execute by self contains unboundvariables),
+					//it means that the plan cannot be executed, and the plan must be removed
+					i.RemovePlan(_selectedPlan);
+					AgentLogger.GetInstance().logAndPrint("Plan with invalid next action removed!");
 				}
-			}
-			else
-			{
-				//If a complete plan does not have a valid next action to execute (ex: the next
-				//action to execute by self contains unboundvariables),
-				//it means that the plan cannot be executed, and the plan must be removed
-				i.RemovePlan(_selectedPlan);
-				AgentLogger.GetInstance().logAndPrint("Plan with invalid next action removed!");
 			}
 		}
 	}
@@ -1251,12 +1246,17 @@ public class DeliberativeProcess implements IComponent, IBehaviourComponent, IMo
 		return new DeliberativeProcess(_goalLibrary, _planner);
 	}
 
-	@Override
-	public void appraisal(AgentModel am, Event e, AppraisalStructure as) {
-	}
 
 	@Override
 	public AgentDisplayPanel createDisplayPanel(AgentModel am) {
 		return null;
+	}
+	
+	@Override
+	public void startAppraisal(AgentModel am, Event e, AppraisalFrame as) {
+	}
+
+	@Override
+	public void continueAppraisal(AgentModel am) {
 	}
 }

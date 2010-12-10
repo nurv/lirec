@@ -68,7 +68,6 @@ import FAtiMA.Core.AgentSimulationTime;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.util.enumerables.EmotionType;
 import FAtiMA.Core.util.enumerables.EmotionValence;
-import FAtiMA.Core.wellFormedNames.Name;
 
 
 
@@ -150,54 +149,27 @@ public class EmotionalState implements Serializable {
 		decay = disposition.GetDecay();
 		
 		auxEmotion = null;
-
-		if (potential > threshold) {
-			if (_emotionPool.containsKey(potEm.GetHashKey())) {
-				auxEmotion = (ActiveEmotion) _emotionPool.get(potEm.GetHashKey());
-				auxEmotion.ReforceEmotion(potential);
-				am.getMemory().getEpisodicMemory().AssociateEmotionToAction(am.getMemory(), 
-						auxEmotion,
-						auxEmotion.GetCause());
-			}
-			else {
-				auxEmotion = new ActiveEmotion(potEm, potential, threshold, decay);
-				_emotionPool.put(potEm.GetHashKey(), auxEmotion);
-				am.getMemory().getEpisodicMemory().AssociateEmotionToAction(am.getMemory(), 
-						auxEmotion,
-						auxEmotion.GetCause());
-				this.GenerateCompoundEmotions(potEm, am);
-			}
+		
+		if(_emotionPool.containsKey(potEm.GetHashKey()))
+		{
+			_emotionPool.remove(potEm.GetHashKey());
+		}
+		
+		if(potential > threshold)
+		{
+			auxEmotion = new ActiveEmotion(potEm, potential, threshold, decay);
+			_emotionPool.put(potEm.GetHashKey(), auxEmotion);
 			this._mood.UpdateMood(auxEmotion);
-		}
-		
-		return auxEmotion;
-	}
-	
-	public void UpdateEmotionalState(BaseEmotion em, AgentModel am)
-	{
-		ActiveEmotion auxEmotion;
-		int decay;
-		EmotionDisposition disposition;
-	
-
-		disposition = _emotionDispositions[em._type];
-		decay = disposition.GetDecay();
-		
-		if (_emotionPool.containsKey(em.GetHashKey())) {
-			auxEmotion = (ActiveEmotion) _emotionPool.get(em.GetHashKey());
-			auxEmotion.ReforceEmotion(em.GetPotential());				
-		}
-		else {
-			auxEmotion = new ActiveEmotion(em, em.GetPotential(), 0, decay);
-			_emotionPool.put(em.GetHashKey(), auxEmotion);
 			am.getMemory().getEpisodicMemory().AssociateEmotionToAction(am.getMemory(), 
 					auxEmotion,
 					auxEmotion.GetCause());
-			this.GenerateCompoundEmotions(em, am);
+			this.GenerateCompoundEmotions(potEm, am);
 		}
-		this._mood.UpdateMood(auxEmotion);
+		
+		
+		return auxEmotion;
 	}
-	
+		
 	
 	/**
 	 * Creates a new ActiveEmotion based on a received BaseEmotion. However,
@@ -290,11 +262,11 @@ public class EmotionalState implements Serializable {
 	 * @return the found ActiveEmotion if it matches the description passed in the arguments,
 	 * 		   null if no emotion is found in the EmotionalState with the given characteristics
 	 */
-	public ActiveEmotion GetEmotion(short emotionType, Name direction, Name cause) {
+	/*public ActiveEmotion GetEmotion(short emotionType, Name direction, Name cause) {
 		
 		BaseEmotion em = new BaseEmotion(emotionType,0,new Event(cause.toString()),direction);
 		return (ActiveEmotion) _emotionPool.get(em.GetHashKey());
-	}
+	}*/
 	
 	/**
 	 * Searches for a given emotion in the EmotionalState
@@ -305,8 +277,7 @@ public class EmotionalState implements Serializable {
 	 */
 	public ActiveEmotion GetEmotion(String emotionKey)
 	{
-		return (ActiveEmotion) _emotionPool.get(emotionKey);
-		
+		return (ActiveEmotion) _emotionPool.get(emotionKey);	
 	}
 	
 	/**
@@ -413,40 +384,10 @@ public class EmotionalState implements Serializable {
 		return result;
 	}
 	
-	
-	
 	public void RemoveEmotion(ActiveEmotion em) {
 		if(em != null) {
 			_emotionPool.remove(em.GetHashKey());
 		}
-	}
-	
-	public ActiveEmotion UpdateProspectEmotion(BaseEmotion em, AgentModel am ) {
-	    ActiveEmotion aEm;
-	    aEm = (ActiveEmotion) _emotionPool.get(em.GetHashKey());
-		if(aEm != null) {
-			if(em.GetPotential() == 0) 
-			{
-				_emotionPool.remove(em.GetHashKey());
-				return null;
-			}
-			aEm.SetIntensity(DeterminePotential(em));
-			if(aEm.GetIntensity() <= 0) {
-			    _emotionPool.remove(em.GetHashKey());
-			    return null;
-			}
-			else 
-			{
-				am.getMemory().getEpisodicMemory().AssociateEmotionToAction(am.getMemory(), 
-						aEm,
-						aEm.GetCause());
-				return aEm;
-			}
-		}
-		else {
-			if(em.GetPotential() == 0) return null;
-			return this.AddEmotion(em,am);
-		} 
 	}
 	
 	private void GenerateCompoundEmotions(BaseEmotion potEm, AgentModel am) {
@@ -461,7 +402,13 @@ public class EmotionalState implements Serializable {
 		Iterator<ActiveEmotion> i1;
 		Iterator<BaseEmotion> i2;
 		ArrayList<BaseEmotion> compoundEmotions = new ArrayList<BaseEmotion>();
+		ArrayList<String> appraisalVariables = new ArrayList<String>();
+		//for now we only allow one composed emotion for event
+		//this should be changed by adding the appraisal variables of all emotions that generated
+		//the composed emotion
+		appraisalVariables.add("Composed");
 		
+		//TODO move this code to the OCCComponent
 		type = potEm.GetType();
 		if(type == EmotionType.JOY) {
 			n1 = EmotionType.PRIDE;
@@ -500,11 +447,11 @@ public class EmotionalState implements Serializable {
 			emotion = i1.next();
 			if(emotion.GetType() == n1 && emotion.GetCause().equals(potEm.GetCause())) {
 				potential = (float) Math.log(Math.pow(potEm.GetPotential(), 2) + Math.pow(emotion.GetPotential(), 2));
-				compoundEmotions.add(new BaseEmotion(res1, potential, potEm.GetCause(), potEm.GetDirection()));
+				compoundEmotions.add(new BaseEmotion(res1, potential, appraisalVariables, potEm.GetCause(), potEm.GetDirection()));
 			}
 			if(n2!=-1 && emotion.GetType() == n2 && emotion.GetCause().equals(potEm.GetCause())) {
 				potential = (float) Math.log(Math.pow(potEm.GetPotential(), 2) + Math.pow(emotion.GetPotential(), 2));
-				compoundEmotions.add(new BaseEmotion(res2, potential, potEm.GetCause(), potEm.GetDirection()));
+				compoundEmotions.add(new BaseEmotion(res2, potential, appraisalVariables, potEm.GetCause(), potEm.GetDirection()));
 			}
 		}
 		
