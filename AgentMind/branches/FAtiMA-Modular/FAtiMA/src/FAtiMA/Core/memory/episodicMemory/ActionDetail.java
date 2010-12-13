@@ -154,7 +154,7 @@ public class ActionDetail implements Serializable {
 			}
 		}
 		
-		this._emotion = new BaseEmotion(EmotionType.NEUTRAL,0,null,null,null);
+		this._emotion = new BaseEmotion(EmotionType.NEUTRAL,0,new ArrayList<String>(),e,null);
 		
 		this._evaluation = new ArrayList<String>();
 	}

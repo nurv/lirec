@@ -38,7 +38,7 @@ public class AgentLauncher {
 		aG.addComponent(new SocialRelationsComponent(extraFiles));
 		aG.addComponent(new MotivationalComponent(extraFiles));
 		aG.addComponent(new ToMComponent(ConfigurationManager.getName()));
-		//aG.addComponent(new AdvancedMemoryComponent());
+		aG.addComponent(new AdvancedMemoryComponent());
 		aG.StartAgent();
 	}
 	
