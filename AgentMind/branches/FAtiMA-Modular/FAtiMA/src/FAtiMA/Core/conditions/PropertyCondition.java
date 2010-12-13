@@ -115,13 +115,13 @@ public abstract class PropertyCondition extends Condition {
 				cond = new PropertyEqual(name, value,ToM);
 			else if (op.equals("!="))
 				cond = new PropertyNotEqual(name, value,ToM);
-			else if (op.equals("GreaterThan"))
+			else if (op.equalsIgnoreCase("GreaterThan"))
 				cond = new PropertyGreater(name, value,ToM);
-			else if (op.equals("LesserThan"))
+			else if (op.equalsIgnoreCase("LesserThan"))
 				cond = new PropertyLesser(name, value,ToM);
-			else if (op.equals("GreaterEqual"))
+			else if (op.equalsIgnoreCase("GreaterEqual"))
 				cond = new PropertyGreaterEqual(name, value,ToM);
-			else if (op.equals("LesserEqual"))
+			else if (op.equalsIgnoreCase("LesserEqual"))
 				cond = new PropertyLesserEqual(name,value,ToM);
 			else
 				cond = new PropertyEqual(name, value,ToM);
@@ -297,7 +297,7 @@ public abstract class PropertyCondition extends Condition {
 	 * Prints the PropertyTest to the Standard Output
 	 */
 	public void Print() {
-		AgentLogger.GetInstance().logAndPrint("    Property= " + _name + " value= " + _value);
+		AgentLogger.GetInstance().logAndPrint("Property= " + _name + " value= " + _value);
 	}
 	
 	protected ArrayList<Substitution> GetBindings(AgentModel am, Name groundValue, Name value) {

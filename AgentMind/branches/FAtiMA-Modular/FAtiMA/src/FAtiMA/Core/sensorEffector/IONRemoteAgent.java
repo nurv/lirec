@@ -105,6 +105,18 @@ public class IONRemoteAgent extends RemoteAgent {
 		return Send(msg);
 	}
 	
+	@Override
+	protected void sendCancelActionMsg(RemoteAction ra)
+	{
+		ra = _processActionStrategy.ProcessActionToWorld(ra);
+		
+		String msg = CANCEL_ACTION + " " + ra.toXML();
+		
+		
+		AgentLogger.GetInstance().log("Canceling action: " + ra._actionType);
+		Send(msg);
+	}
+	
 	public void ReportInternalPropertyChange(String agentName, Name property, Object value)
 	{
 		String prop = "";
@@ -316,6 +328,7 @@ public class IONRemoteAgent extends RemoteAgent {
 		
 		//the agent last action suceeded!
 		if(event.GetSubject().equals(_agent.getName())) {
+			_currentAction = null;
 			_canAct = true;
 		}
 	}

@@ -12,7 +12,6 @@ import FAtiMA.Core.exceptions.UnknownGoalException;
 import FAtiMA.Core.util.ConfigurationManager;
 import FAtiMA.ToM.ToMComponent;
 import FAtiMA.advancedMemoryComponent.AdvancedMemoryComponent;
-import FAtiMA.culture.CulturalDimensionsComponent;
 import FAtiMA.motivationalSystem.MotivationalComponent;
 import FAtiMA.socialRelations.SocialRelationsComponent;
 
@@ -39,7 +38,7 @@ public class AgentLauncher {
 		aG.addComponent(new SocialRelationsComponent(extraFiles));
 		aG.addComponent(new MotivationalComponent(extraFiles));
 		aG.addComponent(new ToMComponent(ConfigurationManager.getName()));
-		aG.addComponent(new AdvancedMemoryComponent());
+		//aG.addComponent(new AdvancedMemoryComponent());
 		aG.StartAgent();
 	}
 	

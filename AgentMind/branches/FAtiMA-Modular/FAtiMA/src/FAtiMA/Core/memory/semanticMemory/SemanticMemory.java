@@ -47,7 +47,7 @@ public class SemanticMemory implements Serializable {
 	{
 		synchronized (this) {
 			KnowledgeSlot ks = (KnowledgeSlot) _stm.Ask(predicate);
-	        if (ks != null && ks.getValue() != null && ks.getValue().toString().equals("True"))
+	        if (ks != null && ks.getValue() != null && ks.getValue().toString().equalsIgnoreCase("True"))
 	        {
 	        	_stm.RearrangeWorkingMemory(predicate,ks.getValue());
 	            return true;
@@ -55,7 +55,7 @@ public class SemanticMemory implements Serializable {
 	        else
 	        {
 	        	ks= (KnowledgeSlot) _kb.Ask(predicate);
-	        	if (ks != null && ks.getValue() != null && ks.getValue().toString().equals("True"))
+	        	if (ks != null && ks.getValue() != null && ks.getValue().toString().equalsIgnoreCase("True"))
 	            {
 	        		_stm.Tell(_kb,predicate, ks.getValue());
 	                return true;

@@ -46,6 +46,7 @@ import FAtiMA.Core.memory.Memory;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.util.Constants;
 import FAtiMA.Core.util.enumerables.EmotionValence;
+import FAtiMA.Core.wellFormedNames.Substitution;
 
 
 public class MemoryEpisode implements Serializable {
@@ -96,6 +97,14 @@ public class MemoryEpisode implements Serializable {
 	{
 		return this._abstract;
 	}*/
+	
+	public void applySubstitution(Substitution s)
+	{
+		for(ActionDetail detail : _details)
+		{
+			detail.applySubstitution(s);
+		}
+	}
 	
 	public void setTime(Time time)
 	{

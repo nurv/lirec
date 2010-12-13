@@ -148,7 +148,7 @@ public abstract class Name implements IGroundable, Cloneable, Serializable {
 	{
 	    if (o == null) return false;
         if (!(o instanceof Name)) return false;
-        return this.toString().equals(o.toString());
+        return this.toString().equalsIgnoreCase(o.toString());
 	}
 	
 	/**

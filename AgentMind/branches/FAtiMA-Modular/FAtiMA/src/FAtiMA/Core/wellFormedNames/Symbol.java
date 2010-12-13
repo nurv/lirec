@@ -40,6 +40,7 @@ package FAtiMA.Core.wellFormedNames;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.ListIterator;
+import java.util.Locale;
 
 import FAtiMA.Core.memory.Memory;
 
@@ -195,7 +196,7 @@ public class Symbol extends Name implements Serializable
          while (li.hasNext())
          {
              b =  li.next();
-             if (this._name.equals(b.getVariable()._name))
+             if (this._name.equalsIgnoreCase(b.getVariable()._name))
              {
              	this._name = b.getValue()._name;
              	this._grounded = b.getValue()._grounded;
@@ -232,7 +233,7 @@ public class Symbol extends Name implements Serializable
     {
     	if (this._grounded) return;
     	
-    	if(this._name.equals(subst.getVariable().toString()))
+    	if(this._name.equalsIgnoreCase(subst.getVariable()._name))
     	{
     		this._name = subst.getValue()._name;
     		this._grounded = subst.getValue()._grounded;

@@ -52,6 +52,7 @@ import FAtiMA.Core.deliberativeLayer.goals.Goal;
 import FAtiMA.Core.memory.Memory;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.util.AgentLogger;
+import FAtiMA.Core.wellFormedNames.Substitution;
 
 public class AutobiographicalMemory implements Serializable {
 	
@@ -65,6 +66,14 @@ public class AutobiographicalMemory implements Serializable {
 	public AutobiographicalMemory()
 	{
 		this._memoryEvents = new ArrayList<MemoryEpisode>();
+	}
+	
+	public void applySubstitution(Substitution s)
+	{
+		for(MemoryEpisode mem : _memoryEvents)
+		{
+			mem.applySubstitution(s);
+		}
 	}
 	
 	public void StoreAction(ActionDetail action)

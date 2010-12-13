@@ -15,6 +15,7 @@ import FAtiMA.Core.util.enumerables.EmotionType;
 import FAtiMA.Core.util.enumerables.EventType;
 import FAtiMA.Core.util.enumerables.GoalEvent;
 import FAtiMA.Core.wellFormedNames.Name;
+import FAtiMA.Core.wellFormedNames.Substitution;
 
 public class EpisodicMemory implements Serializable {
 	
@@ -129,6 +130,12 @@ public class EpisodicMemory implements Serializable {
 				_stm.AssociateEmotionToDetail(m,em,cause,location);
 			}
 		}
+	}
+	
+	public void applySubstitution(Substitution s)
+	{
+		_stm.applySubstitution(s);
+		_am.applySubstitution(s);
 	}
 	
 	public void ClearNewRecords() {

@@ -95,7 +95,9 @@ import FAtiMA.Core.emotionalState.EmotionalState;
 import FAtiMA.Core.util.AgentLogger;
 import FAtiMA.Core.util.parsers.SocketListener;
 import FAtiMA.Core.wellFormedNames.Name;
+import FAtiMA.Core.wellFormedNames.Substitution;
 import FAtiMA.Core.wellFormedNames.SubstitutionSet;
+import FAtiMA.Core.wellFormedNames.Symbol;
 
 
 /**
@@ -129,6 +131,8 @@ public abstract class RemoteAgent extends SocketListener {
 	protected static final String RESUME_TIME = "RESUME-TIME";
 	protected static final String GET_STATE = "GET-STATE";
 	protected static final String SET_STATE = "SET-STATE";
+	protected static final String CANCEL_ACTION = "CANCEL-ACTION";
+	protected static final String IDENTIFY_USER = "IDENTIFY-USER";
 	
 	protected ArrayList<ValuedAction> _actions;
 	
@@ -141,6 +145,7 @@ public abstract class RemoteAgent extends SocketListener {
 	protected ArrayList<String> _lookAtList;
 	protected boolean _running;
 	protected String _userName;
+	protected ValuedAction _currentAction;
 	
 	protected IProcessActionStrategy _processActionStrategy;
 	
@@ -203,6 +208,7 @@ public abstract class RemoteAgent extends SocketListener {
 		ValuedAction action;
 		if(_actions.size() > 0) {
 			action = (ValuedAction) _actions.remove(0);
+			_currentAction = action;
 			this.StartAction(am, action);
 		}
 	}
@@ -228,10 +234,23 @@ public abstract class RemoteAgent extends SocketListener {
 	    return _running;
 	}
 	
+	public void cancelAction(String action)
+	{
+		if(_currentAction != null && _currentAction.GetAction().GetFirstLiteral().toString().equals(action))
+		{
+			RemoteAction ra = new RemoteAction(_agent, _currentAction);
+			sendCancelActionMsg(ra);
+			_currentAction = null;
+			_canAct = true;
+		}
+	}
+	
 	public void setProcessActionStrategy(IProcessActionStrategy strat)
 	{
 		_processActionStrategy = strat;
 	}
+	
+	protected abstract void sendCancelActionMsg(RemoteAction ra);
 		
 	public void processMessage(String msg) {
 		
@@ -321,6 +340,10 @@ public abstract class RemoteAgent extends SocketListener {
 			else if(msgType.equals(RESUME_TIME))
 			{
 				ResumeTimePerception(perception);
+			}
+			else if(msgType.equals(IDENTIFY_USER))
+			{
+				IdentifyUserPerception(perception);
 			}
 			else
 			{
@@ -667,6 +690,15 @@ public abstract class RemoteAgent extends SocketListener {
 	{
 		AgentLogger.GetInstance().log("SHUTTING DOWN!");
 	    this.ShutDown();
+	}
+	
+	protected void IdentifyUserPerception(String perc)
+	{
+		//TODO this is not enough, we also need to update other components.. (In particular Semantic Memory)
+		StringTokenizer st = new StringTokenizer(perc," ");
+		String id = st.nextToken();
+		String userName = st.nextToken();
+		_agent.getMemory().getEpisodicMemory().applySubstitution(new Substitution(new Symbol(id),new Symbol(userName)));
 	}
 	
 	protected void ChangeImportancePerception(String type, String perc)

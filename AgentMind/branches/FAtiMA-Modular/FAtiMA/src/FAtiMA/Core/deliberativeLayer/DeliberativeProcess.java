@@ -934,15 +934,6 @@ public class DeliberativeProcess implements IComponent, IBehaviourComponent, IMo
 				}
 				i.ProcessIntentionSuccess(am);				
 			}
-			/*else if(!i.getGoal().checkPreconditions(am))
-			{
-				RemoveIntention(i);
-				if(i.IsStrongCommitment())
-				{
-					_actionMonitor = null;
-					i.ProcessIntentionCancel(am);
-				}
-			}*/
 			else if(i.getGoal().CheckFailure(am))
 			{
 				RemoveIntention(i);
@@ -965,6 +956,21 @@ public class DeliberativeProcess implements IComponent, IBehaviourComponent, IMo
 				{
 					RemoveIntention(i);
 					_actionMonitor = null;
+				}
+			}
+			else if(!i.getGoal().checkPreconditions(am))
+			{
+				RemoveIntention(i);
+				if(i.IsStrongCommitment())
+				{
+					if(_selectedAction != null)
+					{
+						am.getRemoteAgent().cancelAction(_selectedAction.getName().GetFirstLiteral().toString());
+						_actionMonitor = null;
+						_selectedAction = null;
+					}
+					
+					i.ProcessIntentionCancel(am);
 				}
 			}
 			else

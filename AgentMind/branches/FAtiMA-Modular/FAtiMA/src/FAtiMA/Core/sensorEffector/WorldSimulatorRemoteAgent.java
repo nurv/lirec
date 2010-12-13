@@ -54,6 +54,15 @@ public class WorldSimulatorRemoteAgent extends RemoteAgent {
 		AgentLogger.GetInstance().log("Sending action for execution: " + msg);
 		return Send(msg);
 	}
+	
+	@Override @SuppressWarnings("deprecation")
+	protected void sendCancelActionMsg(RemoteAction ra)
+	{
+		ra = _processActionStrategy.ProcessActionToWorld(ra);
+		String msg = CANCEL_ACTION + " " + ra.toPlainStringMessage();
+		AgentLogger.GetInstance().log("Canceling action: " + msg);
+		Send(msg);
+	}
 
 
 	public void ReportInternalPropertyChange(String agentName, Name property, Object value) {
@@ -259,6 +268,7 @@ public class WorldSimulatorRemoteAgent extends RemoteAgent {
 		if(subject.equals(_agent.getName())) {
 	
 			AgentLogger.GetInstance().log("can act now!");
+			_currentAction = null;
 			_canAct = true;
 		}
 		

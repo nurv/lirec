@@ -389,7 +389,8 @@ public class WorldTest {
 	}
 	
 	public void ReadyForNextStep(){
-		SendPerceptionToAll( "READY-FOR-NEXT-STEP" );
+		//SendPerceptionToAll( "READY-FOR-NEXT-STEP" );
+		SendPerceptionToAll( "IDENTIFY-USER Amy Pixota" );
 	}
 	
 	String knownInfo = "";

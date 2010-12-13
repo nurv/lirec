@@ -54,6 +54,7 @@ import FAtiMA.Core.util.enumerables.EmotionType;
 import FAtiMA.Core.util.enumerables.EmotionValence;
 import FAtiMA.Core.util.enumerables.EventType;
 import FAtiMA.Core.util.enumerables.GoalEvent;
+import FAtiMA.Core.wellFormedNames.Substitution;
 
 
 
@@ -172,6 +173,19 @@ public class ActionDetail implements Serializable {
 		this._emotion = emotion;
 		
 		this._evaluation = evaluation;
+	}
+	
+	public void applySubstitution(Substitution s)
+	{
+		if(this._subject.equalsIgnoreCase(s.getVariable().getName()))
+		{
+			this._subject = s.getValue().getName();
+		}
+		
+		if(this._target.equalsIgnoreCase(s.getVariable().getName()))
+		{
+			this._target = s.getValue().getName();
+		}
 	}
 	
 	public String getSubject()

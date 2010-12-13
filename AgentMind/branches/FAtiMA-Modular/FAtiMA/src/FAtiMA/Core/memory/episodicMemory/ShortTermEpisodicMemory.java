@@ -38,6 +38,7 @@ import FAtiMA.Core.deliberativeLayer.goals.Goal;
 import FAtiMA.Core.emotionalState.ActiveEmotion;
 import FAtiMA.Core.memory.Memory;
 import FAtiMA.Core.sensorEffector.Event;
+import FAtiMA.Core.wellFormedNames.Substitution;
 
 
 /**
@@ -79,6 +80,14 @@ public class ShortTermEpisodicMemory implements Serializable {
 		_details.add(action);
 			
 		//UpdateMemoryFields(action);
+	}
+	
+	public void applySubstitution(Substitution s)
+	{
+		for(ActionDetail detail : _details)
+		{
+			detail.applySubstitution(s);
+		}
 	}
 	
 	public int GetCount()

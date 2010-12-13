@@ -104,7 +104,7 @@ public class PropertyGreater extends PropertyCondition {
 
 		if (propertyValue == null || value == null)
 			return false;
-		aux = new Float( propertyValue.toString());
+		aux = new Float(propertyValue.toString());
 		aux2 = new Float(value.toString());
 		return aux.floatValue() > aux2.floatValue();
 	}
