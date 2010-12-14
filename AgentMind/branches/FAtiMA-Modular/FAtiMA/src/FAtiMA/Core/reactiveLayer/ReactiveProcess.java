@@ -298,4 +298,20 @@ public class ReactiveProcess implements IComponent, IBehaviourComponent, IModelO
 		
 		return;
 	}
+
+	@Override
+	public void inverseAppraisal(AgentModel am, AppraisalFrame af) {
+		Reaction r;
+		float desirability = af.getAppraisalVariable(OCCComponent.DESIRABILITY);
+		float praiseworthiness = af.getAppraisalVariable(OCCComponent.PRAISEWORTHINESS);
+		
+		if(desirability != 0 || praiseworthiness != 0)
+		{
+			
+			r = new Reaction(af.getEvent());
+			r.setDesirability(desirability);
+			r.setPraiseworthiness(praiseworthiness);
+			AddEmotionalReaction(r);
+		}
+	}
 }

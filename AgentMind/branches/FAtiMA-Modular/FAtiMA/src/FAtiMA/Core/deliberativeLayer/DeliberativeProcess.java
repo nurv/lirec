@@ -1265,4 +1265,8 @@ public class DeliberativeProcess implements IComponent, IBehaviourComponent, IMo
 	@Override
 	public void continueAppraisal(AgentModel am) {
 	}
+
+	@Override
+	public void inverseAppraisal(AgentModel am, AppraisalFrame af) {
+	}
 }

@@ -53,7 +53,6 @@ public class MotivationalComponent implements Serializable, Cloneable, IAppraisa
 	private static final float MIN_INTENSITY = 0;
 
 	
-	
 	protected Motivator[]  _motivators;
 	
 	//protected Hashtable<String,Motivator[]> _otherAgentsMotivators;
@@ -558,6 +557,13 @@ public class MotivationalComponent implements Serializable, Cloneable, IAppraisa
 	@Override
 	public void continueAppraisal(AgentModel am) {
 		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void inverseAppraisal(AgentModel am, AppraisalFrame af) {
+		//TODO
 		
 	}
 }

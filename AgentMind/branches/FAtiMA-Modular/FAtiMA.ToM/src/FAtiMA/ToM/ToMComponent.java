@@ -118,7 +118,7 @@ public class ToMComponent implements IAppraisalComponent, IProcessPerceptionsCom
 			ModelOfOther m = _ToM.get(s);
 			e3 = e2.ApplyPerspective(s);
 			m.perceiveEvent(e3);
-		}	
+		}		
 	}
 
 	@Override
@@ -248,5 +248,9 @@ public class ToMComponent implements IAppraisalComponent, IProcessPerceptionsCom
 
 	@Override
 	public void continueAppraisal(AgentModel am) {
+	}
+
+	@Override
+	public void inverseAppraisal(AgentModel am, AppraisalFrame af) {
 	}
 }

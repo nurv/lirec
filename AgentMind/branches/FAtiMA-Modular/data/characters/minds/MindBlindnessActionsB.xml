@@ -1,0 +1,86 @@
+<DomainActions>
+	<Action name="Open([target])">
+		<PreConditions>
+			<Predicate name="[target](OnTable)"/>
+			<Predicate name="[AGENT](isPerson)"/>
+			<Property name="[AGENT]" operator="!=" value="SELF" />
+			<Predicate name="!Contains([target],candy)"/>
+			<Predicate ToM="[AGENT]" name="Contains([target],coin)"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Predicate name="SELF(has,coin)"/>
+			</Effect>
+			<Effect probability="1.0">
+				<Predicate name="!BoxB(Contains,coin)"/>
+			</Effect>
+			<Effect probability="1.0">
+				<Predicate name="!BoxA(Contains,coin)"/>
+			</Effect>
+		</Effects> 
+		<EffectsOnDrives>
+		</EffectsOnDrives>
+	</Action>
+	<Action name="Put([x],[box])">
+		<PreConditions>
+			<Predicate name="[box](OnTable)"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Predicate name="[box](Contains,[x])"/>
+			</Effect>
+		</Effects> 
+		<EffectsOnDrives>
+		</EffectsOnDrives>
+	</Action>
+	<Action name="PutHidden([x],[boxA],[boxB])">
+		<PreConditions>
+			<Property name="[boxA](type)" operator="=" value="Box"/>
+			<Property name="[boxB](type)" operator="=" value="Box"/>
+			<Property name="[boxA]" operator="!=" value="[boxB]"/>
+			<Predicate name="[AGENT](has,[boxA])"/>
+			<Predicate name="[AGENT](has,[boxB])"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Predicate ToM="[AGENT]" name="[boxA](Contains,coin)"/>
+			</Effect>		
+			<Effect probability="1.0">
+				<Predicate ToM="*" name="!SELF(has,coin)"/>
+			</Effect>
+			<Effect probability="1.0">
+				<Predicate ToM="*" name="!User(has,coin)"/>
+			</Effect>
+		</Effects> 
+		<EffectsOnDrives>
+		</EffectsOnDrives>
+	</Action>
+	<Action name="TakeFromTable([x])">
+		<PreConditions>
+			<Predicate name="[x](OnTable)"/>
+			<Property name="[x](type)" operator="=" value="Box"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+			  <Predicate name="[AGENT](has,[x])"/>
+			  <Predicate name="![x](OnTable)" />
+			</Effect>
+		</Effects> 
+		<EffectsOnDrives>
+		</EffectsOnDrives>
+	</Action>
+	<Action name="PutOnTable([x])">
+		<PreConditions>
+			<Predicate name="[AGENT](has,[x])"/>
+			<Property name="[x](type)" operator="=" value="Box"/>	
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+			  <Predicate name="![AGENT](has,[x])"/>
+			  <Predicate name="[x](OnTable)" />
+			</Effect>
+		</Effects> 
+		<EffectsOnDrives>
+		</EffectsOnDrives>
+	</Action>	
+</DomainActions>

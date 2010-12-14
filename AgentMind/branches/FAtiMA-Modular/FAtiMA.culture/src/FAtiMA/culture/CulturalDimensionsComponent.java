@@ -313,5 +313,9 @@ public class CulturalDimensionsComponent implements IAppraisalComponent, IOption
 	public void continueAppraisal(AgentModel am) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public void inverseAppraisal(AgentModel am, AppraisalFrame af) {
 	}	
 }

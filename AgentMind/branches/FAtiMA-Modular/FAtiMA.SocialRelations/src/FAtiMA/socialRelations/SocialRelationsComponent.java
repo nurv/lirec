@@ -90,6 +90,23 @@ public class SocialRelationsComponent implements IAppraisalComponent, IModelOfOt
 			}	
 		}
 	}
+	
+	@Override
+	public void inverseAppraisal(AgentModel am, AppraisalFrame af)
+	{
+		float like;
+		Event e;
+		like = af.getAppraisalVariable(OCCComponent.LIKE);
+		
+		if(like != 0)
+		{
+			e = af.getEvent();
+			LikeRelation.getRelation(Constants.SELF, e.GetTarget()).setValue(am.getMemory(), like);
+		}
+	}
+	
+	//updating other's emotional reactions
+	
 
 	@Override
 	public void emotionActivation(AgentModel am, ActiveEmotion em) {

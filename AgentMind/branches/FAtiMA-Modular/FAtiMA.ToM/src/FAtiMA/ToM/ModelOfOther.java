@@ -22,6 +22,7 @@ import FAtiMA.Core.memory.Memory;
 import FAtiMA.Core.reactiveLayer.ReactiveProcess;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.sensorEffector.RemoteAgent;
+import FAtiMA.Core.util.Constants;
 import FAtiMA.Core.wellFormedNames.Symbol;
 
 public class ModelOfOther implements AgentModel, Serializable {
@@ -98,7 +99,48 @@ public class ModelOfOther implements AgentModel, Serializable {
 		{
 			c.perceiveEvent(this,e);
 		}
+		
+		if(e.GetSubject().equals(Constants.SELF))
+		{
+			emotionReading(e);
+		}
 	}
+	
+	public void emotionReading(Event e)
+	{
+		BaseEmotion perceivedEmotion;
+		ActiveEmotion predictedEmotion;
+		AppraisalFrame af;
+		//if the perceived action corresponds to an emotion expression of other, we 
+		//should update its action tendencies accordingly
+		perceivedEmotion = _reactiveProcess.getActionTendencies().RecognizeEmotion(this, e.toStepName());
+		if(perceivedEmotion != null)
+		{
+			predictedEmotion = _es.GetEmotion(perceivedEmotion.GetHashKey());
+			if(predictedEmotion == null)
+			{
+				//Agent model has to be null or the appraisal frame will generate emotions when we set the appraisal
+				// variables
+				af = new AppraisalFrame(null,perceivedEmotion.GetCause());
+				
+				for(IAffectDerivationComponent c : _affectDerivationComponents)
+				{
+					c.inverseDeriveEmotions(this,perceivedEmotion,af);
+				}
+				
+				//updating other's emotional state
+				_es.AddEmotion(perceivedEmotion, this);
+				
+				for(IAppraisalComponent c : _appraisalComponents)
+				{
+					c.inverseAppraisal(this,af);
+				}
+			}
+		}
+	}
+			
+		
+		
 	
 	public void appraisal(Event e, AppraisalFrame as) 
 	{	

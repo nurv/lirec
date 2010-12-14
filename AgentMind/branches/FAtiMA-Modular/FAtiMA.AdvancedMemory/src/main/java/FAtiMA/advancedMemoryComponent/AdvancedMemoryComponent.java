@@ -33,7 +33,6 @@ import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.ListIterator;
 import java.util.StringTokenizer;
 
 import javax.xml.parsers.SAXParser;
@@ -41,7 +40,6 @@ import javax.xml.parsers.SAXParserFactory;
 
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.AgentSimulationTime;
-import FAtiMA.Core.IComponent;
 import FAtiMA.Core.IAppraisalComponent;
 import FAtiMA.Core.IProcessExternalRequestComponent;
 import FAtiMA.Core.Display.AgentDisplayPanel;
@@ -311,6 +309,10 @@ public class AdvancedMemoryComponent implements Serializable, IAppraisalComponen
 
 	@Override
 	public void continueAppraisal(AgentModel am) {
+	}
+
+	@Override
+	public void inverseAppraisal(AgentModel am, AppraisalFrame af) {
 	}
 	
 	

@@ -10,6 +10,7 @@ import FAtiMA.Core.Display.AgentDisplayPanel;
 import FAtiMA.Core.emotionalState.ActiveEmotion;
 import FAtiMA.Core.emotionalState.AppraisalFrame;
 import FAtiMA.Core.emotionalState.BaseEmotion;
+import FAtiMA.Core.emotionalState.EmotionDisposition;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.util.enumerables.EmotionType;
 import FAtiMA.Core.wellFormedNames.Name;
@@ -201,74 +202,70 @@ public class OCCComponent implements IAffectDerivationComponent, IModelOfOtherCo
 		return emotions;
 	}
 	
-	/*public static AppraisalStructure InverseOCCAppraisal(BaseEmotion em, EmotionalState es)
+	@Override
+	public void inverseDeriveEmotions(AgentModel am, BaseEmotion em, AppraisalFrame af)
 	{
 		//ignoring mood for now
-		EmotionDisposition disposition = es._emotionDispositions[em.GetType()];
+		EmotionDisposition disposition = am.getEmotionalState().getEmotionDispositions()[em.GetType()];
 		
 		int threshold = disposition.GetThreshold();
 		float potentialValue = em.GetPotential() + threshold; 
 		
-		AppraisalStructure vector = new AppraisalStructure();
-		
 		if(em.GetType() == EmotionType.LOVE)
 		{
-			vector.setAppraisalVariable(AppraisalStructure.LIKE, potentialValue * 1.43f);  
+			af.SetAppraisalVariable("", (short)1, LIKE, potentialValue * 1.43f);
 		}
 		else if(em.GetType() == EmotionType.HATE)
 		{
-			vector.setAppraisalVariable(AppraisalStructure.LIKE, -potentialValue * 1.43f);
+			af.SetAppraisalVariable("", (short)1, LIKE, -potentialValue * 1.43f);
 		}
 		else if(em.GetType() == EmotionType.JOY)
 		{
-			vector.setAppraisalVariable(AppraisalStructure.DESIRABILITY, potentialValue);
+			af.SetAppraisalVariable("", (short)1, DESIRABILITY, potentialValue);
 		}
 		else if(em.GetType() == EmotionType.DISTRESS)
 		{
-			vector.setAppraisalVariable(AppraisalStructure.DESIRABILITY, -potentialValue);
+			af.SetAppraisalVariable("", (short)1, DESIRABILITY, -potentialValue);
 		}
 		else if(em.GetType() == EmotionType.PRIDE || em.GetType() == EmotionType.ADMIRATION)
 		{
-			vector.setAppraisalVariable(AppraisalStructure.PRAISEWORTHINESS, potentialValue);
+			af.SetAppraisalVariable("", (short)1, PRAISEWORTHINESS, potentialValue);
 		}
 		else if(em.GetType() == EmotionType.SHAME || em.GetType() == EmotionType.REPROACH)
 		{
-			vector.setAppraisalVariable(AppraisalStructure.PRAISEWORTHINESS, potentialValue);
+			af.SetAppraisalVariable("", (short)1, PRAISEWORTHINESS, -potentialValue);
 		}
 		else if(em.GetType() == EmotionType.GLOATING)
 		{
-			vector.setAppraisalVariable(AppraisalStructure.DESIRABILITY, potentialValue);
-			vector.setAppraisalVariable(AppraisalStructure.DESIRABILITY_FOR_OTHER, -potentialValue);
+			af.SetAppraisalVariable("", (short)1, DESIRABILITY, potentialValue);
+			//vector.setAppraisalVariable(AppraisalStructure.DESIRABILITY_FOR_OTHER, -potentialValue);
 		}
 		else if(em.GetType() == EmotionType.HAPPYFOR)
 		{
-			vector.setAppraisalVariable(AppraisalStructure.DESIRABILITY, potentialValue);
-			vector.setAppraisalVariable(AppraisalStructure.DESIRABILITY_FOR_OTHER, potentialValue);
+			af.SetAppraisalVariable("", (short)1, DESIRABILITY, potentialValue);
+			//vector.setAppraisalVariable(AppraisalStructure.DESIRABILITY_FOR_OTHER, potentialValue);
 		}
 		else if(em.GetType() == EmotionType.PITTY)
 		{
-			vector.setAppraisalVariable(AppraisalStructure.DESIRABILITY, -potentialValue);
-			vector.setAppraisalVariable(AppraisalStructure.DESIRABILITY_FOR_OTHER, -potentialValue);
+			af.SetAppraisalVariable("", (short)1, DESIRABILITY, -potentialValue);
+			//vector.setAppraisalVariable(AppraisalStructure.DESIRABILITY_FOR_OTHER, -potentialValue);
 		}
 		else if(em.GetType() == EmotionType.RESENTMENT)
 		{
-			vector.setAppraisalVariable(AppraisalStructure.DESIRABILITY, -potentialValue);
-			vector.setAppraisalVariable(AppraisalStructure.DESIRABILITY_FOR_OTHER, potentialValue);
+			af.SetAppraisalVariable("", (short)1, DESIRABILITY, -potentialValue);
+			//vector.setAppraisalVariable(AppraisalStructure.DESIRABILITY_FOR_OTHER, potentialValue);
 		}
 		else if(em.GetType() == EmotionType.GRATIFICATION || em.GetType() == EmotionType.GRATITUDE)
 		{
-			vector.setAppraisalVariable(AppraisalStructure.DESIRABILITY, potentialValue);
-			vector.setAppraisalVariable(AppraisalStructure.PRAISEWORTHINESS, potentialValue);
+			af.SetAppraisalVariable("", (short)1, DESIRABILITY, potentialValue);
+			af.SetAppraisalVariable("", (short)1, PRAISEWORTHINESS, potentialValue);
 		}
 		else if(em.GetType() == EmotionType.REGRET || em.GetType() == EmotionType.ANGER)
 		{
-			vector.setAppraisalVariable(AppraisalStructure.DESIRABILITY, -potentialValue);
-			vector.setAppraisalVariable(AppraisalStructure.PRAISEWORTHINESS, -potentialValue);
+			af.SetAppraisalVariable("", (short)1, DESIRABILITY, -potentialValue);
+			af.SetAppraisalVariable("", (short)1, PRAISEWORTHINESS, -potentialValue);
 		}
-		return vector;
-		
-		
-	}*/
+	}
 	
 	private static BaseEmotion OCCAppraiseAttribution(Event event, float like)
 	{
