@@ -1,0 +1,4 @@
+OnTable True
+owner Child
+type Box
+location LivingRoom
