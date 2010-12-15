@@ -31,6 +31,7 @@ package FAtiMA.advancedMemoryComponent;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -38,8 +39,10 @@ import java.util.StringTokenizer;
 
 import FAtiMA.Core.memory.episodicMemory.ActionDetail;
 
-public class SAQuery {
+public class SAQuery implements Serializable {
 
+	private static final long serialVersionUID = 1L;
+	
 	private String _id;
 	private String _question;
 	private String _subject;

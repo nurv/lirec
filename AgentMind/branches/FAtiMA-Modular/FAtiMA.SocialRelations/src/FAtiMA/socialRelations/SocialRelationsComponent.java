@@ -1,6 +1,7 @@
 package FAtiMA.socialRelations;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import javax.xml.parsers.SAXParser;
@@ -23,7 +24,7 @@ import FAtiMA.Core.util.Constants;
 import FAtiMA.Core.util.enumerables.EmotionType;
 
 
-public class SocialRelationsComponent implements IAppraisalComponent, IModelOfOtherComponent, IProcessEmotionComponent {
+public class SocialRelationsComponent implements Serializable, IAppraisalComponent, IModelOfOtherComponent, IProcessEmotionComponent {
 	
 	public static final String NAME = "SocialRelations";
 	private ArrayList<String> _parsingFiles;

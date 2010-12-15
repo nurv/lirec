@@ -152,7 +152,7 @@ public class AdvancedMemoryComponent implements Serializable, IAppraisalComponen
 			_gAttributes.add(attributeStr);
 			System.out.println("gAttribute " + attributeStr);
 		}
-		this._gmPanel.PanelAttributes(_gAttributes);
+		//this._gmPanel.PanelAttributes(_gAttributes);
 	}
 
 	@Override

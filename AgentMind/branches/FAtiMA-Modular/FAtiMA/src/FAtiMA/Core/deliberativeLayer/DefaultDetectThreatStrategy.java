@@ -1,8 +1,10 @@
 package FAtiMA.Core.deliberativeLayer;
 
+import java.io.Serializable;
+
 import FAtiMA.Core.conditions.Condition;
 
-public class DefaultDetectThreatStrategy implements IDetectThreatStrategy {
+public class DefaultDetectThreatStrategy implements Serializable, IDetectThreatStrategy {
 	
 	public DefaultDetectThreatStrategy()
 	{

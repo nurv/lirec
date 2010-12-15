@@ -27,13 +27,14 @@
  */
 package FAtiMA.Core.emotionalState;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.sensorEffector.Event;
 
-public class AppraisalFrame {
+public class AppraisalFrame implements Serializable {
 	
 	
 	private class Pair

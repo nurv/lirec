@@ -1,11 +1,12 @@
 package FAtiMA.motivationalSystem;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 
 import FAtiMA.Core.wellFormedNames.Name;
 
-public class ActionEffectsOnDrives {
+public class ActionEffectsOnDrives implements Serializable{
 	
 	private Name _actionName;
 	private ArrayList<EffectOnDrive> _effects;

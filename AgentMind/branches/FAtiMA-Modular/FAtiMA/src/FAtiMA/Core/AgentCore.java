@@ -8,6 +8,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -54,7 +55,7 @@ import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Symbol;
 
 
-public class AgentCore implements AgentModel, IGetModelStrategy {
+public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 
 	public static final String MIND_PATH = "data/characters/minds/";
 	public static final String MIND_PATH_ANDROID = "sdcard/data/characters/minds/";
@@ -94,6 +95,7 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 
 	private String _saveDirectory;
 	private boolean _saveRequest = false;
+	private boolean _loaded = false;
 
 	private IGetModelStrategy _strat;
 
@@ -134,38 +136,48 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 		}
 				
 		try{
-			AgentLogger.GetInstance().initialize(_name,_showStateWindow);
-			
-			_showStateWindow = ConfigurationManager.getDisplayMode();
-			_displayName = ConfigurationManager.getDisplayName();
-			_role = ConfigurationManager.getRole();
-			_sex = ConfigurationManager.getSex();
-			
-			if(_showStateWindow && !VersionChecker.runningOnAndroid()){
-				_agentDisplay = new AgentDisplay(this);
+			if (Boolean.parseBoolean(ConfigurationManager.getLoad()))
+			{
+				_loaded = true;
+				AgentCoreLoad(ConfigurationManager.getPlatform(), ConfigurationManager.getHost(), ConfigurationManager.getPort(), ConfigurationManager.getSaveDirectory(), agentName);
 			}
-
-			// Load Plan Operators
-			ActionLibrary.GetInstance().LoadActionsFile(ConfigurationManager.getActionsFile(), this);
-			EmotionalPlanner planner = new EmotionalPlanner(ActionLibrary.GetInstance().GetActions());
-
-			// Load GoalLibrary
-			GoalLibrary goalLibrary = new GoalLibrary(ConfigurationManager.getGoalsFile());
-
-			//For efficiency reasons these two are not real processes
-			_reactiveLayer = new ReactiveProcess();
-			addComponent(_reactiveLayer);
-
-			_deliberativeLayer = new DeliberativeProcess(goalLibrary,planner);
-			addComponent(_deliberativeLayer);
-			
-			addComponent(new OCCComponent());
-
-			//TODO:PARSETHEGOALS
-			loadPersonality(ConfigurationManager.getPersonalityFile(),ConfigurationManager.getPlatform(),new ArrayList<String>());
-			//Start the remote agent socket
-			
-			_remoteAgent = createNewRemoteAgent(ConfigurationManager.getPlatform(), ConfigurationManager.getHost(), ConfigurationManager.getPort(), ConfigurationManager.getAgentProperties());
+			else
+			{
+				_loaded = false;
+				AgentLogger.GetInstance().initialize(_name,_showStateWindow);
+				
+				_showStateWindow = ConfigurationManager.getDisplayMode();
+				_displayName = ConfigurationManager.getDisplayName();
+				_role = ConfigurationManager.getRole();
+				_sex = ConfigurationManager.getSex();
+				_saveDirectory = ConfigurationManager.getSaveDirectory();
+				
+				if(_showStateWindow && !VersionChecker.runningOnAndroid()){
+					_agentDisplay = new AgentDisplay(this);
+				}
+	
+				// Load Plan Operators
+				ActionLibrary.GetInstance().LoadActionsFile(ConfigurationManager.getActionsFile(), this);
+				EmotionalPlanner planner = new EmotionalPlanner(ActionLibrary.GetInstance().GetActions());
+	
+				// Load GoalLibrary
+				GoalLibrary goalLibrary = new GoalLibrary(ConfigurationManager.getGoalsFile());
+	
+				//For efficiency reasons these two are not real processes
+				_reactiveLayer = new ReactiveProcess();
+				addComponent(_reactiveLayer);
+	
+				_deliberativeLayer = new DeliberativeProcess(goalLibrary,planner);
+				addComponent(_deliberativeLayer);
+				
+				addComponent(new OCCComponent());
+	
+				//TODO:PARSETHEGOALS
+				loadPersonality(ConfigurationManager.getPersonalityFile(),ConfigurationManager.getPlatform(),new ArrayList<String>());
+				//Start the remote agent socket
+				
+				_remoteAgent = createNewRemoteAgent(ConfigurationManager.getPlatform(), ConfigurationManager.getHost(), ConfigurationManager.getPort(), ConfigurationManager.getAgentProperties());
+			}
 			
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -187,23 +199,32 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 			throw new RuntimeException("startRemoteAgent: AgentPlatform has an incorrect value:" + aP);
 		}
 	}
-
 	
-	
-	public AgentCore(short agentPlatform, String host, int port, String directory, String fileName)
+	public void AgentCoreLoad(short agentPlatform, String host, int port, String directory, String fileName)
 	{
 		try{
 			_shutdown = false;
 			_numberOfCycles = 0;
+			LoadAgentState(directory + fileName);
 			AgentLogger.GetInstance().initialize(fileName,_showStateWindow);
 
-			LoadAgentState(directory + fileName);
-
+			if(_showStateWindow && !VersionChecker.runningOnAndroid()){
+				_agentDisplay = new AgentDisplay(this);
+				for (IComponent c: this.getComponents())
+				{
+					AgentDisplayPanel panel = c.createDisplayPanel(this);
+					if(panel != null)
+					{
+						this._agentDisplay.AddPanel(panel, c.name(),"");
+					}
+				}
+				
+			}
+			
 			// creating a new episode when the agent loads 13/09/10
-
 			_memory.getEpisodicMemory().StartEpisode(_memory);
 			_remoteAgent = this.createNewRemoteAgent(agentPlatform, host, port, new HashMap<String,String>());
-			_remoteAgent.LoadState(fileName+"-RemoteAgent.dat");
+			_remoteAgent.LoadState(directory + fileName + "-RemoteAgent.dat");
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -351,6 +372,10 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 		return _memory;
 	}
 
+	public boolean getLoaded()
+	{
+		return _loaded;
+	}
 
 	/**
 	 * Gets the name of the agent
@@ -750,6 +775,7 @@ public class AgentCore implements AgentModel, IGetModelStrategy {
 		// being stored in the wrong episode
 		// Meiyii 13/09/10
 		_memory.getEpisodicMemory().MoveSTEMtoAM();
+		//_memory.getMemoryWriter().xmlMemoryOutput(_saveDirectory + "XMLMemory");
 
 		AgentSimulationTime.SaveState(fileName+"-Timer.dat");
 		ActionLibrary.SaveState(fileName+"-ActionLibrary.dat");

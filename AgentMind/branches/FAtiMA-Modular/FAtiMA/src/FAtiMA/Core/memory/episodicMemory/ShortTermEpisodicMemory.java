@@ -263,13 +263,13 @@ public class ShortTermEpisodicMemory implements Serializable {
 	public String toXML()
 	{
 		ActionDetail detail;
-		String record = "<Record>";
+		String record = "<STEpisodicMemory>";
 		for(ListIterator<ActionDetail> li = _details.listIterator();li.hasNext();)
 		{
 			detail = li.next();
 			record += detail.toXML();
 		}
-		record += "</Record>\n";
+		record += "</STEpisodicMemory>\n";
 		
 		return record;
 	}

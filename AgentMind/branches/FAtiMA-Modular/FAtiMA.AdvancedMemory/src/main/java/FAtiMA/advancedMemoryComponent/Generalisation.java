@@ -1,7 +1,8 @@
 /** 
  * Generalisation.java - Generate an abstraction from all events in the episodic memory
- * using association rules learning - the Apriori algorithm. Currently 5 item-set is used 
- * (subject, action, target, desirability, praiseworthiness) with coverage 3
+ * using association rules learning - the Apriori algorithm. Users can chose the attributes on which to generalise on. 
+ * Currently, a minimum coverage of 3 is used. And since we have not implemented the deletion of events from EM, 
+ * every time generalise is called, the new GERs will replace the old one.
  *    
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

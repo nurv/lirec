@@ -31,12 +31,15 @@ package FAtiMA.advancedMemoryComponent;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
 import FAtiMA.Core.memory.episodicMemory.ActionDetail;
 
-public class CCQuery {
+public class CCQuery implements Serializable {
+	
+	private static final long serialVersionUID = 1L;
 	
 	private int _numField = 10;
 	

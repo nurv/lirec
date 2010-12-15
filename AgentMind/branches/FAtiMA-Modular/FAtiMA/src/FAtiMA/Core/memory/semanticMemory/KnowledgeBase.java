@@ -352,4 +352,18 @@ public class KnowledgeBase implements Serializable {
 	public String toString() {
 	    return _kB.toString();
 	}
+	
+	public String toXML()
+	{
+		KnowledgeSlot slot;
+		String facts = "<KBFact>";
+		for(ListIterator<KnowledgeSlot> li = _factList.listIterator();li.hasNext();)
+		{
+			slot = li.next();
+			facts += slot.toXML();
+		}
+		facts += "</KBFact>\n";
+		
+		return facts;
+	}
 }

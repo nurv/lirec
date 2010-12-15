@@ -1,5 +1,9 @@
 package FAtiMA.advancedMemoryComponent;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -26,16 +30,23 @@ public class RuleEngine implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	protected KnowledgeBuilder _kbuilder;	
+	protected KnowledgeBuilder _kbuilder;
 	protected KnowledgeBase _kbase;
 	protected StatefulKnowledgeSession _ksession;
+	protected String _rulePath;
 	
 	public RuleEngine(String rulePath)
-	{
+	{		
+		_rulePath = rulePath;
+		createKSession();
+	}
+	
+	private void createKSession()
+	{	
 		try {
 			// load up the knowledge base
 			_kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
-			_kbuilder.add(ResourceFactory.newClassPathResource(rulePath), ResourceType.DRL);
+			_kbuilder.add(ResourceFactory.newClassPathResource(_rulePath), ResourceType.DRL);
 			KnowledgeBuilderErrors errors = _kbuilder.getErrors();
 			if (errors.size() > 0) {
 				for (KnowledgeBuilderError error: errors) {
@@ -47,16 +58,21 @@ public class RuleEngine implements Serializable {
 			_kbase.addKnowledgePackages(_kbuilder.getKnowledgePackages());
 			_ksession = _kbase.newStatefulKnowledgeSession();
 			
-			//_ksession.addEventListener(new DebugAgendaEventListener());
-			//_ksession.addEventListener(new DebugWorkingMemoryEventListener());
-			
-			// setup the audit logging
-			//KnowledgeRuntimeLogger logger = KnowledgeRuntimeLoggerFactory
-			//		.newFileLogger(ksession, "event");
-			//logger.close();		
 		} catch (Throwable t) {
 			t.printStackTrace();
-		}		
+		}			
+	}
+	
+	private void writeObject(ObjectOutputStream out) throws IOException
+	{
+		out.writeObject(_rulePath);
+		
+	}
+	
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
+	{
+		_rulePath = (String) in.readObject();
+		createKSession();
 	}
 	
 	protected void AssertData(EpisodicMemory episodicMemory)

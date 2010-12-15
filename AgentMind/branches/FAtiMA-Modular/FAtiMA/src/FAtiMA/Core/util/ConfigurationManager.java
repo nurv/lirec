@@ -32,7 +32,7 @@ public class ConfigurationManager {
 	private static final String ROLE = "role";
 	private static final String ACTIONS_FILE = "actionsFile";	
 	private static final String GOALS_FILE = "goalsFile";
-	
+	private static final String LOAD = "load";
 	
 	private String mindPath;
 	private HashMap<String,String> agentConfiguration;
@@ -137,6 +137,10 @@ public class ConfigurationManager {
 		return getInstance().mindPath + "roles/" + getRole() + "/" + getRole() + ".xml";
 	}
 
+	public static String getLoad(){
+		return getInstance().getConfigurationValue(LOAD);
+	}
+	
 	public static HashMap<String,String> getAgentProperties(){
 		return getInstance().agentProperties; 
 	}

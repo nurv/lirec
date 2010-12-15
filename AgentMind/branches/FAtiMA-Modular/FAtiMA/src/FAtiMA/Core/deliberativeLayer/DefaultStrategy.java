@@ -1,9 +1,11 @@
 package FAtiMA.Core.deliberativeLayer;
 
+import java.io.Serializable;
+
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.deliberativeLayer.goals.ActivePursuitGoal;
 
-public class DefaultStrategy implements IUtilityStrategy, IProbabilityStrategy, IGetUtilityForOthers
+public class DefaultStrategy implements Serializable, IUtilityStrategy, IProbabilityStrategy, IGetUtilityForOthers
 {	
 	public float getUtility(AgentModel am, ActivePursuitGoal g)
 	{

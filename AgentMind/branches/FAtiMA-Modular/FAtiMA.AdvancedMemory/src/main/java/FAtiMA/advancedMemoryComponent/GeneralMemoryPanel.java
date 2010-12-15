@@ -24,6 +24,7 @@ public class GeneralMemoryPanel extends AgentDisplayPanel {
 	private ArrayList<GERDisplay> _gerDisplayList;
 	private AdvancedMemoryComponent _generalMemory;
 	private ArrayList<String> _gAttributes = new ArrayList<String>();
+	private ArrayList<GER> _gers;
 	
 	private JPanel _aux;
 	
@@ -35,6 +36,7 @@ public class GeneralMemoryPanel extends AgentDisplayPanel {
         _generalMemory = gm;
         
         _gerDisplayList = new ArrayList<GERDisplay>();
+        _gers = new ArrayList<GER>();
         
       	_gersPanel = new JPanel();
       	_gersPanel.setBorder(BorderFactory.createTitledBorder("GERs"));
@@ -47,98 +49,109 @@ public class GeneralMemoryPanel extends AgentDisplayPanel {
 		this.add(gerScroll);
 	}
 
-	public void PanelAttributes(ArrayList<String> gAttributes)
+	public void attributesPanel()
 	{	 
-		_gersPanel.removeAll();
-		_gerDisplayList.clear();
-		
 		_aux = new JPanel();
         _aux.setLayout(new BoxLayout(_aux,BoxLayout.X_AXIS));
         _aux.setMinimumSize(new Dimension(500,30));
         _aux.setMaximumSize(new Dimension(500,30));
 		
         JLabel lbl;
-        _gAttributes = gAttributes;
+        GER ger = new GER();
         
-        if (_gAttributes.contains("subject"))
+        if (_gers.size() > 0)
+        {
+        	ger = _gers.get(0);
+        }
+        
+        if (!ger.getSubject().equals(""))
         {
 	        lbl = new JLabel("Subject"); // Who?
 	        lbl.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
 	        lbl.setMinimumSize(new Dimension(50,30));
 	        lbl.setMaximumSize(new Dimension(50,30));
 	        _aux.add(lbl);
+	        _gAttributes.add("subject");
         }
         
-        if (_gAttributes.contains("action"))
+        if (!ger.getAction().equals(""))
         {
 	        lbl = new JLabel("Action"); // What?
 	        lbl.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
 	        lbl.setMinimumSize(new Dimension(80,30));
 	        lbl.setMaximumSize(new Dimension(80,30));
 	        _aux.add(lbl);
+	        _gAttributes.add("action");
         }
         
-        if (_gAttributes.contains("intention"))
+        if (!ger.getIntention().equals(""))
         {
 	        lbl = new JLabel("Intention"); // What?
 	        lbl.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
 	        lbl.setMinimumSize(new Dimension(80,30));
 	        lbl.setMaximumSize(new Dimension(80,30));
 	        _aux.add(lbl);
+	        _gAttributes.add("intention");
         }
         
-        if (_gAttributes.contains("target"))
+        if (!ger.getTarget().equals(""))
         {
 	        lbl = new JLabel("Target"); // Whom?
 	        lbl.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
 	        lbl.setMinimumSize(new Dimension(80,30));
 	        lbl.setMaximumSize(new Dimension(80,30));
 	        _aux.add(lbl);
+	        _gAttributes.add("target");
         }
         
-        if (_gAttributes.contains("object"))
+        if (!ger.getObject().equals(""))
         {
 	        lbl = new JLabel("Object"); // What?
 	        lbl.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
 	        lbl.setMinimumSize(new Dimension(80,30));
 	        lbl.setMaximumSize(new Dimension(80,30));
 	        _aux.add(lbl);
+	        _gAttributes.add("object");
         }
         
-        if (_gAttributes.contains("desirability"))
+        if (!ger.getDesirability().equals(""))
         {
 	        lbl = new JLabel("Desirability"); // Desirable?
 	        lbl.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
 	        lbl.setMinimumSize(new Dimension(80,30));
 	        lbl.setMaximumSize(new Dimension(80,30));
 	        _aux.add(lbl);
+	        _gAttributes.add("desirability");
         }
         
-        if (_gAttributes.contains("praiseworthiness"))
+        if (!ger.getPraiseworthiness().equals(""))
         {
 	        lbl = new JLabel("Praiseworthiness"); // Praiseworthy?
 	        lbl.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
 	        lbl.setMinimumSize(new Dimension(80,30));
 	        lbl.setMaximumSize(new Dimension(80,30));
 	        _aux.add(lbl);
+	        _gAttributes.add("praiseworthiness");
         }
         
-        if (_gAttributes.contains("location"))
+        if (!ger.getLocation().equals(""))
         {
 	        lbl = new JLabel("Location"); // Where?
 	        lbl.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
 	        lbl.setMinimumSize(new Dimension(80,30));
 	        lbl.setMaximumSize(new Dimension(80,30));
 	        _aux.add(lbl);
+	        _gAttributes.add("location");
         }
         
-        if (_gAttributes.contains("time"))
+        if (!ger.getTime().equals(""))
         {
 	        lbl = new JLabel("Time"); // When?
 	        lbl.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
 	        lbl.setMinimumSize(new Dimension(80,30));
 	        lbl.setMaximumSize(new Dimension(80,30));
 	        _aux.add(lbl);
+	        _gAttributes.add("time");
         }
         
         lbl = new JLabel("Coverage"); // Frequency?
@@ -157,12 +170,19 @@ public class GeneralMemoryPanel extends AgentDisplayPanel {
     
     public boolean Update(AgentModel am) 
     {
-	    ListIterator<GER> li = _generalMemory.getGeneralisation().getAllGERs().listIterator();
+        _gers = _generalMemory.getGeneralisation().getAllGERs();
+	    ListIterator<GER> li = _gers.listIterator();
        
         GER ger;
-        GERDisplay gerDisplay;
-        
+        GERDisplay gerDisplay;        
         int index;
+        
+        _gersPanel.removeAll();
+        _gerDisplayList.clear();
+		_gAttributes.clear();
+		
+		// create the attributes panel
+        attributesPanel();
         
         while (li.hasNext()) {
             index = li.nextIndex();

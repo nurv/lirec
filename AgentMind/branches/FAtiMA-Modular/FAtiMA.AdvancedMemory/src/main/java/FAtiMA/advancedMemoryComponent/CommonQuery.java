@@ -2,11 +2,14 @@ package FAtiMA.advancedMemoryComponent;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
 
-public class CommonQuery {
+public class CommonQuery implements Serializable {
+	
+	private static final long serialVersionUID = 1L;
 	
 	private int _maxNumMatch;
 	private Hashtable<ArrayList<Integer>, Hashtable<String, String>> _match;

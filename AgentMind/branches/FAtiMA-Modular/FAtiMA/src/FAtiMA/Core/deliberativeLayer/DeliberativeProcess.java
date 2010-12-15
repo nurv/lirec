@@ -117,6 +117,7 @@
  
 package FAtiMA.Core.deliberativeLayer;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -159,7 +160,7 @@ import FAtiMA.Core.wellFormedNames.Unifier;
  * 
  * @author João Dias
  */
-public class DeliberativeProcess implements IComponent, IBehaviourComponent, IModelOfOtherComponent, IAppraisalComponent, IOptionsStrategy, IExpectedUtilityStrategy {
+public class DeliberativeProcess implements Serializable, IComponent, IBehaviourComponent, IModelOfOtherComponent, IAppraisalComponent, IOptionsStrategy, IExpectedUtilityStrategy {
 	
 	/**
 	 * 

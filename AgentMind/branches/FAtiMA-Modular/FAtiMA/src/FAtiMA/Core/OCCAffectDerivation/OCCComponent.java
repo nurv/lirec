@@ -1,5 +1,6 @@
 package FAtiMA.Core.OCCAffectDerivation;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import FAtiMA.Core.AgentModel;
@@ -15,7 +16,7 @@ import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.util.enumerables.EmotionType;
 import FAtiMA.Core.wellFormedNames.Name;
 
-public class OCCComponent implements IAffectDerivationComponent, IModelOfOtherComponent {
+public class OCCComponent implements Serializable, IAffectDerivationComponent, IModelOfOtherComponent {
 	
 	public static final String NAME = "OCC";
 	public static final String LIKE = "like";

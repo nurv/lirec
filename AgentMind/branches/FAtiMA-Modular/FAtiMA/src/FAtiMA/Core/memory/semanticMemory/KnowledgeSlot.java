@@ -201,4 +201,26 @@ public class KnowledgeSlot implements Serializable {
 	    }
 	    return aux;
 	}
+	
+	public String toXML() {
+	    Iterator<Object> it;
+	    String aux;
+	    if(_value == null) {
+	        aux = _name + ":";
+	    }
+	    else {
+	        aux = _name + ":" + _value;
+	    }
+	 
+	    it = _children.values().iterator();
+	    if(it.hasNext()) {
+	        
+	        aux = aux + " {" + it.next();
+	        while(it.hasNext()) {
+		        aux = aux + "," + it.next();
+		    }
+	        aux = aux + "}";
+	    }
+	    return aux;
+	}
 }

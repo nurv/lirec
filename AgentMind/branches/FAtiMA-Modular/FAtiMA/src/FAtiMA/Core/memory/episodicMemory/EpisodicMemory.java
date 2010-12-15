@@ -326,4 +326,11 @@ public class EpisodicMemory implements Serializable {
 	{
 		return _am.SummarizeEpisode(m, episode);
 	}
+	
+	public String toXML()
+	{
+		String emStr ="";
+		
+		return emStr;
+	}
 }

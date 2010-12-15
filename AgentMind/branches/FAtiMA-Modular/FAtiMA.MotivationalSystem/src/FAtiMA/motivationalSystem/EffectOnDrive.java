@@ -1,10 +1,12 @@
 package FAtiMA.motivationalSystem;
 
+import java.io.Serializable;
+
 import FAtiMA.Core.wellFormedNames.Symbol;
 
 
 
-public class EffectOnDrive {
+public class EffectOnDrive implements Serializable {
 	
 	private float _value;
 	private short _type;

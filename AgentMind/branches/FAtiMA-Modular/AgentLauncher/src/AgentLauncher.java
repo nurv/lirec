@@ -33,12 +33,15 @@ public class AgentLauncher {
 		ArrayList<String> extraFiles = new ArrayList<String>();
 		//String cultureFile = ConfigurationManager.getMindPath() + ConfigurationManager.getAgentProperties().get("cultureName") + ".xml"; 
 		
-		//extraFiles.add(cultureFile);
-		//aG.addComponent(new CulturalDimensionsComponent(cultureFile));
-		aG.addComponent(new SocialRelationsComponent(extraFiles));
-		aG.addComponent(new MotivationalComponent(extraFiles));
-		aG.addComponent(new ToMComponent(ConfigurationManager.getName()));
-		aG.addComponent(new AdvancedMemoryComponent());
+		if (!aG.getLoaded())
+		{
+			//extraFiles.add(cultureFile);
+			//aG.addComponent(new CulturalDimensionsComponent(cultureFile));
+			aG.addComponent(new SocialRelationsComponent(extraFiles));
+			aG.addComponent(new MotivationalComponent(extraFiles));
+			aG.addComponent(new ToMComponent(ConfigurationManager.getName()));
+			aG.addComponent(new AdvancedMemoryComponent());
+		}
 		aG.StartAgent();
 	}
 	

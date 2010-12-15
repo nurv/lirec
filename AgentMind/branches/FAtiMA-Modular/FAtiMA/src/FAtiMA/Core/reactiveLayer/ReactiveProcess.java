@@ -61,6 +61,8 @@
 package FAtiMA.Core.reactiveLayer;
 
 
+import java.io.Serializable;
+
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.IAppraisalComponent;
 import FAtiMA.Core.IBehaviourComponent;
@@ -77,7 +79,7 @@ import FAtiMA.Core.sensorEffector.Event;
  * Implements FearNot's Agent Reactive Layer (appraisal and coping processes)
  * @author João Dias
  */
-public class ReactiveProcess implements IComponent, IBehaviourComponent, IModelOfOtherComponent, IAppraisalComponent {
+public class ReactiveProcess implements Serializable, IComponent, IBehaviourComponent, IModelOfOtherComponent, IAppraisalComponent {
 	
     /**
 	 * 

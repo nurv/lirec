@@ -408,13 +408,13 @@ public class WorkingMemory implements Serializable {
 	public String toXML()
 	{
 		KnowledgeSlot slot;
-		String facts = "<Fact>";
+		String facts = "<WMFact>";
 		for(ListIterator<KnowledgeSlot> li = _factList.listIterator();li.hasNext();)
 		{
 			slot = li.next();
-			facts += slot.toString();
+			facts += slot.toXML();
 		}
-		facts += "</Fact>\n";
+		facts += "</WMFact>\n";
 		
 		return facts;
 	}

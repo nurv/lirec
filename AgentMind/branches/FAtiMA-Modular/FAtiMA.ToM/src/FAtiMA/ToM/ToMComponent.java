@@ -1,5 +1,6 @@
 package FAtiMA.ToM;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -21,7 +22,7 @@ import FAtiMA.Core.util.Constants;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Symbol;
 
-public class ToMComponent implements IAppraisalComponent, IProcessPerceptionsComponent, IGetModelStrategy, IGetUtilityForOthers {
+public class ToMComponent implements Serializable, IAppraisalComponent, IProcessPerceptionsComponent, IGetModelStrategy, IGetUtilityForOthers {
 	
 	public static final String NAME = "ToM";
 	

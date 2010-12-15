@@ -1,9 +1,10 @@
 package FAtiMA.motivationalSystem;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class ExpectedGoalEffectsOnDrives {
+public class ExpectedGoalEffectsOnDrives implements Serializable{
 	
 	private String _goalName;
 	private ArrayList<EffectOnDrive> _effects;
