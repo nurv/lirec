@@ -56,13 +56,13 @@ public class Memory implements Serializable {
 	
 	private SemanticMemory _sm;
 	private EpisodicMemory _em;
-	private MemoryWriter _mw;
+	//private MemoryWriter _mw;
 	
 	public Memory()
 	{
 		_sm = new SemanticMemory();
 		_em = new EpisodicMemory();
-		_mw = new MemoryWriter();
+		//_mw = new MemoryWriter();
 	}
 	
 	public SemanticMemory getSemanticMemory()
@@ -75,8 +75,8 @@ public class Memory implements Serializable {
 		return _em;
 	}
 	
-	public MemoryWriter getMemoryWriter()
+	/*public MemoryWriter getMemoryWriter()
 	{
 		return _mw;
-	}
+	}*/
 }
