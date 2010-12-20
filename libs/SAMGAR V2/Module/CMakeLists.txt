@@ -4,8 +4,11 @@ cmake_minimum_required(VERSION 2.6)
 # find YARP
 find_package(YARP REQUIRED)
 
+# find pkg-config
+find_package(PkgConfig REQUIRED)
+
 # find OpenCV
-find_package(OpenCV REQUIRED)
+pkg_check_modules(OpenCV REQUIRED opencv)
 
 # add YARP include directories
 include_directories(${YARP_INCLUDE_DIRS})
@@ -21,6 +24,6 @@ add_executable(VideoSend VideoSend.cpp)
 add_executable(VideoGet  VideoGet.cpp)
 
 # link with YARP libraries
-target_link_libraries(SamExamples SamModule ${YARP_LIBRARIES})
-target_link_libraries(VideoSend SamModule ${YARP_LIBRARIES} ${OpenCV_LIBS})
-target_link_libraries(VideoGet SamModule ${YARP_LIBRARIES} ${OpenCV_LIBS})
+target_link_libraries(SamExamples SamModule ${YARP_LIBRARIES} ACE)
+target_link_libraries(VideoSend SamModule ${YARP_LIBRARIES} ${OpenCV_LIBRARIES} ACE)
+target_link_libraries(VideoGet SamModule ${YARP_LIBRARIES} ${OpenCV_LIBRARIES} ACE)
