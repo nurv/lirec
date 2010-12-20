@@ -64,7 +64,6 @@ Max connections,modules and ports are predefined, makes it easer for memory and 
 using namespace yarp::os;
 using namespace yarp::name;
 using namespace std;
-//#include <QtGui>
 
 // not using proper lists, only arrays so we can easily preallocated memory
 // so define the max sizes

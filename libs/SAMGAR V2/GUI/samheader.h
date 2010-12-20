@@ -10,10 +10,6 @@
 
 #include "server3Gui.h"
 
-//#define maxmodules 50
-//#define maxconns   100
-//#define maxports   10
-
 MyConnectionView *myconnwindow;
 
 /** \class DataPort

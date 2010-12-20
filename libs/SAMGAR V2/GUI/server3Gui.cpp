@@ -9,7 +9,7 @@ double connstartx=0;
 double connstarty=0;
 double Xshift=0;
 
-SamConnection SamCons[100];
+SamConnection SamCons[maxconns];
 SamConnection TempConnect;
 
 
