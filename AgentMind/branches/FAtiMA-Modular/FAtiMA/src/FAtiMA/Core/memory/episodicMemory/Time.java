@@ -56,12 +56,25 @@ public class Time implements Serializable {
 		this._narrativeTime = AgentSimulationTime.GetInstance().Time();
 		GregorianCalendar gcal = new GregorianCalendar();
 		this._realTime = gcal.get(Calendar.HOUR_OF_DAY);
+		setStrRealTime();
+		this._eventSequence = _eventCounter;
+		_eventCounter++;
+	}
+	
+	public Time(Long narrativeTime, Long realTime, int eventSequence)
+	{
+		this._narrativeTime = narrativeTime;
+		this._realTime = realTime;
+		setStrRealTime();
+		this._eventSequence = eventSequence;
+	}
+	
+	private void setStrRealTime()
+	{
 		if(this._realTime >= 0 && this._realTime < 12)
 			this._strRealTime = "Morning";
 		else
 			this._strRealTime = "Afternoon";
-		this._eventSequence = _eventCounter;
-		_eventCounter++;
 	}
 	
 	public long getNarrativeTime()
@@ -79,7 +92,7 @@ public class Time implements Serializable {
 		return this._strRealTime;
 	}
 	
-	public long getEventSequence()
+	public int getEventSequence()
 	{
 		return this._eventSequence;
 	}

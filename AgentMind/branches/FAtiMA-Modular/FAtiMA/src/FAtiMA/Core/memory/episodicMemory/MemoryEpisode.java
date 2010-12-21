@@ -70,7 +70,8 @@ public class MemoryEpisode implements Serializable {
 	public MemoryEpisode(String location, Time time)
 	{
 		this._location = new ArrayList<String>();
-		this._location.add(location);
+		if (!location.equals(""))
+			this._location.add(location);
 		this._time = time;
 		this._people = new ArrayList<String>();
 		this._objects = new ArrayList<String>();
@@ -78,6 +79,13 @@ public class MemoryEpisode implements Serializable {
 		this._details = new ArrayList<ActionDetail>();
 		this._numberOfDominantActions = 3;
 		//this._dominantActions = new ArrayList(this._numberOfDominantActions);	
+	}
+	
+	public MemoryEpisode(ArrayList<String> location, ArrayList<String> people, ArrayList<String> objects)
+	{
+		this._location = location;
+		this._people = people;
+		this._objects = objects;
 	}
 	
 	/*public MemoryEpisode(String location)
@@ -158,6 +166,16 @@ public class MemoryEpisode implements Serializable {
 		AddPeople(action.getSubject());
 		
 		Object aux = action.getTargetDetails("type");
+		if(new String("object").equals(aux))
+		{
+			AddObject(action.getTarget());
+		}
+		else if(new String("character").equals(aux))
+		{
+			AddPeople(action.getTarget());
+		}
+		
+		aux = action.getObjectDetails("type");
 		if(new String("object").equals(aux))
 		{
 			AddObject(action.getTarget());
@@ -473,7 +491,7 @@ public class MemoryEpisode implements Serializable {
 	// Meiyii 13/09/10
 	public void AddLocation(String location)
 	{
-		if(location != null)
+		if(!location.equals(""))
 		{
 			if(!this._location.contains(location))
 			{

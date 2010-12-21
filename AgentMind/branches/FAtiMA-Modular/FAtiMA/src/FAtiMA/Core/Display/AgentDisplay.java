@@ -81,8 +81,13 @@ public class AgentDisplay {
 		teste.setText("Save");
 		teste.setEnabled(true);
 		_frame.getContentPane().add(teste);
-		_frame.setVisible(true);
 		
+		JButton sMemory = new JButton("Save Memory");
+		sMemory.addActionListener(new SaveMemory(ag));
+		sMemory.setText("Save Memory");
+		sMemory.setEnabled(true);
+		_frame.getContentPane().add(sMemory);
+		_frame.setVisible(true);		
     }
     
     public void AddPanel(AgentDisplayPanel panel, String title, String description)

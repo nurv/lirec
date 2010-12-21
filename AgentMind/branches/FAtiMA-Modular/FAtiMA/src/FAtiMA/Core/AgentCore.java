@@ -51,6 +51,8 @@ import FAtiMA.Core.util.enumerables.AgentPlatform;
 import FAtiMA.Core.util.enumerables.EmotionType;
 import FAtiMA.Core.util.parsers.AgentLoaderHandler;
 import FAtiMA.Core.util.parsers.BinaryStringConverter;
+import FAtiMA.Core.util.parsers.MemoryLoaderHandler;
+import FAtiMA.Core.util.writers.MemoryWriter;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Symbol;
 
@@ -96,7 +98,9 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 	private String _saveDirectory;
 	private boolean _saveRequest = false;
 	private boolean _loaded = false;
-
+	private boolean _saveMemoryRequest = false;
+	
+	private MemoryWriter _memoryWriter;
 	private IGetModelStrategy _strat;
 
 
@@ -112,6 +116,7 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 		_memory = new Memory();
 		// creating a new episode when the agent starts 13/09/10
 		_memory.getEpisodicMemory().StartEpisode(_memory);
+		_memoryWriter = new MemoryWriter(_memory);
 		_strat = this;
 		
 		_generalComponents = new HashMap<String,IComponent>();
@@ -139,7 +144,7 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 			if (Boolean.parseBoolean(ConfigurationManager.getLoad()))
 			{
 				_loaded = true;
-				AgentCoreLoad(ConfigurationManager.getPlatform(), ConfigurationManager.getHost(), ConfigurationManager.getPort(), ConfigurationManager.getSaveDirectory(), agentName);
+				agentCoreLoad(ConfigurationManager.getPlatform(), ConfigurationManager.getHost(), ConfigurationManager.getPort(), ConfigurationManager.getSaveDirectory(), agentName);
 			}
 			else
 			{
@@ -200,7 +205,7 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 		}
 	}
 	
-	public void AgentCoreLoad(short agentPlatform, String host, int port, String directory, String fileName)
+	public void agentCoreLoad(short agentPlatform, String host, int port, String directory, String fileName)
 	{
 		try{
 			_shutdown = false;
@@ -428,7 +433,20 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 		this._perceivedEvents = (ArrayList<Event>) s.readObject();
 		this._saveDirectory = (String) s.readObject();
 		
-		this._strat = (IGetModelStrategy) s.readObject();
+		Object stratObject = s.readObject();
+		if (stratObject instanceof IGetModelStrategy)
+		{
+			this._strat = (IGetModelStrategy) stratObject;
+		}
+		else 
+		{	
+			if (stratObject instanceof String)
+			{
+				String stratObjectStr = (String) stratObject;
+				if (stratObjectStr.equals("SELF")) this._strat = this;
+			}
+		}
+		 
 		this._generalComponents = (HashMap<String,IComponent>) s.readObject();
 		this._processEmotionComponents = (ArrayList<IProcessEmotionComponent>) s.readObject();
 		this._behaviourComponents = (ArrayList<IBehaviourComponent>) s.readObject();
@@ -744,6 +762,11 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 						_saveRequest = false;
 						SaveAgentState(this.getName());
 					}
+					if(_saveMemoryRequest)
+					{
+						_saveMemoryRequest = false;
+						SaveAgentMemory();
+					}
 				}
 
 				long cycleExecutionTime = System.currentTimeMillis() - startCycleTime;
@@ -765,7 +788,27 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 		this._saveRequest = true;
 	}
 
+	public void RequestMemorySave()
+	{
+		this._saveMemoryRequest = true;
+	}
 
+	private void SaveAgentMemory() throws	ParserConfigurationException, SAXException, IOException
+	{
+		_memoryWriter.outputMemoryInXML(_saveDirectory + "XMLMemory");
+		//this.loadAgentMemory(_saveDirectory + "XMLMemory");
+	}
+	
+	private void loadAgentMemory(String memoryFile) throws	ParserConfigurationException, SAXException, IOException
+	{
+		AgentLogger.GetInstance().log("LOADING Memory: " + memoryFile);
+		MemoryLoaderHandler ml = new MemoryLoaderHandler();
+	
+		SAXParserFactory factory = SAXParserFactory.newInstance();
+		SAXParser parser = factory.newSAXParser();
+		parser.parse(new File(memoryFile), ml);
+	}
+	
 	private void SaveAgentState(String agentName)
 	{
 		String fileName = _saveDirectory + agentName;
@@ -775,7 +818,6 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 		// being stored in the wrong episode
 		// Meiyii 13/09/10
 		_memory.getEpisodicMemory().MoveSTEMtoAM();
-		//_memory.getMemoryWriter().xmlMemoryOutput(_saveDirectory + "XMLMemory");
 
 		AgentSimulationTime.SaveState(fileName+"-Timer.dat");
 		ActionLibrary.SaveState(fileName+"-ActionLibrary.dat");
@@ -785,7 +827,6 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 		{
 			FileOutputStream out = new FileOutputStream(fileName);
 			ObjectOutputStream s = new ObjectOutputStream(out);
-
 			
 			s.writeObject(_deliberativeLayer);
 			s.writeObject(_reactiveLayer);
@@ -803,7 +844,16 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 			s.writeObject(_perceivedEvents);
 			s.writeObject(_saveDirectory);
 			
-			s.writeObject(_strat);
+			// prevent saving of the whole AgentCore which contains _agentDisplay as this would 
+			// lead to NonSerializableException
+			if (_strat != this)
+			{
+				s.writeObject(_strat);
+			}
+			else
+			{
+				s.writeObject(new String("SELF"));
+			}
 			s.writeObject(_generalComponents);
 			s.writeObject(_processEmotionComponents);
 			s.writeObject(_behaviourComponents);

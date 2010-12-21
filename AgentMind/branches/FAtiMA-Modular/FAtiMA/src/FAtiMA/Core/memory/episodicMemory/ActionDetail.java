@@ -92,6 +92,7 @@ public class ActionDetail implements Serializable {
 	private String _speechActMeaning;
 	private String _multimediaPath;
 	private String _object;
+	private KnowledgeSlot _objectDetails = null;
 	
 	private float _desirability;
 	private float _praiseworthiness;
@@ -104,6 +105,7 @@ public class ActionDetail implements Serializable {
 		this._id = ID;
 		
 		this._subject = e.GetSubject();
+		this._subjectDetails = m.getSemanticMemory().GetObjectDetails(_subject);
 		
 		// Meiyii 07/01/10 separate events into intention and action
 		if(e.GetType() == EventType.GOAL)
@@ -118,18 +120,9 @@ public class ActionDetail implements Serializable {
 		}
 		
 		this._target = e.GetTarget();
+		this._targetDetails = m.getSemanticMemory().GetObjectDetails(_target);
 		this._location = location;
 		this._time = new Time();
-		
-		if(this._subject != null)
-		{
-			_subjectDetails = m.getSemanticMemory().GetObjectDetails(this._subject);
-		}
-		
-		if(this._target != null)
-		{
-			_targetDetails = m.getSemanticMemory().GetObjectDetails(this._target);
-		}
 		
 		if(e.GetParameters() != null)
 		{
@@ -150,6 +143,7 @@ public class ActionDetail implements Serializable {
 				else if(p.GetName().equals("param"))
 				{
 					this._object = p.GetValue().toString();
+					this._objectDetails = m.getSemanticMemory().GetObjectDetails(_object);
 				}
 			}
 		}
@@ -245,6 +239,20 @@ public class ActionDetail implements Serializable {
 		if(this._targetDetails != null)
 		{
 			aux = this._targetDetails.get(property);
+			if(aux != null)
+			{
+				return aux.getValue();
+			}
+		}
+		return null;
+	}
+	
+	public Object getObjectDetails(String property)
+	{
+		KnowledgeSlot aux;
+		if(this._objectDetails != null)
+		{
+			aux = this._objectDetails.get(property);
 			if(aux != null)
 			{
 				return aux.getValue();

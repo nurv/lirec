@@ -31,14 +31,21 @@
 
 package FAtiMA.Core.memory;
 
-
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.Serializable;
+import java.io.Writer;
+import java.io.OutputStreamWriter;
 
+import org.znerd.xmlenc.LineBreak;
+import org.znerd.xmlenc.XMLOutputter;
+
+import FAtiMA.Core.memory.episodicMemory.ActionDetail;
 import FAtiMA.Core.memory.episodicMemory.EpisodicMemory;
+import FAtiMA.Core.memory.episodicMemory.MemoryEpisode;
 import FAtiMA.Core.memory.semanticMemory.SemanticMemory;
-
-
-
+import FAtiMA.Core.util.writers.MemoryWriter;
 
 /**
  * Performs operations that involve data from different memories - currently
@@ -56,13 +63,11 @@ public class Memory implements Serializable {
 	
 	private SemanticMemory _sm;
 	private EpisodicMemory _em;
-	//private MemoryWriter _mw;
 	
 	public Memory()
 	{
 		_sm = new SemanticMemory();
 		_em = new EpisodicMemory();
-		//_mw = new MemoryWriter();
 	}
 	
 	public SemanticMemory getSemanticMemory()
@@ -74,9 +79,4 @@ public class Memory implements Serializable {
 	{
 		return _em;
 	}
-	
-	/*public MemoryWriter getMemoryWriter()
-	{
-		return _mw;
-	}*/
 }

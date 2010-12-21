@@ -390,6 +390,14 @@ public class Event implements Cloneable, Serializable {
 	}
 	
 	/**
+	 * Gets the event's time
+	 * @return the event's time
+	 */
+	public long GetTime() {
+		return _time;
+	}
+	
+	/**
 	 * Sets the event's action (what happened)
 	 * @param action - the action to store in the event
 	 */

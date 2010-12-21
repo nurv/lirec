@@ -370,6 +370,15 @@ public class AutobiographicalMemory implements Serializable {
 		return AMSummary;
 	}
 	
+	/*
+	 * Put an episode to the AM - used when reloading in the memory
+	 * Meiyii - 17/12/10
+	 */
+	public void putEpisode(MemoryEpisode me)
+	{
+		_memoryEvents.add(me);
+	}
+
 	public String toXML()
 	{
 		String am  = "<AutobiographicMemory>";
@@ -378,7 +387,7 @@ public class AutobiographicalMemory implements Serializable {
 			MemoryEpisode episode = li.next();
 			am += episode.toXML();
 		}
-		am += "</AutobiographicMemory>";
+		am += "</AutobiographicMemory>\n";
 		return am; 
 	}
 	

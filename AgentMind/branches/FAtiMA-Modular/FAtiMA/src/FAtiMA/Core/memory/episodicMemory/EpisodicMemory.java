@@ -322,6 +322,16 @@ public class EpisodicMemory implements Serializable {
 		}
 	}
 	
+	public AutobiographicalMemory getAM()
+	{
+		return _am;
+	}
+
+	public ShortTermEpisodicMemory getSTEM()
+	{
+		return _stm;
+	}
+	
 	public String SummarizeEpisode(Memory m, int episode)
 	{
 		return _am.SummarizeEpisode(m, episode);
@@ -329,8 +339,10 @@ public class EpisodicMemory implements Serializable {
 	
 	public String toXML()
 	{
-		String emStr ="";
-		
+		String emStr ="<EpisodicMemory>";
+		emStr += _am.toXML();
+		emStr += _stm.toXML();
+		emStr += "</EpisodeMemory>";
 		return emStr;
 	}
 }
