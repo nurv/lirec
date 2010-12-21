@@ -1,0 +1,3 @@
+isFruit True
+eatable True
+type object
