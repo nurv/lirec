@@ -38,14 +38,10 @@ import java.io.Serializable;
 import java.io.Writer;
 import java.io.OutputStreamWriter;
 
-import org.znerd.xmlenc.LineBreak;
-import org.znerd.xmlenc.XMLOutputter;
-
 import FAtiMA.Core.memory.episodicMemory.ActionDetail;
 import FAtiMA.Core.memory.episodicMemory.EpisodicMemory;
 import FAtiMA.Core.memory.episodicMemory.MemoryEpisode;
 import FAtiMA.Core.memory.semanticMemory.SemanticMemory;
-import FAtiMA.Core.util.writers.MemoryWriter;
 
 /**
  * Performs operations that involve data from different memories - currently

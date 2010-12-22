@@ -133,13 +133,13 @@ public class SemanticMemory implements Serializable {
     	return _stm.GetNewFacts();
     }
 	
-	public KnowledgeSlot GetObjectDetails(String objectName)
+	public KnowledgeSlot GetObjectDetails(String objectName, String property)
 	{
 		synchronized(this)
 		{
-			KnowledgeSlot object = _stm.GetObjectDetails(objectName);
+			KnowledgeSlot object = _stm.GetObjectDetails(objectName, property);
 			if(object == null)
-				object = _kb.GetObjectDetails(objectName);
+				object = _kb.GetObjectDetails(objectName, property);
 			return object;
 		}
 	}

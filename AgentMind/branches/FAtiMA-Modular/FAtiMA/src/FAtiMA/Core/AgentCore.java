@@ -796,7 +796,7 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 	private void SaveAgentMemory() throws	ParserConfigurationException, SAXException, IOException
 	{
 		_memoryWriter.outputMemoryInXML(_saveDirectory + "XMLMemory");
-		//this.loadAgentMemory(_saveDirectory + "XMLMemory");
+		this.loadAgentMemory(_saveDirectory + "XMLMemory");
 	}
 	
 	private void loadAgentMemory(String memoryFile) throws	ParserConfigurationException, SAXException, IOException

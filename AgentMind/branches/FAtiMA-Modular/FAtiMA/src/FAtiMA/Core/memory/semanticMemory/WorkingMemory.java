@@ -344,9 +344,9 @@ public class WorkingMemory implements Serializable {
 			return bindingSets;
 	}
 	
-	public KnowledgeSlot GetObjectDetails(String objectName)
+	public KnowledgeSlot GetObjectDetails(String objectName, String property)
 	{
-		return _wM.get(objectName);
+		return _wM.get(objectName).get(property);
 	}
 	
 	private ArrayList<SubstitutionSet> MatchLiteralList(ArrayList<Symbol> literals, int index, KnowledgeSlot ks) {

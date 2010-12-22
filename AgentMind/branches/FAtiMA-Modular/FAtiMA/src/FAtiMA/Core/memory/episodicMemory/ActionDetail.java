@@ -74,16 +74,10 @@ public class ActionDetail implements Serializable {
 	private String _subject;
 	private String _action;
 	private String _target;	
-	
-	private KnowledgeSlot _subjectDetails = null;
-	private KnowledgeSlot _targetDetails = null;
 	private Time _time;
 	private String _location;
-
 	
 	private BaseEmotion _emotion;
-	
-	private ArrayList<String> _evaluation;
 	private ArrayList<Parameter> _parameters = null;
 	
 	// 06/01/10 - Meiyii
@@ -91,22 +85,23 @@ public class ActionDetail implements Serializable {
 	private String _status;
 	private String _speechActMeaning;
 	private String _multimediaPath;
-	private String _object;
-	private KnowledgeSlot _objectDetails = null;
-	
+	private String _object;	
 	private float _desirability;
 	private float _praiseworthiness;
+	
+	private Memory _memory;
 	
 		
 	public ActionDetail(Memory m, int ID, Event e, String location)
 	{  
 		Parameter p;
 		
+		this._memory = m;
+		
 		this._id = ID;
 		
 		this._subject = e.GetSubject();
-		this._subjectDetails = m.getSemanticMemory().GetObjectDetails(_subject);
-		
+	
 		// Meiyii 07/01/10 separate events into intention and action
 		if(e.GetType() == EventType.GOAL)
 		{
@@ -120,53 +115,78 @@ public class ActionDetail implements Serializable {
 		}
 		
 		this._target = e.GetTarget();
-		this._targetDetails = m.getSemanticMemory().GetObjectDetails(_target);
 		this._location = location;
-		this._time = new Time();
+		this._time = new Time(); 
 		
 		if(e.GetParameters() != null)
 		{
 			// Meiyii 07/01/10 separate the parameters into individual fields
 			this._parameters = new ArrayList<Parameter>(e.GetParameters());
-			ListIterator<Parameter> li = this._parameters.listIterator();
-			while(li.hasNext())
-			{
-				p = li.next();
-				if(p.GetName().equals("type"))
-				{
-					this._speechActMeaning = p.GetValue().toString();
-				}				
-				else if(p.GetName().equals("link"))
-				{
-					this._multimediaPath = p.GetValue().toString();
-				}
-				else if(p.GetName().equals("param"))
-				{
-					this._object = p.GetValue().toString();
-					this._objectDetails = m.getSemanticMemory().GetObjectDetails(_object);
-				}
-			}
+			separateParameters();
 		}
 		
 		this._emotion = new BaseEmotion(EmotionType.NEUTRAL,0,new ArrayList<String>(),e,null);
-		
-		this._evaluation = new ArrayList<String>();
 	}
-	
-	// not used currently
-	public ActionDetail(int ID, String subject, String action, String target, ArrayList<Parameter> parameters, ArrayList<String> evaluation, Time time, String location, BaseEmotion emotion)
+
+	public ActionDetail(int ID, String subject, Short eType, String event, String status, 
+			String target, String location, float desirability, float praiseworthiness)
 	{
 		this._id = ID;
 		
 		this._subject = subject;
-		this._action = action;
+		if (eType == EventType.GOAL)
+			this._intention = event;
+		else
+			this._action = event;
+		this._status = status;
 		this._target = target;
 		this._location = location;
 		
-		this._time = time;
-		this._emotion = emotion;
+		this._desirability = desirability;
+		this._praiseworthiness = praiseworthiness;
+	}
+	
+	public void setParameters(ArrayList<Parameter> parameters)
+	{		
+		this._parameters = parameters;
+		separateParameters();
 		
-		this._evaluation = evaluation;
+	}
+	
+	private void separateParameters()
+	{
+		Parameter p;
+		ListIterator<Parameter> li = this._parameters.listIterator();
+		while(li.hasNext())
+		{
+			p = li.next();
+			if(p.GetName().equals("type"))
+			{
+				this._speechActMeaning = p.GetValue().toString();
+			}				
+			else if(p.GetName().equals("link"))
+			{
+				this._multimediaPath = p.GetValue().toString();
+			}
+			else if(p.GetName().equals("param"))
+			{
+				String value = p.GetValue().toString();
+				if (!value.equals("SELF"))
+				{
+					this._object = value;
+				}
+			}
+		}
+	}
+	
+	public void setEmotion(BaseEmotion emotion)
+	{
+		this._emotion = emotion;
+	}
+	
+	public void setTime(Time time)
+	{
+		this._time = time;
 	}
 	
 	public void applySubstitution(Substitution s)
@@ -222,9 +242,9 @@ public class ActionDetail implements Serializable {
 	public Object getSubjectDetails(String property)
 	{
 		KnowledgeSlot aux;
-		if(this._subjectDetails != null)
+		if(this._subject != null)
 		{
-			aux = this._subjectDetails.get(property);
+			aux = _memory.getSemanticMemory().GetObjectDetails(_subject, property);
 			if(aux != null)
 			{
 				return aux.getValue();
@@ -236,9 +256,9 @@ public class ActionDetail implements Serializable {
 	public Object getTargetDetails(String property)
 	{
 		KnowledgeSlot aux;
-		if(this._targetDetails != null)
+		if(this._target != null)
 		{
-			aux = this._targetDetails.get(property);
+			aux = _memory.getSemanticMemory().GetObjectDetails(_target, property);
 			if(aux != null)
 			{
 				return aux.getValue();
@@ -250,9 +270,9 @@ public class ActionDetail implements Serializable {
 	public Object getObjectDetails(String property)
 	{
 		KnowledgeSlot aux;
-		if(this._objectDetails != null)
+		if(this._object != null)
 		{
-			aux = this._objectDetails.get(property);
+			aux = _memory.getSemanticMemory().GetObjectDetails(_object, property);;
 			if(aux != null)
 			{
 				return aux.getValue();
@@ -266,10 +286,10 @@ public class ActionDetail implements Serializable {
 		return this._emotion;
 	}
 	
-	public ArrayList<String> getEvaluation()
+	/*public ArrayList<String> getEvaluation()
 	{
 		return this._evaluation;
-	}
+	}*/
 	
 	//Meiyii 07/01/10
 	public String getIntention()

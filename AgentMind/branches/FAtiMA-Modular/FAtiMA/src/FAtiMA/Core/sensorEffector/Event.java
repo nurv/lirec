@@ -57,6 +57,7 @@ import java.util.StringTokenizer;
 
 
 import FAtiMA.Core.AgentSimulationTime;
+import FAtiMA.Core.memory.episodicMemory.Time;
 import FAtiMA.Core.util.Constants;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Substitution;
@@ -316,6 +317,7 @@ public class Event implements Cloneable, Serializable {
 	 * @param subject - the subject of the event (who performed the action)
 	 * @param action - the action specified by the event
 	 * @param target - the target of the action
+	 * @param type - the type of event
 	 * @param status - the status of the goal/action
 	 */
 	public Event(String subject, String action, String target, short type, short status) {
@@ -326,6 +328,16 @@ public class Event implements Cloneable, Serializable {
 		_target = target;
 		_type = type;
 		_status = status;
+	}
+	
+	public Event(String subject, String action, String target, short type, short status, Long time) {
+		_parameters = new ArrayList<Parameter>();
+		_subject = subject;
+		_action = action;
+		_target = target;
+		_type = type;
+		_status = status;
+		_time = time;
 	}
 	
 	/**
@@ -415,7 +427,7 @@ public class Event implements Cloneable, Serializable {
 
 	/**
 	 * Meiyii 07/01/10
-	 * Sets the event's type (goal or action)
+	 * Sets the event's status 
 	 * (activation, success, failure for goal and success, failure for action)
 	 * @param status - the status of the event
 	 */
@@ -425,7 +437,7 @@ public class Event implements Cloneable, Serializable {
 	
 	/**
 	 * Meiyii 07/01/10
-	 * Sets the event's status 
+	 * Sets the event's type (goal or action)
 	 * @param type - the type of the event
 	 */
 	public void SetType(short type) {

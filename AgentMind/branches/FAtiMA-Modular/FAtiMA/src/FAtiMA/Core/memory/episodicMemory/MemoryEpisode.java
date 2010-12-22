@@ -61,11 +61,8 @@ public class MemoryEpisode implements Serializable {
 	private ArrayList<String> _people;
 	private ArrayList<String> _location; // changed from String to arraylist - Meiyii 13/09/10
 	private ArrayList<String> _objects;
-	//private HashMap _detailsByKey;
-	private ArrayList<ActionDetail> _details;
-	
+	private ArrayList<ActionDetail> _details;	
 	private int _numberOfDominantActions;
-	//private ArrayList _dominantActions;
 	
 	public MemoryEpisode(String location, Time time)
 	{
@@ -75,10 +72,8 @@ public class MemoryEpisode implements Serializable {
 		this._time = time;
 		this._people = new ArrayList<String>();
 		this._objects = new ArrayList<String>();
-		//this._detailsByKey = new HashMap();
 		this._details = new ArrayList<ActionDetail>();
 		this._numberOfDominantActions = 3;
-		//this._dominantActions = new ArrayList(this._numberOfDominantActions);	
 	}
 	
 	public MemoryEpisode(ArrayList<String> location, ArrayList<String> people, ArrayList<String> objects)
@@ -86,25 +81,9 @@ public class MemoryEpisode implements Serializable {
 		this._location = location;
 		this._people = people;
 		this._objects = objects;
+		this._time = new Time();
+		this._details = new ArrayList<ActionDetail>();
 	}
-	
-	/*public MemoryEpisode(String location)
-	{
-		this._location = location;
-		this._time = null;
-		this._people = new ArrayList();
-		this._objects = new ArrayList();
-		//this._detailsByKey = new HashMap();
-		this._details = new ArrayList();
-		this._numberOfDominantActions = 3;
-		//this._dominantActions = new ArrayList(this._numberOfDominantActions);	
-	}*/
-	
-	
-	/*public String getAbstract() 
-	{
-		return this._abstract;
-	}*/
 	
 	public void applySubstitution(Substitution s)
 	{
@@ -154,35 +133,35 @@ public class MemoryEpisode implements Serializable {
 		else return (ActionDetail) this._details.get(actionID);
 	}
 	
-	public void AddActionDetail(ActionDetail action)
+	public void AddActionDetail(ActionDetail ad)
 	{		
-		_details.add(action);
-			
-		UpdateMemoryFields(action);
+		_details.add(ad);
 	}
 	
-	private void UpdateMemoryFields(ActionDetail action)
+	public void UpdateMemoryFields(ActionDetail ad)
 	{
-		AddPeople(action.getSubject());
+		AddPeople(ad.getSubject());
 		
-		Object aux = action.getTargetDetails("type");
+		//check target type
+		Object aux = ad.getTargetDetails("type");
 		if(new String("object").equals(aux))
 		{
-			AddObject(action.getTarget());
+			AddObject(ad.getTarget());
 		}
 		else if(new String("character").equals(aux))
 		{
-			AddPeople(action.getTarget());
+			AddPeople(ad.getTarget());
 		}
 		
-		aux = action.getObjectDetails("type");
+		// check object type
+		aux = ad.getObjectDetails("type");
 		if(new String("object").equals(aux))
 		{
-			AddObject(action.getTarget());
+			AddObject(ad.getObject());
 		}
 		else if(new String("character").equals(aux))
 		{
-			AddPeople(action.getTarget());
+			AddPeople(ad.getObject());
 		}
 	}
 	

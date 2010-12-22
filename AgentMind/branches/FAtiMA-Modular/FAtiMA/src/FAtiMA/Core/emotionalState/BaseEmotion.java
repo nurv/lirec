@@ -36,6 +36,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 import FAtiMA.Core.sensorEffector.Event;
+import FAtiMA.Core.sensorEffector.Parameter;
 import FAtiMA.Core.util.enumerables.EmotionType;
 import FAtiMA.Core.util.enumerables.EmotionValence;
 import FAtiMA.Core.wellFormedNames.Name;

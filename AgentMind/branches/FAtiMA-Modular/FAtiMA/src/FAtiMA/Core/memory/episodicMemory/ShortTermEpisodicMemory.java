@@ -71,15 +71,14 @@ public class ShortTermEpisodicMemory implements Serializable {
 	public void AddActionDetail(Memory m, Event e, String location)
 	{
 		ActionDetail action;
-		//System.out.println("EventID: " + eventID);
-		
-		action = new ActionDetail(m, ShortTermEpisodicMemory.eventID++, e, location);
-				
-		//System.out.println("Action added: " + action.toXML());
-		
-		_details.add(action);
 			
-		//UpdateMemoryFields(action);
+		action = new ActionDetail(m, ShortTermEpisodicMemory.eventID++, e, location);
+		_details.add(action);
+	}
+	
+	public void AddActionDetail(ActionDetail ad)
+	{
+		_details.add(ad);
 	}
 	
 	public void applySubstitution(Substitution s)

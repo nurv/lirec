@@ -291,9 +291,9 @@ public class KnowledgeBase implements Serializable {
 			return bindingSets;
 	}
 	
-	public KnowledgeSlot GetObjectDetails(String objectName)
+	public KnowledgeSlot GetObjectDetails(String objectName, String property)
 	{
-		return _kB.get(objectName);
+		return _kB.get(objectName).get(property);
 	}
 
 	
