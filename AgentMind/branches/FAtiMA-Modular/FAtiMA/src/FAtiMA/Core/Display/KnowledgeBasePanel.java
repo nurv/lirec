@@ -76,8 +76,8 @@ public class KnowledgeBasePanel extends AgentDisplayPanel {
     }
    
     public boolean Update(AgentModel am) {
-        
-        ListIterator<KnowledgeSlot> li = am.getMemory().getSemanticMemory().GetKnowledgeBaseFacts();
+              
+        ListIterator<KnowledgeSlot> li = am.getMemory().getSemanticMemory().GetKnowledgeBaseFacts().listIterator(); 
         
         KnowledgeSlot slot;
         KnowledgeFactDisplay kDisplay;

@@ -200,7 +200,7 @@ public class AdvancedMemoryComponent implements Serializable, IAppraisalComponen
 		ActionDetail ad = new ActionDetail(0,e.GetSubject(),
 					e.GetAction(), 
 					e.GetTarget(),
-					e.GetParameters(),null,null,null,null);
+					e.GetParameters(),null,null,null);
 			
 		_compoundCue.Match(ad,am.getMemory().getEpisodicMemory());
 			

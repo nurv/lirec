@@ -115,31 +115,54 @@ public class SemanticMemory implements Serializable {
 	}
 
 	
+	/*
+	 * Return changeList from the WorkingMemory
+	 */
 	public ArrayList<KnowledgeSlot> GetChangeList() {
 	    return _stm.GetChangeList();
 	}
 	
-	public ListIterator<KnowledgeSlot> GetFactList() {
+	/*
+	 * Return factList from the WorkingMemory
+	 */
+	public ArrayList<KnowledgeSlot> GetFactList() {
 	    return _stm.GetFactList();
 	}
 	
-	public ListIterator<KnowledgeSlot> GetKnowledgeBaseFacts()
+	/*
+	 * Return factList from the KnowledgeBase
+	 */
+	public ArrayList<KnowledgeSlot> GetKnowledgeBaseFacts()
 	{
 		return _kb.GetFactList();
 	}
 	
+	/*
+	 * Return new facts from the WorkingMemory
+	 */
 	public ArrayList<KnowledgeSlot> getNewFacts()
     {
     	return _stm.GetNewFacts();
     }
 	
-	public KnowledgeSlot GetObjectDetails(String objectName, String property)
+	public KnowledgeSlot GetObjectDetails(String objectName)
 	{
 		synchronized(this)
 		{
-			KnowledgeSlot object = _stm.GetObjectDetails(objectName, property);
+			KnowledgeSlot object = _stm.GetObjectDetails(objectName);
 			if(object == null)
-				object = _kb.GetObjectDetails(objectName, property);
+				object = _kb.GetObjectDetails(objectName);
+			return object;
+		}
+	}
+	
+	public KnowledgeSlot GetObjectProperty(String objectName, String property)
+	{
+		synchronized(this)
+		{
+			KnowledgeSlot object = _stm.GetObjectProperty(objectName, property);
+			if(object == null)
+				object = _kb.GetObjectProperty(objectName, property);
 			return object;
 		}
 	}
@@ -318,6 +341,22 @@ public class SemanticMemory implements Serializable {
 		{
 			_stm.Tell(_kb, property, value);
 		}	
+	}
+	
+	/*
+	 * Called during loading
+	 */
+	public void putKnowledgeBase(KnowledgeBase kb)
+	{
+		_kb = kb;
+	}
+	
+	/*
+	 * Called during loading
+	 */
+	public void putWorkingMemory(WorkingMemory wm)
+	{
+		_stm = wm;
 	}
 
 }

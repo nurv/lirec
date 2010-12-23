@@ -161,6 +161,9 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 					_agentDisplay = new AgentDisplay(this);
 				}
 	
+				//testing - loading agent memory from xml
+				//loadAgentMemory(_saveDirectory + "XMLMemory");
+				
 				// Load Plan Operators
 				ActionLibrary.GetInstance().LoadActionsFile(ConfigurationManager.getActionsFile(), this);
 				EmotionalPlanner planner = new EmotionalPlanner(ActionLibrary.GetInstance().GetActions());
@@ -211,6 +214,7 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 			_shutdown = false;
 			_numberOfCycles = 0;
 			LoadAgentState(directory + fileName);
+						
 			AgentLogger.GetInstance().initialize(fileName,_showStateWindow);
 
 			if(_showStateWindow && !VersionChecker.runningOnAndroid()){
@@ -802,7 +806,7 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 	private void loadAgentMemory(String memoryFile) throws	ParserConfigurationException, SAXException, IOException
 	{
 		AgentLogger.GetInstance().log("LOADING Memory: " + memoryFile);
-		MemoryLoaderHandler ml = new MemoryLoaderHandler();
+		MemoryLoaderHandler ml = new MemoryLoaderHandler(_memory);
 	
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		SAXParser parser = factory.newSAXParser();

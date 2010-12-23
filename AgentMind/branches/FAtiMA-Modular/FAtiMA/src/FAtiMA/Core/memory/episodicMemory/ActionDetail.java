@@ -54,6 +54,7 @@ import FAtiMA.Core.util.enumerables.EmotionType;
 import FAtiMA.Core.util.enumerables.EmotionValence;
 import FAtiMA.Core.util.enumerables.EventType;
 import FAtiMA.Core.util.enumerables.GoalEvent;
+import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Substitution;
 
 
@@ -128,9 +129,15 @@ public class ActionDetail implements Serializable {
 		this._emotion = new BaseEmotion(EmotionType.NEUTRAL,0,new ArrayList<String>(),e,null);
 	}
 
-	public ActionDetail(int ID, String subject, Short eType, String event, String status, 
+	/*
+	 * Meiyii 22/12/10
+	 * Called during loading 
+	 */
+	public ActionDetail(Memory m, int ID, String subject, Short eType, String event, String status, 
 			String target, String location, float desirability, float praiseworthiness)
 	{
+		this._memory = m;
+		
 		this._id = ID;
 		
 		this._subject = subject;
@@ -146,11 +153,23 @@ public class ActionDetail implements Serializable {
 		this._praiseworthiness = praiseworthiness;
 	}
 	
+	public ActionDetail(int ID, String subject, String action, String target, ArrayList<Parameter> parameters, Time time, String location, BaseEmotion emotion)
+	{
+		this._id = ID;
+		
+		this._subject = subject;
+		this._action = action;
+		this._target = target;
+		this._location = location;
+		
+		this._time = time;
+		this._emotion = emotion;
+	}
+	
 	public void setParameters(ArrayList<Parameter> parameters)
 	{		
 		this._parameters = parameters;
-		separateParameters();
-		
+		separateParameters();		
 	}
 	
 	private void separateParameters()
@@ -241,44 +260,38 @@ public class ActionDetail implements Serializable {
 	
 	public Object getSubjectDetails(String property)
 	{
-		KnowledgeSlot aux;
+		KnowledgeSlot aux = null;
 		if(this._subject != null)
 		{
-			aux = _memory.getSemanticMemory().GetObjectDetails(_subject, property);
-			if(aux != null)
-			{
+			aux = _memory.getSemanticMemory().GetObjectProperty(_subject, property);
+			if (aux != null)
 				return aux.getValue();
-			}
 		}
-		return null;
+		return aux;
 	}
 	
 	public Object getTargetDetails(String property)
 	{
-		KnowledgeSlot aux;
+		KnowledgeSlot aux = null;
 		if(this._target != null)
 		{
-			aux = _memory.getSemanticMemory().GetObjectDetails(_target, property);
-			if(aux != null)
-			{
+			aux = _memory.getSemanticMemory().GetObjectProperty(_target, property);
+			if (aux != null)
 				return aux.getValue();
-			}
 		}
-		return null;
+		return aux;
 	}
 	
 	public Object getObjectDetails(String property)
 	{
-		KnowledgeSlot aux;
+		KnowledgeSlot aux = null;
 		if(this._object != null)
 		{
-			aux = _memory.getSemanticMemory().GetObjectDetails(_object, property);;
-			if(aux != null)
-			{
+			aux = _memory.getSemanticMemory().GetObjectProperty(_object, property);
+			if (aux != null)
 				return aux.getValue();
-			}
 		}
-		return null;
+		return aux;
 	}
 	
 	public BaseEmotion getEmotion()

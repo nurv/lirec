@@ -36,6 +36,8 @@ import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.ListIterator;
 
 import org.znerd.xmlenc.LineBreak;
 import org.znerd.xmlenc.XMLOutputter;
@@ -72,10 +74,36 @@ public class MemoryWriter implements Serializable{
 			_writer = new FileWriter(file); // new BufferedWriter(new FileWriter(file));
 			//_writer = new OutputStreamWriter(System.out, encoding);
 		    _outputter = new XMLOutputter(_writer, encoding);
-			_outputter.startTag("EpisodicMemory");
-			_outputter.setLineBreak(LineBreak.DOS);
+		    
+		    _outputter.startTag("Memory");	
+		    _outputter.setLineBreak(LineBreak.DOS);
 			_outputter.setIndentation("   ");
 			
+			// SemanticMemory 
+			_outputter.startTag("SemanticMemory");	
+			_outputter.startTag("KnowledgeBase");
+			for (KnowledgeSlot ks: _memory.getSemanticMemory().GetKnowledgeBaseFacts())
+			{
+				_outputter.startTag("KBSlot");
+				knowledgeSlottoXML(ks);
+				_outputter.endTag();
+			}			
+			_outputter.endTag(); //KnowledgeBase
+			
+			// WorkingMemory
+			_outputter.startTag("WorkingMemory");
+			for (KnowledgeSlot ks: _memory.getSemanticMemory().GetFactList())
+			{
+				_outputter.startTag("WMSlot");
+				knowledgeSlottoXML(ks);
+				_outputter.endTag();
+			}	
+			
+			_outputter.endTag(); // WorkingMemory
+			_outputter.endTag(); //SemanticMemory
+			
+			// EpisodicMemory
+			_outputter.startTag("EpisodicMemory");
 			// AutobiographicalMemory entries
 			_outputter.startTag("AutobiographicalMemory");			
 			for (MemoryEpisode me: _memory.getEpisodicMemory().GetAllEpisodes())
@@ -117,6 +145,8 @@ public class MemoryWriter implements Serializable{
 			}
 			_outputter.endTag(); //STEpisodicMemory			
 			_outputter.endTag(); //EpisodicMemory
+			
+			_outputter.endTag(); //Memory
 			_outputter.endDocument(); 
 		    _outputter.getWriter().flush();
 		}
@@ -210,6 +240,31 @@ public class MemoryWriter implements Serializable{
 			_outputter.attribute("realTime", Long.toString(ad.getTime().getRealTime()));
 			_outputter.attribute("eventSequence", Integer.toString(ad.getTime().getEventSequence()));
 			_outputter.endTag();	//EventTime
+		}
+		catch(IOException e)
+		{
+			e.printStackTrace();
+		}
+	}
+	
+	private void knowledgeSlottoXML(KnowledgeSlot ks)
+	{
+		try {
+			if(ks.getName() != null)
+				_outputter.attribute("name", ks.getName());
+			if(ks.getValue() != null)
+				_outputter.attribute("value", ks.getValue().toString());
+			if(ks.getKeyIterator() != null)
+			{
+				Iterator<String> it = ks.getKeyIterator();
+				while (it.hasNext()) {
+					KnowledgeSlot cks = ks.get((String) it.next());
+					_outputter.startTag("Child");
+					_outputter.attribute("name", cks.getName());
+					_outputter.attribute("value", cks.getValue().toString());
+					_outputter.endTag();
+				}
+			}
 		}
 		catch(IOException e)
 		{

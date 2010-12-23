@@ -64,8 +64,7 @@ public class EpisodicMemory implements Serializable {
 	private String _previousLocation; 
 	private ShortTermEpisodicMemory _stm;
 	private AutobiographicalMemory _am;
-	private boolean _newData;
-	
+	private boolean _newData;	
 	
 	private ArrayList<ActionDetail> _newRecords;	
 	
@@ -344,5 +343,21 @@ public class EpisodicMemory implements Serializable {
 		emStr += _stm.toXML();
 		emStr += "</EpisodeMemory>";
 		return emStr;
+	}
+	
+	/*
+	 * Called during loading
+	 */
+	public void putAutobiographicalMemory(AutobiographicalMemory am)
+	{
+		_am = am;
+	}
+	
+	/*
+	 * Called during loading
+	 */
+	public void putSTEpisodicMemory(ShortTermEpisodicMemory stem)
+	{
+		_stm = stem;
 	}
 }

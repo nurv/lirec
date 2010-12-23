@@ -135,8 +135,8 @@ public class WorkingMemory implements Serializable {
 	    return _changeList;
 	}
     
-    public ListIterator<KnowledgeSlot> GetFactList() {
-	    return _factList.listIterator();
+    public ArrayList<KnowledgeSlot> GetFactList() {
+	    return _factList;
 	}
 
 	public ArrayList<KnowledgeSlot> GetNewFacts()
@@ -146,6 +146,13 @@ public class WorkingMemory implements Serializable {
     	return aux;
     }
 
+	 /*
+	  * Called during loading
+	  */
+	public void putFact(KnowledgeSlot ks)
+	{
+		_factList.add(ks);
+	}
 
 	/**
      * Gets a value that indicates whether new Knowledge has been added to the WorkingMemory since
@@ -344,7 +351,13 @@ public class WorkingMemory implements Serializable {
 			return bindingSets;
 	}
 	
-	public KnowledgeSlot GetObjectDetails(String objectName, String property)
+	public KnowledgeSlot GetObjectDetails(String objectName)
+	{
+		return _wM.get(objectName);
+	}
+	
+	// Retrieving an object property value
+	public KnowledgeSlot GetObjectProperty(String objectName, String property)
 	{
 		return _wM.get(objectName).get(property);
 	}

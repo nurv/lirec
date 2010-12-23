@@ -76,7 +76,11 @@ public class ShortTermEpisodicMemory implements Serializable {
 		_details.add(action);
 	}
 	
-	public void AddActionDetail(ActionDetail ad)
+	/*
+	 * Meiyii
+	 * Called only during loading - Add event to the details list without further processing 
+	 */
+	public void putActionDetail(ActionDetail ad)
 	{
 		_details.add(ad);
 	}

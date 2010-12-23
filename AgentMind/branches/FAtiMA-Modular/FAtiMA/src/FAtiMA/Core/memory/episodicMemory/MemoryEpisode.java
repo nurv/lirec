@@ -76,6 +76,10 @@ public class MemoryEpisode implements Serializable {
 		this._numberOfDominantActions = 3;
 	}
 	
+	/*
+	 * Meiyii 22/12/10
+	 * Called during loading
+	 */
 	public MemoryEpisode(ArrayList<String> location, ArrayList<String> people, ArrayList<String> objects)
 	{
 		this._location = location;
@@ -133,9 +137,19 @@ public class MemoryEpisode implements Serializable {
 		else return (ActionDetail) this._details.get(actionID);
 	}
 	
+	/*
+	 * Meiyii
+	 * Called only during loading - Add event to the details list without further processing 
+	 */
+	public void putActionDetail(ActionDetail ad)
+	{		
+		_details.add(ad);
+	}
+	
 	public void AddActionDetail(ActionDetail ad)
 	{		
 		_details.add(ad);
+		UpdateMemoryFields(ad);
 	}
 	
 	public void UpdateMemoryFields(ActionDetail ad)
@@ -490,13 +504,13 @@ public class MemoryEpisode implements Serializable {
 		}
 	}
 	
-	public void AddObject(String objectName)
+	public void AddObject(String object)
 	{
-		if(objectName != null)
+		if(object != null)
 		{
-			if(!this._objects.contains(objectName))
+			if(!this._objects.contains(object))
 			{
-				this._objects.add(objectName);
+				this._objects.add(object);
 			}
 		}
 	}

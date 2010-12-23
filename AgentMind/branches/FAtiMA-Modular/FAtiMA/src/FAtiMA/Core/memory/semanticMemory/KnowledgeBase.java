@@ -162,8 +162,16 @@ public class KnowledgeBase implements Serializable {
     	return this._kB.CountElements();
     }
 
-	 public ListIterator<KnowledgeSlot> GetFactList() {
-	    return _factList.listIterator();
+	 public ArrayList<KnowledgeSlot> GetFactList() {
+	    return _factList;
+	}
+	 
+	 /*
+	  * Called during loading
+	  */
+	public void putFact(KnowledgeSlot ks)
+	{
+		_factList.add(ks);
 	}
 	
 	/**
@@ -291,11 +299,16 @@ public class KnowledgeBase implements Serializable {
 			return bindingSets;
 	}
 	
-	public KnowledgeSlot GetObjectDetails(String objectName, String property)
+	public KnowledgeSlot GetObjectDetails(String objectName)
+	{
+		return _kB.get(objectName);
+	}
+
+	// Meiyii
+	public KnowledgeSlot GetObjectProperty(String objectName, String property)
 	{
 		return _kB.get(objectName).get(property);
 	}
-
 	
 	private ArrayList<SubstitutionSet> MatchLiteralList(ArrayList<Symbol> literals, int index, KnowledgeSlot ks) {
 		Symbol l;

@@ -38,10 +38,14 @@ import FAtiMA.Core.deliberativeLayer.goals.Goal;
 import FAtiMA.Core.emotionalState.BaseEmotion;
 import FAtiMA.Core.memory.Memory;
 import FAtiMA.Core.memory.episodicMemory.ActionDetail;
+import FAtiMA.Core.memory.episodicMemory.AutobiographicalMemory;
+import FAtiMA.Core.memory.episodicMemory.EpisodicMemory;
 import FAtiMA.Core.memory.episodicMemory.MemoryEpisode;
 import FAtiMA.Core.memory.episodicMemory.ShortTermEpisodicMemory;
 import FAtiMA.Core.memory.episodicMemory.Time;
+import FAtiMA.Core.memory.semanticMemory.KnowledgeBase;
 import FAtiMA.Core.memory.semanticMemory.KnowledgeSlot;
+import FAtiMA.Core.memory.semanticMemory.WorkingMemory;
 import FAtiMA.Core.util.Constants;
 import FAtiMA.Core.util.enumerables.EventType;
 import FAtiMA.Core.wellFormedNames.Name;
@@ -53,18 +57,69 @@ import FAtiMA.Core.sensorEffector.Parameter;
 public class MemoryLoaderHandler extends ReflectXMLHandler {
 	
 	private Memory _memory;
+	private KnowledgeBase _currentKB;
+	private WorkingMemory _currentWM;
+	private KnowledgeSlot _currentKS;
+	private AutobiographicalMemory _currentAM;
 	private MemoryEpisode _currentME;
 	private ActionDetail _currentAD;
 	private ArrayList<Parameter> _currentParameters;
 	private BaseEmotion _currentEmotion;
 	private Event _currentCause;
-	private ArrayList<Parameter> _currentEParameters;
 	private ShortTermEpisodicMemory _currentSTEM;
 	
 	
-	public MemoryLoaderHandler() {
+	public MemoryLoaderHandler(Memory memory) {
+		_memory = memory;
+
+		_currentKB = new KnowledgeBase();
+		_currentWM = new WorkingMemory();
+		_currentAM = new AutobiographicalMemory();
 		_currentSTEM = new ShortTermEpisodicMemory();
-	     //_memory = new Memory();
+		
+		_memory.getSemanticMemory().putKnowledgeBase(_currentKB);
+		_memory.getSemanticMemory().putWorkingMemory(_currentWM);
+		_memory.getEpisodicMemory().putAutobiographicalMemory(_currentAM);
+		_memory.getEpisodicMemory().putSTEpisodicMemory(_currentSTEM);
+	}
+	
+	public void KBSlot(Attributes attributes)
+	{
+		String name = attributes.getValue("name");
+		Object value = attributes.getValue("value");
+		
+		_currentKS = new KnowledgeSlot(name);
+		_currentKS.setValue(value);
+		_currentKB.putFact(_currentKS);
+		
+		System.out.println("KBSlot");
+	    System.out.println(name + " " + value);
+	}	
+	
+	public void Child(Attributes attributes)
+	{
+		String name = attributes.getValue("name");
+		Object value = attributes.getValue("value");
+		KnowledgeSlot ks = new KnowledgeSlot(name);
+		ks.setValue(value);
+		
+		System.out.println("Child");
+	    System.out.println(name + " " + value);
+	    
+		_currentKS.put(name, ks);
+	}
+	
+	public void WMSlot(Attributes attributes)
+	{
+		String name = attributes.getValue("name");
+		Object value = attributes.getValue("value");
+		
+		_currentKS = new KnowledgeSlot(name);
+		_currentKS.setValue(value);
+		_currentWM.putFact(_currentKS);
+		
+		System.out.println("WMSlot");
+	    System.out.println(name + " " + value);
 	}
 	
 	public void Episode(Attributes attributes) {
@@ -76,8 +131,7 @@ public class MemoryLoaderHandler extends ReflectXMLHandler {
 	   	ArrayList<String> object = extractItems(objects);
 	   
 	    _currentME = new MemoryEpisode(location, people, object);
-	    
-	    //_memory.getEpisodicMemory().getAM().putEpisode(me);
+	    _currentAM.putEpisode(_currentME);
 	}
 	
 	public void EpisodeTime(Attributes attributes) {
@@ -104,8 +158,8 @@ public class MemoryLoaderHandler extends ReflectXMLHandler {
 	    float desirability = Float.parseFloat(attributes.getValue("desirability"));
 	    float praiseworthiness = Float.parseFloat(attributes.getValue("praiseworthiness"));	
 	    
-	    _currentAD = new ActionDetail(eventID, subject, eType, event, status, target, location, desirability, praiseworthiness);
-	    _currentME.AddActionDetail(_currentAD);     
+	    _currentAD = new ActionDetail(_memory, eventID, subject, eType, event, status, target, location, desirability, praiseworthiness);
+	    _currentME.putActionDetail(_currentAD);     
 	    _currentParameters = new ArrayList<Parameter>();
 	    _currentAD.setParameters(_currentParameters);
 	    
@@ -172,6 +226,7 @@ public class MemoryLoaderHandler extends ReflectXMLHandler {
 	    int eventSequence = Integer.parseInt(attributes.getValue("eventSequence"));
 	    Time time = new Time(narrativeTime, realTime, eventSequence);	    
 
+	    _currentAD.setParameters(_currentParameters);
 	    _currentAD.setTime(time);                
 	    
 	    System.out.println("EventTime");
@@ -189,10 +244,9 @@ public class MemoryLoaderHandler extends ReflectXMLHandler {
 	    float desirability = Float.parseFloat(attributes.getValue("desirability"));
 	    float praiseworthiness = Float.parseFloat(attributes.getValue("praiseworthiness"));	    
 	  
-	    _currentAD = new ActionDetail(eventID, subject, eType, event, status, target, location, desirability, praiseworthiness);
-	    _currentSTEM.AddActionDetail(_currentAD);     
+	    _currentAD = new ActionDetail(_memory, eventID, subject, eType, event, status, target, location, desirability, praiseworthiness);
+	    _currentSTEM.putActionDetail(_currentAD);     
 	    _currentParameters = new ArrayList<Parameter>();
-	    _currentAD.setParameters(_currentParameters);
 	    
 	    System.out.println("STEvent");
 	    System.out.println(eventID + " " + subject + " " + eType + " " + event 
@@ -213,7 +267,8 @@ public class MemoryLoaderHandler extends ReflectXMLHandler {
 			while(st.hasMoreTokens())
 			{
 				String item = st.nextToken();
-				items.add(item);
+				if (!items.contains(item.trim()))
+					items.add(item.trim());
 				System.out.println("Item " + item);
 			}
 		}

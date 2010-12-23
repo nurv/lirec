@@ -123,7 +123,6 @@ public class AutobiographicalMemory implements Serializable {
 			{
 				event = this._memoryEvents.get(i);
 				event.AddActionDetail(action);		
-				event.UpdateMemoryFields(action);
 				if (!event.getLocation().equals(action.getLocation()))
 				{
 					event.AddLocation(action.getLocation());

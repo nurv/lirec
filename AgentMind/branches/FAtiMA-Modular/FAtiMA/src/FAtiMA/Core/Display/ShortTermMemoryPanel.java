@@ -139,7 +139,7 @@ public class ShortTermMemoryPanel extends AgentDisplayPanel {
         _memoryRecords.add(_stmRecordDisplay.getSTMRecordPanel());   	
      
         
-        ListIterator<KnowledgeSlot> li = sm.GetFactList();
+        ListIterator<KnowledgeSlot> li = sm.GetFactList().listIterator();
         
         KnowledgeSlot slot;
         KnowledgeFactDisplay kDisplay;
@@ -162,7 +162,7 @@ public class ShortTermMemoryPanel extends AgentDisplayPanel {
             }
         }*/
         
-        li = sm.GetFactList();
+        li = sm.GetFactList().listIterator();
         ArrayList<KnowledgeSlot> changeList = sm.GetChangeList();
         _workingFactsSubPanel1.removeAll();
         _workingFactsSubPanel2.removeAll();
