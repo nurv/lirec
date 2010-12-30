@@ -199,28 +199,36 @@ Image Image::GRAY2RGB()
 {
 	IplImage *newimage = cvCreateImage(cvGetSize(m_Image), 8, 3);
     cvCvtColor(m_Image, newimage, CV_GRAY2RGB);
-	return Image(newimage);
+	Image ret(newimage);
+    cvReleaseImage(&newimage);
+    return ret;
 }
 
 Image Image::RGB2GRAY()
 {
 	IplImage *newimage = cvCreateImage(cvGetSize(m_Image), 8, 1);
     cvCvtColor(m_Image, newimage, CV_RGB2GRAY);
-	return Image(newimage);
+	Image ret(newimage);
+    cvReleaseImage(&newimage);
+    return ret;
 }
 
 Image Image::BayerGB2RGB()
 {
 	IplImage *newimage = cvCreateImage(cvGetSize(m_Image), 8, 3);
     cvCvtColor(m_Image, newimage, CV_BayerGB2RGB);
-	return Image(newimage);
+	Image ret(newimage);
+    cvReleaseImage(&newimage);
+    return ret;
 }
 
 Image Image::Scale(int w, int h)
 {
 	IplImage *newimage = cvCreateImage(cvSize(w,h), m_Image->depth, m_Image->nChannels);
 	cvResize( m_Image, newimage, CV_INTER_LINEAR );
-	return Image(newimage);
+	Image ret(newimage);
+    cvReleaseImage(&newimage);
+    return ret;
 }
 
 void Image::Blit(const Image &image, int px, int py)
