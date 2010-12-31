@@ -5,7 +5,8 @@
    ring.middleware.file
    oak.world
    oak.remote-agent
-   oak.io)
+   oak.io
+   oak.island)
   (:import java.util.concurrent.Executors)
   (:require [compojure.route :as route]
             [org.danlarkin.json :as json])) 
@@ -22,6 +23,8 @@
 ;(world-crank (deref myworld))
 
 (defroutes main-routes
+  (GET "/spirit-islands" []
+       (read-islands "./islands"))     
   (GET "/agent-info" []
        (json/encode-to-str (map
                             (fn [a]

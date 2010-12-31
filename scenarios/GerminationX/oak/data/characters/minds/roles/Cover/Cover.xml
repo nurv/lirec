@@ -8,10 +8,10 @@
 		<EmotionalThreshold emotion="Relief" threshold="2" decay="5"/>
 		<EmotionalThreshold emotion="Fears-Confirmed" threshold="5" decay="8"/>
 		<EmotionalThreshold emotion="Disappointment" threshold="2" decay="2"/>
-		<EmotionalThreshold emotion="Joy" threshold="3" decay="5"/>
+		<EmotionalThreshold emotion="Joy" threshold="1" decay="5"/>
 		<EmotionalThreshold emotion="Distress" threshold="3" decay="2"/>
-		<EmotionalThreshold emotion="Happy-For" threshold="5" decay="8"/>
-		<EmotionalThreshold emotion="Pitty" threshold="5" decay="8"/>
+		<EmotionalThreshold emotion="Happy-For" threshold="1" decay="8"/>
+		<EmotionalThreshold emotion="Pitty" threshold="1" decay="8"/>
 		<EmotionalThreshold emotion="Resentment" threshold="2" decay="2"/>
 		<EmotionalThreshold emotion="Gloating" threshold="1" decay="8"/>
 		<EmotionalThreshold emotion="Pride" threshold="1" decay="8"/>
@@ -34,7 +34,7 @@
 	</Goals>
 	
 	<InterpersonalRelations>
-		<Relation target="Vertical" like="1" respect="1"/>
+		<Relation target="Vertical" like="10" respect="10"/>
 		<Relation target="Canopy" like="-2" respect="1"/>
 	</InterpersonalRelations>
 	
