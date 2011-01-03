@@ -16,25 +16,39 @@
 package truffle.flash;
 
 import flash.display.Sprite;
+import flash.display.Bitmap;
 import flash.display.BitmapData;
 import flash.events.MouseEvent;
+import flash.events.Event;
+import flash.events.IOErrorEvent;
 import flash.geom.Matrix;
 import flash.geom.Point;
-
-import truffle.Vec3;
+import flash.net.URLRequest;
+import flash.display.Loader;
+import truffle.Vec2;
 import truffle.interfaces.Sprite;
 import truffle.interfaces.World;
 import truffle.interfaces.TextureDesc;
 
 class FlashSprite implements truffle.interfaces.Sprite, extends flash.display.Sprite
 {	
-    public var ScreenPos:Vec3;
+    public var Pos:Vec2;
+    var Angle:Float;
+    var MyScale:Vec2;
+    var Transform:Matrix;
+    var Width:Int;
+    var Height:Int;
 
-	public function new(pos:Vec3, t:TextureDesc) 
+	public function new(pos:Vec2, t:TextureDesc) 
 	{
 		super();
-        ScreenPos=pos;
         ChangeBitmap(t);
+        Pos=pos;
+        Angle=0;
+        MyScale = new Vec2(1,1);
+        Transform = new Matrix();
+        Width=64;
+        Height=112;
 	}
 
 	public function MouseDown(f:Dynamic -> Void=null)
@@ -50,34 +64,61 @@ class FlashSprite implements truffle.interfaces.Sprite, extends flash.display.Sp
 		graphics.endFill();
 	}
 
-	public function Scale(size:Float)
-	{
-		var m:Matrix = transform.matrix;
-		var x=32;
-		var y=112;
-		var p:Point = m.transformPoint(new Point(x, y));
-		m.translate(-p.x, -p.y);
-		m.scale(size,size);
-	    m.translate(p.x, p.y);
-		transform.matrix = m;
-	}
-	
-	public function Rotate(angle:Float)
-	{
-		var m:Matrix = transform.matrix;
-		var x=32;
-		var y=112;
-		var p:Point = m.transformPoint(new Point(x, y));
-		m.translate(-p.x, -p.y);
-		m.rotate(angle*(Math.PI/180));
-		m.translate(p.x, p.y);
-		transform.matrix = m;
-	}
+    public function LoadFromURL(url:String)
+    {
+        var loader:Loader = new Loader();
+        loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, 
+                                                  function(e:IOErrorEvent):Void 
+                                                  {  
+                                                      trace(e.text+' '+url);
+                                                  });
 
-	public function Update(frame:Int, world:World)
+        loader.contentLoaderInfo.addEventListener(Event.COMPLETE, ImageLoaded);
+        loader.load(new URLRequest(url)); 
+    }
+    
+    function ImageLoaded(e:Event)
+    {        
+        e.target.content.smoothing = true;
+        var dupBitmap:Bitmap = new Bitmap(cast(e.target.content,Bitmap).bitmapData);
+        Width=cast(dupBitmap.width,Int);
+        Height=cast(dupBitmap.height,Int);
+		graphics.clear();
+		graphics.beginBitmapFill(dupBitmap.bitmapData);
+        graphics.drawRect(0,0,dupBitmap.width,dupBitmap.height);
+		graphics.endFill();   
+    }
+
+    /*public function ScreenPos() 
+    { 
+        var p:Point = Transform.transformPoint(new Point(0, 0)); 
+        return new Vec3(p.x,p.y,0);
+    }*/
+
+    public function SetPos(s:Vec2) { Pos=s; }
+	public function SetScale(s:Vec2) { MyScale=s; }
+	public function SetRotate(angle:Float) { Angle=angle; }
+    public function GetTransform() : Dynamic { return Transform; }
+
+	public function Update(frame:Int, world:World, tx:Dynamic)
 	{
-		x = ScreenPos.x;
-		y = ScreenPos.y;
+        Transform.identity();
+
+		var cx=Width/2;
+		var cy=Height/2;
+
+        Transform.translate(-cx, -cy);
+		Transform.rotate(Angle*(Math.PI/180));
+        Transform.scale(MyScale.x,MyScale.y);
+        Transform.translate(cx, cy);
+        Transform.translate(Pos.x,Pos.y);
+		
+        if (tx!=null)
+		{
+            Transform.concat(tx);
+        }
+		
+        transform.matrix = Transform;
 	}
 
 }

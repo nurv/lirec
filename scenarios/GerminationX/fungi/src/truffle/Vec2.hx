@@ -14,39 +14,45 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package truffle;
-import truffle.Truffle;
 
-class Entity
+class Vec2 
 {
-    public var LogicalPos:Vec3;
-    public var Depth:Float;
-    public var Pos:Vec3;
-		
-	public function new(w:World,pos:Vec3) 
+	public var x:Float;
+	public var y:Float;
+	
+	public function new(px:Float, py:Float)
 	{
-        LogicalPos=pos;
-        Pos = Pos2PixelPos(LogicalPos);
-        Depth = Pos.z;
-        w.Add(this);
+		x=px; y=py;
+	}
+	
+	public function Add(other:Vec2) : Vec2
+	{
+		return new Vec2(x+other.x,y+other.y);
 	}
 
-	public function Pos2PixelPos(pos:Vec3) : Vec3
+	public function Sub(other:Vec2) : Vec2
 	{
-		// do the nasty iso conversion
-		// this is actually an orthogonal projection matrix! (I think)
-		return new Vec3(250+(pos.x*36-pos.y*26),
-                        50+(pos.y*18+pos.x*9)-(pos.z*37),
-                        pos.x*0.51 + pos.y*0.71 + pos.z*0.47);             
-	}
-		
-	public function Update(frame:Int, world:truffle.interfaces.World)
-	{
-        Pos = Pos2PixelPos(LogicalPos);
-        Depth = Pos.z;
+		return new Vec2(x-other.x,y-other.y);
 	}
 
-    public function GetRoot() : Dynamic
-    {
-        return null;
-    }
+	public function Div(v:Float) : Vec2
+	{
+		return new Vec2(x/v,y/v);
+	}
+
+	public function Mul(v:Float) : Vec2
+	{
+		return new Vec2(x*v,y*v);
+	}
+
+	public function Mag() : Float
+	{
+		return Math.sqrt(x*x+y*y);
+	}
+	
+	public function Lerp(other:Vec2,t:Float) : Vec2
+	{
+		return new Vec2(x*(1-t) + other.x*t,
+						y*(1-t) + other.y*t);
+	}
 }

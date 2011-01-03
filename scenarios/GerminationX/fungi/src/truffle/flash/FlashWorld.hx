@@ -16,8 +16,9 @@
 package truffle.flash;
 
 import flash.display.MovieClip;
-
+import flash.display.DisplayObject;
 import truffle.interfaces.World;
+import truffle.interfaces.Sprite;
 import truffle.Entity;
 
 class FlashWorld implements World, extends MovieClip 
@@ -33,28 +34,35 @@ class FlashWorld implements World, extends MovieClip
     public function Add(e:Entity)
     {
         Scene.push(e);
-        addChild(e);
     }
 
     public function Remove(e:Entity)
     {
         Scene.remove(e);
-        removeChild(e);
     }
-    
+
+    public function AddSprite(s:Sprite)
+    {
+        addChild(cast(s,FlashSprite));
+    }
+
+    public function RemoveSprite(s:Sprite)
+    {
+        removeChild(cast(s,FlashSprite));
+    }
 
     public function SortScene()
     {        
         Scene.sort(function(a:Entity, b:Entity)
-                   {        
-                       if (a.ScreenPos.z<b.ScreenPos.z) return -1;
+                   {                       
+                       if (a.Depth<b.Depth) return -1;
                        else return 1;
                    });
 
         var i=0;
         for (e in Scene)
         {
-            setChildIndex(e,i);
+            setChildIndex(e.GetRoot(),i);
             i++;
         }
     }

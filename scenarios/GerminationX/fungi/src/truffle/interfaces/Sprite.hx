@@ -15,16 +15,22 @@
 
 package truffle.interfaces;
 
-import truffle.Vec3;
+import truffle.Vec2;
 import truffle.interfaces.TextureDesc;
 
 interface Sprite
 {
-	public var ScreenPos:Vec3;		
+    public var Pos:Vec2;
 	public function MouseDown(f:Dynamic -> Void=null) : Void;
 	public function ChangeBitmap(t:TextureDesc) : Void;
-	public function Scale(size:Float) : Void;
-	public function Rotate(angle:Float) : Void;	
-	public function Update(frame:Int, world:World) : Void;
+
+    public function SetPos(s:Vec2) : Void;
+	public function SetScale(s:Vec2) : Void;
+	public function SetRotate(angle:Float) : Void;	
+
+	public function Update(frame:Int, world:World, tx:Dynamic) : Void;
+
+    public function GetTransform() : Dynamic;
+    public function LoadFromURL(url:String) : Void;
 }
 

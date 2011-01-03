@@ -21,6 +21,8 @@ interface World
 {
     public function Add(e:Entity) : Void;
     public function Remove(e:Entity) : Void;
+    public function AddSprite(s:Sprite) : Void;
+    public function RemoveSprite(s:Sprite) : Void;
     public function SortScene() : Void;
     public function Update(time:Int) : Void;
     public function Handle(event:Int) : Void;

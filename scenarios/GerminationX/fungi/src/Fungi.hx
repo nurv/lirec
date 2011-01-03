@@ -180,6 +180,11 @@ class PlayerEntity extends Entity
             world.AddServerPlant(new Vec3(pos.x,pos.y,1),3);
         }
 
+        if (e==80)
+        {
+            world.WorldClient.Call("perceive",function(d){});
+        }
+
 		var oldworldpos=new Vec3(world.WorldPos.x,world.WorldPos.y,world.WorldPos.z);
 
 		if (pos.x<0)

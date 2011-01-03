@@ -16,37 +16,26 @@
 package truffle;
 import truffle.Truffle;
 
-class Entity
+class SpriteEntity extends Entity
 {
-    public var LogicalPos:Vec3;
-    public var Depth:Float;
-    public var Pos:Vec3;
+    public var Spr:Sprite;
 		
-	public function new(w:World,pos:Vec3) 
+	public function new(world:World, pos:Vec3, t:TextureDesc) 
 	{
-        LogicalPos=pos;
-        Pos = Pos2PixelPos(LogicalPos);
-        Depth = Pos.z;
-        w.Add(this);
-	}
-
-	public function Pos2PixelPos(pos:Vec3) : Vec3
-	{
-		// do the nasty iso conversion
-		// this is actually an orthogonal projection matrix! (I think)
-		return new Vec3(250+(pos.x*36-pos.y*26),
-                        50+(pos.y*18+pos.x*9)-(pos.z*37),
-                        pos.x*0.51 + pos.y*0.71 + pos.z*0.47);             
+		super(world,pos);
+        Spr = new Sprite(new Vec2(Pos.x,Pos.y),t);
+        world.AddSprite(Spr);
 	}
 		
-	public function Update(frame:Int, world:truffle.interfaces.World)
+	override public function Update(frame:Int, world:truffle.interfaces.World)
 	{
-        Pos = Pos2PixelPos(LogicalPos);
-        Depth = Pos.z;
+        super.Update(frame,world);
+        Spr.SetPos(new Vec2(Pos.x,Pos.y));
+        Spr.Update(frame,world,null);
 	}
 
-    public function GetRoot() : Dynamic
+    override public function GetRoot() : Dynamic
     {
-        return null;
+        return Spr;
     }
 }

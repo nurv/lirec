@@ -50,6 +50,8 @@ class GhostVertical extends BitmapData { public function new() { super(0,0); } }
 class GhostVerticalHappy extends BitmapData { public function new() { super(0,0); } }
 class GhostVerticalSad extends BitmapData { public function new() { super(0,0); } }
 
+class Test extends BitmapData { public function new() { super(0,0); } }
+
 class Resources
 {
     public static function Get(name:String) : TextureDesc
@@ -87,6 +89,7 @@ class Resources
         case "ghost-vertical": tex.data = new GhostVertical();
         case "ghost-vertical-happy": tex.data = new GhostVerticalHappy();
         case "ghost-vertical-sad": tex.data = new GhostVerticalSad();
+        case "test": tex.data = new Test();
         }
 
         return tex;
