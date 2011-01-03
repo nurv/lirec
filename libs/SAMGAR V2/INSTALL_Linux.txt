@@ -4,7 +4,7 @@ This document describes installation of SAMGAR V2 on Linux system (tested on Ubu
 INSTALL
 ------------------------------------------------------------------------------------
 
-0. Start from creating a common directory for installation porpoise
+0. Start from creating a common directory for installation purpose
 
 mkdir SRC_DIR
 cd SRC_DIR
@@ -41,7 +41,7 @@ cp SAMGAR_V2/GUI/*.h yarp-2.3.1/src/yarpserver/src/
 
 5. Modify CMakeList.txt file responsible for compiling yarpserver
 
-gedit yarp-2.3.1/src/yarpserver/CMakeList.txt
+gedit yarp-2.3.1/src/yarpserver/CMakeLists.txt
 
 After line 
 
@@ -116,7 +116,7 @@ yarpserver3
 
 and then the example module
 
-SAMGAR_V2/Module/build/SamExample
+SAMGAR_V2/Module/build/SamExamples
 
 Aster starting SamExample in yarpserver3 GUI appropriate elements should appear. You can connect modules ports by clicking 
 left mouse button on the desired ports.
