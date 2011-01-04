@@ -1,0 +1,446 @@
+Samgar2Player Module Protocol
+
+This file describes the protocol of data exchange betwean samgar modules and Samgar2Player module.
+
+Samgar2Player protocol implements following devices:
+* Position2d
+* Localize
+* Planner
+* Laser
+* Map
+
+Devices Identifiying constants:
+
+PlayerProxy_TYPE: 
+	Position2d = 0 
+	Localize   = 1
+	Planner	   = 2
+	Laser	   = 3
+	Map	   = 4
+
+PlayerProxy_FIELDS:
+	TYPE	= 0
+	CMD	= 1
+
+PlayerProxy_CMD:
+	SET_REQ	= 0
+
+PlayerProxy_DATA:
+	Error 	= 0
+	Ack 	= 1
+
+
+enum PlayerProxy_Localize_CMD {Localize_SET_POSE=1};
+enum PlayerProxy_Planner_CMD {Planner_SET_GOAL=1, Planner_SET_ENABLE};
+enum PlayerProxy_Laser_CMD {Laser_SET_CONFIG=1};
+
+
+enum PlayerProxy_Localize_DATA {Localize_MAP_INFO=2, Localize_HYPOTHS};
+enum PlayerProxy_Planner_DATA {Planner_GOAL=2, Planner_POSE, Planner_CURR_WAYPOINT, Planner_PATH, Planner_WAYPOINTS};
+enum PlayerProxy_Laser_DATA {Laser_CONFIG=2, Laser_SIZE, Laser_POSE, Laser_ROBOT_POSE, Laser_POINTS, Laser_RANGES};
+enum PlayerProxy_Map_DATA   {Map_MAP=2};
+
+
+The following data structures are defined:
+
+bool:
+	false	= 0
+	true  	= 1
+
+point_type:
++------++-------+-------+
+| desc || x	| y	|
++------++-------+-------+
+| type ||double	|double	|
++------++-------+-------+
+| info || m	| m	|
++------++-------+-------+
+
+coord_type:
++------++---------------+-------+
+| desc || point		| ang	|
++------++---------------+-------+
+| type || point_type	|double	|
++------++---------------+-------+
+| info || 2 fields	| rad	|
++------++---------------+-------+
+
+Commands to given Player devices are send in the following frame:
+
+[ PlayerProxy_TYPE ][ PlayerProxy_CMD PlayerProxy_PARAMS ]
+
+PlayerProxy_CMD can be exteded for particular devices. In such a case instead of PlayerProxy_CMD
+it is possible to apply PlayerProxy_(PlayerProxy_TYPE)_CMD.
+
+Results from Player devices are obtained in the following frame:
+
+[ PlayerProxy_TYPE ][ PlayerProxy_DATA PlayerProxy_PARAMS ]
+
+PlayerProxy_DATA can be exteded for particular devices. In such a case instead of PlayerProxy_DATA
+it is possible to apply PlayerProxy_(PlayerProxy_TYPE)_DATA.
+
+##############
+# Position2d #
+##############
+
+PlayerProxy_Position2d_CMD:
+	SET_REQ			= 0
+	Position2d_SET_SPEED	= 1
+	Position2d_SET_GOAL	= 2
+	Position2d_SET_ODOM	= 3
+	Position2d_SET_MOTOR	= 4
+
+PlayerProxy_Position2d_DATA:
+	Error 			= 0
+	Ack 			= 1
+	Position2d_SPEED	= 2
+	Position2d_POSITION	= 3
+	Position2d_SIZE		= 4
+	Position2d_STALL	= 5
+
+Below is a list of posibble PlayerPoxy_Position2d_CMD frames:
+
++------++-----------------------+-------+-------+
+| desc || command_id		| trans	| ang	|
++------++-----------------------+-------+-------+
+| type || Position2d_SET_SPEED	|double	|double |
++------++-----------------------+-------+-------+
+| info || 			| m/s	| rad/s |
++------++-----------------------+-------+-------+
+
++------++-----------------------+---------------+
+| desc || command_id		| goal	  	|
++------++-----------------------+---------------+
+| type || Position2d_SET_GOAL	| coord_type	|
++------++-----------------------+---------------+
+| info || 			| 		|
++------++-----------------------+---------------+
+
++------++-----------------------+---------------+
+| desc || command_id		| odom	  	|
++------++-----------------------+---------------+
+| type || Position2d_SET_ODOM	| coord_type	|
++------++-----------------------+---------------+
+| info || 			| 		|
++------++-----------------------+---------------+
+
++------++-----------------------+---------------+
+| desc || command_id		| enable  	|
++------++-----------------------+---------------+
+| type || Position2d_SET_MOTORM	| bool		|
++------++-----------------------+---------------+
+| info || 			| 		|
++------++-----------------------+---------------+
+
++------++---------------+-----------------------+-----------------------+-----------------------+-----------------------+
+| desc || command_id	| Position2d_SPEED	| Position2d_POSITION	| Position2d_SIZE	| Position2d_STALL	| 
++------++---------------+-----------------------+-----------------------+-----------------------+-----------------------+
+| type || SET_REQ	| bool			| bool			| bool			| bool			|
++------++---------------+-----------------------+-----------------------+-----------------------+-----------------------+
+| info ||		| 			| 			| 			| 			|
++------++---------------+-----------------------+-----------------------+-----------------------+-----------------------+
+
+Below is a list of posibble PlayerPoxy_Position2d_DATA frames:
+
++------++-----------------------+-------+-------+
+| desc || command_id		| trans	| ang	|
++------++-----------------------+-------+-------+
+| type || Position2d_SPEED	|double	|double |
++------++-----------------------+-------+-------+
+| info || 			| m/s	| rad/s |
++------++-----------------------+-------+-------+
+
++------++-----------------------+---------------+
+| desc || command_id		| goal	  	|
++------++-----------------------+---------------+
+| type || Position2d_POSITION	| coord_type	|
++------++-----------------------+---------------+
+| info || 			| 		|
++------++-----------------------+---------------+
+
++------++-----------------------+-------+-------+
+| desc || command_id		| width	| length|
++------++-----------------------+-------+-------+
+| type || Position2d_SIZE	|double	|double |
++------++-----------------------+-------+-------+
+| info || 			| m	| m	|
++------++-----------------------+-------+-------+
+
++------++-----------------------+---------------+
+| desc || command_id		| stalled  	|
++------++-----------------------+---------------+
+| type || Position2d_STALL	| bool		|
++------++-----------------------+---------------+
+| info || 			| 		|
++------++-----------------------+---------------+
+
+
+###########
+# Lcalize #
+###########
+
+PlayerProxy_Localize_CMD:
+	SET_REQ			= 0
+	Localize_SET_POSE	= 1
+
+PlayerProxy_Localize_DATA:
+	Error 			= 0
+	Ack 			= 1
+	Localize_MAP_INFO	= 2
+	Localize_HYPOTHS	= 3
+
+Below is a list of posibble PlayerPoxy_Localize_CMD frames:
+
++------++-----------------------+---------------+-------+-------+-------+
+| desc || command_id		| goal	  	| cov_x | cov_y |con_ang|
++------++-----------------------+---------------+-------+-------+-------+
+| type || Localize_SET_POSE	| coord_type	|double	|double |double	|
++------++-----------------------+---------------+-------+-------+-------+
+| info || 			| 		|0 to 1	|0 to 1	|0 to 1	|
++------++-----------------------+---------------+-------+-------+-------+
+
++------++---------------+-----------------------+-----------------------+
+| desc || command_id	| Localize_MAP_INFO	| Localize_HYOTHS	|
++------++---------------+-----------------------+-----------------------+
+| type || SET_REQ	| bool			| bool			|
++------++---------------+-----------------------+-----------------------+
+| info ||		| 			| 			|
++------++---------------+-----------------------+-----------------------+
+
+Below is a list of posibble PlayerPoxy_Localize_DATA frames:
+
++------++-----------------------+-------+-------+-------+-------+-------+
+| desc || command_id		|size_x	|size_y	|tile_x	|tile_y	|scale	|
++------++-----------------------+-------+-------+-------+-------+-------+
+| type || Localize_MAP_INFO	|int	|int	|int	|int	|double |
++------++-----------------------+-------+-------+-------+-------+-------+
+| info || 			| 	|	|	|	|	|
++------++-----------------------+-------+-------+-------+-------+-------+
+
++------++-----------------------+-------+---------------+-------+---------------+
+| desc || command_id		| count	| hypot[1]	| 	| hypot[n]	|
++------++-----------------------+-------+---------------+ 	+---------------+
+| type || Localize_HYPOTHS	| int	| hypot_type	| ...	| hypot_type	|
++------++-----------------------+-------+---------------+ 	+---------------+
+| info || 			| 	|		| 	|		|
++------++-----------------------+-------+---------------+-------+---------------+
+
+where hypot_type is a following structure
+
+hypot_type:
++------++---------------+---------------+
+| desc || pypoth_point 	| coefficince	|
++------++---------------+---------------+
+| type || coord_type	| double	|
++------++---------------+---------------+
+| info || 		| 		|
++------++---------------+---------------+
+
+
+###########
+# Planner #
+###########
+
+PlayerProxy_Planner_CMD:
+	SET_REQ			= 0
+	Planner_SET_GOAL	= 1
+	Planner_SET_ENABLE	= 2
+
+PlayerProxy_Planner_DATA:
+	Error 			= 0
+	Ack 			= 1
+	Planner_GOAL		= 2
+	Planner_POSE		= 3
+	Planner_CURR_WAYPOINT	= 4
+	Planner_PATH		= 5
+	Planner_WAYPOINTS	= 6
+
+Below is a list of posibble PlayerPoxy_Planner_CMD frames:
+
++------++-----------------------+---------------+
+| desc || command_id		| goal	  	|
++------++-----------------------+---------------+
+| type || Planner_SET_GOAL	| coord_type	|
++------++-----------------------+---------------+
+| info || 			| 		|
++------++-----------------------+---------------+
+
++------++-----------------------+---------------+
+| desc || command_id		| enable  	|
++------++-----------------------+---------------+
+| type || Planner_SET_ENABLE	| bool		|
++------++-----------------------+---------------+
+| info || 			| 		|
++------++-----------------------+---------------+
+
++------++---------------+---------------+---------------+-----------------------+---------------+-----------------------+
+| desc || command_id	| Planner_GOAL	| Planner_POSE	| Planner_CURR_WAYPOINT	| Planner_PATH	| Planner_WAYPOINTS	|
++------++---------------+---------------+---------------+-----------------------+---------------+-----------------------+
+| type || SET_REQ	| bool		| bool		| bool			| bool		| bool			|
++------++---------------+---------------+---------------+-----------------------+---------------+-----------------------+
+| info ||		| 		| 		| 			| 		|			|
++------++---------------+---------------+---------------+-----------------------+---------------+-----------------------+
+
+Below is a list of posibble PlayerPoxy_Planner_DATA frames:
+
++------++---------------+---------------+
+| desc || command_id	| goal	  	|
++------++---------------+---------------+
+| type || Planner_GOAL	| coord_type	|
++------++---------------+---------------+
+| info || 		| 		|
++------++---------------+---------------+
+
++------++---------------+---------------+
+| desc || command_id	| pose	  	|
++------++---------------+---------------+
+| type || Planner_POSE	| coord_type	|
++------++---------------+---------------+
+| info || 		| 		|
++------++---------------+---------------+
+
++------++-----------------------+---------------+-------+
+| desc || command_id		| waypoint	| id	|
++------++-----------------------+---------------+-------+
+| type || Planner_CURR_WAYPOINT	| coord_type	| int	|
++------++-----------------------+---------------+-------+
+| info || 			|		|	|
++------++-----------------------+---------------+-------+
+
++------++---------------+-------+-------+
+| desc || command_id	| valid	| done	|
++------++---------------+-------+-------+
+| type || Planner_PATH	| bool	| boole |
++------++---------------+-------+-------+
+| info || 		| 	|	|
++------++---------------+-------+-------+
+
++------++-----------------------+-------+---------------+-------+---------------+
+| desc || command_id		| count	| waypoint[1]	| 	| waypoint[n]	|
++------++-----------------------+-------+---------------+ 	+---------------+
+| type || Planner_WAYPOINTS	| int	| coord_type	| ...	| coord_type	|
++------++-----------------------+-------+---------------+ 	+---------------+
+| info || 			| 	|		| 	|		|
++------++-----------------------+-------+---------------+-------+---------------+
+
+#########
+# Laser #
+#########
+
+PlayerProxy_Laser_CMD:
+	SET_REQ			= 0
+	Laser_SET_CONFIG	= 1
+
+
+PlayerProxy_Laser_DATA:
+	Error 			= 0
+	Ack 			= 1
+	Laser_CONFIG		= 2
+	Laser_SIZE		= 3
+	Laser_POSE		= 4
+	Laser_ROBOT_POSE	= 5
+	Laser_POINTS		= 6
+	Laser_RANGES		= 7
+
+Below is a list of posibble PlayerPoxy_Laser_CMD frames:
+
++------++-----------------------+---------------+---------------+---------------+---------------+
+| desc || command_id		| min_angle	| max_angle	| scan_res	| range_res	|
++------++-----------------------+---------------+---------------+---------------+---------------+
+| type || Laser_SET_CONFIG	| double	| double	| double	| double	|
++------++-----------------------+---------------+---------------+---------------+---------------+
+| info || 			| rad		| rad		| mm		| rad		|
++------++-----------------------+---------------+---------------+---------------+---------------+
+
++------++---------------+---------------+---------------+---------------+-----------------------+---------------+---------------+
+| desc || command_id	| Laser_CONFIGL	| Laser_SIZE	| Laser_POSE	| Laser_ROBOT_POSE	| Laser_POINTS	| Laser_RANGES	|
++------++---------------+---------------+---------------+---------------+-----------------------+---------------+---------------+
+| type || SET_REQ	| bool		| bool		| bool		| bool			| bool		| bool	        |
++------++---------------+---------------+---------------+---------------+-----------------------+---------------+---------------+
+| info ||		| 		| 		| 		|			|		|		|
++------++---------------+---------------+---------------+---------------+-----------------------+---------------+---------------+
+
+Below is a list of posibble PlayerPoxy_Laser_DATA frames:
+
++------++-----------------------+---------------+---------------+---------------+---------------+
+| desc || command_id		| min_angle	| max_angle	| scan_res	| range_res	|
++------++-----------------------+---------------+---------------+---------------+---------------+
+| type || Planner_CONFIG	| double	| double	| double	| double	|
++------++-----------------------+---------------+---------------+---------------+---------------+
+| info || 			| rad		| rad		| mm		| rad		|
++------++-----------------------+---------------+---------------+---------------+---------------+
+
++------++---------------+-------+-------+
+| desc || command_id	| width	| length|
++------++---------------+-------+-------+
+| type || Laser_SIZE	|double |double	|
++------++---------------+---------------+
+| info || 		| m	| m	|
++------++---------------+---------------+
+
++------++---------------+---------------+
+| desc || command_id	| pose	  	|
++------++---------------+---------------+
+| type || Laser_POSE	| coord_type	|
++------++---------------+---------------+
+| info || 		| 		|
++------++---------------+---------------+
+
++------++-----------------------+---------------+
+| desc || command_id		| pose		|
++------++-----------------------+---------------+
+| type || Laser_ROBOT_POSE	| coord_type	|
++------++-----------------------+---------------+
+| info || 			|		|
++------++-----------------------+---------------+
+
++------++---------------+-------+---------------+-------+---------------+
+| desc || command_id	| count	| point[1]	| 	| point[count]	|
++------++---------------+-------+---------------+ 	+---------------+
+| type || Laser_POINTS	| int	| point_type	| ...	| point_type	|
++------++---------------+-------+---------------+ 	+---------------+
+| info || 		| 	|		| 	|		|
++------++---------------+-------+---------------+-------+---------------+
+
++------++---------------+-------+---------------+---------------+-------+---------------+---------------+
+| desc || command_id	| count	| range[1]	| bearing[1]	| 	| range[count]	| bearing[count]|
++------++---------------+-------+---------------+---------------+ 	+---------------+---------------+
+| type || Laser_RANGES	| int	| double	| double        | ...	| double	| double        |
++------++---------------+-------+---------------+---------------+ 	+---------------+---------------+
+| info || 		| 	| m		| rad		|	| m		| rad		|
++------++---------------+-------+---------------+---------------+-------+---------------+---------------+
+
+
+#######
+# Map #
+#######
+
+PlayerProxy_Map_CMD:
+	SET_REQ			= 0
+
+PlayerProxy_Map_DATA:
+	Error 			= 0
+	Ack 			= 1
+	Laser_MAP		= 2
+
+Below is a list of posibble PlayerPoxy_Map_CMD frames:
+
++------++---------------+---------------+
+| desc || command_id	| Map_MAP	|
++------++---------------+---------------+
+| type || SET_REQ	| bool		|
++------++---------------+---------------+
+| info ||		| 		|
++------++---------------+---------------+
+
+Below is a list of posibble PlayerPoxy_Map_DATA frames:
+
++------++---------------+-------+-------+---------------+---------------+---------------+-------+-----------------------+
+| desc || command_id	| width	| height| resolution	| cell[1][1]	| cell[1][2]	|	| cell[height][width]	|
++------++---------------+-------+-------+---------------+---------------+---------------+ 	+-----------------------+
+| type || Map_MAP	| int	| int	| double        | double	| double	| ...	| double		|
++------++---------------+-------+-------+---------------+---------------+---------------+ 	+-----------------------+
+| info || 		| 	| 	| m/1		| -1 to 1	| -1 to 1	|	| -1 to 1		|
++------++---------------+-------+-------+---------------+---------------+---------------+-------+-----------------------+
+
+
