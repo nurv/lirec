@@ -1,4 +1,4 @@
-This document describes installation of SAMGAR V2 on Linux system (tested on Ubuntu x64).
+This document describes installation of SAMGAR (version 2.x) on Linux system (tested on Ubuntu x64).
 
 ------------------------------------------------------------------------------------
 INSTALL
@@ -9,9 +9,9 @@ INSTALL
 mkdir SRC_DIR
 cd SRC_DIR
 
-1. Download the latest version of SAMGAR V2 from 
+1. Download the latest version of SAMGAR from 
 
-svn co https://svn.lirec.org/libs/SAMGAR%20V2/ SAMGAR_V2
+svn co https://svn.lirec.org/libs/SAMGAR/trunk SAMGAR
 
 On yarp-2.3.0 aplication works but it was sometimes unstable. On yarp-2.3.1 aplication seams to work more stable.
 
@@ -34,10 +34,10 @@ Having all essential software and libraries installed you can install Qt that is
 
 sudo aptitude install libqt4-dev
 
-4. Copy SAMGAR V2 GUI files to proper yarp subdirestory
+4. Copy SAMGAR GUI files to proper yarp subdirestory
 
-cp SAMGAR_V2/GUI/*.cpp yarp-2.3.1/src/yarpserver/src/
-cp SAMGAR_V2/GUI/*.h yarp-2.3.1/src/yarpserver/src/
+cp SAMGAR/GUI/*.cpp yarp-2.3.1/src/yarpserver/src/
+cp SAMGAR/GUI/*.h yarp-2.3.1/src/yarpserver/src/
 
 5. Modify CMakeList.txt file responsible for compiling yarpserver
 
@@ -98,7 +98,7 @@ sudo cp FindYARP.cmake /usr/share/cmake-2.8/Modules/
 
 than go to module directory  
 
-cd ../SAMGAR_V2/Module
+cd ../SAMGAR/Modules/Examles
 
 to prevent making mess in code this time I suggest to build outside the source, so we have to create a new directory
 
@@ -116,7 +116,7 @@ yarpserver3
 
 and then the example module
 
-SAMGAR_V2/Module/build/SamExamples
+SAMGAR/Modules/Examples/build/SamExamples
 
 Aster starting SamExample in yarpserver3 GUI appropriate elements should appear. You can connect modules ports by clicking 
 left mouse button on the desired ports.
@@ -127,8 +127,8 @@ KNOWN BUGS
 
 1. Above mentioned installation process does not include the icons and other graphical elements
 
-2. Starting yarpserver3 application in the directory containing SAMGAR V2 graphics (GUI/Bin directory) caused Segmentation Fault
-after starting SAMGAR_V2/Module/build/SamExample with following error description
+2. Starting yarpserver3 application in the directory containing SAMGAR graphics (GUI/Bin directory) caused Segmentation Fault
+after starting SAMGAR/Module/Examples/build/SamExample with following error description
 
 QObject::connect: Cannot queue arguments of type 'QTextCursor'
 (Make sure 'QTextCursor' is registered using qRegisterMetaType().)
