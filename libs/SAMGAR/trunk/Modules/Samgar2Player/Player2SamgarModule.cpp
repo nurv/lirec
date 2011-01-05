@@ -1,6 +1,7 @@
 /** \file PlayerSamgarModule.cpp
  */
-#include "PlayerSamgarModule.h"
+#include "Player2SamgarModule.h"
+//#include "Player2SamgarThread.h"
 #include <iostream>
 
 std::string itoa(int value, int base=10) {
@@ -30,7 +31,7 @@ std::string itoa(int value, int base=10) {
 
 
 
-PlayerSamgarModule::PlayerSamgarModule(std::string hostname, uint port):
+Player2SamgarModule::Player2SamgarModule(std::string hostname, uint port):
   SamClass(std::string("/Player-")+hostname+"-"+itoa(port)), gHostname(hostname), gPort(port)
 {
   int proxiesCount;
@@ -84,7 +85,7 @@ PlayerSamgarModule::PlayerSamgarModule(std::string hostname, uint port):
   StartModule();
 }
 
-PlayerSamgarModule::~PlayerSamgarModule()
+Player2SamgarModule::~Player2SamgarModule()
 {
   // cancell all threads
   for (std::list<pthread_t*>::iterator
@@ -119,18 +120,19 @@ PlayerSamgarModule::~PlayerSamgarModule()
        
 }
 
-void PlayerSamgarModule::display()
+void Player2SamgarModule::display()
 {
+  std::cout<<"Found following Player drivers:"<<std::endl;
   for (std::list<PlayerDriver_t>::const_iterator
 	 it = drivers.begin(); it != drivers.end(); it++) 
     {    
-      std::cout << it->driverName <<" "<< it->interfName<<"("<<
+      std::cout <<"-> "<< it->driverName <<" "<< it->interfName<<"("<<
 	it->interfID<<")"<<":"<<it->index <<" "<<it->host<< ":"
 	<<it->port << std::endl;
     }
 }
 
-void PlayerSamgarModule::start()
+void Player2SamgarModule::start()
 {
   // start all threads
   for (std::list<PlayerDriver_t>::iterator
@@ -158,5 +160,14 @@ void PlayerSamgarModule::start()
 	  pthread_create(threads.back(), NULL, &LocalizeThread, &(*it));
 	}
 
+    }
+}
+
+void Player2SamgarModule::join_threads()
+{
+  for (std::list<pthread_t*>::iterator
+	 it = threads.begin(); it != threads.end(); it++) 
+    { 
+      pthread_join(*(*it), NULL);
     }
 }

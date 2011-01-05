@@ -4,19 +4,16 @@
  *  module is a Reader that is capable of obtaining data from other module. 
  */
 
-#include "PlayerSamgarModule.h"
+#include "Player2SamgarModule.h"
 
 int main(void) 
 {
-  PlayerSamgarModule translator;
+  Player2SamgarModule translator;
   std::list<PlayerDriver_t> proxies;
   int prox_count;
   translator.display();
   translator.start();
-  //sleep(10);
-  while(1)
-    sleep(1);
-  
+  translator.join_threads();
   return 0;
 }
 

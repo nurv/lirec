@@ -1,6 +1,7 @@
 /** \file PlayerSamgarThread.h
  */
-#include "PlayerSamgarThread.h"
+//#include "Player2SamgarThread.h"
+#include "Player2SamgarModule.h"
 #include <libplayerc++/playerc++.h>
 
 void* Position2dThread(void * param){

@@ -1,10 +1,16 @@
-/** \file PlayerSamgarThread.h
+/** \file PlayerSamgarModule.h
  */
-#ifndef PLAYERSAMGARTHREAD_H
-#define PLAYERSAMGARTHREAD_H
 
-#include <string>
+#ifndef PLAYERSAMGARMODULE_H
+#define PLAYERSAMGARMODULE_H
+
+#include <libplayerc++/playerc++.h>
 #include <yarp/os/all.h>
+#include <list>
+#include <string>
+#include <pthread.h>
+#include "SamClass.h"
+
 
 enum PlayerProxy_TYPE {Position2d, Localize, Planner, Laser, Map};
 
@@ -44,5 +50,27 @@ void* LocalizeThread(void * param);
 void* PlannerThread(void * param);
 void* LaserThread(void * param);
 void* MapThread(void * param);
+
+
+class Player2SamgarModule: public SamClass 
+{
+public:
+  Player2SamgarModule(std::string hostname=PlayerCc::PLAYER_HOSTNAME, uint port=PlayerCc::PLAYER_PORTNUM);
+  ~Player2SamgarModule();
+  void start();
+  void join_threads();
+  void display();
+  virtual void SamInit(){};
+  virtual void SamIter(){};
+
+
+private:
+  PlayerCc::PlayerClient* player;
+  std::string  gHostname;
+  uint         gPort;
+  std::list<PlayerDriver_t> drivers;
+  std::vector<yarp::os::BufferedPort<yarp::os::Bottle>* > ports;
+  std::list<pthread_t*> threads;
+};
 
 #endif
