@@ -1,32 +1,32 @@
-/** \file PlayerSamgarModule.cpp
+/** \file Player2SamgarModule.cpp
  */
 #include "Player2SamgarModule.h"
 //#include "Player2SamgarThread.h"
 #include <iostream>
 
-std::string itoa(int value, int base=10) {
-	
-		std::string buf;
-	
-		// check that the base if valid
-		if (base < 2 || base > 16) return buf;
-
-		enum { kMaxDigits = 35 };
-		buf.reserve( kMaxDigits ); // Pre-allocate enough space.
-	
-		int quotient = value;
-	
-		// Translating number to string with base:
-		do {
-			buf += "0123456789abcdef"[ std::abs( quotient % base ) ];
-			quotient /= base;
-		} while ( quotient );
-	
-		// Append the negative sign
-		if ( value < 0) buf += '-';
-	
-		std::reverse( buf.begin(), buf.end() );
-		return buf;
+std::string itoa(int value, int base=10) 
+{
+  std::string buf;
+  
+  // check that the base if valid
+  if (base < 2 || base > 16) return buf;
+  
+  enum { kMaxDigits = 35 };
+  buf.reserve( kMaxDigits ); // Pre-allocate enough space.
+  
+  int quotient = value;
+  
+  // Translating number to string with base:
+  do {
+    buf += "0123456789abcdef"[ std::abs( quotient % base ) ];
+    quotient /= base;
+  } while ( quotient );
+  
+  // Append the negative sign
+  if ( value < 0) buf += '-';
+  
+  std::reverse( buf.begin(), buf.end() );
+  return buf;
 }
 
 
@@ -134,10 +134,12 @@ void Player2SamgarModule::display()
 
 void Player2SamgarModule::start()
 {
+  std::cout<<"Player2SamgarModule: starting device threads"<<std::endl;
   // start all threads
   for (std::list<PlayerDriver_t>::iterator
 	 it = drivers.begin(); it != drivers.end(); it++) 
     { 
+      std::cout <<"-> "<< it->driverName <<" "<< it->interfName<<":"<<it->index << std::endl;
       if (it->interfName.compare("position2d")==0)
 	{
 	  threads.push_back(new pthread_t);
@@ -157,9 +159,8 @@ void Player2SamgarModule::start()
       if (it->interfName.compare("map")==0)
 	{
 	  threads.push_back(new pthread_t);
-	  pthread_create(threads.back(), NULL, &LocalizeThread, &(*it));
+	  pthread_create(threads.back(), NULL, &MapThread, &(*it));
 	}
-
     }
 }
 

@@ -1,4 +1,4 @@
-/** \file PlayerSamgarModule.h
+/** \file Player2SamgarModule.h
  */
 
 #ifndef PLAYERSAMGARMODULE_H
@@ -45,13 +45,6 @@ public:
   yarp::os::BufferedPort<yarp::os::Bottle>* samgarPort;
 };
 
-void* Position2dThread(void * param);
-void* LocalizeThread(void * param);
-void* PlannerThread(void * param);
-void* LaserThread(void * param);
-void* MapThread(void * param);
-
-
 class Player2SamgarModule: public SamClass 
 {
 public:
@@ -72,5 +65,32 @@ private:
   std::vector<yarp::os::BufferedPort<yarp::os::Bottle>* > ports;
   std::list<pthread_t*> threads;
 };
+
+/** \brief Thread for communication with Position2d Player devices
+ *
+ * This function is design to work as a POSIX thread responsible for
+ * communication with Position2dProxy in Player and allow acces to this device
+ * in Samgar network.
+ * 
+ * \param param should be of PlayerDriver_t
+ */
+void* Position2dThread(void * param);
+
+/** \brief Thread for communication with Localize Player devices
+ */
+void* LocalizeThread(void * param);
+
+/** \brief Thread for communication with Planner Player devices
+ */
+void* PlannerThread(void * param);
+
+/** \brief Thread for communication with Laser Player devices
+ */
+void* LaserThread(void * param);
+
+/** \brief Thread for communication with Map Player devices
+ */
+void* MapThread(void * param);
+
 
 #endif

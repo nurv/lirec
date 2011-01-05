@@ -1,6 +1,5 @@
-/** \file PlayerSamgarThread.h
+/** \file Player2SamgarThread.h
  */
-//#include "Player2SamgarThread.h"
 #include "Player2SamgarModule.h"
 #include <libplayerc++/playerc++.h>
 
