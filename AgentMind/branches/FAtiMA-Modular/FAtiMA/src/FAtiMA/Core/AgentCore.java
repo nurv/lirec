@@ -622,36 +622,25 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 	public void Run() {
 		ValuedAction action;
 		AppraisalFrame appraisal;
-		ArrayList<AppraisalFrame> resultingAppraisals;
-		ArrayList<BaseEmotion> emotions;
-		ActiveEmotion activeEmotion;
-
+		
 		long updateTime = System.currentTimeMillis();
 
 		while (!_shutdown) {
 			try {
-
 				if(_remoteAgent.isShutDown()) {
 					_shutdown = true;
 				}
-
-				//updates the agent's simulation timer
-				AgentSimulationTime.GetInstance().Tick();
-
-				_numberOfCycles++;
+				
+				updateSimulationTimer();
 				long startCycleTime = System.currentTimeMillis();
 
 				if (_remoteAgent.isRunning()) {
-					//decay the agent's emotional state
-					//self
-
-					long time = AgentSimulationTime.GetInstance().Time();
 					
 					_emotionalState.Decay();
 
 					for(IComponent c : this._generalComponents.values())
 					{
-						c.updateCycle(this, time);
+						c.updateCycle(this, AgentSimulationTime.GetInstance().Time());
 					}
 
 					//perceives and appraises new events
@@ -786,6 +775,13 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 			}
 		}
 	}
+
+	private void updateSimulationTimer() {
+		// //updates the agent's simulation timer
+		AgentSimulationTime.GetInstance().Tick();
+		_numberOfCycles++;	
+	}
+
 
 	public void RequestAgentSave()
 	{
