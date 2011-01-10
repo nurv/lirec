@@ -96,9 +96,10 @@ sudo make install
 
 sudo cp FindYARP.cmake /usr/share/cmake-2.8/Modules/
 
-than go to module directory  
+If your version of cmake is not 2.8 please fix the above liene so it will fit to your system.
+Than go to module directory  
 
-cd ../SAMGAR/Modules/Examles
+cd ../SAMGAR/Modules
 
 to prevent making mess in code this time I suggest to build outside the source, so we have to create a new directory
 
@@ -106,9 +107,23 @@ mkdir build
 cd build
 ccmake ../
 
+If you want to compile Examples please select EXAMPLES_ENABLE to ON.
+If you want to compile other projects you have to select {ProjectName}_ENABLE to ON.
 Type [c] two times and then [g]. After creating makefile compile the example module
 
 make
+
+After succesfull compilation if you have selected EXAMPLES_ENABLE to ON then exacutable example binary files can be found in
+
+SAMGAR/Modules/build/Examples 
+
+You should find there following executable file:
+
+SamExamples  
+
+if you have OpenCV installed then you will also find there files:
+
+VideoGet  VideoSend
 
 7. To make example working first start 
 
@@ -120,6 +135,27 @@ SAMGAR/Modules/Examples/build/SamExamples
 
 Aster starting SamExample in yarpserver3 GUI appropriate elements should appear. You can connect modules ports by clicking 
 left mouse button on the desired ports.
+
+
+------------------------------------------------------------------------------------
+ADDINT NEW MODULE
+------------------------------------------------------------------------------------
+
+To add your own new module you should go to
+
+cd SAMGAR_DIR/Modules
+
+create new directory
+
+mkdir MyNewModule
+cd MyNewModule
+
+create there files in the similar way that they are created in SAMGAR/Modules/Examples direcotry. Finally you should modify
+
+SAMGAR_DIR/Modules/CMakeLists.txt
+
+by adding similar lines to those that are there for Examples module. 
+
 
 ------------------------------------------------------------------------------------
 KNOWN BUGS
