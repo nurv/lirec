@@ -961,7 +961,7 @@ public class DeliberativeProcess implements Serializable, IComponent, IBehaviour
 					_actionMonitor = null;
 				}
 			}
-			else if(!i.getGoal().checkPreconditions(am))
+			/*else if(!i.getGoal().checkPreconditions(am))
 			{
 				RemoveIntention(i);
 				if(i.IsStrongCommitment())
@@ -975,7 +975,7 @@ public class DeliberativeProcess implements Serializable, IComponent, IBehaviour
 					
 					i.ProcessIntentionCancel(am);
 				}
-			}
+			}*/
 			else
 			{
 				_selectedPlan = _planner.ThinkAbout(am, i);

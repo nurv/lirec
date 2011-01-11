@@ -307,7 +307,12 @@ public class KnowledgeBase implements Serializable {
 	// Meiyii
 	public KnowledgeSlot GetObjectProperty(String objectName, String property)
 	{
-		return _kB.get(objectName).get(property);
+		KnowledgeSlot object = _kB.get(objectName);
+		if(object != null)
+		{
+			return object.get(property);
+		}
+		else return null;
 	}
 	
 	private ArrayList<SubstitutionSet> MatchLiteralList(ArrayList<Symbol> literals, int index, KnowledgeSlot ks) {

@@ -1,0 +1,101 @@
+<Character role="Victim" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:noNamespaceSchemaLocation="../../schemas/Character.xsd">
+	
+	<EmotionalThresholds>
+		<EmotionalThreshold emotion="Love" threshold="1" decay="5"/>
+		<EmotionalThreshold emotion="Hate" threshold="1" decay="5"/>
+		<EmotionalThreshold emotion="Hope" threshold="1" decay="5"/>
+		<EmotionalThreshold emotion="Fear" threshold="1" decay="5"/>
+		<EmotionalThreshold emotion="Satisfaction" threshold="1" decay="5"/>
+		<EmotionalThreshold emotion="Relief" threshold="1" decay="5"/>
+		<EmotionalThreshold emotion="Fears-Confirmed" threshold="1" decay="5"/>
+		<EmotionalThreshold emotion="Disappointment" threshold="1" decay="5"/>
+		<EmotionalThreshold emotion="Joy" threshold="3" decay="1"/>
+		<EmotionalThreshold emotion="Distress" threshold="1" decay="5"/>
+		<EmotionalThreshold emotion="Happy-For" threshold="1" decay="5"/>
+		<EmotionalThreshold emotion="Pitty" threshold="1" decay="5"/>
+		<EmotionalThreshold emotion="Resentment" threshold="1" decay="5"/>
+		<EmotionalThreshold emotion="Gloating" threshold="1" decay="5"/>
+		<EmotionalThreshold emotion="Pride" threshold="1" decay="5"/>
+		<EmotionalThreshold emotion="Shame" threshold="1" decay="5"/>
+		<EmotionalThreshold emotion="Gratification" threshold="1" decay="5"/>
+		<EmotionalThreshold emotion="Remorse" threshold="1" decay="5"/>
+		<EmotionalThreshold emotion="Admiration" threshold="1" decay="5"/>
+		<EmotionalThreshold emotion="Reproach" threshold="1" decay="5"/>
+		<EmotionalThreshold emotion="Gratitude" threshold="1" decay="5"/>
+		<EmotionalThreshold emotion="Anger" threshold="1" decay="5"/>
+	</EmotionalThresholds>
+
+	<Goals>
+		
+	</Goals>
+
+	
+	<EventReactions>
+	    
+		<!-- Emotional reactions to seing someone crying -->
+		<EmotionalReaction desirability="-4" desirabilityForOther="-4" praiseworthiness="-4">
+			<Event action="Cry"/>
+		</EmotionalReaction>
+		
+		<EmotionalReaction desirability="-4" praiseworthiness="-3">
+			<Event subject="SELF" action="Cry"/>
+		</EmotionalReaction>
+		
+
+		<EmotionalReaction desirability="-4" praiseworthiness="-4">
+			<Event action="Punch" target="SELF"/>
+		</EmotionalReaction>
+
+		<EmotionalReaction desirability="-3" praiseworthiness="-3">
+			<Event action="Slap" target="SELF"/>
+		</EmotionalReaction>
+
+		<EmotionalReaction desirability="-2" praiseworthiness="-2">
+			<Event action="Kick" target="SELF"/>
+		</EmotionalReaction>
+
+		<EmotionalReaction desirability="4" praiseworthiness="1">
+			<Event action="Hug" target="SELF"/>
+		</EmotionalReaction>
+
+		<EmotionalReaction desirability="3">
+			<Event action="Compliment" target="SELF"/>
+		</EmotionalReaction>
+
+		<EmotionalReaction desirability="4">
+			<Event subject="SELF" action="Eat" target="chocolate"/>
+		</EmotionalReaction>
+
+		<EmotionalReaction desirability="-2">
+			<Event subject="SELF" action="Eat" target="apple"/>
+		</EmotionalReaction>
+
+      
+	</EventReactions>
+	
+	<ActionTendencies>
+	
+		<!-- Generic action tendencies -->
+		
+		
+		<!-- Action tendency of crying when the victim is distressed. Corresponds to the cry coping strategy. -->
+		<ActionTendency action="Cry">
+			<Preconditions>
+            		</Preconditions>
+			<ElicitingEmotion type="Distress" minIntensity="3">
+				<CauseEvent/>
+			</ElicitingEmotion>
+		</ActionTendency>
+
+		<ActionTendency action="Smile">
+			<Preconditions>
+            		</Preconditions>
+			<ElicitingEmotion type="Joy" minIntensity="1">
+				<CauseEvent/>
+			</ElicitingEmotion>
+		</ActionTendency>
+		
+				
+	</ActionTendencies>
+</Character>

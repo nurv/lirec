@@ -1,0 +1,4 @@
+isFruit False
+isChocolate True
+eatable True
+type object

@@ -1,0 +1,40 @@
+<DomainActions>
+	<Action name="Drop([target])">
+		<PreConditions>
+			<Property name="[AGENT]" operator="!=" value="[target]" />
+			<Property name="[AGENT](has,[target])" operator="=" value="True" />
+		</PreConditions>
+		<Effects>	
+			<Effect probability="1.0">
+				<Property name="[target](onfloor)" operator="=" value="True"/>
+			</Effect>
+		</Effects>
+	</Action>
+	<Action name="Pick([target])">
+		<PreConditions>
+			<Property name="[AGENT]" operator="!=" value="[target]" />
+			<Property name="[target](onfloor)" operator="=" value="True"/>
+		</PreConditions>
+		<Effects>	
+			<Effect probability="1.0">
+				<Property name="[target](onfloor)" operator="=" value="False"/>
+
+			</Effect>
+			<Effect probability="1.0">
+				<Property name="[AGENT](has,[target])" operator="=" value="True" />
+			</Effect>
+		</Effects>
+	</Action>
+	<Action name="Eat([target])">
+		<PreConditions>
+			<Property name="[target](eatable)" operator="=" value="True" />
+			<Property name="[AGENT]" operator="!=" value="[target]" />
+			<Property name="[AGENT](has,[target])" operator="=" value="True"/>
+		</PreConditions>
+		<Effects>	
+			<Effect probability="1.0">
+				<Property name="[AGENT](has,[target])" operator="=" value="False" />
+			</Effect>
+		</Effects>
+	</Action>
+</DomainActions>

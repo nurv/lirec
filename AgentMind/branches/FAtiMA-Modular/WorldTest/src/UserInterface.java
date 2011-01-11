@@ -140,6 +140,8 @@ public class UserInterface implements ActionListener {
         _locationOptions = new JComboBox();
         _userOptions = new JComboBox();
         
+        _userOptions.addItem(UserInterface.USER);
+        
         // Meiyii 06/04/09
         if(_world.GetScenery().equals("AmyHouse"))       
         {       				      
@@ -147,8 +149,8 @@ public class UserInterface implements ActionListener {
 	        _locationOptions.addItem(UserInterface.STUDYROOM);
 	        _locationOptions.addItem(UserInterface.KITCHEN);
 	      
-			_userOptions.addItem(UserInterface.AMY);
-			_userOptions.addItem(UserInterface.USER);
+			//_userOptions.addItem(UserInterface.AMY);
+			//_userOptions.addItem(UserInterface.USER);
         }
         else if(_world.GetScenery().equals("Office"))
         {
@@ -156,16 +158,15 @@ public class UserInterface implements ActionListener {
 	        _locationOptions.addItem(UserInterface.COMMONROOM);
 	        _locationOptions.addItem(UserInterface.OFFICE);
 	       
-			_userOptions.addItem(UserInterface.JOHN);
-			_userOptions.addItem(UserInterface.LUKE);
-			_userOptions.addItem(UserInterface.PAULIE);
-			_userOptions.addItem(UserInterface.LUKEPAULIE);		
+			//_userOptions.addItem(UserInterface.JOHN);
+			//_userOptions.addItem(UserInterface.LUKE);
+			//_userOptions.addItem(UserInterface.PAULIE);
+			//_userOptions.addItem(UserInterface.LUKEPAULIE);		
         }
         else
         {
-        	_userOptions.addItem("Judy");
-			_userOptions.addItem("David");
-        	_userOptions.addItem(UserInterface.USER);
+        	//_userOptions.addItem("Judy");
+			//_userOptions.addItem("David");
         }
 
         _locationOptions.addActionListener(new ActionListener(){

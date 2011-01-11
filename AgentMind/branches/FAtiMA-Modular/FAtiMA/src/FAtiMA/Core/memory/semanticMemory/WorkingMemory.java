@@ -359,7 +359,12 @@ public class WorkingMemory implements Serializable {
 	// Retrieving an object property value
 	public KnowledgeSlot GetObjectProperty(String objectName, String property)
 	{
-		return _wM.get(objectName).get(property);
+		KnowledgeSlot object = _wM.get(objectName);
+		if(object != null)
+		{
+			return object.get(property);
+		}
+		else return null;
 	}
 	
 	private ArrayList<SubstitutionSet> MatchLiteralList(ArrayList<Symbol> literals, int index, KnowledgeSlot ks) {

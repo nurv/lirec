@@ -31,7 +31,7 @@ import Language.LanguageEngine;
  */
 public class WorldTest {
 	
-	public static final String SCENARIOS_PATH = "data/characters/minds/LIRECScenarios.xml";
+	public static final String WORLD_PATH = "data/characters/minds/";
 	//public static final String SCENARIOS_PATH = "data/characters/minds/Scenarios.xml";
 	private ServerSocket _ss;
 	private ArrayList<sObject> _objects;
@@ -50,29 +50,31 @@ public class WorldTest {
 		
 		
 		//Load the arguments from the scenario definition present in scenarios.xml
-		if (args.length == 1){
-			ScenarioLoaderHandler scenHandler = new ScenarioLoaderHandler(args[0]);
+		if (args.length == 2){
+			ScenarioLoaderHandler scenHandler = new ScenarioLoaderHandler(args[1]);
 			SAXParserFactory factory = SAXParserFactory.newInstance();
 			SAXParser parser = factory.newSAXParser();
-			parser.parse(new File(SCENARIOS_PATH), scenHandler);
+			parser.parse(new File(WORLD_PATH + args[0]), scenHandler);
 			
 			scenHandler.checkScenario();
 			args = scenHandler.getWorldSimArguments();
+			
+			if (args.length < 6) {
+				System.out.println("Wrong number of arguments in the scenario definition!");
+				return;
+			}			
+			for(i = 6; i < args.length; i++) {
+				objects.add(args[i]);
+			}
+			
+			
+			WorldTest wt = new WorldTest(new Integer(args[0]).intValue(),args[1],args[2], args[3], args[4],args[5],objects);
+			wt.run();
 		}
-		
-		if (args.length < 6) {
-			System.out.println("Wrong number of arguments!");
+		if (args.length < 2) {
+			System.out.println("Expecting 2 arguments: scenarios file, scenario name!");
 			return;
 		}			
-		for(i = 6; i < args.length; i++) {
-			objects.add(args[i]);
-		}
-		
-		
-		WorldTest wt = new WorldTest(new Integer(args[0]).intValue(),args[1],args[2], args[3], args[4],args[5],objects);
-		wt.run();
-		
-		
 	}
 	
 	public WorldTest(int port, String scenery, String actionsFile, String agentLanguageFile, String userLanguageFile, String userOptionsFile, ArrayList<String> objects) {

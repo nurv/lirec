@@ -61,7 +61,6 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 
 	public static final String MIND_PATH = "data/characters/minds/";
 	public static final String MIND_PATH_ANDROID = "sdcard/data/characters/minds/";
-	public static final String SCENARIO_FILENAME = "LIRECScenarios.xml";
 	
 	public static final Name ACTION_CONTEXT = Name.ParseName("ActionContext()");
 
@@ -70,7 +69,7 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 	protected ArrayList<IBehaviourComponent> _behaviourComponents;
 	protected ArrayList<IModelOfOtherComponent> _modelOfOtherComponents;
 	protected ArrayList<IProcessExternalRequestComponent> _processExternalRequestComponents;
-	protected ArrayList<IProcessPerceptionsComponent> _processPerceptionsComponents;
+	protected ArrayList<IAdvancedPerceptionsComponent> _processPerceptionsComponents;
 	protected ArrayList<IAffectDerivationComponent> _affectDerivationComponents;
 	protected ArrayList<IAppraisalComponent> _appraisalComponents;
 	
@@ -124,7 +123,7 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 		_behaviourComponents = new ArrayList<IBehaviourComponent>();
 		_modelOfOtherComponents = new ArrayList<IModelOfOtherComponent>();
 		_processExternalRequestComponents = new ArrayList<IProcessExternalRequestComponent>();
-		_processPerceptionsComponents = new ArrayList<IProcessPerceptionsComponent>();
+		_processPerceptionsComponents = new ArrayList<IAdvancedPerceptionsComponent>();
 		_affectDerivationComponents = new ArrayList<IAffectDerivationComponent>();
 		_appraisalComponents = new ArrayList<IAppraisalComponent>();
 		
@@ -132,12 +131,12 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 	}
 
 
-	public void initialize(String scenarioName, String agentName) throws ParserConfigurationException, SAXException, IOException, UnknownGoalException, ActionsParsingException, GoalLibParsingException{
+	public void initialize(String scenariosFile, String scenarioName, String agentName) throws ParserConfigurationException, SAXException, IOException, UnknownGoalException, ActionsParsingException, GoalLibParsingException{
 		
 		if (VersionChecker.runningOnAndroid()){
-			ConfigurationManager.initialize(MIND_PATH_ANDROID,scenarioName,agentName);
+			ConfigurationManager.initialize(MIND_PATH_ANDROID,scenariosFile,scenarioName,agentName);
 		}else{
-			ConfigurationManager.initialize(MIND_PATH,scenarioName,agentName);
+			ConfigurationManager.initialize(MIND_PATH,scenariosFile,scenarioName,agentName);
 		}
 				
 		try{
@@ -298,9 +297,9 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 		{
 			_processExternalRequestComponents.add((IProcessExternalRequestComponent) c);
 		}
-		if(c instanceof IProcessPerceptionsComponent)
+		if(c instanceof IAdvancedPerceptionsComponent)
 		{
-			_processPerceptionsComponents.add((IProcessPerceptionsComponent) c);
+			_processPerceptionsComponents.add((IAdvancedPerceptionsComponent) c);
 		}
 		if(c instanceof IAffectDerivationComponent)
 		{
@@ -456,7 +455,7 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 		this._behaviourComponents = (ArrayList<IBehaviourComponent>) s.readObject();
 		this._modelOfOtherComponents = (ArrayList<IModelOfOtherComponent>) s.readObject();
 		this._processExternalRequestComponents = (ArrayList<IProcessExternalRequestComponent>) s.readObject();
-		this._processPerceptionsComponents = (ArrayList<IProcessPerceptionsComponent>) s.readObject();
+		this._processPerceptionsComponents = (ArrayList<IAdvancedPerceptionsComponent>) s.readObject();
 		this._affectDerivationComponents = (ArrayList<IAffectDerivationComponent>) s.readObject();
 		this._appraisalComponents = (ArrayList<IAppraisalComponent>) s.readObject();
 		
@@ -540,7 +539,7 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 			auxTarget = target;
 		}
 
-		for(IProcessPerceptionsComponent c : this._processPerceptionsComponents)
+		for(IAdvancedPerceptionsComponent c : this._processPerceptionsComponents)
 		{
 			c.lookAtPerception(this, auxSubject, auxTarget);
 		}
@@ -552,7 +551,7 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 		
 		_memory.getSemanticMemory().Tell(applyPerspective(propertyName, _name), value);
 		
-		for(IProcessPerceptionsComponent c : this._processPerceptionsComponents)
+		for(IAdvancedPerceptionsComponent c : this._processPerceptionsComponents)
 		{
 			c.propertyChangedPerception(ToM, applyPerspective(propertyName, _name), value);
 		}
@@ -591,7 +590,7 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 
 	public void PerceiveEntityRemoved(String entity)
 	{
-		for(IProcessPerceptionsComponent c : this._processPerceptionsComponents)
+		for(IAdvancedPerceptionsComponent c : this._processPerceptionsComponents)
 		{
 			c.entityRemovedPerception(entity);
 		}
@@ -702,7 +701,7 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 					}
 
 
-					bestActionValue = 0;
+					bestActionValue = -1;
 					bestAction = null;
 					
 					for(IBehaviourComponent c : this._behaviourComponents)
@@ -1002,7 +1001,7 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 			this._behaviourComponents = (ArrayList<IBehaviourComponent>) s.readObject();
 			this._modelOfOtherComponents = (ArrayList<IModelOfOtherComponent>) s.readObject();
 			this._processExternalRequestComponents = (ArrayList<IProcessExternalRequestComponent>) s.readObject();
-			this._processPerceptionsComponents = (ArrayList<IProcessPerceptionsComponent>) s.readObject();
+			this._processPerceptionsComponents = (ArrayList<IAdvancedPerceptionsComponent>) s.readObject();
 			this._affectDerivationComponents = (ArrayList<IAffectDerivationComponent>) s.readObject();
 			this._appraisalComponents = (ArrayList<IAppraisalComponent>) s.readObject();
 			

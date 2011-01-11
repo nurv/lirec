@@ -49,8 +49,8 @@ public class ConfigurationManager {
 		return soleInstance;
 	}
 	
-	public static void initialize(String mindPath, String scenarioName, String agentName) throws SAXException, IOException, ParserConfigurationException{
-		String scenarioFileName = mindPath + AgentCore.SCENARIO_FILENAME;	
+	public static void initialize(String mindPath, String scenariosFile, String scenarioName, String agentName) throws SAXException, IOException, ParserConfigurationException{
+		String scenarioFileName = mindPath + scenariosFile;	
 		getInstance().mindPath = mindPath;
 		loadConfigurationFromScenarioFile(scenarioFileName,scenarioName,agentName);
 	}

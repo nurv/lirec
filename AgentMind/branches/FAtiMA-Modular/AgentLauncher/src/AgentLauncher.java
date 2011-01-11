@@ -9,11 +9,6 @@ import FAtiMA.Core.AgentCore;
 import FAtiMA.Core.exceptions.ActionsParsingException;
 import FAtiMA.Core.exceptions.GoalLibParsingException;
 import FAtiMA.Core.exceptions.UnknownGoalException;
-import FAtiMA.Core.util.ConfigurationManager;
-import FAtiMA.ToM.ToMComponent;
-import FAtiMA.advancedMemoryComponent.AdvancedMemoryComponent;
-import FAtiMA.motivationalSystem.MotivationalComponent;
-import FAtiMA.socialRelations.SocialRelationsComponent;
 
 public class AgentLauncher {
 	
@@ -47,16 +42,17 @@ public class AgentLauncher {
 	
 	
 	static protected AgentCore initializeAgentCore(String args[]) throws ParserConfigurationException, SAXException, IOException, UnknownGoalException, ActionsParsingException, GoalLibParsingException{
-		if(args.length != 2){
-			System.err.println("ERROR: It is now required to use the xml file to launch the agent.");
+		if(args.length != 3){
+			System.err.println("ERROR - expecting 3 arguments: Scenarios File, Scenario Name, and Agent Name");
 			System.exit(1);
 		}
 		
-		String scenarioName = args[0];
-		String agentName = args[1];	
+		String scenarioFile = args[0];
+		String scenarioName = args[1];
+		String agentName = args[2];	
 		
 		FAtiMA.Core.AgentCore agent = new AgentCore(agentName);
-		agent.initialize(scenarioName,agentName);
+		agent.initialize(scenarioFile,scenarioName,agentName);
 		
 		return agent;
 	}

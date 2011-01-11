@@ -1,0 +1,21 @@
+<Scenarios>
+	<Scenario name="SimpleScenario">
+		<WorldSimulator port="46874" scenery="Office" actionsFile="data/characters/minds/WorkshopActions.xml" 
+						agentLanguageFile="data/characters/minds/language/agent/en/language-set-1" 
+						userOptionsFile="WorkshopOptions">		
+			<Objects>
+				<Object name="apple"/>
+				<Object name="chocolate"/>
+			</Objects>
+		</WorldSimulator>	
+		<Agent name="Guilhas" displayName="Guilhas" role="Guilhas" platform="worldsim" host="localhost" 
+			   port="46874" displayMode="True" sex="M" actionsFile="WorkshopActions" 
+			   goalsFile="WorkshopGoalLibrary" cultureName="NoCulture" load="false">
+			<Properties>				
+				<Property name="location" value="Office"/>
+				<Property name="time" value="Morning"/>
+				<Property name="isPerson" value="True"/>
+			</Properties>	
+		</Agent>
+	</Scenario>	
+</Scenarios>

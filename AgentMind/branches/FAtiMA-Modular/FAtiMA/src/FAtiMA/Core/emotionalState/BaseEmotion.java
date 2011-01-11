@@ -36,7 +36,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 import FAtiMA.Core.sensorEffector.Event;
-import FAtiMA.Core.sensorEffector.Parameter;
 import FAtiMA.Core.util.enumerables.EmotionType;
 import FAtiMA.Core.util.enumerables.EmotionValence;
 import FAtiMA.Core.wellFormedNames.Name;
@@ -137,7 +136,7 @@ public class BaseEmotion implements Serializable {
 	 * @return - a String used to index the BaseEMotion
 	 */
 	public String GetHashKey() {
-		String aux = _cause.toString();
+		String aux = _cause.toString()+_cause.GetTime();
 		for(String s : _appraisalVariables)
 		{
 			aux += "-" + s;

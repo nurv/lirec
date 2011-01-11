@@ -10,7 +10,7 @@ import FAtiMA.Core.IAppraisalComponent;
 import FAtiMA.Core.IComponent;
 import FAtiMA.Core.IGetModelStrategy;
 import FAtiMA.Core.IModelOfOtherComponent;
-import FAtiMA.Core.IProcessPerceptionsComponent;
+import FAtiMA.Core.IAdvancedPerceptionsComponent;
 import FAtiMA.Core.Display.AgentDisplayPanel;
 import FAtiMA.Core.OCCAffectDerivation.OCCComponent;
 import FAtiMA.Core.deliberativeLayer.IGetUtilityForOthers;
@@ -22,7 +22,7 @@ import FAtiMA.Core.util.Constants;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Symbol;
 
-public class ToMComponent implements Serializable, IAppraisalComponent, IProcessPerceptionsComponent, IGetModelStrategy, IGetUtilityForOthers {
+public class ToMComponent implements Serializable, IAppraisalComponent, IAdvancedPerceptionsComponent, IGetModelStrategy, IGetUtilityForOthers {
 	
 	/**
 	 * 
