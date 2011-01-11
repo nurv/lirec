@@ -18,6 +18,11 @@ import FAtiMA.Core.wellFormedNames.Name;
 
 public class OCCComponent implements Serializable, IAffectDerivationComponent, IModelOfOtherComponent {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
 	public static final String NAME = "OCC";
 	public static final String LIKE = "like";
 	public static final String DESIRABILITY = "desirability";
@@ -49,7 +54,12 @@ public class OCCComponent implements Serializable, IAffectDerivationComponent, I
 	}
 
 	@Override
-	public void updateCycle(AgentModel am, long time) {
+	public void update(AgentModel am, long time) {
+	}
+	
+	@Override
+	public void update(AgentModel am, Event e)
+	{
 	}
 
 	@Override
@@ -69,7 +79,7 @@ public class OCCComponent implements Serializable, IAffectDerivationComponent, I
 	
 	
 	@Override
-	public ArrayList<BaseEmotion> deriveEmotions(AgentModel am, String appraisalVariable, AppraisalFrame af) {
+	public ArrayList<BaseEmotion> affectElicitation(AgentModel am, String appraisalVariable, AppraisalFrame af) {
 		
 		ArrayList<BaseEmotion> emotions = new ArrayList<BaseEmotion>();
 		Event event = af.getEvent();
@@ -204,7 +214,7 @@ public class OCCComponent implements Serializable, IAffectDerivationComponent, I
 	}
 	
 	@Override
-	public void inverseDeriveEmotions(AgentModel am, BaseEmotion em, AppraisalFrame af)
+	public void inverseAffectElicitation(AgentModel am, BaseEmotion em, AppraisalFrame af)
 	{
 		//ignoring mood for now
 		EmotionDisposition disposition = am.getEmotionalState().getEmotionDispositions()[em.GetType()];

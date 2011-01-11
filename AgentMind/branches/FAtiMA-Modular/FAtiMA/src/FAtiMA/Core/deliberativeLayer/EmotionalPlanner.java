@@ -407,6 +407,8 @@ public class EmotionalPlanner implements Serializable {
 		ArrayList<OpenPrecondition> openConditions;
 		ListIterator<GoalThreat> li;
 		GoalThreat goalThreat;
+		float goalProb;
+		float planProb;
 		
 		
 		AppraisalFrame af;
@@ -433,12 +435,22 @@ public class EmotionalPlanner implements Serializable {
 			
 			return null;
 		}
-		
+	
 		prob = p.getProbability(am);
+		goalProb = am.getDeliberativeLayer().getProbabilityStrategy().getProbability(am, intention.getGoal());
+		if(p.getOpenPreconditions().size() == 0)
+		{
+			planProb = prob;
+		}
+		else
+		{
+			planProb = Math.min(prob, goalProb);
+		}
+		
 		//APPRAISAL/REAPPRAISAL - the plan brought into the agent's mind will generate/update
 		//hope and fear emotions according to the plan probability
-		af.SetAppraisalVariable(DeliberativeProcess.NAME, (short)7, OCCComponent.SUCCESSPROBABILITY, prob);
-		af.SetAppraisalVariable(DeliberativeProcess.NAME, (short)7, OCCComponent.FAILUREPROBABILITY, 1-prob);
+		af.SetAppraisalVariable(DeliberativeProcess.NAME, (short)7, OCCComponent.SUCCESSPROBABILITY, planProb);
+		af.SetAppraisalVariable(DeliberativeProcess.NAME, (short)7, OCCComponent.FAILUREPROBABILITY, 1-planProb);
 		
 		hopeEmotion = am.getEmotionalState().GetEmotion(OCCComponent.getHopeKey(af.getEvent()));
 		fearEmotion = am.getEmotionalState().GetEmotion(OCCComponent.getFearKey(af.getEvent()));
@@ -458,7 +470,7 @@ public class EmotionalPlanner implements Serializable {
 		    //that consists in lowering the goal importance
 			intention.getGoal().DecreaseImportanceOfFailure(am, 0.5f);
 			intention.RemovePlan(p);
-			String debug = "ACCEPTANCE - Plan prob to low ( " + p.getProbability(am) + ") - Goal: " +
+			String debug = "ACCEPTANCE - Plan prob to low ( " + prob + ") - Goal: " +
 				intention.getGoal().getName().toString() + " Plan: " + p.toString();
 			AgentLogger.GetInstance().log(debug);
 			return null;
@@ -520,7 +532,7 @@ public class EmotionalPlanner implements Serializable {
 			 *  
 			 */
 			
-			if(failureImportance*p.getProbability(am) <= threatIntensity - hopeIntensity) {
+			if(failureImportance*planProb <= threatIntensity - hopeIntensity) {
 			//if(threatIntensity >= hopeIntensity && aux >= failureImportance) {
 				
 				

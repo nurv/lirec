@@ -18,6 +18,7 @@ import FAtiMA.Core.deliberativeLayer.IExpectedUtilityStrategy;
 import FAtiMA.Core.deliberativeLayer.IGetUtilityForOthers;
 import FAtiMA.Core.deliberativeLayer.IOptionsStrategy;
 import FAtiMA.Core.deliberativeLayer.IUtilityStrategy;
+import FAtiMA.Core.deliberativeLayer.Intention;
 import FAtiMA.Core.deliberativeLayer.goals.ActivePursuitGoal;
 import FAtiMA.Core.emotionalState.AppraisalFrame;
 import FAtiMA.Core.sensorEffector.Event;
@@ -67,7 +68,7 @@ public class CulturalDimensionsComponent implements IAppraisalComponent, IOption
 	}
 	
 	@Override
-	public void startAppraisal(AgentModel am, Event e, AppraisalFrame af)
+	public void appraisal(AgentModel am, Event e, AppraisalFrame af)
 	{
 		float desirabilityForOther = 0;
 		float desirability = af.getAppraisalVariable(OCCComponent.DESIRABILITY);
@@ -272,14 +273,9 @@ public class CulturalDimensionsComponent implements IAppraisalComponent, IOption
 		return _ritualOptions.values();
 		
 	}
-
-	@Override
-	public float getExpectedUtility(AgentModel am, ActivePursuitGoal g) {
-		
-		
-		
-		float probability = am.getDeliberativeLayer().getProbabilityStrategy().getProbability(am, g);
-		
+	
+	private float culturalEU(AgentModel am, ActivePursuitGoal g, float probability)
+	{
 		IUtilityStrategy str =  am.getDeliberativeLayer().getUtilityStrategy();
 		
 		float contributionToSelf = str.getUtility(am, g);
@@ -299,9 +295,28 @@ public class CulturalDimensionsComponent implements IAppraisalComponent, IOption
 	}
 
 	@Override
-	public void updateCycle(AgentModel am,long time) {
-		// TODO Auto-generated method stub
+	public float getExpectedUtility(AgentModel am, ActivePursuitGoal g) {
 		
+		float probability = am.getDeliberativeLayer().getProbabilityStrategy().getProbability(am, g);
+		return culturalEU(am,g,probability);
+	}
+	
+	@Override
+	public float getExpectedUtility(AgentModel am, Intention i) {
+		
+		float probability = am.getDeliberativeLayer().getProbabilityStrategy().getProbability(am, i);
+		
+		return culturalEU(am,i.getGoal(),probability);
+	}
+
+	@Override
+	public void update(AgentModel am,long time) {
+		// TODO Auto-generated method stub
+	}
+	
+	@Override
+	public void update(AgentModel am,Event e) {
+		// TODO Auto-generated method stub
 	}
 
 	@Override
@@ -310,9 +325,8 @@ public class CulturalDimensionsComponent implements IAppraisalComponent, IOption
 	}
 
 	@Override
-	public void continueAppraisal(AgentModel am) {
-		// TODO Auto-generated method stub
-		
+	public void reappraisal(AgentModel am) {
+		// TODO Auto-generated method stub	
 	}
 
 	@Override

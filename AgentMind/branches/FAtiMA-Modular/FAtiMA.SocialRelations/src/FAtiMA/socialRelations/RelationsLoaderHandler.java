@@ -23,8 +23,6 @@ public class RelationsLoaderHandler  extends ReflectXMLHandler{
 	private AgentModel _aM;
 	private float _probability;
     private Substitution _self = new Substitution(new Symbol("[SELF]"), new Symbol(Constants.SELF));
-    
-	
 	
 	public RelationsLoaderHandler(AgentModel aM){
 		_aM = aM;

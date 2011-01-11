@@ -169,7 +169,7 @@ public class SpeechAct extends RemoteAction {
 	{
 		_subject = am.getName();
 		
-		Name action = speechAction.GetAction();
+		Name action = speechAction.getAction();
 		ListIterator<Symbol> li = action.GetLiteralList().listIterator();
 		_actionType = li.next().toString();
 		

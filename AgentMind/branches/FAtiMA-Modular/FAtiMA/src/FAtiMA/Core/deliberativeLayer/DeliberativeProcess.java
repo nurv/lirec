@@ -684,7 +684,7 @@ public class DeliberativeProcess implements Serializable, IComponent, IBehaviour
 	*/
 	
 	@Override
-	public void perceiveEvent(AgentModel am, Event event) {
+	public void update(AgentModel am, Event event) {
 		
 		CheckLinks(am);
 	
@@ -811,7 +811,7 @@ public class DeliberativeProcess implements Serializable, IComponent, IBehaviour
 			if(maxUtility >= MINIMUMUTILITY)
 			{
 				if(_currentIntention == null ||
-						maxUtility > _EUStrategy.getExpectedUtility(am,_currentIntention.getGoal())*SELECTIONTHRESHOLD)
+						maxUtility > _EUStrategy.getExpectedUtility(am,_currentIntention)*SELECTIONTHRESHOLD)
 				{
 					return maxGoal;
 				}
@@ -836,10 +836,10 @@ public class DeliberativeProcess implements Serializable, IComponent, IBehaviour
 		
 		if(_currentIntention != null)
 		{
+			highestUtility = _EUStrategy.getExpectedUtility(am, _currentIntention);
+			
 			maxIntention = _currentIntention;
 			//TODO selection threshold here!
-			
-			highestUtility = _EUStrategy.getExpectedUtility(am, _currentIntention.getGoal());
 		}
 		else
 		{
@@ -858,9 +858,9 @@ public class DeliberativeProcess implements Serializable, IComponent, IBehaviour
 				
 				if(intention != _currentIntention) 
 				{
-					EU = _EUStrategy.getExpectedUtility(am, intention.getGoal()); 
+					EU = _EUStrategy.getExpectedUtility(am, intention); 
 					
-					if(EU > highestUtility)
+					if(EU > highestUtility && EU > MINIMUMUTILITY)
 					{
 						highestUtility = EU;
 						maxIntention = intention;
@@ -885,7 +885,8 @@ public class DeliberativeProcess implements Serializable, IComponent, IBehaviour
 	 * execution.
 	 */
 	@Override
-	public void coping(AgentModel am) {
+	public ValuedAction actionSelection(AgentModel am) {
+		
 		Intention i = null;
 		ActiveEmotion fear;
 		ActiveEmotion hope;
@@ -953,6 +954,7 @@ public class DeliberativeProcess implements Serializable, IComponent, IBehaviour
 					s.perceiveGoalFailure(am, i.getGoal());
 				}
 				i.ProcessIntentionFailure(am);
+				_currentIntention = null;
 				if(i.IsStrongCommitment())
 				{
 					RemoveIntention(i);
@@ -1054,6 +1056,8 @@ public class DeliberativeProcess implements Serializable, IComponent, IBehaviour
 				}
 			}
 		}
+		
+		return GetSelectedAction();
 	}
 	
 	public void AppraiseSelfActionFailed(Event e)
@@ -1072,7 +1076,7 @@ public class DeliberativeProcess implements Serializable, IComponent, IBehaviour
 	 * @return the action selected for execution, or null 
 	 * 	       if no such action exists 
 	 */
-	public ValuedAction GetSelectedAction() {
+	private ValuedAction GetSelectedAction() {
 	 
 		Event e;
 		
@@ -1133,10 +1137,10 @@ public class DeliberativeProcess implements Serializable, IComponent, IBehaviour
 	    	return null;
 	    }
 	    
-	    return new ValuedAction(_selectedAction.getName(),_selectedActionEmotion);
+	    return new ValuedAction(DeliberativeProcess.NAME, _selectedAction.getName(),_selectedActionEmotion);
 	}
 	
-	public void RemoveSelectedAction()
+	public void actionSelectedForExecution(ValuedAction selectedAction)
 	{
 		String action;
 		String target=null;
@@ -1215,6 +1219,10 @@ public class DeliberativeProcess implements Serializable, IComponent, IBehaviour
 	public float getExpectedUtility(AgentModel am, ActivePursuitGoal g) {
 		return _UStrategy.getUtility(am, g) * _PStrategy.getProbability(am, g);
 	}
+	
+	public float getExpectedUtility(AgentModel am, Intention i) {
+		return _UStrategy.getUtility(am, i.getGoal()) * _PStrategy.getProbability(am, i);
+	}
 
 	@Override
 	public String name() {
@@ -1226,7 +1234,7 @@ public class DeliberativeProcess implements Serializable, IComponent, IBehaviour
 	}
 	
 	@Override
-	public void updateCycle(AgentModel am, long time)
+	public void update(AgentModel am, long time)
 	{
 		if(_actionMonitor != null && _actionMonitor.Expired()) {
 			AgentLogger.GetInstance().logAndPrint("Action monitor expired: " + _actionMonitor.toString());
@@ -1260,11 +1268,11 @@ public class DeliberativeProcess implements Serializable, IComponent, IBehaviour
 	}
 	
 	@Override
-	public void startAppraisal(AgentModel am, Event e, AppraisalFrame as) {
+	public void appraisal(AgentModel am, Event e, AppraisalFrame as) {
 	}
 
 	@Override
-	public void continueAppraisal(AgentModel am) {
+	public void reappraisal(AgentModel am) {
 	}
 
 	@Override

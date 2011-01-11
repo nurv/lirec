@@ -24,6 +24,11 @@ import FAtiMA.Core.wellFormedNames.Symbol;
 
 public class ToMComponent implements Serializable, IAppraisalComponent, IProcessPerceptionsComponent, IGetModelStrategy, IGetUtilityForOthers {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public static final String NAME = "ToM";
 	
 	protected String _name;
@@ -100,17 +105,17 @@ public class ToMComponent implements Serializable, IAppraisalComponent, IProcess
 	}
 
 	@Override
-	public void updateCycle(AgentModel am,long time) {
+	public void update(AgentModel am,long time) {
 		
 		for(String s : _nearbyAgents)
 		{
 			ModelOfOther m = _ToM.get(s);
-			m.updateCycle(time);
+			m.update(time);
 		}		
 	}
 	
 	@Override
-	public void perceiveEvent(AgentModel am, Event e)
+	public void update(AgentModel am, Event e)
 	{
 		Event e2 = e.RemovePerspective(_name);
 		Event e3;
@@ -118,12 +123,12 @@ public class ToMComponent implements Serializable, IAppraisalComponent, IProcess
 		{
 			ModelOfOther m = _ToM.get(s);
 			e3 = e2.ApplyPerspective(s);
-			m.perceiveEvent(e3);
+			m.update(e3);
 		}		
 	}
 
 	@Override
-	public void startAppraisal(AgentModel am, Event e, AppraisalFrame as) {
+	public void appraisal(AgentModel am, Event e, AppraisalFrame as) {
 		
 		Event e2 = e.RemovePerspective(_name);
 		Event e3;
@@ -165,7 +170,6 @@ public class ToMComponent implements Serializable, IAppraisalComponent, IProcess
 	public void propertyChangedPerception(String ToM, Name propertyName, String value) 
 	{
 		Name propertyName2 = AgentCore.removePerspective(propertyName, _name);
-		
 		
 		if(ToM.equals(Constants.UNIVERSAL.toString()))
 		{
@@ -248,7 +252,7 @@ public class ToMComponent implements Serializable, IAppraisalComponent, IProcess
 	}
 
 	@Override
-	public void continueAppraisal(AgentModel am) {
+	public void reappraisal(AgentModel am) {
 	}
 
 	@Override

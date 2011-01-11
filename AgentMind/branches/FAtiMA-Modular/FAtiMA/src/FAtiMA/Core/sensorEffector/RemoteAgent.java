@@ -236,7 +236,7 @@ public abstract class RemoteAgent extends SocketListener {
 	
 	public void cancelAction(String action)
 	{
-		if(_currentAction != null && _currentAction.GetAction().GetFirstLiteral().toString().equals(action))
+		if(_currentAction != null && _currentAction.getAction().GetFirstLiteral().toString().equals(action))
 		{
 			RemoteAction ra = new RemoteAction(_agent, _currentAction);
 			sendCancelActionMsg(ra);
@@ -465,7 +465,7 @@ public abstract class RemoteAgent extends SocketListener {
 		String actionName;
 		RemoteAction rAction;
 		
-		actionName = vAction.GetAction().GetFirstLiteral().toString();
+		actionName = vAction.getAction().GetFirstLiteral().toString();
 		
 		//if the action corresponds to a speech act...
 		if(SpeechAct.isSpeechAct(actionName)) {

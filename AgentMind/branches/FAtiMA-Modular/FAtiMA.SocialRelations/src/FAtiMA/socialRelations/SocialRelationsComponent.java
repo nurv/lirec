@@ -26,6 +26,11 @@ import FAtiMA.Core.util.enumerables.EmotionType;
 
 public class SocialRelationsComponent implements Serializable, IAppraisalComponent, IModelOfOtherComponent, IProcessEmotionComponent {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
 	public static final String NAME = "SocialRelations";
 	private ArrayList<String> _parsingFiles;
 	
@@ -72,16 +77,16 @@ public class SocialRelationsComponent implements Serializable, IAppraisalCompone
 	}
 
 	@Override
-	public void updateCycle(AgentModel am, long time) {
+	public void update(AgentModel am, long time) {
 	}
 	
 	@Override
-	public void perceiveEvent(AgentModel am, Event e)
+	public void update(AgentModel am, Event e)
 	{
 	}
 
 	@Override
-	public void startAppraisal(AgentModel am, Event e, AppraisalFrame as) {
+	public void appraisal(AgentModel am, Event e, AppraisalFrame as) {
 		if(e.GetSubject().equals(Constants.SELF) && e.GetAction().equals("look-at"))
 		{
 			int relationShip = Math.round(LikeRelation.getRelation(Constants.SELF, e.GetTarget()).getValue(am.getMemory()));
@@ -195,7 +200,7 @@ public class SocialRelationsComponent implements Serializable, IAppraisalCompone
 	}
 
 	@Override
-	public void continueAppraisal(AgentModel am) {
+	public void reappraisal(AgentModel am) {
 		// TODO Auto-generated method stub
 		
 	}

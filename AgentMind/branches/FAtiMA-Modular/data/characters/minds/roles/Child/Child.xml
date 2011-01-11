@@ -42,10 +42,7 @@
 		
 	</InterpersonalRelations>
 	
-	<EventReactions>
-		<EmotionalReaction desirability="-4" desirabilityForOther="-4">
-			<Event action="SpeechAct"/>
-		</EmotionalReaction>	
+	<EventReactions>	
 	</EventReactions>
 	
 	<ActionTendencies>

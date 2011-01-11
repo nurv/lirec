@@ -200,7 +200,7 @@ public class Event implements Cloneable, Serializable {
 		
 		e._action = this._action;
 		
-		if(this._target.equals(Constants.SELF))
+		if(this._target != null && this._target.equals(Constants.SELF))
 		{
 			e._target = agentName;
 		}

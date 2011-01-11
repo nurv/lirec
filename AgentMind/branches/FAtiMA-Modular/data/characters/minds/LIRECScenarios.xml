@@ -40,11 +40,12 @@
 			<Objects>
 				<Object name="BoxA"/>
 				<Object name="BoxB"/>
+				<Object name="User"/>
 			</Objects>
 	
 		</WorldSimulator>	
-		<Agent name="Tim" displayName="Tim" role="Child" platform="Ion" host="localhost" 
-			   port="46874" displayMode="False" sex="M" actionsFile="MindBlindnessActions" 
+		<Agent name="Tim" displayName="Tim" role="Child" platform="WorldSim" host="localhost" 
+			   port="46874" displayMode="True" sex="M" actionsFile="MindBlindnessActions" 
 			   goalsFile="LIRECGoalLibrary" cultureName="NoCulture">
 			<Properties>				
 				<Property name="location" value="LivingRoom"/>

@@ -58,6 +58,7 @@ public class ValuedAction implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	private Name _action;
+	private String _component;
 	private String _emotionKey;
 	private float _value;
 
@@ -66,7 +67,8 @@ public class ValuedAction implements Serializable {
 	 * @param action - the action
 	 * @param emotion - the emotion associated to the action
 	 */
-	public ValuedAction(Name action, ActiveEmotion emotion) {
+	public ValuedAction(String component, Name action, ActiveEmotion emotion) {
+		_component = component;
 		_action = action;
 		if(emotion != null) 
 		{
@@ -76,18 +78,24 @@ public class ValuedAction implements Serializable {
 		_value = -1;
 	}
 	
-	public ValuedAction(Name action, float value)
+	public ValuedAction(String component, Name action, float value)
 	{
+		_component = component;
 		_action = action;
 		_emotionKey = null;
 		this._value = value;
+	}
+	
+	public String getComponent()
+	{
+		return this._component;
 	}
 
 	/**
 	 * Gets the Action's name
 	 * @return the action to perform
 	 */
-	public Name GetAction() {
+	public Name getAction() {
 		return _action;
 	}
 	/**
@@ -103,7 +111,7 @@ public class ValuedAction implements Serializable {
 	 * Gets an emotional value associated with the action
 	 * @return a float representing how emotionally important is the action
 	 */
-	public float GetValue(EmotionalState es) {
+	public float getValue(EmotionalState es) {
 		if(_value == -1)
 		{
 			ActiveEmotion aux = getEmotion(es);

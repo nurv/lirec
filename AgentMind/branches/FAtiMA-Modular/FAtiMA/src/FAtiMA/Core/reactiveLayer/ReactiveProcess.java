@@ -91,7 +91,6 @@ public class ReactiveProcess implements Serializable, IComponent, IBehaviourComp
 	
 	private ActionTendencies _actionTendencies;
 	private EmotionalReactionTreeNode _emotionalReactions;
-	private ValuedAction _selectedAction;
 	
 	/**
 	 * Creates a new ReactiveProcess
@@ -161,7 +160,7 @@ public class ReactiveProcess implements Serializable, IComponent, IBehaviourComp
 	 * reaction rules
 	 */
 	@Override
-	public void startAppraisal(AgentModel ag, Event event, AppraisalFrame as) {
+	public void appraisal(AgentModel ag, Event event, AppraisalFrame as) {
 		Reaction selfEvaluation;	
 			
 		
@@ -193,43 +192,18 @@ public class ReactiveProcess implements Serializable, IComponent, IBehaviourComp
 	 * according to the emotional state.
 	 */
 	@Override
-	public void coping(AgentModel am) {
-		ValuedAction action;
-		action = _actionTendencies.SelectAction(am);
-		if(_selectedAction == null || (action != null && action.GetValue(am.getEmotionalState()) > _selectedAction.GetValue(am.getEmotionalState()))) {
-			_selectedAction = action;
-		}
+	public ValuedAction actionSelection(AgentModel am) {
+		return _actionTendencies.SelectAction(am);
 	}
 	
-	/**
-	 * Gets the action selected for execution in the last Coping process,
-	 * @return the action selected for execution
-	 */
-	public ValuedAction GetSelectedAction() {
-		
-		if(_selectedAction == null)
-		{
-			return null;
-		}
-		
-		return _selectedAction;
-	}
-	
-	public void RemoveSelectedAction()
-	{
-		if(_selectedAction == null)
-		{
-			return;
-		}
-		
+	public void actionSelectedForExecution(ValuedAction action)
+	{		
 		/*
 		 * Temporarily removes the action selected for execution. This means 
 		 * that when a action is executed it should not be selected again for a while,
 		 * or else we will have a character reacting in the same way several times
 		 */
-		_actionTendencies.IgnoreActionForDuration(_selectedAction,IGNOREDURATION);
-		
-		_selectedAction = null;
+		_actionTendencies.IgnoreActionForDuration(action,IGNOREDURATION);
 	}
 	
 	/**
@@ -237,7 +211,6 @@ public class ReactiveProcess implements Serializable, IComponent, IBehaviourComp
 	 * were not appraised yet
 	 */
 	public void reset() {
-		_selectedAction = null;
 	}
 	
 	/**
@@ -270,11 +243,11 @@ public class ReactiveProcess implements Serializable, IComponent, IBehaviourComp
 	}
 
 	@Override
-	public void updateCycle(AgentModel am,long time) {
+	public void update(AgentModel am,long time) {
 	}
 	
 	@Override
-	public void perceiveEvent(AgentModel am, Event e)
+	public void update(AgentModel am, Event e)
 	{
 	}
 
@@ -296,8 +269,7 @@ public class ReactiveProcess implements Serializable, IComponent, IBehaviourComp
 	}
 
 	@Override
-	public void continueAppraisal(AgentModel am) {
-		
+	public void reappraisal(AgentModel am) {
 		return;
 	}
 

@@ -26,6 +26,7 @@ import FAtiMA.Core.deliberativeLayer.IGoalFailureStrategy;
 import FAtiMA.Core.deliberativeLayer.IGoalSuccessStrategy;
 import FAtiMA.Core.deliberativeLayer.IProbabilityStrategy;
 import FAtiMA.Core.deliberativeLayer.IUtilityStrategy;
+import FAtiMA.Core.deliberativeLayer.Intention;
 import FAtiMA.Core.deliberativeLayer.goals.ActivePursuitGoal;
 import FAtiMA.Core.deliberativeLayer.plan.Step;
 import FAtiMA.Core.emotionalState.AppraisalFrame;
@@ -271,12 +272,22 @@ public class MotivationalComponent implements Serializable, Cloneable, IAppraisa
 		float utility = am.getDeliberativeLayer().getUtilityStrategy().getUtility(am, g);
 		float probability = am.getDeliberativeLayer().getProbabilityStrategy().getProbability(am, g);
 		
-		
-		float EU = utility * probability + (1 + g.GetGoalUrgency());
-		
+		float EU = utility * probability * (1 + g.GetGoalUrgency());
 		
 		AgentLogger.GetInstance().intermittentLog("Goal: " + g.getName() + " Utilitity: " + utility + " Competence: " + probability +
 				" Urgency: "+ g.GetGoalUrgency() + " Total: " + EU);
+		return EU;
+	}
+	
+	public float getExpectedUtility(AgentModel am, Intention i)
+	{
+		float utility = am.getDeliberativeLayer().getUtilityStrategy().getUtility(am, i.getGoal());
+		float probability = am.getDeliberativeLayer().getProbabilityStrategy().getProbability(am, i);
+		
+		float EU = utility * probability * (1 + i.getGoal().GetGoalUrgency());
+		
+		AgentLogger.GetInstance().intermittentLog("Intention: " + i.getGoal().getName() + " Utilitity: " + utility + " Competence: " + probability +
+				" Urgency: "+ i.getGoal().GetGoalUrgency() + " Total: " + EU);
 		return EU;
 	}
 	
@@ -288,6 +299,11 @@ public class MotivationalComponent implements Serializable, Cloneable, IAppraisa
 	public float getProbability(AgentModel am, ActivePursuitGoal g)
 	{
 		return getCompetence(am,g);
+	}
+	
+	public float getProbability(AgentModel am, Intention i)
+	{
+		return i.GetProbability(am);
 	}
 	
 	public float getCompetence(AgentModel am, ActivePursuitGoal g){
@@ -419,18 +435,17 @@ public class MotivationalComponent implements Serializable, Cloneable, IAppraisa
 	@Override
 	public void reset() {
 		// TODO Auto-generated method stub
-	
 	}
 	
 	@Override
-	public void perceiveEvent(AgentModel am, Event e)
+	public void update(AgentModel am, Event e)
 	{
 		float result =  UpdateMotivators(am, e);
 		_appraisals.put(e.toString(), new Float(result*0.5));
 	}
 
 	@Override
-	public void startAppraisal(AgentModel am, Event e, AppraisalFrame as) {
+	public void appraisal(AgentModel am, Event e, AppraisalFrame as) {
 		Float desirability = _appraisals.get(e.toString());
 		if(desirability != null)
 		{
@@ -453,7 +468,7 @@ public class MotivationalComponent implements Serializable, Cloneable, IAppraisa
 	
 	private void LoadNeeds(AgentModel am)
 	{
-		AgentLogger.GetInstance().log("LOADING Social Relations: ");
+		AgentLogger.GetInstance().log("LOADING Needs: ");
 		NeedsLoaderHandler needsLoader = new NeedsLoaderHandler(am,this);
 		
 		try{
@@ -472,7 +487,7 @@ public class MotivationalComponent implements Serializable, Cloneable, IAppraisa
 
 
 	@Override
-	public void updateCycle(AgentModel am, long time) {
+	public void update(AgentModel am, long time) {
 		_appraisals.clear();
 		if (time >= _lastTime + 1000) {
 			_lastTime = time;
@@ -555,15 +570,13 @@ public class MotivationalComponent implements Serializable, Cloneable, IAppraisa
 
 
 	@Override
-	public void continueAppraisal(AgentModel am) {
+	public void reappraisal(AgentModel am) {
 		// TODO Auto-generated method stub
-		
 	}
 
 
 	@Override
 	public void inverseAppraisal(AgentModel am, AppraisalFrame af) {
 		//TODO
-		
 	}
 }

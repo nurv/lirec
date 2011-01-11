@@ -110,7 +110,7 @@ public class RemoteAction implements Serializable {
 		
 
 		String actionName;
-		ListIterator<Symbol> li = va.GetAction().GetLiteralList().listIterator();
+		ListIterator<Symbol> li = va.getAction().GetLiteralList().listIterator();
 		
 		actionName = li.next().toString();
 		_actionType = actionName;

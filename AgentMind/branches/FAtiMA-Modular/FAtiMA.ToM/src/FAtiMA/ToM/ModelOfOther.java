@@ -80,24 +80,24 @@ public class ModelOfOther implements AgentModel, Serializable {
 		return _name;
 	}
 	
-	public void updateCycle(long time)
+	public void update(long time)
 	{
 		_es.Decay();
 		
 		for(IComponent c : _components.values())
 		{
-			c.updateCycle(this,time);
+			c.update(this,time);
 		}
 	}
 	
-	public void perceiveEvent(Event e)
+	public void update(Event e)
 	{
 		_mem.getEpisodicMemory().StoreAction(_mem, e);
 		_mem.getSemanticMemory().Tell(AgentCore.ACTION_CONTEXT, e.toName().toString());
 		
 		for(IAppraisalComponent c : _appraisalComponents)
 		{
-			c.perceiveEvent(this,e);
+			c.update(this,e);
 		}
 		
 		if(e.GetSubject().equals(Constants.SELF))
@@ -125,7 +125,7 @@ public class ModelOfOther implements AgentModel, Serializable {
 				
 				for(IAffectDerivationComponent c : _affectDerivationComponents)
 				{
-					c.inverseDeriveEmotions(this,perceivedEmotion,af);
+					c.inverseAffectElicitation(this,perceivedEmotion,af);
 				}
 				
 				//updating other's emotional state
@@ -146,7 +146,7 @@ public class ModelOfOther implements AgentModel, Serializable {
 	{	
 		for(IAppraisalComponent ac : _appraisalComponents)
 		{
-			ac.startAppraisal(this,e,as);
+			ac.appraisal(this,e,as);
 		}
 	}
 	
@@ -217,7 +217,7 @@ public class ModelOfOther implements AgentModel, Serializable {
 		
 		for(IAffectDerivationComponent ac : this._affectDerivationComponents)
 		{
-			emotions = ac.deriveEmotions(this, appraisalVariable, af);
+			emotions = ac.affectElicitation(this, appraisalVariable, af);
 			for(BaseEmotion em : emotions)
 			{
 				activeEmotion =  _es.AddEmotion(em, this);

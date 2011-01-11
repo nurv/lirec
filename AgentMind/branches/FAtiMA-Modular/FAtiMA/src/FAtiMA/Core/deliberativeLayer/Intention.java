@@ -36,7 +36,9 @@ package FAtiMA.Core.deliberativeLayer;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.ListIterator;
+import java.util.SortedSet;
 
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.OCCAffectDerivation.OCCComponent;
@@ -61,7 +63,7 @@ public class Intention implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private static final int MAXPLANS = 100;
+	private static final int MAXPLANS = 150;
 	
 	private String _fearEmotionID;
 
@@ -100,10 +102,13 @@ public class Intention implements Serializable {
 	 * @see Plan
 	 */
 	public void AddPlan(Plan p) {
-		if(_planConstruction.size() <= MAXPLANS)
+		
+		//TODO get a sorted list here
+		_planConstruction.add(p);
+		
+		/*if(_planConstruction.size() >= MAXPLANS)
 		{
-			_planConstruction.add(p);
-		}
+		}*/
 	}
 	
 	public void AddPlans(ArrayList<Plan> plans)
@@ -234,14 +239,27 @@ public class Intention implements Serializable {
 	 * @return a float value representing the probability [0;1]
 	 */
 	public float GetProbability(AgentModel am) {
-		ListIterator<Plan> li;
+		
 		float p;
+		float p2;
 		float bestProb = 0;
-		li = _planConstruction.listIterator();
-		while (li.hasNext()) {
-			p = ((Plan) li.next()).getProbability(am);
-			if (p > bestProb) bestProb = p; 
+		float goalProb = am.getDeliberativeLayer().getProbabilityStrategy().getProbability(am, _goal);
+		
+		for(Plan plan : _planConstruction)
+		{
+			p = plan.getProbability(am);
+			if(plan.getOpenPreconditions().size() == 0)
+			{
+				p2 = p;
+			}
+			else
+			{
+				p2 = Math.min(goalProb, p); 
+			}
+			
+			if (p2 > bestProb) bestProb = p2; 
 		}
+		
 		return bestProb;
 	}
 	

@@ -172,7 +172,7 @@ public class AdvancedMemoryComponent implements Serializable, IAppraisalComponen
 	}
 
 	@Override
-	public void updateCycle(AgentModel am, long time) {
+	public void update(AgentModel am, long time) {
 		/*if (time >= _lastTime + 86400000) {
 			_lastTime = time;
 			
@@ -189,12 +189,11 @@ public class AdvancedMemoryComponent implements Serializable, IAppraisalComponen
 	}
 
 	@Override
-	public void perceiveEvent(AgentModel am, Event e) {
-		// TODO Auto-generated method stub
+	public void update(AgentModel am, Event e) {
 	}
 
 	@Override
-	public void startAppraisal(AgentModel am, Event e, AppraisalFrame as) {
+	public void appraisal(AgentModel am, Event e, AppraisalFrame as) {
 		
 		//appraisal from memory
 		ActionDetail ad = new ActionDetail(0,e.GetSubject(),
@@ -308,7 +307,7 @@ public class AdvancedMemoryComponent implements Serializable, IAppraisalComponen
 	}
 
 	@Override
-	public void continueAppraisal(AgentModel am) {
+	public void reappraisal(AgentModel am) {
 	}
 
 	@Override

@@ -1,4 +1,8 @@
-User AskLocation SarahReview Amy
+User SpeechAct Tim startgame
+User SpeechAct Tim restartgame
+User Open BoxA
+User Open BoxB
+user AskLocation SarahReview Amy
 user GreetBack Abbuk
 user GreetBack Errep
 user GreetBack Ikop

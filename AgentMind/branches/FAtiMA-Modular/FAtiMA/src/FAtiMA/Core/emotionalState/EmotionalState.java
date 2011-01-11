@@ -139,6 +139,7 @@ public class EmotionalState implements Serializable {
 		int decay;
 		ActiveEmotion auxEmotion;
 		EmotionDisposition disposition;
+		boolean reappraisal = false;
 		
 		if(potEm == null) return null;
 
@@ -152,6 +153,7 @@ public class EmotionalState implements Serializable {
 		
 		if(_emotionPool.containsKey(potEm.GetHashKey()))
 		{
+			reappraisal = true;
 			_emotionPool.remove(potEm.GetHashKey());
 		}
 		
@@ -159,7 +161,10 @@ public class EmotionalState implements Serializable {
 		{
 			auxEmotion = new ActiveEmotion(potEm, potential, threshold, decay);
 			_emotionPool.put(potEm.GetHashKey(), auxEmotion);
-			this._mood.UpdateMood(auxEmotion);
+			if(!reappraisal)
+			{
+				this._mood.UpdateMood(auxEmotion);
+			}
 			am.getMemory().getEpisodicMemory().AssociateEmotionToAction(am.getMemory(), 
 					auxEmotion,
 					auxEmotion.GetCause());

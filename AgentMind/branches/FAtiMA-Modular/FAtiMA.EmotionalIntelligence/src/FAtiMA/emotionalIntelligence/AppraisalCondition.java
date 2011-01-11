@@ -12,6 +12,7 @@ import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Substitution;
 import FAtiMA.Core.wellFormedNames.SubstitutionSet;
 import FAtiMA.Core.wellFormedNames.Symbol;
+import FAtiMA.advancedMemoryComponent.AdvancedMemoryComponent;
 
 public class AppraisalCondition extends PastEventCondition {
 
@@ -63,6 +64,10 @@ public class AppraisalCondition extends PastEventCondition {
 		this._name = Name.ParseName("Appraisal(" + aux + ")");
 	}
 	
+	public boolean CheckCondition(AgentModel am) {
+		return this._action.isGrounded();		 
+	}
+	
 	public Object clone()
 	{
 		AppraisalCondition newCondition = new AppraisalCondition();
@@ -97,88 +102,13 @@ public class AppraisalCondition extends PastEventCondition {
 		
 		return newCondition;	
 	}
-	
+
 	public Object GenerateName(int id) {
 		AppraisalCondition c = (AppraisalCondition) this.clone();
 		c.ReplaceUnboundVariables(id);
 		return c;
 	}
 
-	public void ReplaceUnboundVariables(int variableID) {
-		this._value.ReplaceUnboundVariables(variableID);
-		this._ToM.ReplaceUnboundVariables(variableID);
-		
-		this._name.ReplaceUnboundVariables(variableID);
-		this._subject.ReplaceUnboundVariables(variableID);
-		this._action.ReplaceUnboundVariables(variableID);
-		
-		if(this._target != null)
-		{
-			this._target.ReplaceUnboundVariables(variableID);
-		}
-		
-		ListIterator<Symbol> li = this._parameters.listIterator();
-		while(li.hasNext())
-		{
-			li.next().ReplaceUnboundVariables(variableID);
-		}
-	}
-
-	public Object Ground(ArrayList<Substitution> bindingConstraints) {
-		
-		AppraisalCondition c = (AppraisalCondition) this.clone();
-		c.MakeGround(bindingConstraints);
-		return c;
-	}
-
-	public void MakeGround(ArrayList<Substitution> bindings) {
-		this._value.MakeGround(bindings);
-		
-		this._name.MakeGround(bindings);
-		this._ToM.MakeGround(bindings);
-		this._subject.MakeGround(bindings);
-		this._action.MakeGround(bindings);
-		if(this._target != null)
-		{
-			this._target.MakeGround(bindings);
-		}
-		
-		ListIterator<Symbol> li = this._parameters.listIterator();
-		while(li.hasNext())
-		{
-			li.next().MakeGround(bindings);
-		}
-	}
-
-	public Object Ground(Substitution subst) {
-		AppraisalCondition c = (AppraisalCondition) this.clone();
-		c.MakeGround(subst);
-		return c;
-	}
-
-	public void MakeGround(Substitution subst) {
-		this._value.MakeGround(subst);
-		
-		this._name.MakeGround(subst);
-		this._ToM.MakeGround(subst);
-		this._subject.MakeGround(subst);
-		this._action.MakeGround(subst);
-		if(this._target != null)
-		{
-			this._target.MakeGround(subst);
-		}
-		
-		ListIterator<Symbol> li = this._parameters.listIterator();
-		while(li.hasNext())
-		{
-			li.next().MakeGround(subst);
-		}
-	}
-	
-	public boolean CheckCondition(AgentModel am) {
-		return this._action.isGrounded();		 
-	}
-	
 	public ArrayList<SubstitutionSet> GetValidBindings(AgentModel am) {
 		
 		Symbol target;
@@ -186,6 +116,7 @@ public class AppraisalCondition extends PastEventCondition {
 		ArrayList<SubstitutionSet> subs = new ArrayList<SubstitutionSet>();
 		SubstitutionSet sset;
 		float mood;
+		AdvancedMemoryComponent advMem;
 	
 		AgentModel modelToTest = am.getModelToTest(this._ToM);
 	 	
@@ -219,10 +150,11 @@ public class AppraisalCondition extends PastEventCondition {
 		
 		String question = "action";
 		
-		 
-		/*am.getSpreadActivate().Spread(question, knownInfo, modelToTest.getMemory().getEpisodicMemory());
+		advMem = (AdvancedMemoryComponent) am.getComponent(AdvancedMemoryComponent.NAME);
 		
-		ArrayList<ActionDetail> details = am.getSpreadActivate().getDetails();
+		advMem.getSpreadActivate().Spread(question, knownInfo, modelToTest.getMemory().getEpisodicMemory());
+		
+		ArrayList<ActionDetail> details = advMem.getSpreadActivate().getDetails();
 		
 		if(details.size() > 0)
 		{
@@ -243,8 +175,79 @@ public class AppraisalCondition extends PastEventCondition {
 			}
 			
 			return subs;
-		}*/
+		}
 	
 		return null;
+	}
+
+	public Object Ground(ArrayList<Substitution> bindingConstraints) {
+		
+		AppraisalCondition c = (AppraisalCondition) this.clone();
+		c.MakeGround(bindingConstraints);
+		return c;
+	}
+
+	public Object Ground(Substitution subst) {
+		AppraisalCondition c = (AppraisalCondition) this.clone();
+		c.MakeGround(subst);
+		return c;
+	}
+
+	public void MakeGround(ArrayList<Substitution> bindings) {
+		this._value.MakeGround(bindings);
+		
+		this._name.MakeGround(bindings);
+		this._ToM.MakeGround(bindings);
+		this._subject.MakeGround(bindings);
+		this._action.MakeGround(bindings);
+		if(this._target != null)
+		{
+			this._target.MakeGround(bindings);
+		}
+		
+		ListIterator<Symbol> li = this._parameters.listIterator();
+		while(li.hasNext())
+		{
+			li.next().MakeGround(bindings);
+		}
+	}
+	
+	public void MakeGround(Substitution subst) {
+		this._value.MakeGround(subst);
+		
+		this._name.MakeGround(subst);
+		this._ToM.MakeGround(subst);
+		this._subject.MakeGround(subst);
+		this._action.MakeGround(subst);
+		if(this._target != null)
+		{
+			this._target.MakeGround(subst);
+		}
+		
+		ListIterator<Symbol> li = this._parameters.listIterator();
+		while(li.hasNext())
+		{
+			li.next().MakeGround(subst);
+		}
+	}
+	
+	public void ReplaceUnboundVariables(int variableID) {
+		this._value.ReplaceUnboundVariables(variableID);
+		this._ToM.ReplaceUnboundVariables(variableID);
+		
+		this._name.ReplaceUnboundVariables(variableID);
+		this._subject.ReplaceUnboundVariables(variableID);
+		this._action.ReplaceUnboundVariables(variableID);
+		
+		if(this._target != null)
+		{
+			this._target.ReplaceUnboundVariables(variableID);
+		}
+		
+		ListIterator<Symbol> li = this._parameters.listIterator();
+		while(li.hasNext())
+		{
+			li.next().ReplaceUnboundVariables(variableID);
+		}
 	}
 }

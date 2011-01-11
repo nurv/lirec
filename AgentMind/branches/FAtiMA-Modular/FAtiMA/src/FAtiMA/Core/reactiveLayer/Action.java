@@ -228,7 +228,7 @@ public class Action implements IIntegrityTester, Serializable, IGroundable, Clon
 							//who's intensity is greater than the specified minimum intensity (for this particular action)
 							if (em.GetIntensity() > maxValue && action.isGrounded()) {
 								maxValue = em.GetIntensity();
-								va = new ValuedAction(action, em);
+								va = new ValuedAction(ReactiveProcess.NAME, action, em);
 							}
 						}
 					}

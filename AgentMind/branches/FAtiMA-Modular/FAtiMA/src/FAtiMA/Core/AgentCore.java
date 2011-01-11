@@ -313,7 +313,7 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 		
 		c.initialize(this);
 		AgentDisplayPanel panel = c.createDisplayPanel(this);
-		if(panel != null)
+		if(panel != null & _showStateWindow)
 		{
 			this._agentDisplay.AddPanel(panel, c.name(),"");
 		}
@@ -621,6 +621,9 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 	 */
 	public void Run() {
 		ValuedAction action;
+		ValuedAction bestAction;
+		float bestActionValue;
+		float value;
 		AppraisalFrame appraisal;
 		
 		long updateTime = System.currentTimeMillis();
@@ -640,7 +643,7 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 
 					for(IComponent c : this._generalComponents.values())
 					{
-						c.updateCycle(this, AgentSimulationTime.GetInstance().Time());
+						c.update(this, AgentSimulationTime.GetInstance().Time());
 					}
 
 					//perceives and appraises new events
@@ -654,12 +657,15 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 							_memory.getEpisodicMemory().StoreAction(_memory, e2);
 							_memory.getSemanticMemory().Tell(ACTION_CONTEXT, e2.toName().toString());
 							
+							for(IComponent c : this._generalComponents.values())
+							{
+								c.update(this, e2);
+							}
 							
 							appraisal = new AppraisalFrame(this,e2);
 							for(IAppraisalComponent c : this._appraisalComponents)
 							{
-								c.perceiveEvent(this,e2);
-								c.startAppraisal(this,e2, appraisal);
+								c.appraisal(this,e2, appraisal);
 							}
 						}
 						this._perceivedEvents.clear();
@@ -667,7 +673,7 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 					
 					for(IAppraisalComponent c : this._appraisalComponents)
 					{
-						c.continueAppraisal(this);
+						c.reappraisal(this);
 					}
 					
 					//if there was new data or knowledge added we must apply inference operators
@@ -696,32 +702,29 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 					}
 
 
+					bestActionValue = 0;
+					bestAction = null;
+					
 					for(IBehaviourComponent c : this._behaviourComponents)
 					{
-						c.coping(this);
-					}
-
-					if(_remoteAgent.FinishedExecuting() && _remoteAgent.isRunning()) {
-
-						//action = FilterSpeechAction(_reactiveLayer.GetSelectedAction());
-						action = _reactiveLayer.GetSelectedAction();
-
-						if(action != null) 
+						action = c.actionSelection(this);
+						if(action!= null)
 						{
-							_reactiveLayer.RemoveSelectedAction();
-							_remoteAgent.AddAction(action);
-						}
-						else
-						{
-							//TODO check this FilterSpeechAction
-							//action = FilterSpeechAction(_deliberativeLayer.GetSelectedAction());
-							action = _deliberativeLayer.GetSelectedAction();
-							if(action != null)
+							value = action.getValue(_emotionalState);
+							if(value > bestActionValue)
 							{
-								_deliberativeLayer.RemoveSelectedAction();
-								_remoteAgent.AddAction(action);
+								bestActionValue = value;
+								bestAction = action;
 							}
 						}
+						
+					}
+
+					if(_remoteAgent.FinishedExecuting() && _remoteAgent.isRunning() && bestAction != null) {
+						
+						_remoteAgent.AddAction(bestAction);
+						IBehaviourComponent c = (IBehaviourComponent) getComponent(bestAction.getComponent());
+						c.actionSelectedForExecution(bestAction);
 
 						_remoteAgent.ExecuteNextAction(this);
 					}
@@ -873,29 +876,6 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 		}
 	}
 
-	protected ValuedAction SelectBestAction() {
-
-		ValuedAction bestAction = null;
-		ValuedAction action;
-		int removeHere=-1;
-
-		for(int i=0; i < _actionsForExecution.size(); i++)
-		{
-			action = (ValuedAction) _actionsForExecution.get(i);
-			if(bestAction == null || action.GetValue(_emotionalState) > bestAction.GetValue(_emotionalState))
-			{
-				bestAction = action;
-				removeHere = i;
-			}
-		}
-
-		if(bestAction != null)
-		{
-			_actionsForExecution.remove(removeHere);
-		}
-		return bestAction;
-	}
-
 	/**
 	 * Gets the gender of the agent
 	 * @return the agent's sex
@@ -1044,7 +1024,7 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 		
 		for(IAffectDerivationComponent ac : this._affectDerivationComponents)
 		{
-			emotions = ac.deriveEmotions(this, appraisalVariable, af);
+			emotions = ac.affectElicitation(this, appraisalVariable, af);
 			for(BaseEmotion em : emotions)
 			{
 				activeEmotion = _emotionalState.AddEmotion(em, this);

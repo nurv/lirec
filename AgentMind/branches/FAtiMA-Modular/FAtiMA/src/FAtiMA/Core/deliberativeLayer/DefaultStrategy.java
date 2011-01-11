@@ -16,6 +16,11 @@ public class DefaultStrategy implements Serializable, IUtilityStrategy, IProbabi
 	{
 		return g.getProbability(am);
 	}
+	
+	public float getProbability(AgentModel am, Intention i)
+	{
+		return i.GetProbability(am);
+	}
 
 	@Override
 	public float getUtilityForOthers(AgentModel am, ActivePursuitGoal g) {

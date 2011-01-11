@@ -115,7 +115,7 @@ public class ActionTendencies implements Serializable, Cloneable {
 	 */
 	public void IgnoreActionForDuration(ValuedAction va, long time) {
 		Long wakeUpTime = new Long(AgentSimulationTime.GetInstance().Time() + time);
-		_filteredActions.put(va.GetAction().toString(),wakeUpTime);
+		_filteredActions.put(va.getAction().toString(),wakeUpTime);
 	}
 	
 	public void ClearFilters()
@@ -124,7 +124,7 @@ public class ActionTendencies implements Serializable, Cloneable {
 	}
 	
 	protected boolean isIgnored(ValuedAction va) {
-		String actionName = va.GetAction().toString();
+		String actionName = va.getAction().toString();
 		if(_filteredActions.containsKey(actionName)) {
 			Long wakeUpTime = (Long)_filteredActions.get(actionName);
 			return AgentSimulationTime.GetInstance().Time() < wakeUpTime.longValue();
@@ -150,7 +150,7 @@ public class ActionTendencies implements Serializable, Cloneable {
 			a = it.next();
 			va = a.TriggerAction(am, emState.GetEmotionsIterator());
 			if (va != null && !isIgnored(va)) {
-				if(bestAction == null || va.GetValue(emState) > bestAction.GetValue(emState)) 
+				if(bestAction == null || va.getValue(emState) > bestAction.getValue(emState)) 
 				{
 				    bestAction = va;
 				}

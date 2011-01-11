@@ -135,17 +135,72 @@ public class ActionsLoaderHandler extends ReflectXMLHandler {
 		  _precondition = false;
 	}
 
+	public void EmotionCondition(Attributes attributes)
+	{
+		EmotionCondition ec;
+		try
+		{
+			ec = EmotionCondition.ParseEmotionCondition(attributes);
+			//ec.MakeGround(_self);
+			if(_precondition) 
+			  	_currentOperator.AddPrecondition(ec);
+			else {
+			  	String operatorName = _currentOperator.getName().GetFirstLiteral().toString();
+			  	_currentOperator.AddEffect(new Effect(_am, operatorName,_probability, ec));	
+			}
+		}
+		catch(InvalidEmotionTypeException e)
+		{
+			e.printStackTrace();
+		}
+	}
+	
 	/**
 	 * @return
 	 */
 	public ArrayList<Step> getOperators() {
 		return _operators;
 	}
+    
+	public void MoodCondition(Attributes attributes)
+    {
+    	MoodCondition mc;
+    	
+    	try
+    	{
+    		mc = MoodCondition.ParseMoodCondition(attributes);
+        	//mc.MakeGround(_self);
+        	if(_precondition) 
+    		  	_currentOperator.AddPrecondition(mc);
+    		else {
+    		  	String operatorName = _currentOperator.getName().GetFirstLiteral().toString();
+    		  	_currentOperator.AddEffect(new Effect(_am, operatorName,_probability, mc));	
+    		}
+    	}
+    	catch(Exception e)
+    	{
+    		e.printStackTrace();
+    	}
+    }
+	
+	public void NewEvent(Attributes attributes)
+	{
+		RecentEventCondition event;
+		event = new NewEventCondition(PastEventCondition.ParseEvent(attributes));
+		//event.MakeGround(_self);
+		
+		if(_precondition) 
+		  	_currentOperator.AddPrecondition(event);
+		else {
+		  String operatorName = _currentOperator.getName().GetFirstLiteral().toString();
+		  _currentOperator.AddEffect(new Effect(_am, operatorName,_probability, event));	
+		}
+	}
 	
 	public void PreConditions(Attributes attributes) {
 		  _precondition = true;
 	}
-    
+	
 	public void Predicate(Attributes attributes) {
 		PredicateCondition p;
 		
@@ -174,6 +229,8 @@ public class ActionsLoaderHandler extends ReflectXMLHandler {
 	  }
 	}
 	
+	
+	
 	public void RecentEvent(Attributes attributes)
 	{
 		RecentEventCondition event;
@@ -187,61 +244,4 @@ public class ActionsLoaderHandler extends ReflectXMLHandler {
 		  _currentOperator.AddEffect(new Effect(_am, operatorName,_probability, event));	
 		}
 	}
-	
-	public void NewEvent(Attributes attributes)
-	{
-		RecentEventCondition event;
-		event = new NewEventCondition(PastEventCondition.ParseEvent(attributes));
-		//event.MakeGround(_self);
-		
-		if(_precondition) 
-		  	_currentOperator.AddPrecondition(event);
-		else {
-		  String operatorName = _currentOperator.getName().GetFirstLiteral().toString();
-		  _currentOperator.AddEffect(new Effect(_am, operatorName,_probability, event));	
-		}
-	}
-	
-	public void EmotionCondition(Attributes attributes)
-	{
-		EmotionCondition ec;
-		try
-		{
-			ec = EmotionCondition.ParseEmotionCondition(attributes);
-			//ec.MakeGround(_self);
-			if(_precondition) 
-			  	_currentOperator.AddPrecondition(ec);
-			else {
-			  	String operatorName = _currentOperator.getName().GetFirstLiteral().toString();
-			  	_currentOperator.AddEffect(new Effect(_am, operatorName,_probability, ec));	
-			}
-		}
-		catch(InvalidEmotionTypeException e)
-		{
-			e.printStackTrace();
-		}
-	}
-	
-	
-	
-	public void MoodCondition(Attributes attributes)
-    {
-    	MoodCondition mc;
-    	
-    	try
-    	{
-    		mc = MoodCondition.ParseMoodCondition(attributes);
-        	//mc.MakeGround(_self);
-        	if(_precondition) 
-    		  	_currentOperator.AddPrecondition(mc);
-    		else {
-    		  	String operatorName = _currentOperator.getName().GetFirstLiteral().toString();
-    		  	_currentOperator.AddEffect(new Effect(_am, operatorName,_probability, mc));	
-    		}
-    	}
-    	catch(Exception e)
-    	{
-    		e.printStackTrace();
-    	}
-    }
 }

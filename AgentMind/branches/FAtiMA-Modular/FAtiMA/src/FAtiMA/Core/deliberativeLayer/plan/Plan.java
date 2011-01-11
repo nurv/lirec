@@ -132,6 +132,10 @@ public class Plan implements Cloneable, Serializable
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	private static int planCounter = 0;
+	
+	private int _id;
 
     private Step _finish;
 
@@ -169,6 +173,7 @@ public class Plan implements Cloneable, Serializable
 
     protected Plan()
     {
+    	_id = ++Plan.planCounter;
     }
 
     /**
@@ -227,6 +232,8 @@ public class Plan implements Cloneable, Serializable
     public Plan(ArrayList<ProtectedCondition> protectedConditions, IDetectThreatStrategy strat, 
             ArrayList<Condition> finishConditions)
     {
+    	
+    	_id = ++Plan.planCounter;
         _valid = true;
         _stepCounter = 0;
         _links = new ArrayList<CausalLink>();
@@ -864,6 +871,11 @@ public class Plan implements Cloneable, Serializable
 
         return p;
     }
+    
+    public int getID()
+    {
+    	return _id;
+    }
 
     /**
      * Gets the special Finish Step
@@ -909,6 +921,11 @@ public class Plan implements Cloneable, Serializable
     public ArrayList<OpenPrecondition> getOpenPreconditions()
     {
         return _openPreconditions;
+    }
+    
+    public void debug()
+    {
+    	
     }
 
     /**
@@ -1011,6 +1028,7 @@ public class Plan implements Cloneable, Serializable
      */
     public float h(AgentModel am)
     {
+    	//TODO redo this heuristic function
         return (1 + (_steps.size() * 2) + _openPreconditions.size() + _protectionThreats
                 .size() * 2)
                 / this.getProbability(am);
