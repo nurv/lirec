@@ -3,7 +3,7 @@ package FAtiMA.Core;
 import FAtiMA.Core.emotionalState.AppraisalFrame;
 import FAtiMA.Core.sensorEffector.Event;
 
-public interface IAppraisalComponent extends IComponent {
+public interface IAppraisalDerivationComponent extends IComponent {
 	
 	public void appraisal(AgentModel am, Event e, AppraisalFrame af);
 	

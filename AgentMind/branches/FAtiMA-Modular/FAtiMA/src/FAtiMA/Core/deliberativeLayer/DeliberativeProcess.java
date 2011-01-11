@@ -125,7 +125,7 @@ import java.util.ListIterator;
 import java.util.Set;
 
 import FAtiMA.Core.AgentModel;
-import FAtiMA.Core.IAppraisalComponent;
+import FAtiMA.Core.IAppraisalDerivationComponent;
 import FAtiMA.Core.IBehaviourComponent;
 import FAtiMA.Core.IComponent;
 import FAtiMA.Core.IModelOfOtherComponent;
@@ -160,7 +160,7 @@ import FAtiMA.Core.wellFormedNames.Unifier;
  * 
  * @author João Dias
  */
-public class DeliberativeProcess implements Serializable, IComponent, IBehaviourComponent, IModelOfOtherComponent, IAppraisalComponent, IOptionsStrategy, IExpectedUtilityStrategy {
+public class DeliberativeProcess implements Serializable, IComponent, IBehaviourComponent, IModelOfOtherComponent, IAppraisalDerivationComponent, IOptionsStrategy, IExpectedUtilityStrategy {
 	
 	/**
 	 * 

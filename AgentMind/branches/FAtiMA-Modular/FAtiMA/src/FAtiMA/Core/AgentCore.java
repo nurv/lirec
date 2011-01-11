@@ -71,7 +71,7 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 	protected ArrayList<IProcessExternalRequestComponent> _processExternalRequestComponents;
 	protected ArrayList<IAdvancedPerceptionsComponent> _processPerceptionsComponents;
 	protected ArrayList<IAffectDerivationComponent> _affectDerivationComponents;
-	protected ArrayList<IAppraisalComponent> _appraisalComponents;
+	protected ArrayList<IAppraisalDerivationComponent> _appraisalComponents;
 	
 	protected EmotionalState _emotionalState;
 	protected Memory _memory;
@@ -125,7 +125,7 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 		_processExternalRequestComponents = new ArrayList<IProcessExternalRequestComponent>();
 		_processPerceptionsComponents = new ArrayList<IAdvancedPerceptionsComponent>();
 		_affectDerivationComponents = new ArrayList<IAffectDerivationComponent>();
-		_appraisalComponents = new ArrayList<IAppraisalComponent>();
+		_appraisalComponents = new ArrayList<IAppraisalDerivationComponent>();
 		
 		AgentSimulationTime.GetInstance(); //This call will initialize the timer for the agent's simulation time
 	}
@@ -305,9 +305,9 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 		{
 			_affectDerivationComponents.add((IAffectDerivationComponent) c);
 		}
-		if(c instanceof IAppraisalComponent)
+		if(c instanceof IAppraisalDerivationComponent)
 		{
-			_appraisalComponents.add((IAppraisalComponent) c);
+			_appraisalComponents.add((IAppraisalDerivationComponent) c);
 		}
 		
 		c.initialize(this);
@@ -457,7 +457,7 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 		this._processExternalRequestComponents = (ArrayList<IProcessExternalRequestComponent>) s.readObject();
 		this._processPerceptionsComponents = (ArrayList<IAdvancedPerceptionsComponent>) s.readObject();
 		this._affectDerivationComponents = (ArrayList<IAffectDerivationComponent>) s.readObject();
-		this._appraisalComponents = (ArrayList<IAppraisalComponent>) s.readObject();
+		this._appraisalComponents = (ArrayList<IAppraisalDerivationComponent>) s.readObject();
 		
 		s.close();
 		in.close();
@@ -662,7 +662,7 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 							}
 							
 							appraisal = new AppraisalFrame(this,e2);
-							for(IAppraisalComponent c : this._appraisalComponents)
+							for(IAppraisalDerivationComponent c : this._appraisalComponents)
 							{
 								c.appraisal(this,e2, appraisal);
 							}
@@ -670,7 +670,7 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 						this._perceivedEvents.clear();
 					}
 					
-					for(IAppraisalComponent c : this._appraisalComponents)
+					for(IAppraisalDerivationComponent c : this._appraisalComponents)
 					{
 						c.reappraisal(this);
 					}
@@ -1003,7 +1003,7 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 			this._processExternalRequestComponents = (ArrayList<IProcessExternalRequestComponent>) s.readObject();
 			this._processPerceptionsComponents = (ArrayList<IAdvancedPerceptionsComponent>) s.readObject();
 			this._affectDerivationComponents = (ArrayList<IAffectDerivationComponent>) s.readObject();
-			this._appraisalComponents = (ArrayList<IAppraisalComponent>) s.readObject();
+			this._appraisalComponents = (ArrayList<IAppraisalDerivationComponent>) s.readObject();
 			
 			AgentSimulationTime.LoadState(s);
 			//this._saveDirectory = (String) s.readObject();
