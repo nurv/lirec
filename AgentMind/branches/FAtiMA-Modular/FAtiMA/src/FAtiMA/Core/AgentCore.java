@@ -1023,7 +1023,7 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 		
 		for(IAffectDerivationComponent ac : this._affectDerivationComponents)
 		{
-			emotions = ac.affectElicitation(this, appraisalVariable, af);
+			emotions = ac.affectDerivation(this, appraisalVariable, af);
 			for(BaseEmotion em : emotions)
 			{
 				activeEmotion = _emotionalState.AddEmotion(em, this);
