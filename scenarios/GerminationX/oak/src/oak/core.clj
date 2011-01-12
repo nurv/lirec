@@ -23,8 +23,9 @@
 ;(world-crank (deref myworld))
 
 (defroutes main-routes
-  (GET "/spirit-islands" []
-       (read-islands "./islands"))     
+  (GET "/spirit-sprites" []
+       (println (read-islands "./public/islands"))
+       (read-islands "./public/islands"))     
   (GET "/agent-info" []
        (json/encode-to-str (map
                             (fn [a]

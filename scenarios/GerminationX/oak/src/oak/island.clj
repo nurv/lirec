@@ -20,7 +20,7 @@
    (map
     (fn [file]
       (let [toks (.split (str file) "-")]
-        {:name (str file)
+        {:name (.substring (str file) 8)
          :position
          {:x (nth toks 2)
           :y (first (.split (nth toks 3) "\\."))}}))
