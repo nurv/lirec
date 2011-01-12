@@ -27,7 +27,7 @@ xsi:noNamespaceSchemaLocation="../../schemas/Character.xsd">
 	</EmotionalThresholds>
 
 	<Goals>
-		
+		<Goal name="Eat([target])" importanceOfSuccess="4" importanceOfFailure="3" />
 	</Goals>
 
 	
