@@ -10,7 +10,7 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import FAtiMA.Core.AgentModel;
-import FAtiMA.Core.IAppraisalComponent;
+import FAtiMA.Core.IAppraisalDerivationComponent;
 import FAtiMA.Core.Display.AgentDisplayPanel;
 import FAtiMA.Core.OCCAffectDerivation.OCCComponent;
 import FAtiMA.Core.conditions.Condition;
@@ -30,7 +30,7 @@ import FAtiMA.Core.wellFormedNames.SubstitutionSet;
 import FAtiMA.Core.wellFormedNames.Symbol;
 
 
-public class CulturalDimensionsComponent implements IAppraisalComponent, IOptionsStrategy, IExpectedUtilityStrategy {
+public class CulturalDimensionsComponent implements IAppraisalDerivationComponent, IOptionsStrategy, IExpectedUtilityStrategy {
 	final String NAME = "CulturalDimensionsComponent";
 	
 	final float ALPHA = 0.3f;
