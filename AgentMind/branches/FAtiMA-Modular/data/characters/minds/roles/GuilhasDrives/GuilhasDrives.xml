@@ -9,7 +9,7 @@
 		<EmotionalThreshold emotion="Relief" threshold="1" decay="5"/>
 		<EmotionalThreshold emotion="Fears-Confirmed" threshold="1" decay="5"/>
 		<EmotionalThreshold emotion="Disappointment" threshold="1" decay="5"/>
-		<EmotionalThreshold emotion="Joy" threshold="3" decay="1"/>
+		<EmotionalThreshold emotion="Joy" threshold="1" decay="1"/>
 		<EmotionalThreshold emotion="Distress" threshold="1" decay="5"/>
 		<EmotionalThreshold emotion="Happy-For" threshold="1" decay="5"/>
 		<EmotionalThreshold emotion="Pitty" threshold="1" decay="5"/>
@@ -35,51 +35,20 @@
 		
 	</EmotionalThresholds>
 
+	
+	<MotivationalParameters>
+		<MotivationalParameter motivator="Affiliation" decayFactor="10" weight="0.425" intensity="8"/>
+		<MotivationalParameter motivator="Integrity" decayFactor="1" weight="0.76" intensity="5"/>
+		<MotivationalParameter motivator="Energy" decayFactor="1" weight="0.7" intensity="6"/>
+		<MotivationalParameter motivator="Certainty" decayFactor="1.5" weight="0.365" intensity="6"/>
+		<MotivationalParameter motivator="Competence" decayFactor="1.5" weight="0.825" intensity="7"/>
+	</MotivationalParameters>
+	
 	<Goals>
-		<Goal name="Eat([target])" importanceOfSuccess="4" importanceOfFailure="3" />
+		<Goal name="Eat([target])"/>
 	</Goals>
-
 	
 	<EventReactions>
-	    
-		<!-- Emotional reactions to seing someone crying -->
-		<EmotionalReaction desirability="-4" desirabilityForOther="-4" praiseworthiness="-4">
-			<Event action="Cry"/>
-		</EmotionalReaction>
-		
-		<EmotionalReaction desirability="-4" praiseworthiness="-3">
-			<Event subject="SELF" action="Cry"/>
-		</EmotionalReaction>
-		
-
-		<EmotionalReaction desirability="-4" praiseworthiness="-4">
-			<Event action="Punch" target="SELF"/>
-		</EmotionalReaction>
-
-		<EmotionalReaction desirability="-3" praiseworthiness="-3">
-			<Event action="Slap" target="SELF"/>
-		</EmotionalReaction>
-
-		<EmotionalReaction desirability="-2" praiseworthiness="-2">
-			<Event action="Kick" target="SELF"/>
-		</EmotionalReaction>
-
-		<EmotionalReaction desirability="4" praiseworthiness="1">
-			<Event action="Hug" target="SELF"/>
-		</EmotionalReaction>
-
-		<EmotionalReaction desirability="3">
-			<Event action="Compliment" target="SELF"/>
-		</EmotionalReaction>
-
-		<EmotionalReaction desirability="4">
-			<Event subject="SELF" action="Eat" target="chocolate"/>
-		</EmotionalReaction>
-
-		<EmotionalReaction desirability="-2">
-			<Event subject="SELF" action="Eat" target="apple"/>
-		</EmotionalReaction>
-
       
 	</EventReactions>
 	

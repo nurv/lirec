@@ -9,6 +9,13 @@ xsi:noNamespaceSchemaLocation="./schemas/GoalLibrary.xsd">
 			<NewEvent occurred="True" subject="SELF" action="Eat" target="[target]" />
 		</SucessConditions>
 		<FailureConditions>
-		</FailureConditions>	
+		</FailureConditions>
+		
+		
+		<ExpectedEffects>
+			<OnSelect drive="Energy" target="[SELF]" value="+2"/>	
+		</ExpectedEffects>
+		
 	</ActivePursuitGoal>
+	
 </GoalLibrary>
