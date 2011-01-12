@@ -1,0 +1,1 @@
+haxe compile.hxml ; cp fungi.swf ../../oak/public/
