@@ -27,17 +27,31 @@ class RndGen
 	public function Seed(s:Int)
 	{
 		State=s;
+        WarmUp();
 	}
 	
+    public function WarmUp()
+    {
+        for (i in 0...10)
+        {
+            RndInt();
+        }
+    }
+
 	public function RndInt() : Int
 	{
-		State=cast(10331*State+1203432033,Int);
-		return State;
+		State=cast(State*214013+2531011,Int);
+		return cast(Math.abs(State),Int);
 	}
 	
 	public function RndFlt() : Float
 	{
 		return RndInt()/Math.pow(2,32)+0.5;
 	}
+
+    public function Choose(arr:Array<Dynamic>)
+    {
+        return arr[RndInt()%arr.length];
+    }
 	
 }

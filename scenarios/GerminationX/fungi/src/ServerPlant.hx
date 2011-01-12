@@ -22,4 +22,5 @@ class ServerPlant
 	public var y:Int;
 	public var owner:String;
 	public var type:Int;
+    public var size:Int;
 }

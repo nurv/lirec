@@ -47,4 +47,14 @@ class Vec3
 						y*(1-t) + other.y*t,
 						z*(1-t) + other.z*t);
 	}
+
+	public function Eq(other:Vec3) : Bool
+	{
+		return x==other.x && y==other.y && z==other.z;
+	}
+
+    public function AsStr()
+    {
+        return Std.string(x)+", "+Std.string(y)+", "+Std.string(z);
+    }
 }

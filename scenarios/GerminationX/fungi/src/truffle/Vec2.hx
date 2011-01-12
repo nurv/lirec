@@ -55,4 +55,14 @@ class Vec2
 		return new Vec2(x*(1-t) + other.x*t,
 						y*(1-t) + other.y*t);
 	}
+
+	public function Eq(other:Vec2) : Bool
+	{
+		return x==other.x && y==other.y;
+	}
+
+    public function AsStr()
+    {
+        return Std.string(x)+", "+Std.string(y);
+    }
 }

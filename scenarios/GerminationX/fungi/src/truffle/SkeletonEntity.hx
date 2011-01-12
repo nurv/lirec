@@ -21,7 +21,9 @@ import truffle.Graph;
 class SkeletonEntity extends truffle.Entity
 {
     public var Root:Bone;
-		
+	var g:Graph;
+    var bones:Array<Bone>;
+
 	public function new(world:World,pos:Vec3) 
 	{
 		super(world,pos);
@@ -44,59 +46,123 @@ class SkeletonEntity extends truffle.Entity
         return closest;
     }
     
-    public function Build(world:World,desc:Array<Dynamic>)
+    function FindTop(desc:Array<Dynamic>)
     {
-        var bones=new List<Bone>();
-        var root=new Vec2(desc[0].position.x,
-                          desc[0].position.y);
+        var highest=9999;
+        var top=0;
+        var c=0;
         for (d in desc)
         {
-            var b=new Bone(new Vec2(root.x-Std.parseInt(d.position.x),
-                                    root.y-Std.parseInt(d.position.y)),
+            if (d.position.y<highest)
+            {
+                highest=d.position.y;
+                top=c;
+            }
+            c++;
+        }
+        return top;
+    }
+    
+    function BuildBones(desc:Array<Dynamic>)
+    {
+        var bones=new Array<Bone>();
+        for (d in desc)
+        {
+            var b=new Bone(new Vec2(-Std.parseInt(d.position.x),
+                                    -Std.parseInt(d.position.y)),
                                     Resources.Get("test"));
             b.LoadFromURL(d.name);
-            bones.add(b);
+            bones.push(b);
         }
-
-        Root=bones.first();
-        Root.LoadFromURL(desc[0].name);
-        world.AddSprite(Root);
-
-        bones.remove(bones.first());
-        var current=Root;
-        var next=Root;
-
-        for (b in bones)
-        {
-            var c=GetClosest(b.Pos,bones);
-            trace(c);
-            b.AddChild(world,c);
-        }
-
-//        Root.Print();
-
-        var g=new Graph(new List<Edge>());
-        g.AddEdge(new Edge(0,1,9.5));
-        g.AddEdge(new Edge(1,2,1.9));
-        g.AddEdge(new Edge(0,2,0.3));
-        g.Print();
-        g.MST(0).Print();
-
+        return bones;
     }
-		
-	override public function Update(frame:Int, world:truffle.interfaces.World)
-	{
+
+    function CalculateMST(bones:Array<Bone>,root:Int)
+    {
+        var g=new Graph(new List<Edge>());
+        var x=0;
+        var y=0;
+        for (xb in bones)
+        {
+            for (yb in bones)
+            {
+                g.AddEdge(new Edge(x,y,xb.Pos.Sub(yb.Pos).Mag()));
+                y++;
+            }
+            y=0;
+            x++;
+        }
+        return g.MST(root);
+    }
+
+    public function Build(world:World,desc:Array<Dynamic>)
+    {
+        bones=BuildBones(desc);
+        var top=FindTop(desc);
+        g=CalculateMST(bones,top);
+        Root=bones[top];
+        world.AddSprite(Root);
+        var relative = new Array<Vec2>();
+        for (i in 0...bones.length) relative.push(new Vec2(0,0));
+
+        for (edge in g.Edges)
+        {
+            bones[edge.From].AddChild(world,bones[edge.To]);
+            relative[edge.To]=bones[edge.From].Pos.Sub(bones[edge.To].Pos);
+        } 
+
+        for (b in 0...bones.length)
+        {
+            bones[b].Pos=relative[b].Mul(0.5);
+        }
+    }
+
+    override function OnSortScene(order:Int) : Void
+    {
+        Root.SetDepth(order+10);
         Root.Recurse(function(b:Bone,depth:Int) 
         {
-            b.SetRotate(45*Math.sin(frame*0.1));
+            b.SetDepth(order+1);
+        });        
+    }
+
+	override public function Update(frame:Int, world:truffle.interfaces.World)
+	{
+        super.Update(frame,world);
+
+        //Root.SetRotate(25*Math.sin(frame*0.04));
+        //Draw(cast(world,truffle.World));
+
+        //UpdateDepth();
+
+        Root.Recurse(function(b:Bone,depth:Int) 
+        {
+            b.SetRotate(15*Math.sin((10-depth)*0.58+frame*0.04));
         }
         );
 
-        super.Update(frame,world);
         Root.SetPos(new Vec2(Pos.x,Pos.y));
-        Root.Update(frame,world,null);
+        Root.Update(frame,null);
 	}
  
+	public function Draw(world:World)
+	{
+       	world.graphics.clear();
+		world.graphics.lineStyle(1, 0x00aa00, 1);	
+
+        for (e in g.Edges)
+        {
+            var start=bones[e.From].GetGlobalPos();
+            var end=bones[e.To].GetGlobalPos();
+            world.graphics.moveTo(start.x,start.y);
+            world.graphics.lineTo(end.x,end.y);
+            world.graphics.beginFill( 0x99ff33 , 1 );
+            // drawing circle 
+            world.graphics.drawCircle( start.x , start.y , 4 );
+            world.graphics.drawCircle( end.x , end.y , 4 );
+        }
+    }
+
     override public function GetRoot() : Dynamic
     {
         return Root;

@@ -73,10 +73,13 @@ class Graph
     // a safe way to add edges - checks if it exists already
     public function AddEdge(edge:Edge)
     {
-        if (Root==999) Root=edge.From;
-        Edges.add(edge);
-        AddVertex(edge.From);
-        AddVertex(edge.To);
+        //if (!ContainsEdge(edge))
+        {
+            if (Root==999) Root=edge.From;
+            Edges.add(edge);
+            AddVertex(edge.From);
+            AddVertex(edge.To);
+        }
     }
 
     // remove the edge from the graph - warning, doesn't seem to update
@@ -132,7 +135,7 @@ class Graph
         for (edge in Edges)
         {
             if (edge.From==vertex) ret.add(edge);
-            if (edge.To==vertex) ret.add(edge);
+            //if (edge.To==vertex) ret.add(edge);
         }
         return ret;
     }
@@ -179,6 +182,7 @@ class Graph
             var cheapest = candidate_edges.GetCheapestEdge();
             if (cheapest.From==-1 || cheapest.To==-1) 
             {
+                trace("MST error");
                 return new Graph(new List<Edge>());
             }
             candidate_edges.RemoveEdge(cheapest);

@@ -21,14 +21,22 @@ import truffle.interfaces.TextureDesc;
 interface Sprite
 {
     public var Pos:Vec2;
-	public function MouseDown(f:Dynamic -> Void=null) : Void;
+    public var Width:Int;
+    public var Height:Int;
+
+	public function MouseDown(c:Dynamic, f:Dynamic -> Void=null) : Void;
+	public function MouseOver(c:Dynamic, f:Dynamic -> Void=null) : Void;
 	public function ChangeBitmap(t:TextureDesc) : Void;
 
     public function SetPos(s:Vec2) : Void;
 	public function SetScale(s:Vec2) : Void;
 	public function SetRotate(angle:Float) : Void;	
+    public function SetDepth(s:Int) : Void;
+    public function GetDepth(): Int;
+    public function CentreMiddleBottom(s:Bool) : Void;
+    public function Hide(s:Bool) : Void;
 
-	public function Update(frame:Int, world:World, tx:Dynamic) : Void;
+	public function Update(frame:Int, tx:Dynamic) : Void;
 
     public function GetTransform() : Dynamic;
     public function LoadFromURL(url:String) : Void;

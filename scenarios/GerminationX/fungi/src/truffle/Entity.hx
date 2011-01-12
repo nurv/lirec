@@ -21,12 +21,14 @@ class Entity
     public var LogicalPos:Vec3;
     public var Depth:Float;
     public var Pos:Vec3;
+    public var NeedsUpdate:Bool;
 		
 	public function new(w:World,pos:Vec3) 
 	{
         LogicalPos=pos;
         Pos = Pos2PixelPos(LogicalPos);
         Depth = Pos.z;
+        NeedsUpdate=false;
         w.Add(this);
 	}
 
@@ -34,8 +36,8 @@ class Entity
 	{
 		// do the nasty iso conversion
 		// this is actually an orthogonal projection matrix! (I think)
-		return new Vec3(250+(pos.x*36-pos.y*26),
-                        50+(pos.y*18+pos.x*9)-(pos.z*37),
+		return new Vec3(280+(pos.x*36-pos.y*26),
+                        120+(pos.y*18+pos.x*9)-(pos.z*37),
                         pos.x*0.51 + pos.y*0.71 + pos.z*0.47);             
 	}
 		
@@ -48,5 +50,9 @@ class Entity
     public function GetRoot() : Dynamic
     {
         return null;
+    }
+
+    public function OnSortScene(order:Int) : Void
+    {
     }
 }

@@ -13,83 +13,74 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import haxe.Log;
+
 import truffle.Truffle;
 import truffle.interfaces.Key;
 
 import truffle.Vec3;
+import truffle.Vec2;
 import truffle.RndGen;
 import truffle.Circle;
 import truffle.Client;
 import truffle.Entity;
-
+import truffle.SpriteEntity;
+import truffle.SkeletonEntity;
+ 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-class Cube extends Entity 
+class Cube extends SpriteEntity 
 {	
-	public function new(pos:Vec3) 
+	public function new(world:World, pos:Vec3) 
 	{
-		super(pos, Resources.Get("blue-cube"));
+		super(world, pos, Resources.Get("blue-cube"));
 	}
 	
 	public function UpdateTex(rnd:RndGen)
 	{
 		if (LogicalPos.z<0)
-		{ 
-			if (rnd.RndFlt()<0.5)
-			{
-				ChangeBitmap(Resources.Get("sea-cube-01"));
-			}
-			else
-			{
-				if (rnd.RndFlt()<0.5)
-				{
-					ChangeBitmap(Resources.Get("sea-cube-02"));
-				}
-				else
-				{
-					ChangeBitmap(Resources.Get("sea-cube-03"));
-				}
-			}
+        {
+            Spr.ChangeBitmap(Resources.Get(
+                rnd.Choose(["sea-cube-01","sea-cube-02","sea-cube-03"])));
 		}
 		else 
 		{
-			if (rnd.RndFlt()<0.5)
-			{
-				ChangeBitmap(Resources.Get("grass-cube-01"));
-			}
-			else
-			{
-				if (rnd.RndFlt()<0.5)
-				{
-					ChangeBitmap(Resources.Get("grass-cube-02"));
-				}
-				else
-				{
-					ChangeBitmap(Resources.Get("grass-cube-03"));
-				}
-			}
+            Spr.ChangeBitmap(Resources.Get(
+                rnd.Choose(["grass-cube-01","grass-cube-02","grass-cube-03"])));
 		}
 	}
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-class Plant extends Entity 
+class Plant extends SpriteEntity 
 {
 	public var Owner:String;
 	var PlantScale:Float;
 	public var Age:Int;
+    var Scale:Float;
 
-	public function new(owner:String,pos,bitmap,scale)
+	public function new(world:World, owner:String, pos, bitmap, maxsize, scale)
 	{
-		super(pos,bitmap);
+		super(world,pos,bitmap,false);
 		Owner=owner;
         PlantScale=0;
+        Scale=maxsize;
+        NeedsUpdate=true;
+
         if (scale)
         {
-		    PlantScale=230;
-            //Scale(0.1);
+		    PlantScale=0;
+            Spr.SetScale(new Vec2(0,0));
         }
+        else
+        {
+            Age=100;
+        }
+        
+        Spr.Hide(false);
+        
+        //Spr.MouseOver(this,function(c) { trace("over plant"); });
 
         //var tf = new flash.text.TextField();
         //tf.text = Owner + " planted this.";
@@ -100,26 +91,29 @@ class Plant extends Entity
 	{
 		super.Update(frame,world);
         Age++;
-		if (PlantScale>0)
+		if (Age<100)
 		{
-			//Scale(1.01);
-			PlantScale--;
+			Spr.SetScale(new Vec2((Age/100)*Scale,(Age/100)*Scale));
 		}
+        else
+        {
+            NeedsUpdate=false;
+        }
 	}
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-class Ghost extends Entity 
+class Ghost extends SpriteEntity 
 {
     public var Name:String;
     var Debug:flash.text.TextField;
     public var TexBase:String;
 	
-	public function new(name:String,pos)
+	public function new(world:World, name:String,pos)
 	{
         TexBase="ghost-"+name.toLowerCase();
-		super(pos,Resources.Get(TexBase));
+		super(world,pos,Resources.Get(TexBase));
         Name = name;
 
         Debug = new flash.text.TextField();
@@ -127,16 +121,16 @@ class Ghost extends Entity
         Debug.y=-50;
         Debug.width=300;
         Debug.text = "nothing yet";
-        addChild(Debug);
+        Spr.addChild(Debug);
 	}
 
     public function UpdateEmotions(e:Dynamic)
     {
         var ee = e.emotions.content;
         var mood=Std.parseFloat(ee[0].content[0]);
-        if (mood>1) ChangeBitmap(Resources.Get(TexBase+"-happy"));
-        else if (mood<-1) ChangeBitmap(Resources.Get(TexBase+"-sad"));
-        else ChangeBitmap(Resources.Get(TexBase));
+        if (mood>1) Spr.ChangeBitmap(Resources.Get(TexBase+"-happy"));
+        else if (mood<-1) Spr.ChangeBitmap(Resources.Get(TexBase+"-sad"));
+        else Spr.ChangeBitmap(Resources.Get(TexBase));
 
         Debug.text=Name+"\nMood:"+ee[0].content[0]+"\n";
 
@@ -150,7 +144,7 @@ class Ghost extends Entity
 }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
+/*
 class PlayerEntity extends Entity 
 {
 	public function new(pos:Vec3) 
@@ -162,10 +156,10 @@ class PlayerEntity extends Entity
 	{
 		var pos=new Vec3(LogicalPos.x,LogicalPos.y,LogicalPos.z);
 
-		if (e==Keyboard.toInt(Key.left)) { pos.x-=1; /*ChangeBitmap(Resources.Get("rbot-north"));*/ }
-		if (e==Keyboard.toInt(Key.right)) { pos.x+=1; /*ChangeBitmap(Resources.Get("rbot-south"));*/ }
-		if (e==Keyboard.toInt(Key.up)) { pos.y-=1; /*ChangeBitmap(Resources.Get("rbot-east"));*/ }
-		if (e==Keyboard.toInt(Key.down)) { pos.y+=1; /*ChangeBitmap(Resources.Get("rbot-west"));*/ }
+		if (e==Keyboard.toInt(Key.left)) { pos.x-=1;  }
+		if (e==Keyboard.toInt(Key.right)) { pos.x+=1; }
+		if (e==Keyboard.toInt(Key.up)) { pos.y-=1;  }
+		if (e==Keyboard.toInt(Key.down)) { pos.y+=1;  }
 		//if (e==Keyboard.toInt(Key.space)) { world.AddServerPlant(new Vec3(pos.x,pos.y,1)); }	      
 
         if (e==87)
@@ -222,6 +216,7 @@ class PlayerEntity extends Entity
 		}
 	}
 }
+*/
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -230,7 +225,6 @@ class FungiWorld extends World
 	public var Width:Int;
 	public var Height:Int;
 	var Objs:Array<Cube>;
-	var Player:PlayerEntity;
 	public var WorldPos:Vec3;
 	var MyRndGen:RndGen;
 	public var WorldClient:Client;
@@ -240,6 +234,8 @@ class FungiWorld extends World
     var Frame:Int;
     var TickTime:Int;
     var Ghosts:Array<Ghost>;
+    var Cursor:Sprite;
+    var CursorLogicalPos:Vec3;
 
 	public function new(w:Int, h:Int) 
 	{
@@ -253,33 +249,71 @@ class FungiWorld extends World
         Ghosts = [];
 		WorldPos = new Vec3(0,0,0);
 		MyRndGen = new RndGen();
-		WorldClient=new Client(OnServerPlantsCallback);
+		WorldClient = new Client(OnServerPlantsCallback);
+        CursorLogicalPos = new Vec3(5,5,0);
+
+        Cursor=new Sprite(new Vec2(0,0), Resources.Get("cursor"), true);
+        AddSprite(Cursor);
+        
+/*        var arrow=new Sprite(new Vec2(0,0), Resources.Get("test"));
+        arrow.MouseDown(this,function(c) { c.UpdateWorld(c.WorldPos.Add(new Vec3(1,0,0))); });
+        AddSprite(arrow);
+
+        arrow = new Sprite(new Vec2(500,0), Resources.Get("test"));
+        arrow.MouseDown(this,function(c) { c.UpdateWorld(c.WorldPos.Add(new Vec3(-1,0,0))); });
+        AddSprite(arrow);
+
+        arrow=new Sprite(new Vec2(0,400), Resources.Get("test"));
+        arrow.MouseDown(this,function(c) { c.UpdateWorld(c.WorldPos.Add(new Vec3(0,1,0))); });
+        AddSprite(arrow);
+
+        arrow=new Sprite(new Vec2(500,400), Resources.Get("test"));
+        arrow.MouseDown(this,function(c) { c.UpdateWorld(c.WorldPos.Add(new Vec3(0,-1,0))); });
+      AddSprite(arrow);
+*/
         MyName = "foo";
 
 		for (y in 0...h)
 		{
 			for (x in 0...w)
 			{
-				var ob:Cube = new Cube(new Vec3(0,0,0));
-                Add(ob);
+				var ob:Cube = new Cube(this,new Vec3(0,0,0));
+             
+                ob.Spr.MouseOver(this,function(c)
+                {
+                    c.Cursor.Pos=ob.Spr.Pos;
+                    c.CursorLogicalPos = ob.LogicalPos;
+                });
 				Objs.push(ob);
 			}
 		}
 
+        MouseDown(this, function(c)
+        {
+            c.AddServerPlant(c.CursorLogicalPos.Add(new Vec3(0,0,1)),
+            c.MyRndGen.Choose([
+                "plant-001", 
+                "plant-002", 
+                "plant-003", 
+                "plant-004", 
+                "plant-005", 
+                "plant-006", 
+                "plant-007", 
+                "plant-008"]));
+        });
+
+        WorldClient.Call("spirit-sprites",UpdateSpiritSprites);
+
 		UpdateWorld(new Vec3(0,0,0));
 		
-		Player = new PlayerEntity(new Vec3(5,5,1));
-        Add(Player);
-
         var Names = ["Vertical","Canopy","Cover"];
-        
+/*        
         for (i in 0...3)
         {
-            var g = new Ghost(Names[i],new Vec3(2,(i*3)+2,1));
-            Add(g);
+            var g = new Ghost(this,Names[i],new Vec3(2,(i*3)+2,1));
             Ghosts.push(g);
         }
-
+*/
 //		MyTextEntry=new TextEntry(190,10,310,30,NameCallback);
 //		addChild(MyTextEntry);	
 
@@ -309,19 +343,12 @@ class FungiWorld extends World
 			for (y in -1...2)
 			{
 				MyRndGen.Seed(cast((WorldPos.x+x)+(WorldPos.y+y)*139,Int));
-				
 				for (i in 0...5)
 				{
-				    MyRndGen.RndFlt();
-				    MyRndGen.RndFlt();
-				    MyRndGen.RndFlt();
-				    MyRndGen.RndFlt();
 					var pos = new Vec3(MyRndGen.RndFlt()*10+x*10,
-				                   MyRndGen.RndFlt()*10+y*10,
-									  0);
-									  
-						  
-					circles.push(new Circle(pos, MyRndGen.RndFlt()*5));
+                                       MyRndGen.RndFlt()*10+y*10,
+									   0);		  
+					circles.push(new Circle(pos, MyRndGen.RndFlt()*4));
 				}
 			}
 		}
@@ -331,11 +358,6 @@ class FungiWorld extends World
 		{
 			var pos=new Vec3(i%Width,Math.floor(i/Width),-1);
 			MyRndGen.Seed(cast(WorldPos.x+pos.x+WorldPos.y+pos.y*139,Int));
-			MyRndGen.RndFlt();
-			MyRndGen.RndFlt();
-			MyRndGen.RndFlt();
-			MyRndGen.RndFlt();
-	
 			var inside:Bool=false;
 			for (c in circles)
 			{
@@ -344,6 +366,7 @@ class FungiWorld extends World
 
 			Objs[i].LogicalPos=pos;
 			Objs[i].UpdateTex(MyRndGen);
+            Objs[i].Update(0,this);
 		}
 		
 		//WorldClient.GetPlants(cast(WorldPos.x,Int),cast(WorldPos.y,Int));
@@ -364,41 +387,51 @@ class FungiWorld extends World
 	{
 		for (splant in ServerPlants)
 		{
-			var plant = new Plant(splant.owner,new Vec3(splant.x,splant.y,1),PlantTex(splant.type),false);
+			var plant = new Plant(this,splant.owner,new Vec3(splant.x,splant.y,1),PlantTex(splant.type),splant.size,false);
 			Plants.push(plant);
-            Add(plant);
 		}
         SortScene();
 	}
+
+    public function UpdateSpiritSprites(data:Array<Dynamic>)
+    {
+        var sk:SkeletonEntity = new SkeletonEntity(this,new Vec3(0,5,4));
+        sk.NeedsUpdate=true;
+        sk.Build(this,data);
+        SortScene();
+    }
 	
     public function SpaceClear(pos:Vec3)
     {
         for (plant in Plants)
         {
-            if (plant.LogicalPos==pos) return false;
+            if (plant.LogicalPos.Eq(pos)) return false;
         }
         return true;
     }
 
 	public function AddServerPlant(pos:Vec3,type)
-	{
-        if (MyName!=null)
+	{        
+        //trace(type);
+        if (MyName!=null && SpaceClear(pos) && GetCube(pos).LogicalPos.z>-1)
         {
-		    // call by reference :S
-		    var plant = new Plant(MyName,new Vec3(pos.x,pos.y,1),PlantTex(type),true);
+            var size=MyRndGen.RndFlt();
+            
+		    // call by reference :Sx
+		    var plant = new Plant(this,MyName,pos,Resources.Get(type),size,true);
+
 		    Plants.push(plant);
-            Add(plant);
 		    //WorldClient.AddPlant(cast(WorldPos.x,Int), cast(WorldPos.y,Int), 
 			//			         new ServerPlant(MyName,cast(pos.x,Int),cast(pos.y,Int),type));
+            SortScene();
         }
 	}
 	
    	override public function Handle(e:Int)
 	{
         super.Handle(e);
-		Player.Handle(e,this);
         Update(0);
-        SortScene();
+        //SortScene();
 	}
 
     public function UpdateGhosts(t:Dynamic)
@@ -418,7 +451,7 @@ class FungiWorld extends World
     override function Update(time:Int)
     {
         super.Update(time);
-        if (time>TickTime)
+/*        if (time>TickTime)
         {
             WorldClient.Call("agent-info",UpdateGhosts);
             TickTime=time+100;
@@ -432,7 +465,8 @@ class FungiWorld extends World
                 Remove(plant);
             }
         }
-
+        
+        Cursor.Update(time,this,null);*/
     }
 
 }
@@ -443,6 +477,7 @@ class Fungi extends App
 {
     public function new() 
 	{
+        Log.setColor(0xFFFFFF);
         super(new FungiWorld(10,10));
     }
 	

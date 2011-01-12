@@ -18,27 +18,34 @@ import truffle.Truffle;
 
 class Bone extends Sprite
 {
+    public var Parent:Bone;
     public var Children:List<Bone>;
 
 	public function new(pos:Vec2, t:TextureDesc) 
     {
-        super(pos,t);
         Children = new List<Bone>();
+        super(pos,t);
     }
 
     public function AddChild(world:World,c:Bone)
     {
         Children.add(c);
+        c.Parent=this;
         world.AddSprite(c);
     }
 
-	override function Update(frame:Int, world:truffle.interfaces.World, tx:Dynamic)
+    public function GetGlobalPos() : Vec2
     {
-        super.Update(frame,world,tx);
+        return TransformedPos();
+    }
+
+	override function Update(frame:Int, tx:Dynamic)
+    {
+        super.Update(frame,tx);
         var tx=GetTransform();
         for (c in Children)
         {
-            c.Update(frame,world,tx);
+            c.Update(frame,tx);
         }
     }
 
@@ -58,7 +65,7 @@ class Bone extends Sprite
 
     public function Print()
     {
-        trace("Bone");
+        trace("Bone "+Std.string(Pos.x)+" "+Std.string(Pos.y));
         if (Children.length>0)
         {
             trace("Children start");

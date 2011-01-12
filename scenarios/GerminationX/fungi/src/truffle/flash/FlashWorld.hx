@@ -17,6 +17,7 @@ package truffle.flash;
 
 import flash.display.MovieClip;
 import flash.display.DisplayObject;
+import flash.events.MouseEvent;
 import truffle.interfaces.World;
 import truffle.interfaces.Sprite;
 import truffle.Entity;
@@ -24,6 +25,8 @@ import truffle.Entity;
 class FlashWorld implements World, extends MovieClip 
 {
     var Scene:Array<Entity>;
+    var MouseDownFunc:Dynamic -> Void;
+    var MouseDownContext:Dynamic;
 
     function new()
     {
@@ -51,6 +54,18 @@ class FlashWorld implements World, extends MovieClip
         removeChild(cast(s,FlashSprite));
     }
 
+	public function MouseDown(c:Dynamic, f:Dynamic -> Void=null)
+	{
+        MouseDownFunc=f;
+        MouseDownContext=c;
+		addEventListener(MouseEvent.MOUSE_DOWN, MouseDownCB);
+	}
+
+    public function MouseDownCB(e)
+    {
+        MouseDownFunc(MouseDownContext);
+    }
+
     public function SortScene()
     {        
         Scene.sort(function(a:Entity, b:Entity)
@@ -63,6 +78,7 @@ class FlashWorld implements World, extends MovieClip
         for (e in Scene)
         {
             setChildIndex(e.GetRoot(),i);
+            e.OnSortScene(i);
             i++;
         }
     }
@@ -71,7 +87,10 @@ class FlashWorld implements World, extends MovieClip
     {
         for (e in Scene)
         {
-            e.Update(time,cast(this,truffle.interfaces.World));
+            if (e.NeedsUpdate)
+            {
+                e.Update(time,cast(this,truffle.interfaces.World));
+            }
         }
     }
 

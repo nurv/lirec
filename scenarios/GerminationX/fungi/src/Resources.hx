@@ -51,6 +51,16 @@ class GhostVerticalHappy extends BitmapData { public function new() { super(0,0)
 class GhostVerticalSad extends BitmapData { public function new() { super(0,0); } }
 
 class Test extends BitmapData { public function new() { super(0,0); } }
+class CursorTex extends BitmapData { public function new() { super(0,0); } }
+
+class Plant001Tex extends BitmapData { public function new() { super(0,0); } }
+class Plant002Tex extends BitmapData { public function new() { super(0,0); } }
+class Plant003Tex extends BitmapData { public function new() { super(0,0); } }
+class Plant004Tex extends BitmapData { public function new() { super(0,0); } }
+class Plant005Tex extends BitmapData { public function new() { super(0,0); } }
+class Plant006Tex extends BitmapData { public function new() { super(0,0); } }
+class Plant007Tex extends BitmapData { public function new() { super(0,0); } }
+class Plant008Tex extends BitmapData { public function new() { super(0,0); } }
 
 class Resources
 {
@@ -90,6 +100,15 @@ class Resources
         case "ghost-vertical-happy": tex.data = new GhostVerticalHappy();
         case "ghost-vertical-sad": tex.data = new GhostVerticalSad();
         case "test": tex.data = new Test();
+        case "cursor": tex.data = new CursorTex();
+        case "plant-001": tex.data = new Plant001Tex();
+        case "plant-002": tex.data = new Plant002Tex();
+        case "plant-003": tex.data = new Plant003Tex();
+        case "plant-004": tex.data = new Plant004Tex();
+        case "plant-005": tex.data = new Plant005Tex();
+        case "plant-006": tex.data = new Plant006Tex();
+        case "plant-007": tex.data = new Plant007Tex();
+        case "plant-008": tex.data = new Plant008Tex();
         }
 
         return tex;

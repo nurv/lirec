@@ -20,10 +20,10 @@ class SpriteEntity extends Entity
 {
     public var Spr:Sprite;
 		
-	public function new(world:World, pos:Vec3, t:TextureDesc) 
+	public function new(world:World, pos:Vec3, t:TextureDesc, viz=true) 
 	{
 		super(world,pos);
-        Spr = new Sprite(new Vec2(Pos.x,Pos.y),t);
+        Spr = new Sprite(new Vec2(Pos.x,Pos.y),t,true,viz);
         world.AddSprite(Spr);
 	}
 		
@@ -31,7 +31,7 @@ class SpriteEntity extends Entity
 	{
         super.Update(frame,world);
         Spr.SetPos(new Vec2(Pos.x,Pos.y));
-        Spr.Update(frame,world,null);
+        Spr.Update(frame,null);
 	}
 
     override public function GetRoot() : Dynamic
