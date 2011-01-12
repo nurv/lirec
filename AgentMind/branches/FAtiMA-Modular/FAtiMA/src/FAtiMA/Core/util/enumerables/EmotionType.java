@@ -131,7 +131,7 @@ public abstract class EmotionType {
 	 */
 	public static String GetName(short emotionType) {
 	    if(emotionType == - 1) return "Neutral";
-		if(emotionType >= 0 && emotionType <=21) return _emotionTypes[emotionType];
+		if(emotionType >= 0 && emotionType <=29) return _emotionTypes[emotionType];
 		return null;
 	}
 }
