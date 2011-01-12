@@ -95,7 +95,7 @@ public class EmotionalState implements Serializable {
 	 * Creates a empty EmotionalState
 	 */
 	public EmotionalState() {
-		_emotionDispositions = new EmotionDisposition[22];
+		_emotionDispositions = new EmotionDisposition[30];
 		_emotionPool = new Hashtable<String, ActiveEmotion>();
 		_mood = new Mood();
 		_lastTime = AgentSimulationTime.GetInstance().Time();

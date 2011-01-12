@@ -152,6 +152,11 @@ public class AppraisalFrame implements Serializable {
 		return appraisalValue;
 	}
 	
+	public boolean containsAppraisalVariable(String appraisalVariable)
+	{
+		return _appraisal.containsKey(appraisalVariable);
+	}
+	
 	public boolean hasChanged()
 	{
 		boolean aux = _changed;

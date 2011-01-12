@@ -87,7 +87,12 @@ public class BaseEmotion implements Serializable {
 				type == EmotionType.ADMIRATION ||
 				type == EmotionType.PRIDE || 
 				type == EmotionType.GRATIFICATION ||
-				type == EmotionType.GRATITUDE) 
+				type == EmotionType.GRATITUDE ||
+				type == EmotionType.EXPECTED_REWARD ||
+				type == EmotionType.STRONGER_REWARD ||
+				type == EmotionType.WEAKER_REWARD ||
+				type == EmotionType.UNEXPECTED_REWARD
+				) 
 		{
 			_valence = EmotionValence.POSITIVE;
 		}

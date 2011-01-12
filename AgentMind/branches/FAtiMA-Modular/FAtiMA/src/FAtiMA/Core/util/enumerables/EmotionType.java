@@ -61,6 +61,19 @@ public abstract class EmotionType {
 	public static final short REGRET =19;
 	public static final short GRATITUDE = 20;
 	public static final short ANGER = 21;
+	public static final short WEAKER_PUNISHMENT = 22;
+	public static final short EXPECTED_PUNISHMENT = 23;
+	public static final short STRONGER_PUNISHMENT = 24;
+	public static final short WEAKER_REWARD = 25;
+	public static final short EXPECTED_REWARD = 26;
+	public static final short STRONGER_REWARD = 27;
+	public static final short UNEXPECTED_REWARD = 28;
+	public static final short UNEXPECTED_PUNISHMENT = 29;
+	
+	
+	
+	
+	
 	
 	private static final String[] _emotionTypes = {"Joy",
 												   "Distress",
@@ -83,10 +96,17 @@ public abstract class EmotionType {
 												   "Gratification",
 												   "Remorse",
 												   "Gratitude",
-												   "Anger"};
+												   "Anger",
+												   "Weaker Punishment",
+												   "Expected Punishment",
+												   "Stronger Punishment",
+												   "Weaker Reward",
+												   "Expected Reward",
+												   "Stronger Reward",
+												   "Unexpected Reward",
+												   "Unexpected Punishment"};
 	
-	/**
-	 * Parses a string that corresponds to the emotion type and returns the appropriate
+	/* Parses a string that corresponds to the emotion type and returns the appropriate
 	 * emotion type (enumerable)
 	 * @param emotionType - the name of the emotion to search for
 	 * @return - the id of the emotion type

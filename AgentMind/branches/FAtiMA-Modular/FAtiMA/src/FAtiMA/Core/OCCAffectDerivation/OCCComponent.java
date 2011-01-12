@@ -79,7 +79,7 @@ public class OCCComponent implements Serializable, IAffectDerivationComponent, I
 	
 	
 	@Override
-	public ArrayList<BaseEmotion> affectElicitation(AgentModel am, String appraisalVariable, AppraisalFrame af) {
+	public ArrayList<BaseEmotion> affectDerivation(AgentModel am, String appraisalVariable, AppraisalFrame af) {
 		
 		ArrayList<BaseEmotion> emotions = new ArrayList<BaseEmotion>();
 		Event event = af.getEvent();
@@ -214,7 +214,7 @@ public class OCCComponent implements Serializable, IAffectDerivationComponent, I
 	}
 	
 	@Override
-	public void inverseAffectElicitation(AgentModel am, BaseEmotion em, AppraisalFrame af)
+	public void inverseAffectDerivation(AgentModel am, BaseEmotion em, AppraisalFrame af)
 	{
 		//ignoring mood for now
 		EmotionDisposition disposition = am.getEmotionalState().getEmotionDispositions()[em.GetType()];
