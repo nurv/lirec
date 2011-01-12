@@ -8,7 +8,7 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import FAtiMA.Core.AgentModel;
-import FAtiMA.Core.IAppraisalComponent;
+import FAtiMA.Core.IAppraisalDerivationComponent;
 import FAtiMA.Core.IComponent;
 import FAtiMA.Core.IModelOfOtherComponent;
 import FAtiMA.Core.IProcessEmotionComponent;
@@ -24,7 +24,7 @@ import FAtiMA.Core.util.Constants;
 import FAtiMA.Core.util.enumerables.EmotionType;
 
 
-public class SocialRelationsComponent implements Serializable, IAppraisalComponent, IModelOfOtherComponent, IProcessEmotionComponent {
+public class SocialRelationsComponent implements Serializable, IAppraisalDerivationComponent, IModelOfOtherComponent, IProcessEmotionComponent {
 	
 	/**
 	 * 

@@ -6,7 +6,7 @@ import java.util.HashMap;
 
 import FAtiMA.Core.AgentCore;
 import FAtiMA.Core.AgentModel;
-import FAtiMA.Core.IAppraisalComponent;
+import FAtiMA.Core.IAppraisalDerivationComponent;
 import FAtiMA.Core.IComponent;
 import FAtiMA.Core.IGetModelStrategy;
 import FAtiMA.Core.IModelOfOtherComponent;
@@ -22,7 +22,7 @@ import FAtiMA.Core.util.Constants;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Symbol;
 
-public class ToMComponent implements Serializable, IAppraisalComponent, IAdvancedPerceptionsComponent, IGetModelStrategy, IGetUtilityForOthers {
+public class ToMComponent implements Serializable, IAppraisalDerivationComponent, IAdvancedPerceptionsComponent, IGetModelStrategy, IGetUtilityForOthers {
 	
 	/**
 	 * 

@@ -15,7 +15,7 @@ import javax.xml.parsers.SAXParserFactory;
 
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.AgentSimulationTime;
-import FAtiMA.Core.IAppraisalComponent;
+import FAtiMA.Core.IAppraisalDerivationComponent;
 import FAtiMA.Core.IComponent;
 import FAtiMA.Core.IModelOfOtherComponent;
 import FAtiMA.Core.Display.AgentDisplayPanel;
@@ -46,7 +46,7 @@ import FAtiMA.Core.wellFormedNames.Unifier;
  * @author Meiyii Lim, Samuel Mascarenhas 
  */
 
-public class MotivationalComponent implements Serializable, Cloneable, IAppraisalComponent, IModelOfOtherComponent, IExpectedUtilityStrategy, IProbabilityStrategy, IUtilityStrategy, IGoalSuccessStrategy, IGoalFailureStrategy, IActionFailureStrategy {
+public class MotivationalComponent implements Serializable, Cloneable, IAppraisalDerivationComponent, IModelOfOtherComponent, IExpectedUtilityStrategy, IProbabilityStrategy, IUtilityStrategy, IGoalSuccessStrategy, IGoalFailureStrategy, IActionFailureStrategy {
 	
 	private static final long serialVersionUID = 1L;
 	public static final String NAME ="MotivationalState";
