@@ -374,8 +374,7 @@ class FungiWorld extends World
             }
         });
 */
-        WorldClient.Call("spirit-sprites",UpdateSpiritSprites);
-       
+
 		UpdateWorld(new Vec3(0,0,0));
 		
         var Names = ["Vertical","Canopy","Cover"];
@@ -409,6 +408,11 @@ class FungiWorld extends World
                     "plant-008"
                 ]));
        }
+
+      trace("calling..");
+      WorldClient.Call("spirit-sprites",UpdateSpiritSprites);
+      trace("called");
+
 
 	}
 	
