@@ -409,11 +409,7 @@ class FungiWorld extends World
                 ]));
        }
 
-      trace("calling..");
       WorldClient.Call("spirit-sprites",UpdateSpiritSprites);
-      trace("called");
-
-
 	}
 	
 	public function NameCallback(name)
@@ -539,7 +535,7 @@ class FungiWorld extends World
     override function Update(time:Int)
     {
         super.Update(time);
-        if (time>TickTime)
+        /*if (time>TickTime)
         {
             WorldClient.Call("agent-info",UpdateGhosts);
             TickTime=time+100;
@@ -552,7 +548,7 @@ class FungiWorld extends World
                 Plants.remove(plant);
                 Remove(plant);
             }
-        }
+            }*/
         
         //Cursor.Update(time,null);
     }
