@@ -480,10 +480,12 @@ class FungiWorld extends World
 
     public function UpdateSpiritSprites(data:Array<Dynamic>)
     {
+        trace("hello");
         var sk:SkeletonEntity = new SkeletonEntity(this,new Vec3(0,5,4));
         sk.NeedsUpdate=true;
         sk.Build(this,data);
         SortScene();
+        trace("there");
     }
 	
     public function SpaceClear(pos:Vec3)
