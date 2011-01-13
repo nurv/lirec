@@ -150,16 +150,26 @@ void Player2SamgarModule::start()
 	  threads.push_back(new pthread_t);
 	  pthread_create(threads.back(), NULL, &LocalizeThread, &(*it));
 	}
-      // wafewront has a little buggy interface so there is a need of such a trick
+      // wafewront has a little bug in its interface so there is a need of such a trick
       if (it->interfName.compare("unknown")==0 && it->driverName.compare("wavewront"))
 	{
 	  threads.push_back(new pthread_t);
 	  pthread_create(threads.back(), NULL, &PlannerThread, &(*it));
 	}
+      if (it->interfName.compare("laser")==0)
+	{
+	  threads.push_back(new pthread_t);
+	  pthread_create(threads.back(), NULL, &LaserThread, &(*it));
+	}
       if (it->interfName.compare("map")==0)
 	{
 	  threads.push_back(new pthread_t);
 	  pthread_create(threads.back(), NULL, &MapThread, &(*it));
+	}
+      if (it->interfName.compare("sonar")==0)
+	{
+	  threads.push_back(new pthread_t);
+	  pthread_create(threads.back(), NULL, &SonarThread, &(*it));
 	}
     }
 }

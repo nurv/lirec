@@ -556,3 +556,91 @@ void* MapThread(void * param){
     } // while(1)
   return NULL;
 }
+
+void* SonarThread(void * param){
+  bool active=true;
+  PlayerCc::PlayerClient* player;
+  PlayerDriver_t * data = static_cast< PlayerDriver_t*>(param);
+
+  // player configuration
+  try
+    {
+      // Connect to Player server
+      player = new  PlayerCc::PlayerClient(data->player_hostname, data->player_port);
+    }
+  catch (PlayerCc::PlayerError e)
+    {
+      std::cerr << e << std::endl;
+      throw e;
+      //return -1;
+    }
+
+  PlayerCc::SonarProxy pp(player,data->index);
+  
+  while(active)
+    {
+      // read data from Samgar
+      yarp::os::Bottle *input = data->samgarPort->read(true); // blocking read
+      // analize data from samgar
+      if (input->get(TYPE).asInt() == Laser)
+	{
+	  // read state from Player
+	  player->Read();
+	  
+	  // perform Samgar command
+	  if (input->get(CMD).asInt() == SET_REQ)
+	    {
+	      if (input->get(Sonar_POSES).asInt())
+		{
+		  pp.RequestGeom();
+		  yarp::os::Bottle& B = data->samgarPort->prepare();	  // prepare the bottle/port
+		  B.clear();
+		  B.addInt(Sonar);
+		  B.addInt(Sonar_POSES);
+		  int poseCount = pp.GetPoseCount();
+		  player_pose_t pose;
+		  B.addInt(poseCount);
+		  for (int i=0;i<poseCount; i++)
+		    {
+		      pose = pp.GetPose(i);
+		      B.addDouble(pose.px);
+		      B.addDouble(pose.py);
+		      B.addDouble(pose.pa);
+		    }
+		  data->samgarPort->write();
+		}
+	      if (input->get(Sonar_RANGES).asInt())
+		{
+		  yarp::os::Bottle& B = data->samgarPort->prepare();	  // prepare the bottle/port
+		  B.clear();
+		  B.addInt(Sonar);
+		  B.addInt(Sonar_RANGES);
+		  int rangeCount = pp.GetCount();
+		  B.addInt(rangeCount);
+		  for (int i=0;i<rangeCount; i++){
+		    B.addDouble(pp.GetScan(i));;
+		  }
+		  data->samgarPort->write();
+		}
+
+	    }
+	  
+	  // send data to Samgar
+	  yarp::os::Bottle& B = data->samgarPort->prepare();	  // prepare the bottle/port
+	  B.clear();
+	  B.addInt(Sonar);
+	  B.addInt(Ack);
+	  data->samgarPort->write();
+	    
+	}
+      else{
+	yarp::os::Bottle& B = data->samgarPort->prepare();	  // prepare the bottle/port
+	B.clear();
+	B.addInt(Sonar);
+	B.addInt(Error);
+	B.addString("Wrong device");
+	data->samgarPort->write();
+      }
+    } // while(1)
+  return NULL;
+}

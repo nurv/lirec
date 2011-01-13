@@ -12,7 +12,7 @@
 #include "SamClass.h"
 
 
-enum PlayerProxy_TYPE {Position2d, Localize, Planner, Laser, Map};
+enum PlayerProxy_TYPE {Position2d, Localize, Planner, Laser, Map, Sonar};
 
 enum PlayerProxy_FIELDS {TYPE=0, CMD};
 
@@ -29,6 +29,7 @@ enum PlayerProxy_Localize_DATA {Localize_MAP_INFO=2, Localize_HYPOTHS};
 enum PlayerProxy_Planner_DATA {Planner_GOAL=2, Planner_POSE, Planner_CURR_WAYPOINT, Planner_PATH, Planner_WAYPOINTS};
 enum PlayerProxy_Laser_DATA {Laser_CONFIG=2, Laser_SIZE, Laser_POSE, Laser_ROBOT_POSE, Laser_POINTS, Laser_RANGES};
 enum PlayerProxy_Map_DATA   {Map_MAP=2};
+enum PlayerProxy_Sonar_DATA {Sonar_POSES=2, Sonar_RANGES};
 
 class PlayerDriver_t 
 {
@@ -92,5 +93,8 @@ void* LaserThread(void * param);
  */
 void* MapThread(void * param);
 
+/** \brief Thread for communication with Map Player devices
+ */
+void* SonarThread(void * param);
 
 #endif

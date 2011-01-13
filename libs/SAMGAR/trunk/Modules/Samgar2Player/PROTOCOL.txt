@@ -17,6 +17,7 @@ PlayerProxy_TYPE:
 	Planner	   = 2
 	Laser	   = 3
 	Map	   = 4
+	Sonar	   = 5
 
 PlayerProxy_FIELDS:
 	TYPE	= 0
@@ -33,12 +34,15 @@ PlayerProxy_DATA:
 enum PlayerProxy_Localize_CMD {Localize_SET_POSE=1};
 enum PlayerProxy_Planner_CMD {Planner_SET_GOAL=1, Planner_SET_ENABLE};
 enum PlayerProxy_Laser_CMD {Laser_SET_CONFIG=1};
+// enum PlayerProxy_Map_DATA {};
+// enum PlayerProxy_Sonar_CMD {};
 
 
 enum PlayerProxy_Localize_DATA {Localize_MAP_INFO=2, Localize_HYPOTHS};
 enum PlayerProxy_Planner_DATA {Planner_GOAL=2, Planner_POSE, Planner_CURR_WAYPOINT, Planner_PATH, Planner_WAYPOINTS};
 enum PlayerProxy_Laser_DATA {Laser_CONFIG=2, Laser_SIZE, Laser_POSE, Laser_ROBOT_POSE, Laser_POINTS, Laser_RANGES};
 enum PlayerProxy_Map_DATA   {Map_MAP=2};
+enum PlayerProxy_Sonar_DATA {Sonar_POSES=2, Sonar_RANGES};
 
 
 The following data structures are defined:
@@ -353,7 +357,7 @@ Below is a list of posibble PlayerPoxy_Laser_CMD frames:
 +------++-----------------------+---------------+---------------+---------------+---------------+
 
 +------++---------------+---------------+---------------+---------------+-----------------------+---------------+---------------+
-| desc || command_id	| Laser_CONFIGL	| Laser_SIZE	| Laser_POSE	| Laser_ROBOT_POSE	| Laser_POINTS	| Laser_RANGES	|
+| desc || command_id	| Laser_CONFIG	| Laser_SIZE	| Laser_POSE	| Laser_ROBOT_POSE	| Laser_POINTS	| Laser_RANGES	|
 +------++---------------+---------------+---------------+---------------+-----------------------+---------------+---------------+
 | type || SET_REQ	| bool		| bool		| bool		| bool			| bool		| bool	        |
 +------++---------------+---------------+---------------+---------------+-----------------------+---------------+---------------+
@@ -443,4 +447,44 @@ Below is a list of posibble PlayerPoxy_Map_DATA frames:
 | info || 		| 	| 	| m/1		| -1 to 1	| -1 to 1	|	| -1 to 1		|
 +------++---------------+-------+-------+---------------+---------------+---------------+-------+-----------------------+
 
+#########
+# Sonar #
+#########
+
+PlayerProxy_Sonar_CMD:
+	SET_REQ			= 0
+
+PlayerProxy_Sonar_DATA:
+	Error 			= 0
+	Ack 			= 1
+	Sonar_POSES		= 2
+	Sonar_RANGES		= 3
+
+Below is a list of posibble PlayerPoxy_Sonar_CMD frames:
+
++------++---------------+---------------+---------------+
+| desc || command_id	| Laser_POSES	| Laser_RANGES	|
++------++---------------+---------------+---------------+
+| type || SET_REQ	| bool		| bool		|
++------++---------------+---------------+---------------+
+| info ||		|  		| 		|
++------++---------------+---------------+---------------+
+
+Below is a list of posibble PlayerPoxy_Laser_DATA frames:
+
++------++---------------+-------+---------------+-------+---------------+
+| desc || command_id	| count	| pose[1]	| 	| pose[count]	|
++------++---------------+-------+---------------+ 	+---------------+
+| type || Sonar_POSES	| int	| coord_type	| ...	| coord_type	|
++------++---------------+-------+---------------+ 	+---------------+
+| info || 		| 	|		| 	|		|
++------++---------------+-------+---------------+-------+---------------+
+
++------++---------------+-------+---------------+-------+---------------+
+| desc || command_id	| count	| range[1]	| 	| range[count]	|
++------++---------------+-------+---------------+ 	+---------------+
+| type || Sonar_RANGES	| int	| double	| ...	| double	|
++------++---------------+-------+---------------+ 	+---------------+
+| info || 		| 	| m		| 	| m		|
++------++---------------+-------+---------------+-------+---------------+
 
