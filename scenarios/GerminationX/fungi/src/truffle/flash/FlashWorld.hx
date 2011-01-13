@@ -21,6 +21,7 @@ import flash.events.MouseEvent;
 import truffle.interfaces.World;
 import truffle.interfaces.Sprite;
 import truffle.Entity;
+import truffle.Truffle;
 
 class FlashWorld implements World, extends MovieClip 
 {
@@ -89,7 +90,7 @@ class FlashWorld implements World, extends MovieClip
         {
             if (e.NeedsUpdate)
             {
-                e.Update(time,cast(this,truffle.interfaces.World));
+                e.Update(time,cast(this,truffle.World));
             }
         }
     }

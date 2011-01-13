@@ -27,7 +27,7 @@ class SpriteEntity extends Entity
         world.AddSprite(Spr);
 	}
 		
-	override public function Update(frame:Int, world:truffle.interfaces.World)
+	override public function Update(frame:Int, world:World)
 	{
         super.Update(frame,world);
         Spr.SetPos(new Vec2(Pos.x,Pos.y));

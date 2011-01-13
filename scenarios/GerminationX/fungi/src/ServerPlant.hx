@@ -21,6 +21,6 @@ class ServerPlant
 	public var x:Int;
 	public var y:Int;
 	public var owner:String;
-	public var type:Int;
+	public var type:String;
     public var size:Int;
 }

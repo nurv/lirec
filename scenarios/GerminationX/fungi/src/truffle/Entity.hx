@@ -41,7 +41,7 @@ class Entity
                         pos.x*0.51 + pos.y*0.71 + pos.z*0.47);             
 	}
 		
-	public function Update(frame:Int, world:truffle.interfaces.World)
+	public function Update(frame:Int, world:World)
 	{
         Pos = Pos2PixelPos(LogicalPos);
         Depth = Pos.z;

@@ -126,7 +126,7 @@ class SkeletonEntity extends truffle.Entity
         });        
     }
 
-	override public function Update(frame:Int, world:truffle.interfaces.World)
+	override public function Update(frame:Int, world:World)
 	{
         super.Update(frame,world);
 
