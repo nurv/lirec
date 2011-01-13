@@ -97,7 +97,7 @@ class FlashServerConnection implements ServerConnection
     
     private function SecurityErrorHandler(event:SecurityErrorEvent)
     {
-        //trace("securityErrorHandler: " + event);
+        trace("securityErrorHandler: " + event);
     }
     
     private function HTTPStatusHandler(event:HTTPStatusEvent)
@@ -107,7 +107,7 @@ class FlashServerConnection implements ServerConnection
     
     private function IOErrorHandler(event:IOErrorEvent)
     {
-        //trace("ioErrorHandler: " + event.text);
+        trace("ioErrorHandler: " + event.text);
     }
     
 }
