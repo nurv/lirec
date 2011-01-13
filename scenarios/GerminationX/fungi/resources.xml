@@ -32,6 +32,21 @@
                       <bitmap id="GhostCanopy" import="textures/ghost-canopy.png"/>                     
                       <bitmap id="GhostCanopyHappy" import="textures/ghost-canopy-happy.png"/>                     
                       <bitmap id="GhostCanopySad" import="textures/ghost-canopy-sad.png"/>                     
+
+                      <bitmap id="Test" import="textures/test.png"/>                     
+                      <bitmap id="CursorTex" import="textures/cursor.png"/>                     
+
+                      <bitmap id="Plant001Tex" import="textures/plant-001.png"/>                     
+                      <bitmap id="Plant002Tex" import="textures/plant-002.png"/>                     
+                      <bitmap id="Plant003Tex" import="textures/plant-003.png"/>                     
+                      <bitmap id="Plant004Tex" import="textures/plant-004.png"/>                     
+                      <bitmap id="Plant005Tex" import="textures/plant-005.png"/>                     
+                      <bitmap id="Plant006Tex" import="textures/plant-006.png"/>                     
+                      <bitmap id="Plant007Tex" import="textures/plant-007.png"/>                     
+                      <bitmap id="Plant008Tex" import="textures/plant-008.png"/>                     
+
+                      <bitmap id="SeedTex" import="textures/seed.png"/>                     
+
                 </library>
         </frame>
 </movie>
