@@ -171,6 +171,11 @@ void Player2SamgarModule::start()
 	  threads.push_back(new pthread_t);
 	  pthread_create(threads.back(), NULL, &SonarThread, &(*it));
 	}
+      if (it->interfName.compare("bumper")==0)
+	{
+	  threads.push_back(new pthread_t);
+	  pthread_create(threads.back(), NULL, &BumperThread, &(*it));
+	}
     }
 }
 
