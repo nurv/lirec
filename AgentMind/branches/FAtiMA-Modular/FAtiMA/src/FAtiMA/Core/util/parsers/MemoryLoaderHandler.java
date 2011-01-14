@@ -59,7 +59,6 @@ public class MemoryLoaderHandler extends ReflectXMLHandler {
 	private Memory _memory;
 	private KnowledgeBase _currentKB;
 	private WorkingMemory _currentWM;
-	private KnowledgeSlot _currentKS;
 	private AutobiographicalMemory _currentAM;
 	private MemoryEpisode _currentME;
 	private ActionDetail _currentAD;
@@ -86,40 +85,41 @@ public class MemoryLoaderHandler extends ReflectXMLHandler {
 	public void KBSlot(Attributes attributes)
 	{
 		String name = attributes.getValue("name");
-		Object value = attributes.getValue("value");
+		Object value;
 		
-		_currentKS = new KnowledgeSlot(name);
-		_currentKS.setValue(value);
-		_currentKB.putFact(_currentKS);
+		try
+		{
+			value = Float.parseFloat(attributes.getValue("value")); 
+		}
+		catch (NumberFormatException nfe)
+		{
+			value = attributes.getValue("value");			
+		}
 		
-		System.out.println("KBSlot");
-	    System.out.println(name + " " + value);
+		_currentKB.Tell(Name.ParseName(name), value); 
+		
+		//System.out.println("KBSlot");
+	    //System.out.println(name + " " + value);
 	}	
-	
-	public void Child(Attributes attributes)
-	{
-		String name = attributes.getValue("name");
-		Object value = attributes.getValue("value");
-		KnowledgeSlot ks = new KnowledgeSlot(name);
-		ks.setValue(value);
-		
-		System.out.println("Child");
-	    System.out.println(name + " " + value);
-	    
-		_currentKS.put(name, ks);
-	}
 	
 	public void WMSlot(Attributes attributes)
 	{
 		String name = attributes.getValue("name");
-		Object value = attributes.getValue("value");
+		Object value;
 		
-		_currentKS = new KnowledgeSlot(name);
-		_currentKS.setValue(value);
-		_currentWM.putFact(_currentKS);
+		try
+		{
+			value = Float.parseFloat(attributes.getValue("value")); 
+		}
+		catch (NumberFormatException nfe)
+		{
+			value = attributes.getValue("value");			
+		}
 		
-		System.out.println("WMSlot");
-	    System.out.println(name + " " + value);
+		_currentWM.Tell(_currentKB, Name.ParseName(name), value); 
+		
+		//System.out.println("WMSlot");
+	    //System.out.println(name + " " + value);
 	}
 	
 	public void Episode(Attributes attributes) {
@@ -143,8 +143,8 @@ public class MemoryLoaderHandler extends ReflectXMLHandler {
 	    
 	    _currentME.setTime(time);
 	    
-	    System.out.println("EpisodeTime");
-	    System.out.println(narrativeTime + " " + realTime + " " + eventSequence);
+	    //System.out.println("EpisodeTime");
+	    //System.out.println(narrativeTime + " " + realTime + " " + eventSequence);
 	}
 
 	public void AMEvent(Attributes attributes) {
@@ -163,9 +163,9 @@ public class MemoryLoaderHandler extends ReflectXMLHandler {
 	    _currentParameters = new ArrayList<Parameter>();
 	    _currentAD.setParameters(_currentParameters);
 	    
-	    System.out.println("AMEvent");
-	    System.out.println(eventID + " " + subject + " " + eType + " " + event 
-	    		+ " " + status + " " + target + " " + location + " " + desirability + " " + praiseworthiness);
+	    //System.out.println("AMEvent");
+	    //System.out.println(eventID + " " + subject + " " + eType + " " + event 
+	    //		+ " " + status + " " + target + " " + location + " " + desirability + " " + praiseworthiness);
 	}
 	
 	public void Parameter(Attributes attributes) {
@@ -175,8 +175,8 @@ public class MemoryLoaderHandler extends ReflectXMLHandler {
  		Parameter param = new Parameter(name, value);
  		_currentParameters.add(param);
  		
-	    System.out.println("Parameter");
-	    System.out.println(name + " " + value);
+	    //System.out.println("Parameter");
+	    //System.out.println(name + " " + value);
  	} 	
 	
  	public void Emotion(Attributes attributes) {
@@ -189,8 +189,8 @@ public class MemoryLoaderHandler extends ReflectXMLHandler {
 	    _currentEmotion = new BaseEmotion(type, potential, appraisalVariable, null, direction);
 	    _currentAD.setEmotion(_currentEmotion);
 	    
-	    System.out.println("Emotion");
-	    System.out.println(type + " " + appraisalVariable.toString() + " " +  potential + " " + direction);
+	    //System.out.println("Emotion");
+	    //System.out.println(type + " " + appraisalVariable.toString() + " " +  potential + " " + direction);
  	}
  	
  	public void Cause(Attributes attributes) {
@@ -204,8 +204,8 @@ public class MemoryLoaderHandler extends ReflectXMLHandler {
  	    _currentCause = new Event(subject, action, target, type, status, time);
  	    _currentEmotion.SetCause(_currentCause);
  	    
- 	    System.out.println("Cause");
-	    System.out.println(subject + " " + action + " " + target + " " + status + " " + type + " " + time);	    
+ 	    //System.out.println("Cause");
+	    //System.out.println(subject + " " + action + " " + target + " " + status + " " + type + " " + time);	    
  	}
  	
  	public void EParameter(Attributes attributes) {
@@ -215,8 +215,8 @@ public class MemoryLoaderHandler extends ReflectXMLHandler {
  		Parameter param = new Parameter(name, value);
  		_currentCause.AddParameter(param);
  		
-	    System.out.println("Parameter");
-	    System.out.println(name + " " + value);
+	    //System.out.println("Parameter");
+	    //System.out.println(name + " " + value);
  	}
  	
  	public void EventTime(Attributes attributes) {
@@ -229,8 +229,8 @@ public class MemoryLoaderHandler extends ReflectXMLHandler {
 	    _currentAD.setParameters(_currentParameters);
 	    _currentAD.setTime(time);                
 	    
-	    System.out.println("EventTime");
-	    System.out.println(narrativeTime + " " + realTime + " " + eventSequence);
+	    //System.out.println("EventTime");
+	    //System.out.println(narrativeTime + " " + realTime + " " + eventSequence);
 	}
  	
  	public void STEvent(Attributes attributes) {
@@ -248,9 +248,9 @@ public class MemoryLoaderHandler extends ReflectXMLHandler {
 	    _currentSTEM.putActionDetail(_currentAD);     
 	    _currentParameters = new ArrayList<Parameter>();
 	    
-	    System.out.println("STEvent");
-	    System.out.println(eventID + " " + subject + " " + eType + " " + event 
-	    		+ " " + status + " " + target + " " + location + " " + desirability + " " + praiseworthiness);
+	    //System.out.println("STEvent");
+	    //System.out.println(eventID + " " + subject + " " + eType + " " + event 
+	    //		+ " " + status + " " + target + " " + location + " " + desirability + " " + praiseworthiness);
 	}
  	
 	/* 
@@ -269,7 +269,7 @@ public class MemoryLoaderHandler extends ReflectXMLHandler {
 				String item = st.nextToken();
 				if (!items.contains(item.trim()))
 					items.add(item.trim());
-				System.out.println("Item " + item);
+				//System.out.println("Item " + item);
 			}
 		}
 		return items;

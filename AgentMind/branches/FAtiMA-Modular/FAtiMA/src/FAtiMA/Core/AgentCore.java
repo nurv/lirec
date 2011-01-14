@@ -61,6 +61,7 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 
 	public static final String MIND_PATH = "data/characters/minds/";
 	public static final String MIND_PATH_ANDROID = "sdcard/data/characters/minds/";
+	public static final String MEMORY_FILENAME = "XMLMemory";
 	
 	public static final Name ACTION_CONTEXT = Name.ParseName("ActionContext()");
 
@@ -96,7 +97,7 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 
 	private String _saveDirectory;
 	private boolean _saveRequest = false;
-	private boolean _loaded = false;
+	private boolean _agentLoaded = false;
 	private boolean _saveMemoryRequest = false;
 	
 	private MemoryWriter _memoryWriter;
@@ -140,14 +141,14 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 		}
 				
 		try{
-			if (Boolean.parseBoolean(ConfigurationManager.getLoad()))
+			if (Boolean.parseBoolean(ConfigurationManager.getAgentLoad()))
 			{
-				_loaded = true;
+				_agentLoaded = true;
 				agentCoreLoad(ConfigurationManager.getPlatform(), ConfigurationManager.getHost(), ConfigurationManager.getPort(), ConfigurationManager.getSaveDirectory(), agentName);
 			}
 			else
 			{
-				_loaded = false;
+				_agentLoaded = false;
 				AgentLogger.GetInstance().initialize(_name,_showStateWindow);
 				
 				_showStateWindow = ConfigurationManager.getDisplayMode();
@@ -155,13 +156,22 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 				_role = ConfigurationManager.getRole();
 				_sex = ConfigurationManager.getSex();
 				_saveDirectory = ConfigurationManager.getSaveDirectory();
+				_memory.setSaveDirectory(_saveDirectory);
 				
 				if(_showStateWindow && !VersionChecker.runningOnAndroid()){
 					_agentDisplay = new AgentDisplay(this);
 				}
 	
-				//testing - loading agent memory from xml
-				//loadAgentMemory(_saveDirectory + "XMLMemory");
+				//loading agent memory from xml
+				if (Boolean.parseBoolean(ConfigurationManager.getMemoryLoad()))
+				{
+					_memory.setMemoryLoad(true);
+					loadAgentMemory(_saveDirectory + MEMORY_FILENAME);
+				}
+				else
+				{
+					_memory.setMemoryLoad(false);
+				}
 				
 				// Load Plan Operators
 				ActionLibrary.GetInstance().LoadActionsFile(ConfigurationManager.getActionsFile(), this);
@@ -380,11 +390,11 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 		return _memory;
 	}
 
-	public boolean getLoaded()
+	public boolean getAgentLoad()
 	{
-		return _loaded;
+		return _agentLoaded;
 	}
-
+	
 	/**
 	 * Gets the name of the agent
 	 * @return the agent's name
@@ -795,10 +805,16 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 		this._saveMemoryRequest = true;
 	}
 
-	private void SaveAgentMemory() throws	ParserConfigurationException, SAXException, IOException
+	private void SaveAgentMemory() throws ParserConfigurationException, SAXException, IOException
 	{
-		_memoryWriter.outputMemoryInXML(_saveDirectory + "XMLMemory");
-		this.loadAgentMemory(_saveDirectory + "XMLMemory");
+		_memory.getEpisodicMemory().MoveSTEMtoAM();
+		_memoryWriter.outputMemorytoXML(_saveDirectory + MEMORY_FILENAME);
+		for(IProcessExternalRequestComponent ip: _processExternalRequestComponents)
+		{
+			if(ip.name().equals("AdvancedMemory"))
+				ip.processExternalRequest("SAVE_ADV_MEMORY");
+		}
+		
 	}
 	
 	private void loadAgentMemory(String memoryFile) throws	ParserConfigurationException, SAXException, IOException
@@ -809,6 +825,23 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		SAXParser parser = factory.newSAXParser();
 		parser.parse(new File(memoryFile), ml);
+		
+		// creating a new episode
+		_memory.getEpisodicMemory().StartEpisode(_memory);
+	}
+	
+	/* Currently not called 
+	 * Call it when there is an AdvancedMemory component and memory is being loaded 
+	 * and an AdvancedMemory component previously existed
+	 * Meiyii 14/01/11
+	 */
+	private void loadAgentAdvMemory() throws ParserConfigurationException, SAXException, IOException
+	{
+		for(IProcessExternalRequestComponent ip: _processExternalRequestComponents)
+		{
+			if(ip.name().equals("AdvancedMemory"))
+				ip.processExternalRequest("LOAD_ADV_MEMORY");
+		}
 	}
 	
 	private void SaveAgentState(String agentName)
@@ -893,7 +926,6 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 	{
 		try{
 			_remoteAgent.start();
-
 			this.Run();
 		}
 		catch (Exception e) {

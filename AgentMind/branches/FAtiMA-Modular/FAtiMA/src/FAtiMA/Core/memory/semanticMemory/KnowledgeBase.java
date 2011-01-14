@@ -363,6 +363,11 @@ public class KnowledgeBase implements Serializable {
 			return newBindingSets;
 	}
 
+//	public KnowledgeSlot getMainSlot()
+//	{
+//		return _kB;
+//	}
+	
 	/**
 	 * Converts the Information stored in the KB to one String
 	 * @return the converted String

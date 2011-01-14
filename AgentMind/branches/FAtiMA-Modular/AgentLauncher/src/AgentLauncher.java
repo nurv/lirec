@@ -29,7 +29,7 @@ public class AgentLauncher {
 		ArrayList<String> extraFiles = new ArrayList<String>();
 		//String cultureFile = ConfigurationManager.getMindPath() + ConfigurationManager.getAgentProperties().get("cultureName") + ".xml"; 
 		
-		if (!aG.getLoaded())
+		if (!aG.getAgentLoad())
 		{
 			//extraFiles.add(cultureFile);
 			//aG.addComponent(new CulturalDimensionsComponent(cultureFile));

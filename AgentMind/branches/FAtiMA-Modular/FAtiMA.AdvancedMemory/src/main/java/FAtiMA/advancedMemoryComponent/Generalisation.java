@@ -379,6 +379,11 @@ public class Generalisation implements Serializable {
 		return this._gers;
 	}
 	
+	public void putGER(GER ger)
+	{
+		this._gers.add(ger);
+	}
+	
 	public Object clone()
 	{
 		ArrayList<AttributeItemSet> attrItemSetList = new ArrayList<AttributeItemSet>(this._itemSet.size());

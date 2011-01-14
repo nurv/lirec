@@ -64,6 +64,20 @@ public class GER implements Serializable {
 		this._coverage = 0;
 	}
 	
+	public GER(String subject, String action, String intention, String target, String object, String desirability, String praiseworthiness, String location, String time, int coverage)
+	{
+		this._subject = subject;
+		this._action = action;
+		this._intention = intention;
+		this._target = target;
+		this._object = object;
+		this._desirability = desirability;
+		this._praiseworthiness = praiseworthiness;
+		this._location = location;
+		this._time = time;
+		this._coverage = coverage;
+	}
+	
 	public void setSubject(String subject)
 	{
 		this._subject = subject;

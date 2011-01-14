@@ -68,7 +68,7 @@ public class MemoryWriter implements Serializable{
 		_memory = memory;
 	}
 	
-	public void outputMemoryInXML(String file)
+	public void outputMemorytoXML(String file)
 	{
 		try{
 			_writer = new FileWriter(file); // new BufferedWriter(new FileWriter(file));
@@ -82,12 +82,24 @@ public class MemoryWriter implements Serializable{
 			// SemanticMemory 
 			_outputter.startTag("SemanticMemory");	
 			_outputter.startTag("KnowledgeBase");
+			
+//			// SemanticMemory 
+//			_outputter.startTag("SemanticMemory");	
+//			_outputter.startTag("KnowledgeBase");
+//			knowledgeSlottoXML(_memory.getSemanticMemory().getKBMainSlot());
+//						
+//			_outputter.endTag(); //KnowledgeBase
+//			
+//			// WorkingMemory
+//			_outputter.startTag("WorkingMemory");
+//			knowledgeSlottoXML(_memory.getSemanticMemory().getWMMainSlot());
+			
 			for (KnowledgeSlot ks: _memory.getSemanticMemory().GetKnowledgeBaseFacts())
 			{
 				_outputter.startTag("KBSlot");
 				knowledgeSlottoXML(ks);
 				_outputter.endTag();
-			}			
+			}						
 			_outputter.endTag(); //KnowledgeBase
 			
 			// WorkingMemory
@@ -97,7 +109,7 @@ public class MemoryWriter implements Serializable{
 				_outputter.startTag("WMSlot");
 				knowledgeSlottoXML(ks);
 				_outputter.endTag();
-			}	
+			}
 			
 			_outputter.endTag(); // WorkingMemory
 			_outputter.endTag(); //SemanticMemory
@@ -254,21 +266,36 @@ public class MemoryWriter implements Serializable{
 				_outputter.attribute("name", ks.getName());
 			if(ks.getValue() != null)
 				_outputter.attribute("value", ks.getValue().toString());
-			if(ks.getKeyIterator() != null)
-			{
-				Iterator<String> it = ks.getKeyIterator();
-				while (it.hasNext()) {
-					KnowledgeSlot cks = ks.get((String) it.next());
-					_outputter.startTag("Child");
-					_outputter.attribute("name", cks.getName());
-					_outputter.attribute("value", cks.getValue().toString());
-					_outputter.endTag();
-				}
-			}
 		}
 		catch(IOException e)
 		{
 			e.printStackTrace();
 		}
 	}
+	
+	/*private void knowledgeSlottoXML(KnowledgeSlot ks)
+	{
+		try {
+			_outputter.startTag("MSlot");
+			if(ks.getName() != null)
+				_outputter.attribute("name", ks.getName());
+			if(ks.getValue() != null)
+				_outputter.attribute("value", ks.getValue().toString());
+			if(ks.getKeyIterator() != null)
+			{
+				Iterator<String> it = ks.getKeyIterator();
+				_outputter.startTag("Children");
+				while (it.hasNext()) {
+					KnowledgeSlot cks = ks.get((String) it.next());
+					knowledgeSlottoXML(cks);
+				}
+				_outputter.endTag();
+			}
+			_outputter.endTag();
+		}
+		catch(IOException e)
+		{
+			e.printStackTrace();
+		}
+	}*/
 }

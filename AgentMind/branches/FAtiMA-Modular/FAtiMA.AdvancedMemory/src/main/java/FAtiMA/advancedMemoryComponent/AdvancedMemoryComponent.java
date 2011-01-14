@@ -40,20 +40,18 @@ import javax.xml.parsers.SAXParserFactory;
 
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.AgentSimulationTime;
-import FAtiMA.Core.IAppraisalComponent;
+import FAtiMA.Core.IAppraisalDerivationComponent;
 import FAtiMA.Core.IProcessExternalRequestComponent;
 import FAtiMA.Core.Display.AgentDisplayPanel;
 import FAtiMA.Core.OCCAffectDerivation.OCCComponent;
 import FAtiMA.Core.emotionalState.AppraisalFrame;
+import FAtiMA.Core.memory.Memory;
 import FAtiMA.Core.memory.episodicMemory.ActionDetail;
-import FAtiMA.Core.memory.episodicMemory.EpisodicMemory;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.util.AgentLogger;
 import FAtiMA.Core.util.ConfigurationManager;
 
-
-
-public class AdvancedMemoryComponent implements Serializable, IAppraisalComponent, IProcessExternalRequestComponent {
+public class AdvancedMemoryComponent implements Serializable, IAppraisalDerivationComponent, IProcessExternalRequestComponent {
 
 	private static final long serialVersionUID = 1L;
 	public static final String NAME = "AdvancedMemory";
@@ -61,16 +59,21 @@ public class AdvancedMemoryComponent implements Serializable, IAppraisalComponen
 	private static final String SA_MEMORY = "SA-MEMORY";
 	private static final String CC_MEMORY = "CC-MEMORY";
 	private static final String G_MEMORY = "G-MEMORY";
+	private static final String SAVE_ADV_MEMORY = "SAVE_ADV_MEMORY";
+	private static final String LOAD_ADV_MEMORY = "LOAD_ADV_MEMORY";
+	
+	private static final String ADV_MEMORY_FILENAME = "XMLAdvMemory";
 	
 	private Generalisation _generalisation;
 	private CompoundCue _compoundCue;
 	private SpreadActivate _spreadActivate;
 	private Commonalities _commonalities;
-	private EpisodicMemory _episodicMemory;
+	private Memory _memory;
 	private long _lastTime;
 	
 	private ArrayList<String> _gAttributes;
 	private GeneralMemoryPanel _gmPanel;
+	private AdvancedMemoryWriter _gerWriter;
 	
 	public AdvancedMemoryComponent()
 	{
@@ -81,6 +84,7 @@ public class AdvancedMemoryComponent implements Serializable, IAppraisalComponen
 		this._lastTime = AgentSimulationTime.GetInstance().Time();
 		
 		this._gAttributes = new ArrayList<String>();
+		this._gerWriter = new AdvancedMemoryWriter(this._generalisation.getAllGERs());
 	}
 	
 	public CompoundCue getCompoundCue()
@@ -100,7 +104,7 @@ public class AdvancedMemoryComponent implements Serializable, IAppraisalComponen
 	
 	private void loadMemoryProcessesConditions(AgentModel ag){
 
-		AgentLogger.GetInstance().log("LOADING GeneralMemory: ");
+		AgentLogger.GetInstance().log("LOADING GeneralMemory Conditions: ");
 		
 		ActionsLoaderHandler generalMemoryLoader = new ActionsLoaderHandler(ag);
 		
@@ -162,7 +166,7 @@ public class AdvancedMemoryComponent implements Serializable, IAppraisalComponen
 
 	@Override
 	public void initialize(AgentModel am) {
-		_episodicMemory = am.getMemory().getEpisodicMemory();
+		_memory = am.getMemory();
 		loadMemoryProcessesConditions(am);
 	}
 
@@ -249,7 +253,7 @@ public class AdvancedMemoryComponent implements Serializable, IAppraisalComponen
 			}					
 			System.out.println("question " + question);
 			ArrayList<String> knownInfo = extractKnownInfo(known);
-			_spreadActivate.Spread(question, knownInfo, _episodicMemory);
+			_spreadActivate.Spread(question, knownInfo, _memory.getEpisodicMemory());
 			
 			
 			Hashtable<String, Integer> saResult = _spreadActivate.getSAResults();
@@ -278,8 +282,8 @@ public class AdvancedMemoryComponent implements Serializable, IAppraisalComponen
 		else if(msgType.equals(CC_MEMORY))
 		{
 			int index = Math.min(8, (int) (Math.random()*10));
-			ActionDetail event = _episodicMemory.getDetails().get(index);
-			_compoundCue.Match(event, _episodicMemory);
+			ActionDetail event = _memory.getEpisodicMemory().getDetails().get(index);
+			_compoundCue.Match(event, _memory.getEpisodicMemory());
 			System.out.println("\nEvent ID to match on " + event.getID());
 			
 			Hashtable<Integer, Float>  results = _compoundCue.getCCEvaluations();
@@ -296,7 +300,7 @@ public class AdvancedMemoryComponent implements Serializable, IAppraisalComponen
 			extractGAttributes(perception);
 			
 			//Performs generalisation and update the GeneralMemory with frequent item sets
-			_generalisation.generalise(_gAttributes, _episodicMemory);	
+			_generalisation.generalise(_gAttributes, _memory.getEpisodicMemory());	
 			
 			ArrayList<GER> gers = _generalisation.getAllGERs();
 			for (GER ger : gers)
@@ -304,6 +308,24 @@ public class AdvancedMemoryComponent implements Serializable, IAppraisalComponen
 				System.out.println("GER : " + ger.toString());
 			}
 		}
+		else if(msgType.equals(SAVE_ADV_MEMORY))
+		{
+			_gerWriter.outputGERtoXML(_memory.getSaveDirectory() + ADV_MEMORY_FILENAME);
+		}
+		else if(msgType.equals(LOAD_ADV_MEMORY))
+		{
+			try{
+				AgentLogger.GetInstance().log("LOADING AdvancedMemory Content: " + _memory.getSaveDirectory() + ADV_MEMORY_FILENAME);
+				AdvancedMemoryHandler advMemoryHandler = new AdvancedMemoryHandler(this);
+			
+				SAXParserFactory factory = SAXParserFactory.newInstance();
+				SAXParser parser = factory.newSAXParser();
+				parser.parse(new File(_memory.getSaveDirectory() + ADV_MEMORY_FILENAME), advMemoryHandler);
+			}
+			catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}			
 	}
 
 	@Override
@@ -313,6 +335,4 @@ public class AdvancedMemoryComponent implements Serializable, IAppraisalComponen
 	@Override
 	public void inverseAppraisal(AgentModel am, AppraisalFrame af) {
 	}
-	
-	
 }

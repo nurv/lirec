@@ -64,7 +64,7 @@ public class UserInterface implements ActionListener {
 	public static final String PAULIE = "Paulie";
 	public static final String LUKE = "Luke";
 	public static final String LUKEPAULIE = "LukePaulie";
-	public static final String USER = "User";
+	public static final String USER = "Amy";
 	
 	private Random _r;
 	private static int buffsize = 250;

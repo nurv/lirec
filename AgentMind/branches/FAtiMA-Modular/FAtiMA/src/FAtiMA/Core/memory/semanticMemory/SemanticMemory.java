@@ -358,5 +358,15 @@ public class SemanticMemory implements Serializable {
 	{
 		_stm = wm;
 	}
+	
+//	public KnowledgeSlot getKBMainSlot()
+//	{
+//		return _kb.getMainSlot();
+//	}
+//	
+//	public KnowledgeSlot getWMMainSlot()
+//	{
+//		return _stm.getMainSlot();
+//	}
 
 }

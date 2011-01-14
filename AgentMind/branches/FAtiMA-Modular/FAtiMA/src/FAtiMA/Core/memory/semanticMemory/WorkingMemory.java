@@ -415,6 +415,11 @@ public class WorkingMemory implements Serializable {
 			return newBindingSets;
 	}
 	
+//	public KnowledgeSlot getMainSlot()
+//	{
+//	  return _wM;
+//	}
+	
 	/**
 	 * Converts the Information stored in the WM to one String
 	 * @return the converted String

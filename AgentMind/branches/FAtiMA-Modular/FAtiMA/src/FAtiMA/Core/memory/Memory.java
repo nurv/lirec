@@ -59,11 +59,15 @@ public class Memory implements Serializable {
 	
 	private SemanticMemory _sm;
 	private EpisodicMemory _em;
+	private String _saveDirectory;
+	private boolean _memoryLoaded;
 	
 	public Memory()
 	{
 		_sm = new SemanticMemory();
 		_em = new EpisodicMemory();
+		_saveDirectory = "";
+		_memoryLoaded = false;
 	}
 	
 	public SemanticMemory getSemanticMemory()
@@ -75,4 +79,25 @@ public class Memory implements Serializable {
 	{
 		return _em;
 	}
+	
+	public void setSaveDirectory(String saveDirectory)
+	{
+		_saveDirectory = saveDirectory;
+	}
+	
+	public String getSaveDirectory()
+	{
+		return _saveDirectory;
+	}
+	
+	public void setMemoryLoad(boolean memoryLoaded)
+	{
+		_memoryLoaded = memoryLoaded;
+	}
+	
+	public boolean getMemoryLoad()
+	{
+		return _memoryLoaded;
+	}
+	
 }

@@ -64,7 +64,7 @@ public class GeneralMemoryPanel extends AgentDisplayPanel {
         	ger = _gers.get(0);
         }
         
-        if (!ger.getSubject().equals(""))
+        if (ger.getSubject() != null && !ger.getSubject().equals(""))
         {
 	        lbl = new JLabel("Subject"); // Who?
 	        lbl.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
@@ -74,7 +74,7 @@ public class GeneralMemoryPanel extends AgentDisplayPanel {
 	        _gAttributes.add("subject");
         }
         
-        if (!ger.getAction().equals(""))
+        if (ger.getAction() != null && !ger.getAction().equals(""))
         {
 	        lbl = new JLabel("Action"); // What?
 	        lbl.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
@@ -84,7 +84,7 @@ public class GeneralMemoryPanel extends AgentDisplayPanel {
 	        _gAttributes.add("action");
         }
         
-        if (!ger.getIntention().equals(""))
+        if (ger.getIntention() != null && !ger.getIntention().equals(""))
         {
 	        lbl = new JLabel("Intention"); // What?
 	        lbl.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
@@ -94,7 +94,7 @@ public class GeneralMemoryPanel extends AgentDisplayPanel {
 	        _gAttributes.add("intention");
         }
         
-        if (!ger.getTarget().equals(""))
+        if (ger.getTarget() != null && !ger.getTarget().equals(""))
         {
 	        lbl = new JLabel("Target"); // Whom?
 	        lbl.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
@@ -104,7 +104,7 @@ public class GeneralMemoryPanel extends AgentDisplayPanel {
 	        _gAttributes.add("target");
         }
         
-        if (!ger.getObject().equals(""))
+        if (ger.getObject() != null && !ger.getObject().equals(""))
         {
 	        lbl = new JLabel("Object"); // What?
 	        lbl.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
@@ -114,7 +114,7 @@ public class GeneralMemoryPanel extends AgentDisplayPanel {
 	        _gAttributes.add("object");
         }
         
-        if (!ger.getDesirability().equals(""))
+        if (ger.getDesirability() != null && !ger.getDesirability().equals(""))
         {
 	        lbl = new JLabel("Desirability"); // Desirable?
 	        lbl.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
@@ -124,7 +124,7 @@ public class GeneralMemoryPanel extends AgentDisplayPanel {
 	        _gAttributes.add("desirability");
         }
         
-        if (!ger.getPraiseworthiness().equals(""))
+        if (ger.getPraiseworthiness() != null && !ger.getPraiseworthiness().equals(""))
         {
 	        lbl = new JLabel("Praiseworthiness"); // Praiseworthy?
 	        lbl.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
@@ -134,7 +134,7 @@ public class GeneralMemoryPanel extends AgentDisplayPanel {
 	        _gAttributes.add("praiseworthiness");
         }
         
-        if (!ger.getLocation().equals(""))
+        if (ger.getLocation() != null && !ger.getLocation().equals(""))
         {
 	        lbl = new JLabel("Location"); // Where?
 	        lbl.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
@@ -144,7 +144,7 @@ public class GeneralMemoryPanel extends AgentDisplayPanel {
 	        _gAttributes.add("location");
         }
         
-        if (!ger.getTime().equals(""))
+        if (ger.getTime() != null && !ger.getTime().equals(""))
         {
 	        lbl = new JLabel("Time"); // When?
 	        lbl.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
@@ -154,11 +154,14 @@ public class GeneralMemoryPanel extends AgentDisplayPanel {
 	        _gAttributes.add("time");
         }
         
-        lbl = new JLabel("Coverage"); // Frequency?
-        lbl.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
-        lbl.setMinimumSize(new Dimension(80,30));
-        lbl.setMaximumSize(new Dimension(80,30));
-        _aux.add(lbl);
+        if (!_gAttributes.isEmpty())
+        {
+	        lbl = new JLabel("Coverage"); // Frequency?
+	        lbl.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
+	        lbl.setMinimumSize(new Dimension(80,30));
+	        lbl.setMaximumSize(new Dimension(80,30));
+	        _aux.add(lbl);
+        }
         
         _gersPanel.add(_aux); 
 	}
