@@ -9,6 +9,7 @@ import FAtiMA.Core.AgentCore;
 import FAtiMA.Core.exceptions.ActionsParsingException;
 import FAtiMA.Core.exceptions.GoalLibParsingException;
 import FAtiMA.Core.exceptions.UnknownGoalException;
+import FAtiMA.motivationalSystem.MotivationalComponent;
 
 public class AgentLauncher {
 	
@@ -28,15 +29,15 @@ public class AgentLauncher {
 		ArrayList<String> extraFiles = new ArrayList<String>();
 		//String cultureFile = ConfigurationManager.getMindPath() + ConfigurationManager.getAgentProperties().get("cultureName") + ".xml"; 
 		
-		/*if (!aG.getLoaded())
+		if (!aG.getLoaded())
 		{
 			//extraFiles.add(cultureFile);
 			//aG.addComponent(new CulturalDimensionsComponent(cultureFile));
-			aG.addComponent(new SocialRelationsComponent(extraFiles));
+			//aG.addComponent(new SocialRelationsComponent(extraFiles));
 			aG.addComponent(new MotivationalComponent(extraFiles));
-			aG.addComponent(new ToMComponent(ConfigurationManager.getName()));
-			aG.addComponent(new AdvancedMemoryComponent());
-		}*/
+			//aG.addComponent(new ToMComponent(ConfigurationManager.getName()));
+			//aG.addComponent(new AdvancedMemoryComponent());
+		}
 		aG.StartAgent();
 	}
 	

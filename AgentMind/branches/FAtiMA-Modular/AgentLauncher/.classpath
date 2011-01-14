@@ -8,5 +8,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/FAtiMA.culture"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/FAtiMA.ToM"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/FAtiMA.AdvancedMemory"/>
+	<classpathentry kind="src" path="/FAtiMA.Emotivector"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
