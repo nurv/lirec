@@ -686,16 +686,16 @@ void* BumperThread(void * param){
 		  B.addInt(Bumper);
 		  B.addInt(Bumper_POSES);
 		  int poseCount = pp.GetPoseCount();
-		  player_pose_t pose;
+		  player_bumper_define_t bumper;
 		  B.addInt(poseCount);
 		  for (int i=0;i<poseCount; i++)
 		    {
-		      pose = pp.GetPose(i);
-		      B.addDouble(pose.pose.px);
-		      B.addDouble(pose.pose.py);
-		      B.addDouble(pose.pose.pa);
-		      B.addDouble(pose.length);
-		      B.addDouble(pose.radius);
+		      bumper = pp.GetPose(i);
+		      B.addDouble(bumper.pose.px);
+		      B.addDouble(bumper.pose.py);
+		      B.addDouble(bumper.pose.pa);
+		      B.addDouble(bumper.length);
+		      B.addDouble(bumper.radius);
 		    }
 		  data->samgarPort->write();
 		}
