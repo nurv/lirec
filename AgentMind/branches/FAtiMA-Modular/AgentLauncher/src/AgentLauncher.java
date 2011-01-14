@@ -42,7 +42,7 @@ public class AgentLauncher {
 	}
 	
 	
-	static protected AgentCore initializeAgentCore(String args[]) throws ParserConfigurationException, SAXException, IOException, UnknownGoalException, ActionsParsingException, GoalLibParsingException{
+	static private AgentCore initializeAgentCore(String args[]) throws ParserConfigurationException, SAXException, IOException, UnknownGoalException, ActionsParsingException, GoalLibParsingException{
 		if(args.length != 3){
 			System.err.println("ERROR - expecting 3 arguments: Scenarios File, Scenario Name, and Agent Name");
 			System.exit(1);
@@ -57,8 +57,5 @@ public class AgentLauncher {
 		
 		return agent;
 	}
-	
-	
-	
 }
 
