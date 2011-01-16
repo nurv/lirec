@@ -1,16 +1,22 @@
 import java.io.File;
+import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+
+import org.xml.sax.SAXException;
 
 import FAtiMA.Core.deliberativeLayer.plan.Step;
 import FAtiMA.Core.sensorEffector.SpeechAct;
 import FAtiMA.Core.util.parsers.ScenarioLoaderHandler;
 import FAtiMA.Core.util.parsers.ActionsLoaderHandler;
+import Language.LactException;
 import Language.LanguageEngine;
+import Language.SactException;
 
 
 /*
@@ -30,45 +36,45 @@ import Language.LanguageEngine;
  * 
  */
 public class WorldTest {
-	
+
 	public static final String WORLD_PATH = "data/characters/minds/";
-	//public static final String SCENARIOS_PATH = "data/characters/minds/Scenarios.xml";
+	public static final int MINIMUM_NUM_WORLD_SIM_ARGS = 7;
+
+
 	private ServerSocket _ss;
 	private ArrayList<sObject> _objects;
 	private ArrayList<RemoteAgent> _agents;
 	private String _scenery;
 	private ArrayList<Step> _actions;
-	private LanguageEngine agentLanguage;
-	private LanguageEngine userLanguage;
+	private LanguageEngine _agentLanguage;
+	private LanguageEngine _userLanguage;
 	private UserInterface _userInterface;
 	private String _userOptionsFile;
 	private GretaAgent _ga;
-	
-	static public void main(String args[]) throws Exception {
+
+
+	static public void main(String args[]) throws Exception{
 		int i;
 		ArrayList<String> objects = new ArrayList<String>();
-		
-		
-		//Load the arguments from the scenario definition present in scenarios.xml
+
 		if (args.length == 2){
-			ScenarioLoaderHandler scenHandler = new ScenarioLoaderHandler(args[1]);
-			SAXParserFactory factory = SAXParserFactory.newInstance();
-			SAXParser parser = factory.newSAXParser();
-			parser.parse(new File(WORLD_PATH + args[0]), scenHandler);
-			
-			scenHandler.checkScenario();
-			args = scenHandler.getWorldSimArguments();
-			
-			if (args.length < 6) {
+
+			args = loadArgumentsFromScenarioDefinition(args[0],args[1]);
+
+			if (args.length < MINIMUM_NUM_WORLD_SIM_ARGS) {
 				System.out.println("Wrong number of arguments in the scenario definition!");
 				return;
 			}			
-			for(i = 6; i < args.length; i++) {
+			for(i = MINIMUM_NUM_WORLD_SIM_ARGS; i < args.length; i++) {
 				objects.add(args[i]);
 			}
+
+			boolean simplifiedVersion = false;
+			if(args[6] != null){
+				simplifiedVersion = new Boolean(args[6]);
+			}
 			
-			
-			WorldTest wt = new WorldTest(new Integer(args[0]).intValue(),args[1],args[2], args[3], args[4],args[5],objects);
+			WorldTest wt = new WorldTest(new Integer(args[0]).intValue(),args[1],args[2], args[3], args[4],args[5],simplifiedVersion,objects);
 			wt.run();
 		}
 		if (args.length < 2) {
@@ -76,103 +82,100 @@ public class WorldTest {
 			return;
 		}			
 	}
-	
-	public WorldTest(int port, String scenery, String actionsFile, String agentLanguageFile, String userLanguageFile, String userOptionsFile, ArrayList<String> objects) {
+
+
+
+
+	public WorldTest(int port, String scenery, String actionsFile, String agentLanguageFile, String userLanguageFile, String userOptionsFile, boolean simplifiedVersion, ArrayList<String> objects) throws IOException {
 		_scenery = scenery;
 		_agents = new ArrayList<RemoteAgent>();
 		_objects = new ArrayList<sObject>();
 		_userOptionsFile = userOptionsFile;
-		_userInterface = new UserInterface(this);
 		
+		_userInterface = new UserInterface(this,simplifiedVersion);
+
 		for(String objName : objects)
 		{
 			_objects.add(sObject.ParseFile(objName));
 		}
-		
-		_userInterface.WriteLine("Initializing Agent Language Engine(ALE)... ");
-		_userInterface.WriteLine("Language File: " + agentLanguageFile);
-		_userInterface.WriteLine("Sex: M");
-		_userInterface.WriteLine("Role: Victim");
-		try
-		{
-			this.agentLanguage = new LanguageEngine("name","M","Victim",new File(agentLanguageFile));
+
+		try{
+			
+			if(agentLanguageFile != null){
+				_agentLanguage = this.initializeLanguageEngine("name", "Victim", "M", agentLanguageFile);
+			}
+			
+			if(userLanguageFile != null){
+				_userLanguage = this.initializeLanguageEngine("name", "User", "M", userLanguageFile);
+			}
+			
 			_userInterface.WriteLine("Finished ALE initialization!");
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
 		
-		_userInterface.WriteLine("Initializing User Language Engine(ULE)... ");
-		_userInterface.WriteLine("Language File: " + userLanguageFile);
-		_userInterface.WriteLine("Sex: M");
-		_userInterface.WriteLine("Role: Victim");
-		try
-		{
-			this.userLanguage = new LanguageEngine("name","M","User",new File(userLanguageFile));
-			_userInterface.WriteLine("Finished ALE initialization!");
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-		
-					
-		try {
 			ActionsLoaderHandler op = LoadOperators(actionsFile, "[SELF]");
 			this._actions = op.getOperators();
 			_ss = new ServerSocket(port);
-			
-			//_ssToGreta = new ServerSocket(100);	
-		}
-		catch (Exception e){
+			//_ssToGreta = new ServerSocket(100);
+
+		}catch(Exception e){
 			e.printStackTrace();
+			System.exit(-1);
 		}
+
+	}
+
+	private LanguageEngine initializeLanguageEngine(String name, String role, String sex, String languageFile) throws SactException, LactException{
 		
-		
+		if(role.equals("User")){
+			_userInterface.WriteLine("Initializing User Language Engine(ALE)... ");		
+		}else{
+			_userInterface.WriteLine("Initializing Agent Language Engine(ALE)... ");			
+		}
+		_userInterface.WriteLine("Language File: " + languageFile);
+		_userInterface.WriteLine("Sex: " + sex);
+		_userInterface.WriteLine("Role: " + role);
+		return new LanguageEngine(name,sex,role,new File(languageFile));
 	}
 	
-	private ActionsLoaderHandler LoadOperators(String xmlFile, String self)  throws Exception
+	private static String[] loadArgumentsFromScenarioDefinition(String scenarioFilename, String scenarioName) throws SAXException, IOException, ParserConfigurationException {
+		ScenarioLoaderHandler scenHandler = new ScenarioLoaderHandler(scenarioName);
+		SAXParserFactory factory = SAXParserFactory.newInstance();
+		SAXParser parser = factory.newSAXParser();
+		parser.parse(new File(WORLD_PATH + scenarioFilename), scenHandler);
+		scenHandler.checkScenario();
+		return  scenHandler.getWorldSimArguments();
+	}
+	
+
+	private ActionsLoaderHandler LoadOperators(String xmlFile, String self) throws ParserConfigurationException, SAXException, IOException 
 	{
-		_userInterface.WriteLine("LOAD: " + xmlFile);
-		//com.sun.xml.parser.Parser parser;
-		//parser = new com.sun.xml.parser.Parser();
+		_userInterface.WriteLine("Loaded actions from: " + xmlFile);
 		ActionsLoaderHandler op = new ActionsLoaderHandler(null);
-		//parser.setDocumentHandler(op);
-		try 
-		{
-			SAXParserFactory factory = SAXParserFactory.newInstance();
-			SAXParser parser = factory.newSAXParser();
-			parser.parse(new File(xmlFile), op);
-			//InputSource input = Resolver.createInputSource(new File(xmlFile));
-			//parser.parse(input);
-			return op;
-		}
-		catch (Exception ex) 
-		{
-			throw new Exception("Error parsing the actions file.",ex);
-		}	
+		
+		SAXParserFactory factory = SAXParserFactory.newInstance();
+		SAXParser parser = factory.newSAXParser();
+		parser.parse(new File(xmlFile), op);
+		return op;		
 	}
-	
+
 	public void run() {
 		Socket s2;
 		RemoteAgent ra;		
-		
+
 		while(true) {
 			try {
 				/*s1 = _ssToGreta.accept();
 				_ga = new GretaAgent(this,s1);
 				_ga.start();
 				_ga.Send("Connected!");*/
-				
+
 				s2 = _ss.accept();
 				ra = new RemoteAgent(this,s2);
 				ra.start();
 				_agents.add(ra);
-				
+
 				//hack for Mac
 				Thread.sleep(150);
-				
+
 				_userInterface.WriteLine(ra.Name() + " enters the " + _scenery);
 				NotifyEntityAdded(ra.Name());
 				PerceiveEntities(ra);
@@ -183,11 +186,11 @@ public class WorldTest {
 			}		
 		}
 	}
-	
+
 	public void NotifyEntityAdded(String entityName) {
-	
+
 		String msg = "ENTITY-ADDED " + entityName;
-		
+
 		for(RemoteAgent ag : _agents)
 		{
 			if(!ag.Name().equals(entityName)){
@@ -195,72 +198,72 @@ public class WorldTest {
 			}
 		}
 	}
-	
+
 	public void PerceiveEntities(RemoteAgent agent) {
-		
+
 		String entities = "AGENTS";
-		
+
 		for(RemoteAgent ag : _agents)
 		{
 			entities = entities + " " + ag.Name();
 		}
-		
+
 		for(sObject obj : _objects)
 		{
 			entities = entities + " " + obj.Name();
 		}
-		
+
 		agent.Send(entities);
 	}
-	
+
 	public void SendPerceptionToAll(String perception) {
-		
+
 		for(RemoteAgent ag : _agents)
 		{
 			ag.Send(perception);
 		}
 	}
-	
+
 	public String GetPropertiesList(String target) {
-		
+
 		for(RemoteAgent ag : _agents)
 		{
 			if(target.equals(ag.Name())) {
 				return ag.GetPropertiesList();
 			}
 		}
-		
+
 		for(sObject obj : _objects)
 		{
 			if(target.equals(obj.Name())) {
 				return obj.GetPropertiesList();
 			}
 		}
-		
+
 		return null;
 	}
-	
+
 	public ArrayList<Step> GetActions()
 	{
 		return this._actions;
 	}
-	
+
 	public String Say(String speech)
 	{
 		String utterance;
 		String aux;
 		String[] aux2;
-		
+
 		//System.out.println("Generating SpeechAct:" + speech);
-		if(this.agentLanguage!= null)
+		if(this._agentLanguage!= null)
 		{
 			try
 			{
-				aux = this.agentLanguage.Say(speech);
+				aux = this._agentLanguage.Say(speech);
 				aux2 = aux.split("<Utterance>");
 				if(aux2.length > 1){
-				 utterance = aux2[1].split("</Utterance>")[0];
-				 return utterance;
+					utterance = aux2[1].split("</Utterance>")[0];
+					return utterance;
 				}
 			}
 			catch (Exception e)
@@ -270,28 +273,27 @@ public class WorldTest {
 		}	
 		return null;
 	}
-	
+
 	public String ProcessInput(String user,String target, String text)
 	{
 		GetUserInterface().WriteLine(user + " says to " + target + "; " + text);
-		//System.out.println("Generating SpeechAct:" + speech);
-		
+
 		SpeechAct userSpeech = new SpeechAct();
 		userSpeech.setReceiver(target);
 		userSpeech.setSender(user);
 		userSpeech.setUtterance(text);
 		userSpeech.setActionType(SpeechAct.UserSpeech);
-		
-		if(this.userLanguage!= null)
+
+		if(this._userLanguage!= null)
 		{
 			try
 			{
-				String speech = this.userLanguage.Input(userSpeech.toLanguageEngine());
+				String speech = this._userLanguage.Input(userSpeech.toLanguageEngine());
 				userSpeech = (SpeechAct) SpeechAct.ParseFromXml(speech);
 				userSpeech.setActionType(SpeechAct.UserSpeech);
 				String perception = "ACTION-FINISHED " + user + " UserSpeech " + target + " " + userSpeech.toXML();
 				this.SendPerceptionToAll(perception);
-				
+
 			}
 			catch (Exception e)
 			{
@@ -300,24 +302,24 @@ public class WorldTest {
 		}	
 		return null;
 	}
-	
+
 	public UserInterface GetUserInterface(){
 		return _userInterface;
 	}
-	
+
 	public void ChangeTime( String time ){
 		for( int i = 0, limit = _agents.size(); i != limit; ++i ){
 			SendPerceptionToAll( "PROPERTY-CHANGED " + "*" + ((RemoteAgent)_agents.get(i)).Name() + " time " + time );
 		}
 	}
-	
+
 	public void ChangePlace( String location ){
 		for( int i = 0, limit = _agents.size(); i != limit; ++i ){
 			SendPerceptionToAll( "PROPERTY-CHANGED " + "*" + ((RemoteAgent)_agents.get(i)).Name() + " location " + location );
 			SendPerceptionToAll( "ACTION-FINISHED " + "*" + ((RemoteAgent)_agents.get(i)).Name() + " MoveTo " + location );
 		}
 	}
-	
+
 	// Meiyii 11/03/09 
 	public void ChangeUser( String previousUser, String user ){
 		for( int i = 0, limit = _agents.size(); i != limit; ++i ){
@@ -333,7 +335,7 @@ public class WorldTest {
 					SendPerceptionToAll( "PROPERTY-CHANGED * " + previousUser + "(isPresent) False");
 				}
 			}
-			
+
 			if(user.equalsIgnoreCase("LukePaulie"))
 			{
 				SendPerceptionToAll( "PROPERTY-CHANGED * Luke(isPresent) True");
@@ -345,10 +347,10 @@ public class WorldTest {
 			}
 		}
 	}
-		
+
 	// Meiyii 06/04/09 
 	public void ChangeExperimentCase( String expCase ){
-	
+
 		if(_scenery.equals("AmyHouse"))
 		{
 			if(expCase.equals(UserInterface.CASE1))
@@ -389,37 +391,38 @@ public class WorldTest {
 			}	
 		}
 	}
-	
+
+
 	public void ReadyForNextStep(){
 		//SendPerceptionToAll( "READY-FOR-NEXT-STEP" );
 		SendPerceptionToAll( "IDENTIFY-USER Amy Pixota" );
 	}
-	
+
 	String knownInfo = "";
 	public void AddKnownInfo( String info ){
 		knownInfo = knownInfo + info + "*";
 	}
-	
+
 	public void CCMemory(){
 		SendPerceptionToAll("AdvancedMemory CC-MEMORY");
 	}
-	
+
 	public void SAMemory(String question){
 		SendPerceptionToAll("AdvancedMemory SA-MEMORY " + question + "$" + knownInfo );
 		knownInfo = "";
 	}
-	
+
 	String gAttributes = "";
 	public void AddGAttributes( String attribute ){
 		gAttributes = gAttributes + attribute + "*";
 	}
-	
+
 	public void GMemory(){
 		SendPerceptionToAll("AdvancedMemory G-MEMORY " + gAttributes);
 		System.out.println("WorldTest gAttributes " + gAttributes);
 		gAttributes = "";
 	}
-		
+
 	public synchronized void removeAgent(RemoteAgent ra){
 		_agents.remove(ra);
 		_userInterface.WriteLine(ra.Name() + " disconnected\n");
@@ -429,11 +432,11 @@ public class WorldTest {
 		_userInterface.WriteLine(_ga + " disconnected\n");
 		_ga = null;
 	}
-	
+
 	public GretaAgent GetGreta(){
 		return _ga;
 	}
-	
+
 	public String GetUserOptionsFile() {
 		return this._userOptionsFile;
 	}
