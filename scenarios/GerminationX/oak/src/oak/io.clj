@@ -13,15 +13,22 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (ns oak.io
+  (:use
+   clojure.xml
+   clojure.contrib.io)
   (:import
+   java.io.File
+   java.io.FileInputStream
+   java.io.FileOutputStream
+   java.io.PushbackReader
+   java.io.FileReader
    java.net.Socket
    java.nio.ByteBuffer
    java.nio.CharBuffer
    java.nio.channels.SocketChannel
    java.nio.charset.Charset
    java.io.IOException
-   java.io.ByteArrayInputStream)
-  (use clojure.xml))
+   java.io.ByteArrayInputStream))
 
 ;(defn msg-waiting? [socket]
 ;  (> (. (. socket getInputStream) available) 0))
@@ -47,6 +54,27 @@
 ;   (catch IOException e
 ;     (. e printStackTrace)
 ;     false)))
+
+(comment
+(defn serialise
+  "Print a data structure to a file so that we may read it in later."
+  [data-structure #^String filename]
+  (with-out-writer
+    (java.io.File. filename)
+    (binding [*print-dup* true] (prn data-structure))))
+
+;; This allows us to then read in the structure at a later time, like so:
+(defn deserialise [filename]
+  (with-open [r (PushbackReader. (FileReader. filename))]
+    (read r))))
+
+(defn serialise [o filename]
+  (with-open [outp (-> (java.io.File. filename) java.io.FileOutputStream. java.io.ObjectOutputStream.)]
+    (.writeObject outp o)))
+
+(defn deserialise [filename]
+  (with-open [inp (-> (java.io.File. filename) java.io.FileInputStream. java.io.ObjectInputStream.)]
+    (.readObject inp)))
 
 (def buf (ByteBuffer/allocateDirect 4096))
 

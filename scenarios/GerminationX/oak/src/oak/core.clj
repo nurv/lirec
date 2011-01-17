@@ -6,10 +6,23 @@
    oak.world
    oak.remote-agent
    oak.io
-   oak.island)
-  (:import java.util.concurrent.Executors)
+   oak.island
+   oak.game-world
+   oak.vec2
+   oak.plant
+   oak.tile)
+  (:import
+   java.util.concurrent.Executors)
   (:require [compojure.route :as route]
             [org.danlarkin.json :as json])) 
+
+(defn game-world-save [game-world fn]
+  (serialise game-world fn))
+
+(defn game-world-load [fn]
+  (deserialise fn))
+
+(def state-filename "state.txt")
 
 (def myworld
      (ref
@@ -20,9 +33,31 @@
        (list "WiltedVine"
              "AppleTree"))))
 
+(def my-game-world (ref (game-world-load state-filename)))
+(println (deref my-game-world))
+;(def my-game-world (ref (make-game-world)))
+
 ;(world-crank (deref myworld))
 
 (defroutes main-routes
+  (GET "/get-tile/:tilex/:tiley" [tilex tiley]
+       (println (list tilex tiley))
+       (let [tile (game-world-get-tile (deref my-game-world)
+                                       (make-vec2 tilex tiley))]
+         (if tile
+           (json/encode-to-str tile)
+           (json/encode-to-str '()))))
+  (GET "/make-plant/:tilex/:tiley/:posx/:posy/:type/:owner"
+       [tilex tiley posx posy type owner]
+       (println (list tilex tiley posx posy type owner))
+       (dosync
+        (ref-set my-game-world
+                 (game-world-add-entity
+                  (deref my-game-world)
+                  (make-vec2 tilex tiley)
+                  (make-plant (make-vec2 posx posy) type owner))))
+       (game-world-save (deref my-game-world) state-filename)
+       (println (deref my-game-world)))
   (GET "/spirit-sprites" []
        (println (read-islands "./public/islands"))
        (read-islands "./public/islands"))     
