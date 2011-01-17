@@ -14,7 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#if flash
+//#if flash
 
 import flash.display.BitmapData;
 import truffle.Truffle;
@@ -119,7 +119,7 @@ class Resources
     }
 }
 
-#else
+/*#else
 
 class Resources
 {
@@ -129,4 +129,4 @@ class Resources
     }
 }
 
-#end
+#end*/

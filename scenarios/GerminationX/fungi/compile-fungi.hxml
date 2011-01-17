@@ -2,4 +2,5 @@
 -swf-version 9
 -swf-lib resources.swf
 -main Fungi
+-cp src
 -swf-header 640:480:40:ffffff

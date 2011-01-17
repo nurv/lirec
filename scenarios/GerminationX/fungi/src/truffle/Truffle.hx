@@ -15,7 +15,7 @@
 
 package truffle;
 
-#if flash
+//#if flash
 
 import truffle.flash.FlashSprite;
 import truffle.flash.FlashSoundPlayer;
@@ -51,10 +51,7 @@ class Keyboard
     }
 }
 
-#else
+//#else
 
-class Entity extends CanvasEntity
-{
-}
 
-#end
+//#end

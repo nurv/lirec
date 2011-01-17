@@ -1,0 +1,5 @@
+--remap flash:jeash
+-js fungi.js
+-main Fungi
+-cp src/jeash
+-cp src/truffle

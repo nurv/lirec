@@ -1,5 +1,6 @@
--swf fungi.swf
+-swf truffle-test.swf
 -swf-version 9
 -swf-lib resources.swf
--main Fungi
+-main TruffleTest
+-cp src
 -swf-header 640:480:40:ffffff

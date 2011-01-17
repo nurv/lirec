@@ -38,7 +38,7 @@ interface Sprite
 
 	public function Update(frame:Int, tx:Dynamic) : Void;
 
-    public function GetTransform() : Dynamic;
+    public function GetTx() : Dynamic;
     public function LoadFromURL(url:String) : Void;
 }
 

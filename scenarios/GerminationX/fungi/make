@@ -1,0 +1,11 @@
+haxe compile-test.hxml 
+cp truffle-test.swf ../oak/public/
+cp html/truffle-test.html ../oak/public/
+
+haxe compile-fungi.hxml 
+cp fungi.swf ../oak/public/
+cp html/index.html ../oak/public/
+
+#haxe compile-jeash.hxml 
+#cp truffle.js ../oak/public/
+#cp html/truffle-jeash.html ../oak/public/

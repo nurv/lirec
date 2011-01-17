@@ -25,7 +25,7 @@ import flash.net.URLRequest;
 import flash.net.URLLoader;
 import flash.net.URLLoaderDataFormat;
 import flash.net.URLRequestMethod;
-import flash.net.URLVariables;
+//import flash.net.URLVariables;
 import hxjson2.JSON;
 
 import truffle.interfaces.ServerConnection;
@@ -95,7 +95,7 @@ class FlashServerConnection implements ServerConnection
         //trace("progressHandler loaded:" + event.bytesLoaded + " total: " + event.bytesTotal);
     }
     
-    private function SecurityErrorHandler(event:SecurityErrorEvent)
+      private function SecurityErrorHandler(event:SecurityErrorEvent)
     {
         trace("securityErrorHandler: " + event);
     }
@@ -103,7 +103,7 @@ class FlashServerConnection implements ServerConnection
     private function HTTPStatusHandler(event:HTTPStatusEvent)
     {
         //trace("httpStatusHandler: " + event.status);
-   }
+    }
     
     private function IOErrorHandler(event:IOErrorEvent)
     {

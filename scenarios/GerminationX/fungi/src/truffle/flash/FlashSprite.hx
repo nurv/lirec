@@ -174,7 +174,7 @@ class FlashSprite implements truffle.interfaces.Sprite, extends flash.display.Sp
     public function SetPos(s:Vec2) { Pos=s; }
 	public function SetScale(s:Vec2) { MyScale=s; }
 	public function SetRotate(angle:Float) { Angle=angle; }
-    public function GetTransform() : Dynamic { return Transform; }
+    public function GetTx() : Dynamic { return Transform; }
 
     public function TransformedPos() : Vec2
     {

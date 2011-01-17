@@ -42,7 +42,7 @@ class Bone extends Sprite
 	override function Update(frame:Int, tx:Dynamic)
     {
         super.Update(frame,tx);
-        var tx=GetTransform();
+        var tx=GetTx();
         for (c in Children)
         {
             c.Update(frame,tx);
