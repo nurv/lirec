@@ -16,7 +16,10 @@
   (:use
    oak.vec2
    oak.plant
-   oak.tile))
+   oak.tile
+   oak.rand)
+  (:require
+   clojure.contrib.math))
 
 (defrecord game-world
   [players
@@ -26,9 +29,6 @@
 (defn game-world-players [game-world] (:players game-world))
 (defn game-world-tiles [game-world] (:tiles game-world))
 (defn game-world-spirits [game-world] (:spirits game-world))
-
-(defn make-game-world []
-  (game-world. () {} ()))
 
 (defn game-world-get-tile [game-world pos]
   (reduce
@@ -42,8 +42,40 @@
 (defn game-world-add-tile [game-world tile]
   (merge game-world {:tiles (cons tile (game-world-tiles game-world))}))
 
+(defn game-world-modify-tile [game-world pos f]
+  (merge
+   game-world
+   {:tiles
+    (map
+     (fn [t]
+       (if (vec2-eq? (:pos t) pos) (f t) t))
+     (game-world-tiles game-world))}))
+
 (defn game-world-add-entity [game-world tile-pos entity]
   (let [tile (game-world-get-tile game-world tile-pos)]
     (if (not tile)
       (game-world-add-tile game-world (make-tile tile-pos (list entity)))
-      (tile-add-entity tile entity))))
+      (game-world-modify-tile
+       game-world
+       tile-pos
+       (fn [tile]
+         (tile-add-entity tile entity))))))
+
+(defn make-game-world [num-plants area]
+  (reduce
+   (fn [world plant]
+     (game-world-add-entity
+      world
+      (make-vec2
+       (Math/round (* (rand-gaussian) area))
+       (Math/round (* (rand-gaussian) area)))
+      plant))
+   (game-world. () {} ()) 
+   (repeatedly num-plants (fn [] (make-random-plant)))))
+
+(defn game-world-print [game-world]
+  (doseq [tile (game-world-tiles game-world)]
+    (println (format "tile %d %d" (:x (tile-pos tile)) (:y (tile-pos tile))))
+    (doseq [plant (tile-entities tile)]
+      (println (format "plant %d %d" (:x (plant-pos plant)) (:y (plant-pos plant)))))))
+                                      

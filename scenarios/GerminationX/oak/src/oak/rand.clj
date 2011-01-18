@@ -12,16 +12,12 @@
 ;; You should have received a copy of the GNU Affero General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-(ns oak.vec2)
+(ns oak.rand
+  (:import
+   java.util.Random))
 
-(defrecord vec2 [x y])
+(def random (java.util.Random.))
 
-(defn vec2-x [vec2] (:x vec2))
-(defn vec2-y [vec2] (:y vec2))
-
-(defn make-vec2 [x y]
-  (vec2. x y))
-
-(defn vec2-eq? [vec2 other]
-  (and (= (:x vec2) (:x other))
-       (= (:y vec2) (:y other))))
+(defn rand-int [] (.nextInt random))
+(defn rand-float [] (.nextFloat random))
+(defn rand-gaussian [] (.nextGaussian random))

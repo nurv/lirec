@@ -25,6 +25,7 @@ interface Sprite
     public var Height:Int;
 
 	public function MouseDown(c:Dynamic, f:Dynamic -> Void=null) : Void;
+	public function MouseUp(c:Dynamic, f:Dynamic -> Void=null) : Void;
 	public function MouseOver(c:Dynamic, f:Dynamic -> Void=null) : Void;
 	public function ChangeBitmap(t:TextureDesc) : Void;
 

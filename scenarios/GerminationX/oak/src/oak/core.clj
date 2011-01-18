@@ -33,31 +33,34 @@
        (list "WiltedVine"
              "AppleTree"))))
 
-(def my-game-world (ref (game-world-load state-filename)))
-(println (deref my-game-world))
-;(def my-game-world (ref (make-game-world)))
-
+;(def my-game-world (ref (game-world-load state-filename)))
+(def my-game-world (ref (make-game-world 1000 4)))
+(game-world-print (deref my-game-world))
 ;(world-crank (deref myworld))
+
+(defn parse [s]
+  (try (Integer/parseInt (.trim s))
+       (catch NumberFormatException e nil)))
 
 (defroutes main-routes
   (GET "/get-tile/:tilex/:tiley" [tilex tiley]
-       (println (list tilex tiley))
        (let [tile (game-world-get-tile (deref my-game-world)
-                                       (make-vec2 tilex tiley))]
+                                       (make-vec2 (parse tilex)
+                                                  (parse tiley)))]
          (if tile
            (json/encode-to-str tile)
            (json/encode-to-str '()))))
-  (GET "/make-plant/:tilex/:tiley/:posx/:posy/:type/:owner"
-       [tilex tiley posx posy type owner]
-       (println (list tilex tiley posx posy type owner))
+  (GET "/make-plant/:tilex/:tiley/:posx/:posy/:type/:owner/:size"
+       [tilex tiley posx posy type owner size]
        (dosync
         (ref-set my-game-world
                  (game-world-add-entity
                   (deref my-game-world)
-                  (make-vec2 tilex tiley)
-                  (make-plant (make-vec2 posx posy) type owner))))
+                  (make-vec2 (parse tilex) (parse tiley))
+                  (make-plant (make-vec2 (parse posx) (parse posy)) type owner size))))
        (game-world-save (deref my-game-world) state-filename)
-       (println (deref my-game-world)))
+       (println (deref my-game-world))
+       (json/encode-to-str '("ok")))
   (GET "/spirit-sprites" []
        (println (read-islands "./public/islands"))
        (read-islands "./public/islands"))     

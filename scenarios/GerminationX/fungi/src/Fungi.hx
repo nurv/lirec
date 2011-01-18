@@ -22,7 +22,6 @@ import truffle.Vec3;
 import truffle.Vec2;
 import truffle.RndGen;
 import truffle.Circle;
-import truffle.Client;
 import truffle.Entity;
 import truffle.SpriteEntity;
 import truffle.SkeletonEntity;
@@ -60,6 +59,7 @@ class Plant extends SpriteEntity
 	public var Age:Int;
     var Scale:Float;
     var PlantType:String;
+    var Seeds:Array<Sprite>;
 
 	public function new(world:World, owner:String, pos, type, maxsize, scale)
 	{
@@ -69,6 +69,7 @@ class Plant extends SpriteEntity
         PlantScale=0;
         Scale=maxsize;
         NeedsUpdate=true;
+        Seeds=[];
 
         if (scale)
         {
@@ -77,6 +78,7 @@ class Plant extends SpriteEntity
         }
         else
         {
+            Spr.SetScale(new Vec2(Scale,Scale));
             Age=100;
         }
         
@@ -88,6 +90,15 @@ class Plant extends SpriteEntity
         //tf.text = Owner + " planted this.";
         //addChild(tf);
 	}
+
+    override function Destroy(world:World)
+    {
+        super.Destroy(world);
+        for (seed in Seeds)
+        {
+            world.RemoveSprite(seed);
+        }
+    }
 	
 	public override function Update(frame:Int, world:World)
 	{
@@ -109,10 +120,15 @@ class Plant extends SpriteEntity
         var f=new Sprite(Spr.Pos.Add(new Vec2(0,-Spr.Height/2)),
                          Resources.Get("seed"));
         world.AddSprite(f);
-        f.MouseDown([this,world],function(c) 
-        {
-            var w = cast(c[1],FungiWorld);
-            w.Seeds.Add(new Seed(c[0].PlantType,f));
+        Seeds.push(f);
+        f.MouseDown(this,function(p) 
+        {            
+            var s=new Seed(p.PlantType);
+            if (world.Seeds.Add(world,s))
+            {
+                p.Seeds.remove(f);
+                world.RemoveSprite(f);
+            }
         });
     }
 }
@@ -240,10 +256,10 @@ class Seed
     public var Type:String;
     public var Spr:Sprite;
 
-    public function new(t:String,s:Sprite)
+    public function new(t:String)
     {
         Type=t;
-        Spr=s;
+        Spr=new Sprite(new Vec2(0,0),Resources.Get("seed"));
     }
 }
 
@@ -254,18 +270,22 @@ class SeedStore
 
     public function new(size:Int)
     {
-        Seeds = new Array<Seed>();
+        Seeds = [];
         Size = size;
     }
 
-    public function Add(s:Seed)
+    public function Add(world:World,s:Seed) : Bool
     {
         if (Seeds.length<Size)
         {
             Seeds.push(s);
             s.Spr.SetPos(new Vec2(20+Seeds.length*10,30));
+            //cast(world,truffle.flash.FlashWorld).addSprite(s.Spr);
+            //trace("did it...");
             s.Spr.Update(0,null);
+            return true;
         }
+        return false;
     }
 
     public function Remove(world:World) : String
@@ -273,7 +293,7 @@ class SeedStore
         if (Seeds.length>0)
         {
             var s = Seeds.pop();
-            world.RemoveSprite(s.Spr);
+//            world.RemoveSprite(s.Spr);
             return s.Type;
         }
         else
@@ -292,9 +312,8 @@ class FungiWorld extends World
 	var Objs:Array<Cube>;
 	public var WorldPos:Vec3;
 	var MyRndGen:RndGen;
-	public var WorldClient:Client;
 	public var MyTextEntry:TextEntry;
-	var Plants:Array<Plant>;
+	public var Plants:Array<Plant>;
 	var MyName:String;
     var Frame:Int;
     var TickTime:Int;
@@ -302,6 +321,7 @@ class FungiWorld extends World
     var Cursor:Sprite;
     var CursorLogicalPos:Vec3;
     public var Seeds:SeedStore;
+    var Server : ServerConnection;
 
 	public function new(w:Int, h:Int) 
 	{
@@ -316,28 +336,28 @@ class FungiWorld extends World
         Seeds = new SeedStore(1);
 		WorldPos = new Vec3(0,0,0);
 		MyRndGen = new RndGen();
-		WorldClient = new Client(OnServerPlantsCallback);
         CursorLogicalPos = new Vec3(5,5,0);
+        Server = new ServerConnection();
 
         Cursor=new Sprite(new Vec2(0,0), Resources.Get("cursor"), true);
         AddSprite(Cursor);
 
-/*        var arrow=new Sprite(new Vec2(0,0), Resources.Get("test"));
-        arrow.MouseDown(this,function(c) { c.UpdateWorld(c.WorldPos.Add(new Vec3(1,0,0))); });
-        AddSprite(arrow);
-
-        arrow = new Sprite(new Vec2(500,0), Resources.Get("test"));
-        arrow.MouseDown(this,function(c) { c.UpdateWorld(c.WorldPos.Add(new Vec3(-1,0,0))); });
+        var arrow = new Sprite(new Vec2(500,0), Resources.Get("test"));
+        arrow.MouseUp(this,function(c) { c.UpdateWorld(c.WorldPos.Add(new Vec3(0,-1,0))); });
         AddSprite(arrow);
 
         arrow=new Sprite(new Vec2(0,400), Resources.Get("test"));
-        arrow.MouseDown(this,function(c) { c.UpdateWorld(c.WorldPos.Add(new Vec3(0,1,0))); });
+        arrow.MouseUp(this,function(c) { c.UpdateWorld(c.WorldPos.Add(new Vec3(0,1,0))); });
+        AddSprite(arrow);
+
+        arrow=new Sprite(new Vec2(0,0), Resources.Get("test"));
+        arrow.MouseUp(this,function(c) { c.UpdateWorld(c.WorldPos.Add(new Vec3(-1,0,0))); });
         AddSprite(arrow);
 
         arrow=new Sprite(new Vec2(500,400), Resources.Get("test"));
-        arrow.MouseDown(this,function(c) { c.UpdateWorld(c.WorldPos.Add(new Vec3(0,-1,0))); });
-      AddSprite(arrow);
-*/
+        arrow.MouseUp(this,function(c) { c.UpdateWorld(c.WorldPos.Add(new Vec3(1,0,0))); });
+        AddSprite(arrow);
+
         MyName = "foo";
 
 		for (y in 0...h)
@@ -364,17 +384,6 @@ class FungiWorld extends World
 			}
 		}
 
-
-/*        MouseDown(this, function(c)
-        {
-            var type=c.Seeds.Remove(cast(c,truffle.World));
-            if (type!="")
-            {
-                c.AddServerPlant(c.CursorLogicalPos.Add(new Vec3(0,0,1)),type);
-            }
-        });
-*/
-
 		UpdateWorld(new Vec3(0,0,0));
 		
         var Names = ["Vertical","Canopy","Cover"];
@@ -390,32 +399,12 @@ class FungiWorld extends World
 
         Update(0);
         SortScene();
-
-
-        for (i in 0...10)
-        {
-            AddServerPlant(new Vec3(MyRndGen.RndInt()%10,
-                                    MyRndGen.RndInt()%10,1),
-            MyRndGen.Choose(
-                [
-                    "plant-001",
-                    "plant-002",
-                    "plant-003",
-                    "plant-004",
-                    "plant-005",
-                    "plant-006",
-                    "plant-007",
-                    "plant-008"
-                ]));
-       }
-
-      WorldClient.Call("spirit-sprites",UpdateSpiritSprites);
+        Server.Request("spirit-sprites",this,UpdateSpiritSprites);
 	}
 	
 	public function NameCallback(name)
 	{
 		removeChild(MyTextEntry);
-		WorldClient.Identify(name);
 		MyName=name;
 		//WorldClient.GetPlants(cast(WorldPos.x,Int),cast(WorldPos.y,Int));
 	}
@@ -425,11 +414,7 @@ class FungiWorld extends World
 		WorldPos=pos;
 		
 		var circles = [];
-		
-		for (i in Plants) Remove(i);
-		Plants=[];
-		
-		for (x in -1...2)
+        for (x in -1...2)
 		{
 			for (y in -1...2)
 			{
@@ -459,26 +444,63 @@ class FungiWorld extends World
 			Objs[i].UpdateTex(MyRndGen);
             Objs[i].Update(0,this);
 		}
-		
-		//WorldClient.GetPlants(cast(WorldPos.x,Int),cast(WorldPos.y,Int));
+
+        ClearPlants();		
+        Server.Request("get-tile/"+Std.string(cast(WorldPos.x,Int))+"/"
+                                  +Std.string(cast(WorldPos.y,Int)),
+        this,
+        function (c:truffle.World,d)
+        {
+            var data:Array<Dynamic>=cast(d.entities,Array<Dynamic>);
+            for (p in data)
+            {
+                var pos = new Vec3(p.pos.x,p.pos.y,1);
+                
+                if (pos.x<10 && pos.y<10 && pos.x>0 && pos.y>0 &&
+                    c.SpaceClear(pos) && c.GetCube(pos).LogicalPos.z>-1)
+                {
+                    var plant = new Plant(c,p.owner,pos,p.type,p.size/100,false);
+                    c.Plants.push(plant);
+                }
+            }
+            c.SortScene();
+        });
 	}
-		
+
+	public function AddServerPlant(pos:Vec3,type)
+	{        
+        if (MyName!=null && SpaceClear(pos) && GetCube(pos).LogicalPos.z>-1)
+        {
+            var size=MyRndGen.RndFlt()+0.5;
+		    var plant = new Plant(this,MyName,pos,type,size,true);
+		    Plants.push(plant);
+            Server.Request("make-plant/"+Std.string(cast(WorldPos.x,Int))+"/"+
+                                         Std.string(cast(WorldPos.y,Int))+"/"+
+                                         Std.string(cast(pos.x,Int))+"/"+
+                                         Std.string(cast(pos.y,Int))+"/"+
+                                         type+"/"+
+                                         MyName+"/"+
+                                         Math.round(size*100),
+            this, function (c,data) {});       
+            SortScene();
+        }
+	}
+
+    public function ClearPlants() : Void
+    {
+        for (plant in Plants)
+        {
+            Remove(plant);
+        }
+        Plants = [];
+	}
+	
 	public function GetCube(pos:Vec3) : Cube
 	{
 		return Objs[cast(pos.x+pos.y*Width,Int)];
 	}
 	
-	public function OnServerPlantsCallback(ServerPlants:Array<ServerPlant>)
-	{
-		for (splant in ServerPlants)
-		{
-			var plant = new Plant(this,splant.owner,new Vec3(splant.x,splant.y,1),splant.type,splant.size,false);
-			Plants.push(plant);
-		}
-        SortScene();
-	}
-
-    public function UpdateSpiritSprites(data:Array<Dynamic>)
+    public function UpdateSpiritSprites(c,data:Array<Dynamic>)
     {
         var sk:SkeletonEntity = new SkeletonEntity(this,new Vec3(0,5,4));
         sk.NeedsUpdate=true;
@@ -494,21 +516,6 @@ class FungiWorld extends World
         }
         return true;
     }
-
-	public function AddServerPlant(pos:Vec3,type)
-	{        
-        if (MyName!=null && SpaceClear(pos) && GetCube(pos).LogicalPos.z>-1)
-        {
-            var size=MyRndGen.RndFlt();
-            
-		    // call by reference :Sx
-		    var plant = new Plant(this,MyName,pos,type,size,true);
-		    Plants.push(plant);
-		    //WorldClient.AddPlant(cast(WorldPos.x,Int), cast(WorldPos.y,Int), 
-			//			         new ServerPlant(MyName,cast(pos.x,Int),cast(pos.y,Int),type));
-            SortScene();
-        }
-	}
 	
    	override public function Handle(e:Int)
 	{
@@ -533,6 +540,9 @@ class FungiWorld extends World
     override function Update(time:Int)
     {
         super.Update(time);
+
+        Server.Update();
+
         /*if (time>TickTime)
         {
             WorldClient.Call("agent-info",UpdateGhosts);

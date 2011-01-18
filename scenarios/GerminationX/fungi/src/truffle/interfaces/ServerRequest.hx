@@ -13,35 +13,18 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package truffle;
-import truffle.Truffle;
+package truffle.interfaces;
 
-class SpriteEntity extends Entity
+class ServerRequest
 {
-    public var Spr:Sprite;
-		
-	public function new(world:World, pos:Vec3, t:TextureDesc, viz=true) 
-	{
-		super(world,pos);
-        Spr = new Sprite(new Vec2(Pos.x,Pos.y),t,true,viz);
-        world.AddSprite(Spr);
-	}
-		
-    override function Destroy(world:World)
-    {
-        super.Destroy(world);
-        world.RemoveSprite(Spr);
-    }
+    public var URL:String;
+    public var Context:Dynamic;
+    public var Callback:Dynamic -> Dynamic -> Void;
 
-	override public function Update(frame:Int, world:World)
-	{
-        super.Update(frame,world);
-        Spr.SetPos(new Vec2(Pos.x,Pos.y));
-        Spr.Update(frame,null);
-	}
-
-    override public function GetRoot() : Dynamic
+    public function new(a:String, b:Dynamic, c:Dynamic -> Dynamic -> Void)
     {
-        return Spr;
+        URL=a;
+        Context=b;
+        Callback=c;
     }
 }

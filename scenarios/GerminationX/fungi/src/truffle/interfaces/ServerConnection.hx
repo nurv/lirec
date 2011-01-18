@@ -14,8 +14,35 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package truffle.interfaces;
+import truffle.interfaces.ServerRequest;
 
-interface ServerConnection
+class ServerConnection
 {
-    public function Request(Args:Dynamic, Callback:Dynamic -> Void) : Bool;
+    var RequestQueue:Array<ServerRequest>;
+    var Ready:Bool;
+
+    public function new()
+    {
+        RequestQueue=[];
+        Ready=true;
+    }
+
+    public function Request(URL:String, 
+                            Context:Dynamic,
+                            Callback:Dynamic -> Dynamic -> Void) : Void
+    {
+        RequestQueue.push(new ServerRequest(URL,Context,Callback));
+    }
+
+    public function InnerRequest(r:ServerRequest) : Void
+    {
+    }
+
+    public function Update() : Void
+    {
+        if (RequestQueue.length>0 && Ready)
+        {
+            InnerRequest(RequestQueue.pop());
+        }
+    }
 }

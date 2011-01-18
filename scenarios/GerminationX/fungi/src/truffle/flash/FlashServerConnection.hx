@@ -29,16 +29,17 @@ import flash.net.URLRequestMethod;
 import hxjson2.JSON;
 
 import truffle.interfaces.ServerConnection;
+import truffle.interfaces.ServerRequest;
 
-class FlashServerConnection implements ServerConnection
+class FlashServerConnection extends ServerConnection
 {
     var Loader:URLLoader;
-    var Loading:Bool;
-    var LoadedCallback:Dynamic -> Void;
+    var LoadedCallback:Dynamic -> Dynamic -> Void;
+    var LoadedContext:Dynamic;
 
     public function new() 
 	{
-        Loading = false;
+        super();
         Loader = new URLLoader();
         Loader.dataFormat = URLLoaderDataFormat.TEXT;
         Loader.addEventListener(Event.COMPLETE, CompleteHandler);
@@ -49,40 +50,23 @@ class FlashServerConnection implements ServerConnection
         Loader.addEventListener(IOErrorEvent.IO_ERROR, IOErrorHandler);
 	}
 	
-    public function MakeParams(p:Dynamic) : String
-    {
-        var s = "?";
-        var first=true;
-        for (field in Reflect.fields(p)) 
-        {
-            var value:String = Reflect.field(p, field);
-            if (!first) s+="&";            
-            first=false;
-            s+=field+"="+value;
-        }     
-        return s;
-    }
-
-    public function Request(Args:Dynamic, Callback:Dynamic -> Void) : Bool
+    override function InnerRequest(r:ServerRequest) : Void
     {        
-        if (!Loading)
-        {
-            LoadedCallback = Callback;
-            // can't get URLVariables to work so doing it by hand :/
-            //var urlvars:URLVariables = new URLVariables("function_name=ping");      
-            var request:URLRequest = new URLRequest(Args.function_name/*+MakeParams(Args)*/);
-            request.method = URLRequestMethod.POST;
-            //request.data = urlvars;
-            Loader.load(request);
-            return true;
-        }
-        return false;
+        Ready=false;
+        LoadedCallback = r.Callback;
+        LoadedContext = r.Context;
+        //trace(URL);
+        var request:URLRequest = new URLRequest(r.URL);
+        request.method = URLRequestMethod.POST;
+        Loader.load(request);
     }
     
     private function CompleteHandler(event:Event)
     {
+        Ready=true;
         //trace(Loader.data);
-        return LoadedCallback(JSON.decode(Loader.data));   
+        var t=JSON.decode(Loader.data);
+        LoadedCallback(LoadedContext,JSON.decode(Loader.data));   
     }
     
     private function OpenHandler(event:Event)

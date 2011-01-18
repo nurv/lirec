@@ -41,6 +41,8 @@ class FlashSprite implements truffle.interfaces.Sprite, extends flash.display.Sp
     var Depth:Int;
     var MouseDownFunc:Dynamic -> Void;
     var MouseDownContext:Dynamic;
+    var MouseUpFunc:Dynamic -> Void;
+    var MouseUpContext:Dynamic;
     var MouseOverFunc:Dynamic -> Void;
     var MouseOverContext:Dynamic;
     var Centre:Vec2;
@@ -78,6 +80,18 @@ class FlashSprite implements truffle.interfaces.Sprite, extends flash.display.Sp
     public function MouseDownCB(e)
     {
         MouseDownFunc(MouseDownContext);
+    }
+
+	public function MouseUp(c:Dynamic, f:Dynamic -> Void=null)
+	{
+        MouseUpFunc=f;
+        MouseUpContext=c;
+		addEventListener(MouseEvent.MOUSE_UP, MouseUpCB);
+	}
+
+    public function MouseUpCB(e)
+    {
+        MouseUpFunc(MouseUpContext);
     }
 
 	public function MouseOver(c:Dynamic, f:Dynamic -> Void=null)

@@ -46,7 +46,7 @@ class RndGen
 	
 	public function RndFlt() : Float
 	{
-		return RndInt()/Math.pow(2,32)+0.5;
+		return RndInt()/Math.pow(2,32)*2;
 	}
 
     public function Choose(arr:Array<Dynamic>)

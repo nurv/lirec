@@ -12,7 +12,11 @@
 ;; You should have received a copy of the GNU Affero General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-(ns oak.plant)
+(ns oak.plant
+  (:use
+   oak.vec2)
+  (:require
+   clojure.contrib.math))
 
 (defrecord plant
   [pos
@@ -20,7 +24,8 @@
    layer
    state
    picked-by
-   owner])
+   owner
+   size])
 
 (defn plant-pos [plant] (:pos plant))
 (defn plant-type [plant] (:type plant))
@@ -28,6 +33,21 @@
 (defn plant-state [plant] (:state plant))
 (defn plant-picked-by [plant] (:picked-by plant))
 (defn plant-owner [plant] (:owner plant))
+(defn plant-size [plant] (:size plant))
 
-(defn make-plant [pos type owner]
-  (plant. pos type "" "" '() owner))
+(defn make-plant [pos type owner size]
+  (plant. pos type "" "" '() owner size))
+
+(defn make-random-plant []
+  (make-plant
+   (make-vec2 (Math/round (rand 10)) (Math/round (rand 10)))
+   (rand-nth '("plant-001"
+               "plant-002"
+               "plant-003"
+               "plant-004"
+               "plant-005"
+               "plant-006"
+               "plant-007"
+               "plant-008"))
+   "germination x"
+   (Math/round (+ 50 (rand 100)))))

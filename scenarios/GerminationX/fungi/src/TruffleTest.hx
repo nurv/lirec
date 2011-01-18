@@ -20,7 +20,6 @@ import truffle.Vec3;
 import truffle.Vec2;
 import truffle.RndGen;
 import truffle.Circle;
-import truffle.Client;
 import truffle.Entity;
 import truffle.SpriteEntity;
 import truffle.Bone;
@@ -31,7 +30,7 @@ class TruffleWorld extends World
 {
     var Frame:Int;
     var TickTime:Int;
-	public var WorldClient:Client;
+	public var Server:ServerConnection;
     var Sprites:Array<Sprite>;
     var TestBone:Bone;
 
@@ -40,7 +39,7 @@ class TruffleWorld extends World
 		super();
 		Frame=0;
         TickTime=0;
-		WorldClient=new Client(OnServerPlantsCallback);
+		Server=new ServerConnection();
         Sprites=new Array<Sprite>();
 
         var num=10;
@@ -97,10 +96,10 @@ TestBone.AddChild(this,ob2); */
         Update(0);
         SortScene();
         
-        WorldClient.Call("spirit-sprites",UpdateSpiritSprites);
+        Server.Request("spirit-sprites",this,UpdateSpiritSprites);
 	}
 
-    public function UpdateSpiritSprites(data:Array<Dynamic>)
+    public function UpdateSpiritSprites(c,data:Array<Dynamic>)
     {
         var sk:SkeletonEntity = new SkeletonEntity(this,new Vec3(5,0,0));
         sk.NeedsUpdate=true;

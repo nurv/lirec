@@ -42,6 +42,7 @@ class FlashWorld implements World, extends MovieClip
 
     public function Remove(e:Entity)
     {
+        e.Destroy(cast(this,truffle.World));
         Scene.remove(e);
     }
 

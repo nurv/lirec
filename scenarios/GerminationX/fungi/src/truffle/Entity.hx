@@ -32,6 +32,11 @@ class Entity
         w.Add(this);
 	}
 
+    // called by world before destruction (cnance to remove sprites)
+    public function Destroy(world:World)
+    {
+    }
+
 	public function Pos2PixelPos(pos:Vec3) : Vec3
 	{
 		// do the nasty iso conversion
