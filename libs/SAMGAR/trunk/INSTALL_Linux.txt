@@ -39,7 +39,8 @@ sudo aptitude install libqt4-dev
 cp SAMGAR/GUI/*.cpp yarp-2.3.1/src/yarpserver/src/
 cp SAMGAR/GUI/*.h yarp-2.3.1/src/yarpserver/src/
 cp SAMGAR/GUI/*.qrc yarp-2.3.1/src/yarpserver/src/
-cp -r SAMGAR/GUI/images yarp-2.3.1/src/yarpserver/src/
+mkdir yarp-2.3.1/src/yarpserver/src/images
+cp SAMGAR/GUI/images/*.* yarp-2.3.1/src/yarpserver/src/images
 
 5. Modify CMakeList.txt file responsible for compiling yarpserver
 
@@ -52,7 +53,6 @@ if (CREATE_YARPSERVER3)
 add following lines
 
 FIND_PACKAGE(Qt4 COMPONENTS QtCore QtGui QtXml REQUIRED)
-SET(QT_USE_QTXML 1)
 INCLUDE(${QT_USE_FILE})
 
 then beforre the line
