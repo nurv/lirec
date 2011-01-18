@@ -96,9 +96,9 @@ void PortIcon::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
    QRectF source2(0, 108.0, 100.0, 100.0);
 
    if(this->isSelected())
-      painter->drawPixmap(target2,QPixmap("Sprites.png"), source2);
+      painter->drawPixmap(target2,QPixmap(":/images/Sprites.png"), source2);
    else
-      painter->drawPixmap(target2,QPixmap("Sprites.png"), source2);
+      painter->drawPixmap(target2,QPixmap(":/images/Sprites.png"), source2);
 
    QRectF target3(75+(mynum*95),-25,60,80);
    QFont font;// = QApplication::font();
@@ -167,9 +167,6 @@ void PortIcon::CreateDeleateCons(void)
 	 SamCons[bb].SetConnected(false);
 	 NewonetoAdd=false;
 
- Network::disconnect(TempConnect.GetMom()->GetRealName().c_str(),TempConnect.GetDad()->GetRealName().c_str());
- Network::disconnect(TempConnect.GetDad()->GetRealName().c_str(),TempConnect.GetMom()->GetRealName().c_str());
-/*
 	 cmd.clear();
 	 cmd.addString("unsubscribe");
 	 cmd.addString(SamCons[bb].GetMom()->GetRealName().c_str());
@@ -183,8 +180,7 @@ void PortIcon::CreateDeleateCons(void)
 	 Network::disconnect(TempConnect.GetMom()->GetRealName().c_str(),
 			     TempConnect.GetDad()->GetRealName().c_str());
       
-*/  
-  }
+      }
    }
   
    this->scene()->update(); // force refreshment of the scene after removing the connection
@@ -331,22 +327,22 @@ void ModuleIcon::paint(QPainter *painter,
       place++;
    if(place>360)
       place=0;
-   painter->drawPixmap(target2,QPixmap("Rotate.png"),Asource);
+   painter->drawPixmap(target2,QPixmap(":/images/Rotate.png"),Asource);
    painter->restore();
 
    if(this->isSelected())
    {
       if(online)
-	 painter->drawPixmap(target,QPixmap("Sprites.png"), Ssource);
+	 painter->drawPixmap(target,QPixmap(":/images/Sprites.png"), Ssource);
       else	  
-	 painter->drawPixmap(target,QPixmap("Sprites.png"), SOsource);
+	 painter->drawPixmap(target,QPixmap(":/images/Sprites.png"), SOsource);
    }
    else
    {
       if(online)
-	 painter->drawPixmap(target,QPixmap("Sprites.png"), Nsource);
+	 painter->drawPixmap(target,QPixmap(":/images/Sprites.png"), Nsource);
       else
-	 painter->drawPixmap(target,QPixmap("Sprites.png"), Osource);
+	 painter->drawPixmap(target,QPixmap(":/images/Sprites.png"), Osource);
    }
 
    QRectF target3(-30, -40, 80.0, 80.0);
@@ -556,7 +552,7 @@ MyConnectionView::MyConnectionView()
       myCline3[yu] = scene->addLine(0,0,0,0);
    }
 
-   setBackgroundBrush(QPixmap("BackGround.png"));
+   setBackgroundBrush(QPixmap(":/images/BackGround.png"));
 
    setScene(scene);
    setRenderHint(QPainter::Antialiasing);
@@ -749,7 +745,7 @@ void MyConnectionView::SaveAllmod2()
 void MyConnectionView::LoadAll2(void)
 {
    QString filename = QFileDialog::getOpenFileName(this,"Samgar File Load",
-						   QString(),"*.SAMstate");
+						   QString(),".SAMstate");
    QFile f( filename );
    f.open( QIODevice::ReadOnly );
    QTextStream in(&f);
@@ -801,68 +797,7 @@ void MyConnectionView::LoadAll2(void)
    f.close();
   
 }
-void MyConnectionView::LoadAuto(void)
-{
 
-	
-	if(QFile::exists(QString("AutoLoad.SAMstate")))
-	{
-	this->mylogwindow->WriteToLog("Loading Autoconnect file",true);
-	QFile f(QString("AutoLoad.SAMstate"));
-   f.open( QIODevice::ReadOnly );
-   QTextStream in(&f);
-  
-   QString name;
-
-   // TODO: assume that the comment line special sighn is # and ignore all data
-   // that stands after it. 
-   in.readLine(); 
-   in.readLine();
-   in.readLine();
-   in.readLine();
-   in.readLine();// ignore first couple of lines cos there for humans
-
-   QString Data = in.readLine(); // get first valid line
-   while(!Data.isEmpty()&&!Data.isNull())
-   {
-      string Pdata[10];// = {" "};
-    
-      QStringList list1 = Data.split(",");
-      string name=list1.at(0).toStdString();
-      int x = list1.at(2).toInt();
-      int y = list1.at(3).toInt();
-    
-      for(int zz = 4;zz<list1.size();zz++)
-      {
-	 Pdata[zz-4]=list1.at(zz).toStdString();
-      }
-      AddMod(name,Pdata,x,y);
-      Data = in.readLine();
-   }
-   in.readLine(); in.readLine();in.readLine();in.readLine();
-  
-   // load connections // put stuff here to load connections, dont worry about
-   // threads as the conns themselves should be thread safe 
-
-   Data = in.readLine(); // get first valid line
-   string fake[maxports];
-   while(!Data.isEmpty()&&!Data.isNull())
-   {
-      QStringList list1 = Data.split(",");
-      string dname=list1.at(0).toStdString();
-      string mname=list1.at(1).toStdString();
-      int conntype = list1.at(2).toInt();
-      CreateConnection(dname,mname,conntype,true,false);
-      Data = in.readLine();
-   }
-
-   f.close();
-	}
-	else
-	{
-	this->mylogwindow->WriteToLog("No Autoconnect file exists",false);
-	}
-}
 void MyConnectionView::updateconnection(string d,string m,bool deleate,
 					bool connected)
 {

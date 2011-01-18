@@ -38,6 +38,8 @@ sudo aptitude install libqt4-dev
 
 cp SAMGAR/GUI/*.cpp yarp-2.3.1/src/yarpserver/src/
 cp SAMGAR/GUI/*.h yarp-2.3.1/src/yarpserver/src/
+cp SAMGAR/GUI/*.qrc yarp-2.3.1/src/yarpserver/src/
+cp -r SAMGAR/GUI/images yarp-2.3.1/src/yarpserver/src/
 
 5. Modify CMakeList.txt file responsible for compiling yarpserver
 
@@ -49,7 +51,7 @@ if (CREATE_YARPSERVER3)
 
 add following lines
 
-FIND_PACKAGE(Qt4 REQUIRED)
+FIND_PACKAGE(Qt4 COMPONENTS QtCore QtGui QtXml REQUIRED)
 SET(QT_USE_QTXML 1)
 INCLUDE(${QT_USE_FILE})
 
@@ -59,11 +61,12 @@ add_executable(yarpserver3 ...)
 
 add line
 
-qt_wrap_cpp(yarpserver3 SERVER3GUI_MOC ${CMAKE_CURRENT_SOURCE_DIR}/src/server3Gui.h)
+QT4_ADD_RESOURCES(SERVER3GUI_RC_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/src/server3Gui.qrc)
+QT_WRAP_CPP(yarpserver3 SERVER3GUI_MOC ${CMAKE_CURRENT_SOURCE_DIR}/src/server3Gui.h)
 
 add at the end of add_executable(yarpserver3 ...) file list following files
 
-${CMAKE_CURRENT_SOURCE_DIR}/src/samheader.h ${CMAKE_CURRENT_SOURCE_DIR}/src/server3Gui.h ${CMAKE_CURRENT_SOURCE_DIR}/src/server3Gui.cpp ${SERVER3GUI_MOC}
+${CMAKE_CURRENT_SOURCE_DIR}/src/samheader.h ${CMAKE_CURRENT_SOURCE_DIR}/src/server3Gui.h ${CMAKE_CURRENT_SOURCE_DIR}/src/server3Gui.cpp ${SERVER3GUI_MOC} ${SERVER3GUI_RC_SRCS}
 
 Finally change the line 
 

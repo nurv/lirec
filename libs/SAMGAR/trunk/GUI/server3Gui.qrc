@@ -1,0 +1,15 @@
+<!DOCTYPE RCC><RCC version="1.0">
+ <qresource>
+      <file>images/BackGround.png</file>
+      <file>images/black.png</file>
+      <file>images/ModIconp-noblur.png</file>
+      <file>images/ModIconp.png</file>
+      <file>images/ModIconp - Copy.png</file>
+      <file>images/PortIconp-noblur.png</file>
+      <file>images/PortIconp.png</file>
+      <file>images/PortIconpSelect.png</file>
+      <file>images/Rotate.png</file>
+      <file>images/Sprites.png</file>
+      <file>images/Sprites 2.png</file>
+ </qresource>
+</RCC>
