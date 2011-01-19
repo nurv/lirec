@@ -98,6 +98,15 @@
 			<Property name="[AGENT]" operator="!=" value="[target]" />
 		</PreConditions>
 		<EffectsOnDrives>
+			<Motivator drive="Affiliation" target="[target]" value="+2"/>
+		</EffectsOnDrives>
+	</Action>
+	
+	<Action name="Greet([target])">
+		<PreConditions>
+			<Property name="[AGENT]" operator="!=" value="[target]" />
+		</PreConditions>
+		<EffectsOnDrives>
 			<Motivator drive="Affiliation" target="[target]" value="+1"/>
 		</EffectsOnDrives>
 	</Action>

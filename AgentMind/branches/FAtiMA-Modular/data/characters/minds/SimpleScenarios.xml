@@ -8,6 +8,7 @@
 			<Objects>
 				<Object name="apple"/>
 				<Object name="chocolate"/>
+				<Object name="User"/>	
 			</Objects>
 		</WorldSimulator>	
 		
@@ -31,6 +32,7 @@
 			<Objects>
 				<Object name="apple"/>
 				<Object name="chocolate"/>
+				<Object name="User"/>	
 			</Objects>
 		</WorldSimulator>	
 		
@@ -41,6 +43,7 @@
 				<Property name="location" value="Office"/>
 				<Property name="time" value="Morning"/>
 				<Property name="isPerson" value="True"/>
+				<Property name="power" value="5"/>
 			</Properties>	
 		</Agent>
 	</Scenario>	
