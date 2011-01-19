@@ -684,7 +684,10 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 					for(IAppraisalDerivationComponent c : this._appraisalComponents)
 					{
 						appraisalFrame = c.reappraisal(this);
-						updateEmotions(appraisalFrame);
+						if(appraisalFrame != null)
+						{
+							updateEmotions(appraisalFrame);
+						}
 					}
 					
 					//if there was new data or knowledge added we must apply inference operators

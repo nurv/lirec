@@ -28,4 +28,9 @@ public class EmotionType {
 	public String[] getAppraisalVariables() {
 		return _appraisalVariables;
 	}
+	
+	public boolean equals(EmotionType type)
+	{
+		return _name.equals(type._name);
+	}
 }

@@ -142,7 +142,7 @@ public class ToMComponent implements Serializable, IAppraisalDerivationComponent
 			e3 = e2.ApplyPerspective(s);
 			otherAF = new AppraisalFrame(e3);
 			m.appraisal(e3, otherAF);
-			m.updateEmotions(appraisalVariable, af)
+			m.updateEmotions(otherAF);
 			
 			desirability = otherAF.getAppraisalVariable(OCCComponent.DESIRABILITY);
 			if(desirability != 0)

@@ -190,46 +190,46 @@ public class OCCComponent implements Serializable, IAffectDerivationComponent, I
 		int threshold = emotionDisposition.getThreshold();
 		float potentialValue = em.GetPotential() + threshold; 
 		
-		if(em.getType() == LoveEmotion.getInstance())
+		if(em.getType().equals(LoveEmotion.getInstance()))
 		{
 			af.SetAppraisalVariable("", (short)1, LIKE, potentialValue * 1.43f);
 		}
-		else if(em.getType() == HateEmotion.getInstance())
+		else if(em.getType().equals(HateEmotion.getInstance()))
 		{
 			af.SetAppraisalVariable("", (short)1, LIKE, -potentialValue * 1.43f);
 		}
-		else if(em.getType() == JoyEmotion.getInstance())
+		else if(em.getType().equals(JoyEmotion.getInstance()))
 		{
 			af.SetAppraisalVariable("", (short)1, DESIRABILITY, potentialValue);
 		}
-		else if(em.getType() == DistressEmotion.getInstance())
+		else if(em.getType().equals(DistressEmotion.getInstance()))
 		{
 			af.SetAppraisalVariable("", (short)1, DESIRABILITY, -potentialValue);
 		}
-		else if(em.getType() == PrideEmotion.getInstance() || em.getType() == AdmirationEmotion.getInstance())
+		else if(em.getType().equals(PrideEmotion.getInstance()) || em.getType().equals(AdmirationEmotion.getInstance()))
 		{
 			af.SetAppraisalVariable("", (short)1, PRAISEWORTHINESS, potentialValue);
 		}
-		else if(em.getType() == ShameEmotion.getInstance() || em.getType() == ReproachEmotion.getInstance())
+		else if(em.getType().equals(ShameEmotion.getInstance()) || em.getType().equals(ReproachEmotion.getInstance()))
 		{
 			af.SetAppraisalVariable("", (short)1, PRAISEWORTHINESS, -potentialValue);
 		}
-		else if(em.getType() == GloatingEmotion.getInstance())
+		else if(em.getType().equals(GloatingEmotion.getInstance()))
 		{
 			af.SetAppraisalVariable("", (short)1, DESIRABILITY, potentialValue);
 			//vector.setAppraisalVariable(AppraisalStructure.DESIRABILITY_FOR_OTHER, -potentialValue);
 		}
-		else if(em.getType() == HappyForEmotion.getInstance())
+		else if(em.getType().equals(HappyForEmotion.getInstance()))
 		{
 			af.SetAppraisalVariable("", (short)1, DESIRABILITY, potentialValue);
 			//vector.setAppraisalVariable(AppraisalStructure.DESIRABILITY_FOR_OTHER, potentialValue);
 		}
-		else if(em.getType() == PittyEmotion.getInstance())
+		else if(em.getType().equals(PittyEmotion.getInstance()))
 		{
 			af.SetAppraisalVariable("", (short)1, DESIRABILITY, -potentialValue);
 			//vector.setAppraisalVariable(AppraisalStructure.DESIRABILITY_FOR_OTHER, -potentialValue);
 		}
-		else if(em.getType() == ResentmentEmotion.getInstance())
+		else if(em.getType().equals(ResentmentEmotion.getInstance()))
 		{
 			af.SetAppraisalVariable("", (short)1, DESIRABILITY, -potentialValue);
 			//vector.setAppraisalVariable(AppraisalStructure.DESIRABILITY_FOR_OTHER, potentialValue);

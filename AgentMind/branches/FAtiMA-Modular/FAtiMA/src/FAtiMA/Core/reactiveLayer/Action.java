@@ -206,7 +206,7 @@ public class Action implements IIntegrityTester, Serializable, IGroundable, Clon
 			for(Iterator<ActiveEmotion> it = emotionsIterator; it.hasNext();)
 			{
 				em = (ActiveEmotion) it.next();
-				if(em.getType() == _elicitingEmotion.getType() &&
+				if(em.getType().equals(_elicitingEmotion.getType()) &&
 				   em.GetIntensity() >= _elicitingEmotion.GetPotential())
 				{
 					//if the emotion has passed these two first tests, we need to
