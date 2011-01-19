@@ -9,6 +9,6 @@ public interface IAppraisalDerivationComponent extends IComponent {
 	
 	public void inverseAppraisal(AgentModel am, AppraisalFrame af);
 	
-	public void reappraisal(AgentModel am);
+	public AppraisalFrame reappraisal(AgentModel am);
 
 }

@@ -38,7 +38,6 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import FAtiMA.Core.memory.episodicMemory.ActionDetail;
-import FAtiMA.Core.util.enumerables.EmotionType;
 
 
 public class MemoryDetailPanel extends JPanel {
@@ -162,7 +161,7 @@ public class MemoryDetailPanel extends JPanel {
         _parameters.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
         this.add(_parameters);*/
 	
-        _feeling = new JTextField(EmotionType.GetName(detail.getEmotion().GetType()) + "-" 
+        _feeling = new JTextField(detail.getEmotion().getType().getName() + "-" 
         		+ detail.getEmotion().GetPotential());
         _feeling.setMinimumSize(new Dimension(110,30));
         _feeling.setMaximumSize(new Dimension(110,30));

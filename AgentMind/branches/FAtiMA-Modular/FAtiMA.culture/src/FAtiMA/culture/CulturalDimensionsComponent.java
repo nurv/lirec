@@ -325,8 +325,8 @@ public class CulturalDimensionsComponent implements IAppraisalDerivationComponen
 	}
 
 	@Override
-	public void reappraisal(AgentModel am) {
-		// TODO Auto-generated method stub	
+	public AppraisalFrame reappraisal(AgentModel am) {
+		return null;	
 	}
 
 	@Override

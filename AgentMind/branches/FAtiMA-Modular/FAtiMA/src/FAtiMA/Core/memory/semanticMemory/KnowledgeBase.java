@@ -288,6 +288,7 @@ public class KnowledgeBase implements Serializable {
 		}
 	}
 	
+	
 	public ArrayList<SubstitutionSet> GetPossibleBindings(Name name) {
 		ArrayList<SubstitutionSet> bindingSets = null;
 
@@ -313,6 +314,11 @@ public class KnowledgeBase implements Serializable {
 			return object.get(property);
 		}
 		else return null;
+	}
+	
+	public KnowledgeSlot getMainSlot()
+	{
+		return _kB;
 	}
 	
 	private ArrayList<SubstitutionSet> MatchLiteralList(ArrayList<Symbol> literals, int index, KnowledgeSlot ks) {

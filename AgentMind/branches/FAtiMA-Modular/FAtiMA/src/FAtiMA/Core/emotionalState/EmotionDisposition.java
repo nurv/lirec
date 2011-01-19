@@ -47,21 +47,19 @@ public class EmotionDisposition implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	
+	private String _emotion;
 	private int _decay;
-	private short _emotionType;
 	private int _threshold;
 
 	/**
 	 * Creates a new EmotionDisposition
 	 * 
-	 * @param emotionType - a short value representing the type of the Emotion (ex: Fear, Hope, etc)
 	 * @param threshold - the threshold for the emotion
 	 * @param decay - the decay rate for the emotion
 	 * 
-	 * @see the enumerable EmotionType to see the possible types of Emotion
 	 */
-	public EmotionDisposition(short emotionType, int threshold, int decay) {
-		_emotionType = emotionType;
+	public EmotionDisposition(String emotion, int threshold, int decay) {
+		_emotion = emotion;
 		_threshold = threshold;
 		_decay = decay;
 	}
@@ -70,25 +68,21 @@ public class EmotionDisposition implements Serializable {
 	 * Gets the decay rate for the emotion
 	 * @return the decay rate
 	 */
-	public int GetDecay() {
+	public int getDecay() {
 		return _decay;
-	}
-
-	/**
-	 * Gets the emotion's type
-	 * @return a short representing the emotion type (enumerable)
-	 * @see the enumerable EmotionType
-	 */
-	public short GetEmotionType() {
-		return _emotionType;
 	}
 
 	/**
 	 * gets the emotion's threshold
 	 * @return the threshold
 	 */
-	public int GetThreshold() {
+	public int getThreshold() {
 		return _threshold;
+	}
+	
+	public String getEmotion()
+	{
+		return _emotion;
 	}
 	
 	/**
@@ -96,6 +90,6 @@ public class EmotionDisposition implements Serializable {
 	 * @return the converted String
 	 */
 	public String toString() {
-		return "Emotion: " + _emotionType + " Threshold: " + _threshold + " Decay: " + _decay;
+		return "Emotion: " + _emotion + " Threshold: " + _threshold + " Decay: " + _decay;
 	}
 }

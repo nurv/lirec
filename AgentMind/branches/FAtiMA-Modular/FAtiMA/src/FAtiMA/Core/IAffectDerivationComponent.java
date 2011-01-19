@@ -7,7 +7,7 @@ import FAtiMA.Core.emotionalState.BaseEmotion;
 
 public interface IAffectDerivationComponent extends IComponent{
 	
-	public ArrayList<BaseEmotion> affectDerivation(AgentModel am, String appraisalVariable, AppraisalFrame af);
+	public ArrayList<BaseEmotion> affectDerivation(AgentModel am, AppraisalFrame af);
 	public void inverseAffectDerivation(AgentModel am, BaseEmotion em, AppraisalFrame af);
 	
 

@@ -31,12 +31,18 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 
-import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.sensorEffector.Event;
 
 public class AppraisalFrame implements Serializable {
 	
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	private static final short DEFAULTCOMPONENTWEIGHT = 5;
+
 	private class Pair
 	{
 		protected float _value;
@@ -61,19 +67,17 @@ public class AppraisalFrame implements Serializable {
 	}
 	
 	private Event _event;
-	private AgentModel _am;
 	private HashMap<String,AppraisalVariable> _appraisal;
 	
 	
 	private boolean _changed;
 	private boolean _empty;
 	
-	public AppraisalFrame(AgentModel am, Event e)
+	public AppraisalFrame(Event e)
 	{
 		_event = e;
-		_changed = true;
+		_changed = false;
 		_empty = true;
-		_am = am;
 		_appraisal = new HashMap<String,AppraisalVariable>();
 	}
 	
@@ -82,49 +86,48 @@ public class AppraisalFrame implements Serializable {
 		return _event;
 	}
 	
-	public void SetAppraisalVariable(String component, short weight, String appraisalVariable, float value)
+	public void SetAppraisalVariable(String componentName, String appraisalVariableName, float value)
+	{
+		SetAppraisalVariable(componentName, DEFAULTCOMPONENTWEIGHT, appraisalVariableName, value);
+	}
+	
+	public void SetAppraisalVariable(String componentName, short componentWeight, String appraisalVariableName, float value)
 	{
 		AppraisalVariable av;
 		
-		if(_appraisal.containsKey(appraisalVariable))
+		if(_appraisal.containsKey(appraisalVariableName))
 		{
-			av = _appraisal.get(appraisalVariable);
+			av = _appraisal.get(appraisalVariableName);
 		}
 		else
 		{
-			av = new AppraisalVariable(appraisalVariable);
-			_appraisal.put(appraisalVariable, av);
+			av = new AppraisalVariable(appraisalVariableName);
+			_appraisal.put(appraisalVariableName, av);
 		}
 		
 		//replacing or setting up a new value?
-		if(av._values.containsKey(component))
+		if(av._values.containsKey(componentName))
 		{
 			//replacing an existing value
-			Pair p = av._values.get(component);
+			Pair p = av._values.get(componentName);
 			if(p._value != value)
 			{
 				//if the values are different, replace them
 				p._value = value;
 				_changed = true;
-				if(_am != null)
-				{
-					_am.updateEmotions(appraisalVariable, this);
-				}
+			
 				//nothing else needs to be done in this case
 			}
 		}
 		else
 		{
 			//setting up a new value
-			Pair p = new Pair(weight, value);
-			av._weight += weight;
+			Pair p = new Pair(componentWeight, value);
+			av._weight += componentWeight;
 			
-			av._values.put(component,p);
+			av._values.put(componentName,p);
 			_empty = false;
-			if(_am != null)
-			{
-				_am.updateEmotions(appraisalVariable, this);
-			}
+		
 			_changed = true;	
 		}	
 	}

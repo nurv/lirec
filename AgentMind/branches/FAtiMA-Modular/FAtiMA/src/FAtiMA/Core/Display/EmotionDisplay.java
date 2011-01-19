@@ -37,7 +37,7 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 
 import FAtiMA.Core.emotionalState.ActiveEmotion;
-import FAtiMA.Core.util.enumerables.EmotionType;
+import FAtiMA.Core.util.enumerables.EmotionValence;
 
 
 /**
@@ -51,25 +51,17 @@ public class EmotionDisplay {
     
     public EmotionDisplay(ActiveEmotion em) {
         _panel = new JPanel();
-        _panel.setBorder(BorderFactory.createTitledBorder(EmotionType.GetName(em.GetType()) + " " + em.GetCause().toString()));
+        _panel.setBorder(BorderFactory.createTitledBorder(em.getType().getName() + " " + em.GetCause().toString()));
         _panel.setMaximumSize(new Dimension(300,60));
 
         _bar = new JProgressBar(0,100);
         _bar.setStringPainted(true);
-        switch (em.GetType()) {
-        	case EmotionType.FEAR: {
-        	    _bar.setForeground(new Color(255,0,0));
-        	    break;
-        	}
-        	case EmotionType.HOPE: {
-        	    _bar.setForeground(new Color(0,255,0));
-        	    break;
-        	}
-        	case EmotionType.DISTRESS: {
+        switch (em.getType().getValence()) {
+        	case EmotionValence.NEGATIVE: {
         	    _bar.setForeground(new Color(100,0,0));
         	    break;
         	}
-        	case EmotionType.JOY: {
+        	case EmotionValence.POSITIVE: {
         	    _bar.setForeground(new Color(0,100,0));
         	    break;
         	}

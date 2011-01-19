@@ -8,7 +8,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import FAtiMA.Core.reactiveLayer.Action;
-import FAtiMA.Core.util.enumerables.EmotionType;
 
 public class ActionDisplay extends JPanel {
 
@@ -33,7 +32,7 @@ public class ActionDisplay extends JPanel {
         
         this.add(em1);
         
-        JLabel em2 = new JLabel(EmotionType.GetName(a.GetElicitingEmotion().GetType()));
+        JLabel em2 = new JLabel(a.GetElicitingEmotion().getType().getName());
         em2.setMaximumSize(d1);
         em2.setMinimumSize(d1);
         

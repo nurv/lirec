@@ -37,7 +37,6 @@ import FAtiMA.Core.memory.Memory;
 import FAtiMA.Core.sensorEffector.Parameter;
 import FAtiMA.Core.sensorEffector.SpeechAct;
 import FAtiMA.Core.util.Constants;
-import FAtiMA.Core.util.enumerables.EmotionType;
 import FAtiMA.Core.wellFormedNames.Name;
 
 /**
@@ -168,7 +167,7 @@ public abstract class SummaryGenerator {
 			EMSummary += "direction=\"" + direction + "\"";
 		}
 		
-		EMSummary += ">"+EmotionType.GetName(em.GetType()) + "</Emotion>";
+		EMSummary += ">"+em.getType().getName() + "</Emotion>";
 		
 		return EMSummary;
 	}

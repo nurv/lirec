@@ -3,13 +3,14 @@ package FAtiMA.emotionalIntelligence;
 import java.util.ArrayList;
 
 import FAtiMA.Core.AgentModel;
+import FAtiMA.Core.OCCAffectDerivation.DistressEmotion;
+import FAtiMA.Core.OCCAffectDerivation.JoyEmotion;
 import FAtiMA.Core.conditions.EmotionCondition;
 import FAtiMA.Core.conditions.NewEventCondition;
 import FAtiMA.Core.deliberativeLayer.plan.Effect;
 import FAtiMA.Core.deliberativeLayer.plan.Step;
 import FAtiMA.Core.emotionalState.EmotionDisposition;
 import FAtiMA.Core.util.enumerables.ActionEvent;
-import FAtiMA.Core.util.enumerables.EmotionType;
 import FAtiMA.Core.util.enumerables.EventType;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Symbol;
@@ -37,13 +38,13 @@ public abstract class OCCAppraisalRules {
 		appraisalOperators = new ArrayList<Step>();
 		
 		joyOperator = new Step(new Symbol("[AGENT]"),Name.ParseName("JoyAppraisal()"),1.0f);
-		c = new EmotionCondition(true, new Symbol("[AGENT]"), EmotionType.JOY);
+		c = new EmotionCondition(true, new Symbol("[AGENT]"), JoyEmotion.getInstance().getName());
 		c.SetIntensity(new Symbol("[X]"));
 		aux = new Effect(am, "JoyEmotion", 1.0f,c);
 		joyOperator.AddEffect(aux);
 		
-		disp = am.getEmotionalState().getEmotionDispositions()[EmotionType.JOY];
-		threshold = disp.GetThreshold();
+		disp = am.getEmotionalState().getEmotionDisposition(JoyEmotion.getInstance().getName());
+		threshold = disp.getThreshold();
 		
 		params = new ArrayList<Symbol>();
 		//params.add(new Symbol("[p1]"));
@@ -67,13 +68,13 @@ public abstract class OCCAppraisalRules {
 		
 		//distress
 		distressOperator = new Step(new Symbol("[AGENT]"),Name.ParseName("DistressAppraisal()"),1.0f);
-		c = new EmotionCondition(true, new Symbol("[AGENT]"), EmotionType.DISTRESS);
+		c = new EmotionCondition(true, new Symbol("[AGENT]"), DistressEmotion.getInstance().getName());
 		c.SetIntensity(new Symbol("[X]"));
 		aux = new Effect(am, "DistressEmotion", 1.0f,c);
 		distressOperator.AddEffect(aux);
 		
-		disp = am.getEmotionalState().getEmotionDispositions()[EmotionType.DISTRESS];
-		threshold = disp.GetThreshold();
+		disp = am.getEmotionalState().getEmotionDisposition(DistressEmotion.getInstance().getName());
+		threshold = disp.getThreshold();
 		
 		params = new ArrayList<Symbol>();
 		params.add(new Symbol("[p1]"));

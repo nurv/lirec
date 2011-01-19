@@ -57,7 +57,6 @@ package FAtiMA.Core.emotionalState;
 
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -66,7 +65,6 @@ import java.util.Set;
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.AgentSimulationTime;
 import FAtiMA.Core.sensorEffector.Event;
-import FAtiMA.Core.util.enumerables.EmotionType;
 import FAtiMA.Core.util.enumerables.EmotionValence;
 
 
@@ -84,9 +82,10 @@ public class EmotionalState implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	
+	private static final EmotionDisposition DEFAULT_EMOTION_DISPOSITION = new EmotionDisposition("default",0,5);
 	
-	protected EmotionDisposition[] _emotionDispositions;
 	protected Hashtable<String, ActiveEmotion> _emotionPool;
+	protected Hashtable<String, EmotionDisposition> _emotionDispositions;
 	
 	protected long _lastTime;
 	protected Mood _mood;
@@ -95,8 +94,9 @@ public class EmotionalState implements Serializable {
 	 * Creates a empty EmotionalState
 	 */
 	public EmotionalState() {
-		_emotionDispositions = new EmotionDisposition[30];
 		_emotionPool = new Hashtable<String, ActiveEmotion>();
+		_emotionDispositions = new Hashtable<String,EmotionDisposition>();
+		
 		_mood = new Mood();
 		_lastTime = AgentSimulationTime.GetInstance().Time();
 	}
@@ -105,7 +105,7 @@ public class EmotionalState implements Serializable {
 	    float potential = potEm.GetPotential();
 
 		//positive emotion
-		if (potEm._valence == EmotionValence.POSITIVE) {
+		if (potEm.getValence() == EmotionValence.POSITIVE) {
 			//if good mood(positive), will favor a positive emotion
 			//if bad mood(negative), will make it harder 
 			potential = potential + (_mood.GetMoodValue() * EmotionalPameters.MoodInfluenceOnEmotion);
@@ -138,16 +138,16 @@ public class EmotionalState implements Serializable {
 		int threshold;
 		int decay;
 		ActiveEmotion auxEmotion;
-		EmotionDisposition disposition;
 		boolean reappraisal = false;
 		
 		if(potEm == null) return null;
 
 		potential = DeterminePotential(potEm);
+		
+		EmotionDisposition disposition = getEmotionDisposition(potEm.getType().getName());
 
-		disposition = _emotionDispositions[potEm._type];
-		threshold = disposition.GetThreshold();
-		decay = disposition.GetDecay();
+		threshold = disposition.getThreshold();
+		decay = disposition.getDecay();
 		
 		auxEmotion = null;
 		
@@ -168,7 +168,7 @@ public class EmotionalState implements Serializable {
 			am.getMemory().getEpisodicMemory().AssociateEmotionToAction(am.getMemory(), 
 					auxEmotion,
 					auxEmotion.GetCause());
-			this.GenerateCompoundEmotions(potEm, am);
+			//this.GenerateCompoundEmotions(potEm, am);
 		}
 		
 		
@@ -193,13 +193,13 @@ public class EmotionalState implements Serializable {
 		int threshold;
 		int decay;
 		ActiveEmotion auxEmotion;
-		EmotionDisposition disposition;
 
 		potential = DeterminePotential(potEm);
 
-		disposition = _emotionDispositions[potEm._type];
-		threshold = disposition.GetThreshold();
-		decay = disposition.GetDecay();
+		EmotionDisposition emotionDisposition = getEmotionDisposition(potEm.getType().getName());
+		
+		threshold = emotionDisposition.getThreshold();
+		decay = emotionDisposition.getDecay();
 		
 		auxEmotion = null;
 
@@ -210,21 +210,6 @@ public class EmotionalState implements Serializable {
 		return auxEmotion;
 	}
 	
-
-	/**
-	 * Adds an EmotionDisposition (threshold + decay) to a particular emotion type
-	 * @param emotionDis - the EmotionDisposition to add
-	 * @see EmotionDisposition
-	 */
-	public void AddEmotionDisposition(EmotionDisposition emotionDis) {
-		_emotionDispositions[emotionDis.GetEmotionType()] = emotionDis;
-	}
-	
-	
-	public EmotionDisposition[] getEmotionDispositions()
-	{
-		return _emotionDispositions;
-	}
 
 	
 	/**
@@ -395,7 +380,7 @@ public class EmotionalState implements Serializable {
 		}
 	}
 	
-	private void GenerateCompoundEmotions(BaseEmotion potEm, AgentModel am) {
+	/*private void GenerateCompoundEmotions(BaseEmotion potEm, AgentModel am) {
 		ActiveEmotion emotion;
 		short n1;
 		short n2=-1;
@@ -465,5 +450,26 @@ public class EmotionalState implements Serializable {
 		while(i2.hasNext()) {
 			AddEmotion(i2.next(), am);
 		}
+	}*/
+	
+	public void AddEmotionDisposition(EmotionDisposition emotionDisposition)
+	{
+		_emotionDispositions.put(emotionDisposition.getEmotion(), emotionDisposition);
 	}
+	
+	
+	public Collection<EmotionDisposition> getEmotionDispositions()
+	{
+		return _emotionDispositions.values();
+	}
+	
+	public EmotionDisposition getEmotionDisposition(String emotionName)
+	{
+		if(_emotionDispositions.containsKey(emotionName))
+		{
+			return _emotionDispositions.get(emotionName);
+		}
+		else return DEFAULT_EMOTION_DISPOSITION;
+	}
+	
 }

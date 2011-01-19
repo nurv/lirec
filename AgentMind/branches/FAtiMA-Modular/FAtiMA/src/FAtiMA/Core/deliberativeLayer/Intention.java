@@ -89,7 +89,7 @@ public class Intention implements Serializable {
 		_fearEmotionID = null;
 		_hopeEmotionID = null;
 		_strongCommitment = false;
-		_appraisalFrame = new AppraisalFrame(am, g.GetActivationEvent());
+		_appraisalFrame = new AppraisalFrame(g.GetActivationEvent());
 		_appraisalFrame.SetAppraisalVariable(DeliberativeProcess.NAME, (short) 7, OCCComponent.GOALSTATUS, OCCComponent.GOALUNCONFIRMED);
 	}
 	
@@ -398,7 +398,7 @@ public class Intention implements Serializable {
 	    
 	    am.getMemory().getEpisodicMemory().StoreAction(am.getMemory(), e);
 	    
-	    AppraisalFrame af = new AppraisalFrame(am, e);
+	    AppraisalFrame af = new AppraisalFrame(e);
 	    af.SetAppraisalVariable(DeliberativeProcess.NAME,(short)8,OCCComponent.GOALSTATUS, OCCComponent.GOALDISCONFIRMED);
 	    af.SetAppraisalVariable(DeliberativeProcess.NAME, (short)8,OCCComponent.GOALCONDUCIVENESS, am.getDeliberativeLayer().getUtilityStrategy().getUtility(am, _goal));
 	    
@@ -434,7 +434,7 @@ public class Intention implements Serializable {
 	    
 	    Event e = _goal.GetSuccessEvent();
 	    am.getMemory().getEpisodicMemory().StoreAction(am.getMemory(), e);
-	    AppraisalFrame af = new AppraisalFrame(am, e);
+	    AppraisalFrame af = new AppraisalFrame(e);
 	    af.SetAppraisalVariable(DeliberativeProcess.NAME,(short)8,OCCComponent.GOALSTATUS, OCCComponent.GOALCONFIRMED);
 	    af.SetAppraisalVariable(DeliberativeProcess.NAME, (short)8,OCCComponent.GOALCONDUCIVENESS, am.getDeliberativeLayer().getUtilityStrategy().getUtility(am, _goal));
 	        		   		

@@ -41,7 +41,6 @@ import FAtiMA.Core.emotionalState.EmotionalState;
 import FAtiMA.Core.exceptions.InvalidEmotionTypeException;
 import FAtiMA.Core.memory.semanticMemory.KnowledgeBase;
 import FAtiMA.Core.util.Constants;
-import FAtiMA.Core.util.enumerables.EmotionType;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Substitution;
 import FAtiMA.Core.wellFormedNames.SubstitutionSet;
@@ -55,7 +54,7 @@ public class EmotionCondition extends PredicateCondition {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	protected short _emotionType;
+	protected String _emotionType;
 	protected Symbol _intensity;
 	protected Symbol _direction;
 	
@@ -83,12 +82,11 @@ public class EmotionCondition extends PredicateCondition {
 		aux = attributes.getValue("agent");
 		if(aux != null)
 		{
-			ec = new EmotionCondition(active,new Symbol(aux),EmotionType.ParseType(emotionType));
+			ec = new EmotionCondition(active,new Symbol(aux),emotionType);
 		}
 		else
 		{
-			ec = new EmotionCondition(active,
-					EmotionType.ParseType(emotionType));
+			ec = new EmotionCondition(active,emotionType);
 		}
 		
 		
@@ -118,7 +116,7 @@ public class EmotionCondition extends PredicateCondition {
 	{
 	}
 	
-	public EmotionCondition(boolean active, short emotion)
+	public EmotionCondition(boolean active, String emotion)
 	{
 		this._positive = active;
 		this._emotionType = emotion;	
@@ -129,7 +127,7 @@ public class EmotionCondition extends PredicateCondition {
 		UpdateName();
 	}
 	
-	public EmotionCondition(boolean active, Symbol ToM, short emotion)
+	public EmotionCondition(boolean active, Symbol ToM, String emotion)
 	{
 		this._positive = active;
 		this._emotionType = emotion;	
@@ -158,7 +156,7 @@ public class EmotionCondition extends PredicateCondition {
 	
 	private void UpdateName()
 	{
-		String aux = EmotionType.GetName(this._emotionType) + "("; 
+		String aux = this._emotionType + "("; 
 		
 		if(this._direction != null)
 		{
@@ -232,7 +230,7 @@ public class EmotionCondition extends PredicateCondition {
 		for(Iterator<ActiveEmotion> it = es.GetEmotionsIterator();it.hasNext();)
 		{
 			aem = (ActiveEmotion) it.next();
-			if(aem.GetType() == this._emotionType)
+			if(aem.getType().getName().equals(this._emotionType))
 			{
 				if(this._intensity.isGrounded())
 				{

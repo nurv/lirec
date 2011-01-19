@@ -19,7 +19,7 @@ public abstract class ActionTendencyOperatorFactory {
 	{
 		Step s = null;
 		BaseEmotion em = at.GetElicitingEmotion();
-		EmotionCondition ec = new EmotionCondition(true,new Symbol("[AGENT]"),em.GetType());
+		EmotionCondition ec = new EmotionCondition(true,new Symbol("[AGENT]"),em.getType().getName());
 		ec.SetIntensity(em.GetPotential());
 		
 		s = new Step(new Symbol("[AGENT]"), at.getName(), 0.9f);

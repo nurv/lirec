@@ -152,9 +152,8 @@ public class Action implements IIntegrityTester, Serializable, IGroundable, Clon
 			{
 				newPotential = 0;
 			}
-			_elicitingEmotion = new BaseEmotion(_elicitingEmotion.GetType(),
+			_elicitingEmotion = new BaseEmotion(_elicitingEmotion.getType(),
 					newPotential,
-					new ArrayList<String>(),
 					_elicitingEmotion.GetCause(),
 					_elicitingEmotion.GetDirection());
 		}
@@ -175,9 +174,8 @@ public class Action implements IIntegrityTester, Serializable, IGroundable, Clon
 			{
 				newPotential = 10;
 			}
-			_elicitingEmotion = new BaseEmotion(_elicitingEmotion.GetType(),
+			_elicitingEmotion = new BaseEmotion(_elicitingEmotion.getType(),
 					newPotential,
-					new ArrayList<String>(),
 					_elicitingEmotion.GetCause(),
 					_elicitingEmotion.GetDirection());
 		}
@@ -208,7 +206,7 @@ public class Action implements IIntegrityTester, Serializable, IGroundable, Clon
 			for(Iterator<ActiveEmotion> it = emotionsIterator; it.hasNext();)
 			{
 				em = (ActiveEmotion) it.next();
-				if(em.GetType() == _elicitingEmotion.GetType() &&
+				if(em.getType() == _elicitingEmotion.getType() &&
 				   em.GetIntensity() >= _elicitingEmotion.GetPotential())
 				{
 					//if the emotion has passed these two first tests, we need to

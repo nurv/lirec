@@ -30,6 +30,6 @@ public interface AgentModel {
 	
 	public boolean isSelf();
 	
-	public void updateEmotions(String appraisalVariable, AppraisalFrame af);
+	public void updateEmotions(AppraisalFrame af);
 	
 }

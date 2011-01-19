@@ -13,7 +13,15 @@ import FAtiMA.Core.IComponent;
 import FAtiMA.Core.IModelOfOtherComponent;
 import FAtiMA.Core.IProcessEmotionComponent;
 import FAtiMA.Core.Display.AgentDisplayPanel;
+import FAtiMA.Core.OCCAffectDerivation.AdmirationEmotion;
+import FAtiMA.Core.OCCAffectDerivation.DistressEmotion;
+import FAtiMA.Core.OCCAffectDerivation.GloatingEmotion;
+import FAtiMA.Core.OCCAffectDerivation.HappyForEmotion;
+import FAtiMA.Core.OCCAffectDerivation.JoyEmotion;
 import FAtiMA.Core.OCCAffectDerivation.OCCComponent;
+import FAtiMA.Core.OCCAffectDerivation.PittyEmotion;
+import FAtiMA.Core.OCCAffectDerivation.ReproachEmotion;
+import FAtiMA.Core.OCCAffectDerivation.ResentmentEmotion;
 import FAtiMA.Core.emotionalState.ActiveEmotion;
 import FAtiMA.Core.emotionalState.AppraisalFrame;
 import FAtiMA.Core.memory.Memory;
@@ -21,7 +29,6 @@ import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.util.AgentLogger;
 import FAtiMA.Core.util.ConfigurationManager;
 import FAtiMA.Core.util.Constants;
-import FAtiMA.Core.util.enumerables.EmotionType;
 
 
 public class SocialRelationsComponent implements Serializable, IAppraisalDerivationComponent, IModelOfOtherComponent, IProcessEmotionComponent {
@@ -117,73 +124,62 @@ public class SocialRelationsComponent implements Serializable, IAppraisalDerivat
 	@Override
 	public void emotionActivation(AgentModel am, ActiveEmotion em) {
 		Memory m = am.getMemory();
-		switch(em.GetType())
+		if(em.getType() == AdmirationEmotion.getInstance())
 		{
-			case EmotionType.ADMIRATION:
+			if(em.GetDirection() != null)
 			{
-				if(em.GetDirection() != null)
-				{
-					LikeRelation.getRelation(Constants.SELF,em.GetDirection().toString()).increment(m,em.GetIntensity());
-					RespectRelation.getRelation(Constants.SELF,em.GetDirection().toString()).increment(m, em.GetIntensity());
-					break;		
-				}
+				LikeRelation.getRelation(Constants.SELF,em.GetDirection().toString()).increment(m,em.GetIntensity());
+				RespectRelation.getRelation(Constants.SELF,em.GetDirection().toString()).increment(m, em.GetIntensity());		
 			}
-			case EmotionType.REPROACH:
+		}
+		else if(em.getType() == ReproachEmotion.getInstance())
+		{
+			if(em.GetDirection() != null)
 			{
-				if(em.GetDirection() != null)
-				{
-					LikeRelation.getRelation(Constants.SELF,em.GetDirection().toString()).decrement(m, em.GetIntensity());
-					RespectRelation.getRelation(Constants.SELF,em.GetDirection().toString()).decrement(m, em.GetIntensity());
-					break;
-				}
+				LikeRelation.getRelation(Constants.SELF,em.GetDirection().toString()).decrement(m, em.GetIntensity());
+				RespectRelation.getRelation(Constants.SELF,em.GetDirection().toString()).decrement(m, em.GetIntensity());
 			}
-			case EmotionType.HAPPYFOR:
+		}
+		else if(em.getType() == HappyForEmotion.getInstance())
+		{
+			if(em.GetDirection() != null)
 			{
-				if(em.GetDirection() != null)
-				{
-					LikeRelation.getRelation(Constants.SELF,em.GetDirection().toString()).increment(m, em.GetIntensity());
-					break;
-				}
+				LikeRelation.getRelation(Constants.SELF,em.GetDirection().toString()).increment(m, em.GetIntensity());
 			}
-			case EmotionType.GLOATING:
+		}
+		else if(em.getType() == GloatingEmotion.getInstance())
+		{
+			if(em.GetDirection() != null)
 			{
-				if(em.GetDirection() != null)
-				{
-					LikeRelation.getRelation(Constants.SELF,em.GetDirection().toString()).decrement(m, em.GetIntensity());
-					break;
-				}
+				LikeRelation.getRelation(Constants.SELF,em.GetDirection().toString()).decrement(m, em.GetIntensity());
 			}
-			case EmotionType.PITTY:
+		}
+		else if(em.getType() == PittyEmotion.getInstance())
+		{
+			if(em.GetDirection() != null)
 			{
-				if(em.GetDirection() != null)
-				{
-					LikeRelation.getRelation(Constants.SELF,em.GetDirection().toString()).increment(m, em.GetIntensity());
-					break;
-				}
+				LikeRelation.getRelation(Constants.SELF,em.GetDirection().toString()).increment(m, em.GetIntensity());
 			}
-			case EmotionType.RESENTMENT:
+		}
+		else if(em.getType() == ResentmentEmotion.getInstance())
+		{
+			if(em.GetDirection() != null)
 			{
-				if(em.GetDirection() != null)
-				{
-					LikeRelation.getRelation(Constants.SELF,em.GetDirection().toString()).decrement(m, em.GetIntensity());
-					break;
-				}
-			}			
-			case EmotionType.JOY:
-			{
-				if(em.GetCause().GetTarget() != null && em.GetCause().GetTarget().equals(Constants.SELF))
-				{
-					LikeRelation.getRelation(Constants.SELF,em.GetCause().GetSubject()).increment(m, em.GetIntensity());
-				}
-				break;
+				LikeRelation.getRelation(Constants.SELF,em.GetDirection().toString()).decrement(m, em.GetIntensity());
 			}
-			case EmotionType.DISTRESS:
+		}
+		else if(em.getType() == JoyEmotion.getInstance())
+		{
+			if(em.GetCause().GetTarget() != null && em.GetCause().GetTarget().equals(Constants.SELF))
 			{
-				if(em.GetCause().GetTarget() != null && em.GetCause().GetTarget().equals(Constants.SELF))
-				{
-					LikeRelation.getRelation(Constants.SELF,em.GetCause().GetSubject()).decrement(m, em.GetIntensity());
-				}
-				break;
+				LikeRelation.getRelation(Constants.SELF,em.GetCause().GetSubject()).increment(m, em.GetIntensity());
+			}
+		}
+		else if(em.getType() == DistressEmotion.getInstance())
+		{
+			if(em.GetCause().GetTarget() != null && em.GetCause().GetTarget().equals(Constants.SELF))
+			{
+				LikeRelation.getRelation(Constants.SELF,em.GetCause().GetSubject()).decrement(m, em.GetIntensity());
 			}
 		}
 	}
@@ -200,8 +196,7 @@ public class SocialRelationsComponent implements Serializable, IAppraisalDerivat
 	}
 
 	@Override
-	public void reappraisal(AgentModel am) {
-		// TODO Auto-generated method stub
-		
+	public AppraisalFrame reappraisal(AgentModel am) {
+		return null;
 	}
 }

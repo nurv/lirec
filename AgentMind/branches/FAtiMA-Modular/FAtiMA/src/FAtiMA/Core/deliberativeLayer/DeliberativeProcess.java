@@ -1272,7 +1272,8 @@ public class DeliberativeProcess implements Serializable, IComponent, IBehaviour
 	}
 
 	@Override
-	public void reappraisal(AgentModel am) {
+	public AppraisalFrame reappraisal(AgentModel am) {
+		return null;
 	}
 
 	@Override

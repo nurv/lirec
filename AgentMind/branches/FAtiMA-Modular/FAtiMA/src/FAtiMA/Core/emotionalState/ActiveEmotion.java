@@ -35,7 +35,6 @@
 package FAtiMA.Core.emotionalState;
 
 import FAtiMA.Core.AgentSimulationTime;
-import FAtiMA.Core.util.enumerables.EmotionType;
 
 /**
  * Represents an Emotion with intensity that is active in the character's 
@@ -144,8 +143,8 @@ public class ActiveEmotion extends BaseEmotion {
 	 * @return a XML String that contains all information about the ActiveEmotion
 	 */
 	public String toXml() {
-		return "<Emotion t0=\"" + _t0 + "\" type=\"" + EmotionType.GetName(_type) + 
-				"\" valence=\"" + _valence + 
+		return "<Emotion t0=\"" + _t0 + "\" type=\"" + _type.getName() + 
+				"\" valence=\"" + _type.getValence() + 
 				"\" cause=\"" + _cause + "\" direction=\"" + _direction
 				+ "\" intensity=\"" + _intensity + "\" />";
 	}

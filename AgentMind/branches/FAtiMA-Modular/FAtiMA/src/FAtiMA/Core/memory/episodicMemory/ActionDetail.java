@@ -45,16 +45,15 @@ import java.util.ListIterator;
 
 import FAtiMA.Core.emotionalState.ActiveEmotion;
 import FAtiMA.Core.emotionalState.BaseEmotion;
+import FAtiMA.Core.emotionalState.NeutralEmotion;
 import FAtiMA.Core.memory.Memory;
 import FAtiMA.Core.memory.semanticMemory.KnowledgeSlot;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.sensorEffector.Parameter;
 import FAtiMA.Core.util.enumerables.ActionEvent;
-import FAtiMA.Core.util.enumerables.EmotionType;
 import FAtiMA.Core.util.enumerables.EmotionValence;
 import FAtiMA.Core.util.enumerables.EventType;
 import FAtiMA.Core.util.enumerables.GoalEvent;
-import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Substitution;
 
 
@@ -126,7 +125,7 @@ public class ActionDetail implements Serializable {
 			separateParameters();
 		}
 		
-		this._emotion = new BaseEmotion(EmotionType.NEUTRAL,0,new ArrayList<String>(),e,null);
+		this._emotion = new BaseEmotion(NeutralEmotion.getInstance(),0,e);
 	}
 
 	/*
@@ -347,8 +346,8 @@ public class ActionDetail implements Serializable {
 
 		if(em.GetIntensity() > this._emotion.GetPotential())
 		{
-			this._emotion = new BaseEmotion(em.GetType(),em.GetIntensity(),em.GetAppraisalVariables(), em.GetCause(),em.GetDirection());
-			if(this._emotion.GetValence() == EmotionValence.POSITIVE)
+			this._emotion = new BaseEmotion(em.getType(),em.GetIntensity(), em.GetCause(),em.GetDirection());
+			if(this._emotion.getType().getValence() == EmotionValence.POSITIVE)
 			{
 				this._desirability = (float) Math.floor(em.GetPotential());
 			}
@@ -582,7 +581,7 @@ public class ActionDetail implements Serializable {
 	{
 		String action = "<Event>";
 		action += "<EventID>" + this.getID() + "</EventID>";
-		action += "<Emotion>" + EmotionType.GetName(this.getEmotion().GetType()) + " " + this.getEmotion().GetPotential() + "</Emotion>";
+		action += "<Emotion>" + this.getEmotion().getType().getName() + " " + this.getEmotion().GetPotential() + "</Emotion>";
 		action += "<Subject>" + this.getSubject() + "</Subject>";
 		action += "<Intention>" + this.getIntention() + "</Intention>";
 		action += "<Status>" + this.getStatus() + "</Status>";

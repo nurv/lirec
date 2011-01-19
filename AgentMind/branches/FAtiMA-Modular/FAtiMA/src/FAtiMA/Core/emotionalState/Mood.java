@@ -109,7 +109,7 @@ public class Mood implements Serializable {
 	 {
 	 	float newMood;
 	 	
-	 	if(em.GetValence() == EmotionValence.POSITIVE) {
+	 	if(em.getValence() == EmotionValence.POSITIVE) {
 		    newMood = _intensity + (em.GetIntensity() * EmotionalPameters.EmotionInfluenceOnMood);
 		    //mood is limited between -10 and 10
 		    newMood = Math.min(newMood, 10);

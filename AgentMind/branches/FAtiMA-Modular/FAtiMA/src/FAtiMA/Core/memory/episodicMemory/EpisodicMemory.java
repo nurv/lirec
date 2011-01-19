@@ -6,12 +6,12 @@ import java.util.ListIterator;
 
 import FAtiMA.Core.deliberativeLayer.goals.Goal;
 import FAtiMA.Core.emotionalState.ActiveEmotion;
+import FAtiMA.Core.emotionalState.NeutralEmotion;
 import FAtiMA.Core.memory.Memory;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.sensorEffector.Parameter;
 import FAtiMA.Core.util.Constants;
 import FAtiMA.Core.util.enumerables.ActionEvent;
-import FAtiMA.Core.util.enumerables.EmotionType;
 import FAtiMA.Core.util.enumerables.EventType;
 import FAtiMA.Core.util.enumerables.GoalEvent;
 import FAtiMA.Core.wellFormedNames.Name;
@@ -285,7 +285,7 @@ public class EpisodicMemory implements Serializable {
 				if((detail.getIntention() != null && (detail.getStatus().equals(GoalEvent.GetName(GoalEvent.ACTIVATION)) || 
 						detail.getStatus().equals(GoalEvent.GetName(GoalEvent.SUCCESS)) ||
 						detail.getStatus().equals(GoalEvent.GetName(GoalEvent.FAILURE)))) ||
-						(detail.getAction() != null && (detail.getEmotion().GetType()) != EmotionType.NEUTRAL))
+						(detail.getAction() != null && (detail.getEmotion().getType()) != NeutralEmotion.getInstance()))
 				{
 					_am.StoreAction(detail);					
 				}
@@ -312,7 +312,7 @@ public class EpisodicMemory implements Serializable {
 				if((detail.getIntention() != null && (detail.getStatus().equals(GoalEvent.GetName(GoalEvent.ACTIVATION)) || 
 						detail.getStatus().equals(GoalEvent.GetName(GoalEvent.SUCCESS)) ||
 						detail.getStatus().equals(GoalEvent.GetName(GoalEvent.FAILURE)))) ||
-						(detail.getAction() != null && (detail.getEmotion().GetType()) != EmotionType.NEUTRAL))
+						(detail.getAction() != null && (detail.getEmotion().getType()) != NeutralEmotion.getInstance()))
 				{
 					_am.StoreAction(detail);					
 				}

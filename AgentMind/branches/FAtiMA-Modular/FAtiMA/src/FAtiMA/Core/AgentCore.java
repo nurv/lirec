@@ -32,6 +32,7 @@ import FAtiMA.Core.emotionalState.ActiveEmotion;
 import FAtiMA.Core.emotionalState.AppraisalFrame;
 import FAtiMA.Core.emotionalState.BaseEmotion;
 import FAtiMA.Core.emotionalState.EmotionalState;
+import FAtiMA.Core.emotionalState.NeutralEmotion;
 import FAtiMA.Core.exceptions.ActionsParsingException;
 import FAtiMA.Core.exceptions.GoalLibParsingException;
 import FAtiMA.Core.exceptions.UnknownGoalException;
@@ -48,7 +49,6 @@ import FAtiMA.Core.util.ConfigurationManager;
 import FAtiMA.Core.util.Constants;
 import FAtiMA.Core.util.VersionChecker;
 import FAtiMA.Core.util.enumerables.AgentPlatform;
-import FAtiMA.Core.util.enumerables.EmotionType;
 import FAtiMA.Core.util.parsers.AgentLoaderHandler;
 import FAtiMA.Core.util.parsers.BinaryStringConverter;
 import FAtiMA.Core.util.parsers.MemoryLoaderHandler;
@@ -87,7 +87,7 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 	protected String _sex;
 	protected String _displayName; 
 	protected SpeechAct _speechAct;
-	protected short _currentEmotion;
+	protected String _currentEmotion;
 	protected long _numberOfCycles;
 	protected long _totalexecutingtime=0;
 
@@ -108,7 +108,7 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 		_name = name;
 		_shutdown = false;
 		_numberOfCycles = 0;
-		_currentEmotion = EmotionType.NEUTRAL; //neutral emotion - no emotion
+		_currentEmotion = NeutralEmotion.getInstance().getName(); //neutral emotion - no emotion
 		_actionsForExecution = new ArrayList<ValuedAction>();
 		_perceivedEvents = new ArrayList<Event>();
 		_saveDirectory = "";
@@ -439,7 +439,7 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 		this._name = (String) s.readObject();
 		this._sex = (String) s.readObject();
 		this._speechAct = (SpeechAct) s.readObject();
-		this._currentEmotion = ((Short) s.readObject()).shortValue();
+		this._currentEmotion = ((String) s.readObject());
 		this._displayName = (String) s.readObject();
 		this._showStateWindow = ((Boolean) s.readObject()).booleanValue();
 		this._actionsForExecution = (ArrayList<ValuedAction>) s.readObject();
@@ -633,7 +633,7 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 		ValuedAction bestAction;
 		float bestActionValue;
 		float value;
-		AppraisalFrame appraisal;
+		AppraisalFrame appraisalFrame;
 		
 		long updateTime = System.currentTimeMillis();
 
@@ -671,10 +671,11 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 								c.update(this, e2);
 							}
 							
-							appraisal = new AppraisalFrame(this,e2);
+							appraisalFrame = new AppraisalFrame(e2);
 							for(IAppraisalDerivationComponent c : this._appraisalComponents)
 							{
-								c.appraisal(this,e2, appraisal);
+								c.appraisal(this,e2, appraisalFrame);
+								updateEmotions(appraisalFrame);
 							}
 						}
 						this._perceivedEvents.clear();
@@ -682,7 +683,8 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 					
 					for(IAppraisalDerivationComponent c : this._appraisalComponents)
 					{
-						c.reappraisal(this);
+						appraisalFrame = c.reappraisal(this);
+						updateEmotions(appraisalFrame);
 					}
 					
 					//if there was new data or knowledge added we must apply inference operators
@@ -872,7 +874,7 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 			s.writeObject(_name);
 			s.writeObject(_sex);
 			s.writeObject(_speechAct);
-			s.writeObject(new Short(_currentEmotion));
+			s.writeObject(_currentEmotion);
 			s.writeObject(_displayName);
 			s.writeObject(new Boolean(_showStateWindow));
 			s.writeObject(_actionsForExecution);
@@ -961,7 +963,7 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 			//s.writeObject(_name);
 			//s.writeObject(_sex);
 			s.writeObject(_speechAct);
-			s.writeObject(new Short(_currentEmotion));
+			s.writeObject(_currentEmotion);
 			s.writeObject(_displayName);
 			//s.writeObject(new Boolean(_showStateWindow));
 			s.writeObject(_actionsForExecution);
@@ -1021,7 +1023,7 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 			//this._name = (String) s.readObject();
 			//this._sex = (String) s.readObject();
 			this._speechAct = (SpeechAct) s.readObject();
-			this._currentEmotion = ((Short) s.readObject()).shortValue();
+			this._currentEmotion = (String) s.readObject();
 			this._displayName = (String) s.readObject();
 			//this._showStateWindow = ((Boolean) s.readObject()).booleanValue();
 			this._actionsForExecution = (ArrayList<ValuedAction>) s.readObject();
@@ -1046,24 +1048,26 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 		}
 	}
 
-
-	@Override
-	public void updateEmotions(String appraisalVariable, AppraisalFrame af) {
+	public void updateEmotions(AppraisalFrame af) {
 		
 		ArrayList<BaseEmotion> emotions;
 		ActiveEmotion activeEmotion;
 		
-		for(IAffectDerivationComponent ac : this._affectDerivationComponents)
+			
+		if(af.hasChanged())
 		{
-			emotions = ac.affectDerivation(this, appraisalVariable, af);
-			for(BaseEmotion em : emotions)
-			{
-				activeEmotion = _emotionalState.AddEmotion(em, this);
-				if(activeEmotion != null)
+			for(IAffectDerivationComponent ac : this._affectDerivationComponents)
+			{	
+				emotions = ac.affectDerivation(this, af);
+				for(BaseEmotion em : emotions)
 				{
-					for(IProcessEmotionComponent pec : this._processEmotionComponents)
+					activeEmotion = _emotionalState.AddEmotion(em, this);
+					if(activeEmotion != null)
 					{
-						pec.emotionActivation(this,activeEmotion);
+						for(IProcessEmotionComponent pec : this._processEmotionComponents)
+						{
+							pec.emotionActivation(this,activeEmotion);
+						}
 					}
 				}
 			}

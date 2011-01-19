@@ -197,7 +197,7 @@ public class AdvancedMemoryComponent implements Serializable, IAppraisalDerivati
 	}
 
 	@Override
-	public void appraisal(AgentModel am, Event e, AppraisalFrame as) {
+	public void appraisal(AgentModel am, Event e, AppraisalFrame af) {
 		
 		//appraisal from memory
 		ActionDetail ad = new ActionDetail(0,e.GetSubject(),
@@ -214,7 +214,7 @@ public class AdvancedMemoryComponent implements Serializable, IAppraisalDerivati
 			float desirability = result.getDesirability();
 			if(desirability != 0)
 			{
-				as.SetAppraisalVariable(AdvancedMemoryComponent.NAME, (short)3, OCCComponent.DESIRABILITY, desirability);
+				af.SetAppraisalVariable(AdvancedMemoryComponent.NAME, (short)3, OCCComponent.DESIRABILITY, desirability);
 			}	
 		}
 	}
@@ -329,10 +329,11 @@ public class AdvancedMemoryComponent implements Serializable, IAppraisalDerivati
 	}
 
 	@Override
-	public void reappraisal(AgentModel am) {
+	public void inverseAppraisal(AgentModel am, AppraisalFrame af) {
 	}
 
 	@Override
-	public void inverseAppraisal(AgentModel am, AppraisalFrame af) {
+	public AppraisalFrame reappraisal(AgentModel am) {
+		return null;
 	}
 }

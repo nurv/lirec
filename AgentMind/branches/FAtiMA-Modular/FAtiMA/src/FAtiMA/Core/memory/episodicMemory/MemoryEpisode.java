@@ -326,7 +326,7 @@ public class MemoryEpisode implements Serializable {
 				{
 					action = (ActionDetail) auxList.get(i);
 					secondStrongestEmotion = action.getEmotion();
-					if(secondStrongestEmotion.GetType() != strongestEmotion.GetType())
+					if(secondStrongestEmotion.getType() != strongestEmotion.getType())
 					{
 						break;
 					}
@@ -360,7 +360,7 @@ public class MemoryEpisode implements Serializable {
 				AMSummary += SummaryGenerator.GenerateActionSummary(m, action);
 				
 				if(strongestEmotion != null &&
-						action.getEmotion().GetType() == strongestEmotion.GetType() &&
+						action.getEmotion().getType() == strongestEmotion.getType() &&
 						action.getEmotion().GetPotential() == strongestEmotion.GetPotential())
 				{
 					AMSummary += SummaryGenerator.GenerateEmotionSummary(m, strongestEmotion);
@@ -416,7 +416,7 @@ public class MemoryEpisode implements Serializable {
 			em = action.getEmotion();
 			if(em.GetPotential() > 0)
 			{
-				if(em.GetValence() == EmotionValence.POSITIVE)
+				if(em.getType().getValence() == EmotionValence.POSITIVE)
 				{
 					value += em.GetPotential();
 				}
@@ -456,7 +456,7 @@ public class MemoryEpisode implements Serializable {
 			em = action.getEmotion();
 			if(em.GetPotential() > 0)
 			{
-				if(em.GetValence() == EmotionValence.POSITIVE)
+				if(em.getType().getValence() == EmotionValence.POSITIVE)
 				{
 					error = em.GetPotential() - avg;
 				}

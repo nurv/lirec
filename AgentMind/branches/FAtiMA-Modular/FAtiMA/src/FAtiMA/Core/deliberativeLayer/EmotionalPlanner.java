@@ -489,7 +489,7 @@ public class EmotionalPlanner implements Serializable {
 			//aux = prob * threatImportance;
 			failureImportance = intention.getGoal().GetImportanceOfFailure(am);
 			
-			AppraisalFrame auxFrame = new AppraisalFrame(am, tGoal.GetActivationEvent());
+			AppraisalFrame auxFrame = new AppraisalFrame(tGoal.GetActivationEvent());
 			auxFrame.SetAppraisalVariable(DeliberativeProcess.NAME, (short)6, OCCComponent.FAILUREPROBABILITY, prob);
 			auxFrame.SetAppraisalVariable(DeliberativeProcess.NAME, (short)6, OCCComponent.GOALCONDUCIVENESS, -tGoal.GetImportanceOfFailure(am));
 			 

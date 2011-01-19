@@ -121,7 +121,7 @@ public class ModelOfOther implements AgentModel, Serializable {
 			{
 				//Agent model has to be null or the appraisal frame will generate emotions when we set the appraisal
 				// variables
-				af = new AppraisalFrame(null,perceivedEmotion.GetCause());
+				af = new AppraisalFrame(perceivedEmotion.GetCause());
 				
 				for(IAffectDerivationComponent c : _affectDerivationComponents)
 				{
@@ -211,25 +211,28 @@ public class ModelOfOther implements AgentModel, Serializable {
 	}
 
 	@Override
-	public void updateEmotions(String appraisalVariable, AppraisalFrame af) {
+	public void updateEmotions(AppraisalFrame af) {
 		ArrayList<BaseEmotion> emotions;
 		ActiveEmotion activeEmotion;
 		
-		for(IAffectDerivationComponent ac : this._affectDerivationComponents)
+		if(af.hasChanged())
 		{
-			emotions = ac.affectDerivation(this, appraisalVariable, af);
-			for(BaseEmotion em : emotions)
-			{
-				activeEmotion =  _es.AddEmotion(em, this);
-				if(activeEmotion != null)
+			for(IAffectDerivationComponent ac : this._affectDerivationComponents)
+			{	
+				emotions = ac.affectDerivation(this, af);
+				for(BaseEmotion em : emotions)
 				{
-					for(IProcessEmotionComponent pec : this._processEmotionComponents)
+					activeEmotion = _es.AddEmotion(em, this);
+					if(activeEmotion != null)
 					{
-						pec.emotionActivation(this,activeEmotion);
+						for(IProcessEmotionComponent pec : this._processEmotionComponents)
+						{
+							pec.emotionActivation(this,activeEmotion);
+						}
 					}
 				}
 			}
-		}
+		}	
 	}
 
 }

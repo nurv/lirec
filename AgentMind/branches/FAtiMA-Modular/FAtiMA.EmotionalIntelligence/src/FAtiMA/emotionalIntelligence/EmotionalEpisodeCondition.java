@@ -41,7 +41,6 @@ import FAtiMA.Core.emotionalState.EmotionalState;
 import FAtiMA.Core.exceptions.InvalidEmotionTypeException;
 import FAtiMA.Core.memory.episodicMemory.MemoryEpisode;
 import FAtiMA.Core.util.Constants;
-import FAtiMA.Core.util.enumerables.EmotionType;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Substitution;
 import FAtiMA.Core.wellFormedNames.SubstitutionSet;
@@ -127,18 +126,14 @@ public class EmotionalEpisodeCondition extends Condition {
 		
 		emotion = episode.getStrongestEmotion();
 		
-		try {
-			if(emotion.GetType() == EmotionType.ParseType(this._emotion.toString()))
-			{
-				if(emotion.GetPotential() >= this._value)
-				{
-					return true;
-				}
-			}
-		} catch (InvalidEmotionTypeException e) {
-				return false;
-		}
 		
+		if(emotion.getType().getName().equals(this._emotion.toString()))
+		{
+			if(emotion.GetPotential() >= this._value)
+			{
+				return true;
+			}
+		}		
 		
 		return false;
 		
@@ -214,11 +209,11 @@ public class EmotionalEpisodeCondition extends Condition {
 					ss = new SubstitutionSet();
 					if(!_emotion.isGrounded())
 					{
-						s = new Substitution(this._emotion,new Symbol(EmotionType.GetName(emotion.GetType())));
+						s = new Substitution(this._emotion,new Symbol(emotion.getType().toString()));
 						ss.AddSubstitution(s);
 						bindingSets.add(ss);
 					}
-					else if(emotion.GetType() == EmotionType.ParseType(this._emotion.toString()))
+					else if(emotion.getType().equals(this._emotion.toString()))
 					{
 						ss = new SubstitutionSet();
 						bindingSets.add(ss);
@@ -241,12 +236,12 @@ public class EmotionalEpisodeCondition extends Condition {
 					if(!_emotion.isGrounded())
 					{
 						
-						s = new Substitution(this._emotion,new Symbol(EmotionType.GetName(emotion.GetType())));
+						s = new Substitution(this._emotion,new Symbol(emotion.getType().getName()));
 						ss.AddSubstitution(s);
 						bindingSets.add(ss);
 						
 					}
-					else if(emotion.GetType() == EmotionType.ParseType(this._emotion.toString()))
+					else if(emotion.getType().getName().equals(this._emotion.toString()))
 					{
 						bindingSets.add(ss);
 					}	

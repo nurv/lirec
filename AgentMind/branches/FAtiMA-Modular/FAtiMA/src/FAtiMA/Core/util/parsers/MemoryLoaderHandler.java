@@ -33,26 +33,19 @@ import java.util.StringTokenizer;
 
 import org.xml.sax.Attributes;
 
-import FAtiMA.Core.deliberativeLayer.goals.ActivePursuitGoal;
-import FAtiMA.Core.deliberativeLayer.goals.Goal;
 import FAtiMA.Core.emotionalState.BaseEmotion;
+import FAtiMA.Core.emotionalState.EmotionType;
 import FAtiMA.Core.memory.Memory;
 import FAtiMA.Core.memory.episodicMemory.ActionDetail;
 import FAtiMA.Core.memory.episodicMemory.AutobiographicalMemory;
-import FAtiMA.Core.memory.episodicMemory.EpisodicMemory;
 import FAtiMA.Core.memory.episodicMemory.MemoryEpisode;
 import FAtiMA.Core.memory.episodicMemory.ShortTermEpisodicMemory;
 import FAtiMA.Core.memory.episodicMemory.Time;
 import FAtiMA.Core.memory.semanticMemory.KnowledgeBase;
-import FAtiMA.Core.memory.semanticMemory.KnowledgeSlot;
 import FAtiMA.Core.memory.semanticMemory.WorkingMemory;
-import FAtiMA.Core.util.Constants;
-import FAtiMA.Core.util.enumerables.EventType;
-import FAtiMA.Core.wellFormedNames.Name;
-import FAtiMA.Core.wellFormedNames.Substitution;
-import FAtiMA.Core.wellFormedNames.Symbol;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.sensorEffector.Parameter;
+import FAtiMA.Core.wellFormedNames.Name;
 
 public class MemoryLoaderHandler extends ReflectXMLHandler {
 	
@@ -180,13 +173,14 @@ public class MemoryLoaderHandler extends ReflectXMLHandler {
  	} 	
 	
  	public void Emotion(Attributes attributes) {
- 		Short type = Short.valueOf(attributes.getValue("type"));
+ 		String type = attributes.getValue("type");
+ 		byte valence = Byte.parseByte(attributes.getValue("valence"));
  		Name direction = Name.ParseName(attributes.getValue("direction"));
- 		String appraisalVariables = attributes.getValue("appraisalVariables");
- 		ArrayList<String> appraisalVariable = extractItems(appraisalVariables);
+ 		String aux = attributes.getValue("appraisalVariables");
+ 		String[] appraisalVariables = (String[]) extractItems(aux).toArray();
 	    float potential = Float.parseFloat(attributes.getValue("potential"));
 	    	    
-	    _currentEmotion = new BaseEmotion(type, potential, appraisalVariable, null, direction);
+	    _currentEmotion = new BaseEmotion(new EmotionType(type,appraisalVariables,valence), potential, null, direction);
 	    _currentAD.setEmotion(_currentEmotion);
 	    
 	    //System.out.println("Emotion");

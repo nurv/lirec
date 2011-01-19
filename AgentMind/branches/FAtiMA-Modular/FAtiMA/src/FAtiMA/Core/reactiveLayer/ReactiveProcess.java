@@ -160,8 +160,8 @@ public class ReactiveProcess implements Serializable, IComponent, IBehaviourComp
 	 * reaction rules
 	 */
 	@Override
-	public void appraisal(AgentModel ag, Event event, AppraisalFrame as) {
-		Reaction selfEvaluation;	
+	public void appraisal(AgentModel ag, Event event, AppraisalFrame af) {
+		Reaction selfEvaluation;
 			
 		
 		selfEvaluation = Evaluate(ag, event);
@@ -170,19 +170,19 @@ public class ReactiveProcess implements Serializable, IComponent, IBehaviourComp
 		{
 			if(selfEvaluation._desirability != null)
 			{
-				as.SetAppraisalVariable(NAME, (short)5, OCCComponent.DESIRABILITY, selfEvaluation._desirability.intValue());
+				af.SetAppraisalVariable(NAME, OCCComponent.DESIRABILITY, selfEvaluation._desirability.intValue());
 			}
 			if(selfEvaluation._desirabilityForOther != null && selfEvaluation._other != null)
 			{
-				as.SetAppraisalVariable(NAME, (short)5, OCCComponent.DESFOROTHER + selfEvaluation._other, selfEvaluation._desirabilityForOther.intValue());
+				af.SetAppraisalVariable(NAME,  OCCComponent.DESFOROTHER + selfEvaluation._other, selfEvaluation._desirabilityForOther.intValue());
 			}
 			if(selfEvaluation._praiseworthiness != null)
 			{
-				as.SetAppraisalVariable(NAME, (short)5, OCCComponent.PRAISEWORTHINESS, selfEvaluation._praiseworthiness.intValue());
+				af.SetAppraisalVariable(NAME, OCCComponent.PRAISEWORTHINESS, selfEvaluation._praiseworthiness);
 			}
 			if(selfEvaluation._like != null)
 			{
-				as.SetAppraisalVariable(NAME, (short)5, OCCComponent.LIKE, selfEvaluation._like.intValue());
+				af.SetAppraisalVariable(NAME, OCCComponent.LIKE, selfEvaluation._like.intValue());
 			}
 		}
 	}
@@ -269,8 +269,8 @@ public class ReactiveProcess implements Serializable, IComponent, IBehaviourComp
 	}
 
 	@Override
-	public void reappraisal(AgentModel am) {
-		return;
+	public AppraisalFrame reappraisal(AgentModel am) {
+		return null;
 	}
 
 	@Override

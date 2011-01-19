@@ -570,8 +570,8 @@ public class MotivationalComponent implements Serializable, Cloneable, IAppraisa
 
 
 	@Override
-	public void reappraisal(AgentModel am) {
-		// TODO Auto-generated method stub
+	public AppraisalFrame reappraisal(AgentModel am) {
+		return null;
 	}
 
 

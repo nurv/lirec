@@ -49,8 +49,6 @@
 
 package FAtiMA.Core.util.parsers;
 
-import java.util.ArrayList;
-
 import org.xml.sax.Attributes;
 
 import FAtiMA.Core.AgentModel;
@@ -63,6 +61,7 @@ import FAtiMA.Core.conditions.RecentEventCondition;
 import FAtiMA.Core.deliberativeLayer.DeliberativeProcess;
 import FAtiMA.Core.emotionalState.BaseEmotion;
 import FAtiMA.Core.emotionalState.EmotionDisposition;
+import FAtiMA.Core.emotionalState.EmotionType;
 import FAtiMA.Core.emotionalState.EmotionalState;
 import FAtiMA.Core.exceptions.InvalidEmotionTypeException;
 import FAtiMA.Core.exceptions.UnknownGoalException;
@@ -71,7 +70,6 @@ import FAtiMA.Core.reactiveLayer.Reaction;
 import FAtiMA.Core.reactiveLayer.ReactiveProcess;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.util.Constants;
-import FAtiMA.Core.util.enumerables.EmotionType;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Substitution;
 import FAtiMA.Core.wellFormedNames.Symbol;
@@ -116,14 +114,14 @@ public class AgentLoaderHandler extends ReflectXMLHandler {
 
     public void ElicitingEmotion(Attributes attributes) throws InvalidEmotionTypeException {
     	String emotionName;
-    	short type;
     	Integer minIntensity;
+ 
     	
     	emotionName = attributes.getValue("type");
-    	type = EmotionType.ParseType(emotionName);
+    	EmotionType type = new EmotionType(emotionName,null,(byte)0); 
     	
     	minIntensity = new Integer(attributes.getValue("minIntensity"));
-    	_elicitingEmotion = new BaseEmotion(type,minIntensity.intValue(),new ArrayList<String>(),null,null);
+    	_elicitingEmotion = new BaseEmotion(type,minIntensity.intValue(),null);
     	_action.SetElicitingEmotion(_elicitingEmotion);
     	_reactiveLayer.getActionTendencies().AddAction(_action);
     }
@@ -152,11 +150,10 @@ public class AgentLoaderHandler extends ReflectXMLHandler {
 
     public void EmotionalThreshold(Attributes attributes) throws InvalidEmotionTypeException {
     	String emotionName;
-    	short type;
-    	
+ 
     	emotionName = attributes.getValue("emotion");
-    	type = EmotionType.ParseType(emotionName);
-        _emotionalState.AddEmotionDisposition(new EmotionDisposition(type,
+  
+        _emotionalState.AddEmotionDisposition(new EmotionDisposition(emotionName,
                                                               new Integer(attributes.getValue("threshold")).intValue(),
                                                               new Integer(attributes.getValue("decay")).intValue()));
     }

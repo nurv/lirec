@@ -33,11 +33,8 @@
 package FAtiMA.Core.emotionalState;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 
 import FAtiMA.Core.sensorEffector.Event;
-import FAtiMA.Core.util.enumerables.EmotionType;
-import FAtiMA.Core.util.enumerables.EmotionValence;
 import FAtiMA.Core.wellFormedNames.Name;
 
 
@@ -56,10 +53,8 @@ public class BaseEmotion implements Serializable {
 	protected Event _cause;
 	protected Name _direction;
 	protected float _potential;
-	protected ArrayList<String> _appraisalVariables;
 
-	protected final short _type;
-	protected final byte _valence; 
+	protected final EmotionType _type; 
 	
 	/**
 	 * Creates a new BasicEmotion
@@ -70,36 +65,15 @@ public class BaseEmotion implements Serializable {
 	 * @param direction - if the emotion is targeted to someone (ex: angry with Luke),
 	 * 				      this parameter specifies the target
 	 */
-	public BaseEmotion(short type, float potential, ArrayList<String> appraisalVariables, Event cause, Name direction) {
+	public BaseEmotion(EmotionType type, float potential, Event cause, Name direction) {
 		_type = type;
 		_potential = potential;
 		_cause = cause;
 		_direction = direction;
-		_appraisalVariables = appraisalVariables;
-		
-		if(type == EmotionType.JOY ||
-				type == EmotionType.LOVE ||
-				type == EmotionType.HOPE ||
-				type == EmotionType.SATISFACTION ||
-				type == EmotionType.RELIEF ||
-				type == EmotionType.GLOATING ||
-				type == EmotionType.HAPPYFOR ||
-				type == EmotionType.ADMIRATION ||
-				type == EmotionType.PRIDE || 
-				type == EmotionType.GRATIFICATION ||
-				type == EmotionType.GRATITUDE ||
-				type == EmotionType.EXPECTED_REWARD ||
-				type == EmotionType.STRONGER_REWARD ||
-				type == EmotionType.WEAKER_REWARD ||
-				type == EmotionType.UNEXPECTED_REWARD
-				) 
-		{
-			_valence = EmotionValence.POSITIVE;
-		}
-		else 
-		{
-			_valence = EmotionValence.NEGATIVE;
-		}
+	}
+	
+	public BaseEmotion(EmotionType type, float potential, Event cause) {
+		this(type,potential,cause,null);
 	}
 	
 	/**
@@ -111,8 +85,6 @@ public class BaseEmotion implements Serializable {
 		_potential = em._potential;
 		_cause = em._cause;
 		_direction = em._direction;
-		_valence = em._valence;
-		_appraisalVariables = em._appraisalVariables;
 	}
 	
 	/**
@@ -131,10 +103,6 @@ public class BaseEmotion implements Serializable {
 		return _direction;
 	}
 	
-	public ArrayList<String> GetAppraisalVariables()
-	{
-		return _appraisalVariables;
-	}
 	
 	/**
 	 * Gets an hask key used to index this BaseEmotion
@@ -142,9 +110,13 @@ public class BaseEmotion implements Serializable {
 	 */
 	public String GetHashKey() {
 		String aux = _cause.toString()+_cause.GetTime();
-		for(String s : _appraisalVariables)
+		for(String s : _type.getAppraisalVariables())
 		{
 			aux += "-" + s;
+		}
+		if(_direction!=null)
+		{
+			aux += _direction;
 		}
 		return aux;
 	}
@@ -162,7 +134,7 @@ public class BaseEmotion implements Serializable {
 	 * @return a short value corresponding to the EmotionType enumerable
 	 * @see EmotionType enumerable for the set of possible emotion types
 	 */
-	public short GetType() {
+	public EmotionType getType() {
 		return _type;
 	}
 	
@@ -171,8 +143,8 @@ public class BaseEmotion implements Serializable {
 	 * @return a short value corresponding to the EmotionValence enumerable
 	 * @see EmotionValence enumerable
 	 */
-	public byte GetValence() {
-		return _valence;
+	public byte getValence() {
+		return _type.getValence();
 	}
 	
 	/**
@@ -203,6 +175,6 @@ public class BaseEmotion implements Serializable {
 	 * @return the converted String
 	 */
 	public String toString() {
-		return EmotionType.GetName(_type) + ": " + _cause + " " + _direction; 
+		return _type.getName() + ": " + _cause + " " + _direction; 
 	}
 }

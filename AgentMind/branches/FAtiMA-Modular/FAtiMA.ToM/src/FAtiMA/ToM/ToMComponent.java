@@ -140,7 +140,7 @@ public class ToMComponent implements Serializable, IAppraisalDerivationComponent
 		{
 			ModelOfOther m = _ToM.get(s);
 			e3 = e2.ApplyPerspective(s);
-			otherAF = new AppraisalFrame(m,e3);
+			otherAF = new AppraisalFrame(e3);
 			m.appraisal(e3, otherAF);
 			
 			desirability = otherAF.getAppraisalVariable(OCCComponent.DESIRABILITY);
@@ -252,7 +252,8 @@ public class ToMComponent implements Serializable, IAppraisalDerivationComponent
 	}
 
 	@Override
-	public void reappraisal(AgentModel am) {
+	public AppraisalFrame reappraisal(AgentModel am) {
+		return null;
 	}
 
 	@Override

@@ -31,28 +31,18 @@ package FAtiMA.Core.util.writers;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
 import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.ListIterator;
 
 import org.znerd.xmlenc.LineBreak;
 import org.znerd.xmlenc.XMLOutputter;
 
-import FAtiMA.Core.emotionalState.BaseEmotion;
 import FAtiMA.Core.memory.Memory;
 import FAtiMA.Core.memory.episodicMemory.ActionDetail;
 import FAtiMA.Core.memory.episodicMemory.MemoryEpisode;
-import FAtiMA.Core.memory.episodicMemory.Time;
 import FAtiMA.Core.memory.semanticMemory.KnowledgeSlot;
-import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.sensorEffector.Parameter;
-import FAtiMA.Core.util.enumerables.EmotionType;
 import FAtiMA.Core.util.enumerables.EventType;
-import FAtiMA.Core.wellFormedNames.Name;
 
 
 public class MemoryWriter implements Serializable{
@@ -209,11 +199,12 @@ public class MemoryWriter implements Serializable{
 			if(ad.getEmotion() != null)
 			{
 				_outputter.startTag("Emotion");
-				_outputter.attribute("type", Short.toString(ad.getEmotion().GetType()));
+				_outputter.attribute("type", ad.getEmotion().getType().getName());
+				_outputter.attribute("valence", Byte.toString(ad.getEmotion().getType().getValence()));
 				if(ad.getEmotion().GetDirection() != null)
 					_outputter.attribute("direction", ad.getEmotion().GetDirection().toString());
-				if(ad.getEmotion().GetAppraisalVariables() != null)
-					_outputter.attribute("appraisalVariables", ad.getEmotion().GetAppraisalVariables().toString());	//ArrayList
+				if(ad.getEmotion().getType().getAppraisalVariables() != null)
+					_outputter.attribute("appraisalVariables", ad.getEmotion().getType().getAppraisalVariables().toString());	//ArrayList
 				_outputter.attribute("potential", Float.toString(ad.getEmotion().GetPotential()));
 				
 				//cause event
