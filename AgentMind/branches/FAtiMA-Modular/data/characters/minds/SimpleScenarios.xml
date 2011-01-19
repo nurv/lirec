@@ -1,6 +1,6 @@
 <Scenarios>
 	<Scenario name="SimpleScenario">
-		<WorldSimulator port="46874" scenery="Office" actionsFile="data/characters/minds/WorkshopActions.xml" 
+		<WorldSimulator port="46874" scenery="Office" actionsFile="data/characters/minds/SimpleActions.xml" 
 						agentLanguageFile="data/characters/minds/language/agent/en/language-set-1"
 						userLanguageFile="data/characters/minds/language/user/en/language-set-1" 
 						userOptionsFile="OptionsSimpleScenario"	
@@ -23,7 +23,7 @@
 	</Scenario>
 	
 	<Scenario name="ScenarioWithDrives">
-		<WorldSimulator port="46874" scenery="Office" actionsFile="data/characters/minds/WorkshopActionsWithDrives.xml" 
+		<WorldSimulator port="46874" scenery="Office" actionsFile="data/characters/minds/SimpleActionsWithDrives.xml" 
 						agentLanguageFile="data/characters/minds/language/agent/en/language-set-1"
 						userLanguageFile="data/characters/minds/language/user/en/language-set-1" 
 						userOptionsFile="OptionsSimpleScenarioUser"
