@@ -381,6 +381,8 @@ public class Intention implements Serializable {
 	    _appraisalFrame.SetAppraisalVariable(DeliberativeProcess.NAME, (short)7, OCCComponent.SUCCESSPROBABILITY, probability);
 	    _appraisalFrame.SetAppraisalVariable(DeliberativeProcess.NAME, (short)7, OCCComponent.FAILUREPROBABILITY, 1-probability);
 	    _appraisalFrame.SetAppraisalVariable(DeliberativeProcess.NAME, (short)7, OCCComponent.GOALCONDUCIVENESS, goalConduciveness);
+	    
+	    am.updateEmotions(_appraisalFrame);
 		
 		//SetHope(hope);
 		//SetFear(fear);	
@@ -401,6 +403,7 @@ public class Intention implements Serializable {
 	    AppraisalFrame af = new AppraisalFrame(e);
 	    af.SetAppraisalVariable(DeliberativeProcess.NAME,(short)8,OCCComponent.GOALSTATUS, OCCComponent.GOALDISCONFIRMED);
 	    af.SetAppraisalVariable(DeliberativeProcess.NAME, (short)8,OCCComponent.GOALCONDUCIVENESS, am.getDeliberativeLayer().getUtilityStrategy().getUtility(am, _goal));
+	    am.updateEmotions(af);
 	    
 	    if(!isRootIntention())
 	    {
@@ -437,6 +440,7 @@ public class Intention implements Serializable {
 	    AppraisalFrame af = new AppraisalFrame(e);
 	    af.SetAppraisalVariable(DeliberativeProcess.NAME,(short)8,OCCComponent.GOALSTATUS, OCCComponent.GOALCONFIRMED);
 	    af.SetAppraisalVariable(DeliberativeProcess.NAME, (short)8,OCCComponent.GOALCONDUCIVENESS, am.getDeliberativeLayer().getUtilityStrategy().getUtility(am, _goal));
+	    am.updateEmotions(af);
 	        		   		
 	    AgentLogger.GetInstance().logAndPrint("Goal SUCCESS - " + getGoal().getName());
 	}

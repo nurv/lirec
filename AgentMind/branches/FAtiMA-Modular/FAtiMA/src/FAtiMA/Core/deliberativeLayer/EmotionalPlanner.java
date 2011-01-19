@@ -451,6 +451,7 @@ public class EmotionalPlanner implements Serializable {
 		//hope and fear emotions according to the plan probability
 		af.SetAppraisalVariable(DeliberativeProcess.NAME, (short)7, OCCComponent.SUCCESSPROBABILITY, planProb);
 		af.SetAppraisalVariable(DeliberativeProcess.NAME, (short)7, OCCComponent.FAILUREPROBABILITY, 1-planProb);
+		am.updateEmotions(af);
 		
 		hopeEmotion = am.getEmotionalState().GetEmotion(OCCComponent.getHopeKey(af.getEvent()));
 		fearEmotion = am.getEmotionalState().GetEmotion(OCCComponent.getFearKey(af.getEvent()));
@@ -492,6 +493,7 @@ public class EmotionalPlanner implements Serializable {
 			AppraisalFrame auxFrame = new AppraisalFrame(tGoal.GetActivationEvent());
 			auxFrame.SetAppraisalVariable(DeliberativeProcess.NAME, (short)6, OCCComponent.FAILUREPROBABILITY, prob);
 			auxFrame.SetAppraisalVariable(DeliberativeProcess.NAME, (short)6, OCCComponent.GOALCONDUCIVENESS, -tGoal.GetImportanceOfFailure(am));
+			am.updateEmotions(auxFrame);
 			 
 			
 			threatEmotion = am.getEmotionalState().GetEmotion(OCCComponent.getFearKey(tGoal.GetActivationEvent())); 

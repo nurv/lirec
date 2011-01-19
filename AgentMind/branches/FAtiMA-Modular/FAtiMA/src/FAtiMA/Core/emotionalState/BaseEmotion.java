@@ -109,7 +109,7 @@ public class BaseEmotion implements Serializable {
 	 * @return - a String used to index the BaseEMotion
 	 */
 	public String GetHashKey() {
-		String aux = _cause.toString()+_cause.GetTime();
+		String aux = _cause.toString();
 		for(String s : _type.getAppraisalVariables())
 		{
 			aux += "-" + s;
