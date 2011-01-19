@@ -1,8 +1,10 @@
 <Scenarios>
 	<Scenario name="SimpleScenario">
 		<WorldSimulator port="46874" scenery="Office" actionsFile="data/characters/minds/WorkshopActions.xml" 
-						agentLanguageFile="data/characters/minds/language/agent/en/language-set-1" 
-						userOptionsFile="WorkshopOptions">		
+						agentLanguageFile="data/characters/minds/language/agent/en/language-set-1"
+						userLanguageFile="data/characters/minds/language/user/en/language-set-1" 
+						userOptionsFile="OptionsSimpleScenario"	
+						simplifiedVersion="True">		
 			<Objects>
 				<Object name="apple"/>
 				<Object name="chocolate"/>
@@ -11,7 +13,7 @@
 		
 		<Agent name="Guilhas" displayName="Guilhas" role="Guilhas" platform="worldsim" host="localhost" 
 			   port="46874" displayMode="True" sex="M" actionsFile="WorkshopActions" 
-			   goalsFile="WorkshopGoalLibrary" cultureName="NoCulture" load="false">
+			   goalsFile="WorkshopGoalLibrary" cultureName="SimpleCulture" load="false">
 			<Properties>				
 				<Property name="location" value="Office"/>
 				<Property name="time" value="Morning"/>
@@ -22,8 +24,10 @@
 	
 	<Scenario name="ScenarioWithDrives">
 		<WorldSimulator port="46874" scenery="Office" actionsFile="data/characters/minds/WorkshopActionsWithDrives.xml" 
-						agentLanguageFile="data/characters/minds/language/agent/en/language-set-1" 
-						userOptionsFile="WorkshopOptions">		
+						agentLanguageFile="data/characters/minds/language/agent/en/language-set-1"
+						userLanguageFile="data/characters/minds/language/user/en/language-set-1" 
+						userOptionsFile="OptionsSimpleScenarioUser"
+						simplifiedVersion="True">		
 			<Objects>
 				<Object name="apple"/>
 				<Object name="chocolate"/>
@@ -31,8 +35,8 @@
 		</WorldSimulator>	
 		
 		<Agent name="Guilhas" displayName="Guilhas" role="GuilhasDrives" platform="worldsim" host="localhost" 
-			   port="46874" displayMode="True" sex="M" actionsFile="WorkshopActionsWithDrives" 
-			   goalsFile="WorkshopGoalLibraryWithDrives" cultureName="NoCulture" load="false">
+			   port="46874" displayMode="True" sex="M" actionsFile="SimpleActionsWithDrives" 
+			   goalsFile="SimpleGoalLibraryWithDrives" cultureName="SimpleCulture" load="false">
 			<Properties>				
 				<Property name="location" value="Office"/>
 				<Property name="time" value="Morning"/>
