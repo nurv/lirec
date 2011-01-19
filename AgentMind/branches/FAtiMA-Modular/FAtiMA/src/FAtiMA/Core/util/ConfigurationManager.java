@@ -118,7 +118,7 @@ public class ConfigurationManager {
 		}
 		else
 		{
-			return AgentCore.MIND_PATH_ANDROID;
+			return AgentCore.MIND_PATH;
 		}
 	}
 	
@@ -171,9 +171,9 @@ public class ConfigurationManager {
 		}
 	}
 	
-	private String getOptionalConfigurationValue(String name){
-		if(this.agentConfiguration.containsKey(name)){
-			return this.agentConfiguration.get(name);
+	public static String getOptionalConfigurationValue(String name){
+		if(getInstance().agentConfiguration.containsKey(name)){
+			return getInstance().agentConfiguration.get(name);
 		}else{
 			return null;
 		}
