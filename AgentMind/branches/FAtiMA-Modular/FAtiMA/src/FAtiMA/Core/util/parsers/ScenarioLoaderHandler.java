@@ -75,6 +75,7 @@ public class ScenarioLoaderHandler extends ReflectXMLHandler{
     		_worldSimArgs.add(attributes.getValue("agentLanguageFile"));
     		_worldSimArgs.add(attributes.getValue("userLanguageFile"));
     		_worldSimArgs.add(attributes.getValue("userOptionsFile"));
+    		_worldSimArgs.add(attributes.getValue("simplifiedVersion"));
     	}
     }
     
