@@ -1,1 +1,2 @@
 isPerson True
+power 10
