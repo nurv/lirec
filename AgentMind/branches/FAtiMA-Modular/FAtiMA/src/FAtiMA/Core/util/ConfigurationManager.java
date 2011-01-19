@@ -138,12 +138,23 @@ public class ConfigurationManager {
 		return getInstance().mindPath + "roles/" + getRole() + "/" + getRole() + ".xml";
 	}
 
-	public static String getAgentLoad(){
-		return getInstance().getConfigurationValue(AGENT_LOAD);
+	
+	public static boolean getAgentLoad(){
+		String agentLoad = getInstance().getOptionalConfigurationValue(AGENT_LOAD);
+		if(agentLoad!=null){
+			return Boolean.parseBoolean(agentLoad);
+		}else{
+			return false;
+		}
 	}
 	
-	public static String getMemoryLoad(){
-		return getInstance().getConfigurationValue(MEMORY_LOAD);
+	public static boolean getMemoryLoad(){
+		String memoryLoad = getInstance().getOptionalConfigurationValue(MEMORY_LOAD);
+		if(memoryLoad!=null){
+			return Boolean.parseBoolean(memoryLoad);
+		}else{
+			return false;
+		}
 	}
 	
 	public static HashMap<String,String> getAgentProperties(){
@@ -157,6 +168,14 @@ public class ConfigurationManager {
 			return this.agentConfiguration.get(name);
 		}else{
 			throw new RuntimeException("There is no configuration with such name: " + name);
+		}
+	}
+	
+	private String getOptionalConfigurationValue(String name){
+		if(this.agentConfiguration.containsKey(name)){
+			return this.agentConfiguration.get(name);
+		}else{
+			return null;
 		}
 	}
 	

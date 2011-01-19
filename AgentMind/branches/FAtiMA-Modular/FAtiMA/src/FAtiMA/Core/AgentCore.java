@@ -141,7 +141,7 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 		}
 				
 		try{
-			if (Boolean.parseBoolean(ConfigurationManager.getAgentLoad()))
+			if (ConfigurationManager.getAgentLoad())
 			{
 				_agentLoaded = true;
 				agentCoreLoad(ConfigurationManager.getPlatform(), ConfigurationManager.getHost(), ConfigurationManager.getPort(), ConfigurationManager.getSaveDirectory(), agentName);
@@ -163,7 +163,7 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 				}
 	
 				//loading agent memory from xml
-				if (Boolean.parseBoolean(ConfigurationManager.getMemoryLoad()))
+				if (ConfigurationManager.getMemoryLoad())
 				{
 					_memory.setMemoryLoad(true);
 					loadAgentMemory(_saveDirectory + MEMORY_FILENAME);
