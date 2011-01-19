@@ -64,7 +64,7 @@ public class CulturalDimensionsComponent implements IAppraisalDerivationComponen
 	
 	public void perceiveEvent(AgentModel am, Event e)
 	{
-		this.addRitualOptions(e,am);
+		
 	}
 	
 	@Override
@@ -316,7 +316,7 @@ public class CulturalDimensionsComponent implements IAppraisalDerivationComponen
 	
 	@Override
 	public void update(AgentModel am,Event e) {
-		// TODO Auto-generated method stub
+		this.addRitualOptions(e,am);
 	}
 
 	@Override
