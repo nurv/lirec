@@ -84,11 +84,20 @@ class Plant extends SpriteEntity
         
         Spr.Hide(false);
         
-        //Spr.MouseOver(this,function(c) { trace("over plant"); });
-
-        //var tf = new flash.text.TextField();
-        //tf.text = Owner + " planted this.";
-        //addChild(tf);
+        var tf = new flash.text.TextField();
+        tf.text = Owner + " planted this.";
+        tf.x=Spr.Pos.x-50;
+        tf.y=Spr.Pos.y-30-Spr.Height*Spr.MyScale.y;
+        tf.height=40;
+        tf.background = true;
+        //tf.autoSize = true;
+        tf.backgroundColor = 0x8dd788;
+        tf.border = true;
+        tf.wordWrap = true;
+        Spr.parent.addChild(tf);
+        tf.visible=false;
+        Spr.MouseOver(this,function(c) { tf.visible=true; });
+        Spr.MouseOut(this,function(c) { tf.visible=false; });
 	}
 
     override function Destroy(world:World)
@@ -123,11 +132,14 @@ class Plant extends SpriteEntity
         Seeds.push(f);
         f.MouseDown(this,function(p) 
         {            
-            var s=new Seed(p.PlantType);
-            if (world.Seeds.Add(world,s))
+            if (world.MyName!="")
             {
-                p.Seeds.remove(f);
-                world.RemoveSprite(f);
+                var s=new Seed(p.PlantType);
+                if (world.Seeds.Add(world,s))
+                {
+                    p.Seeds.remove(f);
+                    world.RemoveSprite(f);
+                }
             }
         });
     }
@@ -338,27 +350,27 @@ class FungiWorld extends World
 		MyRndGen = new RndGen();
         CursorLogicalPos = new Vec3(5,5,0);
         Server = new ServerConnection();
+        MyName = "";
 
-        Cursor=new Sprite(new Vec2(0,0), Resources.Get("cursor"), true);
-        AddSprite(Cursor);
+        var arrow1 = new SpriteEntity(this,new Vec3(5,-2,1), Resources.Get("arr3"));
+        arrow1.Spr.MouseUp(this,function(c) { c.UpdateWorld(c.WorldPos.Add(new Vec3(0,-1,0))); });
+        arrow1.Spr.MouseOver(this,function(c) { arrow1.Spr.SetScale(new Vec2(1.1,1.1)); arrow1.Spr.Update(0,null); });
+        arrow1.Spr.MouseOut(this,function(c) { arrow1.Spr.SetScale(new Vec2(1,1)); arrow1.Spr.Update(0,null); });
+ 
+        var arrow2=new SpriteEntity(this,new Vec3(7,15,1), Resources.Get("arr4"));
+        arrow2.Spr.MouseUp(this,function(c) { c.UpdateWorld(c.WorldPos.Add(new Vec3(0,1,0))); });
+        arrow2.Spr.MouseOver(this,function(c) { arrow2.Spr.SetScale(new Vec2(1.1,1.1)); arrow2.Spr.Update(0,null); });
+        arrow2.Spr.MouseOut(this,function(c) { arrow2.Spr.SetScale(new Vec2(1,1)); arrow2.Spr.Update(0,null); });
+ 
+        var arrow3=new SpriteEntity(this,new Vec3(-2,5,1), Resources.Get("arr2"));
+        arrow3.Spr.MouseUp(this,function(c) { c.UpdateWorld(c.WorldPos.Add(new Vec3(-1,0,0))); });
+        arrow3.Spr.MouseOver(this,function(c) { arrow3.Spr.SetScale(new Vec2(1.1,1.1)); arrow3.Spr.Update(0,null); });
+        arrow3.Spr.MouseOut(this,function(c) { arrow3.Spr.SetScale(new Vec2(1,1)); arrow3.Spr.Update(0,null); });
 
-        var arrow = new Sprite(new Vec2(500,0), Resources.Get("test"));
-        arrow.MouseUp(this,function(c) { c.UpdateWorld(c.WorldPos.Add(new Vec3(0,-1,0))); });
-        AddSprite(arrow);
-
-        arrow=new Sprite(new Vec2(0,400), Resources.Get("test"));
-        arrow.MouseUp(this,function(c) { c.UpdateWorld(c.WorldPos.Add(new Vec3(0,1,0))); });
-        AddSprite(arrow);
-
-        arrow=new Sprite(new Vec2(0,0), Resources.Get("test"));
-        arrow.MouseUp(this,function(c) { c.UpdateWorld(c.WorldPos.Add(new Vec3(-1,0,0))); });
-        AddSprite(arrow);
-
-        arrow=new Sprite(new Vec2(500,400), Resources.Get("test"));
-        arrow.MouseUp(this,function(c) { c.UpdateWorld(c.WorldPos.Add(new Vec3(1,0,0))); });
-        AddSprite(arrow);
-
-        MyName = "foo";
+        var arrow4=new SpriteEntity(this,new Vec3(14,7,1), Resources.Get("arr1"));
+        arrow4.Spr.MouseUp(this,function(c) { c.UpdateWorld(c.WorldPos.Add(new Vec3(1,0,0))); });
+        arrow4.Spr.MouseOver(this,function(c) { arrow4.Spr.SetScale(new Vec2(1.1,1.1)); arrow4.Spr.Update(0,null); });
+        arrow4.Spr.MouseOut(this,function(c) { arrow4.Spr.SetScale(new Vec2(1,1)); arrow4.Spr.Update(0,null); });
 
 		for (y in 0...h)
 		{
@@ -394,12 +406,15 @@ class FungiWorld extends World
             Ghosts.push(g);
         }
 */
-//		MyTextEntry=new TextEntry(190,10,310,30,NameCallback);
-//		addChild(MyTextEntry);	
+		MyTextEntry=new TextEntry(190,10,310,30,NameCallback);
+		addChild(MyTextEntry);	
 
         Update(0);
         SortScene();
         Server.Request("spirit-sprites",this,UpdateSpiritSprites);
+
+        Cursor=new Sprite(new Vec2(0,0), Resources.Get("cursor"), true);
+        AddSprite(Cursor);
 	}
 	
 	public function NameCallback(name)

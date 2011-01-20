@@ -64,6 +64,11 @@ class Plant008Tex extends BitmapData { public function new() { super(0,0); } }
 
 class SeedTex extends BitmapData { public function new() { super(0,0); } }
 
+class Arr1Tex extends BitmapData { public function new() { super(0,0); } }
+class Arr2Tex extends BitmapData { public function new() { super(0,0); } }
+class Arr3Tex extends BitmapData { public function new() { super(0,0); } }
+class Arr4Tex extends BitmapData { public function new() { super(0,0); } }
+
 class Resources
 {
     public static function Get(name:String) : TextureDesc
@@ -113,6 +118,12 @@ class Resources
         case "plant-008": tex.data = new Plant008Tex();
 
         case "seed": tex.data = new SeedTex();
+
+        case "arr1": tex.data = new Arr1Tex();
+        case "arr2": tex.data = new Arr2Tex();
+        case "arr3": tex.data = new Arr3Tex();
+        case "arr4": tex.data = new Arr4Tex();
+
         }
 
         return tex;

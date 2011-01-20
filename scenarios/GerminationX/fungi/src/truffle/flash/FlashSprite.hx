@@ -35,8 +35,8 @@ class FlashSprite implements truffle.interfaces.Sprite, extends flash.display.Sp
     public var Pos:Vec2;
     public var Width:Int;
     public var Height:Int;
-    var Angle:Float;
-    var MyScale:Vec2;
+    public var Angle:Float;
+    public var MyScale:Vec2;
     var Transform:Matrix;
     var Depth:Int;
     var MouseDownFunc:Dynamic -> Void;
@@ -45,6 +45,8 @@ class FlashSprite implements truffle.interfaces.Sprite, extends flash.display.Sp
     var MouseUpContext:Dynamic;
     var MouseOverFunc:Dynamic -> Void;
     var MouseOverContext:Dynamic;
+    var MouseOutFunc:Dynamic -> Void;
+    var MouseOutContext:Dynamic;
     var Centre:Vec2;
     var DoCentreMiddleBottom:Bool;
 
@@ -104,6 +106,18 @@ class FlashSprite implements truffle.interfaces.Sprite, extends flash.display.Sp
     public function MouseOverCB(e)
     {
         MouseOverFunc(MouseOverContext);
+    }
+
+	public function MouseOut(c:Dynamic, f:Dynamic -> Void=null)
+	{
+        MouseOutFunc=f;
+        MouseOutContext=c;
+		addEventListener(MouseEvent.MOUSE_OUT, MouseOutCB);
+	}
+
+    public function MouseOutCB(e)
+    {
+        MouseOutFunc(MouseOutContext);
     }
 
     public function SetDepth(s:Int)

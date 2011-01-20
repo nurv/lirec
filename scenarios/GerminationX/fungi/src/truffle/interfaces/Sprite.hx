@@ -23,11 +23,14 @@ interface Sprite
     public var Pos:Vec2;
     public var Width:Int;
     public var Height:Int;
+    public var Angle:Float;
+    public var MyScale:Vec2;
 
 	public function MouseDown(c:Dynamic, f:Dynamic -> Void=null) : Void;
 	public function MouseUp(c:Dynamic, f:Dynamic -> Void=null) : Void;
-	public function MouseOver(c:Dynamic, f:Dynamic -> Void=null) : Void;
-	public function ChangeBitmap(t:TextureDesc) : Void;
+	public function MouseOver(c:Dynamic, f:Dynamic -> Void=null) : Void;	
+	public function MouseOut(c:Dynamic, f:Dynamic -> Void=null) : Void;
+    public function ChangeBitmap(t:TextureDesc) : Void;
 
     public function SetPos(s:Vec2) : Void;
 	public function SetScale(s:Vec2) : Void;

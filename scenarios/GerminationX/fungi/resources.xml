@@ -47,6 +47,11 @@
 
                       <bitmap id="SeedTex" import="textures/seed.png"/>                     
 
+                      <bitmap id="Arr1Tex" import="textures/arr1.png"/>                     
+                      <bitmap id="Arr2Tex" import="textures/arr2.png"/>                     
+                      <bitmap id="Arr3Tex" import="textures/arr3.png"/>                     
+                      <bitmap id="Arr4Tex" import="textures/arr4.png"/>                     
+
                 </library>
         </frame>
 </movie>

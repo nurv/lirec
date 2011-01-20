@@ -43,15 +43,17 @@ class FlashTextEntry implements TextEntry, extends MovieClip
 		TextField.y = y;		
 		TextField.width = w;
 		TextField.height = h;		
-		var tf = new flash.text.TextFormat();
+        TextField.backgroundColor = 0x8dd788;
+
+        var tf = new flash.text.TextFormat();
         tf.font = "Verdana"; 
         tf.size = 20;                
         tf.color= 0x000000;           
         TextField.setTextFormat(tf);
 		addChild(TextField);	           
 		
-		//addEventListener(MouseEvent.MOUSE_DOWN, OnMouseDown);
-		//addEventListener(flash.events.KeyboardEvent.KEY_DOWN,OnKeyDown,false); 
+		addEventListener(MouseEvent.MOUSE_DOWN, OnMouseDown);
+		addEventListener(flash.events.KeyboardEvent.KEY_DOWN,OnKeyDown,false); 
 	}
 	
 	function OnKeyDown(e:KeyboardEvent) 
@@ -64,13 +66,13 @@ class FlashTextEntry implements TextEntry, extends MovieClip
 			Callback(text);
 		}
 	}
-	/*
-	override function OnMouseDown(_) 
+	
+	function OnMouseDown(_) 
 	{
 		if (TextField.text=="Enter a name before planting.")
 		{
 			TextField.text = "";
 		}
-        }*/
+    }
 	
 }
