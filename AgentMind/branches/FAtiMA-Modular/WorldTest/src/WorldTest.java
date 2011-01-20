@@ -4,6 +4,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 
+import javax.swing.JFileChooser;
+import javax.swing.JPanel;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -12,8 +14,8 @@ import org.xml.sax.SAXException;
 
 import FAtiMA.Core.deliberativeLayer.plan.Step;
 import FAtiMA.Core.sensorEffector.SpeechAct;
-import FAtiMA.Core.util.parsers.ScenarioLoaderHandler;
 import FAtiMA.Core.util.parsers.ActionsLoaderHandler;
+import FAtiMA.Core.util.parsers.ScenarioLoaderHandler;
 import Language.LactException;
 import Language.LanguageEngine;
 import Language.SactException;
@@ -48,14 +50,19 @@ public class WorldTest {
 	private ArrayList<Step> _actions;
 	private LanguageEngine _agentLanguage;
 	private LanguageEngine _userLanguage;
-	private UserInterface _userInterface;
+	private static UserInterface _userInterface;
 	private String _userOptionsFile;
 	private GretaAgent _ga;
 
 
 	static public void main(String args[]) throws Exception{
 		int i;
+	
 		ArrayList<String> objects = new ArrayList<String>();
+		
+		//JFileChooser fc = new JFileChooser();
+		//fc.showOpenDialog(new JPanel());
+	
 
 		if (args.length == 2){
 
@@ -70,6 +77,7 @@ public class WorldTest {
 			}
 
 			boolean simplifiedVersion = false;
+			
 			if(args[6] != null){
 				simplifiedVersion = new Boolean(args[6]);
 			}

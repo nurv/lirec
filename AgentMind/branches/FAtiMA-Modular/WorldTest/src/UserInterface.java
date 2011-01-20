@@ -73,29 +73,28 @@ public class UserInterface implements ActionListener {
 	private String _previousUser;
 	
 	
-	
     public UserInterface(WorldTest world_in, boolean simplifiedVersion) throws IOException {
-        
+    
+
     	Box  caseBox = null, timeBox = null, locationBox = null, infoBox = null,queryBox = null, attributeBox = null;
     	Box  userBox = null;
+    	
     	_world = world_in;
     	_r = new Random();
-    	
-    
         _frame = new JFrame("WorldTest User Interface");
         _frame.getContentPane().setLayout(new BoxLayout(_frame.getContentPane(),BoxLayout.Y_AXIS));
 		_frame.setSize(500,800);
 		_frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
 		textArea = new JTextArea(40, 200);
 	    JScrollPane scrollPane = new JScrollPane(textArea);
 	    scrollPane.setVerticalScrollBarPolicy(
                 JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-
+	    _frame.getContentPane().add(scrollPane);
+	    
         // Create the combo box
         inputList = new JComboBox();
         
-        _frame.getContentPane().add(scrollPane);
+        
         
         /*
         _timeOptions = new JComboBox();
