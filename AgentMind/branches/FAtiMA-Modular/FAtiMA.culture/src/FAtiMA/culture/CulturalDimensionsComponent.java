@@ -61,12 +61,7 @@ public class CulturalDimensionsComponent implements IAppraisalDerivationComponen
 		aM.getDeliberativeLayer().setExpectedUtilityStrategy(this);
 		aM.getRemoteAgent().setProcessActionStrategy(new CultureProcessActionStrategy());
 	}
-	
-	public void perceiveEvent(AgentModel am, Event e)
-	{
-		
-	}
-	
+
 	@Override
 	public void appraisal(AgentModel am, Event e, AppraisalFrame af)
 	{

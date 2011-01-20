@@ -74,6 +74,7 @@ public class CultureLoaderHandler extends ReflectXMLHandler {
 	
 
 	private Context _contextBeingParsed;
+	private boolean _beforeRituals;
 
 	public CultureLoaderHandler(AgentModel aM, CulturalDimensionsComponent cDM) {
 		_rituals = new ArrayList<Ritual>();
@@ -82,7 +83,7 @@ public class CultureLoaderHandler extends ReflectXMLHandler {
 		_deliberativeLayer = aM.getDeliberativeLayer();
 		_am = aM;
 		_culturalComponent = cDM;
-		
+		_beforeRituals = true;
 		_currentGoalKey = null;
 	}
 
@@ -142,16 +143,20 @@ public class CultureLoaderHandler extends ReflectXMLHandler {
 		_reactiveLayer.getEmotionalReactions().AddEmotionalReaction(_eventReaction);
 	}
 
+	public void Rituals(Attributes attributes){
+		_beforeRituals=false;
+	}
 
-	public void Ritual(Attributes attributes) {
+	public void Ritual(Attributes attributes){
 		Name description;
+		
 		description = new Symbol(attributes.getValue("name"));
 		_ritual = new Ritual(description);
 		_rituals.add(_ritual);
 		_conditionType = "PreConditions";
-		_currentGoalKey = null;
+		_currentGoalKey = null;	
 	}
-
+	
 	public void Symbol(Attributes attributes)  {
 		try{
 			SymbolTranslator.GetInstance().addEntry(attributes.getValue("name"),
@@ -165,9 +170,13 @@ public class CultureLoaderHandler extends ReflectXMLHandler {
 	
 	public void Goal(Attributes attributes) throws UnknownGoalException 
     {
-      String goalName = attributes.getValue("name");	
-      _deliberativeLayer.AddGoal(_am, goalName); 
+		if(_beforeRituals){
+			String goalName = attributes.getValue("name");	
+		    _deliberativeLayer.AddGoal(_am, goalName);  
+		}
     }
+	
+	
 
 	public void PreConditions(Attributes attributes)
 	{
