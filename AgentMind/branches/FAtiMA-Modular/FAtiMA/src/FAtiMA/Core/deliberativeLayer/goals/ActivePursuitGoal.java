@@ -108,7 +108,6 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
 	protected ArrayList<Condition> _preConditions;
 	protected ArrayList<Condition> _successConditions;
 	protected int _numberOfTries;
-	protected Hashtable<Symbol, Float> _expectedEffects;
 		
 	protected Float _probability = null;
 	protected boolean _probabilityDetermined = false;
@@ -128,7 +127,6 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
 	public ActivePursuitGoal(Name description) {
 		super(description);
 		
-		_expectedEffects = new Hashtable<Symbol,Float>();
 		_preConditions = new ArrayList<Condition>(5);
 		_successConditions = new ArrayList<Condition>(2);
 		_failureConditions = new ArrayList<Condition>(2);
