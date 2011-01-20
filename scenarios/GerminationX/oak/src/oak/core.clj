@@ -1,6 +1,7 @@
 (ns oak.core
   (:use
    compojure.core
+   clojure.contrib.duck-streams
    ring.adapter.jetty
    ring.middleware.file
    oak.world
@@ -12,7 +13,8 @@
    oak.plant
    oak.tile)
   (:import
-   java.util.concurrent.Executors)
+   java.util.concurrent.Executors
+   java.util.Date)
   (:require [compojure.route :as route]
             [org.danlarkin.json :as json])) 
 
@@ -23,6 +25,7 @@
   (deserialise fn))
 
 (def state-filename "state.txt")
+(def log-filename "public/log.txt")
 
 (def myworld
      (ref
@@ -38,6 +41,8 @@
 (game-world-print (deref my-game-world))
 ;(world-crank (deref myworld))
 
+(append-spit log-filename (str (str (Date.)) " server started\n"))
+
 (defn parse [s]
   (try (Integer/parseInt (.trim s))
        (catch NumberFormatException e nil)))
@@ -52,6 +57,11 @@
            (json/encode-to-str '()))))
   (GET "/make-plant/:tilex/:tiley/:posx/:posy/:type/:owner/:size"
        [tilex tiley posx posy type owner size]
+       (append-spit
+        log-filename
+        (str
+         (str (Date.)) " " owner " has created a " type " at tile "
+         tilex "," tiley " position " posx "," posy "\n"))
        (dosync
         (ref-set my-game-world
                  (game-world-add-entity
