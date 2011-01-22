@@ -48,6 +48,7 @@ import FAtiMA.Core.wellFormedNames.Unifier;
 
 public class MotivationalComponent implements Serializable, Cloneable, IAppraisalDerivationComponent, IModelOfOtherComponent, IExpectedUtilityStrategy, IProbabilityStrategy, IUtilityStrategy, IGoalSuccessStrategy, IGoalFailureStrategy, IActionFailureStrategy {
 	
+	private static final float UTILITY_WEIGHT = 0.2f;
 	private static final long serialVersionUID = 1L;
 	public static final String NAME ="MotivationalState";
 	private static final float MAX_INTENSITY = 10;
@@ -293,7 +294,7 @@ public class MotivationalComponent implements Serializable, Cloneable, IAppraisa
 	
 	public float getUtility(AgentModel am, ActivePursuitGoal g)
 	{
-		return getContributionToNeeds(am,g)*0.2f;
+		return getContributionToNeeds(am,g) * UTILITY_WEIGHT;
 	}
 	
 	public float getProbability(AgentModel am, ActivePursuitGoal g)
