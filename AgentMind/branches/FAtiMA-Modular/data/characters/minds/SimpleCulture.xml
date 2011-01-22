@@ -3,37 +3,43 @@
 	<CulturalDimension name="PowerDistance" value="100"/>
 	<CulturalDimension name="Collectivism" value="0"/>
 	
-	<Symbols>
+	<!--<Symbols>
 		<Symbol name="Compliment" meaning="respect-greeting-gesture"/>
 		<Symbol name="Greet" meaning="casual-greeting-gesture"/>
-	</Symbols>
+	</Symbols>-->
 	
-	<Goals>
-	</Goals>
+	<CulturalGoals>
+		
+	</CulturalGoals>
 	
 	<Rituals>
 		<Ritual name="GreetingRitual">
+			<Goal key="GreetingRitual([greet-initiator],[greet-replier])"/>
 			<Roles>
 				<Role name="[greet-initiator]"/>
 				<Role name="[greet-replier]"/>
 			</Roles>
 			<PreConditions>
-				<RecentEvent occurred="True" subject="[greet-initiator]" action="look-at" target="[greet-replier]"/>
-				<Property name="[greet-replier]" operator="!=" value="[greet-initiator]"/>
 				<Property name="[greet-replier](isPerson)" operator="=" value="True"/>
 				<Property name="[greet-initiator](isPerson)" operator="=" value="True"/>
-				<Property name="[greet-initiator](power)" operator="LesserThan" value="[greet-replier](power)" />
+				<Property name="[greet-replier]" operator="!=" value="[greet-initiator]"/>
+				<Property name="[greet-initiator](power)" operator="GreaterThan" value="[greet-replier](power)" />
 			</PreConditions>
 			<Steps>
-				<Step role="[greet-initiator]" name="respect-greeting-gesture([greet-replier])"/>
-				<Step role="[greet-replier]" name="casual-greeting-gesture([greet-initiator])"/>
+				<!--<Step role="[greet-initiator]" name="respect-greeting-gesture([greet-replier])"/>
+				<Step role="[greet-replier]" name="casual-greeting-gesture([greet-initiator])"/>-->
+				<Step role="[greet-initiator]" name="Greet([greet-replier])"/>
+				<Step role="[greet-replier]" name="Greet([greet-initiator])"/>
+				<Step role="[greet-initiator]" name="Compliment([greet-replier])"/>	
 			</Steps>
       <OrderingConstraints>
-        <Link before="2" after="3"/>
+        <Link before="0" after="1"/>
+		<Link before="1" after="2"/>
+		  
       </OrderingConstraints>
 			<ExpectedEffects>
-				<OnSelect drive="Affiliation" target="[SELF]" value="+3"/>
-				<OnSelect drive="Affiliation" target="[target]" value="+3"/>
+				<OnSelect drive="Affiliation" target="[SELF]" value="+5"/>
+				<OnSelect drive="Affiliation" target="[target]" value="+5"/>
 				<OnIgnore drive="Affiliation" target="[SELF]" value="-5"/>
 				<OnIgnore drive="Affiliation" target="[target]" value="-5"/>
 			</ExpectedEffects>
