@@ -15,7 +15,8 @@
 (ns oak.tile
   (:use
    oak.vec2
-   oak.plant))
+   oak.plant
+   oak.forms))
 
 (defrecord tile
   [pos
@@ -40,3 +41,24 @@
   (if (not (tile-position-taken? tile (plant-pos entity)))
     (merge tile {:entities (cons entity (tile-entities tile))})
     tile))
+
+(defn tile-get-neighbours [tile pos]
+  (reduce
+   (fn [l e]
+     (if (< (vec2-dist (:pos e) pos) 2)
+       (cons e l) l))
+   '()
+   (:entities tile)))
+
+(defn tile-update [tile time delta]
+  (modify :entities
+          (fn [entities]
+            (map
+             (fn [e]
+               ;; todo dispatch on entity type
+               (plant-update e time delta (tile-get-neighbours tile (:pos e))))
+             (filter
+              (fn [e]
+                (not (= (:state e) 'decayed)))
+              entities)))
+          tile))

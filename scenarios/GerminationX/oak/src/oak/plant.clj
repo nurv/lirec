@@ -14,9 +14,16 @@
 
 (ns oak.plant
   (:use
-   oak.vec2)
+   oak.vec2
+   oak.forms)
   (:require
    clojure.contrib.math))
+
+(def min-health 10)
+(def max-health 90)
+(def start-health 20)
+(def min-neighbours 2)
+(def max-neighbours 5)
 
 (defrecord plant
   [pos
@@ -25,8 +32,11 @@
    state
    picked-by
    owner
-   size])
-
+   size
+   timer
+   tick
+   health])
+  
 (defn plant-pos [plant] (:pos plant))
 (defn plant-type [plant] (:type plant))
 (defn plant-layer [plant] (:layer plant))
@@ -36,18 +46,59 @@
 (defn plant-size [plant] (:size plant))
 
 (defn make-plant [pos type owner size]
-  (plant. pos type "" "" '() owner size))
+  (plant. pos type "" 'grow-a '() owner size 0 5 start-health))
 
 (defn make-random-plant []
   (make-plant
    (make-vec2 (Math/round (rand 10)) (Math/round (rand 10)))
-   (rand-nth '("plant-001"
-               "plant-002"
-               "plant-003"
-               "plant-004"
-               "plant-005"
-               "plant-006"
-               "plant-007"
-               "plant-008"))
-   "germination x"
+   "plant-000"
+   "the garden"
    (Math/round (+ 50 (rand 100)))))
+
+; the plant state machine, advance state, based on health
+(defn adv-state [state health]
+  (cond
+   (= state 'grow-a) (cond (> health min-health) 'grow-b :else (rand-nth (list 'grow-a 'grow-b)))
+   (= state 'grow-b) (cond (> health min-health) 'grow-c :else (rand-nth (list 'grow-b 'grow-c)))
+   (= state 'grow-c) (cond (> health min-health) 'grown :else (rand-nth (list 'grow-c 'grown)))
+   (= state 'grown) (cond
+           (> health max-health) 'fruit-a
+           (< health min-health) 'ill-a
+           :else 'grown)
+   (= state 'decay-a) (cond (> health max-health) 'decay-a :else 'decay-b)
+   (= state 'decay-b) (cond (> health max-health) 'decay-b :else 'decay-c)
+   (= state 'decay-c) (cond (> health max-health) 'decay-c :else 'decayed)
+   (= state 'fruit-a) 'fruit-b
+   (= state 'fruit-b) 'fruit-c
+   (= state 'fruit-c) 'grown
+   (= state 'ill-a) (cond (< health min-health) 'ill-b
+                (> health max-health) 'grown
+                :else 'ill-a)
+   (= state 'ill-b) (cond (< health min-health) 'ill-c
+                (> health max-health) 'ill-a
+                :else 'ill-b)
+   (= state 'ill-c) (cond (< health min-health) 'decayed
+                (> health max-health) 'ill-b
+                :else 'ill-c)
+   (= state 'decayed) 'decayed))
+
+(defn plant-update [plant time delta neighbours]
+  (modify
+   :health
+   (fn [health]
+     (cond
+      (< (count neighbours) min-neighbours) (max 0 (- health 1))
+      (> (count neighbours) max-neighbours) (max 0 (- health 1))
+      :else (min 100 (+ health 1))))
+   (modify
+    :timer
+    (fn [timer]
+      (+ timer delta))
+    (if (> (:timer plant) (:tick plant))
+      (modify
+       :state
+       (fn [state] (adv-state state (:health plant)))
+       (modify
+        :timer (fn [t] 0) plant))
+      plant))))
+

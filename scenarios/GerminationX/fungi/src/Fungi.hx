@@ -59,29 +59,19 @@ class Plant extends SpriteEntity
 	public var Age:Int;
     var Scale:Float;
     var PlantType:String;
+    var State:String;
     var Seeds:Array<Sprite>;
 
-	public function new(world:World, owner:String, pos, type, maxsize, scale)
+	public function new(world:World, owner:String, pos, type:String, state:String)
 	{
-		super(world,pos,Resources.Get(type),false);
+		super(world,pos,Resources.Get(type+"-"+state),false);
         PlantType=type;
+        State=state;
 		Owner=owner;
         PlantScale=0;
-        Scale=maxsize;
         NeedsUpdate=true;
         Seeds=[];
 
-        if (scale)
-        {
-		    PlantScale=0;
-            Spr.SetScale(new Vec2(0,0));
-        }
-        else
-        {
-            Spr.SetScale(new Vec2(Scale,Scale));
-            Age=100;
-        }
-        
         Spr.Hide(false);
         
         var tf = new flash.text.TextField();
@@ -100,6 +90,12 @@ class Plant extends SpriteEntity
         Spr.MouseOut(this,function(c) { tf.visible=false; });
 	}
 
+    function StateUpdate(state)
+    {
+        State=state;
+        Spr.ChangeBitmap(Resources.Get(PlantType+"-"+State));
+    }
+
     override function Destroy(world:World)
     {
         super.Destroy(world);
@@ -112,16 +108,6 @@ class Plant extends SpriteEntity
 	public override function Update(frame:Int, world:World)
 	{
 		super.Update(frame,world);
-        Age++;
-		if (Age<100)
-		{
-			Spr.SetScale(new Vec2((Age/100)*Scale,(Age/100)*Scale));
-		}
-        else
-        {
-            Fruit(world);
-            NeedsUpdate=false;
-        }
 	}
 
     public function Fruit(world:World)
@@ -474,7 +460,7 @@ class FungiWorld extends World
                 if (pos.x<10 && pos.y<10 && pos.x>0 && pos.y>0 &&
                     c.SpaceClear(pos) && c.GetCube(pos).LogicalPos.z>-1)
                 {
-                    var plant = new Plant(c,p.owner,pos,p.type,p.size/100,false);
+                    var plant = new Plant(c,p.owner,pos,p.type,p.state);
                     c.Plants.push(plant);
                 }
             }
@@ -487,7 +473,7 @@ class FungiWorld extends World
         if (MyName!=null && SpaceClear(pos) && GetCube(pos).LogicalPos.z>-1)
         {
             var size=MyRndGen.RndFlt()+0.5;
-		    var plant = new Plant(this,MyName,pos,type,size,true);
+		    var plant = new Plant(this,MyName,pos,"plant-000","grow-a");
 		    Plants.push(plant);
             Server.Request("make-plant/"+Std.string(cast(WorldPos.x,Int))+"/"+
                                          Std.string(cast(WorldPos.y,Int))+"/"+
@@ -558,12 +544,36 @@ class FungiWorld extends World
 
         Server.Update();
 
-        /*if (time>TickTime)
+        if (time>TickTime)
         {
-            WorldClient.Call("agent-info",UpdateGhosts);
+            //WorldClient.Call("agent-info",UpdateGhosts);
+
+            Server.Request("get-tile/"+Std.string(cast(WorldPos.x,Int))+"/"
+            +Std.string(cast(WorldPos.y,Int)),
+            this,
+            function (c:truffle.World,d)
+            {
+                c.ClearPlants();
+                var data:Array<Dynamic>=cast(d.entities,Array<Dynamic>);
+                for (p in data)
+                    {
+                        var pos = new Vec3(p.pos.x,p.pos.y,1);
+                        
+                        if (pos.x<10 && pos.y<10 && pos.x>0 && pos.y>0 &&
+                        c.SpaceClear(pos) && c.GetCube(pos).LogicalPos.z>-1)
+                            {
+                                var plant = new Plant(c,p.owner,pos,p.type,p.state);
+                                c.Plants.push(plant);
+                            }
+                    }
+                c.SortScene();
+            });
+
+            
+            
             TickTime=time+100;
         }
-        
+        /*
         for (plant in Plants)
         {
             if (plant.Age>2000)

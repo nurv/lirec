@@ -69,6 +69,20 @@ class Arr2Tex extends BitmapData { public function new() { super(0,0); } }
 class Arr3Tex extends BitmapData { public function new() { super(0,0); } }
 class Arr4Tex extends BitmapData { public function new() { super(0,0); } }
 
+class Plant000GrowATex extends BitmapData { public function new() { super(0,0); } }
+class Plant000GrowBTex extends BitmapData { public function new() { super(0,0); } }
+class Plant000GrowCTex extends BitmapData { public function new() { super(0,0); } }
+class Plant000GrownTex extends BitmapData { public function new() { super(0,0); } }
+class Plant000DecayATex extends BitmapData { public function new() { super(0,0); } }
+class Plant000DecayBTex extends BitmapData { public function new() { super(0,0); } }
+class Plant000DecayCTex extends BitmapData { public function new() { super(0,0); } }
+class Plant000IllATex extends BitmapData { public function new() { super(0,0); } }
+class Plant000IllBTex extends BitmapData { public function new() { super(0,0); } }
+class Plant000IllCTex extends BitmapData { public function new() { super(0,0); } }
+class Plant000FruitATex extends BitmapData { public function new() { super(0,0); } }
+class Plant000FruitBTex extends BitmapData { public function new() { super(0,0); } }
+class Plant000FruitCTex extends BitmapData { public function new() { super(0,0); } }
+
 class Resources
 {
     public static function Get(name:String) : TextureDesc
@@ -123,6 +137,20 @@ class Resources
         case "arr2": tex.data = new Arr2Tex();
         case "arr3": tex.data = new Arr3Tex();
         case "arr4": tex.data = new Arr4Tex();
+
+        case "plant-000-grow-a": tex.data = new Plant000GrowATex();
+        case "plant-000-grow-b": tex.data = new Plant000GrowBTex();
+        case "plant-000-grow-c": tex.data = new Plant000GrowCTex();
+        case "plant-000-grown": tex.data = new Plant000GrownTex();
+        case "plant-000-ill-a": tex.data = new Plant000IllATex();
+        case "plant-000-ill-b": tex.data = new Plant000IllBTex();
+        case "plant-000-ill-c": tex.data = new Plant000IllCTex();
+        case "plant-000-decay-a": tex.data = new Plant000DecayATex();
+        case "plant-000-decay-b": tex.data = new Plant000DecayBTex();
+        case "plant-000-decay-c": tex.data = new Plant000DecayCTex();
+        case "plant-000-fruit-a": tex.data = new Plant000FruitATex();
+        case "plant-000-fruit-b": tex.data = new Plant000FruitBTex();
+        case "plant-000-fruit-c": tex.data = new Plant000FruitCTex();
 
         }
 

@@ -52,6 +52,21 @@
                       <bitmap id="Arr3Tex" import="textures/arr3.png"/>                     
                       <bitmap id="Arr4Tex" import="textures/arr4.png"/>                     
 
+                      <bitmap id="Plant000GrowATex" import="textures/grow-a.png"/>                     
+                      <bitmap id="Plant000GrowBTex" import="textures/grow-b.png"/>                     
+                      <bitmap id="Plant000GrowCTex" import="textures/grow-c.png"/>                     
+                      <bitmap id="Plant000GrownTex" import="textures/grown.png"/>                     
+                      <bitmap id="Plant000DecayATex" import="textures/decay-a.png"/>                     
+                      <bitmap id="Plant000DecayBTex" import="textures/decay-b.png"/>                     
+                      <bitmap id="Plant000DecayCTex" import="textures/decay-c.png"/>                     
+                      <bitmap id="Plant000IllATex" import="textures/ill-a.png"/>                     
+                      <bitmap id="Plant000IllBTex" import="textures/ill-b.png"/>                     
+                      <bitmap id="Plant000IllCTex" import="textures/ill-c.png"/>                     
+                      <bitmap id="Plant000FruitATex" import="textures/fruit-a.png"/>                     
+                      <bitmap id="Plant000FruitBTex" import="textures/fruit-b.png"/>                     
+                      <bitmap id="Plant000FruitCTex" import="textures/fruit-c.png"/>                     
+
+
                 </library>
         </frame>
 </movie>

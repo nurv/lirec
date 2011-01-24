@@ -12,37 +12,7 @@
 ;; You should have received a copy of the GNU Affero General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-(ns oak.vec2
-  (:require clojure.contrib.math))
+(ns oak.forms)
 
-(defrecord vec2 [x y])
-
-(defn make-vec2 [x y]
-  (vec2. x y))
-
-(defn vec2-add [a b]
-  (vec2. (+ (:x a) (:x b))
-         (+ (:y a) (:y b))))
-
-(defn vec2-sub [a b]
-  (vec2. (- (:x a) (:x b))
-         (- (:y a) (:y b))))
-
-(defn vec2-mul [a b]
-  (vec2. (* (:x a) b)
-         (* (:y a) b)))
-
-(defn vec2-div [a b]
-  (vec2. (/ (:x a) b)
-         (/ (:y a) b)))
-
-(defn vec2-mag [v]
-  (Math/sqrt (+ (* (:x v) (:x v))
-                (* (:y v) (:y v)))))
-
-(defn vec2-dist [a b]
-  (vec2-mag (vec2-sub a b)))
-
-(defn vec2-eq? [a b]
-  (and (= (:x a) (:x b))
-       (= (:y a) (:y b))))
+(defn modify [what f thing]
+  (merge thing {what (f (what thing))}))

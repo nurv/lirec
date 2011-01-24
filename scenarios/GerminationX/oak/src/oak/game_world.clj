@@ -14,6 +14,7 @@
 
 (ns oak.game-world
   (:use
+   oak.forms
    oak.vec2
    oak.plant
    oak.tile
@@ -43,13 +44,13 @@
   (merge game-world {:tiles (cons tile (game-world-tiles game-world))}))
 
 (defn game-world-modify-tile [game-world pos f]
-  (merge
-   game-world
-   {:tiles
-    (map
-     (fn [t]
-       (if (vec2-eq? (:pos t) pos) (f t) t))
-     (game-world-tiles game-world))}))
+  (modify :tiles
+          (fn [tiles]
+            (map
+             (fn [t]
+               (if (vec2-eq? (:pos t) pos) (f t) t))
+             tiles))
+          game-world))
 
 (defn game-world-add-entity [game-world tile-pos entity]
   (let [tile (game-world-get-tile game-world tile-pos)]
@@ -77,5 +78,15 @@
   (doseq [tile (game-world-tiles game-world)]
     (println (format "tile %d %d" (:x (tile-pos tile)) (:y (tile-pos tile))))
     (doseq [plant (tile-entities tile)]
-      (println (format "plant %d %d" (:x (plant-pos plant)) (:y (plant-pos plant)))))))
-                                      
+      (println (format "plant %d %d state: %s health: %d"
+                       (:x (:pos plant)) (:y (:pos plant))
+                       (:state plant) (:health plant))))))
+
+(defn game-world-update [game-world time delta]
+  (modify :tiles
+          (fn [tiles]
+            (map
+             (fn [tile]
+               (tile-update tile time delta))
+             tiles))
+          game-world))

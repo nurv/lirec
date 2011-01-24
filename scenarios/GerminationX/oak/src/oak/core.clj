@@ -26,8 +26,9 @@
 
 (def state-filename "state.txt")
 (def log-filename "public/log.txt")
+(def game-world-tick 1)
 
-(def myworld
+(comment (def myworld
      (ref
       (make-world
        46874
@@ -35,11 +36,10 @@
        "data/characters/minds/Actions.xml"
        (list "WiltedVine"
              "AppleTree"))))
+         )
 
 ;(def my-game-world (ref (game-world-load state-filename)))
 (def my-game-world (ref (make-game-world 1000 4)))
-(game-world-print (deref my-game-world))
-;(world-crank (deref myworld))
 
 (append-spit log-filename (str (str (Date.)) " server started\n"))
 
@@ -73,7 +73,9 @@
        (json/encode-to-str '("ok")))
   (GET "/spirit-sprites" []
        (println (read-islands "./public/islands"))
-       (read-islands "./public/islands"))     
+       (read-islands "./public/islands"))
+
+  (comment
   (GET "/agent-info" []
        (json/encode-to-str (map
                             (fn [a]
@@ -87,15 +89,20 @@
   (GET "/add-object/:obj" [obj]
        (println (str "adding " obj))
        (dosync (ref-set myworld (world-add-object (deref myworld)
-                                                  (load-object obj)))))
+                                                  (load-object obj))))))
   
   (route/not-found "<h1>Page not found</h1>"))
 
 (defn tick []
   (Thread/sleep 1000)
-  (dosync
-   (ref-set myworld
-            (world-run (deref myworld))))
+  ;(game-world-print (deref my-game-world))
+  (let [time (.getTime (java.util.Date.))]
+    ;(dosync
+     ;(ref-set myworld
+     ;         (world-run (deref myworld))))
+     (dosync (ref-set my-game-world
+              (game-world-update (deref my-game-world)
+                                 time 1))))
   (recur))
   
 (let [pool (Executors/newFixedThreadPool 2)
