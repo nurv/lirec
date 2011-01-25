@@ -20,7 +20,7 @@ import FAtiMA.Core.wellFormedNames.Symbol;
  *
  */
 public class ActionsLoaderHandler extends ReflectXMLHandler {
-	private String _operatorKey;
+	private String  _operatorKey;
 	 
 	private boolean _precondition;
 	
