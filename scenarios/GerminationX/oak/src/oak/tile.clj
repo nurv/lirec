@@ -53,12 +53,12 @@
 (defn tile-update [tile time delta]
   (modify :entities
           (fn [entities]
-            (map
-             (fn [e]
-               ;; todo dispatch on entity type
-               (plant-update e time delta (tile-get-neighbours tile (:pos e))))
-             (filter
-              (fn [e]
-                (not (= (:state e) 'decayed)))
-              entities)))
+            (doall (map
+                    (fn [e]
+                      ;; todo dispatch on entity type
+                      (plant-update e time delta (tile-get-neighbours tile (:pos e))))
+                    (doall (filter
+                            (fn [e]
+                              (not (= (:state e) 'decayed)))
+                            entities)))))
           tile))
