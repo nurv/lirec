@@ -19,6 +19,7 @@ import FAtiMA.Core.IAppraisalDerivationComponent;
 import FAtiMA.Core.IComponent;
 import FAtiMA.Core.IModelOfOtherComponent;
 import FAtiMA.Core.Display.AgentDisplayPanel;
+import FAtiMA.Core.OCCAffectDerivation.OCCAppraisalVariables;
 import FAtiMA.Core.OCCAffectDerivation.OCCComponent;
 import FAtiMA.Core.deliberativeLayer.IActionFailureStrategy;
 import FAtiMA.Core.deliberativeLayer.IExpectedUtilityStrategy;
@@ -450,7 +451,7 @@ public class MotivationalComponent implements Serializable, Cloneable, IAppraisa
 		Float desirability = _appraisals.get(e.toString());
 		if(desirability != null)
 		{
-			as.SetAppraisalVariable(NAME, (short) 8, OCCComponent.DESIRABILITY, desirability.floatValue());
+			as.SetAppraisalVariable(NAME, (short) 8, OCCAppraisalVariables.DESIRABILITY.name(), desirability.floatValue());
 		}
 		_appraisals.remove(e.toString());
 	}
