@@ -12,6 +12,7 @@ import javax.xml.parsers.SAXParserFactory;
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.IAppraisalDerivationComponent;
 import FAtiMA.Core.Display.AgentDisplayPanel;
+import FAtiMA.Core.OCCAffectDerivation.OCCAppraisalVariables;
 import FAtiMA.Core.OCCAffectDerivation.OCCComponent;
 import FAtiMA.Core.conditions.Condition;
 import FAtiMA.Core.deliberativeLayer.IExpectedUtilityStrategy;
@@ -24,7 +25,6 @@ import FAtiMA.Core.emotionalState.AppraisalFrame;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.util.AgentLogger;
 import FAtiMA.Core.util.Constants;
-import FAtiMA.Core.util.enumerables.CulturalDimensionType;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.SubstitutionSet;
 import FAtiMA.Core.wellFormedNames.Symbol;
@@ -66,12 +66,12 @@ public class CulturalDimensionsComponent implements IAppraisalDerivationComponen
 	public void appraisal(AgentModel am, Event e, AppraisalFrame af)
 	{
 		float desirabilityForOther = 0;
-		float desirability = af.getAppraisalVariable(OCCComponent.DESIRABILITY);
+		float desirability = af.getAppraisalVariable(OCCAppraisalVariables.DESIRABILITY.name());
 		
 		
 		for(String variable : af.getAppraisalVariables())
 		{
-			if(variable.startsWith(OCCComponent.DESFOROTHER))
+			if(variable.startsWith(OCCAppraisalVariables.DESFOROTHER.name()))
 			{
 				desirabilityForOther += af.getAppraisalVariable(variable);
 			}
@@ -81,7 +81,7 @@ public class CulturalDimensionsComponent implements IAppraisalDerivationComponen
 				desirability,
 				desirabilityForOther);
 		
-		af.SetAppraisalVariable(NAME, (short)4, OCCComponent.PRAISEWORTHINESS, praiseWorthiness);	
+		af.SetAppraisalVariable(NAME, (short)4, OCCAppraisalVariables.PRAISEWORTHINESS.name(), praiseWorthiness);	
 		
 	}
 	

@@ -52,7 +52,6 @@ import FAtiMA.Core.reactiveLayer.Reaction;
 import FAtiMA.Core.reactiveLayer.ReactiveProcess;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.util.AgentLogger;
-import FAtiMA.Core.util.enumerables.CulturalDimensionType;
 import FAtiMA.Core.util.parsers.ReflectXMLHandler;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Substitution;
