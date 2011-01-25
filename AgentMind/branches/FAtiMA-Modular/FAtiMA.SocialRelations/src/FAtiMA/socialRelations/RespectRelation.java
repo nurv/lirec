@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.ListIterator;
 
 import FAtiMA.Core.memory.Memory;
-import FAtiMA.Core.util.enumerables.RelationType;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Substitution;
 import FAtiMA.Core.wellFormedNames.SubstitutionSet;
