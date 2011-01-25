@@ -13,7 +13,6 @@ import FAtiMA.Core.IComponent;
 import FAtiMA.Core.IModelOfOtherComponent;
 import FAtiMA.Core.IProcessEmotionComponent;
 import FAtiMA.Core.Display.AgentDisplayPanel;
-import FAtiMA.Core.OCCAffectDerivation.AdmirationEmotion;
 import FAtiMA.Core.OCCAffectDerivation.DistressEmotion;
 import FAtiMA.Core.OCCAffectDerivation.GloatingEmotion;
 import FAtiMA.Core.OCCAffectDerivation.HappyForEmotion;
