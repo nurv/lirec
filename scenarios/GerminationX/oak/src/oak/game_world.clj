@@ -85,8 +85,8 @@
 (defn game-world-update [game-world time delta]
   (modify :tiles
           (fn [tiles]
-            (map
-             (fn [tile]
-               (tile-update tile time delta))
-             tiles))
+            (doall (map
+                    (fn [tile]
+                      (tile-update tile time delta))
+                    tiles)))
           game-world))

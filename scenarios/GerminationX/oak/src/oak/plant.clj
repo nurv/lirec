@@ -46,12 +46,12 @@
 (defn plant-size [plant] (:size plant))
 
 (defn make-plant [pos type owner size]
-  (plant. pos type "" 'grow-a '() owner size 0 5 start-health))
+  (plant. pos type "" 'grow-a '() owner size 0 (+ 30 (Math/floor (rand 10))) start-health))
 
 (defn make-random-plant []
   (make-plant
-   (make-vec2 (Math/round (rand 10)) (Math/round (rand 10)))
-   "plant-000"
+   (make-vec2 (Math/floor (rand 15)) (Math/floor (rand 15)))
+   (rand-nth (list "plant-001" "plant-002" "plant-003"))
    "the garden"
    (Math/round (+ 50 (rand 100)))))
 
@@ -62,8 +62,8 @@
    (= state 'grow-b) (cond (> health min-health) 'grow-c :else (rand-nth (list 'grow-b 'grow-c)))
    (= state 'grow-c) (cond (> health min-health) 'grown :else (rand-nth (list 'grow-c 'grown)))
    (= state 'grown) (cond
-           (> health max-health) 'fruit-a
-           (< health min-health) 'ill-a
+           (> health max-health) (rand-nth (list 'grown 'fruit-a))
+           (< health min-health) (rand-nth (list 'grown 'ill-a))
            :else 'grown)
    (= state 'decay-a) (cond (> health max-health) 'decay-a :else 'decay-b)
    (= state 'decay-b) (cond (> health max-health) 'decay-b :else 'decay-c)
@@ -89,6 +89,7 @@
      (cond
       (< (count neighbours) min-neighbours) (max 0 (- health 1))
       (> (count neighbours) max-neighbours) (max 0 (- health 1))
+      (= (:state plant) 'fruit-c) (max 0 (- health 10))
       :else (min 100 (+ health 1))))
    (modify
     :timer

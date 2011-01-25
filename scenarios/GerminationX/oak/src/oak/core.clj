@@ -39,7 +39,7 @@
          )
 
 ;(def my-game-world (ref (game-world-load state-filename)))
-(def my-game-world (ref (make-game-world 1000 4)))
+(def my-game-world (ref (make-game-world 5000 4)))
 
 (append-spit log-filename (str (str (Date.)) " server started\n"))
 
@@ -57,6 +57,7 @@
            (json/encode-to-str '()))))
   (GET "/make-plant/:tilex/:tiley/:posx/:posy/:type/:owner/:size"
        [tilex tiley posx posy type owner size]
+       (println "making plant...")
        (append-spit
         log-filename
         (str
@@ -68,8 +69,8 @@
                   (deref my-game-world)
                   (make-vec2 (parse tilex) (parse tiley))
                   (make-plant (make-vec2 (parse posx) (parse posy)) type owner size))))
-       (game-world-save (deref my-game-world) state-filename)
-       (println (deref my-game-world))
+       ;(game-world-save (deref my-game-world) state-filename)
+       ;(println (deref my-game-world))
        (json/encode-to-str '("ok")))
   (GET "/spirit-sprites" []
        (println (read-islands "./public/islands"))
@@ -103,6 +104,7 @@
      (dosync (ref-set my-game-world
               (game-world-update (deref my-game-world)
                                  time 1))))
+  (println "tick...")
   (recur))
   
 (let [pool (Executors/newFixedThreadPool 2)

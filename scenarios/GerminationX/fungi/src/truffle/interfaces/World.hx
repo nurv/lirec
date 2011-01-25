@@ -16,11 +16,13 @@
 package truffle.interfaces;
 
 import truffle.Entity;
+import truffle.Vec2;
 
 interface World  
 {
     public function Add(e:Entity) : Void;
     public function Remove(e:Entity) : Void;
+    public function Get(p:Vec2) : Dynamic;
     public function AddSprite(s:Sprite) : Void;
     public function RemoveSprite(s:Sprite) : Void;
 	public function MouseDown(c:Dynamic, f:Dynamic -> Void=null) : Void;

@@ -22,6 +22,7 @@ import truffle.interfaces.World;
 import truffle.interfaces.Sprite;
 import truffle.Entity;
 import truffle.Truffle;
+import truffle.Vec2;
 
 class FlashWorld implements World, extends MovieClip 
 {
@@ -44,6 +45,26 @@ class FlashWorld implements World, extends MovieClip
     {
         e.Destroy(cast(this,truffle.World));
         Scene.remove(e);
+    }
+
+    public function Get(p:Vec2) : Dynamic
+    {
+        var top:Entity = null;
+        var upper:Float=-9999;
+
+        for (e in Scene)
+        {
+            if (p.x==e.LogicalPos.x &&
+                p.y==e.LogicalPos.y)
+            {
+                if (e.LogicalPos.z>upper)
+                {
+                    top=e;
+                    upper=e.LogicalPos.z;
+                }
+            }
+        }
+        return top;
     }
 
     public function AddSprite(s:Sprite)

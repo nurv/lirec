@@ -43,7 +43,7 @@ class FlashTextEntry implements TextEntry, extends MovieClip
 		TextField.y = y;		
 		TextField.width = w;
 		TextField.height = h;		
-        TextField.backgroundColor = 0x8dd788;
+        //TextField.backgroundColor = 0x8dd788;
 
         var tf = new flash.text.TextFormat();
         tf.font = "Verdana"; 

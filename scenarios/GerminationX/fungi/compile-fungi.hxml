@@ -3,4 +3,4 @@
 -swf-lib resources.swf
 -main Fungi
 -cp src
--swf-header 640:480:40:ffffff
+-swf-header 950:576:40:ffffff

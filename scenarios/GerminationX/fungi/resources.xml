@@ -4,46 +4,7 @@
         <frame>
                 <library>
                       <bitmap id="BlueCubeTex" import="textures/blue-cube.png"/>                     
-                      <bitmap id="GrassCube01Tex" import="textures/grass-cube-01.png"/>                     
-                      <bitmap id="GrassCube02Tex" import="textures/grass-cube-02.png"/>                     
-                      <bitmap id="GrassCube03Tex" import="textures/grass-cube-03.png"/>                     
-                      <bitmap id="SeaCube01Tex" import="textures/sea-cube-01.png"/>                     
-                      <bitmap id="SeaCube02Tex" import="textures/sea-cube-02.png"/>                     
-                      <bitmap id="SeaCube03Tex" import="textures/sea-cube-03.png"/>                     
-                      <bitmap id="RBotNorthTex" import="textures/bbot-north.png"/>                     
-                      <bitmap id="RBotSouthTex" import="textures/bbot-south.png"/>                     
-                      <bitmap id="RBotEastTex" import="textures/bbot-east.png"/>                     
-                      <bitmap id="RBotWestTex" import="textures/bbot-west.png"/>                     
-                      <bitmap id="CanopyTex" import="textures/canopy.png"/>                     
-                      <bitmap id="LollyPopTex" import="textures/lollypop.png"/>                     
-                      <bitmap id="FlowersTex" import="textures/flowers.png"/>                     
-                      <bitmap id="ClimberTex" import="textures/climber.png"/>                     
-
-                      <bitmap id="Player" import="textures/player.png"/>                     
-
-                      <bitmap id="GhostVertical" import="textures/ghost-vertical.png"/>                     
-                      <bitmap id="GhostVerticalHappy" import="textures/ghost-vertical-happy.png"/>                     
-                      <bitmap id="GhostVerticalSad" import="textures/ghost-vertical-sad.png"/>                     
-
-                      <bitmap id="GhostCover" import="textures/ghost-cover.png"/>                     
-                      <bitmap id="GhostCoverHappy" import="textures/ghost-cover-happy.png"/>                     
-                      <bitmap id="GhostCoverSad" import="textures/ghost-cover-sad.png"/>                     
-
-                      <bitmap id="GhostCanopy" import="textures/ghost-canopy.png"/>                     
-                      <bitmap id="GhostCanopyHappy" import="textures/ghost-canopy-happy.png"/>                     
-                      <bitmap id="GhostCanopySad" import="textures/ghost-canopy-sad.png"/>                     
-
                       <bitmap id="Test" import="textures/test.png"/>                     
-                      <bitmap id="CursorTex" import="textures/cursor.png"/>                     
-
-                      <bitmap id="Plant001Tex" import="textures/plant-001.png"/>                     
-                      <bitmap id="Plant002Tex" import="textures/plant-002.png"/>                     
-                      <bitmap id="Plant003Tex" import="textures/plant-003.png"/>                     
-                      <bitmap id="Plant004Tex" import="textures/plant-004.png"/>                     
-                      <bitmap id="Plant005Tex" import="textures/plant-005.png"/>                     
-                      <bitmap id="Plant006Tex" import="textures/plant-006.png"/>                     
-                      <bitmap id="Plant007Tex" import="textures/plant-007.png"/>                     
-                      <bitmap id="Plant008Tex" import="textures/plant-008.png"/>                     
 
                       <bitmap id="SeedTex" import="textures/seed.png"/>                     
 
@@ -52,19 +13,54 @@
                       <bitmap id="Arr3Tex" import="textures/arr3.png"/>                     
                       <bitmap id="Arr4Tex" import="textures/arr4.png"/>                     
 
-                      <bitmap id="Plant000GrowATex" import="textures/grow-a.png"/>                     
-                      <bitmap id="Plant000GrowBTex" import="textures/grow-b.png"/>                     
-                      <bitmap id="Plant000GrowCTex" import="textures/grow-c.png"/>                     
-                      <bitmap id="Plant000GrownTex" import="textures/grown.png"/>                     
-                      <bitmap id="Plant000DecayATex" import="textures/decay-a.png"/>                     
-                      <bitmap id="Plant000DecayBTex" import="textures/decay-b.png"/>                     
-                      <bitmap id="Plant000DecayCTex" import="textures/decay-c.png"/>                     
-                      <bitmap id="Plant000IllATex" import="textures/ill-a.png"/>                     
-                      <bitmap id="Plant000IllBTex" import="textures/ill-b.png"/>                     
-                      <bitmap id="Plant000IllCTex" import="textures/ill-c.png"/>                     
-                      <bitmap id="Plant000FruitATex" import="textures/fruit-a.png"/>                     
-                      <bitmap id="Plant000FruitBTex" import="textures/fruit-b.png"/>                     
-                      <bitmap id="Plant000FruitCTex" import="textures/fruit-c.png"/>                     
+                      <bitmap id="RockCube01Tex" import="textures/rock-cube-01.png"/>                     
+                      <bitmap id="RockCube02Tex" import="textures/rock-cube-02.png"/>                     
+                      <bitmap id="RockCube03Tex" import="textures/rock-cube-03.png"/>                     
+                      <bitmap id="RockCube04Tex" import="textures/rock-cube-04.png"/>                     
+                      <bitmap id="RockCube05Tex" import="textures/rock-cube-05.png"/>                     
+                      <bitmap id="RockCube06Tex" import="textures/rock-cube-06.png"/>                     
+
+                      <bitmap id="Plant001GrowATex" import="textures/plant-001-grow-a.png"/>                     
+                      <bitmap id="Plant001GrowBTex" import="textures/plant-001-grow-b.png"/>                     
+                      <bitmap id="Plant001GrowCTex" import="textures/plant-001-grow-c.png"/>                     
+                      <bitmap id="Plant001GrownTex" import="textures/plant-001-grown.png"/>                     
+                      <bitmap id="Plant001DecayATex" import="textures/plant-001-decay-a.png"/>                     
+                      <bitmap id="Plant001DecayBTex" import="textures/plant-001-decay-b.png"/>                     
+                      <bitmap id="Plant001DecayCTex" import="textures/plant-001-decay-c.png"/>                     
+                      <bitmap id="Plant001IllATex" import="textures/plant-001-ill-a.png"/>                     
+                      <bitmap id="Plant001IllBTex" import="textures/plant-001-ill-b.png"/>                     
+                      <bitmap id="Plant001IllCTex" import="textures/plant-001-ill-c.png"/>                     
+                      <bitmap id="Plant001FruitATex" import="textures/plant-001-fruit-a.png"/>                     
+                      <bitmap id="Plant001FruitBTex" import="textures/plant-001-fruit-b.png"/>                     
+                      <bitmap id="Plant001FruitCTex" import="textures/plant-001-fruit-c.png"/>                     
+
+                      <bitmap id="Plant002GrowATex" import="textures/plant-002-grow-a.png"/>                     
+                      <bitmap id="Plant002GrowBTex" import="textures/plant-002-grow-b.png"/>                     
+                      <bitmap id="Plant002GrowCTex" import="textures/plant-002-grow-c.png"/>                     
+                      <bitmap id="Plant002GrownTex" import="textures/plant-002-grown.png"/>                     
+                      <bitmap id="Plant002DecayATex" import="textures/plant-002-decay-a.png"/>                     
+                      <bitmap id="Plant002DecayBTex" import="textures/plant-002-decay-b.png"/>                     
+                      <bitmap id="Plant002DecayCTex" import="textures/plant-002-decay-c.png"/>                     
+                      <bitmap id="Plant002IllATex" import="textures/plant-002-ill-a.png"/>                     
+                      <bitmap id="Plant002IllBTex" import="textures/plant-002-ill-b.png"/>                     
+                      <bitmap id="Plant002IllCTex" import="textures/plant-002-ill-c.png"/>                     
+                      <bitmap id="Plant002FruitATex" import="textures/plant-002-fruit-a.png"/>                     
+                      <bitmap id="Plant002FruitBTex" import="textures/plant-002-fruit-b.png"/>                     
+                      <bitmap id="Plant002FruitCTex" import="textures/plant-002-fruit-c.png"/>                     
+
+                      <bitmap id="Plant003GrowATex" import="textures/plant-003-grow-a.png"/>                     
+                      <bitmap id="Plant003GrowBTex" import="textures/plant-003-grow-b.png"/>                     
+                      <bitmap id="Plant003GrowCTex" import="textures/plant-003-grow-c.png"/>                     
+                      <bitmap id="Plant003GrownTex" import="textures/plant-003-grown.png"/>                     
+                      <bitmap id="Plant003DecayATex" import="textures/plant-003-decay-a.png"/>                     
+                      <bitmap id="Plant003DecayBTex" import="textures/plant-003-decay-b.png"/>                     
+                      <bitmap id="Plant003DecayCTex" import="textures/plant-003-decay-c.png"/>                     
+                      <bitmap id="Plant003IllATex" import="textures/plant-003-ill-a.png"/>                     
+                      <bitmap id="Plant003IllBTex" import="textures/plant-003-ill-b.png"/>                     
+                      <bitmap id="Plant003IllCTex" import="textures/plant-003-ill-c.png"/>                     
+                      <bitmap id="Plant003FruitATex" import="textures/plant-003-fruit-a.png"/>                     
+                      <bitmap id="Plant003FruitBTex" import="textures/plant-003-fruit-b.png"/>                     
+                      <bitmap id="Plant003FruitCTex" import="textures/plant-003-fruit-c.png"/>                     
 
 
                 </library>
