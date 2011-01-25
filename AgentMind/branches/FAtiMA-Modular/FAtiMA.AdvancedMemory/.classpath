@@ -8,42 +8,5 @@
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/FAtiMA"/>
-	<classpathentry kind="lib" path="/FAtiMA/xmlenc-0.52.jar"/>
-	<classpathentry kind="lib" path="drools-runtime/drools-api.jar"/>
-	<classpathentry kind="lib" path="drools-runtime/antlr-runtime.jar"/>
-	<classpathentry kind="lib" path="drools-runtime/drools-ant-5.0.1.jar"/>
-	<classpathentry kind="lib" path="drools-runtime/drools-api-5.0.1.jar"/>
-	<classpathentry kind="lib" path="drools-runtime/drools-bam-5.0.1.jar"/>
-	<classpathentry kind="lib" path="drools-runtime/drools-clips-5.0.1.jar"/>
-	<classpathentry kind="lib" path="drools-runtime/drools-compiler-5.0.1.jar"/>
-	<classpathentry kind="lib" path="drools-runtime/drools-compiler.jar"/>
-	<classpathentry kind="lib" path="drools-runtime/drools-core-5.0.1.jar"/>
-	<classpathentry kind="lib" path="drools-runtime/drools-core.jar"/>
-	<classpathentry kind="lib" path="drools-runtime/drools-decisiontables-5.0.1.jar"/>
-	<classpathentry kind="lib" path="drools-runtime/drools-decisiontables.jar"/>
-	<classpathentry kind="lib" path="drools-runtime/drools-jsr94-5.0.1.jar"/>
-	<classpathentry kind="lib" path="drools-runtime/drools-jsr94.jar"/>
-	<classpathentry kind="lib" path="drools-runtime/drools-mc-5.0.1.jar"/>
-	<classpathentry kind="lib" path="drools-runtime/drools-messenger-jms-5.0.1.jar"/>
-	<classpathentry kind="lib" path="drools-runtime/drools-persistence-jpa-5.0.1.jar"/>
-	<classpathentry kind="lib" path="drools-runtime/drools-process-task-5.0.1.jar"/>
-	<classpathentry kind="lib" path="drools-runtime/drools-server-5.0.1.war"/>
-	<classpathentry kind="lib" path="drools-runtime/drools-templates-5.0.1.jar"/>
-	<classpathentry kind="lib" path="drools-runtime/drools-templates.jar"/>
-	<classpathentry kind="lib" path="drools-runtime/drools-transformer-jaxb-5.0.1.jar"/>
-	<classpathentry kind="lib" path="drools-runtime/drools-transformer-jxls-5.0.1.jar"/>
-	<classpathentry kind="lib" path="drools-runtime/drools-transformer-smooks-5.0.1.jar"/>
-	<classpathentry kind="lib" path="drools-runtime/drools-transformer-xstream-5.0.1.jar"/>
-	<classpathentry kind="lib" path="drools-runtime/drools-verifier-5.0.1.jar"/>
-	<classpathentry kind="lib" path="drools-runtime/drools-workitems-5.0.1.jar"/>
-	<classpathentry kind="lib" path="drools-runtime/joda-time.jar"/>
-	<classpathentry kind="lib" path="drools-runtime/jsr94.jar"/>
-	<classpathentry kind="lib" path="drools-runtime/jxl.jar"/>
-	<classpathentry kind="lib" path="drools-runtime/LICENSE-ASL-2.0.txt"/>
-	<classpathentry kind="lib" path="drools-runtime/mvel2.jar"/>
-	<classpathentry kind="lib" path="drools-runtime/README_DEPENDENCIES.txt"/>
-	<classpathentry kind="lib" path="drools-runtime/xpp3_min.jar"/>
-	<classpathentry kind="lib" path="drools-runtime/xpp3.jar"/>
-	<classpathentry kind="lib" path="drools-runtime/xstream.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
