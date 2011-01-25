@@ -11,11 +11,6 @@ import java.util.ArrayList;
 import org.znerd.xmlenc.LineBreak;
 import org.znerd.xmlenc.XMLOutputter;
 
-import FAtiMA.Core.memory.Memory;
-import FAtiMA.Core.memory.episodicMemory.ActionDetail;
-import FAtiMA.Core.memory.episodicMemory.MemoryEpisode;
-import FAtiMA.Core.memory.semanticMemory.KnowledgeSlot;
-
 public class AdvancedMemoryWriter implements Serializable {
 
 	final String encoding = "iso-8859-1";
