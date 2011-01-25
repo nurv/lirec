@@ -37,7 +37,6 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 
 import FAtiMA.Core.memory.Memory;
-import FAtiMA.Core.util.enumerables.RelationType;
 
 
 /**
