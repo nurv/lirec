@@ -108,7 +108,7 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 		_name = name;
 		_shutdown = false;
 		_numberOfCycles = 0;
-		_currentEmotion = NeutralEmotion.getInstance().getName(); //neutral emotion - no emotion
+		_currentEmotion = NeutralEmotion.NAME; //neutral emotion - no emotion
 		_actionsForExecution = new ArrayList<ValuedAction>();
 		_perceivedEvents = new ArrayList<Event>();
 		_saveDirectory = "";

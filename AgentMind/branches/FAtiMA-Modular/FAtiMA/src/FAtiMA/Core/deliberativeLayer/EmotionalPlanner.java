@@ -114,6 +114,7 @@ import java.util.ListIterator;
 
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.IntegrityValidator;
+import FAtiMA.Core.OCCAffectDerivation.OCCAppraisalVariables;
 import FAtiMA.Core.OCCAffectDerivation.OCCComponent;
 import FAtiMA.Core.conditions.Condition;
 import FAtiMA.Core.conditions.PropertyNotEqual;
@@ -449,8 +450,8 @@ public class EmotionalPlanner implements Serializable {
 		
 		//APPRAISAL/REAPPRAISAL - the plan brought into the agent's mind will generate/update
 		//hope and fear emotions according to the plan probability
-		af.SetAppraisalVariable(DeliberativeProcess.NAME, (short)7, OCCComponent.SUCCESSPROBABILITY, planProb);
-		af.SetAppraisalVariable(DeliberativeProcess.NAME, (short)7, OCCComponent.FAILUREPROBABILITY, 1-planProb);
+		af.SetAppraisalVariable(DeliberativeProcess.NAME, (short)7, OCCAppraisalVariables.SUCCESSPROBABILITY.name(), planProb);
+		af.SetAppraisalVariable(DeliberativeProcess.NAME, (short)7, OCCAppraisalVariables.FAILUREPROBABILITY.name(), 1-planProb);
 		am.updateEmotions(af);
 		
 		hopeEmotion = am.getEmotionalState().GetEmotion(OCCComponent.getHopeKey(af.getEvent()));
@@ -491,8 +492,8 @@ public class EmotionalPlanner implements Serializable {
 			failureImportance = intention.getGoal().GetImportanceOfFailure(am);
 			
 			AppraisalFrame auxFrame = new AppraisalFrame(tGoal.GetActivationEvent());
-			auxFrame.SetAppraisalVariable(DeliberativeProcess.NAME, (short)6, OCCComponent.FAILUREPROBABILITY, prob);
-			auxFrame.SetAppraisalVariable(DeliberativeProcess.NAME, (short)6, OCCComponent.GOALCONDUCIVENESS, -tGoal.GetImportanceOfFailure(am));
+			auxFrame.SetAppraisalVariable(DeliberativeProcess.NAME, (short)6, OCCAppraisalVariables.FAILUREPROBABILITY.name(), prob);
+			auxFrame.SetAppraisalVariable(DeliberativeProcess.NAME, (short)6, OCCAppraisalVariables.GOALCONDUCIVENESS.name(), -tGoal.GetImportanceOfFailure(am));
 			am.updateEmotions(auxFrame);
 			 
 			

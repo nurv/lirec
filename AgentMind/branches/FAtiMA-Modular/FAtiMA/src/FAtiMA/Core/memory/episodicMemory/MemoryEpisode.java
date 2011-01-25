@@ -416,7 +416,7 @@ public class MemoryEpisode implements Serializable {
 			em = action.getEmotion();
 			if(em.GetPotential() > 0)
 			{
-				if(em.getType().getValence() == EmotionValence.POSITIVE)
+				if(em.getValence() == EmotionValence.POSITIVE)
 				{
 					value += em.GetPotential();
 				}
@@ -456,7 +456,7 @@ public class MemoryEpisode implements Serializable {
 			em = action.getEmotion();
 			if(em.GetPotential() > 0)
 			{
-				if(em.getType().getValence() == EmotionValence.POSITIVE)
+				if(em.getValence() == EmotionValence.POSITIVE)
 				{
 					error = em.GetPotential() - avg;
 				}

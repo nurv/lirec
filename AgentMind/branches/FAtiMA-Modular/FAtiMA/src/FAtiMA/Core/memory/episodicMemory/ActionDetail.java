@@ -45,6 +45,7 @@ import java.util.ListIterator;
 
 import FAtiMA.Core.emotionalState.ActiveEmotion;
 import FAtiMA.Core.emotionalState.BaseEmotion;
+import FAtiMA.Core.emotionalState.EmotionalState;
 import FAtiMA.Core.emotionalState.NeutralEmotion;
 import FAtiMA.Core.memory.Memory;
 import FAtiMA.Core.memory.semanticMemory.KnowledgeSlot;
@@ -125,7 +126,7 @@ public class ActionDetail implements Serializable {
 			separateParameters();
 		}
 		
-		this._emotion = new BaseEmotion(NeutralEmotion.getInstance(),0,e);
+		this._emotion = new NeutralEmotion(e);
 	}
 
 	/*
@@ -346,8 +347,8 @@ public class ActionDetail implements Serializable {
 
 		if(em.GetIntensity() > this._emotion.GetPotential())
 		{
-			this._emotion = new BaseEmotion(em.getType(),em.GetIntensity(), em.GetCause(),em.GetDirection());
-			if(this._emotion.getType().getValence() == EmotionValence.POSITIVE)
+			this._emotion = new BaseEmotion((BaseEmotion)em);
+			if(this._emotion.getValence() == EmotionValence.POSITIVE)
 			{
 				this._desirability = (float) Math.floor(em.GetPotential());
 			}
@@ -581,7 +582,7 @@ public class ActionDetail implements Serializable {
 	{
 		String action = "<Event>";
 		action += "<EventID>" + this.getID() + "</EventID>";
-		action += "<Emotion>" + this.getEmotion().getType().getName() + " " + this.getEmotion().GetPotential() + "</Emotion>";
+		action += "<Emotion>" + this.getEmotion().getType() + " " + this.getEmotion().GetPotential() + "</Emotion>";
 		action += "<Subject>" + this.getSubject() + "</Subject>";
 		action += "<Intention>" + this.getIntention() + "</Intention>";
 		action += "<Status>" + this.getStatus() + "</Status>";

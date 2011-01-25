@@ -12,26 +12,14 @@ import FAtiMA.Core.emotionalState.ActiveEmotion;
 import FAtiMA.Core.emotionalState.AppraisalFrame;
 import FAtiMA.Core.emotionalState.BaseEmotion;
 import FAtiMA.Core.emotionalState.EmotionDisposition;
-import FAtiMA.Core.emotionalState.EmotionType;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.wellFormedNames.Name;
 
 public class OCCComponent implements Serializable, IAffectDerivationComponent, IModelOfOtherComponent {
 	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	
 	public static final String NAME = "OCC";
-	public static final String LIKE = "like";
-	public static final String DESIRABILITY = "desirability";
-	public static final String PRAISEWORTHINESS = "praiseworthiness";
-	public static final String GOALSTATUS = "GoalStatus";
-	public static final String GOALCONDUCIVENESS = "GoalConduciveness";
-	public static final String SUCCESSPROBABILITY = "SuccessProbability";
-	public static final String FAILUREPROBABILITY = "FailureProbability";
-	public static final String DESFOROTHER = "DesFor-";
 	public static final int GOALCONFIRMED = 1;
 	public static final int GOALUNCONFIRMED = 0;
 	public static final int GOALDISCONFIRMED = 2;
@@ -69,12 +57,14 @@ public class OCCComponent implements Serializable, IAffectDerivationComponent, I
 	
 	public static String getHopeKey(Event e)
 	{
-		return e + "-" + GOALCONDUCIVENESS + "-" + SUCCESSPROBABILITY;
+		return e + "-" + OCCAppraisalVariables.GOALCONDUCIVENESS + "-" + 
+					OCCAppraisalVariables.SUCCESSPROBABILITY;
 	}
 	
 	public static String getFearKey(Event e)
 	{
-		return e + "-" + GOALCONDUCIVENESS + "-" + FAILUREPROBABILITY;
+		return e + "-" + OCCAppraisalVariables.GOALCONDUCIVENESS + "-" + 
+			OCCAppraisalVariables.FAILUREPROBABILITY;
 	}
 	
 	
@@ -87,9 +77,9 @@ public class OCCComponent implements Serializable, IAffectDerivationComponent, I
 		ActiveEmotion hope;
 		float status;
 		
-		if(af.containsAppraisalVariable(DESIRABILITY))
+		if(af.containsAppraisalVariable(OCCAppraisalVariables.DESIRABILITY.name()))
 		{
-			float desirability = af.getAppraisalVariable(DESIRABILITY);
+			float desirability = af.getAppraisalVariable(OCCAppraisalVariables.DESIRABILITY.name());
 			if(desirability!=0)
 			{
 				emotions.add(OCCAppraiseWellBeing(event, desirability));
@@ -98,9 +88,9 @@ public class OCCComponent implements Serializable, IAffectDerivationComponent, I
 				
 				for(String variable : af.getAppraisalVariables())
 				{
-					if(variable.startsWith(DESFOROTHER))
+					if(variable.startsWith(OCCAppraisalVariables.DESFOROTHER.name()))
 					{
-						other = variable.substring(DESFOROTHER.length());
+						other = variable.substring(OCCAppraisalVariables.DESFOROTHER.name().length());
 						desirabilityForOther = af.getAppraisalVariable(variable);
 						if(desirabilityForOther != 0)
 						{
@@ -111,37 +101,37 @@ public class OCCComponent implements Serializable, IAffectDerivationComponent, I
 				}
 			}
 		}
-		if(af.containsAppraisalVariable(PRAISEWORTHINESS))
+		if(af.containsAppraisalVariable(OCCAppraisalVariables.PRAISEWORTHINESS.name()))
 		{
-			float praiseworthiness = af.getAppraisalVariable(PRAISEWORTHINESS);
+			float praiseworthiness = af.getAppraisalVariable(OCCAppraisalVariables.PRAISEWORTHINESS.name());
 			if(praiseworthiness!=0)
 			{
 				emotions.add(OCCAppraisePraiseworthiness(am.getName(), event, praiseworthiness));
 			}
 		}
-		if(af.containsAppraisalVariable(LIKE))
+		if(af.containsAppraisalVariable(OCCAppraisalVariables.LIKE.name()))
 		{
-			float like = af.getAppraisalVariable(LIKE);
+			float like = af.getAppraisalVariable(OCCAppraisalVariables.LIKE.name());
 			if(like!=0)
 			{
 				emotions.add(OCCAppraiseAttribution(event, like));
 			}
 		}
-		if(af.containsAppraisalVariable(GOALCONDUCIVENESS))
+		if(af.containsAppraisalVariable(OCCAppraisalVariables.GOALCONDUCIVENESS.name()))
 		{
-			float goalConduciveness = af.getAppraisalVariable(GOALCONDUCIVENESS);
+			float goalConduciveness = af.getAppraisalVariable(OCCAppraisalVariables.GOALCONDUCIVENESS.name());
 			if(goalConduciveness!=0)
 			{
-				status = af.getAppraisalVariable(GOALSTATUS);
+				status = af.getAppraisalVariable(OCCAppraisalVariables.GOALSTATUS.name());
 				if(status == GOALUNCONFIRMED)
 				{
-					float prob = af.getAppraisalVariable(SUCCESSPROBABILITY);
+					float prob = af.getAppraisalVariable(OCCAppraisalVariables.SUCCESSPROBABILITY.name());
 					if(prob != 0)
 					{
 						emotions.add(AppraiseGoalSuccessProbability(am, event, goalConduciveness, prob));
 					}
 					
-					prob = af.getAppraisalVariable(FAILUREPROBABILITY);
+					prob = af.getAppraisalVariable(OCCAppraisalVariables.FAILUREPROBABILITY.name());
 					if(prob != 0)
 					{
 						emotions.add(AppraiseGoalFailureProbability(am, event, goalConduciveness, prob));
@@ -149,7 +139,7 @@ public class OCCComponent implements Serializable, IAffectDerivationComponent, I
 				}
 				else if(status == GOALCONFIRMED)
 				{
-					float conduciveness = af.getAppraisalVariable(GOALCONDUCIVENESS);
+					float conduciveness = af.getAppraisalVariable(OCCAppraisalVariables.GOALCONDUCIVENESS.name());
 					if(conduciveness != 0)
 					{
 						fear = am.getEmotionalState().GetEmotion(getFearKey(event));
@@ -163,7 +153,7 @@ public class OCCComponent implements Serializable, IAffectDerivationComponent, I
 				}
 				else if(status == GOALDISCONFIRMED)
 				{
-					float conduciveness = af.getAppraisalVariable(GOALCONDUCIVENESS);
+					float conduciveness = af.getAppraisalVariable(OCCAppraisalVariables.GOALCONDUCIVENESS.name());
 					if(conduciveness != 0)
 					{
 						fear = am.getEmotionalState().GetEmotion(getFearKey(event));
@@ -186,136 +176,95 @@ public class OCCComponent implements Serializable, IAffectDerivationComponent, I
 	{
 		//ignoring mood for now
 		
-		EmotionDisposition emotionDisposition = am.getEmotionalState().getEmotionDisposition(em.getType().getName());
+		EmotionDisposition emotionDisposition = am.getEmotionalState().getEmotionDisposition(em.getType());
 		int threshold = emotionDisposition.getThreshold();
 		float potentialValue = em.GetPotential() + threshold; 
 		
-		if(em.getType().equals(LoveEmotion.getInstance()))
-		{
-			af.SetAppraisalVariable("", (short)1, LIKE, potentialValue * 1.43f);
+		OCCEmotionType emotionType = OCCEmotionType.valueOf(em.getType());
+		switch(emotionType){
+			case LOVE: af.SetAppraisalVariable("", (short)1, OCCAppraisalVariables.LIKE.name(), potentialValue * 1.43f);
+					   break;
+			case HATE: af.SetAppraisalVariable("", (short)1, OCCAppraisalVariables.LIKE.name(), -potentialValue * 1.43f);
+					   break;
+			case JOY:  af.SetAppraisalVariable("", (short)1, OCCAppraisalVariables.DESIRABILITY.name(), potentialValue);
+					   break;
+			case DISTRESS:af.SetAppraisalVariable("", (short)1, OCCAppraisalVariables.DESIRABILITY.name(), -potentialValue);
+					   break;
+			case PRIDE: af.SetAppraisalVariable("", (short)1, OCCAppraisalVariables.PRAISEWORTHINESS.name(), potentialValue);
+					   break;
+			case SHAME: af.SetAppraisalVariable("", (short)1, OCCAppraisalVariables.PRAISEWORTHINESS.name(), -potentialValue);
+					   break;
+			case GLOATING: af.SetAppraisalVariable("", (short)1, OCCAppraisalVariables.DESIRABILITY.name(), potentialValue);
+						   //vector.setAppraisalVariable(AppraisalStructure.DESIRABILITY_FOR_OTHER, -potentialValue);
+					   break;
+			
+			case HAPPY_FOR: af.SetAppraisalVariable("", (short)1, OCCAppraisalVariables.DESIRABILITY.name(), potentialValue);
+							//vector.setAppraisalVariable(AppraisalStructure.DESIRABILITY_FOR_OTHER, potentialValue);
+					   break;
+			case PITTY: af.SetAppraisalVariable("", (short)1, OCCAppraisalVariables.DESIRABILITY.name(), -potentialValue);
+						//vector.setAppraisalVariable(AppraisalStructure.DESIRABILITY_FOR_OTHER, -potentialValue);´
+	   				   break;
+			
+			case RESENTMENT: //vector.setAppraisalVariable(AppraisalStructure.DESIRABILITY_FOR_OTHER, potentialValue);
+					   break;
+			case GRATIFICATION: //af.SetAppraisalVariable("", (short)1, DESIRABILITY, potentialValue);
+								//af.SetAppraisalVariable("", (short)1, PRAISEWORTHINESS, potentialValue);
+					   break;
+			case ANGER:// af.SetAppraisalVariable("", (short)1, DESIRABILITY, -potentialValue);
+					   //af.SetAppraisalVariable("", (short)1, PRAISEWORTHINESS, -potentialValue);
+					   break;
 		}
-		else if(em.getType().equals(HateEmotion.getInstance()))
-		{
-			af.SetAppraisalVariable("", (short)1, LIKE, -potentialValue * 1.43f);
-		}
-		else if(em.getType().equals(JoyEmotion.getInstance()))
-		{
-			af.SetAppraisalVariable("", (short)1, DESIRABILITY, potentialValue);
-		}
-		else if(em.getType().equals(DistressEmotion.getInstance()))
-		{
-			af.SetAppraisalVariable("", (short)1, DESIRABILITY, -potentialValue);
-		}
-		else if(em.getType().equals(PrideEmotion.getInstance()) || em.getType().equals(AdmirationEmotion.getInstance()))
-		{
-			af.SetAppraisalVariable("", (short)1, PRAISEWORTHINESS, potentialValue);
-		}
-		else if(em.getType().equals(ShameEmotion.getInstance()) || em.getType().equals(ReproachEmotion.getInstance()))
-		{
-			af.SetAppraisalVariable("", (short)1, PRAISEWORTHINESS, -potentialValue);
-		}
-		else if(em.getType().equals(GloatingEmotion.getInstance()))
-		{
-			af.SetAppraisalVariable("", (short)1, DESIRABILITY, potentialValue);
-			//vector.setAppraisalVariable(AppraisalStructure.DESIRABILITY_FOR_OTHER, -potentialValue);
-		}
-		else if(em.getType().equals(HappyForEmotion.getInstance()))
-		{
-			af.SetAppraisalVariable("", (short)1, DESIRABILITY, potentialValue);
-			//vector.setAppraisalVariable(AppraisalStructure.DESIRABILITY_FOR_OTHER, potentialValue);
-		}
-		else if(em.getType().equals(PittyEmotion.getInstance()))
-		{
-			af.SetAppraisalVariable("", (short)1, DESIRABILITY, -potentialValue);
-			//vector.setAppraisalVariable(AppraisalStructure.DESIRABILITY_FOR_OTHER, -potentialValue);
-		}
-		else if(em.getType().equals(ResentmentEmotion.getInstance()))
-		{
-			af.SetAppraisalVariable("", (short)1, DESIRABILITY, -potentialValue);
-			//vector.setAppraisalVariable(AppraisalStructure.DESIRABILITY_FOR_OTHER, potentialValue);
-		}
-		/*else if(em.getType() == GratificationEmotioEmotionType.GRATIFICATION || em.GetType() == EmotionType.GRATITUDE)
-		{
-			af.SetAppraisalVariable("", (short)1, DESIRABILITY, potentialValue);
-			af.SetAppraisalVariable("", (short)1, PRAISEWORTHINESS, potentialValue);
-		}
-		else if(em.GetType() == EmotionType.REGRET || em.GetType() == EmotionType.ANGER)
-		{
-			af.SetAppraisalVariable("", (short)1, DESIRABILITY, -potentialValue);
-			af.SetAppraisalVariable("", (short)1, PRAISEWORTHINESS, -potentialValue);
-		}*/
 	}
 	
-	private static BaseEmotion OCCAppraiseAttribution(Event event, float like)
+	private static OCCBaseEmotion OCCAppraiseAttribution(Event event, float like)
 	{
-		BaseEmotion em;
+		OCCBaseEmotion em;
 		
 		if(like >= 0) {
-			em = new BaseEmotion(LoveEmotion.getInstance(), like*0.7f, event, Name.ParseName(event.GetTarget()));
+			em = new OCCBaseEmotion(OCCEmotionType.LOVE, like*0.7f, event, Name.ParseName(event.GetTarget()));
 		}
 		else {
-			em = new BaseEmotion(HateEmotion.getInstance(), -like*0.7f, event, Name.ParseName(event.GetTarget()));
+			em = new OCCBaseEmotion(OCCEmotionType.HATE, -like*0.7f, event, Name.ParseName(event.GetTarget()));
 		}
 		
 		return em;
 	}
 	
-	private static BaseEmotion OCCAppraiseWellBeing(Event event, float desirability) {
-		BaseEmotion em;
+	private static OCCBaseEmotion OCCAppraiseWellBeing(Event event, float desirability) {
+		OCCBaseEmotion em;
 		
 		if(desirability >= 0) {
-			em = new BaseEmotion(JoyEmotion.getInstance(), desirability, event);
+			em = new OCCBaseEmotion(OCCEmotionType.JOY, desirability, event);
 		}
 		else {
-			em = new BaseEmotion(DistressEmotion.getInstance(), -desirability, event);
+			em = new OCCBaseEmotion(OCCEmotionType.DISTRESS, -desirability, event);
 		}
 		return em;
 	}
 	
-	private static BaseEmotion OCCAppraisePraiseworthiness(String appraisingAgent, Event event, float praiseworthiness) {
-		BaseEmotion em;
+	private static OCCBaseEmotion OCCAppraisePraiseworthiness(String appraisingAgent, Event event, float praiseworthiness) {
+		OCCBaseEmotion em;
 		
 		if(praiseworthiness >= 0) {
 			if(event.GetSubject().equals(appraisingAgent)) {
-				em = new BaseEmotion(PrideEmotion.getInstance(), praiseworthiness, event, Name.ParseName("SELF"));
+				em = new OCCBaseEmotion(OCCEmotionType.PRIDE, praiseworthiness, event, Name.ParseName("SELF"));
 			}
 			else {
-				em = new BaseEmotion(AdmirationEmotion.getInstance(), praiseworthiness, event, Name.ParseName(event.GetSubject()));
+				em = new OCCBaseEmotion(OCCEmotionType.ADMIRATION, praiseworthiness, event, Name.ParseName(event.GetSubject()));
 			}
 		}
 		else {
 			if(event.GetSubject().equals(appraisingAgent)) {
-				em = new BaseEmotion(ShameEmotion.getInstance(), -praiseworthiness, event, Name.ParseName("SELF"));
+				em = new OCCBaseEmotion(OCCEmotionType.SHAME, -praiseworthiness, event, Name.ParseName("SELF"));
 			}
 			else {
-				em = new BaseEmotion(ReproachEmotion.getInstance(), -praiseworthiness, event, Name.ParseName(event.GetSubject()));
+				em = new OCCBaseEmotion(OCCEmotionType.REPROACH, -praiseworthiness, event, Name.ParseName(event.GetSubject()));
 			}
 		}
 		
 		return em;
 	}
-	
-	/*private static BaseEmotion GenerateEmotionForOther(AgentModel am, Event event, float desirability, AppraisalFrame appraisalOfOther, String other)
-	{
-		float desirabilityForOther = appraisalOfOther.getAppraisalVariable(DESIRABILITY);
-			
-		
-		if(desirabilityForOther == 0) return null;
-		
-		//TODO move this code to the social relations component appraisal 
-		/*targetBias = LikeRelation.getRelation(Constants.SELF,other).getValue(am.getMemory()) * desirabilityForOther/10;
-		bias = targetBias;
-		if(!subject.equals(Constants.SELF))
-		{
-				subjectBias = LikeRelation.getRelation(Constants.SELF, subject).getValue(am.getMemory());
-				bias = (bias + subjectBias)/2;
-		}
-		
-		newDesirability = (desirability + bias)/2;*/
 
-		
-		//return OCCAppraiseFortuneOfOthers(event, desirability, desirabilityForOther, other);
-	//}
 	
 	/**
 	 * Appraises a Goal's likelihood of failure
@@ -323,12 +272,12 @@ public class OCCComponent implements Serializable, IAffectDerivationComponent, I
 	 * @param probability - the probability of the goal to fail
 	 * @return - the emotion created
 	 */
-	public static BaseEmotion AppraiseGoalFailureProbability(AgentModel am , Event e, float goalConduciveness, float prob)
+	public static OCCBaseEmotion AppraiseGoalFailureProbability(AgentModel am , Event e, float goalConduciveness, float prob)
 	{
 		float potential;
 		potential = prob * goalConduciveness;
 		
-		BaseEmotion em = new  BaseEmotion(FearEmotion.getInstance(), potential, e);
+		OCCBaseEmotion em = new  OCCBaseEmotion(OCCEmotionType.FEAR, potential, e);
 		
 		return em;
 	}
@@ -339,12 +288,12 @@ public class OCCComponent implements Serializable, IAffectDerivationComponent, I
 	 * @param probability - the probability of the goal to succeed
 	 * @return - the BaseEmotion created
 	 */
-	public static BaseEmotion AppraiseGoalSuccessProbability(AgentModel am, Event e, float goalConduciveness, float prob) {
+	public static OCCBaseEmotion AppraiseGoalSuccessProbability(AgentModel am, Event e, float goalConduciveness, float prob) {
 	
 		float potential;
 		potential = prob * goalConduciveness;
 	
-		BaseEmotion em = new BaseEmotion(HopeEmotion.getInstance(), potential, e);
+		OCCBaseEmotion em = new  OCCBaseEmotion(OCCEmotionType.HOPE, potential, e);
 	
 		return em;
 	}
@@ -355,8 +304,8 @@ public class OCCComponent implements Serializable, IAffectDerivationComponent, I
 	 * @param fearEmotion - the emotion of Fear for not achieving the goal that the character feels
 	 * @param g - the Goal that failed
 	 */
-	public static BaseEmotion AppraiseGoalFailure(AgentModel am, ActiveEmotion hopeEmotion, ActiveEmotion fearEmotion, float conduciveness, Event e) {
-		return AppraiseGoalEnd(DisappointmentEmotion.getInstance(),FearsConfirmedEmotion.getInstance(),hopeEmotion,fearEmotion,conduciveness,e);
+	public static OCCBaseEmotion AppraiseGoalFailure(AgentModel am, ActiveEmotion hopeEmotion, ActiveEmotion fearEmotion, float conduciveness, Event e) {
+		return AppraiseGoalEnd(OCCEmotionType.DISAPPOINTMENT,OCCEmotionType.FEARS_CONFIRMED,hopeEmotion,fearEmotion,conduciveness,e);
 	}
 	
 	
@@ -368,42 +317,42 @@ public class OCCComponent implements Serializable, IAffectDerivationComponent, I
 	 * @param g - the Goal that succeeded
 	 * @return - the emotion created
 	 */
-	public static BaseEmotion AppraiseGoalSuccess(AgentModel am, ActiveEmotion hopeEmotion, ActiveEmotion fearEmotion, float conduciveness, Event e) {
-		return AppraiseGoalEnd(SatisfactionEmotion.getInstance(),ReliefEmotion.getInstance(),hopeEmotion,fearEmotion,conduciveness,e);
+	public static OCCBaseEmotion AppraiseGoalSuccess(AgentModel am, ActiveEmotion hopeEmotion, ActiveEmotion fearEmotion, float conduciveness, Event e) {
+		return AppraiseGoalEnd(OCCEmotionType.SATISFACTION,OCCEmotionType.RELIEF,hopeEmotion,fearEmotion,conduciveness,e);
 	}
 
 	
 	
-	private static BaseEmotion OCCAppraiseFortuneOfOthers(Event event, float desirability, float desirabilityForOther, String target) {
-		BaseEmotion em;
+	private static OCCBaseEmotion OCCAppraiseFortuneOfOthers(Event event, float desirability, float desirabilityForOther, String target) {
+		OCCBaseEmotion em;
 		float potential;
 		
 		potential = (Math.abs(desirabilityForOther) + Math.abs(desirability)) / 2.0f;
 		
 		if(desirability >= 0) {
 			if(desirabilityForOther >= 0) {
-				em = new BaseEmotion(HappyForEmotion.getInstance(), potential, event, Name.ParseName(target));	
+				em = new OCCBaseEmotion(OCCEmotionType.HAPPY_FOR, potential, event, Name.ParseName(target));	
 			}
 			else {
-				em = new BaseEmotion(GloatingEmotion.getInstance(), potential, event, Name.ParseName(target));
+				em = new OCCBaseEmotion(OCCEmotionType.GLOATING,potential, event, Name.ParseName(target));
 			}
 		}
 		else {
 			if(desirabilityForOther >= 0) {
-				em = new BaseEmotion(ResentmentEmotion.getInstance(), potential, event, Name.ParseName(target));
+				em = new OCCBaseEmotion(OCCEmotionType.RESENTMENT, potential, event, Name.ParseName(target));
 			}
 			else {
-				em = new BaseEmotion(PittyEmotion.getInstance(), potential, event, Name.ParseName(target));
+				em = new OCCBaseEmotion(OCCEmotionType.PITTY, potential, event, Name.ParseName(target));
 			}
 		}
 		
 		return em;
 	}
 	
-	private static BaseEmotion AppraiseGoalEnd(EmotionType hopefullOutcome, EmotionType fearfullOutcome, 
+	private static OCCBaseEmotion AppraiseGoalEnd(OCCEmotionType hopefullOutcome, OCCEmotionType fearfullOutcome, 
 			ActiveEmotion hopeEmotion, ActiveEmotion fearEmotion, float goalConduciveness, Event e) {
 	
-		EmotionType finalEmotion;
+		OCCEmotionType finalEmotion;
 		float potential = 0;
 		
 		if(hopeEmotion != null) {
@@ -425,7 +374,7 @@ public class OCCComponent implements Serializable, IAffectDerivationComponent, I
 		//Change, the goal importance now affects 66% of the final potential value for the emotion
 		potential = (potential +  2* goalConduciveness) / 3;
 		
-		return new BaseEmotion(finalEmotion, potential, e);
+		return new OCCBaseEmotion(finalEmotion, potential, e);
 	}
 
 	@Override

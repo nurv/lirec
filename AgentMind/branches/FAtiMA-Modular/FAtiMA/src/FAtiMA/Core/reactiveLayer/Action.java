@@ -152,10 +152,9 @@ public class Action implements IIntegrityTester, Serializable, IGroundable, Clon
 			{
 				newPotential = 0;
 			}
-			_elicitingEmotion = new BaseEmotion(_elicitingEmotion.getType(),
-					newPotential,
-					_elicitingEmotion.GetCause(),
-					_elicitingEmotion.GetDirection());
+			_elicitingEmotion = new BaseEmotion(_elicitingEmotion);
+			_elicitingEmotion.setPotential(newPotential);
+
 		}
 	}
 	
@@ -174,10 +173,8 @@ public class Action implements IIntegrityTester, Serializable, IGroundable, Clon
 			{
 				newPotential = 10;
 			}
-			_elicitingEmotion = new BaseEmotion(_elicitingEmotion.getType(),
-					newPotential,
-					_elicitingEmotion.GetCause(),
-					_elicitingEmotion.GetDirection());
+			_elicitingEmotion = new BaseEmotion(_elicitingEmotion);
+			_elicitingEmotion.setPotential(newPotential);
 		}
 	}
 	

@@ -199,12 +199,12 @@ public class MemoryWriter implements Serializable{
 			if(ad.getEmotion() != null)
 			{
 				_outputter.startTag("Emotion");
-				_outputter.attribute("type", ad.getEmotion().getType().getName());
-				_outputter.attribute("valence", Byte.toString(ad.getEmotion().getType().getValence()));
+				_outputter.attribute("type", ad.getEmotion().getType());
+				_outputter.attribute("valence", ad.getEmotion().getValence().name());
 				if(ad.getEmotion().GetDirection() != null)
 					_outputter.attribute("direction", ad.getEmotion().GetDirection().toString());
-				if(ad.getEmotion().getType().getAppraisalVariables() != null)
-					_outputter.attribute("appraisalVariables", ad.getEmotion().getType().getAppraisalVariables().toString());	//ArrayList
+				if(ad.getEmotion().GetAppraisalVariables() != null)
+					_outputter.attribute("appraisalVariables", ad.getEmotion().GetAppraisalVariables().toString());	//ArrayList
 				_outputter.attribute("potential", Float.toString(ad.getEmotion().GetPotential()));
 				
 				//cause event

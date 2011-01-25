@@ -59,9 +59,8 @@ import FAtiMA.Core.conditions.PredicateCondition;
 import FAtiMA.Core.conditions.PropertyCondition;
 import FAtiMA.Core.conditions.RecentEventCondition;
 import FAtiMA.Core.deliberativeLayer.DeliberativeProcess;
-import FAtiMA.Core.emotionalState.BaseEmotion;
+import FAtiMA.Core.emotionalState.ElicitingEmotion;
 import FAtiMA.Core.emotionalState.EmotionDisposition;
-import FAtiMA.Core.emotionalState.EmotionType;
 import FAtiMA.Core.emotionalState.EmotionalState;
 import FAtiMA.Core.exceptions.InvalidEmotionTypeException;
 import FAtiMA.Core.exceptions.UnknownGoalException;
@@ -82,7 +81,7 @@ public class AgentLoaderHandler extends ReflectXMLHandler {
     
 	private Action _action;
     private String _goalName;
-    private BaseEmotion _elicitingEmotion;
+    private ElicitingEmotion _elicitingEmotion;
     private Reaction _eventReaction;
     private Substitution _self;
     private AgentModel _am;
@@ -118,10 +117,17 @@ public class AgentLoaderHandler extends ReflectXMLHandler {
  
     	
     	emotionName = attributes.getValue("type");
-    	EmotionType type = new EmotionType(emotionName,null,(byte)0); 
+    	
+    	//Just to prevent typing errors
+    	if(emotionName.equalsIgnoreCase("happy-for")){
+    		emotionName = "happy_for";
+    	}
+    	if(emotionName.equalsIgnoreCase("fears-confirmed")){
+    		emotionName = "fears_confirmed";
+		}
     	
     	minIntensity = new Integer(attributes.getValue("minIntensity"));
-    	_elicitingEmotion = new BaseEmotion(type,minIntensity.intValue(),null);
+    	_elicitingEmotion = new ElicitingEmotion(emotionName,minIntensity.intValue());
     	_action.SetElicitingEmotion(_elicitingEmotion);
     	_reactiveLayer.getActionTendencies().AddAction(_action);
     }

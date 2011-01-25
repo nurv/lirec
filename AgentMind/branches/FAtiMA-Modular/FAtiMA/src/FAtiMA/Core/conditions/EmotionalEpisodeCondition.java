@@ -125,7 +125,7 @@ public class EmotionalEpisodeCondition extends Condition {
 		emotion = episode.getStrongestEmotion();
 		
 		
-		if(emotion.getType().getName().equals(this._emotion.toString()))
+		if(emotion.getType().equalsIgnoreCase(this._emotion.toString()))
 		{
 			if(emotion.GetPotential() >= this._value)
 			{
@@ -174,11 +174,11 @@ public class EmotionalEpisodeCondition extends Condition {
 					ss = new SubstitutionSet();
 					if(!_emotion.isGrounded())
 					{
-						s = new Substitution(this._emotion,new Symbol(emotion.getType().getName()));
+						s = new Substitution(this._emotion,new Symbol(emotion.getType()));
 						ss.AddSubstitution(s);
 						bindingSets.add(ss);
 					}
-					else if(emotion.getType().getName().equals(this._emotion.toString()));
+					else if(emotion.getType().equalsIgnoreCase(this._emotion.toString()));
 					{
 						ss = new SubstitutionSet();
 						bindingSets.add(ss);
@@ -201,12 +201,12 @@ public class EmotionalEpisodeCondition extends Condition {
 					if(!_emotion.isGrounded())
 					{
 						
-						s = new Substitution(this._emotion,new Symbol(emotion.getType().getName()));
+						s = new Substitution(this._emotion,new Symbol(emotion.getType()));
 						ss.AddSubstitution(s);
 						bindingSets.add(ss);
 						
 					}
-					else if(emotion.getType().getName().equals(this._emotion.toString()))
+					else if(emotion.getType().equalsIgnoreCase(this._emotion.toString()))
 					{
 						bindingSets.add(ss);
 					}	

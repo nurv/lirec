@@ -118,7 +118,7 @@ public class RecordDetailPanel extends JPanel {
         _parameters.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
         this.add(_parameters);*/
 	
-        _feeling = new JTextField(detail.getEmotion().getType().getName() + "-" 
+        _feeling = new JTextField(detail.getEmotion().getType() + "-" 
         		+ detail.getEmotion().GetPotential());
         _feeling.setMinimumSize(new Dimension(110,30));
         _feeling.setMaximumSize(new Dimension(110,30));

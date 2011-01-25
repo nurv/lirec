@@ -1,28 +1,18 @@
 package FAtiMA.Core.emotionalState;
 
-import FAtiMA.Core.emotionalState.EmotionType;
+import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.util.enumerables.EmotionValence;
 
-public class NeutralEmotion extends EmotionType {
+public final class NeutralEmotion extends BaseEmotion{
+	private static final long serialVersionUID = 1L;
 	
-   private static final String[] appraisalVariables = {};
- 
-   // Private constructor prevents instantiation from other classes
-   private NeutralEmotion() {
-	   super("Neutral",appraisalVariables,EmotionValence.POSITIVE);
-   }
- 
-   /**
-    * SingletonHolder is loaded on the first execution of Singleton.getInstance() 
-    * or the first access to SingletonHolder.INSTANCE, not before.
-    */
-   private static class SingletonHolder { 
-     public static final NeutralEmotion INSTANCE = new NeutralEmotion();
-   }
- 
-   public static NeutralEmotion getInstance() 
-   {
-     return SingletonHolder.INSTANCE;
-   }	 
-}
+	public static final String NAME = "Neutral";	
+	public static final EmotionValence VALENCE = EmotionValence.POSITIVE;
+	private static final String[] APPRAISAL_VARIABLES = {};
+	public static final float POTENTIAL = 0;	
+	
 
+	public NeutralEmotion(Event e){
+		super(NAME, VALENCE,APPRAISAL_VARIABLES,POTENTIAL,e);
+	}
+}

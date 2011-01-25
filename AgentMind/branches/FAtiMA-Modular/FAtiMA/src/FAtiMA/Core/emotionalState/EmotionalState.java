@@ -82,6 +82,7 @@ public class EmotionalState implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	
+
 	private static final EmotionDisposition DEFAULT_EMOTION_DISPOSITION = new EmotionDisposition("default",0,5);
 	
 	protected Hashtable<String, ActiveEmotion> _emotionPool;
@@ -144,7 +145,7 @@ public class EmotionalState implements Serializable {
 
 		potential = DeterminePotential(potEm);
 		
-		EmotionDisposition disposition = getEmotionDisposition(potEm.getType().getName());
+		EmotionDisposition disposition = getEmotionDisposition(potEm.getType());
 
 		threshold = disposition.getThreshold();
 		decay = disposition.getDecay();
@@ -196,7 +197,7 @@ public class EmotionalState implements Serializable {
 
 		potential = DeterminePotential(potEm);
 
-		EmotionDisposition emotionDisposition = getEmotionDisposition(potEm.getType().getName());
+		EmotionDisposition emotionDisposition = getEmotionDisposition(potEm.getType());
 		
 		threshold = emotionDisposition.getThreshold();
 		decay = emotionDisposition.getDecay();

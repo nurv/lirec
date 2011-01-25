@@ -41,6 +41,7 @@ import java.util.ListIterator;
 import java.util.SortedSet;
 
 import FAtiMA.Core.AgentModel;
+import FAtiMA.Core.OCCAffectDerivation.OCCAppraisalVariables;
 import FAtiMA.Core.OCCAffectDerivation.OCCComponent;
 import FAtiMA.Core.deliberativeLayer.goals.ActivePursuitGoal;
 import FAtiMA.Core.deliberativeLayer.goals.Goal;
@@ -90,7 +91,7 @@ public class Intention implements Serializable {
 		_hopeEmotionID = null;
 		_strongCommitment = false;
 		_appraisalFrame = new AppraisalFrame(g.GetActivationEvent());
-		_appraisalFrame.SetAppraisalVariable(DeliberativeProcess.NAME, (short) 7, OCCComponent.GOALSTATUS, OCCComponent.GOALUNCONFIRMED);
+		_appraisalFrame.SetAppraisalVariable(DeliberativeProcess.NAME, (short) 7, OCCAppraisalVariables.GOALSTATUS.name(), OCCComponent.GOALUNCONFIRMED);
 	}
 	
 	
@@ -378,9 +379,9 @@ public class Intention implements Serializable {
 	  
 	    am.getMemory().getEpisodicMemory().StoreAction(am.getMemory(), e);
 	    
-	    _appraisalFrame.SetAppraisalVariable(DeliberativeProcess.NAME, (short)7, OCCComponent.SUCCESSPROBABILITY, probability);
-	    _appraisalFrame.SetAppraisalVariable(DeliberativeProcess.NAME, (short)7, OCCComponent.FAILUREPROBABILITY, 1-probability);
-	    _appraisalFrame.SetAppraisalVariable(DeliberativeProcess.NAME, (short)7, OCCComponent.GOALCONDUCIVENESS, goalConduciveness);
+	    _appraisalFrame.SetAppraisalVariable(DeliberativeProcess.NAME, (short)7, OCCAppraisalVariables.SUCCESSPROBABILITY.name(), probability);
+	    _appraisalFrame.SetAppraisalVariable(DeliberativeProcess.NAME, (short)7, OCCAppraisalVariables.FAILUREPROBABILITY.name(), 1-probability);
+	    _appraisalFrame.SetAppraisalVariable(DeliberativeProcess.NAME, (short)7, OCCAppraisalVariables.GOALCONDUCIVENESS.name(), goalConduciveness);
 	    
 	    am.updateEmotions(_appraisalFrame);
 		
@@ -401,8 +402,8 @@ public class Intention implements Serializable {
 	    am.getMemory().getEpisodicMemory().StoreAction(am.getMemory(), e);
 	    
 	    AppraisalFrame af = new AppraisalFrame(e);
-	    af.SetAppraisalVariable(DeliberativeProcess.NAME,(short)8,OCCComponent.GOALSTATUS, OCCComponent.GOALDISCONFIRMED);
-	    af.SetAppraisalVariable(DeliberativeProcess.NAME, (short)8,OCCComponent.GOALCONDUCIVENESS, am.getDeliberativeLayer().getUtilityStrategy().getUtility(am, _goal));
+	    af.SetAppraisalVariable(DeliberativeProcess.NAME,(short)8,OCCAppraisalVariables.GOALSTATUS.name(), OCCComponent.GOALDISCONFIRMED);
+	    af.SetAppraisalVariable(DeliberativeProcess.NAME, (short)8,OCCAppraisalVariables.GOALCONDUCIVENESS.name(), am.getDeliberativeLayer().getUtilityStrategy().getUtility(am, _goal));
 	    am.updateEmotions(af);
 	    
 	    if(!isRootIntention())
@@ -438,8 +439,8 @@ public class Intention implements Serializable {
 	    Event e = _goal.GetSuccessEvent();
 	    am.getMemory().getEpisodicMemory().StoreAction(am.getMemory(), e);
 	    AppraisalFrame af = new AppraisalFrame(e);
-	    af.SetAppraisalVariable(DeliberativeProcess.NAME,(short)8,OCCComponent.GOALSTATUS, OCCComponent.GOALCONFIRMED);
-	    af.SetAppraisalVariable(DeliberativeProcess.NAME, (short)8,OCCComponent.GOALCONDUCIVENESS, am.getDeliberativeLayer().getUtilityStrategy().getUtility(am, _goal));
+	    af.SetAppraisalVariable(DeliberativeProcess.NAME,(short)8,OCCAppraisalVariables.GOALSTATUS.name(), OCCComponent.GOALCONFIRMED);
+	    af.SetAppraisalVariable(DeliberativeProcess.NAME, (short)8,OCCAppraisalVariables.GOALCONDUCIVENESS.name(), am.getDeliberativeLayer().getUtilityStrategy().getUtility(am, _goal));
 	    am.updateEmotions(af);
 	        		   		
 	    AgentLogger.GetInstance().logAndPrint("Goal SUCCESS - " + getGoal().getName());

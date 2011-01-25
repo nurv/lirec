@@ -32,7 +32,7 @@ public class ActionDisplay extends JPanel {
         
         this.add(em1);
         
-        JLabel em2 = new JLabel(a.GetElicitingEmotion().getType().getName());
+        JLabel em2 = new JLabel(a.GetElicitingEmotion().getType());
         em2.setMaximumSize(d1);
         em2.setMinimumSize(d1);
         

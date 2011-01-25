@@ -285,7 +285,7 @@ public class EpisodicMemory implements Serializable {
 				if((detail.getIntention() != null && (detail.getStatus().equals(GoalEvent.GetName(GoalEvent.ACTIVATION)) || 
 						detail.getStatus().equals(GoalEvent.GetName(GoalEvent.SUCCESS)) ||
 						detail.getStatus().equals(GoalEvent.GetName(GoalEvent.FAILURE)))) ||
-						(detail.getAction() != null && (detail.getEmotion().getType()) != NeutralEmotion.getInstance()))
+						(detail.getAction() != null && (detail.getEmotion().getType()) != NeutralEmotion.NAME))
 				{
 					_am.StoreAction(detail);					
 				}
@@ -312,7 +312,7 @@ public class EpisodicMemory implements Serializable {
 				if((detail.getIntention() != null && (detail.getStatus().equals(GoalEvent.GetName(GoalEvent.ACTIVATION)) || 
 						detail.getStatus().equals(GoalEvent.GetName(GoalEvent.SUCCESS)) ||
 						detail.getStatus().equals(GoalEvent.GetName(GoalEvent.FAILURE)))) ||
-						(detail.getAction() != null && (detail.getEmotion().getType()) != NeutralEmotion.getInstance()))
+						(detail.getAction() != null && (detail.getEmotion().getType()) != NeutralEmotion.NAME))
 				{
 					_am.StoreAction(detail);					
 				}

@@ -143,8 +143,8 @@ public class ActiveEmotion extends BaseEmotion {
 	 * @return a XML String that contains all information about the ActiveEmotion
 	 */
 	public String toXml() {
-		return "<Emotion t0=\"" + _t0 + "\" type=\"" + _type.getName() + 
-				"\" valence=\"" + _type.getValence() + 
+		return "<Emotion t0=\"" + _t0 + "\" type=\"" + _type + 
+				"\" valence=\"" + _valence + 
 				"\" cause=\"" + _cause + "\" direction=\"" + _direction
 				+ "\" intensity=\"" + _intensity + "\" />";
 	}

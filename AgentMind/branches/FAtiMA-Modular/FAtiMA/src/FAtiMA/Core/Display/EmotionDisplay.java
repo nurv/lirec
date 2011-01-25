@@ -51,17 +51,17 @@ public class EmotionDisplay {
     
     public EmotionDisplay(ActiveEmotion em) {
         _panel = new JPanel();
-        _panel.setBorder(BorderFactory.createTitledBorder(em.getType().getName() + " " + em.GetCause().toString()));
+        _panel.setBorder(BorderFactory.createTitledBorder(em.getType() + " " + em.GetCause().toString()));
         _panel.setMaximumSize(new Dimension(300,60));
 
         _bar = new JProgressBar(0,100);
         _bar.setStringPainted(true);
-        switch (em.getType().getValence()) {
-        	case EmotionValence.NEGATIVE: {
+        switch (em.getValence()) {
+        	case NEGATIVE: {
         	    _bar.setForeground(new Color(100,0,0));
         	    break;
         	}
-        	case EmotionValence.POSITIVE: {
+        	case POSITIVE: {
         	    _bar.setForeground(new Color(0,100,0));
         	    break;
         	}

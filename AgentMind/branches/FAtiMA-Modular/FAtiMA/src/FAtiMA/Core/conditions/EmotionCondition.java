@@ -230,7 +230,7 @@ public class EmotionCondition extends PredicateCondition {
 		for(Iterator<ActiveEmotion> it = es.GetEmotionsIterator();it.hasNext();)
 		{
 			aem = (ActiveEmotion) it.next();
-			if(aem.getType().getName().equals(this._emotionType))
+			if(aem.getType().equalsIgnoreCase(this._emotionType))
 			{
 				if(this._intensity.isGrounded())
 				{

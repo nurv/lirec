@@ -167,7 +167,7 @@ public abstract class SummaryGenerator {
 			EMSummary += "direction=\"" + direction + "\"";
 		}
 		
-		EMSummary += ">"+em.getType().getName() + "</Emotion>";
+		EMSummary += ">"+em.getType() + "</Emotion>";
 		
 		return EMSummary;
 	}

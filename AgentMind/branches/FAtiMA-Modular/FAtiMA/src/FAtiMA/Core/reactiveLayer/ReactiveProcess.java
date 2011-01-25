@@ -70,6 +70,7 @@ import FAtiMA.Core.IComponent;
 import FAtiMA.Core.IModelOfOtherComponent;
 import FAtiMA.Core.ValuedAction;
 import FAtiMA.Core.Display.AgentDisplayPanel;
+import FAtiMA.Core.OCCAffectDerivation.OCCAppraisalVariables;
 import FAtiMA.Core.OCCAffectDerivation.OCCComponent;
 import FAtiMA.Core.emotionalState.AppraisalFrame;
 import FAtiMA.Core.sensorEffector.Event;
@@ -170,19 +171,19 @@ public class ReactiveProcess implements Serializable, IComponent, IBehaviourComp
 		{
 			if(selfEvaluation._desirability != null)
 			{
-				af.SetAppraisalVariable(NAME, OCCComponent.DESIRABILITY, selfEvaluation._desirability.intValue());
+				af.SetAppraisalVariable(NAME, OCCAppraisalVariables.DESIRABILITY.name(), selfEvaluation._desirability.intValue());
 			}
 			if(selfEvaluation._desirabilityForOther != null && selfEvaluation._other != null)
 			{
-				af.SetAppraisalVariable(NAME,  OCCComponent.DESFOROTHER + selfEvaluation._other, selfEvaluation._desirabilityForOther.intValue());
+				af.SetAppraisalVariable(NAME,  OCCAppraisalVariables.DESFOROTHER.name() + selfEvaluation._other, selfEvaluation._desirabilityForOther.intValue());
 			}
 			if(selfEvaluation._praiseworthiness != null)
 			{
-				af.SetAppraisalVariable(NAME, OCCComponent.PRAISEWORTHINESS, selfEvaluation._praiseworthiness);
+				af.SetAppraisalVariable(NAME, OCCAppraisalVariables.PRAISEWORTHINESS.name(), selfEvaluation._praiseworthiness);
 			}
 			if(selfEvaluation._like != null)
 			{
-				af.SetAppraisalVariable(NAME, OCCComponent.LIKE, selfEvaluation._like.intValue());
+				af.SetAppraisalVariable(NAME, OCCAppraisalVariables.LIKE.name(), selfEvaluation._like.intValue());
 			}
 		}
 	}
@@ -276,8 +277,8 @@ public class ReactiveProcess implements Serializable, IComponent, IBehaviourComp
 	@Override
 	public void inverseAppraisal(AgentModel am, AppraisalFrame af) {
 		Reaction r;
-		float desirability = af.getAppraisalVariable(OCCComponent.DESIRABILITY);
-		float praiseworthiness = af.getAppraisalVariable(OCCComponent.PRAISEWORTHINESS);
+		float desirability = af.getAppraisalVariable(OCCAppraisalVariables.DESIRABILITY.name());
+		float praiseworthiness = af.getAppraisalVariable(OCCAppraisalVariables.PRAISEWORTHINESS.name());
 		
 		if(desirability != 0 || praiseworthiness != 0)
 		{

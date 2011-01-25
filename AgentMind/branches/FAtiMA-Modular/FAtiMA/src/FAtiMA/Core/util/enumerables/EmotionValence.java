@@ -35,7 +35,7 @@ package FAtiMA.Core.util.enumerables;
  * 
  * @author João Dias
  */
-public abstract class EmotionValence {
-	public static final byte NEGATIVE = 0;
-	public static final byte POSITIVE = 1;
+public enum EmotionValence {
+	NEGATIVE,
+	POSITIVE;
 }
