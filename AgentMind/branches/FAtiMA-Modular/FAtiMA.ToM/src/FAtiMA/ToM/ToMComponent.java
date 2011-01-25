@@ -6,13 +6,13 @@ import java.util.HashMap;
 
 import FAtiMA.Core.AgentCore;
 import FAtiMA.Core.AgentModel;
+import FAtiMA.Core.IAdvancedPerceptionsComponent;
 import FAtiMA.Core.IAppraisalDerivationComponent;
 import FAtiMA.Core.IComponent;
 import FAtiMA.Core.IGetModelStrategy;
 import FAtiMA.Core.IModelOfOtherComponent;
-import FAtiMA.Core.IAdvancedPerceptionsComponent;
 import FAtiMA.Core.Display.AgentDisplayPanel;
-import FAtiMA.Core.OCCAffectDerivation.OCCComponent;
+import FAtiMA.Core.OCCAffectDerivation.OCCAppraisalVariables;
 import FAtiMA.Core.deliberativeLayer.IGetUtilityForOthers;
 import FAtiMA.Core.deliberativeLayer.goals.ActivePursuitGoal;
 import FAtiMA.Core.emotionalState.AppraisalFrame;
@@ -144,13 +144,13 @@ public class ToMComponent implements Serializable, IAppraisalDerivationComponent
 			m.appraisal(e3, otherAF);
 			m.updateEmotions(otherAF);
 			
-			desirability = otherAF.getAppraisalVariable(OCCComponent.DESIRABILITY);
+			desirability = otherAF.getAppraisalVariable(OCCAppraisalVariables.DESIRABILITY.name());
 			if(desirability != 0)
 			{
 				as.SetAppraisalVariable(NAME, 
 						(short)7,
-						OCCComponent.DESFOROTHER+s,
-						otherAF.getAppraisalVariable(OCCComponent.DESIRABILITY));
+						OCCAppraisalVariables.DESFOROTHER.name()+s,
+						otherAF.getAppraisalVariable(OCCAppraisalVariables.DESIRABILITY.name()));
 			} 
 		}
 	}
