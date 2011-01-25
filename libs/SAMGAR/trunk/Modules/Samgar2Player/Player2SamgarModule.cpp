@@ -1,7 +1,6 @@
 /** \file Player2SamgarModule.cpp
  */
 #include "Player2SamgarModule.h"
-//#include "Player2SamgarThread.h"
 #include <iostream>
 
 std::string itoa(int value, int base=10) 
@@ -49,7 +48,10 @@ Player2SamgarModule::Player2SamgarModule(std::string hostname, uint port):
       throw e;
       //return -1;
     }
-  player->StartThread();
+  player->SetDataMode(PLAYER_DATAMODE_PULL);
+  player->SetReplaceRule( 1 , PLAYER_MSGTYPE_DATA, -1 , -1) ;
+
+  //player->StartThread();
 
   std::list<playerc_device_info_t > devices;
   int devicesCount;
@@ -72,7 +74,8 @@ Player2SamgarModule::Player2SamgarModule(std::string hostname, uint port):
       currDriver.player_hostname=gHostname;
       currDriver.player_port=gPort;
 
-      name = currDriver.interfName; 
+      name = currDriver.driverName+"-";
+      name += currDriver.interfName; 
       name += "-"+itoa(currDriver.index);
       
       ports.push_back(new  yarp::os::BufferedPort<yarp::os::Bottle>);
@@ -145,33 +148,33 @@ void Player2SamgarModule::start()
 	  threads.push_back(new pthread_t);
 	  pthread_create(threads.back(), NULL, &Position2dThread, &(*it));
 	}
-      if (it->interfName.compare("localize")==0)
+      else if (it->interfName.compare("localize")==0)
 	{
 	  threads.push_back(new pthread_t);
 	  pthread_create(threads.back(), NULL, &LocalizeThread, &(*it));
 	}
       // wafewront has a little bug in its interface so there is a need of such a trick
-      if (it->interfName.compare("unknown")==0 && it->driverName.compare("wavewront"))
+      else if (it->interfName.compare("unknown")==0 && it->driverName.compare("wavewront"))
 	{
 	  threads.push_back(new pthread_t);
 	  pthread_create(threads.back(), NULL, &PlannerThread, &(*it));
 	}
-      if (it->interfName.compare("laser")==0)
+      else if (it->interfName.compare("laser")==0)
 	{
 	  threads.push_back(new pthread_t);
 	  pthread_create(threads.back(), NULL, &LaserThread, &(*it));
 	}
-      if (it->interfName.compare("map")==0)
+      else if (it->interfName.compare("map")==0)
 	{
 	  threads.push_back(new pthread_t);
 	  pthread_create(threads.back(), NULL, &MapThread, &(*it));
 	}
-      if (it->interfName.compare("sonar")==0)
+      else if (it->interfName.compare("sonar")==0)
 	{
 	  threads.push_back(new pthread_t);
 	  pthread_create(threads.back(), NULL, &SonarThread, &(*it));
 	}
-      if (it->interfName.compare("bumper")==0)
+      else if (it->interfName.compare("bumper")==0)
 	{
 	  threads.push_back(new pthread_t);
 	  pthread_create(threads.back(), NULL, &BumperThread, &(*it));

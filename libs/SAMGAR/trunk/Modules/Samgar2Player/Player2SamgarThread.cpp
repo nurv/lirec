@@ -21,6 +21,9 @@ void* Position2dThread(void * param){
       //return -1;
     }
 
+  player->SetDataMode(PLAYER_DATAMODE_PULL);
+  player->SetReplaceRule( 1 , PLAYER_MSGTYPE_DATA, -1 , -1) ;
+
   PlayerCc::Position2dProxy pp(player,data->index);
   
   while(active)
@@ -66,12 +69,12 @@ void* Position2dThread(void * param){
 		  B.addDouble(pp.GetYawSpeed());
 		  data->samgarPort->write();
 		}
-	      if (input->get(Position2d_POSITION).asInt())
+	      if (input->get(Position2d_POSE).asInt())
 		{
 		  yarp::os::Bottle& B = data->samgarPort->prepare();	  // prepare the bottle/port
 		  B.clear();
 		  B.addInt(Position2d);
-		  B.addInt(Position2d_POSITION);
+		  B.addInt(Position2d_POSE);
 		  B.addDouble(pp.GetXPos());
 		  B.addDouble(pp.GetYPos());
 		  B.addDouble(pp.GetYaw());
@@ -107,6 +110,7 @@ void* Position2dThread(void * param){
 	  data->samgarPort->write();
 	    
 	}
+#if DEBUG
       else{
 	yarp::os::Bottle& B = data->samgarPort->prepare();	  // prepare the bottle/port
 	B.clear();
@@ -115,6 +119,7 @@ void* Position2dThread(void * param){
 	B.addString("Wrong device");
 	data->samgarPort->write();
       }
+#endif
     } // while(1)
   return NULL;
 }
@@ -138,6 +143,9 @@ void* LocalizeThread(void * param){
       //return -1;
     }
 
+  player->SetDataMode(PLAYER_DATAMODE_PULL);
+  player->SetReplaceRule( 1 , PLAYER_MSGTYPE_DATA, -1 , -1) ;
+
   PlayerCc::LocalizeProxy pp(player,data->index);
   
   while(active)
@@ -149,7 +157,6 @@ void* LocalizeThread(void * param){
 	{
 	  // read state from Player
 	  player->Read();
-	  
 	  // perform Samgar command
 	  if (input->get(CMD).asInt() == Localize_SET_POSE)
 	    {
@@ -164,6 +171,7 @@ void* LocalizeThread(void * param){
 	      if (input->get(Localize_MAP_INFO).asInt())
 		{
 		  yarp::os::Bottle& B = data->samgarPort->prepare();	  // prepare the bottle/port
+		  //std::cout<<"MAP_INFO"<<std::endl;
 		  B.clear();
 		  B.addInt(Localize);
 		  B.addInt(Localize_MAP_INFO);
@@ -173,13 +181,16 @@ void* LocalizeThread(void * param){
 		  B.addInt(pp.GetMapTileY());
 		  B.addDouble(pp.GetMapScale());
 		  data->samgarPort->write();
+		  usleep(1000);
 		}
 	      if (input->get(Localize_HYPOTHS).asInt())
 		{
 		  yarp::os::Bottle& B = data->samgarPort->prepare();	  // prepare the bottle/port
+		  //std::cout<<"HYPOTHS"<<std::endl;
 		  B.clear();
 		  B.addInt(Localize);
 		  B.addInt(Localize_HYPOTHS);
+		  //std::cout<<pp.GetNumHypoths()<<" "<<pp.GetNumParticles()<<" "<<pp.GetParticles()<<" "<<pp.GetHypothCount()<<" "<< pp.GetPendingCount()<<std::endl;
 		  int hypothsCount = pp.GetHypothCount();
 		  player_localize_hypoth_t hypoth;
 		  B.addInt(hypothsCount);
@@ -191,6 +202,7 @@ void* LocalizeThread(void * param){
 		    B.addDouble(hypoth.alpha);
 		  }
 		  data->samgarPort->write();
+		  usleep(1000);
 		}
 	    }
 	  
@@ -202,6 +214,7 @@ void* LocalizeThread(void * param){
 	  data->samgarPort->write();
 	    
 	}
+#if DEBUG
       else{
 	yarp::os::Bottle& B = data->samgarPort->prepare();	  // prepare the bottle/port
 	B.clear();
@@ -210,6 +223,7 @@ void* LocalizeThread(void * param){
 	B.addString("Wrong device");
 	data->samgarPort->write();
       }
+#endif
     } // while(1)
   return NULL;
 }
@@ -232,6 +246,9 @@ void* PlannerThread(void * param){
       //return -1;
     }
 
+  player->SetDataMode(PLAYER_DATAMODE_PULL);
+  player->SetReplaceRule( 1 , PLAYER_MSGTYPE_DATA, -1 , -1) ;
+
   PlayerCc::PlannerProxy pp(player,data->index);
   
   while(active)
@@ -243,7 +260,6 @@ void* PlannerThread(void * param){
 	{
 	  // read state from Player
 	  player->Read();
-	  
 	  // perform Samgar command
 	  if (input->get(CMD).asInt() == Planner_SET_GOAL)
 	    {
@@ -253,7 +269,7 @@ void* PlannerThread(void * param){
 	    }
 	  if (input->get(1).asInt() == Planner_SET_ENABLE)
 	    {
-	      pp.SetEnable(input->get(2).asDouble());
+	      pp.SetEnable(input->get(2).asInt());
 	    }
 
 	  if (input->get(1).asInt() == SET_REQ)
@@ -328,6 +344,7 @@ void* PlannerThread(void * param){
 	  data->samgarPort->write();
 	    
 	}
+#if DEBUG
       else{
 	yarp::os::Bottle& B = data->samgarPort->prepare();	  // prepare the bottle/port
 	B.clear();
@@ -336,6 +353,7 @@ void* PlannerThread(void * param){
 	B.addString("Wrong device");
 	data->samgarPort->write();
       }
+#endif
     } // while(1)
   return NULL;
 }
@@ -359,12 +377,16 @@ void* LaserThread(void * param){
       //return -1;
     }
 
+  player->SetDataMode(PLAYER_DATAMODE_PULL);
+  player->SetReplaceRule( 1 , PLAYER_MSGTYPE_DATA, -1 , -1) ;
+
   PlayerCc::LaserProxy pp(player,data->index);
   
   while(active)
     {
       // read data from Samgar
       yarp::os::Bottle *input = data->samgarPort->read(true); // blocking read
+
       // analize data from samgar
       if (input->get(TYPE).asInt() == Laser)
 	{
@@ -469,9 +491,9 @@ void* LaserThread(void * param){
 	  B.clear();
 	  B.addInt(Laser);
 	  B.addInt(Ack);
-	  data->samgarPort->write();
-	    
+	  data->samgarPort->write();   
 	}
+#if DEBUG
       else{
 	yarp::os::Bottle& B = data->samgarPort->prepare();	  // prepare the bottle/port
 	B.clear();
@@ -480,6 +502,7 @@ void* LaserThread(void * param){
 	B.addString("Wrong device");
 	data->samgarPort->write();
       }
+#endif
     } // while(1)
   return NULL;
 }
@@ -502,6 +525,9 @@ void* MapThread(void * param){
       throw e;
       //return -1;
     }
+
+  player->SetDataMode(PLAYER_DATAMODE_PULL);
+  player->SetReplaceRule( 1 , PLAYER_MSGTYPE_DATA, -1 , -1) ;
 
   PlayerCc::MapProxy pp(player,data->index);
   
@@ -545,6 +571,7 @@ void* MapThread(void * param){
 	  data->samgarPort->write();
 	    
 	}
+#if DEBUG
       else{
 	yarp::os::Bottle& B = data->samgarPort->prepare();	  // prepare the bottle/port
 	B.clear();
@@ -553,6 +580,7 @@ void* MapThread(void * param){
 	B.addString("Wrong device");
 	data->samgarPort->write();
       }
+#endif
     } // while(1)
   return NULL;
 }
@@ -574,6 +602,9 @@ void* SonarThread(void * param){
       throw e;
       //return -1;
     }
+
+  player->SetDataMode(PLAYER_DATAMODE_PULL);
+  player->SetReplaceRule( 1 , PLAYER_MSGTYPE_DATA, -1 , -1) ;
 
   PlayerCc::SonarProxy pp(player,data->index);
   
@@ -633,6 +664,7 @@ void* SonarThread(void * param){
 	  data->samgarPort->write();
 	    
 	}
+#if DEBUG
       else{
 	yarp::os::Bottle& B = data->samgarPort->prepare();	  // prepare the bottle/port
 	B.clear();
@@ -641,6 +673,7 @@ void* SonarThread(void * param){
 	B.addString("Wrong device");
 	data->samgarPort->write();
       }
+#endif
     } // while(1)
   return NULL;
 }
@@ -662,6 +695,9 @@ void* BumperThread(void * param){
       throw e;
       //return -1;
     }
+
+  player->SetDataMode(PLAYER_DATAMODE_PULL);
+  player->SetReplaceRule( 1 , PLAYER_MSGTYPE_DATA, -1 , -1) ;
 
   PlayerCc::BumperProxy pp(player,data->index);
   
@@ -723,6 +759,7 @@ void* BumperThread(void * param){
 	  data->samgarPort->write();
 	    
 	}
+#if DEBUG
       else{
 	yarp::os::Bottle& B = data->samgarPort->prepare();	  // prepare the bottle/port
 	B.clear();
@@ -731,6 +768,7 @@ void* BumperThread(void * param){
 	B.addString("Wrong device");
 	data->samgarPort->write();
       }
+#endif
     } // while(1)
   return NULL;
 }

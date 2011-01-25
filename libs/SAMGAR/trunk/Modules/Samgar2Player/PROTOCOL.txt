@@ -33,7 +33,7 @@ PlayerProxy_DATA:
 	Error 	= 0
 	Ack 	= 1
 
-
+enum PlayerProxy_Position2d_CMD {Position2d_SET_SPEED=1, Position2d_SET_GOAL, Position2d_SET_ODOM, Position2d_SET_MOTOR};
 enum PlayerProxy_Localize_CMD {Localize_SET_POSE=1};
 enum PlayerProxy_Planner_CMD {Planner_SET_GOAL=1, Planner_SET_ENABLE};
 enum PlayerProxy_Laser_CMD {Laser_SET_CONFIG=1};
@@ -42,6 +42,7 @@ enum PlayerProxy_Laser_CMD {Laser_SET_CONFIG=1};
 // enum PlayerProxy_Bumper_CMD {};
 
 
+enum PlayerProxy_Position2d_DATA {Position2d_SPEED=2, Position2d_POSE, Position2d_SIZE, Position2d_STALL};
 enum PlayerProxy_Localize_DATA {Localize_MAP_INFO=2, Localize_HYPOTHS};
 enum PlayerProxy_Planner_DATA {Planner_GOAL=2, Planner_POSE, Planner_CURR_WAYPOINT, Planner_PATH, Planner_WAYPOINTS};
 enum PlayerProxy_Laser_DATA {Laser_CONFIG=2, Laser_SIZE, Laser_POSE, Laser_ROBOT_POSE, Laser_POINTS, Laser_RANGES};
@@ -103,7 +104,7 @@ PlayerProxy_Position2d_DATA:
 	Error 			= 0
 	Ack 			= 1
 	Position2d_SPEED	= 2
-	Position2d_POSITION	= 3
+	Position2d_POSE		= 3
 	Position2d_SIZE		= 4
 	Position2d_STALL	= 5
 
@@ -142,7 +143,7 @@ Below is a list of posibble PlayerPoxy_Position2d_CMD frames:
 +------++-----------------------+---------------+
 
 +------++---------------+-----------------------+-----------------------+-----------------------+-----------------------+
-| desc || command_id	| Position2d_SPEED	| Position2d_POSITION	| Position2d_SIZE	| Position2d_STALL	| 
+| desc || command_id	| Position2d_SPEED	| Position2d_POSE	| Position2d_SIZE	| Position2d_STALL	| 
 +------++---------------+-----------------------+-----------------------+-----------------------+-----------------------+
 | type || SET_REQ	| bool			| bool			| bool			| bool			|
 +------++---------------+-----------------------+-----------------------+-----------------------+-----------------------+
@@ -160,9 +161,9 @@ Below is a list of posibble PlayerPoxy_Position2d_DATA frames:
 +------++-----------------------+-------+-------+
 
 +------++-----------------------+---------------+
-| desc || command_id		| goal	  	|
+| desc || command_id		| pose	  	|
 +------++-----------------------+---------------+
-| type || Position2d_POSITION	| coord_type	|
+| type || Position2d_POSE	| coord_type	|
 +------++-----------------------+---------------+
 | info || 			| 		|
 +------++-----------------------+---------------+
