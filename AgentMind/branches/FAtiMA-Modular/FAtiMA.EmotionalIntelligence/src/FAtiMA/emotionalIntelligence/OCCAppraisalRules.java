@@ -3,8 +3,7 @@ package FAtiMA.emotionalIntelligence;
 import java.util.ArrayList;
 
 import FAtiMA.Core.AgentModel;
-import FAtiMA.Core.OCCAffectDerivation.DistressEmotion;
-import FAtiMA.Core.OCCAffectDerivation.JoyEmotion;
+import FAtiMA.Core.OCCAffectDerivation.OCCEmotionType;
 import FAtiMA.Core.conditions.EmotionCondition;
 import FAtiMA.Core.conditions.NewEventCondition;
 import FAtiMA.Core.deliberativeLayer.plan.Effect;
@@ -38,19 +37,19 @@ public abstract class OCCAppraisalRules {
 		appraisalOperators = new ArrayList<Step>();
 		
 		joyOperator = new Step(new Symbol("[AGENT]"),Name.ParseName("JoyAppraisal()"),1.0f);
-		c = new EmotionCondition(true, new Symbol("[AGENT]"), JoyEmotion.getInstance().getName());
+		c = new EmotionCondition(true, new Symbol("[AGENT]"), OCCEmotionType.JOY.name());
 		c.SetIntensity(new Symbol("[X]"));
 		aux = new Effect(am, "JoyEmotion", 1.0f,c);
 		joyOperator.AddEffect(aux);
 		
-		disp = am.getEmotionalState().getEmotionDisposition(JoyEmotion.getInstance().getName());
+		disp = am.getEmotionalState().getEmotionDisposition(OCCEmotionType.JOY.name());
 		threshold = disp.getThreshold();
 		
 		params = new ArrayList<Symbol>();
 		//params.add(new Symbol("[p1]"));
 		//params.add(new Symbol("[p2]"));
 		appraisal = new AppraisalCondition(new Symbol("[AGENT]"),
-				"desirability", new Symbol("[X]"),
+				"DESIRABILITY", new Symbol("[X]"),
 				threshold, 
 				(short)0,
 				new Symbol("[s]"),
@@ -68,12 +67,12 @@ public abstract class OCCAppraisalRules {
 		
 		//distress
 		distressOperator = new Step(new Symbol("[AGENT]"),Name.ParseName("DistressAppraisal()"),1.0f);
-		c = new EmotionCondition(true, new Symbol("[AGENT]"), DistressEmotion.getInstance().getName());
+		c = new EmotionCondition(true, new Symbol("[AGENT]"), OCCEmotionType.DISTRESS.name());
 		c.SetIntensity(new Symbol("[X]"));
 		aux = new Effect(am, "DistressEmotion", 1.0f,c);
 		distressOperator.AddEffect(aux);
 		
-		disp = am.getEmotionalState().getEmotionDisposition(DistressEmotion.getInstance().getName());
+		disp = am.getEmotionalState().getEmotionDisposition(OCCEmotionType.DISTRESS.name());
 		threshold = disp.getThreshold();
 		
 		params = new ArrayList<Symbol>();
