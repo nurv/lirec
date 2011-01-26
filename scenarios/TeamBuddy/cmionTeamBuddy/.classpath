@@ -5,6 +5,8 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/cmionAddOns"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/cmionMain"/>
 	<classpathentry kind="lib" path="jyarp-win.jar"/>
+	<classpathentry kind="lib" path="gdata-calendar-2.0.jar"/>
+	<classpathentry kind="lib" path="google-collect-1.0-rc1.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/ION.Meta"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="output" path="bin"/>
