@@ -26,7 +26,7 @@
 
 (defn update-islands [srcpath dstpath]
   (when (.exists (clojure.contrib.java-utils/file srcpath))
-    (execute (str "rm " dstpath "islands/*"))
+    (execute (str "rm -r " dstpath "islands"))
     (execute (str "cp -r " srcpath " " dstpath))
     (execute (str "rm -r " srcpath))
     ))
