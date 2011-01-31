@@ -22,6 +22,8 @@
    java.io.FileOutputStream
    java.io.PushbackReader
    java.io.FileReader
+   java.io.BufferedReader
+   java.io.InputStreamReader
    java.net.Socket
    java.nio.ByteBuffer
    java.nio.CharBuffer
@@ -29,6 +31,10 @@
    java.nio.charset.Charset
    java.io.IOException
    java.io.ByteArrayInputStream))
+
+(defn parse-number [s]
+  (try (Integer/parseInt (.trim s))
+       (catch NumberFormatException e nil)))
 
 ;(defn msg-waiting? [socket]
 ;  (> (. (. socket getInputStream) available) 0))
@@ -76,21 +82,26 @@
   (with-open [inp (-> (java.io.File. filename) java.io.FileInputStream. java.io.ObjectInputStream.)]
     (.readObject inp)))
 
-(def buf (ByteBuffer/allocateDirect 4096))
+(comment (def buf (ByteBuffer/allocateDirect 4096))
 
 (defn read-msg [sc]
   (.clear buf)
-  (let [r (.read sc buf)]
+  (let [r (.readLine sc buf)]
     (if (> r 0)
       (do
         (.flip buf)
         (let [bytearr (byte-array (.remaining buf))]
           (.get buf bytearr)
           (new String bytearr)))
-      false)))
-  
+      false))))
+
+(defn read-msg [reader]
+  (let [r (.readLine reader)]
+    ;(println "<-----------------" r)
+    r))
+
 (defn send-msg [sc msg]
-  (println "sending:" msg)
+  ;(println "-----------------------> sending:" msg)
   (let [msg (str msg "\n")
         enc (.newEncoder (Charset/forName "US-ASCII"))]  
     (.write sc (.encode enc (CharBuffer/wrap msg)))))

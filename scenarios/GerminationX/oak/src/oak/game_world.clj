@@ -18,7 +18,10 @@
    oak.vec2
    oak.plant
    oak.tile
-   oak.rand)
+   oak.rand
+   oak.remote-agent
+   oak.spirit
+   oak.world)
   (:require
    clojure.contrib.math))
 
@@ -90,3 +93,28 @@
                       (tile-update tile time delta))
                     tiles)))
           game-world))
+
+(defn game-world-find-spirit [game-world name]
+  (reduce
+   (fn [r spirit]
+     (if (and (not r) (= name (:name spirit)))
+       spirit r))
+   false
+   (:spirits game-world)))
+
+(defn game-world-sync<-fatima [game-world fatima-world]
+  (modify :spirits
+          (fn [spirits]
+            (reduce
+             (fn [spirits agent]
+               (let [spirit (game-world-find-spirit game-world
+                                                    (remote-agent-name agent))]
+                 (if spirit
+                   (cons (spirit-update spirit agent) spirits)
+                   (cons (make-spirit agent) spirits))))
+             '()
+             (world-agents fatima-world)))
+          game-world))
+
+(defn game-world-sync->fatima [fatima-world game-world]
+  fatima-world)

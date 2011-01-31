@@ -19,6 +19,8 @@
    java.io.File
    java.io.IOException
    java.util.Random
+   java.io.BufferedReader
+   java.io.InputStreamReader
    FAtiMA.util.parsers.SocketListener
    FAtiMA.autobiographicalMemory.AutobiographicalMemory))
 
@@ -32,7 +34,8 @@
   :emotions
   :said
   :done
-  :random)
+  :random
+  :reader)
 
 (def remote-agent-properties (accessor remote-agent :properties))
 (def remote-agent-name (accessor remote-agent :name))
@@ -44,6 +47,7 @@
 (def remote-agent-said (accessor remote-agent :said))
 (def remote-agent-done (accessor remote-agent :done))
 (def remote-agent-random (accessor remote-agent :random))
+(def remote-agent-reader (accessor remote-agent :reader))
 
 (defn remote-agent-add-property [agent property]
   (merge agent {:properties (cons property (remote-agent-properties agent))})) 
@@ -51,7 +55,10 @@
 (defn make-remote-agent [socket world]
   ;(.configureBlocking socket false)
   ;(. (AutobiographicalMemory/GetInstance) setSelf name)
-  (let [toks (.split (read-msg socket) " ")]
+  (let [reader (BufferedReader.
+                (InputStreamReader.
+                 (.getInputStream (.socket socket))))
+        toks (.split (read-msg reader) " ")]
     (send-msg socket "OK")
     (struct
      remote-agent
@@ -69,5 +76,7 @@
      "none yet"
      '()
      '()
-     (new java.util.Random))))
+     (new java.util.Random)
+     reader
+     )))
 

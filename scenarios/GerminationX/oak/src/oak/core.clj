@@ -28,30 +28,44 @@
 (def log-filename "public/log.txt")
 (def game-world-tick 1)
 
-(comment (def myworld
+(def fatima-world
      (ref
       (make-world
        46874
        "data/characters/minds/language/agent/en/language-set-1"
        "data/characters/minds/Actions.xml"
-       (list "WiltedVine"
-             "AppleTree"))))
-         )
+       (list 
+        "WiltedVine"
+        "AppleTree"
+             ))))
 
 ;(def my-game-world (ref (game-world-load state-filename)))
 (def my-game-world (ref (make-game-world 5000 4)))
 
 (append-spit log-filename (str (str (Date.)) " server started\n"))
 
-(defn parse [s]
-  (try (Integer/parseInt (.trim s))
-       (catch NumberFormatException e nil)))
+(defn tick []
+  (Thread/sleep 1000)
+  ;(game-world-print (deref my-game-world))
+  (let [time (.getTime (java.util.Date.))]
+    (dosync (ref-set fatima-world
+                     (world-run
+                      (game-world-sync->fatima
+                       (deref fatima-world)
+                       (deref my-game-world)))))
+    (dosync (ref-set my-game-world
+                     (game-world-update
+                      (game-world-sync<-fatima
+                       (deref my-game-world)
+                       (deref fatima-world))
+                      time 1))))
+  (recur))
 
 (defroutes main-routes
   (GET "/get-tile/:tilex/:tiley" [tilex tiley]
        (let [tile (game-world-get-tile (deref my-game-world)
-                                       (make-vec2 (parse tilex)
-                                                  (parse tiley)))]
+                                       (make-vec2 (parse-number tilex)
+                                                  (parse-number tiley)))]
          (if tile
            (json/encode-to-str tile)
            (json/encode-to-str '()))))
@@ -67,12 +81,13 @@
         (ref-set my-game-world
                  (game-world-add-entity
                   (deref my-game-world)
-                  (make-vec2 (parse tilex) (parse tiley))
-                  (make-plant (make-vec2 (parse posx) (parse posy)) type owner size))))
+                  (make-vec2 (parse-number tilex) (parse-number tiley))
+                  (make-plant (make-vec2 (parse-number posx) (parse-number posy)) type owner size))))
        ;(game-world-save (deref my-game-world) state-filename)
        ;(println (deref my-game-world))
        (json/encode-to-str '("ok")))
   (GET "/spirit-sprites" []
+       (update-islands "./islands" "./public/islands")
        (println (read-islands "./public/islands"))
        (read-islands "./public/islands"))
 
@@ -93,19 +108,6 @@
                                                   (load-object obj))))))
   
   (route/not-found "<h1>Page not found</h1>"))
-
-(defn tick []
-  (Thread/sleep 1000)
-  ;(game-world-print (deref my-game-world))
-  (let [time (.getTime (java.util.Date.))]
-    ;(dosync
-     ;(ref-set myworld
-     ;         (world-run (deref myworld))))
-     (dosync (ref-set my-game-world
-              (game-world-update (deref my-game-world)
-                                 time 1))))
-  (println "tick...")
-  (recur))
   
 (let [pool (Executors/newFixedThreadPool 2)
       tasks (list (fn []

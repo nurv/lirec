@@ -13,7 +13,23 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (ns oak.island
-  (:require [org.danlarkin.json :as json]))
+  (:use clojure.contrib.duck-streams)
+  (:require [org.danlarkin.json :as json]
+            clojure.contrib.java-utils))
+
+(defn execute [command]
+  (println (str "executing: " command))
+  (let [process (.exec (Runtime/getRuntime) command)]
+    (if (= 0 (.waitFor  process))
+        (read-lines (.getInputStream process))
+        (read-lines (.getErrorStream process)))))
+
+(defn update-islands [srcpath dstpath]
+  (when (.exists (clojure.contrib.java-utils/file srcpath))
+    (execute (str "rm " dstpath "/islands/*"))
+    (execute (str "cp -r " srcpath " " dstpath))
+    (execute (str "rm -r " srcpath))
+    ))
 
 (defn read-islands [path]
   (json/encode-to-str

@@ -87,7 +87,7 @@
 	    <!--<Goal name="HumiliateVictory([target])" importanceOfSuccess="4" importanceOfFailure="2" /> -->
 	    
 	    <!-- Episode G23: Classroom - Verbal -->
-	    <Goal name="Follow([victim])" importanceOfSuccess="5" importanceOfFailure="10"/>
+	 <!--   <Goal name="Follow([victim])" importanceOfSuccess="5" importanceOfFailure="10"/> -->
 		<Goal name="FollowLeaveFollow([victim])" importanceOfSuccess="5" importanceOfFailure="10"/>
 	
 

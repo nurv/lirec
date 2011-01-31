@@ -171,12 +171,13 @@
           (properties-changed world agent (.getEffects gstep)))))))
     
 
-(defn world-process-agent [world agent msg]        
+(defn world-process-agent [world agent msg]
+;  (println (str "world-process-agent got " msg))
   (let [toks (.split msg " ")
         type (nth toks 0)]
     (cond
      (.startsWith type "<EmotionalState") (merge agent {:emotions (parse-xml msg)})
-     (.startsWith type "<Relations") (merge agent {:relations msg})
+     (.startsWith type "<Relations") (merge agent {:relations (parse-xml msg)})
      (.startsWith type "PROPERTY-CHANGED") agent
      (= type "look-at")
      (do
@@ -208,6 +209,7 @@
      :else
      (do
        (println "action")
+       (println msg)
        (update-action-effects
         world agent
         (convert-to-action-name
@@ -218,12 +220,12 @@
                            (second toks)
                            (map (fn [s] (str s " ")) (rest (rest toks))))
                           '())))))
-        (world-broadcast-all
-         world
-         (apply str (concat "ACTION-FINISHED " (remote-agent-name agent)
-                            (map (fn [s] (str s " ")) (rest toks)))))
-        (merge agent {:done (cons (str (world-time world) ": " msg)
-                                  (remote-agent-done agent))})))))
+       (world-broadcast-all
+        world
+        (apply str (concat "ACTION-FINISHED " (remote-agent-name agent) " "
+                           (map (fn [s] (str s " ")) toks))))
+       (merge agent {:done (cons (str (world-time world) ": " msg)
+                                 (remote-agent-done agent))})))))
 
 (defn world-check-for-new-agents [world]
   (let [chan (.accept (world-ssc world))]
@@ -244,7 +246,7 @@
     (world-perceive world a)))
 
 (defn world-update-agent [world agent]
-  (let [msgs (read-msg (remote-agent-socket agent))]
+  (let [msgs (read-msg (remote-agent-reader agent))]
     (if msgs
       (reduce
        (fn [agent msg]
@@ -253,16 +255,16 @@
        (.split msgs "\n")))))
 
 (defn world-update-agents [world]
-  (println "updating: "
+  (comment (println "updating: "
           (map
            (fn [agent] (remote-agent-name agent))
-           (world-agents world)))
+           (world-agents world))))
   (merge world
          {:agents
-          (map
-           (fn [agent]
-             (world-update-agent world agent))
-           (world-agents world))}))
+          (doall (map
+                  (fn [agent]
+                    (world-update-agent world agent))
+                  (world-agents world)))}))
  
 (defn world-run [world]
   (world-update-agents
