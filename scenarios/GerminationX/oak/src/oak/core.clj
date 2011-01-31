@@ -87,8 +87,7 @@
        ;(println (deref my-game-world))
        (json/encode-to-str '("ok")))
   (GET "/spirit-sprites" []
-       (update-islands "./islands" "./public/islands")
-       (println (read-islands "./public/islands"))
+       (update-islands "./islands" "./public/")
        (read-islands "./public/islands"))
 
   (comment
