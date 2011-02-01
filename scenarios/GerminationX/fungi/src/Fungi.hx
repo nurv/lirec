@@ -352,7 +352,7 @@ class FungiWorld extends World
         var names = ["CanopySpirit","CoverSpirit","VerticalSpirit"];
         var positions = [new Vec3(0,5,4), new Vec3(7,0,4), new Vec3(2,10,4)];
 
-        for (i in 0...3)
+        for (i in 0...2)
         {
             Server.Request("spirit-sprites/"+names[i],
             this,
