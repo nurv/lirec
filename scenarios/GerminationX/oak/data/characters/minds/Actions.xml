@@ -1,22 +1,22 @@
 <DomainActions>
-	<Action name="poke([target])">
+	<Action name="flower([target])">
 		<PreConditions>
 			<Property name="[AGENT](pose)" operator="=" value="standing"/>
 		</PreConditions>
 		<Effects>
 			<Effect probability="0.8">
-				<Property name="[target](annoyed)" operator="=" value="True"/>
+		<!--		<Property name="[target](annoyed)" operator="=" value="True"/> -->
 			</Effect>
 		</Effects>
 	</Action>
 
-	<Action name="sing([target])">
+	<Action name="drop-leaves([target])">
 		<PreConditions>
 			<Property name="[AGENT](pose)" operator="=" value="standing"/>
 		</PreConditions>
 		<Effects>
 			<Effect probability="0.8">
-				<Property name="[target](annoyed)" operator="=" value="True"/>
+		<!--		<Property name="[target](annoyed)" operator="=" value="True"/> -->
 			</Effect>
 		</Effects>
 	</Action>

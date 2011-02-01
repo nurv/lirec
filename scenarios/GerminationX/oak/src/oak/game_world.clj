@@ -117,4 +117,25 @@
           game-world))
 
 (defn game-world-sync->fatima [fatima-world game-world]
-  fatima-world)
+  (let [tile (game-world-get-tile game-world (make-vec2 0 0))] 
+    (reduce
+     (fn [fw entity]
+       (cond
+        (or
+         (= (:state entity) 'grow-a)
+         (= (:state entity) 'fruit-a)
+         (= (:state entity) 'fruit-b)
+         (= (:state entity) 'fruit-c)
+         (= (:state entity) 'ill-a)
+         (= (:state entity) 'ill-b)
+         (= (:state entity) 'ill-c))
+        (do
+          (world-add-object fw
+                            {"name" (str (:layer entity) "-" (:state entity))
+                             "owner" (:layer entity)
+                             "position" (str (:x (:pos entity)) "," (:y (:pos entity)))
+                             "tile" "0,0"
+                             "type" "object"}))
+        :else fw))
+     fatima-world
+     (:entities tile))))

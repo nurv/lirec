@@ -97,14 +97,18 @@
 
 (defn read-msg [reader]
   (let [r (.readLine reader)]
-    ;(println "<-----------------" r)
+    (println "<----------------- " r)
     r))
 
 (defn send-msg [sc msg]
-  ;(println "-----------------------> sending:" msg)
+  (println "----------------> " msg)
   (let [msg (str msg "\n")
         enc (.newEncoder (Charset/forName "US-ASCII"))]  
     (.write sc (.encode enc (CharBuffer/wrap msg)))))
+
+(let [i (atom 0)]
+  (defn generate-id []
+    (swap! i inc)))
 
 (defn load-object [fname]
   (reduce
@@ -121,5 +125,8 @@
      (load-object obj))
    objects))
 
-(defn parse-xml [str]
-  (parse (ByteArrayInputStream. (.getBytes str "UTF-8"))))
+(defn parse-xml [s]
+  (try
+    (parse (ByteArrayInputStream. (.getBytes s "UTF-8"))) 
+    (catch org.xml.sax.SAXParseException e
+      (println (str "xml error with " s)))))

@@ -1,4 +1,4 @@
-<Character role="Cover">
+<Character role="CoverSpirit">
 	<EmotionalThresholds>
 		<EmotionalThreshold emotion="Love" threshold="3" decay="5"/>
 		<EmotionalThreshold emotion="Hate" threshold="2" decay="5"/>
@@ -29,8 +29,8 @@
 	</Goals>
 	
 	<InterpersonalRelations>
-		<Relation target="Vertical" like="10" respect="10"/>
-		<Relation target="Canopy" like="-5" respect="-3"/>
+		<Relation target="VerticalSpirit" like="3" respect="1"/>
+		<Relation target="CanopySpirit" like="-5" respect="-3"/>
         <Relation target="cover-grow-a" like="3" respect="1"/>
         <Relation target="cover-fruit-a" like="1" respect="1"/>
         <Relation target="cover-fruit-b" like="2" respect="1"/>

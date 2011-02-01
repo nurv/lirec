@@ -45,8 +45,15 @@
 (defn plant-owner [plant] (:owner plant))
 (defn plant-size [plant] (:size plant))
 
+(defn plant-type->layer [type]
+  (cond
+   (= type "plant-001") "canopy"
+   (= type "plant-002") "vertical"
+   (= type "plant-003") "cover"))
+  
 (defn make-plant [pos type owner size]
-  (plant. pos type "" 'grow-a '() owner size 0 (+ 30 (Math/floor (rand 10))) start-health))
+  (plant. pos type (plant-type->layer type)
+          'grow-a '() owner size 0 (+ 30 (Math/floor (rand 10))) start-health))
 
 (defn make-random-plant []
   (make-plant

@@ -1,4 +1,4 @@
-<Character role="Canopy">
+<Character role="CanopySpirit">
 	<EmotionalThresholds>
 		<EmotionalThreshold emotion="Love" threshold="1" decay="10"/>
 		<EmotionalThreshold emotion="Hate" threshold="0" decay="5"/>
@@ -29,8 +29,8 @@
 	</Goals>
 	
 	<InterpersonalRelations>
-		<Relation target="Vertical" like="10" respect="10"/>
-		<Relation target="Cover" like="2" respect="1"/>
+		<Relation target="VerticalSpirit" like="3" respect="10"/>
+		<Relation target="CoverSpirit" like="2" respect="1"/>
         <Relation target="canopy-grow-a" like="3" respect="1"/>
         <Relation target="canopy-fruit-a" like="1" respect="1"/>
         <Relation target="canopy-fruit-b" like="2" respect="1"/>

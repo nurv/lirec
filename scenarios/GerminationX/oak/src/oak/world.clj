@@ -62,7 +62,6 @@
           op))
 
 (defn make-world [port agent-language-file actions-file objects]
-  (println "make-world")
   (struct world
           (load-objects objects)
           []
@@ -127,10 +126,22 @@
                           (str " " (get object "name")))
                         (world-objects world))))))
 
+(defn world-get-object [world name pos]
+  (reduce
+   (fn [r obj]
+     (if (and (not r) (and (= name (get obj "name"))
+                           (= pos (get obj "position"))))
+       obj r))
+   false
+   (world-objects world)))
 
 (defn world-add-object [world object]
-  (world-broadcast-all world (str "ENTITY-ADDED " (get object "name")))
-  (merge world {:objects (cons object (world-objects world))}))
+  (if (not (world-get-object world (get object "name") (get object "position")))
+    (do
+      (println (str "adding " (get object "name") " " (get object "position")))
+      (world-broadcast-all world (str "ENTITY-ADDED " (get object "name")))
+      (merge world {:objects (cons object (world-objects world))}))
+    world))
 
 (defn list->commas [l]
   (if (not (empty l))

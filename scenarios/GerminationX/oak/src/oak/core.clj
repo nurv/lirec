@@ -34,13 +34,10 @@
        46874
        "data/characters/minds/language/agent/en/language-set-1"
        "data/characters/minds/Actions.xml"
-       (list 
-        "WiltedVine"
-        "AppleTree"
-             ))))
+       (list))))
 
 ;(def my-game-world (ref (game-world-load state-filename)))
-(def my-game-world (ref (make-game-world 5000 4)))
+(def my-game-world (ref (make-game-world 100 1)))
 
 (append-spit log-filename (str (str (Date.)) " server started\n"))
 
@@ -60,6 +57,8 @@
                        (deref fatima-world))
                       time 1))))
   (recur))
+
+(tick)
 
 (defroutes main-routes
   (GET "/get-tile/:tilex/:tiley" [tilex tiley]
@@ -86,12 +85,11 @@
        ;(game-world-save (deref my-game-world) state-filename)
        ;(println (deref my-game-world))
        (json/encode-to-str '("ok")))
-  (GET "/spirit-sprites" []
-       (update-islands "./islands" "./public/")
-       (read-islands "./public/islands"))
+  (GET "/spirit-sprites/:name" [name]
+       (update-islands (str "./" name) (str "./" name))
+       (read-islands "./public/" name))
 
-  (comment
-  (GET "/agent-info" []
+  (GET "/spirit-info" []
        (json/encode-to-str (map
                             (fn [a]
                               {:name (remote-agent-name a)
@@ -100,7 +98,8 @@
                            :indent 2))
   (GET "/perceive" []
        (world-perceive-all (deref myworld)))
- 
+  
+  (comment 
   (GET "/add-object/:obj" [obj]
        (println (str "adding " obj))
        (dosync (ref-set myworld (world-add-object (deref myworld)
