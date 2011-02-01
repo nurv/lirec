@@ -349,7 +349,7 @@ class FungiWorld extends World
 
         Update(0);
         SortScene();
-        var names = ["CanopySpirit","CoverSpirit","VerticalSpirit"];
+        var names = ["CanopySpirit","CoverSpirit"];
         var positions = [new Vec3(0,5,4), new Vec3(7,0,4), new Vec3(2,10,4)];
 
         for (i in 0...2)
