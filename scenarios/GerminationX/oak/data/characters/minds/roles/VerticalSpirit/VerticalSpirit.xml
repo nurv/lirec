@@ -31,26 +31,24 @@
 	<InterpersonalRelations>
 		<Relation target="Canopy" like="5" respect="5"/>
 		<Relation target="Cover" like="2" respect="1"/>
-        <Relation target="WiltedVine" like="-10" respect="1"/>
+        <Relation target="vertical-grow-a" like="3" respect="1"/>
+        <Relation target="vertical-fruit-a" like="1" respect="1"/>
+        <Relation target="vertical-fruit-b" like="2" respect="1"/>
+        <Relation target="vertical-fruit-c" like="3" respect="1"/>
+        <Relation target="vertical-ill-a" like="-1" respect="1"/>
+        <Relation target="vertical-ill-b" like="-2" respect="1"/>
+        <Relation target="vertical-ill-c" like="-3" respect="1"/>
 	</InterpersonalRelations>
 	
 	<EventReactions>
 
 		<!-- General emotional reactions used in more than one episode -->
-		<!--<EmotionalReaction desirability="-6" desirabilityForOther="6" praiseworthiness="5"> 
-			<Event subject="*" action="poke"/>
-		</EmotionalReaction> -->
-
-		<EmotionalReaction desirability="6" desirabilityForOther="-6" praiseworthiness="5"> 
-			<Event subject="*" action="poke"/>
+		<EmotionalReaction desirability="6" desirabilityForOther="1" praiseworthiness="5"> 
+			<Event subject="*" action="flower"/>
 		</EmotionalReaction>
 
-		<EmotionalReaction desirability="-6" desirabilityForOther="-6" praiseworthiness="-5"> 
-			<Event subject="*" action="cry"/>
-		</EmotionalReaction>
-		
-		<EmotionalReaction desirability="-5" praiseworthiness="-5">
-			<Event subject="[SELF]" action="cry"/>
+		<EmotionalReaction desirability="-6" desirabilityForOther="-1" praiseworthiness="-2"> 
+			<Event subject="*" action="drop-leaves"/>
 		</EmotionalReaction>
 		
 	</EventReactions>
@@ -58,21 +56,20 @@
 	<ActionTendencies>
 		
 		<!-- Generic action tendencies -->
-		<ActionTendency action="sing([Target])">
+
+		<ActionTendency action="flower([Target])">
 			<Preconditions>
-			  <!-- <RecentEvent occurred="True" subject="[SELF]" action="poke" target="*"/> -->
             </Preconditions>
-			<ElicitingEmotion type="Gratitude" minIntensity="1">
+			<ElicitingEmotion type="Love" minIntensity="2">
 				<CauseEvent/>
 			</ElicitingEmotion>
 		</ActionTendency>
 
-		<ActionTendency action="SpeechAct([Target],singat)">
+		<ActionTendency action="drop-leaves([Target])">
 			<Preconditions>
-				<Property name="[Target](type)" operator="=" value="character"/>
-			</Preconditions>
-			<ElicitingEmotion type="Joy" minIntensity="3">
-				<CauseEvent subject="*" action="sing"/>
+            </Preconditions>
+			<ElicitingEmotion type="Hate" minIntensity="2">
+				<CauseEvent/>
 			</ElicitingEmotion>
 		</ActionTendency>
        

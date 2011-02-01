@@ -26,73 +26,50 @@
 	
 	<Goals>
 		<!-- General goals used in more than one episode -->
-		<Goal name="ReplyPositively([speaker],[question])" importanceOfSuccess="4" importanceOfFailure="3"/>
-		<Goal name="ReplyNegatively([speaker],[question])" importanceOfSuccess="4" importanceOfFailure="3"/>
-		<Goal name="ReplyPositivelyNoChoice([speaker],[question])" importanceOfSuccess="0" importanceOfFailure="4"/>
-		<Goal name="AvoidGettingHarmed" importanceOfSuccess="2" importanceOfFailure="10"/>
-		<Goal name="ConfrontVictimTellTeacher([victim])" importanceOfSuccess="2" importanceOfFailure="2"/>
 	</Goals>
 	
 	<InterpersonalRelations>
 		<Relation target="Vertical" like="10" respect="10"/>
-		<Relation target="Canopy" like="-2" respect="1"/>
+		<Relation target="Canopy" like="-5" respect="-3"/>
+        <Relation target="cover-grow-a" like="3" respect="1"/>
+        <Relation target="cover-fruit-a" like="1" respect="1"/>
+        <Relation target="cover-fruit-b" like="2" respect="1"/>
+        <Relation target="cover-fruit-c" like="3" respect="1"/>
+        <Relation target="cover-ill-a" like="-1" respect="1"/>
+        <Relation target="cover-ill-b" like="-2" respect="1"/>
+        <Relation target="cover-ill-c" like="-3" respect="1"/>
 	</InterpersonalRelations>
 	
 	<EventReactions>
 
 		<!-- General emotional reactions used in more than one episode -->
-	
-		<EmotionalReaction desirability="6" desirabilityForOther="6" praiseworthiness="5"> 
-			<Event subject="*" action="sing"/>
+		<EmotionalReaction desirability="6" desirabilityForOther="1" praiseworthiness="5"> 
+			<Event subject="*" action="flower"/>
 		</EmotionalReaction>
 
-		<EmotionalReaction desirability="-6" desirabilityForOther="-6" praiseworthiness="-5"> 
-			<Event subject="*" action="cry"/>
-		</EmotionalReaction>
-		
-		<EmotionalReaction desirability="-5" praiseworthiness="-5">
-			<Event subject="[SELF]" action="cry"/>
-		</EmotionalReaction>
-		
-		<!-- new emotional reaction, the character finds it undesirable to get hurt -->
-		<EmotionalReaction desirability="-6">
-			<Event subject="[SELF]" action="PROPERTY-CHANGED" target="hurt" parameters="True" />
-		</EmotionalReaction>
-
-		<!-- to see others get hurt -->
-		<EmotionalReaction desirability="06">
-			<Event action="PROPERTY-CHANGED" target="hurt" parameters="True" />
-		</EmotionalReaction>
-
-		<EmotionalReaction desirability="-5" praiseworthiness="4">
-			<Event action="SpeechAct" target="[SELF]" parameters="insult"/>
-		</EmotionalReaction>
-
-		<EmotionalReaction desirability="-5" praiseworthiness="5">
-			<Event action="SpeechAct" subject="[SELF]" parameters="insult"/>
+		<EmotionalReaction desirability="-6" desirabilityForOther="-1" praiseworthiness="-2"> 
+			<Event subject="*" action="drop-leaves"/>
 		</EmotionalReaction>
 		
 	</EventReactions>
 	
 	<ActionTendencies>
-		
-		<!-- Generic action tendencies -->
-		<ActionTendency action="cry">
+
+		<ActionTendency action="flower([Target])">
 			<Preconditions>
             </Preconditions>
-			<ElicitingEmotion type="Joy" minIntensity="6">
+			<ElicitingEmotion type="Love" minIntensity="2">
 				<CauseEvent/>
 			</ElicitingEmotion>
 		</ActionTendency>
 
-		<ActionTendency action="SpeechAct([Target],singat)">
+		<ActionTendency action="drop-leaves([Target])">
 			<Preconditions>
-				<Property name="[Target](type)" operator="=" value="character"/>
-			</Preconditions>
-			<ElicitingEmotion type="Joy" minIntensity="3">
-				<CauseEvent subject="*" action="sing"/>
+            </Preconditions>
+			<ElicitingEmotion type="Hate" minIntensity="2">
+				<CauseEvent/>
 			</ElicitingEmotion>
 		</ActionTendency>
-       
+
 	</ActionTendencies>
 </Character>
