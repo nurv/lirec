@@ -23,11 +23,14 @@ class SkeletonEntity extends truffle.Entity
     public var Root:Bone;
 	var g:Graph;
     var bones:Array<Bone>;
+    public var Id:Int;
 
 	public function new(world:World,pos:Vec3) 
 	{
 		super(world,pos);
         Root = null;
+        // hack for the animation
+        Id=cast(pos.y,Int);
 	}
 
     function GetClosest(pos:Vec2, bones:List<Bone>) : Bone
@@ -134,10 +137,11 @@ class SkeletonEntity extends truffle.Entity
         //Draw(cast(world,truffle.World));
 
         //UpdateDepth();
+        var c=this;
 
         Root.Recurse(function(b:Bone,depth:Int) 
         {
-            b.SetRotate(15*Math.sin((10-depth)*0.58+frame*0.04));
+            b.SetRotate(15*Math.sin((10-depth)*0.58+frame*(0.04+0.01*c.Id)));
         }
         );
 

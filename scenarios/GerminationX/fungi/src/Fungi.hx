@@ -84,6 +84,12 @@ class Plant extends SpriteEntity
         //tf.backgroundColor = 0x8dd788;
         tf.border = true;
         tf.wordWrap = true;
+        tf.autoSize = flash.text.TextFieldAutoSize.LEFT;
+        var t = new flash.text.TextFormat();
+        t.font = "Verdana"; 
+        t.size = 8;                
+        t.color= 0x000000;           
+        tf.setTextFormat(t);
         Spr.parent.addChild(tf);
         tf.visible=false;
         Spr.MouseOver(this,function(c) { tf.visible=true; });
@@ -140,41 +146,71 @@ class Plant extends SpriteEntity
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-class Ghost extends SpriteEntity 
+class Spirit extends SkeletonEntity 
 {
     public var Name:String;
     var Debug:flash.text.TextField;
-    public var TexBase:String;
 	
-	public function new(world:World, name:String,pos)
+	public function new(world:World, name:String, pos)
 	{
-        TexBase="ghost-"+name.toLowerCase();
-		super(world,pos,Resources.Get(TexBase));
+		super(world,pos);
         Name = name;
+    }
 
-        Debug = new flash.text.TextField();
-        Debug.wordWrap=true;
-        Debug.y=-50;
-        Debug.width=300;
-        Debug.text = "nothing yet";
-        Spr.addChild(Debug);
+	public function BuildDebug(c)
+    {
+        var tf = new flash.text.TextField();
+        tf.text = "nowt yet.";
+        tf.x=Pos.x-50;
+        tf.y=Pos.y-25;
+        tf.height=150;
+        tf.width=100;
+        tf.background = true;
+        tf.autoSize = flash.text.TextFieldAutoSize.LEFT;
+        //tf.backgroundColor = 0x8dd788;
+        tf.border = true;
+        tf.wordWrap = true;
+        var t = new flash.text.TextFormat();
+        t.font = "Verdana"; 
+        t.size = 8;                
+        t.color= 0x000000;           
+        tf.setTextFormat(t);
+        c.addChild(tf);
+        Debug=tf;
+        /*tf.visible=false;
+        Root.MouseOver(this,function(c) { tf.visible=true; });
+        Root.MouseOut(this,function(c) { tf.visible=false; });*/
+
+        Root.MouseDown(c,function(c)
+        {
+            trace("perc...");
+            c.Server.Request("perceive",1,function(c,d){});
+        });
 	}
 
     public function UpdateEmotions(e:Dynamic)
     {
         var ee = e.emotions.content;
         var mood=Std.parseFloat(ee[0].content[0]);
-        if (mood>1) Spr.ChangeBitmap(Resources.Get(TexBase+"-happy"));
-        else if (mood<-1) Spr.ChangeBitmap(Resources.Get(TexBase+"-sad"));
-        else Spr.ChangeBitmap(Resources.Get(TexBase));
 
-        Debug.text=Name+"\nMood:"+ee[0].content[0]+"\n";
+        var text=Name+"\nMood:"+ee[0].content[0]+"\n";
 
         for (i in 1...ee.length)
         {
-            Debug.text+=ee[i].attrs.type+" "+ee[i].attrs.direction+"\n";
-            Debug.text+=ee[i].attrs.cause+"\n";
+            text+=ee[i].attrs.type+" "+ee[i].attrs.direction+"\n";
+            text+=ee[i].attrs.cause+"\n";
         }
+
+        Debug.text=text;
+
+        var t = new flash.text.TextFormat();
+        t.font = "Verdana"; 
+        t.size = 8;                
+        t.color= 0x000000;           
+        Debug.setTextFormat(t);
+
+
+        //trace(text);
     }
 }
 
@@ -246,7 +282,8 @@ class FungiWorld extends World
 	var MyName:String;
     var Frame:Int;
     var TickTime:Int;
-    var Ghosts:Array<Ghost>;
+    var PerceiveTime:Int;
+    var Spirits:Array<Spirit>;
     public var Seeds:SeedStore;
     var Server : ServerConnection;
 
@@ -255,11 +292,12 @@ class FungiWorld extends World
 		super();
 		Frame=0;
         TickTime=0;
+        PerceiveTime=0;
 		Width=w;
 		Height=h;
 		Plants = [];
         Objs = [];
-        Ghosts = [];
+        Spirits = [];
         Seeds = new SeedStore(1);
 		WorldPos = new Vec3(0,0,0);
 		MyRndGen = new RndGen();
@@ -306,20 +344,28 @@ class FungiWorld extends World
 
 		UpdateWorld(new Vec3(0,0,0));
 		
-        var Names = ["Vertical","Canopy","Cover"];
-/*        
-        for (i in 0...3)
-        {
-            var g = new Ghost(this,Names[i],new Vec3(2,(i*3)+2,1));
-            Ghosts.push(g);
-        }
-*/
 		MyTextEntry=new TextEntry(300,10,310,30,NameCallback);
 		addChild(MyTextEntry);	
 
         Update(0);
         SortScene();
-        Server.Request("spirit-sprites",this,UpdateSpiritSprites);
+        var names = ["CanopySpirit","CoverSpirit","VerticalSpirit"];
+        var positions = [new Vec3(0,5,4), new Vec3(7,0,4), new Vec3(2,10,4)];
+
+        for (i in 0...3)
+        {
+            Server.Request("spirit-sprites/"+names[i],
+            this,
+            function (c,data:Array<Dynamic>)
+            {
+                var sp:Spirit = new Spirit(c,names[i],positions[i]);
+                sp.NeedsUpdate=true;
+                sp.Build(c,data);
+                sp.BuildDebug(c);
+                c.SortScene();
+                c.Spirits.push(sp);
+            });
+        }
 	}
 	
 	public function NameCallback(name)
@@ -397,15 +443,7 @@ class FungiWorld extends World
 	{
 		return Objs[cast(pos.x+pos.y*Width,Int)];
 	}
-	
-    public function UpdateSpiritSprites(c,data:Array<Dynamic>)
-    {
-        var sk:SkeletonEntity = new SkeletonEntity(this,new Vec3(0,5,4));
-        sk.NeedsUpdate=true;
-        sk.Build(this,data);
-        SortScene();
-     }
-	
+		
     public function SpaceClear(pos:Vec3)
     {
         for (plant in Plants)
@@ -421,11 +459,11 @@ class FungiWorld extends World
         Update(0);
 	}
 
-    public function UpdateGhosts(t:Dynamic)
+    public function UpdateGhosts(c,t:Dynamic)
     {
         for(i in 0...t.length)
         {
-            for (g in Ghosts)
+            for (g in Spirits)
             {
                 if (g.Name==t[i].name)
                 {
@@ -443,7 +481,7 @@ class FungiWorld extends World
 
         if (time>TickTime)
         {
-            //WorldClient.Call("agent-info",UpdateGhosts);
+            Server.Request("spirit-info",this,UpdateGhosts);
 
             Server.Request("get-tile/"+Std.string(cast(WorldPos.x,Int))+"/"
             +Std.string(cast(WorldPos.y,Int)),

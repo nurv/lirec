@@ -1,6 +1,6 @@
 <Character role="CanopySpirit">
 	<EmotionalThresholds>
-		<EmotionalThreshold emotion="Love" threshold="1" decay="10"/>
+		<EmotionalThreshold emotion="Love" threshold="0" decay="10"/>
 		<EmotionalThreshold emotion="Hate" threshold="0" decay="5"/>
 		<EmotionalThreshold emotion="Hope" threshold="3" decay="2"/>
 		<EmotionalThreshold emotion="Fear" threshold="4" decay="8"/>
@@ -43,7 +43,7 @@
 	<EventReactions>
 
 		<!-- General emotional reactions used in more than one episode -->
-	
+	<!--
 		<EmotionalReaction desirability="6" desirabilityForOther="1" praiseworthiness="5"> 
 			<Event subject="*" action="flower"/>
 		</EmotionalReaction>
@@ -51,7 +51,7 @@
 		<EmotionalReaction desirability="-6" desirabilityForOther="-1" praiseworthiness="-2"> 
 			<Event subject="*" action="drop-leaves"/>
 		</EmotionalReaction>
-		
+		-->
 	</EventReactions>
 	
 	<ActionTendencies>

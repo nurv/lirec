@@ -43,6 +43,7 @@
 
 (defn tick []
   (Thread/sleep 1000)
+  (println ".")
   ;(game-world-print (deref my-game-world))
   (let [time (.getTime (java.util.Date.))]
     (dosync (ref-set fatima-world
@@ -58,7 +59,7 @@
                       time 1))))
   (recur))
 
-(tick)
+;(tick)
 
 (defroutes main-routes
   (GET "/get-tile/:tilex/:tiley" [tilex tiley]
@@ -68,9 +69,9 @@
          (if tile
            (json/encode-to-str tile)
            (json/encode-to-str '()))))
+
   (GET "/make-plant/:tilex/:tiley/:posx/:posy/:type/:owner/:size"
        [tilex tiley posx posy type owner size]
-       (println "making plant...")
        (append-spit
         log-filename
         (str
@@ -85,19 +86,21 @@
        ;(game-world-save (deref my-game-world) state-filename)
        ;(println (deref my-game-world))
        (json/encode-to-str '("ok")))
+  
   (GET "/spirit-sprites/:name" [name]
        (update-islands (str "./" name) (str "./" name))
-       (read-islands "./public/" name))
+       (read-islands (str "./public/" name)))
 
   (GET "/spirit-info" []
        (json/encode-to-str (map
                             (fn [a]
                               {:name (remote-agent-name a)
                                :emotions (remote-agent-emotions a)})
-                            (world-agents (deref myworld)))
+                            (world-agents (deref fatima-world)))
                            :indent 2))
   (GET "/perceive" []
-       (world-perceive-all (deref myworld)))
+       (world-perceive-all (deref fatima-world))
+       (json/encode-to-str '("ok")))
   
   (comment 
   (GET "/add-object/:obj" [obj]
@@ -111,7 +114,7 @@
       tasks (list (fn []
                     (run-jetty (wrap-file main-routes "public") {:port 8001}))
                   (fn []
-                    (tick) (println "DONE TICK")))]
+                    (tick)))]
     
   (doseq [future (.invokeAll pool tasks)]
     (.get future))

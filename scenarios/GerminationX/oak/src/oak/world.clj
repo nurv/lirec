@@ -129,8 +129,7 @@
 (defn world-get-object [world name pos]
   (reduce
    (fn [r obj]
-     (if (and (not r) (and (= name (get obj "name"))
-                           (= pos (get obj "position"))))
+     (if (and (not r) (= pos (get obj "position")))
        obj r))
    false
    (world-objects world)))

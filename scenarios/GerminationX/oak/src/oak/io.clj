@@ -97,18 +97,14 @@
 
 (defn read-msg [reader]
   (let [r (.readLine reader)]
-    (println "<----------------- " r)
+    ;(println "<----------------- " r)
     r))
 
 (defn send-msg [sc msg]
-  (println "----------------> " msg)
+  ;(println "----------------> " msg)
   (let [msg (str msg "\n")
         enc (.newEncoder (Charset/forName "US-ASCII"))]  
     (.write sc (.encode enc (CharBuffer/wrap msg)))))
-
-(let [i (atom 0)]
-  (defn generate-id []
-    (swap! i inc)))
 
 (defn load-object [fname]
   (reduce

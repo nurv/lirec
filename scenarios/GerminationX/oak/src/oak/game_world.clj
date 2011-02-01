@@ -131,7 +131,7 @@
          (= (:state entity) 'ill-c))
         (do
           (world-add-object fw
-                            {"name" (str (:layer entity) "-" (:state entity))
+                            {"name" (str (:layer entity) "-" (:state entity) "-" (str (:id entity)))
                              "owner" (:layer entity)
                              "position" (str (:x (:pos entity)) "," (:y (:pos entity)))
                              "tile" "0,0"

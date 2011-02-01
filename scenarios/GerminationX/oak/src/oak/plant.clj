@@ -26,7 +26,8 @@
 (def max-neighbours 5)
 
 (defrecord plant
-  [pos
+  [id
+   pos
    type
    layer
    state
@@ -52,7 +53,7 @@
    (= type "plant-003") "cover"))
   
 (defn make-plant [pos type owner size]
-  (plant. pos type (plant-type->layer type)
+  (plant. (generate-id) pos type (plant-type->layer type)
           'grow-a '() owner size 0 (+ 30 (Math/floor (rand 10))) start-health))
 
 (defn make-random-plant []
