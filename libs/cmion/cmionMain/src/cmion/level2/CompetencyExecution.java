@@ -51,11 +51,19 @@ public class CompetencyExecution extends CmionComponent {
 	/** store all plans that we are currently executing */
 	private ArrayList<CompetencyExecutionPlan> currentPlans;
 	
+	/** store all plans that we are currently cancelling */
+	private ArrayList<CompetencyExecutionPlan> plansToCancel;
+	
+	/** store all competencies that we are currently running indexing the plan they belong to */
+	private HashMap<Competency, CompetencyExecutionPlan> runningCompetencies;
+	
 	/** create a new Competency Execution Component */
 	public CompetencyExecution(IArchitecture architecture)
 	{
 		super(architecture);
 		currentPlans = new ArrayList<CompetencyExecutionPlan>();
+		plansToCancel = new ArrayList<CompetencyExecutionPlan>();
+		runningCompetencies = new HashMap<Competency, CompetencyExecutionPlan>();
 	}
 	
 	/** start the execution of a competency execution plan */
@@ -75,10 +83,35 @@ public class CompetencyExecution extends CmionComponent {
 		}
 	}
 
+	/** cancel the execution of a currently executing competency execution plan */
+	private synchronized void cancelPlan(CompetencyExecutionPlan cep)
+	{
+		// check if the plan is instantiated and already being executed
+		if (cep.isInstantiated() && cep.isCurrentlyExecuting())
+		{
+			// remember this as one of the plans to cancel
+			plansToCancel.add(cep);
+			
+			// cancel all competencies currently executing in this plan 
+			for (Competency c: runningCompetencies.keySet())
+			{
+				// cancel this competency if it belongs to the plan we want to cancel
+				if (runningCompetencies.get(c).equals(cep))
+					c.cancel();
+			}
+		}
+	}	
+	
 	/** checks pre conditions of provided plan and if possible either executes the next batch
 	 *  of steps or if all steps are finished raises a plan success event */
 	private synchronized void updatePlanProgress(CompetencyExecutionPlan cep)
 	{		
+		if (plansToCancel.contains(cep))
+		{
+			checkPlanCancelled(cep);
+			return;
+		}
+		
 		// build a list of plan steps that are neither completed yet nor executed currently
 		ArrayList<CompetencyExecutionPlanStep>  stepsLeft = new ArrayList<CompetencyExecutionPlanStep>();
 		for (CompetencyExecutionPlanStep step : cep.getPlanSteps())
@@ -131,6 +164,12 @@ public class CompetencyExecution extends CmionComponent {
 	 *  or if this could not be accomplished fail the whole plan */
 	private synchronized void executeStep(CompetencyExecutionPlanStep step, CompetencyExecutionPlan cep)
 	{
+		if (plansToCancel.contains(cep))
+		{
+			checkPlanCancelled(cep);
+			return;
+		}
+		
 		// find a competency from the library that can execute this step
 		ArrayList<Competency> competencies = architecture.getCompetencyLibrary().getCompetencies(step.getCompetencyType());
 		
@@ -151,6 +190,9 @@ public class CompetencyExecution extends CmionComponent {
 				// flag that we are currently executing this plan step
 				cep.getStepsCurrentlyExecuted().add(step);
 				
+				// also remember that this is one of the competencies currently executing
+				runningCompetencies.put(competency,cep);
+				
 				// request the competency to start
 				competency.requestStartCompetency(step.getCompetencyParameters());
 				
@@ -164,92 +206,147 @@ public class CompetencyExecution extends CmionComponent {
 	/** this method should be called when an execution plan has failed */
 	private synchronized void planFailed(CompetencyExecutionPlan cep)
 	{
-		// mark the plan as not anymore executing
-		cep.stopExecution();
+		// check if the plan is actually still current
+		if (currentPlans.contains(cep))
+		{
+			// mark the plan as not anymore executing
+			cep.stopExecution();
 		
-		// remove this plan from our current plans
-		currentPlans.remove(cep);
+			// remove this plan from our current plans
+			currentPlans.remove(cep);
 		
-		// raise an event that the plan has failed
-		this.raise(new EventCompetencyExecutionPlanFailed(cep));		
+			// raise an event that the plan has failed
+			this.raise(new EventCompetencyExecutionPlanFailed(cep));
+		}
+	}
+
+	
+	private synchronized void checkPlanCancelled(CompetencyExecutionPlan cep)
+	{
+		// check that this is a plan we want to cancel and all its steps have finished
+		if (plansToCancel.contains(cep) && (cep.getStepsCurrentlyExecuted().size()==0))
+		{
+			// ok ready to cancel
+			cep.stopExecution();
+			
+			// remove this plan from our current plans
+			currentPlans.remove(cep);
+			
+			// raise an event that the plan was cancelled
+			this.raise(new EventCompetencyExecutionPlanCancelled(cep));		
+
+		}
+		
+		
 	}
 	
 	/** process the success of a competency*/
 	private synchronized void processCompetencySuccess(Competency competency, HashMap<String,String> parameters)
 	{
+		// get the plan that this competency is part of realizing
+		CompetencyExecutionPlan plan = runningCompetencies.get(competency);
 		
-		// find the plans and plan steps that correspond to this competency
-		ArrayList<CompetencyExecutionPlan> plans = new ArrayList<CompetencyExecutionPlan>();
-		ArrayList<CompetencyExecutionPlanStep> steps = new ArrayList<CompetencyExecutionPlanStep>();
+		// mark the competency as not executing anymore
+		runningCompetencies.remove(competency);
+				
+		CompetencyExecutionPlanStep s=null;
 		
-		for (CompetencyExecutionPlan cep: currentPlans)
-			for (CompetencyExecutionPlanStep step : cep.getStepsCurrentlyExecuted())
-				if (step.getCompetencyType().equals(competency.getCompetencyType()))
-					// compare parameters to make sure this competency has performed what the plan step required
-					if (parameters.equals(step.getCompetencyParameters()))
-					{
-						// we have found a plan and a step of this plan that was completed through this competency
-						plans.add(cep);
-						steps.add(step);						
-					}
-		
-		// now process the found matches (note: this is in a seperate loop from above, because the processing 
-		// modifies the collection we iterate over above)
-		for (int i = 0; i<plans.size(); i++)
+		// find the plan step that has completed		
+		for (CompetencyExecutionPlanStep step : plan.getStepsCurrentlyExecuted())
+			if (step.getCompetencyType().equals(competency.getCompetencyType()))
+				// compare parameters to make sure this competency was what the plan step required
+				if (parameters.equals(step.getCompetencyParameters()))
+				{
+					s = step;
+				}
+	
+		if (s!=null)
 		{
-			// remove the step from the plans executed steps list and add it to the completed steps list instead
-			plans.get(i).getStepsCurrentlyExecuted().remove(steps.get(i));
-			plans.get(i).getStepsAlreadyCompleted().add(steps.get(i));
+			// remove the step from the plan's executed steps list			
+			plan.getStepsCurrentlyExecuted().remove(s);					
+			plan.getStepsAlreadyCompleted().add(s);
 			
 			// update the plan progress
-			updatePlanProgress(plans.get(i));
+			updatePlanProgress(plan);	
 		}
-	
 	}
 
 	/** process the failure of a competency*/
 	private synchronized void processCompetencyFailure(Competency competency, HashMap<String,String> parameters)
 	{
-		// find the plans and plan steps that have (possibly) failed because this competency has failed
-		ArrayList<CompetencyExecutionPlan> plans = new ArrayList<CompetencyExecutionPlan>();
-		ArrayList<CompetencyExecutionPlanStep> steps = new ArrayList<CompetencyExecutionPlanStep>();
+		// get the plan that this competency is part of realizing
+		CompetencyExecutionPlan plan = runningCompetencies.get(competency);
 		
-		for (CompetencyExecutionPlan cep: currentPlans)
-			for (CompetencyExecutionPlanStep step : cep.getStepsCurrentlyExecuted())
-				if (step.getCompetencyType().equals(competency.getCompetencyType()))
-					// compare parameters to make sure this competency was what the plan step required
-					if (parameters.equals(step.getCompetencyParameters()))
-					{
-						// we have found a plan and a step of this plan that has (possibly) failed through this competency
-						plans.add(cep);
-						steps.add(step);						
-					}
+		// mark the competency as not executing anymore
+		runningCompetencies.remove(competency);
+		CompetencyExecutionPlanStep s=null;
 		
-		// now process the found matches (note: this is in a seperate loop from above, because the processing 
-		// modifies the collection we iterate over above)
-		for (int i = 0; i<plans.size(); i++)
-		{
-			// remove the step from the plans executed steps list
-			plans.get(i).getStepsCurrentlyExecuted().remove(steps.get(i));
+		// find the plan step that has failed because this competency has failed		
+		for (CompetencyExecutionPlanStep step : plan.getStepsCurrentlyExecuted())
+			if (step.getCompetencyType().equals(competency.getCompetencyType()))
+				// compare parameters to make sure this competency was what the plan step required
+				if (parameters.equals(step.getCompetencyParameters()))
+				{
+					s = step;
+				}
 
-			// check if the plan is still one of our current plans (this could not be the case if i>0 and
-			// one of the previous steps has already failed the plan
-			if (currentPlans.contains(plans.get(i))) 
+		if (s!=null)
+		{
+			// remove the step from the plan's executed steps list			
+			plan.getStepsCurrentlyExecuted().remove(s);					
+
+			// check if the plan is still one of our current plans 
+			if (currentPlans.contains(plan)) 
 				// ok, it is still a current plan, so try if we can execute the step still (through another competency)
-				executeStep(steps.get(i),plans.get(i));			
-		}
-		
+				executeStep(s,plan);	
+			
+		}		
 	}
+
+	/** process the cancelation of a competency*/
+	private synchronized void processCompetencyCancel(Competency competency, HashMap<String,String> parameters)
+	{
+		// get the plan that this competency is part of realizing
+		CompetencyExecutionPlan plan = runningCompetencies.get(competency);
+		
+		// mark the competency as not executing anymore
+		runningCompetencies.remove(competency);
+				
+		CompetencyExecutionPlanStep s=null;
+		
+		// find the plan step that was cancelled		
+		for (CompetencyExecutionPlanStep step : plan.getStepsCurrentlyExecuted())
+			if (step.getCompetencyType().equals(competency.getCompetencyType()))
+				// compare parameters to make sure this competency was what the plan step required
+				if (parameters.equals(step.getCompetencyParameters()))
+				{
+					s = step;
+				}
+	
+		if (s!=null)
+		{
+			// remove the step from the plan's executed steps list			
+			plan.getStepsCurrentlyExecuted().remove(s);					
+			
+			// check if we can already cancel the plan or if we need to wait for other competencies 
+			checkPlanCancelled(plan);	
+		}
+
+	}
+
 	
 	/** registers request and event handlers of the competency execution system*/
 	@Override
 	public final void registerHandlers() {
-		// register request handler for new competency execution plan requests with this
+		// register request handler for new and cancelled competency execution plan requests with this
 		this.getRequestHandlers().add(new HandleNewCompetencyExecutionPlan());
-		// register event handlers for failed and suceeded competencies
+		this.getRequestHandlers().add(new HandleCancelCompetencyExecutionPlan());
+
+		// register event handlers for failed, suceeded and cancelled competencies
 		// since they could come from many different competencies, register with the whole simulation
 		Simulation.instance.getEventHandlers().add(new HandleCompetencySucceeded());
 		Simulation.instance.getEventHandlers().add(new HandleCompetencyFailed());
+		Simulation.instance.getEventHandlers().add(new HandleCompetencyCancelled());
 	}
 	
 	
@@ -266,6 +363,23 @@ public class CompetencyExecution extends CmionComponent {
 	    	for (RequestNewCompetencyExecutionPlan request : requests.get(RequestNewCompetencyExecutionPlan.class))
 	    	{
 	    		executePlan(request.getCompetencyExecutionPlan());
+	    	}	
+	    }
+	}
+
+	/** internal event handler class for handling new competency execution plan requests */
+	private class HandleCancelCompetencyExecutionPlan extends RequestHandler {
+
+	    public HandleCancelCompetencyExecutionPlan() {
+	        super(new TypeSet(RequestCancelCompetencyExecutionPlan.class));
+	    }
+
+	    @Override
+	    public void invoke(IReadOnlyQueueSet<Request> requests) {
+	        // since this is a request handler only for type RequestCancelCompetencyExecutionPlan the following cast always works
+	    	for (RequestCancelCompetencyExecutionPlan request : requests.get(RequestCancelCompetencyExecutionPlan.class))
+	    	{
+	    		cancelPlan(request.getCompetencyExecutionPlan());
 	    	}	
 	    }
 	}
@@ -302,6 +416,21 @@ public class CompetencyExecution extends CmionComponent {
 	    }
 	}
 
+	/** internal event handler class for listening to competency cancelled events */
+	private class HandleCompetencyCancelled extends EventHandler {
+
+	    public HandleCompetencyCancelled() {
+	        super(EventCompetencyCancelled.class);
+	    }
+
+	    @Override
+	    public void invoke(IEvent evt) {
+	        // since this is an event handler only for type EventCompetencyCancelled the following casts always work
+	    	Competency competency = ((EventCompetencyCancelled)evt).getCompetency();
+	    	HashMap<String,String> parameters = ((EventCompetencyCancelled)evt).getParameters();
+	    	processCompetencyCancel(competency, parameters);
+	    }
+	}
 
 
 }

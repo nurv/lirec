@@ -77,6 +77,9 @@ protected abstract void processActionSuccess(MindAction a);
 /** informs mind of the failure of a recently executed action */
 protected abstract void processActionFailure(MindAction a);
 
+/** informs mind of the success of the cancellation of an executed action */
+protected abstract void processActionCancellation(MindAction a);
+
 /** informs the mind that a new entity (agent or object) has been added to the world model*/
 protected abstract void processEntityAdded(String entityName);
 
@@ -106,7 +109,8 @@ public final void registerHandlers()
 	// so register those handlers directly with the competency manager
 	architecture.getCompetencyManager().getEventHandlers().add(new HandleActionSucceeded());
 	architecture.getCompetencyManager().getEventHandlers().add(new HandleActionFailed());
-
+	architecture.getCompetencyManager().getEventHandlers().add(new HandleActionCancelled());
+	
 	// register handlers with the world model for listening to changes to it
 	// for now we are interested in entities added and removed from the world model
 	architecture.getWorldModel().getEventHandlers().add(new HandleSubContainerAdded());
@@ -126,6 +130,12 @@ public final void registerHandlers()
 public final void newAction(MindAction mindAction)
 {
 	architecture.getCompetencyManager().schedule(new RequestNewMindAction(mindAction));
+}
+
+/** cancels a currently executing mind action (if such an action is currently running) */
+public final void cancel(MindAction mindAction) 
+{
+	architecture.getCompetencyManager().schedule(new RequestCancelMindAction(mindAction));
 }
 
 /** abstract method overridden from ION.meta.element */
@@ -176,6 +186,21 @@ private class HandleActionFailed extends EventHandler {
         // since this is an event handler only for type EventMindActionFailed the following cast always works
     	MindAction mA = ((EventMindActionFailed)evt).getMindAction();
     	processActionFailure(mA);
+    }
+}
+
+/** internal event handler class for listening to action failed events */
+private class HandleActionCancelled extends EventHandler {
+
+    public HandleActionCancelled() {
+        super(EventMindActionCancelled.class);
+    }
+
+    @Override
+    public void invoke(IEvent evt) {
+        // since this is an event handler only for type EventMindActionFailed the following cast always works
+    	MindAction mA = ((EventMindActionCancelled)evt).getMindAction();
+    	processActionCancellation(mA);
     }
 }
 

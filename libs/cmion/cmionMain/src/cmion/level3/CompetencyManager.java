@@ -51,8 +51,11 @@ import org.w3c.dom.NodeList;
 import cmion.architecture.CmionComponent;
 import cmion.architecture.IArchitecture;
 import cmion.level2.CompetencyExecutionPlan;
+import cmion.level2.CompetencyExecutionPlanStep;
+import cmion.level2.EventCompetencyExecutionPlanCancelled;
 import cmion.level2.EventCompetencyExecutionPlanFailed;
 import cmion.level2.EventCompetencyExecutionPlanSucceeded;
+import cmion.level2.RequestCancelCompetencyExecutionPlan;
 import cmion.level2.RequestNewCompetencyExecutionPlan;
 
 /** the competency manager receives actions from the mind for execution and decomposes 
@@ -110,6 +113,23 @@ public class CompetencyManager extends CmionComponent
 			this.raise(new EventMindActionFailed(a));
 		}	
 	}	
+
+
+	/** method that is called by the event handler whenever the mind initiates a new action */
+	protected synchronized void cancelActionFromMind(MindAction a)
+	{	
+		// find plans currently executed as a realization of a
+		for (CompetencyExecutionPlan plan : plansCurrentlyExecuted.keySet())
+		{
+			// check if plan realizes a
+			if ( (a!=null) && (a.equals(plansCurrentlyExecuted.get(plan))))
+			{
+				// cancel plan
+				architecture.getCompetencyExecution().schedule(new RequestCancelCompetencyExecutionPlan(plan));			
+			}
+		}
+	}	
+	
 	
 	/** find a rule from the rule base that maps the specified Mind Action to a competency execution plan
 	 * 
@@ -156,11 +176,12 @@ public class CompetencyManager extends CmionComponent
 	{
 		// register new mind action request handler with this
 		this.getRequestHandlers().add(new HandleNewMindAction());
+		this.getRequestHandlers().add(new HandleCancelMindAction());
 		
 		// register event handlers for execution plan events with competency execution system
 		architecture.getCompetencyExecution().getEventHandlers().add(new HandleCEPSucceeded());
 		architecture.getCompetencyExecution().getEventHandlers().add(new HandleCEPFailed());
-		
+		architecture.getCompetencyExecution().getEventHandlers().add(new HandleCEPCancelled());		
 	}
 	
 	protected InputStream openRulesFile(String competencyManagerRulesFileName) throws Exception{
@@ -262,8 +283,32 @@ public class CompetencyManager extends CmionComponent
 			// this was not one of the plans we are waiting for
 			// this should not happen, so print out error
 			System.err.println("CompetencyManager error: received plan failure for unknown plan");
+			System.err.println("plan steps: " + plan.getNoOfSteps());
+			for (CompetencyExecutionPlanStep step : plan.getPlanSteps())
+				System.err.println("step " + step.getCompetencyType());
 		}
 		
+	}
+	
+
+	/** handles cancelled competency execution plans */	
+	private synchronized void processPlanCancellation(CompetencyExecutionPlan plan)
+	{
+		// check if this is one of the plans currently executed
+		if (plansCurrentlyExecuted.containsKey(plan))
+		{						
+			// obtain the mind action belonging to this execution plan
+			MindAction ma = plansCurrentlyExecuted.get(plan);
+			
+			// remove this plan from our memory
+			plansCurrentlyExecuted.remove(plan);
+			
+			// remove what's left of this action from our memory
+			rulesAlreadyTried.remove(ma);
+				
+			// raise an event that the mind action has failed
+			this.raise(new EventMindActionCancelled(ma));
+		}			
 	}
 	
 	
@@ -284,6 +329,25 @@ public class CompetencyManager extends CmionComponent
 	    	}	
 	    }
 	}
+
+	/** internal request handler class for listening to new action requests */
+	private class HandleCancelMindAction extends RequestHandler {
+
+	    public HandleCancelMindAction() {
+	        super(new TypeSet(RequestCancelMindAction.class));
+	    }
+
+	    @Override
+	    public void invoke(IReadOnlyQueueSet<Request> requests) 
+	    {
+	    	// iterate through requests, normally this should always only be one
+	    	for (RequestCancelMindAction request : requests.get(RequestCancelMindAction.class))
+	    	{
+	    		cancelActionFromMind(request.getMindAction());
+	    	}	
+	    }
+	}
+	
 	
 	/** internal event handler class for listening to competency execution plan succeeded events */
 	private class HandleCEPSucceeded extends EventHandler {
@@ -315,5 +379,19 @@ public class CompetencyManager extends CmionComponent
 	    }
 	}
 
+	/** internal event handler class for listening to competency execution plan cancellation events */
+	private class HandleCEPCancelled extends EventHandler {
+
+	    public HandleCEPCancelled() {
+	        super(EventCompetencyExecutionPlanCancelled.class);
+	    }
+
+	    @Override
+	    public void invoke(IEvent evt) {
+	        // since this is an event handler only for type EventCompetencyExecutionPlanCancelled the following cast always works
+	    	CompetencyExecutionPlan plan = ((EventCompetencyExecutionPlanCancelled)evt).getCompetencyExecutionPlan();
+	    	processPlanCancellation(plan);
+	    }
+	}	
 	
 }

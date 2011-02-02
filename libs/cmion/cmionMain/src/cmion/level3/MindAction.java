@@ -140,6 +140,29 @@ public class MindAction
 	}
 	
 	
+	/** override equals to allow comparisons between 2 mind actions */
+	@Override 
+	public boolean equals(Object other)
+	{
+		if (other == null) return false;
+		if (!(other instanceof MindAction)) return false;
+		MindAction otherMa = (MindAction) other;
+		if (   (name.equals(otherMa.name))
+			&& (subject.equals(otherMa.subject))
+			&& (parameters.equals(otherMa.parameters))
+			) 
+			return true;
+		else 
+			return false;
+	}
+	
+	/** define hash code for mind actions */
+	@Override 
+	public int hashCode()
+	{
+		return name.hashCode() + subject.hashCode();
+	}
+	
 	/** the name/identifier of the action */
 	protected String name;
 	

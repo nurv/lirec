@@ -29,34 +29,50 @@
 
 package cmion.level2;
 
+import java.util.HashMap;
+
 import cmion.architecture.CmionEvent;
 
-/** this type of event is raised by the competency execution system when a competency execution plan has failed 
-*  the competency manager listens for those events */
-public class EventCompetencyExecutionPlanFailed extends CmionEvent 
+/** this event signifies that the execution of a competency was cancelled */
+public class EventCompetencyCancelled extends CmionEvent 
 {
 
-	/** creates a new event */
-	public EventCompetencyExecutionPlanFailed(CompetencyExecutionPlan executionPlan)
+	/** a reference to the competency that was cancelled  */
+	private Competency competency;
+	
+	/** the parameters the competency was running with, when cancelled */
+	private HashMap<String, String> parameters;
+	
+	
+	public EventCompetencyCancelled(Competency competency,
+			HashMap<String, String> parameters) 
 	{
-		super();
-		this.executionPlan = executionPlan;
+		this.competency = competency;
+		this.parameters = parameters;
 	}
-	/** the competency execution plan that this event refers to */
-	private CompetencyExecutionPlan executionPlan;
 
-	/** returns the competency execution plan that this event refers to */
-	public CompetencyExecutionPlan getCompetencyExecutionPlan()
+	/** returns a reference to the competency that was cancelled */	
+	public Competency getCompetency()
 	{
-		return executionPlan;
+		return competency;
 	}
+	
+	/** returns the parameters the competency was running with, when cancelled */
+	public HashMap<String, String> getParameters()
+	{
+		return parameters;
+	}	
 	
 	/** displays information about this event */
 	@Override
 	public String toString()
 	{
-		// not sure how to display more concise short information about this
-		String evtString =  "Competency Execution plan failed";
-		return evtString;
+		String evtString =  "Competency cancelled: " + competency.getCompetencyName();
+		evtString += ", parameters:";
+		if (parameters.size()==0) evtString += " none";
+		else for (String parameterName : parameters.keySet())
+			evtString += " " + parameterName +"="+parameters.get(parameterName);
+		return evtString;		
 	}
+
 }

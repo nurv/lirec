@@ -37,8 +37,6 @@ import java.util.HashMap;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.Text;
-
 import cmion.architecture.IArchitecture;
 import cmion.level2.migration.Migrating;
 import cmion.level2.migration.MigrationAware;
@@ -57,6 +55,9 @@ public class FAtiMAConnector extends AgentMindConnector implements Migrating, Mi
 	
 	/** keeps track of whether the connected mind is currently active or not*/
 	private boolean sleeping;
+	
+	/** keeps track of whether the connected mind is the new modular version of Fatima or not*/
+	private boolean modular;
 	
 	/** is the connected FAtiMA capable of migrating, i.e. can it send and receive
 	 *  its agent state through the socket connection with this connector 
@@ -86,6 +87,7 @@ public class FAtiMAConnector extends AgentMindConnector implements Migrating, Mi
 		sleeping = false;
 		mindThread = null;
 		canMigrate = false;
+		modular = false;
 		new ListenForConnectionThread().start();
 	}
 
@@ -113,7 +115,12 @@ public class FAtiMAConnector extends AgentMindConnector implements Migrating, Mi
 			sleeping = true;
 		else
 			sleeping = false;
-	
+
+		if (optionsStr.contains("modular"))
+			modular = true;
+		else
+			modular = false;
+
 		new ListenForConnectionThread().start();
 	}
 
@@ -153,6 +160,10 @@ public class FAtiMAConnector extends AgentMindConnector implements Migrating, Mi
 		if (mindThread!=null) mindThread.send(msg);	
 	}
 	
+	/** FAtiMA is currently not receiving any cancellation feedback messages,
+	 *  so we don't need to do anything in here */
+	@Override
+	protected void processActionCancellation(MindAction a) {}
 	
 	@Override
 	protected void processRemoteAction(MindAction remoteAction) {
@@ -185,7 +196,11 @@ public class FAtiMAConnector extends AgentMindConnector implements Migrating, Mi
 	@Override
 	protected void processPropertyChanged(String entityName,
 			String propertyName, String propertyValue) {
-		if (mindThread!=null) mindThread.send("PROPERTY-CHANGED "+entityName+ "(" + propertyName+ ") " + propertyValue);		
+		if (mindThread!=null) 
+			if (modular) // the modular fatima version receives property change messages in a different format (because of ToM)
+				mindThread.send("PROPERTY-CHANGED SELF "+ entityName+ "(" + propertyName+ ") " + propertyValue);		
+			else
+				mindThread.send("PROPERTY-CHANGED "+ entityName+ "(" + propertyName+ ") " + propertyValue);		
 	}
 
 	@Override
@@ -319,6 +334,16 @@ public class FAtiMAConnector extends AgentMindConnector implements Migrating, Mi
 			System.out.println("this version of fatima cannot load the incoming state");
 	}
 
+	public void saveStateToDisk()
+	{
+		if (mindThread!=null)
+		{
+			// send save command to FAtiMA
+			mindThread.send("CMD SAVE");
+		}
+	}
+	
+	
 	@Override
 	public Element saveState(Document doc) 
 	{
@@ -400,8 +425,5 @@ public class FAtiMAConnector extends AgentMindConnector implements Migrating, Mi
 		// and send it for execution
 		this.newAction(mindAction);
 	}
-
-
-
 
 }

@@ -29,6 +29,8 @@
 
 package cmion.level3.supersimplemind;
 
+import java.util.ArrayList;
+
 import cmion.level3.MindAction;
 
 /** an example mind that does almost nothing except executing random actions,
@@ -90,7 +92,16 @@ public synchronized void sendSuccess(MindAction a) {
 	// this super simple mind does not care what happens to the actions it sends
 	executing = false;
 	// if we are not sleeping, execute new random action
-	if (!sleeping) executeRandomAction();	
+	//if (!sleeping) executeRandomAction();	
+}
+
+/** notify the mind of an action cancellation*/
+public synchronized void sendCancel(MindAction a) {
+	// this super simple mind does not care what happens to the actions it sends
+	executing = false;
+	// if we are not sleeping, execute new random action
+	//if (!sleeping) executeRandomAction();	
+	System.out.println("action succesfully cancelled");
 }
 
 /** send the mind to sleep */
@@ -111,13 +122,20 @@ public synchronized  boolean isSleeping()
 	return sleeping;
 }
 
+private MindAction getAction()
+{
+	// modify this for test purposes
+	ArrayList<String> parameters = new ArrayList<String>();
+	parameters.add("test");
+	return new MindAction(agentName,"TestAction",parameters);	
+}
+
 /** creates a random action and executes it, what random exactly means depends on the body of this
  * method, which can be modified for testing purposes */
 private void executeRandomAction()
 {
 	// modify this for test purposes
-	MindAction ma = new MindAction(agentName,"Greet",null);
-	this.connector.newAction(ma);
+	this.connector.newAction(getAction());
 	executing = true;
 }
 
@@ -135,7 +153,7 @@ public void sendEntityRemoved(String entityName) {
 public void sendPropertyChanged(String entityName, String propertyName,
 		String propertyValue) 
 {
-	//this super simple mind doesn't do anything with perceptions}
+	if (propertyName.equals("cancel")) this.connector.cancel(getAction());
 }
 
 /** the mind processes removed properties in this function */

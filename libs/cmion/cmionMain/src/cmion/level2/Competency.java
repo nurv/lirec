@@ -32,7 +32,6 @@ package cmion.level2;
 import ion.Meta.IReadOnlyQueueSet;
 import ion.Meta.Request;
 import ion.Meta.RequestHandler;
-import ion.Meta.Simulation;
 import ion.Meta.TypeSet;
 
 import java.util.HashMap;
@@ -105,7 +104,7 @@ public abstract class Competency extends CmionComponent implements Runnable
 	 * @param parameters a map including running parameters and their values
 	 * @return the return value of this method should indicate, whether the competency 
 	 * execution was a success (true) or failure (false) */ 
-	protected abstract boolean competencyCode(HashMap<String, String> parameters);
+	protected abstract boolean competencyCode(HashMap<String, String> parameters) throws CompetencyCancelledException;
 	
 	/** custom competency initialisation code should go in here */
 	public abstract void initialize();
@@ -115,13 +114,24 @@ public abstract class Competency extends CmionComponent implements Runnable
 	public final void run()
 	{
 		// start competency code and when finished store the return value
-		boolean succeeded = competencyCode(parameters);
+		boolean succeeded = false;
+		boolean cancelled = false;
+		try
+		{
+			succeeded = competencyCode(parameters);
+		}
+		catch (CompetencyCancelledException e)
+		{
+			cancelled = true;
+		}
 		
 		// competency code has executed, now that it has finished 
 		// set competency running to false and raise success / failure events
 		synchronized(this)
 		{			
-			if (succeeded) 
+			if (cancelled)
+				this.raise(new EventCompetencyCancelled(this, parameters));
+			else if (succeeded) 
 				this.raise(new EventCompetencySucceeded(this, parameters));
 			else 
 				this.raise(new EventCompetencyFailed(this, parameters));
@@ -167,6 +177,13 @@ public abstract class Competency extends CmionComponent implements Runnable
 			new Thread(this,getCompetencyName()).start();
 		}		
 	}
+
+	/** Competencies can (and should) override this method to allow the execution
+	 *  system to cancel them. When this method is called the competency should stop
+	 *  its execution as quickly as possible by throwing a CompetencyCancelledException
+	 *  in the comptencyCode method*/
+	public void cancel() {}
+
 	
 	/** registers request and event handlers of the competency execution system,
 	 *  if overridden, remember to call super.registerHandlers(); from within */
@@ -198,5 +215,6 @@ public abstract class Competency extends CmionComponent implements Runnable
 	 *  Please ignore this and don't call it :) */ 
 	public void setAdditionalData(Object data)
 	{}
+
 	
 }

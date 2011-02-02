@@ -27,36 +27,40 @@
   ---  
 */
 
-package cmion.level2;
+package cmion.level3;
 
 import cmion.architecture.CmionEvent;
 
-/** this type of event is raised by the competency execution system when a competency execution plan has failed 
-*  the competency manager listens for those events */
-public class EventCompetencyExecutionPlanFailed extends CmionEvent 
+/** this type of event is raised by the competency manager when a mind action was cancelled 
+ *  the agent mind connector listens for those events and sends them to the agent mind*/
+public class EventMindActionCancelled extends CmionEvent 
 {
 
-	/** creates a new event */
-	public EventCompetencyExecutionPlanFailed(CompetencyExecutionPlan executionPlan)
-	{
-		super();
-		this.executionPlan = executionPlan;
-	}
-	/** the competency execution plan that this event refers to */
-	private CompetencyExecutionPlan executionPlan;
-
-	/** returns the competency execution plan that this event refers to */
-	public CompetencyExecutionPlan getCompetencyExecutionPlan()
-	{
-		return executionPlan;
-	}
-	
-	/** displays information about this event */
-	@Override
-	public String toString()
-	{
-		// not sure how to display more concise short information about this
-		String evtString =  "Competency Execution plan failed";
-		return evtString;
-	}
+public EventMindActionCancelled(MindAction mindAction)
+{
+	super();
+	this.mindAction = mindAction;
 }
+
+/** the mind action that was cancelled */
+private MindAction mindAction;
+
+/** returns the mind action that this event refers to */
+public MindAction getMindAction()
+{
+	return mindAction;
+}
+
+/** displays information about this event */
+@Override
+public String toString()
+{
+	String evtString =  "Mind Action cancelled: " + mindAction.getName();
+	for (String parameter : mindAction.getParameters())
+		evtString += " " + parameter;
+	return evtString;		
+}
+
+
+}
+

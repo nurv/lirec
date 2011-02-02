@@ -75,6 +75,10 @@ public class SuperSimpleMigratingMindConnector extends AgentMindConnector implem
 		mind.sendSuccess(a);
 	}
 
+	@Override
+	protected void processActionCancellation(MindAction a) {
+	}
+	
 	/** pause the mind */
 	@Override
 	public synchronized void  sendMindToSleep() {

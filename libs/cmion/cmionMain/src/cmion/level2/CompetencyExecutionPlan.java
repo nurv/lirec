@@ -188,7 +188,5 @@ public class CompetencyExecutionPlan {
 	{
 		currentlyExecuting = false; 		
 	}
-	
-	
 
 }

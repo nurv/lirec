@@ -33,7 +33,6 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 
-import cmion.level3.MindAction;
 import cmion.storage.WorldModel;
 import cmion.util.SocketListener;
 
@@ -155,6 +154,10 @@ public class FAtiMAListenerThread extends SocketListener {
 		else if (msg.equals("STATE-SET"))
 		{
 			connector.notifySetState();
+		}
+		else if (type.equals("CANCEL-ACTION"))
+		{
+			connector.cancel(FAtiMAutils.fatimaMessageToMindAction(agentName, st.nextToken()));
 		}
 		else {
 			//Corresponds to an action

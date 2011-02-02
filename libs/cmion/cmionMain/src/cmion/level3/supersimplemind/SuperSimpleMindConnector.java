@@ -69,6 +69,12 @@ public class SuperSimpleMindConnector extends AgentMindConnector {
 		mind.sendSuccess(a);
 	}
 
+	@Override
+	protected void processActionCancellation(MindAction a) 
+	{
+		mind.sendCancel(a);
+	}
+	
 	/** pause the mind */
 	@Override
 	public synchronized void  sendMindToSleep() {

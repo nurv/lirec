@@ -29,19 +29,22 @@
 
 package cmion.level2;
 
-import cmion.architecture.CmionEvent;
+import ion.Meta.Request;
 
-/** this type of event is raised by the competency execution system when a competency execution plan has failed 
-*  the competency manager listens for those events */
-public class EventCompetencyExecutionPlanFailed extends CmionEvent 
+
+/** this type of event is raised by the competency manager when it wants to cancel a
+ * currently executing competency execution plan 
+*  the competency execution system listens for those events to stop the execution of the associated plan */
+public class RequestCancelCompetencyExecutionPlan extends Request 
 {
 
-	/** creates a new event */
-	public EventCompetencyExecutionPlanFailed(CompetencyExecutionPlan executionPlan)
+	/** creates a new request */
+	public RequestCancelCompetencyExecutionPlan(CompetencyExecutionPlan executionPlan)
 	{
 		super();
 		this.executionPlan = executionPlan;
 	}
+	
 	/** the competency execution plan that this event refers to */
 	private CompetencyExecutionPlan executionPlan;
 
@@ -50,13 +53,5 @@ public class EventCompetencyExecutionPlanFailed extends CmionEvent
 	{
 		return executionPlan;
 	}
-	
-	/** displays information about this event */
-	@Override
-	public String toString()
-	{
-		// not sure how to display more concise short information about this
-		String evtString =  "Competency Execution plan failed";
-		return evtString;
-	}
 }
+

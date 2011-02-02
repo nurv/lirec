@@ -31,13 +31,13 @@ package cmion.level2;
 
 import cmion.architecture.CmionEvent;
 
-/** this type of event is raised by the competency execution system when a competency execution plan has failed 
+/** this type of event is raised by the competency execution system when a competency execution plan has been cancelled 
 *  the competency manager listens for those events */
-public class EventCompetencyExecutionPlanFailed extends CmionEvent 
+public class EventCompetencyExecutionPlanCancelled extends CmionEvent 
 {
 
 	/** creates a new event */
-	public EventCompetencyExecutionPlanFailed(CompetencyExecutionPlan executionPlan)
+	public EventCompetencyExecutionPlanCancelled(CompetencyExecutionPlan executionPlan)
 	{
 		super();
 		this.executionPlan = executionPlan;
@@ -56,7 +56,7 @@ public class EventCompetencyExecutionPlanFailed extends CmionEvent
 	public String toString()
 	{
 		// not sure how to display more concise short information about this
-		String evtString =  "Competency Execution plan failed";
+		String evtString =  "Competency Execution plan cancelled";
 		return evtString;
 	}
 }
