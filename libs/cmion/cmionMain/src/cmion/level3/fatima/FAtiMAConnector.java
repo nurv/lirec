@@ -213,6 +213,7 @@ public class FAtiMAConnector extends AgentMindConnector implements Migrating, Mi
 	public void notifyAgentConnected(String agentName,
 			HashMap<String, Object> properties) {
 		architecture.getWorldModel().requestAddAgent(agentName, properties);
+		architecture.getBlackBoard().requestSetProperty("agentName", agentName);
 		fatimaConnected = true;
 	}
 	
