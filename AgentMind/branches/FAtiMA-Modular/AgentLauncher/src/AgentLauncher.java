@@ -34,7 +34,7 @@ public class AgentLauncher {
 			//extraFiles.add(cultureFile);
 			//aG.addComponent(new CulturalDimensionsComponent(cultureFile));
 			//aG.addComponent(new SocialRelationsComponent(extraFiles));
-			//aG.addComponent(new MotivationalComponent(extraFiles));
+			aG.addComponent(new MotivationalComponent(extraFiles));
 			//aG.addComponent(new ToMComponent(ConfigurationManager.getName()));
 			//aG.addComponent(new AdvancedMemoryComponent());
 		}

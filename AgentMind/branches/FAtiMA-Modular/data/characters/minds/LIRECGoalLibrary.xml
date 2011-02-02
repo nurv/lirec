@@ -23,7 +23,7 @@ xsi:noNamespaceSchemaLocation="./schemas/GoalLibrary.xsd">
 		<ExpectedEffects>
 			<OnSelect drive="Affiliation" target="[SELF]" value="+3"/>
 		</ExpectedEffects>	
-	</ActivePursuitGoal>
+	</ActivePursuitGoal>Click the centre of the hamster wheel!
 	<ActivePursuitGoal name="PlayHideCoinWith([target])">
 		<PreConditions>
 			<Predicate name="[box](OnTable)"/>
