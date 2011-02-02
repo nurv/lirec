@@ -123,8 +123,19 @@ public class WorldSimulatorRemoteAgent extends RemoteAgent {
 		
 	}
 	
-	protected void PropertyRemovedPerception(String perc){
-		AgentLogger.GetInstance().log("WARNING: Code entered a non-predicted area -> Class: WorldSimulatorRemoteAgent -  Method: PropertyRemovedPerception(String perc)");			
+	protected void PropertyRemovedPerception(String perc)
+	{
+		StringTokenizer st = new StringTokenizer(perc," ");
+		//a object/agent has one of its properties removed
+		//the perception specifies which property was removed
+		//percept-type object property 
+		//Ex: PROPERTY-REMOVED Luke pose 
+		String subject = st.nextToken();
+		String property = st.nextToken();
+	
+		
+		AgentLogger.GetInstance().logAndPrint("Removing Property: " + subject + " " + property);
+		_agent.PerceivePropertyRemoved(subject, property);	
 	}
 	
 	protected void UserSpeechPerception(String perc){

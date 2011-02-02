@@ -234,9 +234,9 @@ public abstract class RemoteAgent extends SocketListener {
 	    return _running;
 	}
 	
-	public void cancelAction(String action)
+	public void cancelAction()
 	{
-		if(_currentAction != null && _currentAction.getAction().GetFirstLiteral().toString().equals(action))
+		if(_currentAction != null) 
 		{
 			RemoteAction ra = new RemoteAction(_agent, _currentAction);
 			sendCancelActionMsg(ra);

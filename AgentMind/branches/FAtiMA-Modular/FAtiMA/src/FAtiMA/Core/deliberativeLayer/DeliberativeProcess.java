@@ -961,21 +961,21 @@ public class DeliberativeProcess implements Serializable, IComponent, IBehaviour
 					_actionMonitor = null;
 				}
 			}
-			/*else if(!i.getGoal().checkPreconditions(am))
+			else if(!i.getGoal().checkPreconditions(am))
 			{
 				RemoveIntention(i);
 				if(i.IsStrongCommitment())
 				{
-					if(_selectedAction != null)
+					//if(_selectedAction != null)
 					{
-						am.getRemoteAgent().cancelAction(_selectedAction.getName().GetFirstLiteral().toString());
+						am.getRemoteAgent().cancelAction();
 						_actionMonitor = null;
 						_selectedAction = null;
 					}
 					
 					i.ProcessIntentionCancel(am);
 				}
-			}*/
+			}
 			else
 			{
 				_selectedPlan = _planner.ThinkAbout(am, i);
