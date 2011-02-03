@@ -41,7 +41,6 @@
 	</InterpersonalRelations>
 	
 	<EventReactions>
-<!--
 		
 		<EmotionalReaction desirability="6" desirabilityForOther="1" praiseworthiness="5"> 
 			<Event subject="*" action="flower"/>
@@ -50,7 +49,7 @@
 		<EmotionalReaction desirability="-6" desirabilityForOther="-1" praiseworthiness="-2"> 
 			<Event subject="*" action="drop-leaves"/>
 		</EmotionalReaction>
-	-->	
+
 	</EventReactions>
 	
 	<ActionTendencies>
@@ -60,7 +59,7 @@
 		<ActionTendency action="flower([Target])">
 			<Preconditions>
             </Preconditions>
-			<ElicitingEmotion type="Love" minIntensity="2">
+			<ElicitingEmotion type="Love" minIntensity="4">
 				<CauseEvent/>
 			</ElicitingEmotion>
 		</ActionTendency>
@@ -68,7 +67,7 @@
 		<ActionTendency action="drop-leaves([Target])">
 			<Preconditions>
             </Preconditions>
-			<ElicitingEmotion type="Hate" minIntensity="2">
+			<ElicitingEmotion type="Hate" minIntensity="4">
 				<CauseEvent/>
 			</ElicitingEmotion>
 		</ActionTendency>

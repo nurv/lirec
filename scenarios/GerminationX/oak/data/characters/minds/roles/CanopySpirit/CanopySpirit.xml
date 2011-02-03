@@ -35,15 +35,15 @@
         <Relation target="canopy-fruit-a" like="1" respect="1"/>
         <Relation target="canopy-fruit-b" like="2" respect="1"/>
         <Relation target="canopy-fruit-c" like="3" respect="1"/>
-        <Relation target="canopy-ill-a" like="-1" respect="1"/>
-        <Relation target="canopy-ill-b" like="-2" respect="1"/>
-        <Relation target="canopy-ill-c" like="-3" respect="1"/>
+        <Relation target="canopy-ill-a" like="-4" respect="1"/>
+        <Relation target="canopy-ill-b" like="-6" respect="1"/>
+        <Relation target="canopy-ill-c" like="-8" respect="1"/>
 	</InterpersonalRelations>
 	
 	<EventReactions>
 
 		<!-- General emotional reactions used in more than one episode -->
-	<!--
+	
 		<EmotionalReaction desirability="6" desirabilityForOther="1" praiseworthiness="5"> 
 			<Event subject="*" action="flower"/>
 		</EmotionalReaction>
@@ -51,7 +51,7 @@
 		<EmotionalReaction desirability="-6" desirabilityForOther="-1" praiseworthiness="-2"> 
 			<Event subject="*" action="drop-leaves"/>
 		</EmotionalReaction>
-		-->
+		
 	</EventReactions>
 	
 	<ActionTendencies>
@@ -60,7 +60,7 @@
 		<ActionTendency action="flower([Target])">
 			<Preconditions>
             </Preconditions>
-			<ElicitingEmotion type="Love" minIntensity="2">
+			<ElicitingEmotion type="Love" minIntensity="4">
 				<CauseEvent/>
 			</ElicitingEmotion>
 		</ActionTendency>
@@ -68,7 +68,7 @@
 		<ActionTendency action="drop-leaves([Target])">
 			<Preconditions>
             </Preconditions>
-			<ElicitingEmotion type="Hate" minIntensity="2">
+			<ElicitingEmotion type="Hate" minIntensity="3">
 				<CauseEvent/>
 			</ElicitingEmotion>
 		</ActionTendency>

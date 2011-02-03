@@ -116,7 +116,7 @@
              (world-agents fatima-world)))
           game-world))
 
-(defn game-world-sync->fatima [fatima-world game-world]
+(defn game-world-sync->fatima [fatima-world game-world time]
   (let [tile (game-world-get-tile game-world (make-vec2 0 0))] 
     (reduce
      (fn [fw entity]
@@ -131,11 +131,12 @@
          (= (:state entity) 'ill-c))
         (do
           (world-add-object fw
-                            {"name" (str (:layer entity) "-" (:state entity) "-" (str (:id entity)))
+                            {"name" (str (:layer entity) "-" (:state entity))
                              "owner" (:layer entity)
                              "position" (str (:x (:pos entity)) "," (:y (:pos entity)))
                              "tile" "0,0"
-                             "type" "object"}))
+                             "type" "object"
+                             "time" time}))
         :else fw))
      fatima-world
      (:entities tile))))

@@ -14,6 +14,7 @@
 
 (ns oak.world
   (:use
+   oak.forms
    oak.remote-agent
    oak.io)
   (:import
@@ -129,7 +130,7 @@
 (defn world-get-object [world name pos]
   (reduce
    (fn [r obj]
-     (if (and (not r) (= pos (get obj "position")))
+     (if (and (not r) (= pos (get obj "position")) (= name (get obj "name")))
        obj r))
    false
    (world-objects world)))
@@ -139,6 +140,7 @@
     (do
       (println (str "adding " (get object "name") " " (get object "position")))
       (world-broadcast-all world (str "ENTITY-ADDED " (get object "name")))
+      (println (str (count (world-objects world)) "objects stored"))
       (merge world {:objects (cons object (world-objects world))}))
     world))
 
@@ -180,9 +182,8 @@
           (.MakeGround s bindings)
           (properties-changed world agent (.getEffects gstep)))))))
     
-
 (defn world-process-agent [world agent msg]
-;  (println (str "world-process-agent got " msg))
+  ;(println (str "world-process-agent for " (remote-agent-name agent) " got " msg))
   (let [toks (.split msg " ")
         type (nth toks 0)]
     (cond
@@ -191,11 +192,13 @@
      (.startsWith type "PROPERTY-CHANGED") agent
      (= type "look-at")
      (do
+       ;(println (str (remote-agent-name agent) " -----------> LOOKING AT: " (nth toks 1)))
        (send-msg (remote-agent-socket agent)
                  (str "LOOK-AT " (nth toks 1) " "
                       (hash-map-to-string
                        (world-get-properties world (nth toks 1)))))
-       agent)
+       (merge agent {:done (max-cons (str (world-time world) ": " msg)
+                                     (remote-agent-done agent) 4)}))
      (= type "say")
      (do (println "say")
          (let [say (SpeechAct/ParseFromXml (.substring msg 3))]
@@ -218,8 +221,8 @@
      (= type "UserSpeech") (do (println "user speech") agent)
      :else
      (do
-       (println "action")
-       (println msg)
+       ;(println "action")
+       ;(println msg)
        (update-action-effects
         world agent
         (convert-to-action-name
@@ -234,8 +237,8 @@
         world
         (apply str (concat "ACTION-FINISHED " (remote-agent-name agent) " "
                            (map (fn [s] (str s " ")) toks))))
-       (merge agent {:done (cons (str (world-time world) ": " msg)
-                                 (remote-agent-done agent))})))))
+       (merge agent {:done (max-cons (str (world-time world) ": " msg)
+                                     (remote-agent-done agent) 4)})))))
 
 (defn world-check-for-new-agents [world]
   (let [chan (.accept (world-ssc world))]
@@ -256,7 +259,7 @@
     (world-perceive world a)))
 
 (defn world-update-agent [world agent]
-  (let [msgs (read-msg (remote-agent-reader agent))]
+  (let [msgs (read-msg (remote-agent-socket agent))]
     (if msgs
       (reduce
        (fn [agent msg]
@@ -275,18 +278,22 @@
                   (fn [agent]
                     (world-update-agent world agent))
                   (world-agents world)))}))
- 
-(defn world-run [world]
-  (world-update-agents
-   (world-check-for-new-agents
-    (merge world {:time (+ (world-time world) 1)}))))
-                               
-(defn world-crank [world]
-  (Thread/sleep 1000)
-  (println (map (fn [a] (remote-agent-said a)) (world-agents world)))
-  (println (map (fn [a] (remote-agent-done a)) (world-agents world)))
-  ;(println (world-agents world))
-  (recur (world-run world)))
 
-(defn thing []
-  "<h1>ewewew!</h1>")
+(def object-max-age 100)
+
+(defn world-remove-old-objects [world time]
+  (merge world
+         {:objects
+          (doall
+           (filter
+            (fn [obj]
+              (< (- time (get obj "time")) object-max-age))
+            (world-objects world)))}))
+
+(defn world-run [world time]
+  (world-update-agents
+   (world-remove-old-objects
+    (world-check-for-new-agents
+     (merge world {:time (+ (world-time world) 1)}))
+    time)))
+

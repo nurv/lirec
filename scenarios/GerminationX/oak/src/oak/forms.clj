@@ -19,8 +19,8 @@
 
 (defn discard [l n]
   (cond
-   (empty? l) l
-   (= 0 n) l
+   (empty? l) '()
+   (= 0 n) '()
    :else (cons (first l) (discard (rest l) (- n 1)))))
 
 (defn max-cons [o l m]

@@ -43,14 +43,15 @@
 
 (defn tick []
   (Thread/sleep 1000)
-  (println ".")
+  ;(println ".")
   ;(game-world-print (deref my-game-world))
-  (let [time (.getTime (java.util.Date.))]
+  (let [time (/ (.getTime (java.util.Date.)) 1000.0)]
     (dosync (ref-set fatima-world
                      (world-run
                       (game-world-sync->fatima
                        (deref fatima-world)
-                       (deref my-game-world)))))
+                       (deref my-game-world)
+                       time) time)))
     (dosync (ref-set my-game-world
                      (game-world-update
                       (game-world-sync<-fatima
@@ -95,7 +96,8 @@
        (json/encode-to-str (map
                             (fn [a]
                               {:name (remote-agent-name a)
-                               :emotions (remote-agent-emotions a)})
+                               :emotions (remote-agent-emotions a)
+                               :actions (remote-agent-done a)})
                             (world-agents (deref fatima-world)))
                            :indent 2))
   (GET "/perceive" []

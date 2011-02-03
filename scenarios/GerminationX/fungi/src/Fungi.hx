@@ -25,6 +25,11 @@ import truffle.Circle;
 import truffle.Entity;
 import truffle.SpriteEntity;
 import truffle.SkeletonEntity;
+
+// todo: remove this
+import flash.display.Graphics;
+import flash.display.Shape;
+
  
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -80,7 +85,6 @@ class Plant extends SpriteEntity
         tf.y=Spr.Pos.y-30-Spr.Height*Spr.MyScale.y;
         tf.height=40;
         tf.background = true;
-        //tf.autoSize = true;
         //tf.backgroundColor = 0x8dd788;
         tf.border = true;
         tf.wordWrap = true;
@@ -150,7 +154,8 @@ class Spirit extends SkeletonEntity
 {
     public var Name:String;
     var Debug:flash.text.TextField;
-	
+	var BG:Graphics;
+
 	public function new(world:World, name:String, pos)
 	{
 		super(world,pos);
@@ -164,8 +169,8 @@ class Spirit extends SkeletonEntity
         tf.x=Pos.x-50;
         tf.y=Pos.y-25;
         tf.height=150;
-        tf.width=100;
-        tf.background = true;
+        tf.width=140;
+        tf.background = false;
         tf.autoSize = flash.text.TextFieldAutoSize.LEFT;
         //tf.backgroundColor = 0x8dd788;
         tf.border = true;
@@ -175,6 +180,14 @@ class Spirit extends SkeletonEntity
         t.size = 8;                
         t.color= 0x000000;           
         tf.setTextFormat(t);
+
+        var figures:Shape = new Shape();
+        BG = figures.graphics;
+        BG.beginFill(0xffffff,0.5);
+        BG.drawRect(tf.x,tf.y,tf.width,tf.height);
+        BG.endFill();
+        cast(c,truffle.flash.FlashWorld).addChild(figures);
+
         c.addChild(tf);
         Debug=tf;
         /*tf.visible=false;
@@ -194,11 +207,18 @@ class Spirit extends SkeletonEntity
         var mood=Std.parseFloat(ee[0].content[0]);
 
         var text=Name+"\nMood:"+ee[0].content[0]+"\n";
-
+        text+="Emotions:\n";
         for (i in 1...ee.length)
         {
             text+=ee[i].attrs.type+" "+ee[i].attrs.direction+"\n";
-            text+=ee[i].attrs.cause+"\n";
+            //text+=ee[i].attrs.cause+"\n";
+        }
+
+        text+="Actions:\n";
+        var acs = cast(e.actions,Array<Dynamic>);
+        for (i in 0...acs.length)
+        {
+            text+=acs[i]+"\n";
         }
 
         Debug.text=text;
@@ -209,6 +229,10 @@ class Spirit extends SkeletonEntity
         t.color= 0x000000;           
         Debug.setTextFormat(t);
 
+        BG.clear();
+        BG.beginFill(0xffffff,0.5);
+        BG.drawRect(Debug.x,Debug.y,Debug.width,Debug.height);
+        BG.endFill();
 
         //trace(text);
     }

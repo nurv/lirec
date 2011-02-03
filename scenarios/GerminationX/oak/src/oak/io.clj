@@ -82,22 +82,34 @@
   (with-open [inp (-> (java.io.File. filename) java.io.FileInputStream. java.io.ObjectInputStream.)]
     (.readObject inp)))
 
-(comment (def buf (ByteBuffer/allocateDirect 4096))
+(def buf (ByteBuffer/allocateDirect 409600))
 
 (defn read-msg [sc]
   (.clear buf)
-  (let [r (.readLine sc buf)]
+  (let [r (.read sc buf)]
     (if (> r 0)
       (do
         (.flip buf)
         (let [bytearr (byte-array (.remaining buf))]
           (.get buf bytearr)
           (new String bytearr)))
-      false))))
+      false)))
 
-(defn read-msg [reader]
+(comment defn read-msg [reader]
+  (defn _ []
+    (println "inner reader")
+    (let [s (.readLine reader)]
+      (println (str "[" s "]"))
+      (if (not s)
+        ""
+        (str s "\n" (_)))))
+  (println "read-msg in")
+  (_)
+  (println "read-msg out"))
+
+(comment defn read-msg [reader]
   (let [r (.readLine reader)]
-    ;(println "<----------------- " r)
+     ;(println "<----------------- " r)
     r))
 
 (defn send-msg [sc msg]

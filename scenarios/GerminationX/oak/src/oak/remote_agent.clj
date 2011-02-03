@@ -58,7 +58,7 @@
   (let [reader (BufferedReader.
                 (InputStreamReader.
                  (.getInputStream (.socket socket))))
-        toks (.split (read-msg reader) " ")]
+        toks (.split (read-msg socket) " ")]
     (send-msg socket "OK")
     (struct
      remote-agent

@@ -34,8 +34,9 @@
    (remote-agent-name remote-agent)))
   
 (defn spirit-update [spirit remote-agent]
-  (println (:name spirit))
-  (println (map
+  (comment println (:name spirit))
+  (comment println (remote-agent-done remote-agent))
+  (comment println (map
             (fn [emotion]
               (if (= (:tag emotion) :Mood)
                 (list "Mood" (:content emotion))
