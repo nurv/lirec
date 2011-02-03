@@ -1,14 +1,14 @@
 <Character role="CanopySpirit">
 	<EmotionalThresholds>
-		<EmotionalThreshold emotion="Love" threshold="0" decay="10"/>
-		<EmotionalThreshold emotion="Hate" threshold="0" decay="5"/>
+		<EmotionalThreshold emotion="Love" threshold="3" decay="10"/>
+		<EmotionalThreshold emotion="Hate" threshold="2" decay="5"/>
 		<EmotionalThreshold emotion="Hope" threshold="3" decay="2"/>
 		<EmotionalThreshold emotion="Fear" threshold="4" decay="8"/>
 		<EmotionalThreshold emotion="Satisfaction" threshold="2" decay="5"/>
 		<EmotionalThreshold emotion="Relief" threshold="3" decay="5"/>
 		<EmotionalThreshold emotion="Fears-Confirmed" threshold="2" decay="8"/>
 		<EmotionalThreshold emotion="Disappointment" threshold="2" decay="2"/>
-		<EmotionalThreshold emotion="Joy" threshold="3" decay="5"/>
+		<EmotionalThreshold emotion="Joy" threshold="3" decay="2"/>
 		<EmotionalThreshold emotion="Distress" threshold="1" decay="2"/>
 		<EmotionalThreshold emotion="Happy-For" threshold="2" decay="8"/>
 		<EmotionalThreshold emotion="Pitty" threshold="2" decay="8"/>
