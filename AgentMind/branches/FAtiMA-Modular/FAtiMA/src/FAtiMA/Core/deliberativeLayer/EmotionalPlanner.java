@@ -115,7 +115,9 @@ import java.util.ListIterator;
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.IntegrityValidator;
 import FAtiMA.Core.OCCAffectDerivation.OCCAppraisalVariables;
+import FAtiMA.Core.OCCAffectDerivation.OCCBaseEmotion;
 import FAtiMA.Core.OCCAffectDerivation.OCCComponent;
+import FAtiMA.Core.OCCAffectDerivation.OCCEmotionType;
 import FAtiMA.Core.conditions.Condition;
 import FAtiMA.Core.conditions.PropertyNotEqual;
 import FAtiMA.Core.deliberativeLayer.goals.ActivePursuitGoal;
@@ -454,8 +456,8 @@ public class EmotionalPlanner implements Serializable {
 		af.SetAppraisalVariable(DeliberativeProcess.NAME, (short)7, OCCAppraisalVariables.FAILUREPROBABILITY.name(), 1-planProb);
 		am.updateEmotions(af);
 		
-		hopeEmotion = am.getEmotionalState().GetEmotion(OCCComponent.getHopeKey(af.getEvent()));
-		fearEmotion = am.getEmotionalState().GetEmotion(OCCComponent.getFearKey(af.getEvent()));
+		fearEmotion = am.getEmotionalState().GetEmotion(new OCCBaseEmotion(OCCEmotionType.FEAR, 0, af.getEvent()));		 
+		hopeEmotion = am.getEmotionalState().GetEmotion(new OCCBaseEmotion(OCCEmotionType.HOPE,0, af.getEvent()));
 		
 		intention.SetHope(hopeEmotion);
 		intention.SetFear(fearEmotion);
@@ -494,10 +496,12 @@ public class EmotionalPlanner implements Serializable {
 			AppraisalFrame auxFrame = new AppraisalFrame(tGoal.GetActivationEvent());
 			auxFrame.SetAppraisalVariable(DeliberativeProcess.NAME, (short)6, OCCAppraisalVariables.FAILUREPROBABILITY.name(), prob);
 			auxFrame.SetAppraisalVariable(DeliberativeProcess.NAME, (short)6, OCCAppraisalVariables.GOALCONDUCIVENESS.name(), -tGoal.GetImportanceOfFailure(am));
+			auxFrame.SetAppraisalVariable(DeliberativeProcess.NAME, (short)6, OCCAppraisalVariables.GOALSTATUS.name(), OCCComponent.GOALUNCONFIRMED);
 			am.updateEmotions(auxFrame);
 			 
 			
-			threatEmotion = am.getEmotionalState().GetEmotion(OCCComponent.getFearKey(tGoal.GetActivationEvent())); 
+			threatEmotion = am.getEmotionalState().GetEmotion(new OCCBaseEmotion(OCCEmotionType.FEAR, 0, tGoal.GetActivationEvent()));
+					 
 			if(threatEmotion != null) { //if does not exist a fear caused by the threat, emotion coping is not necessary
 				threatIntensity = threatEmotion.GetIntensity();
 			}

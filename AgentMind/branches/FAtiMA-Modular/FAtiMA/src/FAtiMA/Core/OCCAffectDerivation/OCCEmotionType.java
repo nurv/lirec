@@ -5,24 +5,24 @@ import FAtiMA.Core.util.enumerables.EmotionValence;
 public enum OCCEmotionType {
 	ADMIRATION (EmotionValence.POSITIVE){public String[] getAppraisalVariables(){return attribution;}},
 	ANGER (EmotionValence.POSITIVE) {public String[] getAppraisalVariables(){return composed;}},
-	DISAPPOINTMENT (EmotionValence.NEGATIVE) {public String[] getAppraisalVariables(){return prospectBased;}},
+	DISAPPOINTMENT (EmotionValence.NEGATIVE) {public String[] getAppraisalVariables(){return positiveProspect;}},
 	DISTRESS (EmotionValence.NEGATIVE) {public String[] getAppraisalVariables(){return wellBeing;}},
-	FEAR (EmotionValence.NEGATIVE) {public String[] getAppraisalVariables(){return fearVariables;}},
-	FEARS_CONFIRMED (EmotionValence.NEGATIVE) {public String[] getAppraisalVariables(){return prospectBased;}},
+	FEAR (EmotionValence.NEGATIVE) {public String[] getAppraisalVariables(){return negativeProspect;}},
+	FEARS_CONFIRMED (EmotionValence.NEGATIVE) {public String[] getAppraisalVariables(){return negativeProspect;}},
 	GRATIFICATION (EmotionValence.POSITIVE) {public String[] getAppraisalVariables(){return composed;}},
 	GLOATING (EmotionValence.POSITIVE) {public String[] getAppraisalVariables(){return fortuneOfOthers;}},
 	HAPPY_FOR(EmotionValence.POSITIVE) {public String[] getAppraisalVariables(){return fortuneOfOthers;}},
 	HATE (EmotionValence.NEGATIVE) {public String[] getAppraisalVariables(){return attraction;}},
-	HOPE (EmotionValence.POSITIVE) {public String[] getAppraisalVariables(){return hopeVariables;}},
+	HOPE (EmotionValence.POSITIVE) {public String[] getAppraisalVariables(){return positiveProspect;}},
 	JOY (EmotionValence.POSITIVE) {public String[] getAppraisalVariables(){return wellBeing;}},
 	LOVE (EmotionValence.POSITIVE) {public String[] getAppraisalVariables(){return attraction;}},
 	PITTY (EmotionValence.NEGATIVE) {public String[] getAppraisalVariables(){return fortuneOfOthers;}},
 	PRIDE (EmotionValence.POSITIVE) {public String[] getAppraisalVariables(){return attribution;}},
-	RELIEF (EmotionValence.POSITIVE) {public String[] getAppraisalVariables(){return prospectBased;}},
+	RELIEF (EmotionValence.POSITIVE) {public String[] getAppraisalVariables(){return negativeProspect;}},
 	REMORSE (EmotionValence.NEGATIVE) {public String[] getAppraisalVariables(){return composed;}},
 	REPROACH (EmotionValence.NEGATIVE) {public String[] getAppraisalVariables(){return attribution;}},
 	RESENTMENT (EmotionValence.NEGATIVE) {public String[] getAppraisalVariables(){return fortuneOfOthers;}},
-	SATISFACTION (EmotionValence.POSITIVE) {public String[] getAppraisalVariables(){return prospectBased;}},
+	SATISFACTION (EmotionValence.POSITIVE) {public String[] getAppraisalVariables(){return positiveProspect;}},
 	SHAME (EmotionValence.NEGATIVE) {public String[] getAppraisalVariables(){return attribution;}};
 	
 	
@@ -34,9 +34,8 @@ public enum OCCEmotionType {
 	private static String[] attraction = {OCCAppraisalVariables.DESIRABILITY.name()};
 	private static String[] composed = {OCCAppraisalVariables.DESIRABILITY.name(),OCCAppraisalVariables.PRAISEWORTHINESS.name()};
 	
-	private static String[] fearVariables = {OCCAppraisalVariables.GOALCONDUCIVENESS.name(),OCCAppraisalVariables.FAILUREPROBABILITY.name()};
-	private static String[] hopeVariables = {OCCAppraisalVariables.GOALCONDUCIVENESS.name(),OCCAppraisalVariables.SUCCESSPROBABILITY.name()};	
-	private static String[] prospectBased = {OCCAppraisalVariables.GOALCONDUCIVENESS.name(),OCCAppraisalVariables.GOALSTATUS.name()};
+	private static String[] positiveProspect = {OCCAppraisalVariables.GOALCONDUCIVENESS.name(),OCCAppraisalVariables.GOALSTATUS.name(), OCCAppraisalVariables.FAILUREPROBABILITY.name()};
+	private static String[] negativeProspect = {OCCAppraisalVariables.GOALCONDUCIVENESS.name(),OCCAppraisalVariables.GOALSTATUS.name(), OCCAppraisalVariables.SUCCESSPROBABILITY.name()};	
 
 	
 	private final EmotionValence valence; 

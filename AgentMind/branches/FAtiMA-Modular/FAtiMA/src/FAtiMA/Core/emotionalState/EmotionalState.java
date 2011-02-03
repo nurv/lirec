@@ -139,6 +139,7 @@ public class EmotionalState implements Serializable {
 		int threshold;
 		int decay;
 		ActiveEmotion auxEmotion;
+		ActiveEmotion previousEmotion;
 		boolean reappraisal = false;
 		
 		if(potEm == null) return null;
@@ -154,7 +155,18 @@ public class EmotionalState implements Serializable {
 		
 		if(_emotionPool.containsKey(potEm.GetHashKey()))
 		{
-			reappraisal = true;
+			previousEmotion = _emotionPool.get(potEm.GetHashKey());
+			//if this test is true, it means that this is 100% a reappraisal of the same event
+			//if not true, it is not a reappraisal, but the appraisal of a new event of the same
+			//type
+			if(previousEmotion.GetCause().GetTime() == potEm.GetCause().GetTime())
+			{
+				reappraisal = true;
+			}
+			
+			//in both cases we need to remove the old emotion. In the case of reappraisal it is obvious.
+			//In the case of the appraisal of a similar event, we want to aggregate all the similar resulting 
+			//emotions into only one emotion
 			_emotionPool.remove(potEm.GetHashKey());
 		}
 		
@@ -269,6 +281,11 @@ public class EmotionalState implements Serializable {
 	public ActiveEmotion GetEmotion(String emotionKey)
 	{
 		return (ActiveEmotion) _emotionPool.get(emotionKey);	
+	}
+	
+	public ActiveEmotion GetEmotion(BaseEmotion emotion)
+	{
+		return (ActiveEmotion) _emotionPool.get(emotion.GetHashKey());
 	}
 	
 	/**

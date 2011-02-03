@@ -382,6 +382,7 @@ public class Intention implements Serializable {
 	    _appraisalFrame.SetAppraisalVariable(DeliberativeProcess.NAME, (short)7, OCCAppraisalVariables.SUCCESSPROBABILITY.name(), probability);
 	    _appraisalFrame.SetAppraisalVariable(DeliberativeProcess.NAME, (short)7, OCCAppraisalVariables.FAILUREPROBABILITY.name(), 1-probability);
 	    _appraisalFrame.SetAppraisalVariable(DeliberativeProcess.NAME, (short)7, OCCAppraisalVariables.GOALCONDUCIVENESS.name(), goalConduciveness);
+	    _appraisalFrame.SetAppraisalVariable(DeliberativeProcess.NAME, (short)7, OCCAppraisalVariables.GOALSTATUS.name(), OCCComponent.GOALUNCONFIRMED);
 	    
 	    am.updateEmotions(_appraisalFrame);
 		

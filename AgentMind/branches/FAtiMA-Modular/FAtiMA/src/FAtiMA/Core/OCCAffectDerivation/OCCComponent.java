@@ -55,19 +55,6 @@ public class OCCComponent implements Serializable, IAffectDerivationComponent, I
 		return null;
 	}
 	
-	public static String getHopeKey(Event e)
-	{
-		return e + "-" + OCCAppraisalVariables.GOALCONDUCIVENESS + "-" + 
-					OCCAppraisalVariables.SUCCESSPROBABILITY;
-	}
-	
-	public static String getFearKey(Event e)
-	{
-		return e + "-" + OCCAppraisalVariables.GOALCONDUCIVENESS + "-" + 
-			OCCAppraisalVariables.FAILUREPROBABILITY;
-	}
-	
-	
 	@Override
 	public ArrayList<BaseEmotion> affectDerivation(AgentModel am, AppraisalFrame af) {
 		
@@ -137,32 +124,23 @@ public class OCCComponent implements Serializable, IAffectDerivationComponent, I
 						emotions.add(AppraiseGoalFailureProbability(am, event, goalConduciveness, prob));
 					}
 				}
-				else if(status == GOALCONFIRMED)
+				else 
 				{
-					float conduciveness = af.getAppraisalVariable(OCCAppraisalVariables.GOALCONDUCIVENESS.name());
-					if(conduciveness != 0)
-					{
-						fear = am.getEmotionalState().GetEmotion(getFearKey(event));
-						hope = am.getEmotionalState().GetEmotion(getHopeKey(event));
-						if(fear!= null || hope != null)
-						{
-							emotions.add(AppraiseGoalSuccess(am, hope, fear, conduciveness,af.getEvent()));
-						}
-					}
+		 
+					fear = am.getEmotionalState().GetEmotion(new OCCBaseEmotion(OCCEmotionType.FEAR, 0, event));		 
+					hope = am.getEmotionalState().GetEmotion(new OCCBaseEmotion(OCCEmotionType.HOPE,0, event));
 					
-				}
-				else if(status == GOALDISCONFIRMED)
-				{
-					float conduciveness = af.getAppraisalVariable(OCCAppraisalVariables.GOALCONDUCIVENESS.name());
-					if(conduciveness != 0)
+					if(fear!= null || hope != null)
 					{
-						fear = am.getEmotionalState().GetEmotion(getFearKey(event));
-						hope = am.getEmotionalState().GetEmotion(getHopeKey(event));
-						if(fear!= null || hope != null)
+						if(status == GOALCONFIRMED)
 						{
-							emotions.add(AppraiseGoalFailure(am, hope, fear, conduciveness,af.getEvent()));
+							emotions.add(AppraiseGoalSuccess(am, hope, fear, goalConduciveness,af.getEvent()));
 						}
-					}
+						else if (status == GOALDISCONFIRMED)
+						{
+							emotions.add(AppraiseGoalFailure(am, hope, fear, goalConduciveness,af.getEvent()));
+						}	
+					}	
 				}
 			}
 		}
