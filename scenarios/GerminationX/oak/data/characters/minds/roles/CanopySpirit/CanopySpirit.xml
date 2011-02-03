@@ -60,7 +60,7 @@
 		<ActionTendency action="flower([Target])">
 			<Preconditions>
             </Preconditions>
-			<ElicitingEmotion type="Love" minIntensity="4">
+			<ElicitingEmotion type="Love" minIntensity="2">
 				<CauseEvent/>
 			</ElicitingEmotion>
 		</ActionTendency>
@@ -68,7 +68,7 @@
 		<ActionTendency action="drop-leaves([Target])">
 			<Preconditions>
             </Preconditions>
-			<ElicitingEmotion type="Hate" minIntensity="3">
+			<ElicitingEmotion type="Hate" minIntensity="1">
 				<CauseEvent/>
 			</ElicitingEmotion>
 		</ActionTendency>
