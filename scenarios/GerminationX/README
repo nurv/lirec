@@ -1,0 +1,8 @@
+Germination X is an experiment to allow multiple users to interact with companions in an online game world themed around food production and specifically permaculture and companion planting.
+
+It is also aimed to provide an environment for experimenting with FAtiMA in the context of social networks.
+
+oak is the server, which feeds http requests to a FAtiMA world and agents.
+fungi is the client, which represents the agents in a browser.
+
+dave@fo.am 
