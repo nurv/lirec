@@ -15,41 +15,69 @@
 
 (ns oak.spirit
   (:use
+   oak.io
    oak.vec2
    oak.remote-agent
-   oak.forms)
+   oak.forms
+   oak.tile)
   (:require
    clojure.contrib.math))
 
 (defrecord spirit
   [tile
    pos
-   name])
+   name
+   emotions
+   actions])
 
 (defn make-spirit [remote-agent]
   (println (str "creating spirit for " (remote-agent-name remote-agent)))
   (spirit.
    (make-vec2 0 0)
    (make-vec2 0 0)
-   (remote-agent-name remote-agent)))
+   (remote-agent-name remote-agent)
+   '() '()))
+
+; convert foofooname#999# to 999
+(defn fatima-name->id [name]
+  (if (.contains name "#")
+    (parse-number (.substring name
+                              (+ 1 (.indexOf name "#"))
+                              (.lastIndexOf name "#")))
+    false))
+
+(defn spirit-update [spirit remote-agent tile]
+; for the moment take a straight copy of actions and emotions
+  (let [spirit (modify :emotions
+                       (fn [emotions]
+                         (remote-agent-emotions remote-agent))
+                       (modify :actions
+                               (fn [actions]
+                                 (remote-agent-done remote-agent))
+                               spirit))]
+    
+    ; if we have some actions
+    (if (not (empty? (:actions spirit)))
+      (let [latest-action (first (:actions spirit))
+            latest-subject (nth (.split (:msg latest-action) " ") 1)
+            id (fatima-name->id latest-subject)]
+        (if id
+          (let [e (tile-find-entity tile id)]
+            (if e
+              (modify :pos (fn [pos] (:pos e)) spirit)
+              spirit))
+          spirit))
+      spirit)))
+            
+          
+(comment println
+         (map
+          (fn [relation]
+            (list (:tag relation)
+                  (map
+                   (fn [chunk]
+                     (list (:tag chunk) (:content chunk)))
+                   (:content relation))))
+          (:content (remote-agent-relations remote-agent))))
+
   
-(defn spirit-update [spirit remote-agent]
-  (comment println (:name spirit))
-  (comment println (remote-agent-done remote-agent))
-  (comment println (map
-            (fn [emotion]
-              (if (= (:tag emotion) :Mood)
-                (list "Mood" (:content emotion))
-                (let [e (:attrs emotion)]
-                  (list (:type e) (:cause e)))))
-            (:content (remote-agent-emotions remote-agent))))
-  (comment println
-   (map
-    (fn [relation]
-      (list (:tag relation)
-            (map
-             (fn [chunk]
-               (list (:tag chunk) (:content chunk)))
-             (:content relation))))
-    (:content (remote-agent-relations remote-agent))))
-  spirit)

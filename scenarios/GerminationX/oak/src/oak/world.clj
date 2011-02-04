@@ -127,20 +127,21 @@
                           (str " " (get object "name")))
                         (world-objects world))))))
 
-(defn world-get-object [world name pos]
+(defn world-get-object [world name]
   (reduce
    (fn [r obj]
-     (if (and (not r) (= pos (get obj "position")) (= name (get obj "name")))
+     (if (and (not r) (= name (get obj "name")))
        obj r))
    false
    (world-objects world)))
 
 (defn world-add-object [world object]
-  (if (not (world-get-object world (get object "name") (get object "position")))
+  ; check we haven't added it already
+  (if (not (world-get-object world (get object "name")))
     (do
-      (println (str "adding " (get object "name") " " (get object "position")))
       (world-broadcast-all world (str "ENTITY-ADDED " (get object "name")))
-      (println (str (count (world-objects world)) "objects stored"))
+      (println (str "added " (get object "name") " " (get object "position") " "
+                    (count (world-objects world)) " objects stored"))
       (merge world {:objects (cons object (world-objects world))}))
     world))
 
@@ -197,7 +198,8 @@
                  (str "LOOK-AT " (nth toks 1) " "
                       (hash-map-to-string
                        (world-get-properties world (nth toks 1)))))
-       (merge agent {:done (max-cons (str (world-time world) ": " msg)
+       (merge agent {:done (max-cons {:time (world-time world)
+                                      :msg msg}
                                      (remote-agent-done agent) 4)}))
      (= type "say")
      (do (println "say")
@@ -237,7 +239,8 @@
         world
         (apply str (concat "ACTION-FINISHED " (remote-agent-name agent) " "
                            (map (fn [s] (str s " ")) toks))))
-       (merge agent {:done (max-cons (str (world-time world) ": " msg)
+       (merge agent {:done (max-cons {:time (world-time world)
+                                      :msg msg}
                                      (remote-agent-done agent) 4)})))))
 
 (defn world-check-for-new-agents [world]

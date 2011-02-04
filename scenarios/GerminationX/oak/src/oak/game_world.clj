@@ -14,6 +14,7 @@
 
 (ns oak.game-world
   (:use
+   oak.io
    oak.forms
    oak.vec2
    oak.plant
@@ -55,15 +56,49 @@
              tiles))
           game-world))
 
+(defn find-spirit [world name]
+  (reduce
+   (fn [r spirit]
+     (if (and (not r) (= name (:name spirit)))
+       spirit r))
+   false
+   (:spirits world)))
+
+(defn layer->spirit-name [layer]
+  (cond
+   (= layer "canopy") "CanopySpirit"
+   (= layer "vertical") "VerticalSpirit"
+   (= layer "cover") "CoverSpirit"
+   :else "UnknownSpirit"))
+
+(defn game-world-summon-spirit [world tile-pos entity]
+  (let [spirit-name (layer->spirit-name (:layer entity))]
+    (modify :spirits
+            (fn [spirits]
+              (map
+               (fn [spirit]
+                 (if (= spirit-name (:name spirit))
+                   (modify :tile
+                           (fn [tile]
+                             (println (str "summonning " spirit-name " to " tile-pos))
+                             tile-pos)
+                           spirit)
+                   spirit))
+               spirits))
+            world)))
+
 (defn game-world-add-entity [game-world tile-pos entity]
   (let [tile (game-world-get-tile game-world tile-pos)]
-    (if (not tile)
-      (game-world-add-tile game-world (make-tile tile-pos (list entity)))
-      (game-world-modify-tile
-       game-world
-       tile-pos
-       (fn [tile]
-         (tile-add-entity tile entity))))))
+    (game-world-summon-spirit
+     (if (not tile)
+       (game-world-add-tile game-world (make-tile tile-pos (list entity)))
+       (game-world-modify-tile
+        game-world
+        tile-pos
+        (fn [tile]
+          (tile-add-entity tile entity))))
+     tile-pos
+     entity)))
 
 (defn make-game-world [num-plants area]
   (reduce
@@ -107,17 +142,23 @@
           (fn [spirits]
             (reduce
              (fn [spirits agent]
-               (let [spirit (game-world-find-spirit game-world
-                                                    (remote-agent-name agent))]
+               (let [spirit (game-world-find-spirit
+                             game-world
+                             (remote-agent-name agent))]
                  (if spirit
-                   (cons (spirit-update spirit agent) spirits)
+                   (cons (spirit-update
+                          spirit agent
+                          (game-world-get-tile
+                           game-world (:tile spirit)))
+                         spirits)
                    (cons (make-spirit agent) spirits))))
              '()
              (world-agents fatima-world)))
           game-world))
 
 (defn game-world-sync->fatima [fatima-world game-world time]
-  (let [tile (game-world-get-tile game-world (make-vec2 0 0))] 
+  (reduce
+   (fn [fw tile]
     (reduce
      (fn [fw entity]
        (cond
@@ -131,12 +172,16 @@
          (= (:state entity) 'ill-c))
         (do
           (world-add-object fw
-                            {"name" (str (:layer entity) "-" (:state entity))
+                            {"name" (str (:layer entity) "-" (:state entity) "#" (:id entity) "#")
                              "owner" (:layer entity)
                              "position" (str (:x (:pos entity)) "," (:y (:pos entity)))
                              "tile" "0,0"
                              "type" "object"
                              "time" time}))
         :else fw))
-     fatima-world
-     (:entities tile))))
+     fw
+     (:entities tile)))
+   fatima-world
+   (:tiles game-world)))
+
+

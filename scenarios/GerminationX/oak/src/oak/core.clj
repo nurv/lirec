@@ -93,13 +93,8 @@
        (read-islands (str "./public/" name)))
 
   (GET "/spirit-info" []
-       (json/encode-to-str (map
-                            (fn [a]
-                              {:name (remote-agent-name a)
-                               :emotions (remote-agent-emotions a)
-                               :actions (remote-agent-done a)})
-                            (world-agents (deref fatima-world)))
-                           :indent 2))
+       (json/encode-to-str (:spirits (deref my-game-world))))
+
   (GET "/perceive" []
        (world-perceive-all (deref fatima-world))
        (json/encode-to-str '("ok")))

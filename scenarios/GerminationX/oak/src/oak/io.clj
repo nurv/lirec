@@ -82,7 +82,7 @@
   (with-open [inp (-> (java.io.File. filename) java.io.FileInputStream. java.io.ObjectInputStream.)]
     (.readObject inp)))
 
-(def buf (ByteBuffer/allocateDirect 40960))
+(def buf (ByteBuffer/allocateDirect 409600))
 
 (defn read-msg [sc]
   (.clear buf)

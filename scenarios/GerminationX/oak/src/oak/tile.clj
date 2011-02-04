@@ -42,6 +42,14 @@
     (merge tile {:entities (cons entity (tile-entities tile))})
     tile))
 
+(defn tile-find-entity [tile id]
+  (reduce
+   (fn [r e]
+     (if (and (not r) (= id (:id e)))
+       e r))
+   false
+   (:entities tile)))
+
 (defn tile-get-neighbours [tile pos]
   (reduce
    (fn [l e]
