@@ -29,4 +29,5 @@ interface World
     public function SortScene() : Void;
     public function Update(time:Int) : Void;
     public function Handle(event:Int) : Void;
+    public function SetCurrentTilePos(s:Vec2) : Void;
 }

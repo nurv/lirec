@@ -153,6 +153,7 @@ class Plant extends SpriteEntity
 class Spirit extends SkeletonEntity 
 {
     public var Name:String;
+
     var Debug:flash.text.TextField;
 	var BG:Graphics;
 
@@ -166,7 +167,7 @@ class Spirit extends SkeletonEntity
     {
         var tf = new flash.text.TextField();
         tf.text = "nowt yet.";
-        tf.x=Pos.x-50;
+        tf.x=Pos.x-150;
         tf.y=Pos.y-25;
         tf.height=150;
         tf.width=140;
@@ -186,23 +187,29 @@ class Spirit extends SkeletonEntity
         BG.beginFill(0xffffff,0.5);
         BG.drawRect(tf.x,tf.y,tf.width,tf.height);
         BG.endFill();
+        figures.visible=false;
         cast(c,truffle.flash.FlashWorld).addChild(figures);
 
         c.addChild(tf);
         Debug=tf;
-        /*tf.visible=false;
-        Root.MouseOver(this,function(c) { tf.visible=true; });
-        Root.MouseOut(this,function(c) { tf.visible=false; });*/
+        tf.visible=false;
 
         Root.MouseDown(c,function(c)
         {
-            trace("perc...");
-            c.Server.Request("perceive",1,function(c,d){});
+            tf.visible=!tf.visible;
+            figures.visible=!figures.visible;
         });
 	}
 
     public function UpdateEmotions(e:Dynamic)
     {
+        SetTilePos(new Vec2(Std.parseInt(e.tile.x),
+                            Std.parseInt(e.tile.y)));
+
+        LogicalPos = new Vec3(Std.parseInt(e.pos.x),
+                              Std.parseInt(e.pos.y),
+                              4);
+
         var ee = e.emotions.content;
         var mood=Std.parseFloat(ee[0].content[0]);
 
@@ -228,6 +235,8 @@ class Spirit extends SkeletonEntity
         t.size = 8;                
         t.color= 0x000000;           
         Debug.setTextFormat(t);
+        Debug.x=Pos.x-150;
+        Debug.y=Pos.y-25;
 
         BG.clear();
         BG.beginFill(0xffffff,0.5);
@@ -402,6 +411,7 @@ class FungiWorld extends World
 	public function UpdateWorld(pos:Vec3)
 	{
 		WorldPos=pos;
+        SetCurrentTilePos(new Vec2(pos.x,pos.y));
 		
 		var circles = [];
         for (x in -1...2)

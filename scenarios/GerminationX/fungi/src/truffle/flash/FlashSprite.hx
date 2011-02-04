@@ -37,6 +37,7 @@ class FlashSprite implements truffle.interfaces.Sprite, extends flash.display.Sp
     public var Height:Int;
     public var Angle:Float;
     public var MyScale:Vec2;
+    public var Hidden:Bool;
     var Transform:Matrix;
     var Depth:Int;
     var MouseDownFunc:Dynamic -> Void;
@@ -69,6 +70,7 @@ class FlashSprite implements truffle.interfaces.Sprite, extends flash.display.Sp
 
     public function Hide(s:Bool) : Void
     {
+        Hidden=s;
         visible=!s;
     }
 

@@ -29,11 +29,13 @@ class FlashWorld implements World, extends MovieClip
     var Scene:Array<Entity>;
     var MouseDownFunc:Dynamic -> Void;
     var MouseDownContext:Dynamic;
+    var CurrentTilePos:Vec2;
 
     function new()
     {
         super();
         Scene = [];
+        CurrentTilePos=new Vec2(0,0); // perhaps
     }
 
     public function Add(e:Entity)
@@ -106,11 +108,21 @@ class FlashWorld implements World, extends MovieClip
         }
     }
 
+    public function SetCurrentTilePos(s:Vec2) : Void
+    {
+        CurrentTilePos=s;
+    }
+
     public function Update(time)
     {
         for (e in Scene)
         {
-            if (e.NeedsUpdate)
+            if (e.TilePos!=null)
+            {
+                e.Hide(!e.TilePos.Eq(CurrentTilePos));
+            }
+
+            if (e.NeedsUpdate && !e.Hidden)
             {
                 e.Update(time,cast(this,truffle.World));
             }

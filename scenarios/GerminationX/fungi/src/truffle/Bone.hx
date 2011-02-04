@@ -63,6 +63,18 @@ class Bone extends Sprite
         }
     }
 
+    override function Hide(s:Bool) : Void
+    {
+        if (Hidden!=s)
+        {
+            super.Hide(s);
+            for (c in Children)
+            {
+                c.Hide(s);
+            }
+        }
+    }
+
     public function Print()
     {
         trace("Bone "+Std.string(Pos.x)+" "+Std.string(Pos.y));

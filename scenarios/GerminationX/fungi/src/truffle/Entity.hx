@@ -18,15 +18,18 @@ import truffle.Truffle;
 
 class Entity
 {
-    public var LogicalPos:Vec3;
-    public var Depth:Float;
-    public var Pos:Vec3;
-    public var NeedsUpdate:Bool;
+    public var TilePos:Vec2;     // position in the world in tiles 
+    public var LogicalPos:Vec3;  // position in it's tile
+    public var Pos:Vec3;         // screen position
+    public var Depth:Float;      // depth from camera
+    public var NeedsUpdate:Bool; 
+    public var Hidden:Bool;
 		
 	public function new(w:World,pos:Vec3) 
 	{
         LogicalPos=pos;
         Pos = Pos2PixelPos(LogicalPos);
+        TilePos = null;
         Depth = Pos.z;
         NeedsUpdate=false;
         w.Add(this);
@@ -45,7 +48,12 @@ class Entity
                         120+(pos.y*18+pos.x*9)-(pos.z*37),
                         pos.x*0.51 + pos.y*0.71 + pos.z*0.47);             
 	}
-		
+
+    public function SetTilePos(s:Vec2) : Void
+    {
+        TilePos=s;
+    }
+
 	public function Update(frame:Int, world:World)
 	{
         Pos = Pos2PixelPos(LogicalPos);
@@ -59,5 +67,11 @@ class Entity
 
     public function OnSortScene(order:Int) : Void
     {
+    }
+
+    public function Hide(s:Bool) : Void
+    {
+        Hidden=s;
+        if (GetRoot()) GetRoot().Hide(s);
     }
 }

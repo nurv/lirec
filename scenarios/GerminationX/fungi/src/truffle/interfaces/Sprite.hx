@@ -25,6 +25,7 @@ interface Sprite
     public var Height:Int;
     public var Angle:Float;
     public var MyScale:Vec2;
+    public var Hidden:Bool;
 
 	public function MouseDown(c:Dynamic, f:Dynamic -> Void=null) : Void;
 	public function MouseUp(c:Dynamic, f:Dynamic -> Void=null) : Void;
