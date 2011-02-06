@@ -24,13 +24,17 @@ class Entity
     public var Depth:Float;      // depth from camera
     public var NeedsUpdate:Bool; 
     public var Hidden:Bool;
-		
+    public var Speed:Float;
+    public var UpdateFreq:Int;
+	
 	public function new(w:World,pos:Vec3) 
 	{
         LogicalPos=pos;
         Pos = Pos2PixelPos(LogicalPos);
         TilePos = null;
         Depth = Pos.z;
+        Speed = 0;
+        UpdateFreq=0;
         NeedsUpdate=false;
         w.Add(this);
 	}
@@ -56,7 +60,19 @@ class Entity
 
 	public function Update(frame:Int, world:World)
 	{
-        Pos = Pos2PixelPos(LogicalPos);
+        if (Speed==0)
+        {
+            Pos = Pos2PixelPos(LogicalPos);
+        }
+        else
+        {
+            var Dst = Pos2PixelPos(LogicalPos);
+            if (!Dst.Eq(Pos))
+            {
+                Pos = Pos.Lerp(Dst,Speed);
+            }
+        }
+
         Depth = Pos.z;
 	}
 

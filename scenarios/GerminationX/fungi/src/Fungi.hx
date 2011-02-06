@@ -25,6 +25,7 @@ import truffle.Circle;
 import truffle.Entity;
 import truffle.SpriteEntity;
 import truffle.SkeletonEntity;
+import truffle.Bone;
 
 // todo: remove this
 import flash.display.Graphics;
@@ -156,11 +157,16 @@ class Spirit extends SkeletonEntity
 
     var Debug:flash.text.TextField;
 	var BG:Graphics;
+    var Emotions:Dynamic;
 
 	public function new(world:World, name:String, pos)
 	{
 		super(world,pos);
         Name = name;
+        Speed=0.1;
+        UpdateFreq=5;
+        Hide(true);
+        Emotions={Love:0};
     }
 
 	public function BuildDebug(c)
@@ -206,11 +212,14 @@ class Spirit extends SkeletonEntity
         SetTilePos(new Vec2(Std.parseInt(e.tile.x),
                             Std.parseInt(e.tile.y)));
 
-        LogicalPos = new Vec3(Std.parseInt(e.pos.x),
-                              Std.parseInt(e.pos.y),
+
+        LogicalPos = new Vec3(Std.parseInt(e.emotionalloc.x),
+                              Std.parseInt(e.emotionalloc.y),
                               4);
 
-        var ee = e.emotions.content;
+        Emotions = e.emotions;
+
+        var ee = e.fatemotions.content;
         var mood=Std.parseFloat(ee[0].content[0]);
 
         var text=Name+"\nMood:"+ee[0].content[0]+"\n";
@@ -222,10 +231,10 @@ class Spirit extends SkeletonEntity
         }
 
         text+="Actions:\n";
-        var acs = cast(e.actions,Array<Dynamic>);
+        var acs = cast(e.fatactions,Array<Dynamic>);
         for (i in 0...acs.length)
         {
-            text+=acs[i]+"\n";
+            text+=acs[i].msg+"\n";
         }
 
         Debug.text=text;
@@ -244,6 +253,23 @@ class Spirit extends SkeletonEntity
         BG.endFill();
 
         //trace(text);
+    }
+
+    override function Update(frame:Int, world:World)
+    {
+        if (Emotions!=null)
+        {
+            //Draw(cast(world,truffle.World));
+            var c=this;
+            Root.Recurse(function(b:Bone,depth:Int) 
+            {
+                b.SetRotate(15*Math.sin(
+                    (((10-depth)+frame*0.04)*c.Emotions.Love) +
+                    (world.MyRndGen.RndFlt()*45*c.Emotions.Hate)
+                ));                
+            });
+        }
+        super.Update(frame,world);
     }
 }
 
@@ -525,16 +551,24 @@ class FungiWorld extends World
                 var data:Array<Dynamic>=cast(d.entities,Array<Dynamic>);
                 for (p in data)
                 {
-                    var e = c.Get(new Vec2(p.pos.x,p.pos.y));
-                    if (!Std.is(e,Plant))
+                    var worldpos = new Vec2(p.pos.x,p.pos.y);
+                    var e = c.Get("Plant",worldpos);
+                    if (e==null)
                     {
-                        var pos = new Vec3(p.pos.x,p.pos.y,e.LogicalPos.z+1);   
-                        var plant = new Plant(c,p.owner,pos,p.type,p.state);
-                        c.Plants.push(plant);                        
+                        //trace("making new plant");
+                        var cube = c.Get("Cube",worldpos);
+                        if (cube!=null)
+                        {
+                            var pos = new Vec3(p.pos.x,p.pos.y,cube.LogicalPos.z+1);   
+                            var plant = new Plant(c,p.owner,pos,p.type,p.state);
+                            c.Plants.push(plant);
+                        }
                     }
                     else
                     {
                         //trace("updating plant");
+                        //trace(e);
+                        //trace(p.state);
                         cast(e,Plant).StateUpdate(p.state,c);
                     }
                 }

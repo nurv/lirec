@@ -49,24 +49,18 @@ class FlashWorld implements World, extends MovieClip
         Scene.remove(e);
     }
 
-    public function Get(p:Vec2) : Dynamic
+    public function Get(type:String, p:Vec2) : Dynamic
     {
-        var top:Entity = null;
-        var upper:Float=-9999;
-
         for (e in Scene)
         {
             if (p.x==e.LogicalPos.x &&
-                p.y==e.LogicalPos.y)
+                p.y==e.LogicalPos.y &&
+                Type.getClassName(Type.getClass(e))==type)
             {
-                if (e.LogicalPos.z>upper)
-                {
-                    top=e;
-                    upper=e.LogicalPos.z;
-                }
+                return e;
             }
         }
-        return top;
+        return null;
     }
 
     public function AddSprite(s:Sprite)
@@ -122,7 +116,9 @@ class FlashWorld implements World, extends MovieClip
                 e.Hide(!e.TilePos.Eq(CurrentTilePos));
             }
 
-            if (e.NeedsUpdate && !e.Hidden)
+            if (e.NeedsUpdate && !e.Hidden &&
+                (e.UpdateFreq==0 ||
+                (time % e.UpdateFreq)==0))
             {
                 e.Update(time,cast(this,truffle.World));
             }

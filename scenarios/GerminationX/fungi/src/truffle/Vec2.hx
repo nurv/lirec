@@ -20,48 +20,48 @@ class Vec2
 	public var x:Float;
 	public var y:Float;
 	
-	public function new(px:Float, py:Float)
+	public inline function new(px:Float, py:Float)
 	{
 		x=px; y=py;
 	}
 	
-	public function Add(other:Vec2) : Vec2
+	public inline function Add(other:Vec2) : Vec2
 	{
 		return new Vec2(x+other.x,y+other.y);
 	}
 
-	public function Sub(other:Vec2) : Vec2
+	public inline function Sub(other:Vec2) : Vec2
 	{
 		return new Vec2(x-other.x,y-other.y);
 	}
 
-	public function Div(v:Float) : Vec2
+	public inline function Div(v:Float) : Vec2
 	{
 		return new Vec2(x/v,y/v);
 	}
 
-	public function Mul(v:Float) : Vec2
+	public inline function Mul(v:Float) : Vec2
 	{
 		return new Vec2(x*v,y*v);
 	}
 
-	public function Mag() : Float
+	public inline function Mag() : Float
 	{
 		return Math.sqrt(x*x+y*y);
 	}
 	
-	public function Lerp(other:Vec2,t:Float) : Vec2
+	public inline function Lerp(other:Vec2,t:Float) : Vec2
 	{
 		return new Vec2(x*(1-t) + other.x*t,
 						y*(1-t) + other.y*t);
 	}
 
-	public function Eq(other:Vec2) : Bool
+	public inline function Eq(other:Vec2) : Bool
 	{
 		return x==other.x && y==other.y;
 	}
 
-    public function AsStr()
+    public inline function AsStr()
     {
         return Std.string(x)+", "+Std.string(y);
     }

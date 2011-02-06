@@ -175,13 +175,22 @@
                             {"name" (str (:layer entity) "-" (:state entity) "#" (:id entity) "#")
                              "owner" (:layer entity)
                              "position" (str (:x (:pos entity)) "," (:y (:pos entity)))
-                             "tile" "0,0"
+                             "tile" (:pos tile)
                              "type" "object"
                              "time" time}))
         :else fw))
      fw
      (:entities tile)))
-   fatima-world
+   ; update the agent's tile position
+   (merge fatima-world
+          {:agents
+           (map
+            (fn [agent]
+              (merge agent
+                     {:tile
+                      (:tile
+                       (find-spirit game-world (remote-agent-name agent)))}))
+            (world-agents fatima-world))})
    (:tiles game-world)))
 
 

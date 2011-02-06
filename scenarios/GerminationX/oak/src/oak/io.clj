@@ -36,6 +36,10 @@
   (try (Integer/parseInt (.trim s))
        (catch NumberFormatException e nil)))
 
+(defn parse-float [s]
+  (try (Float/parseFloat (.trim s))
+       (catch NumberFormatException e nil)))
+
 ;(defn msg-waiting? [socket]
 ;  (> (. (. socket getInputStream) available) 0))
 

@@ -13,7 +13,9 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (ns oak.remote-agent
-  (:use oak.io)
+  (:use
+   oak.vec2
+   oak.io)
   (:import
    java.net.Socket
    java.io.File
@@ -35,7 +37,8 @@
   :said
   :done
   :random
-  :reader)
+  :reader
+  :tile)
 
 (def remote-agent-properties (accessor remote-agent :properties))
 (def remote-agent-name (accessor remote-agent :name))
@@ -48,6 +51,7 @@
 (def remote-agent-done (accessor remote-agent :done))
 (def remote-agent-random (accessor remote-agent :random))
 (def remote-agent-reader (accessor remote-agent :reader))
+(def remote-agent-tile (accessor remote-agent :tile))
 
 (defn remote-agent-add-property [agent property]
   (merge agent {:properties (cons property (remote-agent-properties agent))})) 
@@ -78,5 +82,6 @@
      '()
      (new java.util.Random)
      reader
+     (make-vec2 0 0)
      )))
 

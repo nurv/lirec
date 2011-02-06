@@ -215,8 +215,8 @@ class FlashSprite implements truffle.interfaces.Sprite, extends flash.display.Sp
     
 	public function Update(frame:Int, tx:Dynamic)
 	{
-        Transform.identity();        
         // we don't want to pass on the centering offset to the hierachy
+        Transform.identity();        
         var tmp = new Matrix(Transform.a,Transform.b,Transform.c,Transform.d,
            Transform.tx-Centre.x,Transform.ty-Centre.y);
 
@@ -236,5 +236,9 @@ class FlashSprite implements truffle.interfaces.Sprite, extends flash.display.Sp
             tmp.concat(tx);
         }
         transform.matrix = tmp;
+
+        //transform.matrix = Transform;
+        //x=x-Centre.x;
+        //y=y-Centre.y;
 	}
 }

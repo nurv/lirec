@@ -16,7 +16,8 @@
   (:use
    oak.forms
    oak.remote-agent
-   oak.io)
+   oak.io
+   oak.vec2)
   (:import
    java.util.ArrayList
    java.net.InetSocketAddress
@@ -140,7 +141,7 @@
   (if (not (world-get-object world (get object "name")))
     (do
       (world-broadcast-all world (str "ENTITY-ADDED " (get object "name")))
-      (println (str "added " (get object "name") " " (get object "position") " "
+      (comment println (str "added " (get object "name") " " (get object "position") " "
                     (count (world-objects world)) " objects stored"))
       (merge world {:objects (cons object (world-objects world))}))
     world))
@@ -193,14 +194,20 @@
      (.startsWith type "PROPERTY-CHANGED") agent
      (= type "look-at")
      (do
-       ;(println (str (remote-agent-name agent) " -----------> LOOKING AT: " (nth toks 1)))
-       (send-msg (remote-agent-socket agent)
-                 (str "LOOK-AT " (nth toks 1) " "
-                      (hash-map-to-string
-                       (world-get-properties world (nth toks 1)))))
-       (merge agent {:done (max-cons {:time (world-time world)
-                                      :msg msg}
-                                     (remote-agent-done agent) 4)}))
+       (let [object-name (nth toks 1)]
+         ;(println (remote-agent-tile agent))
+         ; is the agent on the same tile as the object?
+         (if (vec2-eq? (remote-agent-tile agent)
+                       (get (world-get-object world object-name) "tile"))
+           (do
+             (send-msg (remote-agent-socket agent)
+                       (str "LOOK-AT " object-name " "
+                            (hash-map-to-string
+                             (world-get-properties world (nth toks 1)))))
+             (merge agent {:done (max-cons {:time (world-time world)
+                                            :msg msg}
+                                           (remote-agent-done agent) 4)}))
+           agent)))
      (= type "say")
      (do (println "say")
          (let [say (SpeechAct/ParseFromXml (.substring msg 3))]

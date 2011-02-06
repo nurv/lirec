@@ -28,7 +28,33 @@
    pos
    name
    emotions
-   actions])
+   emotionalloc
+   fatactions
+   fatemotions])
+
+(defn emotion-map []
+  { "Love" 0
+    "Hate" 0
+    "Hope" 0
+    "Fear" 0
+    "Satisfaction" 0
+    "Relief" 0
+    "Fears-Confirmed" 0
+    "Disappointment" 0
+    "Joy" 0
+    "Distress" 0
+	"Happy-For" 0
+	"Pitty" 0
+	"Resentment" 0
+	"Gloating" 0
+    "Pride" 0
+	"Shame" 0
+	"Gratification" 0
+	"Remorse" 0
+	"Admiration" 0
+	"Reproach" 0
+	"Gratitude" 0
+	"Anger" 0 })
 
 (defn make-spirit [remote-agent]
   (println (str "creating spirit for " (remote-agent-name remote-agent)))
@@ -36,6 +62,8 @@
    (make-vec2 0 0)
    (make-vec2 0 0)
    (remote-agent-name remote-agent)
+   (emotion-map)
+   (make-vec2 0 0)
    '() '()))
 
 ; convert foofooname#999# to 999
@@ -48,17 +76,57 @@
 
 (defn spirit-update [spirit remote-agent tile]
 ; for the moment take a straight copy of actions and emotions
-  (let [spirit (modify :emotions
-                       (fn [emotions]
-                         (remote-agent-emotions remote-agent))
-                       (modify :actions
-                               (fn [actions]
-                                 (remote-agent-done remote-agent))
-                               spirit))]
+  (let [spirit
+        (modify
+         :emotionalloc ; get the object causing the highest emotion
+         (fn [emotionalloc]
+           (first
+            (reduce
+             (fn [r emotion]
+               (let [e (:attrs emotion)]
+                 (if e
+                   (let [intensity (parse-float (:intensity e))]
+                     (if (> intensity (second r))
+                       (let [id (fatima-name->id (:direction e))]
+                         (if id
+                           (let [obj (tile-find-entity tile id)]
+                             (if obj
+                               (list (:pos obj) intensity)
+                               r))
+                           r))
+                       r))
+                   r)))
+             (list emotionalloc 0)
+             (:content (remote-agent-emotions remote-agent)))))
+         (modify
+          :emotions ; process emotions into a useable form
+          (fn [emotions]
+            (reduce
+             (fn [r emotion]
+               (let [e (:attrs emotion)]
+                 (if e
+                   (merge r {(:type e)
+                             (+ (parse-float (:intensity e))
+                                (get r (:type e)))})
+                   r)))
+             (emotion-map)
+             (:content (remote-agent-emotions remote-agent))))
+          (modify
+           :fatemotions ; copy the fatima stuff for debug output
+           (fn [emotions]
+             ;(println emotions)
+             (remote-agent-emotions remote-agent))
+           (modify
+            :fatactions
+            (fn [actions]
+              (remote-agent-done remote-agent))
+            spirit))))]
+    
+;    (println (:emotionalloc spirit))
     
     ; if we have some actions
-    (if (not (empty? (:actions spirit)))
-      (let [latest-action (first (:actions spirit))
+    (if (not (empty? (:fatactions spirit)))
+      (let [latest-action (first (:fatactions spirit))
             latest-subject (nth (.split (:msg latest-action) " ") 1)
             id (fatima-name->id latest-subject)]
         (if id

@@ -21,39 +21,54 @@ class Vec3
 	public var y:Float;
 	public var z:Float;
 	
-	public function new(px:Float, py:Float, pz:Float)
+	public inline function new(px:Float, py:Float, pz:Float)
 	{
 		x=px; y=py; z=pz;
 	}
 	
-	public function Add(other:Vec3) : Vec3
+ 	public inline function Add(other:Vec3) : Vec3
 	{
 		return new Vec3(x+other.x,y+other.y,z+other.z);
 	}
 
-	public function Sub(other:Vec3) : Vec3
+	public inline function Sub(other:Vec3) : Vec3
 	{
 		return new Vec3(x-other.x,y-other.y,z-other.z);
 	}
+
+ 	public inline function Mul(v:Float) : Vec3
+	{
+		return new Vec3(x*v,y*v,z*v);
+	}
+
+ 	public inline function Div(v:Float) : Vec3
+	{
+		return new Vec3(x/v,y/v,z/v);
+	}
 	
-	public function Mag() : Float
+	public inline function Mag() : Float
 	{
 		return Math.sqrt(x*x+y*y+z*z);
 	}
+
+    public inline function Normalise() : Vec3
+    {
+        return Div(Mag());
+    }
 	
-	public function Lerp(other:Vec3,t:Float) : Vec3
+	public inline function Lerp(other:Vec3,t:Float) : Vec3
 	{
 		return new Vec3(x*(1-t) + other.x*t,
 						y*(1-t) + other.y*t,
 						z*(1-t) + other.z*t);
 	}
 
-	public function Eq(other:Vec3) : Bool
+	public inline function Eq(other:Vec3) : Bool
 	{
 		return x==other.x && y==other.y && z==other.z;
 	}
 
-    public function AsStr()
+    public inline function AsStr()
     {
         return Std.string(x)+", "+Std.string(y)+", "+Std.string(z);
     }

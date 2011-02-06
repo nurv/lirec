@@ -1,5 +1,5 @@
 java -classpath $( echo lib/*.jar . | sed 's/ /:/g'):src clojure.main src/oak/core.clj &
-sleep 30
+sleep 40
 echo starting agents...
 java -cp lib/FAtiMA.jar FAtiMA.Agent localhost 46874 false CanopySpirit F CanopySpirit CanopySpirit strength:4 hurt:false pose:standing &
 sleep 1

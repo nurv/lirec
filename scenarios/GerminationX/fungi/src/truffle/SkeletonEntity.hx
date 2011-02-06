@@ -132,19 +132,6 @@ class SkeletonEntity extends truffle.Entity
 	override public function Update(frame:Int, world:World)
 	{
         super.Update(frame,world);
-
-        //Root.SetRotate(25*Math.sin(frame*0.04));
-        //Draw(cast(world,truffle.World));
-
-        //UpdateDepth();
-        var c=this;
-
-        Root.Recurse(function(b:Bone,depth:Int) 
-        {
-            b.SetRotate(15*Math.sin((10-depth)*0.58+frame*(0.04+0.01*c.Id)));
-        }
-        );
-
         Root.SetPos(new Vec2(Pos.x,Pos.y));
         Root.Update(frame,null);
 	}
