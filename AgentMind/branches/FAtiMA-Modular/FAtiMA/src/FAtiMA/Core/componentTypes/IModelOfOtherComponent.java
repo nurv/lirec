@@ -1,4 +1,5 @@
-package FAtiMA.Core;
+package FAtiMA.Core.componentTypes;
+
 
 public interface IModelOfOtherComponent extends IComponent {
 	

@@ -1,7 +1,8 @@
-package FAtiMA.Core;
+package FAtiMA.Core.componentTypes;
 
 import java.util.ArrayList;
 
+import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.emotionalState.AppraisalFrame;
 import FAtiMA.Core.emotionalState.BaseEmotion;
 

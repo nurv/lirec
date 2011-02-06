@@ -64,14 +64,14 @@ package FAtiMA.Core.reactiveLayer;
 import java.io.Serializable;
 
 import FAtiMA.Core.AgentModel;
-import FAtiMA.Core.IAppraisalDerivationComponent;
-import FAtiMA.Core.IBehaviourComponent;
-import FAtiMA.Core.IComponent;
-import FAtiMA.Core.IModelOfOtherComponent;
 import FAtiMA.Core.ValuedAction;
 import FAtiMA.Core.Display.AgentDisplayPanel;
 import FAtiMA.Core.OCCAffectDerivation.OCCAppraisalVariables;
 import FAtiMA.Core.OCCAffectDerivation.OCCComponent;
+import FAtiMA.Core.componentTypes.IAppraisalDerivationComponent;
+import FAtiMA.Core.componentTypes.IBehaviourComponent;
+import FAtiMA.Core.componentTypes.IComponent;
+import FAtiMA.Core.componentTypes.IModelOfOtherComponent;
 import FAtiMA.Core.emotionalState.AppraisalFrame;
 import FAtiMA.Core.sensorEffector.Event;
 

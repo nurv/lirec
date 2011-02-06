@@ -1,5 +1,6 @@
-package FAtiMA.Core;
+package FAtiMA.Core.componentTypes;
 
+import FAtiMA.Core.AgentCore;
 import FAtiMA.Core.wellFormedNames.Name;
 
 public interface IAdvancedPerceptionsComponent extends IComponent{

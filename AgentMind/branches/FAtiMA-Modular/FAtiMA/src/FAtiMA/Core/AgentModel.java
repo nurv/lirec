@@ -1,5 +1,6 @@
 package FAtiMA.Core;
 
+import FAtiMA.Core.componentTypes.IComponent;
 import FAtiMA.Core.deliberativeLayer.DeliberativeProcess;
 import FAtiMA.Core.emotionalState.AppraisalFrame;
 import FAtiMA.Core.emotionalState.EmotionalState;

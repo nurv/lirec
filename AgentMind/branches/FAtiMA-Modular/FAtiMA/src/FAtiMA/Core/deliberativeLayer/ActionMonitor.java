@@ -33,9 +33,13 @@
 package FAtiMA.Core.deliberativeLayer;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
+import FAtiMA.Core.AgentModel;
+import FAtiMA.Core.conditions.Condition;
 import FAtiMA.Core.deliberativeLayer.plan.Step;
 import FAtiMA.Core.sensorEffector.Event;
+import FAtiMA.Core.wellFormedNames.SubstitutionSet;
 
 
 /**
@@ -68,7 +72,7 @@ public class ActionMonitor implements Serializable {
      * Gets the action that the ActionMonitor is monitoring
      * @return - the monitored step
      */
-    public Step GetStep() {
+    public Step getStep() {
         return _step;
     }
     
@@ -79,7 +83,7 @@ public class ActionMonitor implements Serializable {
      * @return true if the received event corresponds to the end of the
      * 		   monitored action, false otherwise
      */
-    public boolean MatchEvent(Event e) {
+    public boolean matchEvent(Event e) {
         return Event.MatchEvent(_event,e);
     }
     
@@ -88,8 +92,20 @@ public class ActionMonitor implements Serializable {
      * Since this action monitor waits forever, it never expires.
      * @return allways returns false
      */
-    public boolean Expired() {
+    public boolean expired() {
         return false;
+    }
+    
+    /**
+     * indicates if the action's preconditions are verified and the action can thus complete
+     * if the action's preconditions are not verified, then it means that the action will fail
+     * @return
+     */
+    public boolean checkPreconditions(AgentModel am)
+    {
+    	ArrayList<SubstitutionSet> ss = Condition.CheckActivation(am, _step.getPreconditions());
+    	
+    	return ss != null;
     }
     
     public String toString(){

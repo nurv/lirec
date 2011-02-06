@@ -1,5 +1,6 @@
-package FAtiMA.Core;
+package FAtiMA.Core.componentTypes;
 
+import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.emotionalState.ActiveEmotion;
 
 public interface IProcessEmotionComponent extends IComponent{

@@ -69,7 +69,7 @@ public class ExpirableActionMonitor extends ActionMonitor {
      * indicates if the ActionMonitor expired and we should wait no more.
      * @return true if the Monitor waited more than specified, false otherwise
      */
-    public boolean Expired() {
+    public boolean expired() {
         return  AgentSimulationTime.GetInstance().Time() > _endTime;
     }
 }

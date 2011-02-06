@@ -125,12 +125,12 @@ import java.util.ListIterator;
 import java.util.Set;
 
 import FAtiMA.Core.AgentModel;
-import FAtiMA.Core.IAppraisalDerivationComponent;
-import FAtiMA.Core.IBehaviourComponent;
-import FAtiMA.Core.IComponent;
-import FAtiMA.Core.IModelOfOtherComponent;
 import FAtiMA.Core.ValuedAction;
 import FAtiMA.Core.Display.AgentDisplayPanel;
+import FAtiMA.Core.componentTypes.IAppraisalDerivationComponent;
+import FAtiMA.Core.componentTypes.IBehaviourComponent;
+import FAtiMA.Core.componentTypes.IComponent;
+import FAtiMA.Core.componentTypes.IModelOfOtherComponent;
 import FAtiMA.Core.conditions.Condition;
 import FAtiMA.Core.deliberativeLayer.goals.ActivePursuitGoal;
 import FAtiMA.Core.deliberativeLayer.goals.Goal;
@@ -147,6 +147,7 @@ import FAtiMA.Core.exceptions.UnknownGoalException;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.sensorEffector.Parameter;
 import FAtiMA.Core.util.AgentLogger;
+import FAtiMA.Core.util.Constants;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Substitution;
 import FAtiMA.Core.wellFormedNames.SubstitutionSet;
@@ -689,38 +690,38 @@ public class DeliberativeProcess implements Serializable, IComponent, IBehaviour
 		CheckLinks(am);
 	
 		
-		if(_actionMonitor != null && _actionMonitor.MatchEvent(event)) {
-		    if(_actionMonitor.GetStep().getAgent().isGrounded() &&  
-		    		!_actionMonitor.GetStep().getAgent().toString().equals("SELF"))
+		if(_actionMonitor != null && _actionMonitor.matchEvent(event)) {
+		    if(_actionMonitor.getStep().getAgent().isGrounded() &&  
+		    		!_actionMonitor.getStep().getAgent().toString().equals(Constants.SELF))
 		    {
 		    	//the agent was waiting for an action of other agent to be complete
 		    	//since the step of another agent may contain unbound variables,
 		    	//we cannot just compare the names, we need to try to unify them
 		    	if(Unifier.Unify(event.toStepName(), 
-		    			_actionMonitor.GetStep().getName()) != null)
+		    			_actionMonitor.getStep().getName()) != null)
 		    	{
-		    		_actionMonitor.GetStep().IncreaseProbability(am);
+		    		_actionMonitor.getStep().IncreaseProbability(am);
 		    		//System.out.println("Calling updateEffectsProbability (other's action: step completed)");
-		    		_actionMonitor.GetStep().updateEffectsProbability(am);
+		    		_actionMonitor.getStep().updateEffectsProbability(am);
 		    	}
 		    	else
 		    	{
 		    		for(IActionFailureStrategy s : _actionFailureStrategies)
 		    		{
-		    			s.perceiveActionFailure(am, _actionMonitor.GetStep());
+		    			s.perceiveActionFailure(am, _actionMonitor.getStep());
 		    		}
 		    
-		    		_actionMonitor.GetStep().DecreaseProbability(am);
+		    		_actionMonitor.getStep().DecreaseProbability(am);
 		    	}
 		    }
 		    else 
 		    {
 		    	for(IActionSuccessStrategy s : _actionSuccessStrategies)
 		    	{
-		    		s.perceiveActionSuccess(am, _actionMonitor.GetStep());
+		    		s.perceiveActionSuccess(am, _actionMonitor.getStep());
 		    	}
 		    	//System.out.println("Calling updateEffectsProbability (self: step completed)");
-		    	_actionMonitor.GetStep().updateEffectsProbability(am);
+		    	_actionMonitor.getStep().updateEffectsProbability(am);
 		    }
 		    		
 			UpdateProbabilities();
@@ -785,8 +786,6 @@ public class DeliberativeProcess implements Serializable, IComponent, IBehaviour
 		float maxUtility;
 		// expected utility of achieving a goal
 		float EU;
-		
-		
 		
 		maxUtility = -200;
 		
@@ -929,23 +928,22 @@ public class DeliberativeProcess implements Serializable, IComponent, IBehaviour
 			if(i.getGoal().CheckSuccess(am))
 			{
 				RemoveIntention(i);
-				_actionMonitor = null;
 				for(IGoalSuccessStrategy s: _goalSuccessStrategies)
 				{
 					s.perceiveGoalSuccess(am, i.getGoal());
 				}
-				i.ProcessIntentionSuccess(am);				
+				i.ProcessIntentionSuccess(am);
+				cancelAction(am);
 			}
 			else if(i.getGoal().CheckFailure(am))
 			{
 				RemoveIntention(i);
-				
-				_actionMonitor = null;
 				for(IGoalFailureStrategy s: _goalFailureStrategies)
 				{
 					s.perceiveGoalFailure(am, i.getGoal());
 				}
 				i.ProcessIntentionFailure(am);
+				cancelAction(am);
 			}
 			else if(i.NumberOfAlternativePlans() == 0)
 			{
@@ -955,25 +953,21 @@ public class DeliberativeProcess implements Serializable, IComponent, IBehaviour
 				}
 				i.ProcessIntentionFailure(am);
 				_currentIntention = null;
+				//we need to maintain the goal failure in memory (remembering there is no way to achieve the goal) 
+				//if there is no strong commitment
 				if(i.IsStrongCommitment())
 				{
-					RemoveIntention(i);
-					_actionMonitor = null;
+					RemoveIntention(i);	
 				}
+				cancelAction(am);
 			}
 			else if(!i.getGoal().checkPreconditions(am))
 			{
-				RemoveIntention(i);
-				if(i.IsStrongCommitment())
+				//this is done only if the agent hasn't tried to do anything yet, he cancels the goal out
+				//if the preconditions are not yet established
+				if(!i.IsStrongCommitment())
 				{
-					//if(_selectedAction != null)
-					{
-						am.getRemoteAgent().cancelAction();
-						_actionMonitor = null;
-						_selectedAction = null;
-					}
-					
-					i.ProcessIntentionCancel(am);
+					RemoveIntention(i);
 				}
 			}
 			else
@@ -1060,11 +1054,25 @@ public class DeliberativeProcess implements Serializable, IComponent, IBehaviour
 		return GetSelectedAction();
 	}
 	
+	private void cancelAction(AgentModel am)
+	{
+		if(_actionMonitor!=null)
+		{
+			if(_actionMonitor.getStep().getAgent().toString().equals(Constants.SELF))
+			{
+				am.getRemoteAgent().cancelAction();
+			}
+			_actionMonitor = null;
+		}
+		
+		_selectedAction = null;
+	}
+	
 	public void AppraiseSelfActionFailed(Event e)
 	{
 		if(_actionMonitor != null)
 		{
-			if(_actionMonitor.MatchEvent(e))
+			if(_actionMonitor.matchEvent(e))
 			{
 				_actionMonitor = null;
 			}
@@ -1099,7 +1107,7 @@ public class DeliberativeProcess implements Serializable, IComponent, IBehaviour
 	    	//substitution to the plan and testing if the resulting plan is valid
 	    	
 	    	Substitution sub = new Substitution(_selectedAction.getAgent(),
-	    			new Symbol("SELF"));
+	    			new Symbol(Constants.SELF));
 	    	
 	    	Plan clonedPlan = (Plan) _selectedPlan.clone();
 	    	clonedPlan.AddBindingConstraint(sub);
@@ -1125,7 +1133,7 @@ public class DeliberativeProcess implements Serializable, IComponent, IBehaviour
 	    		_selectedAction.SetSelfExecutable(false);
 	    	}
 	    }
-	    else if(!_selectedAction.getAgent().toString().equals("SELF"))
+	    else if(!_selectedAction.getAgent().toString().equals(Constants.SELF))
 	    {
 	    	//we have to wait for another agent to act
 	    	AgentLogger.GetInstance().logAndPrint("Waiting for agent " + _selectedAction.getAgent().toString() + " to do:" + _selectedAction.getName().toString());
@@ -1159,7 +1167,7 @@ public class DeliberativeProcess implements Serializable, IComponent, IBehaviour
 	        target = li.next().toString();
 	    }
 	    
-	    e = new Event("SELF",action,target);
+	    e = new Event(Constants.SELF,action,target);
         _actionMonitor = new ActionMonitor(_selectedAction,e);
         
         while(li.hasNext()) {
@@ -1236,22 +1244,26 @@ public class DeliberativeProcess implements Serializable, IComponent, IBehaviour
 	@Override
 	public void update(AgentModel am, long time)
 	{
-		if(_actionMonitor != null && _actionMonitor.Expired()) {
-			AgentLogger.GetInstance().logAndPrint("Action monitor expired: " + _actionMonitor.toString());
-			//If the action expired we must check the plan links (continuous planning)
-			//just to make sure
-			CheckLinks(am);
-			
-			
-			//System.out.println("Calling UpdateCertainty (action monitor expired)");
-			for(IActionFailureStrategy s : _actionFailureStrategies)
+		if(_actionMonitor != null)
+		{
+			if(_actionMonitor.expired() || !_actionMonitor.checkPreconditions(am))
 			{
-				s.perceiveActionFailure(am, _actionMonitor.GetStep());
+				AgentLogger.GetInstance().logAndPrint("Action monitor failed or expired: " + _actionMonitor.toString());
+				//If the action expired or failed we must check the plan links (continuous planning)
+				//just to make sure
+				CheckLinks(am);
+				
+				for(IActionFailureStrategy s : _actionFailureStrategies)
+				{
+					s.perceiveActionFailure(am, _actionMonitor.getStep());
+				}
+				_actionMonitor.getStep().DecreaseProbability(am);
+				
+				UpdateProbabilities();
+				
+				cancelAction(am);
+			    _actionMonitor = null;
 			}
-			_actionMonitor.GetStep().DecreaseProbability(am);
-			
-			UpdateProbabilities();
-		    _actionMonitor = null;
 		}
 	}
 

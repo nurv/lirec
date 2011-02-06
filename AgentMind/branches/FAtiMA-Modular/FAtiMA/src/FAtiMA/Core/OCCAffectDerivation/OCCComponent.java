@@ -4,10 +4,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 import FAtiMA.Core.AgentModel;
-import FAtiMA.Core.IAffectDerivationComponent;
-import FAtiMA.Core.IComponent;
-import FAtiMA.Core.IModelOfOtherComponent;
 import FAtiMA.Core.Display.AgentDisplayPanel;
+import FAtiMA.Core.componentTypes.IAffectDerivationComponent;
+import FAtiMA.Core.componentTypes.IComponent;
+import FAtiMA.Core.componentTypes.IModelOfOtherComponent;
 import FAtiMA.Core.emotionalState.ActiveEmotion;
 import FAtiMA.Core.emotionalState.AppraisalFrame;
 import FAtiMA.Core.emotionalState.BaseEmotion;
