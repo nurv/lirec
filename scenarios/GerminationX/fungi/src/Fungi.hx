@@ -67,6 +67,7 @@ class Plant extends SpriteEntity
     var PlantType:String;
     var State:String;
     var Seeds:Array<Sprite>;
+    var Layer:String;
 
 	public function new(world:World, owner:String, pos, type:String, state:String)
 	{
@@ -78,10 +79,16 @@ class Plant extends SpriteEntity
         //NeedsUpdate=true;
         Seeds=[];
 
+        Layer="none";
+        if (type=="plant-001") Layer="cover";
+        if (type=="plant-002") Layer="canopy";
+        if (type=="plant-003") Layer="vertical";
+
         Spr.Hide(false);
         
         var tf = new flash.text.TextField();
-        tf.text = Owner + " planted this.";
+        tf.text = "This plant belongs to the "+type+" species, part of the "+ 
+            Layer+" layer. "+Owner+" planted this.";
         tf.x=Spr.Pos.x-50;
         tf.y=Spr.Pos.y-30-Spr.Height*Spr.MyScale.y;
         tf.height=40;
@@ -157,8 +164,10 @@ class Spirit extends SkeletonEntity
 
     var Debug:flash.text.TextField;
 	var BG:Graphics;
+    var RawEmotions:Dynamic;
     var Emotions:Dynamic;
-
+    var DesiredPos:Vec2;
+    
 	public function new(world:World, name:String, pos)
 	{
 		super(world,pos);
@@ -166,7 +175,19 @@ class Spirit extends SkeletonEntity
         Speed=0.1;
         UpdateFreq=5;
         Hide(true);
-        Emotions={Love:0};
+        DesiredPos=new Vec2(LogicalPos.x,LogicalPos.y);
+        RawEmotions={Love:0,Hate:0,Hope:0,Fear:0,Satisfaction:0,
+                     Relief:0,Fears_Confirmed:0,Disappointment:0,
+                     Joy:0,Distress:0,Happy_For:0,Pitty:0,
+                     Resentment:0,Gloating:0,Pride:0,Shame:0,
+                     Gratification:0,Remorse:0,Admiration:0,
+                     Reproach:0,Gratitude:0,Anger:0};
+        Emotions={Love:0,Hate:0,Hope:0,Fear:0,Satisfaction:0,
+                  Relief:0,Fears_Confirmed:0,Disappointment:0,
+                  Joy:0,Distress:0,Happy_For:0,Pitty:0,
+                  Resentment:0,Gloating:0,Pride:0,Shame:0,
+                  Gratification:0,Remorse:0,Admiration:0,
+                  Reproach:0,Gratitude:0,Anger:0};
     }
 
 	public function BuildDebug(c)
@@ -207,17 +228,27 @@ class Spirit extends SkeletonEntity
         });
 	}
 
-    public function UpdateEmotions(e:Dynamic)
+    public function UpdateEmotions(e:Dynamic,world:World)
     {
         SetTilePos(new Vec2(Std.parseInt(e.tile.x),
                             Std.parseInt(e.tile.y)));
 
+        
+        var dst = new Vec2(Std.parseInt(e.emotionalloc.x),
+                              Std.parseInt(e.emotionalloc.y));
 
-        LogicalPos = new Vec3(Std.parseInt(e.emotionalloc.x),
-                              Std.parseInt(e.emotionalloc.y),
-                              4);
+        if (dst.x!=DesiredPos.x || dst.y!=DesiredPos.y)
+        {
+            DesiredPos = dst;
+            while (world.Get("Spirit",dst)!=null)
+            {
+                dst = dst.Add(new Vec2(world.MyRndGen.Choose([-2,0,2]),
+                                       world.MyRndGen.Choose([-2,0,2])));
+            }
+            LogicalPos = new Vec3(dst.x,dst.y,4);
+        }
 
-        Emotions = e.emotions;
+        RawEmotions = e.emotions;
 
         var ee = e.fatemotions.content;
         var mood=Std.parseFloat(ee[0].content[0]);
@@ -257,18 +288,27 @@ class Spirit extends SkeletonEntity
 
     override function Update(frame:Int, world:World)
     {
-        if (Emotions!=null)
+        for (f in Reflect.fields(Emotions))
         {
-            //Draw(cast(world,truffle.World));
-            var c=this;
-            Root.Recurse(function(b:Bone,depth:Int) 
-            {
-                b.SetRotate(15*Math.sin(
-                    (((10-depth)+frame*0.04)*c.Emotions.Love) +
-                    (world.MyRndGen.RndFlt()*45*c.Emotions.Hate)
-                ));                
-            });
+            // do a linear blend to smooth out changes in emotions
+            Reflect.setField(Emotions,f,
+            Reflect.field(Emotions,f)*0.95+Reflect.field(RawEmotions,f)*0.05);
+            //trace(f);
         }
+
+        //Draw(cast(world,truffle.World));
+        var c=this;
+        Root.Recurse(function(b:Bone,depth:Int) 
+        {
+            b.SetRotate((c.Emotions.Love+
+                         c.Emotions.Admiration)*5*Math.sin(
+                             (((10-depth)+frame*0.04+c.Emotions.Gratitude*0.01)+
+                             c.Emotions.Joy*0.1)) +
+            ((world.MyRndGen.RndFlt()-0.5)*10*(c.Emotions.Hate+
+                    c.Emotions.Distress)));
+           
+        });
+
         super.Update(frame,world);
     }
 }
@@ -527,7 +567,7 @@ class FungiWorld extends World
             {
                 if (g.Name==t[i].name)
                 {
-                    g.UpdateEmotions(t[i]);
+                    g.UpdateEmotions(t[i],this);
                 }
             }
         }

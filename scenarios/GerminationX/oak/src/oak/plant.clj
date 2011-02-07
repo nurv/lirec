@@ -48,9 +48,9 @@
 
 (defn plant-type->layer [type]
   (cond
-   (= type "plant-001") "canopy"
-   (= type "plant-002") "vertical"
-   (= type "plant-003") "cover"))
+   (= type "plant-001") "cover"
+   (= type "plant-002") "canopy"
+   (= type "plant-003") "vertical"))
   
 (defn make-plant [pos type owner size]
   (plant. (generate-id) pos type (plant-type->layer type)
