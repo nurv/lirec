@@ -67,6 +67,7 @@ import FAtiMA.Core.wellFormedNames.Symbol;
 
 public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 
+	private static final long serialVersionUID = 1L;
 	public static final String MIND_PATH = "data/characters/minds/";
 	public static final String MIND_PATH_ANDROID = "sdcard/data/characters/minds/";
 	public static final String MEMORY_FILENAME = "XMLMemory";
