@@ -7,11 +7,11 @@ import java.util.HashMap;
 
 import FAtiMA.Core.AgentCore;
 import FAtiMA.Core.AgentModel;
-import FAtiMA.Core.IAffectDerivationComponent;
-import FAtiMA.Core.IAppraisalDerivationComponent;
-import FAtiMA.Core.IComponent;
 import FAtiMA.Core.IGetModelStrategy;
-import FAtiMA.Core.IProcessEmotionComponent;
+import FAtiMA.Core.componentTypes.IAffectDerivationComponent;
+import FAtiMA.Core.componentTypes.IAppraisalDerivationComponent;
+import FAtiMA.Core.componentTypes.IComponent;
+import FAtiMA.Core.componentTypes.IProcessEmotionComponent;
 import FAtiMA.Core.deliberativeLayer.DeliberativeProcess;
 import FAtiMA.Core.emotionalState.ActiveEmotion;
 import FAtiMA.Core.emotionalState.AppraisalFrame;

@@ -8,14 +8,13 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import FAtiMA.Core.AgentModel;
-import FAtiMA.Core.IAppraisalDerivationComponent;
-import FAtiMA.Core.IComponent;
-import FAtiMA.Core.IModelOfOtherComponent;
-import FAtiMA.Core.IProcessEmotionComponent;
 import FAtiMA.Core.Display.AgentDisplayPanel;
 import FAtiMA.Core.OCCAffectDerivation.OCCAppraisalVariables;
-import FAtiMA.Core.OCCAffectDerivation.OCCComponent;
 import FAtiMA.Core.OCCAffectDerivation.OCCEmotionType;
+import FAtiMA.Core.componentTypes.IAppraisalDerivationComponent;
+import FAtiMA.Core.componentTypes.IComponent;
+import FAtiMA.Core.componentTypes.IModelOfOtherComponent;
+import FAtiMA.Core.componentTypes.IProcessEmotionComponent;
 import FAtiMA.Core.emotionalState.ActiveEmotion;
 import FAtiMA.Core.emotionalState.AppraisalFrame;
 import FAtiMA.Core.memory.Memory;

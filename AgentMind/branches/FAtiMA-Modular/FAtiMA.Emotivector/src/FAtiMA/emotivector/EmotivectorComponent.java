@@ -3,14 +3,13 @@ package FAtiMA.emotivector;
 import java.util.ArrayList;
 
 import FAtiMA.Core.AgentModel;
-import FAtiMA.Core.IAffectDerivationComponent;
-import FAtiMA.Core.IAppraisalDerivationComponent;
-import FAtiMA.Core.IComponent;
 import FAtiMA.Core.Display.AgentDisplayPanel;
+import FAtiMA.Core.componentTypes.IAffectDerivationComponent;
+import FAtiMA.Core.componentTypes.IAppraisalDerivationComponent;
+import FAtiMA.Core.componentTypes.IComponent;
 import FAtiMA.Core.emotionalState.AppraisalFrame;
 import FAtiMA.Core.emotionalState.BaseEmotion;
 import FAtiMA.Core.sensorEffector.Event;
-import FAtiMA.emotivector.EmotivectorSensationType;
 
 public class EmotivectorComponent implements IComponent, IAppraisalDerivationComponent, IAffectDerivationComponent {
 

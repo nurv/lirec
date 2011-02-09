@@ -7,8 +7,8 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import FAtiMA.Core.AgentModel;
-import FAtiMA.Core.IComponent;
 import FAtiMA.Core.Display.AgentDisplayPanel;
+import FAtiMA.Core.componentTypes.IComponent;
 import FAtiMA.Core.deliberativeLayer.EmotionalPlanner;
 import FAtiMA.Core.deliberativeLayer.plan.Step;
 import FAtiMA.Core.reactiveLayer.Action;

@@ -15,12 +15,11 @@ import javax.xml.parsers.SAXParserFactory;
 
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.AgentSimulationTime;
-import FAtiMA.Core.IAppraisalDerivationComponent;
-import FAtiMA.Core.IComponent;
-import FAtiMA.Core.IModelOfOtherComponent;
 import FAtiMA.Core.Display.AgentDisplayPanel;
 import FAtiMA.Core.OCCAffectDerivation.OCCAppraisalVariables;
-import FAtiMA.Core.OCCAffectDerivation.OCCComponent;
+import FAtiMA.Core.componentTypes.IAppraisalDerivationComponent;
+import FAtiMA.Core.componentTypes.IComponent;
+import FAtiMA.Core.componentTypes.IModelOfOtherComponent;
 import FAtiMA.Core.deliberativeLayer.IActionFailureStrategy;
 import FAtiMA.Core.deliberativeLayer.IExpectedUtilityStrategy;
 import FAtiMA.Core.deliberativeLayer.IGoalFailureStrategy;
@@ -50,6 +49,7 @@ import FAtiMA.Core.wellFormedNames.Unifier;
 public class MotivationalComponent implements Serializable, Cloneable, IAppraisalDerivationComponent, IModelOfOtherComponent, IExpectedUtilityStrategy, IProbabilityStrategy, IUtilityStrategy, IGoalSuccessStrategy, IGoalFailureStrategy, IActionFailureStrategy {
 	
 	private static final float UTILITY_WEIGHT = 0.2f;
+	private static final float EFFECT_ON_DRIVES_WEIGHT = 0.5f;
 	private static final long serialVersionUID = 1L;
 	public static final String NAME ="MotivationalState";
 	private static final float MAX_INTENSITY = 10;
@@ -443,7 +443,7 @@ public class MotivationalComponent implements Serializable, Cloneable, IAppraisa
 	public void update(AgentModel am, Event e)
 	{
 		float result =  UpdateMotivators(am, e);
-		_appraisals.put(e.toString(), new Float(result*0.5));
+		_appraisals.put(e.toString(), new Float(result * EFFECT_ON_DRIVES_WEIGHT));
 	}
 
 	@Override

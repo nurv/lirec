@@ -7,7 +7,7 @@ import java.util.Iterator;
 import org.xml.sax.Attributes;
 
 import FAtiMA.Core.AgentModel;
-import FAtiMA.Core.IComponent;
+import FAtiMA.Core.componentTypes.IComponent;
 import FAtiMA.Core.conditions.Condition;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Substitution;

@@ -6,13 +6,13 @@ import java.util.HashMap;
 
 import FAtiMA.Core.AgentCore;
 import FAtiMA.Core.AgentModel;
-import FAtiMA.Core.IAdvancedPerceptionsComponent;
-import FAtiMA.Core.IAppraisalDerivationComponent;
-import FAtiMA.Core.IComponent;
 import FAtiMA.Core.IGetModelStrategy;
-import FAtiMA.Core.IModelOfOtherComponent;
 import FAtiMA.Core.Display.AgentDisplayPanel;
 import FAtiMA.Core.OCCAffectDerivation.OCCAppraisalVariables;
+import FAtiMA.Core.componentTypes.IAdvancedPerceptionsComponent;
+import FAtiMA.Core.componentTypes.IAppraisalDerivationComponent;
+import FAtiMA.Core.componentTypes.IComponent;
+import FAtiMA.Core.componentTypes.IModelOfOtherComponent;
 import FAtiMA.Core.deliberativeLayer.IGetUtilityForOthers;
 import FAtiMA.Core.deliberativeLayer.goals.ActivePursuitGoal;
 import FAtiMA.Core.emotionalState.AppraisalFrame;

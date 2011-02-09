@@ -10,10 +10,9 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import FAtiMA.Core.AgentModel;
-import FAtiMA.Core.IAppraisalDerivationComponent;
 import FAtiMA.Core.Display.AgentDisplayPanel;
 import FAtiMA.Core.OCCAffectDerivation.OCCAppraisalVariables;
-import FAtiMA.Core.OCCAffectDerivation.OCCComponent;
+import FAtiMA.Core.componentTypes.IAppraisalDerivationComponent;
 import FAtiMA.Core.conditions.Condition;
 import FAtiMA.Core.deliberativeLayer.IExpectedUtilityStrategy;
 import FAtiMA.Core.deliberativeLayer.IGetUtilityForOthers;
@@ -239,7 +238,8 @@ public class CulturalDimensionsComponent implements IAppraisalDerivationComponen
 			return 0;
 		}
 		else{
-			return (contributionToOthersNeeds - contributionToSelfNeeds) * collectivismCoefficient;
+			float praiseworthiness = (contributionToOthersNeeds - contributionToSelfNeeds) * collectivismCoefficient;
+			return praiseworthiness;
 		}
 	}
 
