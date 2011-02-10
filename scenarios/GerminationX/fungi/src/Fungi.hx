@@ -301,7 +301,7 @@ class Spirit extends SkeletonEntity
         Root.Recurse(function(b:Bone,depth:Int) 
         {
             b.SetRotate((c.Emotions.Love+
-                         c.Emotions.Admiration)*5*Math.sin(
+                         c.Emotions.Admiration)*1*Math.sin(
                              (((10-depth)+frame*0.04+c.Emotions.Gratitude*0.01)+
                              c.Emotions.Joy*0.1)) +
             ((world.MyRndGen.RndFlt()-0.5)*10*(c.Emotions.Hate+
