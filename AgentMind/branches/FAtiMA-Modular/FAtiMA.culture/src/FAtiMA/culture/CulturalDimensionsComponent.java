@@ -95,7 +95,7 @@ public class CulturalDimensionsComponent implements IAppraisalDerivationComponen
 					if (agentName.equalsIgnoreCase(e.GetSubject())){
 						desirabilityForAgentResponsible = af.getAppraisalVariable(variable);
 					}
-					desirabilityForOtherAgents += af.getAppraisalVariable(variable);
+					desirabilityForOtherAgents  += af.getAppraisalVariable(variable);
 				}
 			}
 		}
