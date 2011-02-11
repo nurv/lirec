@@ -34,6 +34,7 @@ public class CulturalDimensionsComponent implements IAppraisalDerivationComponen
 	
 	final float ALPHA = 0.3f;
 	final float POWER_DISTANCE_K = 1.2f;
+	final float MAX_DIMENSIONAL_SCORE = 100;
 	
 	private String cultureFile;
 	private int[] _dimensionalValues;	
@@ -64,21 +65,42 @@ public class CulturalDimensionsComponent implements IAppraisalDerivationComponen
 	@Override
 	public void appraisal(AgentModel am, Event e, AppraisalFrame af)
 	{
-		float desirabilityForOther = 0;
-		float desirability = af.getAppraisalVariable(OCCAppraisalVariables.DESIRABILITY.name());
+		float desirabilityForOtherAgents = 0;
+		float desirabilityForAgentResponsible = 0;
 		
-		
-		for(String variable : af.getAppraisalVariables())
-		{
-			if(variable.startsWith(OCCAppraisalVariables.DESFOROTHER.name()))
+		if(e.GetSubject().equalsIgnoreCase(Constants.SELF)){
+			/* if the agent was responsible for the event,
+			 * desirabilityForAgentResponsible is equal to the
+			 * desirability the event had for the agent itself
+			 */
+			desirabilityForAgentResponsible = af.getAppraisalVariable(OCCAppraisalVariables.DESIRABILITY.name());
+			for(String variable : af.getAppraisalVariables())
 			{
-				desirabilityForOther += af.getAppraisalVariable(variable);
+				if(variable.startsWith(OCCAppraisalVariables.DESFOROTHER.name()))
+				{		
+					desirabilityForOtherAgents += af.getAppraisalVariable(variable);
+				}
+			}
+		}else{
+			/* if the agent was not responsible for the event,
+			 * then the desirability the event had for the agent itself is added to
+			 * the desirabirabilityForOtherAgents
+			 */
+			desirabilityForOtherAgents += af.getAppraisalVariable(OCCAppraisalVariables.DESIRABILITY.name());
+			for(String variable : af.getAppraisalVariables())
+			{
+				if(variable.startsWith(OCCAppraisalVariables.DESFOROTHER.name()))
+				{
+					String agentName = variable.substring(OCCAppraisalVariables.DESFOROTHER.name().length());
+					if (agentName.equalsIgnoreCase(e.GetSubject())){
+						desirabilityForAgentResponsible = af.getAppraisalVariable(variable);
+					}
+					desirabilityForOtherAgents += af.getAppraisalVariable(variable);
+				}
 			}
 		}
-			
-		float praiseWorthiness = this.determinePraiseWorthiness(
-				desirability,
-				desirabilityForOther);
+				
+		float praiseWorthiness = this.determinePraiseWorthiness(desirabilityForAgentResponsible, desirabilityForOtherAgents);
 		
 		af.SetAppraisalVariable(NAME, (short)4, OCCAppraisalVariables.PRAISEWORTHINESS.name(), praiseWorthiness);	
 		
@@ -229,16 +251,16 @@ public class CulturalDimensionsComponent implements IAppraisalDerivationComponen
 		}
 	}*/
 
-	public float determinePraiseWorthiness(float contributionToSelfNeeds, float contributionToOthersNeeds) {
-		float collectivismCoefficient = _dimensionalValues[CulturalDimensionType.COLLECTIVISM] * 0.01f;
+	public float determinePraiseWorthiness(float contributionToResponsibleAgentNeeds, float contributionToOthersNeeds) {
+		float collectivismCoefficient = _dimensionalValues[CulturalDimensionType.COLLECTIVISM] / MAX_DIMENSIONAL_SCORE;
 
 		
-		if((contributionToOthersNeeds >= 0)  && (contributionToSelfNeeds - contributionToOthersNeeds > 0)){
+		if((contributionToOthersNeeds >= 0)  && (contributionToResponsibleAgentNeeds - contributionToOthersNeeds > 0)){
 			//if agent doesn't lower other agents needs and he does something better for himself than to others
 			return 0;
 		}
 		else{
-			float praiseworthiness = (contributionToOthersNeeds - contributionToSelfNeeds) * collectivismCoefficient;
+			float praiseworthiness = (contributionToOthersNeeds - contributionToResponsibleAgentNeeds) * collectivismCoefficient;
 			return praiseworthiness;
 		}
 	}
