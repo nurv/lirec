@@ -111,6 +111,7 @@ import java.util.ListIterator;
 
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.conditions.Condition;
+import FAtiMA.Core.deliberativeLayer.ActionMonitor;
 import FAtiMA.Core.deliberativeLayer.IDetectThreatStrategy;
 import FAtiMA.Core.util.AgentLogger;
 import FAtiMA.Core.util.Constants;
@@ -619,7 +620,7 @@ public class Plan implements Cloneable, Serializable
      * detecting if the plan is not consistent with the world state anymore, and to fix
      * such continuous planning flaws. This method should be called whenever the world changes. 
      */
-    public void UpdatePlan(AgentModel am)
+    public ArrayList<IPlanningOperator> UpdatePlan(AgentModel am)
     {
         CausalLink link;
         CausalLink startLink;
@@ -627,6 +628,8 @@ public class Plan implements Cloneable, Serializable
         ArrayList<CausalLink> linksToAdd = new ArrayList<CausalLink>();
         Condition cond;
         IPlanningOperator op;
+        
+        ArrayList<IPlanningOperator> canceledActions = new ArrayList<IPlanningOperator>(); 
         
         
         //this method needs to have two distinct stages. In the first one, we check
@@ -650,7 +653,8 @@ public class Plan implements Cloneable, Serializable
             {
             	
             	//TODO Extending a causal link to start might be causing problems with
-            	// the planning algorithm
+            	// the planning algorithm (for instance, you may not want to extend a causal link to start
+            	// because doing so will lead to a dead end, and instead you want to use another action 
             	op = getOperator(link.getDestination());
                 cond = op.getPrecondition(link.getCondition());
                 
@@ -763,19 +767,25 @@ public class Plan implements Cloneable, Serializable
                 	_openPreconditions.add(new OpenPrecondition(link
                             .getDestination(), link.getCondition()));
                     linksToRemove.add(link);
+                    
+                    canceledActions.add(op);
+                    
+                    
                 }
         	}
         }
         
         //finally at the end of the second stage we must still remove
         //all the unsupported links that were found
+        //in this case we don't need to remove redundant steps, because
+    	//the Start Step is never redundant, and furthermore we cannot remove it
         for(ListIterator<CausalLink> li = linksToRemove.listIterator(); li.hasNext();)
         {
         	link = (CausalLink) li.next();
         	RemoveCausalLink(link);
-        	//in this case we don't need to remove redundant steps, because
-        	//the Start Step is never redundant, and furthermore we cannot remove it
         }
+        
+        return canceledActions;
     }
 
     /**

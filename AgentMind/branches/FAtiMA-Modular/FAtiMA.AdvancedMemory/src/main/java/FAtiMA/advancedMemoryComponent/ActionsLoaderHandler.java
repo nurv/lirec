@@ -58,7 +58,9 @@ public class ActionsLoaderHandler extends ReflectXMLHandler {
 		try
     	{
     		_sac = SACondition.ParseSA(attributes);
-    		operator = _am.getDeliberativeLayer().getEmotionalPlanner().GetStep(_operatorKey);
+    		operator = 
+    		
+    		_am.getActionLibrary().getAction(_operatorKey);
   
     		_sac.MakeGround(_self);
     		if(_precondition) 

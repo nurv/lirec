@@ -35,9 +35,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.ListIterator;
 
-import FAtiMA.Core.ActionLibrary;
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.conditions.Condition;
+import FAtiMA.Core.deliberativeLayer.DeliberativeProcess;
 import FAtiMA.Core.deliberativeLayer.goals.ActivePursuitGoal;
 import FAtiMA.Core.deliberativeLayer.plan.CausalLink;
 import FAtiMA.Core.deliberativeLayer.plan.Effect;
@@ -83,10 +83,10 @@ public class Ritual extends ActivePursuitGoal {
 		_roles = new ArrayList<Symbol>(3);
 	}
 	
-	public void AddStep(Name actionName, Name role)
+	public void AddStep(AgentModel am, Name actionName, Name role)
 	{
 		ArrayList<Substitution> subst;
-		Step action = ActionLibrary.GetInstance().GetAction(_steps.size(), actionName);
+		Step action =  am.getActionLibrary().getAction(_steps.size(), actionName);
 		if(action != null)
 		{
 			subst = Unifier.Unify(action.getAgent(),role);
@@ -163,9 +163,11 @@ public class Ritual extends ActivePursuitGoal {
 	
 	public void BuildPlan(AgentModel am)
 	{
+		DeliberativeProcess dp = (DeliberativeProcess) am.getComponent(DeliberativeProcess.NAME);
+		
 		Step s;
 		OrderingConstraint o;
-		_plan = new Plan(new ArrayList<ProtectedCondition>(),am.getDeliberativeLayer().getDetectThreatStrategy(),_successConditions);
+		_plan = new Plan(new ArrayList<ProtectedCondition>(),dp.getDetectThreatStrategy(),_successConditions);
 		
 		for(int i=0; i < _steps.size(); i++)
 		{

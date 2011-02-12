@@ -706,7 +706,7 @@ public abstract class RemoteAgent extends SocketListener {
 		StringTokenizer st = new StringTokenizer(perc," ");
 		String goalName = st.nextToken();
 		float importance = new Float(st.nextToken()).floatValue();
-		_agent.getDeliberativeLayer().ChangeGoalImportance(_agent, goalName,importance,type);
+		_agent.getDeliberativeLayer().changeGoalImportance(_agent, goalName,importance,type);
 	}
 	
 	protected void CmdPerception(String perc)
@@ -800,7 +800,7 @@ public abstract class RemoteAgent extends SocketListener {
 			importance = new Float(st2.nextToken()).floatValue();
 			importance2 = new Float(st2.nextToken()).floatValue();
 			try {
-				_agent.getDeliberativeLayer().AddGoal(_agent, goalName,importance,importance2);
+				_agent.getDeliberativeLayer().addGoal(_agent, goalName,importance,importance2);
 			}
 			catch(Exception e) {
 				e.printStackTrace();
@@ -810,12 +810,12 @@ public abstract class RemoteAgent extends SocketListener {
 	
 	protected void RemoveGoalPerception(String perc)
 	{
-		_agent.getDeliberativeLayer().RemoveGoal(perc);	
+		_agent.getDeliberativeLayer().removeGoal(perc);	
 	}
 	
 	protected void RemoveAllGoalsPerception(String perc)
 	{
-		_agent.getDeliberativeLayer().RemoveAllGoals();
+		_agent.getDeliberativeLayer().removeAllGoals();
 	}
 	
 	protected void AgentsPerception(String perc)

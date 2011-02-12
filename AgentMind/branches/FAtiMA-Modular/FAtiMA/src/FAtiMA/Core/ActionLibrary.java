@@ -30,10 +30,6 @@
 package FAtiMA.Core;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.ListIterator;
@@ -43,6 +39,8 @@ import javax.xml.parsers.SAXParserFactory;
 
 import FAtiMA.Core.deliberativeLayer.plan.Step;
 import FAtiMA.Core.exceptions.ActionsParsingException;
+import FAtiMA.Core.exceptions.UnknownSpeechActException;
+import FAtiMA.Core.exceptions.UnspecifiedVariableException;
 import FAtiMA.Core.util.AgentLogger;
 import FAtiMA.Core.util.parsers.ActionsLoaderHandler;
 import FAtiMA.Core.wellFormedNames.Name;
@@ -52,89 +50,89 @@ import FAtiMA.Core.wellFormedNames.Unifier;
 /**
  * @author João Dias
  * Class that stores the STRIPS definition of the domain actions
- * You cannot create an ActionLibrary since there is one and only instance 
- * for the agent. If you want to access it use AgentLibrary.GetInstance() method.
  */
 public class ActionLibrary implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;	
 	
-	/**
-	 * Singleton pattern 
-	 */
-	private static ActionLibrary _actionLibraryInstance = null;
-	
-	/**
-	 * Gets a the library with all actions specified in a STRIPS-like fashion
-	 * 
-	 * @return an ActionLibrary
-	 */
-	public static ActionLibrary GetInstance()
-	{
-		if(_actionLibraryInstance == null)
-		{
-			_actionLibraryInstance = new ActionLibrary();
-		}
-		return _actionLibraryInstance;
-	}
-	
-	/**
-	 * Saves the state of the current ActionLibrary to a file,
-	 * so that it can be later restored from file
-	 * @param fileName - the name of the file where we must write
-	 * 		             the state of the timer
-	 */
-	public static void SaveState(String fileName)
-	{
-		try 
-		{
-			FileOutputStream out = new FileOutputStream(fileName);
-	    	ObjectOutputStream s = new ObjectOutputStream(out);
-	    	
-	    	s.writeObject(_actionLibraryInstance);
-        	s.flush();
-        	s.close();
-        	out.close();
-		}
-		catch(Exception e)
-		{
-			AgentLogger.GetInstance().logAndPrint("Exception: " + e);
-			e.printStackTrace();
-		}
-	}
-	
-	/**
-	 * Loads a specific state of the ActionLibrary from a previously
-	 * saved file
-	 * @param fileName - the name of the file that contains the stored
-	 * 					 timer
-	 */
-	public static void LoadState(String fileName)
-	{
-		try
-		{
-			FileInputStream in = new FileInputStream(fileName);
-        	ObjectInputStream s = new ObjectInputStream(in);
-        	_actionLibraryInstance = (ActionLibrary) s.readObject();
-        	
-        	s.close();
-        	in.close();
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-	}
-
 	private ArrayList<Step> _actions;
 	
-	/**
-	 * Creates a new timer for the Agent's simulation
-	 *
-	 */
-	private ActionLibrary()
+
+	public ActionLibrary()
 	{
 		_actions = new ArrayList<Step>();
+	}
+	
+	public void addAction(Step action)
+	{
+		_actions.add(action);
+	}
+	
+	/**
+	 * Checks the integrity of the Planner operators/Steps/actions.
+	 * For instance it checks if a operator references a SpeechAct not 
+	 * defined, or if it uses a unbound variable (in effects or preconditions)
+	 * not used in the operator's name 
+	 * @param val - the IntegrityValidator used to detect problems
+	 * @throws UnspecifiedVariableException - thrown when the operator uses a unbound
+	 * 										  variable in the effects or preconditions
+	 * 									      without using the same variable in the 
+	 * 									      step's name
+	 * @throws UnknownSpeechActException - thrown when the operator references a 
+	 * 									   SpeechAct not defined
+	 */
+	public void checkIntegrity(IntegrityValidator val) throws UnspecifiedVariableException, UnknownSpeechActException {
+	    ListIterator<Step> li = _actions.listIterator();
+	    
+	    while(li.hasNext()) {
+	         li.next().CheckIntegrity(val);
+	    }
+	}
+	
+	public Step getAction(int id, Name actionName)
+	{
+		Step s;
+		ArrayList<Substitution> subst;
+		
+		for(ListIterator<Step> li = _actions.listIterator(); li.hasNext();)
+		{
+			s = (Step) li.next();
+			s = (Step)s.clone();
+			s.ReplaceUnboundVariables(id);
+			
+			subst = Unifier.Unify(s.getName(), actionName);
+			if(subst != null)
+			{
+				s = (Step) s.clone();
+				s.MakeGround(subst);
+				return s;
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Gets the operator that corresponds to the given name
+	 * @param name - the name of the step to get
+	 * @return the searched step if it is found, null otherwise
+	 */
+	public Step getAction(String name) {
+		
+		for(Step s : _actions)
+		{
+			if(s.getName().toString().equals(name))
+			{
+				return s;
+			}
+		}
+		
+		return null;
+	}
+	
+	public ArrayList<Step> getActions()
+	{
+		return _actions;
 	}
 	
 	public void LoadActionsFile(String xmlFile, AgentModel am) throws ActionsParsingException
@@ -157,33 +155,5 @@ public class ActionLibrary implements Serializable {
 		catch (Exception ex) {
 			throw new ActionsParsingException("Error parsing the actions file.",ex);
 		}	
-	}
-	
-	public ArrayList<Step> GetActions()
-	{
-		return _actions;
-	}
-	
-	public Step GetAction(int id, Name actionName)
-	{
-		Step s;
-		ArrayList<Substitution> subst;
-		
-		for(ListIterator<Step> li = _actions.listIterator(); li.hasNext();)
-		{
-			s = (Step) li.next();
-			s = (Step)s.clone();
-			s.ReplaceUnboundVariables(id);
-			
-			subst = Unifier.Unify(s.getName(), actionName);
-			if(subst != null)
-			{
-				s = (Step) s.clone();
-				s.MakeGround(subst);
-				return s;
-			}
-		}
-		
-		return null;
 	}
 }

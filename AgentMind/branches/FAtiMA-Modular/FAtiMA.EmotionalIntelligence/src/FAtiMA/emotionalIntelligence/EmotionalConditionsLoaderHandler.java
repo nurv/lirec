@@ -34,7 +34,7 @@ public class EmotionalConditionsLoaderHandler extends ReflectXMLHandler {
 		{
 			ee = EmotionalEpisodeCondition.ParseEmotionalEpisodeCondition(attributes);
 			ee.MakeGround(_self);
-			g = _aM.getDeliberativeLayer().getGoalLibrary().GetGoal(Name.ParseName(_currentGoalKey));
+			g = _aM.getGoalLibrary().GetGoal(Name.ParseName(_currentGoalKey));
 			g.AddCondition(_conditionType, ee);
 		}
 		catch(Exception e)

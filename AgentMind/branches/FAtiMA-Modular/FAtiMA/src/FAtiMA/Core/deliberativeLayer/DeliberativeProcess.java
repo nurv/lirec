@@ -134,7 +134,6 @@ import FAtiMA.Core.componentTypes.IModelOfOtherComponent;
 import FAtiMA.Core.conditions.Condition;
 import FAtiMA.Core.deliberativeLayer.goals.ActivePursuitGoal;
 import FAtiMA.Core.deliberativeLayer.goals.Goal;
-import FAtiMA.Core.deliberativeLayer.goals.GoalLibrary;
 import FAtiMA.Core.deliberativeLayer.goals.InterestGoal;
 import FAtiMA.Core.deliberativeLayer.plan.Effect;
 import FAtiMA.Core.deliberativeLayer.plan.IPlanningOperator;
@@ -173,7 +172,6 @@ public class DeliberativeProcess implements Serializable, IComponent, IBehaviour
 	public static final String NAME = "Deliberative";
 	private ArrayList<Goal> _goals;
 	
-	private GoalLibrary _goalLibrary;
 	private EmotionalPlanner _planner;
 	private ActionMonitor _actionMonitor;
 	private Plan _selectedPlan;
@@ -201,10 +199,9 @@ public class DeliberativeProcess implements Serializable, IComponent, IBehaviour
 	 * @param goalLibrary - the GoalLibrary with all domain's goals
 	 * @param planner - the EmotionalPlanner that will be used by the deliberative layer
 	 */
-	public DeliberativeProcess(GoalLibrary goalLibrary,  EmotionalPlanner planner) {
+	public DeliberativeProcess(EmotionalPlanner planner) {
 		_goals = new ArrayList<Goal>();
 	
-		_goalLibrary = goalLibrary;
 		_planner = planner;
 		_actionMonitor = null;
 		_selectedAction = null;
@@ -228,19 +225,212 @@ public class DeliberativeProcess implements Serializable, IComponent, IBehaviour
 		_actionSuccessStrategies = new ArrayList<IActionSuccessStrategy>();
 	}
 	
-	public void addGoalSuccessStrategy(IGoalSuccessStrategy strat)
+	public void actionSelectedForExecution(ValuedAction selectedAction)
 	{
-		_goalSuccessStrategies.add(strat);
+		String action;
+		String target=null;
+		Event e;
+		
+		if(_selectedAction == null)
+		{
+			return;
+		}
+		
+		ListIterator<Symbol> li = _selectedAction.getName().GetLiteralList().listIterator();
+	    
+	    action = li.next().toString();
+	    
+	    if(li.hasNext()) {
+	        target = li.next().toString();
+	    }
+	    
+	    e = new Event(Constants.SELF,action,target);
+        _actionMonitor = new ActionMonitor(_selectedAction,e);
+        
+        while(li.hasNext()) {
+	        e.AddParameter(new Parameter("parameter",li.next().toString()));
+	    }
+	    
+	    _selectedActionEmotion = null;
+		_selectedAction = null;
 	}
 	
-	public void addGoalFailureStrategy(IGoalFailureStrategy strat)
-	{
-		_goalFailureStrategies.add(strat);
-	}
-	
-	public void addActionSuccessStrategy(IActionSuccessStrategy strat)
-	{
-		_actionSuccessStrategies.add(strat);
+	/**
+	 * Deliberative Coping process. Gets the most relevant intention, thinks about it
+	 * for one reasoning cycle (planning) and if possible selects an action for 
+	 * execution.
+	 */
+	@Override
+	public ValuedAction actionSelection(AgentModel am) {
+		
+		Intention i = null;
+		ActiveEmotion fear;
+		ActiveEmotion hope;
+		
+		IPlanningOperator copingAction;
+		
+		_selectedActionEmotion = null;
+		_selectedAction = null;
+		_selectedPlan = null;
+		
+		_options.clear();
+		for(IOptionsStrategy strategy : _optionStrategies)
+		{
+			_options.addAll(strategy.options(am));
+		}
+		
+		//deliberation;
+		ActivePursuitGoal g = filter(am, this._options);
+		
+		if(g != null)
+		{
+			addIntention(am, g);
+		}
+		
+		//means-end reasoning
+		_currentIntention = filter2ndLevel(am);
+		if(_currentIntention != null) {
+			i = _currentIntention.GetSubIntention();
+					
+			//TODO adding and removing intentions from memory.
+			// ok, this needs some explaining. If you play close attention to the following
+			// code u'll see that if an intention has no available plans (i.e. failed), I will not
+			// remove the intention unless it has been strongly committed. This is intended. 
+			// If not strongly committed the intention needs to stay in the list of current intentions.
+			// This is because if we would remove it, the agent would immediately select the intention
+			// again not knowing that he would fail to create a plan for it. So he needs to remember that 
+			// the intention is not feasible. What we should do latter is to remove the intention from memory
+			// after some significant time has passed, or if a maximum number of stored intentions is reached
+			
+			if(i.getGoal().CheckSuccess(am))
+			{
+				removeIntention(i);
+				for(IGoalSuccessStrategy s: _goalSuccessStrategies)
+				{
+					s.perceiveGoalSuccess(am, i.getGoal());
+				}
+				i.ProcessIntentionSuccess(am);
+			}
+			else if(i.getGoal().CheckFailure(am))
+			{
+				removeIntention(i);
+				for(IGoalFailureStrategy s: _goalFailureStrategies)
+				{
+					s.perceiveGoalFailure(am, i.getGoal());
+				}
+				i.ProcessIntentionFailure(am);
+				cancelAction(am);
+			}
+			else if(i.NumberOfAlternativePlans() == 0)
+			{
+				for(IGoalFailureStrategy s: _goalFailureStrategies)
+				{
+					s.perceiveGoalFailure(am, i.getGoal());
+				}
+				i.ProcessIntentionFailure(am);
+				_currentIntention = null;
+				//we need to maintain the goal failure in memory (remembering there is no way to achieve the goal) 
+				//if there is no strong commitment
+				if(i.IsStrongCommitment())
+				{
+					removeIntention(i);	
+				}
+				cancelAction(am);
+			}
+			else if(!i.IsStrongCommitment() && !i.getGoal().checkPreconditions(am))
+			{
+				//this is done only if the agent hasn't tried to do anything yet, he cancels the goal out
+				//if the preconditions are not yet established
+				removeIntention(i);
+			}
+			else
+			{
+				_selectedPlan = _planner.ThinkAbout(am,this, i);
+			}
+			
+			if(_selectedPlan == null && i.IsStrongCommitment() && !i.getGoal().checkPreconditions(am))
+			{
+				i.ProcessIntentionCancel(am);
+				removeIntention(i);
+			}
+			
+			if(_actionMonitor == null && _selectedPlan != null) {
+				AgentLogger.GetInstance().logAndPrint("Plan Finished: " + _selectedPlan.toString());
+				copingAction = _selectedPlan.UnexecutedAction(am);
+				
+				if(copingAction != null) {
+					if(!i.IsStrongCommitment())
+					{
+						i.SetStrongCommitment(am);
+						AgentLogger.GetInstance().log("Plan Commited: " + _selectedPlan.toString());
+					}
+					String actionName = copingAction.getName().GetFirstLiteral().toString();
+					
+					if(copingAction instanceof ActivePursuitGoal)
+					{
+						addSubIntention(am, _currentIntention, (ActivePursuitGoal) copingAction);	
+					}
+					else if(!actionName.startsWith("Inference") && !actionName.endsWith("Appraisal") && !actionName.startsWith("SA"))
+					{
+						fear = i.GetFear(am.getEmotionalState());
+						hope = i.GetHope(am.getEmotionalState());
+						if(hope != null)
+						{
+							if(fear != null)
+							{
+								if(hope.GetIntensity() >= fear.GetIntensity())
+								{
+									_selectedActionEmotion = hope;
+								}
+								else
+								{
+									_selectedActionEmotion = fear;
+								}
+							}
+							else
+							{
+								_selectedActionEmotion = hope;
+							}
+						} 
+						else
+						{
+							_selectedActionEmotion = fear;
+						}
+							
+						
+						_selectedAction = (Step) copingAction;
+						AgentLogger.GetInstance().log("Selecting Action: " + _selectedAction.toString() + "from plan:" +_selectedPlan.toString());
+					}
+					else if(actionName.startsWith("SA"))
+					{
+						Effect eff;
+					
+					    for(ListIterator<Effect> li =  copingAction.getEffects().listIterator(); li.hasNext();)
+					    {
+					      eff = (Effect) li.next();
+					      if(eff.isGrounded())
+					    	  am.getMemory().getSemanticMemory().Tell(eff.GetEffect().getName(), eff.GetEffect().GetValue().toString());
+					    }
+					    this.checkLinks(am);
+					}
+					else
+					{
+						//this should never be selected
+						System.out.println("InferenceOperator selected for execution");
+					}
+				}
+				else
+				{
+					//If a complete plan does not have a valid next action to execute (ex: the next
+					//action to execute by self contains unboundvariables),
+					//it means that the plan cannot be executed, and the plan must be removed
+					i.RemovePlan(_selectedPlan);
+					AgentLogger.GetInstance().logAndPrint("Plan with invalid next action removed!");
+				}
+			}
+		}
+		
+		return getSelectedAction();
 	}
 	
 	public void addActionFailureStrategy(IActionFailureStrategy strat)
@@ -248,61 +438,61 @@ public class DeliberativeProcess implements Serializable, IComponent, IBehaviour
 		_actionFailureStrategies.add(strat);
 	}
 	
-	public void setUtilityForOthersStrategy(IGetUtilityForOthers strat)
+	public void addActionSuccessStrategy(IActionSuccessStrategy strat)
 	{
-		_UOthersStrategy = strat;
+		_actionSuccessStrategies.add(strat);
 	}
 	
-	public void setDetectThreatStrategy(IDetectThreatStrategy strat)
-	{
-		_isThreatStrat = strat;
+	/**
+	 * Adds a goal to the agent's Goal List
+	 * @param goalName - the name of the Goal
+	 * @param importanceOfSuccess - the goal's importance of success
+	 * @param importanceOfFailure - the goal's importance of failure
+	 * @throws UnknownGoalException - thrown if the goal is not specified
+	 * 						          in the GoalLibrary file. You can only add
+	 * 								  goals defined in the GoalLibrary.
+	 */
+	public void addGoal(AgentModel am, String goalName)  throws UnknownGoalException {
+	    Goal g = am.getGoalLibrary().GetGoal(Name.ParseName(goalName));
+	    if (g != null) {
+	      g.SetImportanceOfSuccess(am, 1);
+	      g.SetImportanceOfFailure(am, 1);
+	      addGoal(g);
+	    }
+	    else
+	    {
+	      throw new UnknownGoalException(goalName);
+	    }
 	}
 	
-	public void setExpectedUtilityStrategy(IExpectedUtilityStrategy strategy)
-	{
-		_EUStrategy = strategy;
-	}
-	
-	public void setProbabilityStrategy(IProbabilityStrategy strategy)
-	{
-		_PStrategy = strategy;
-	}
-	
-	public void setUtilityStrategy(IUtilityStrategy strategy)
-	{
-		_UStrategy = strategy;
-	}
-	
-	public IExpectedUtilityStrategy getExpectedUtilityStrategy()
-	{
-		return _EUStrategy;
-	}
-	
-	public IGetUtilityForOthers getUtilityForOthersStrategy()
-	{
-		return _UOthersStrategy;
-	}
-	
-	public IProbabilityStrategy getProbabilityStrategy()
-	{
-		return _PStrategy;
-	}
-	
-	public IUtilityStrategy getUtilityStrategy()
-	{
-		return _UStrategy;
-	}
-	
-	public IDetectThreatStrategy getDetectThreatStrategy()
-	{
-		return _isThreatStrat;
+	/**
+	 * Adds a goal to the agent's Goal List
+	 * @param goalName - the name of the Goal
+	 * @param importanceOfSuccess - the goal's importance of success
+	 * @param importanceOfFailure - the goal's importance of failure
+	 * @throws UnknownGoalException - thrown if the goal is not specified
+	 * 						          in the GoalLibrary file. You can only add
+	 * 								  goals defined in the GoalLibrary.
+	 */
+	public void addGoal(AgentModel am, String goalName, float importanceOfSuccess, float importanceOfFailure)  throws UnknownGoalException {
+		
+	    Goal g = am.getGoalLibrary().GetGoal(Name.ParseName(goalName));
+	    if (g != null) {
+	      g.SetImportanceOfSuccess(am, importanceOfSuccess);
+	      g.SetImportanceOfFailure(am, importanceOfFailure);
+	      addGoal(g);
+	    }
+	    else
+	    {
+	      throw new UnknownGoalException(goalName);
+	    }
 	}
 	
 	/**
 	 * Adds a goal to the agent's Goal List
 	 * @param goal - the goal to add
 	 */
-	public void AddGoal(Goal goal) {
+	public void addGoal(Goal goal) {
 		InterestGoal iGoal;
 		ArrayList<Condition> protectionConstraints;
 		ListIterator<Condition> li;
@@ -318,7 +508,7 @@ public class DeliberativeProcess implements Serializable, IComponent, IBehaviour
 						li = protectionConstraints.listIterator();
 						while(li.hasNext())
 						{
-							AddProtectionConstraint(new ProtectedCondition(iGoal, (Condition) li.next()));
+							addProtectionConstraint(new ProtectedCondition(iGoal, (Condition) li.next()));
 						}
 					}
 				}
@@ -326,159 +516,15 @@ public class DeliberativeProcess implements Serializable, IComponent, IBehaviour
 		}
 	}
 	
-	/**
-	 * Adds a ProtectionConstraint to the DeliberativeLayer. The planner will detect
-	 * when there are threats to these ProtectionConstraints and deal with them
-	 * with emotion-focused coping strategies. 
-	 * 
-	 * @param cond - the ProtectedCondition to add
-	 * @see ProtectedCondition
-	 */
-	public void AddProtectionConstraint(ProtectedCondition cond) {
-		_protectionConstraints.add(cond);
-	}
-	
-	
-	/**
-	 * Updates all the plans that the deliberative layer is currently working with, i.e.,
-	 * it updates all plans of all current active intentions
-	 */
-	public void CheckLinks(AgentModel am) {
-		Iterator<Intention> it;
-		
-		synchronized(this)
-		{
-			it = _intentions.values().iterator();
-			while (it.hasNext()) {
-				((Intention) it.next()).CheckLinks(am);
-			}
-		}
-	}
-	
-	public boolean ContainsIntention(ActivePursuitGoal goal)
+	public void addGoalFailureStrategy(IGoalFailureStrategy strat)
 	{
-		String goalName = goal.getNameWithCharactersOrdered();
-		
-		return _intentions.containsKey(goalName);
-		
-		
-		/*
-		while(it.hasNext())
-		{
-			i = (Intention) it.next();
-			if (i.containsIntention(goalName)) return true;
-		}
-		
-		return false;*/
+		_goalFailureStrategies.add(strat);
 	}
 	
-	/**
-	 * Changes a Goal's Importance
-	 * @param goalName - the name of the goal to change
-	 * @param importance - the new value for the importance
-	 * @param importanceType - the type of importance: 
-	 * 						   the String "CIS" changes the importance of success
-	 * 						   the String "CIF" changes the importance of failure
-	 */
-	public void ChangeGoalImportance(AgentModel am, String goalName, float importance, String importanceType) {
-		ListIterator<Goal> li;
-		
-		synchronized (this) {
-			li = _goals.listIterator();
-			Goal g;
-			
-			while(li.hasNext()) {
-				g = (Goal) li.next();
-				if(goalName.equals(g.getName().toString())) {
-					if(importanceType.equals("CIS")) {
-						g.SetImportanceOfSuccess(am, importance);
-					}
-					else {
-						g.SetImportanceOfFailure(am, importance);
-					}
-					break;
-				}
-			}	
-		}
+	public void addGoalSuccessStrategy(IGoalSuccessStrategy strat)
+	{
+		_goalSuccessStrategies.add(strat);
 	}
-	
-	/**
-	 * Removes a given goal from the agent's goal list
-	 * @param goalName - the name of the goal to remove
-	 */
-	public void RemoveGoal(String goalName) {
-		Goal g;
-		
-		synchronized (this)
-		{
-			for(int i=0; i < _goals.size(); i++) {
-				g = (Goal) _goals.get(i);
-				if(goalName.equals(g.getName().toString())) {
-					_goals.remove(i);
-					break;
-				}
-			}
-		}
-	}
-	
-	/**
-	 * Removes all the agent's goals
-	 *
-	 */
-	public void RemoveAllGoals() {
-		
-		synchronized (this)
-		{
-			_goals.clear();
-			_options.clear();
-			_intentions.clear();
-		}
-	}
-	
-	/**
-	 * Adds a goal to the agent's Goal List
-	 * @param goalName - the name of the Goal
-	 * @param importanceOfSuccess - the goal's importance of success
-	 * @param importanceOfFailure - the goal's importance of failure
-	 * @throws UnknownGoalException - thrown if the goal is not specified
-	 * 						          in the GoalLibrary file. You can only add
-	 * 								  goals defined in the GoalLibrary.
-	 */
-	public void AddGoal(AgentModel am, String goalName, float importanceOfSuccess, float importanceOfFailure)  throws UnknownGoalException {
-	    Goal g = _goalLibrary.GetGoal(Name.ParseName(goalName));
-	    if (g != null) {
-	      g.SetImportanceOfSuccess(am, importanceOfSuccess);
-	      g.SetImportanceOfFailure(am, importanceOfFailure);
-	      AddGoal(g);
-	    }
-	    else
-	    {
-	      throw new UnknownGoalException(goalName);
-	    }
-	}
-	
-	/**
-	 * Adds a goal to the agent's Goal List
-	 * @param goalName - the name of the Goal
-	 * @param importanceOfSuccess - the goal's importance of success
-	 * @param importanceOfFailure - the goal's importance of failure
-	 * @throws UnknownGoalException - thrown if the goal is not specified
-	 * 						          in the GoalLibrary file. You can only add
-	 * 								  goals defined in the GoalLibrary.
-	 */
-	public void AddGoal(AgentModel am, String goalName)  throws UnknownGoalException {
-	    Goal g = _goalLibrary.GetGoal(Name.ParseName(goalName));
-	    if (g != null) {
-	      g.SetImportanceOfSuccess(am, 1);
-	      g.SetImportanceOfFailure(am, 1);
-	      AddGoal(g);
-	    }
-	    else
-	    {
-	      throw new UnknownGoalException(goalName);
-	    }
-	}
-	
 	
 	/**
 	 * Creates and Adds an intention to the set of intentions that the 
@@ -487,7 +533,7 @@ public class DeliberativeProcess implements Serializable, IComponent, IBehaviour
 	 * 
 	 * @param goal - the goal that we want to add
 	 */
-	public void AddIntention(AgentModel am, ActivePursuitGoal goal) {
+	public void addIntention(AgentModel am, ActivePursuitGoal goal) {
 		ArrayList<Plan> plans;
 		Plan newPlan;
 		Intention intention;
@@ -514,7 +560,24 @@ public class DeliberativeProcess implements Serializable, IComponent, IBehaviour
 		}
 	}
 	
-	public void AddSubIntention(AgentModel am, Intention mainIntention, ActivePursuitGoal goal)
+	public void addOptionsStrategy(IOptionsStrategy strategy)
+	{
+		_optionStrategies.add(strategy);
+	}
+	
+	/**
+	 * Adds a ProtectionConstraint to the DeliberativeLayer. The planner will detect
+	 * when there are threats to these ProtectionConstraints and deal with them
+	 * with emotion-focused coping strategies. 
+	 * 
+	 * @param cond - the ProtectedCondition to add
+	 * @see ProtectedCondition
+	 */
+	public void addProtectionConstraint(ProtectedCondition cond) {
+		_protectionConstraints.add(cond);
+	}
+	
+	public void addSubIntention(AgentModel am, Intention mainIntention, ActivePursuitGoal goal)
 	{
 		ArrayList<Plan> plans;
 		Plan newPlan;
@@ -536,25 +599,211 @@ public class DeliberativeProcess implements Serializable, IComponent, IBehaviour
 		mainIntention.AddSubIntention(subIntention);
 	}
 	
-	public void AddOptionsStrategy(IOptionsStrategy strategy)
+	@Override
+	public void appraisal(AgentModel am, Event e, AppraisalFrame as) {
+	}
+	
+	public void appraiseSelfActionFailed(Event e)
 	{
-		_optionStrategies.add(strategy);
+		if(_actionMonitor != null)
+		{
+			if(_actionMonitor.matchEvent(e))
+			{
+				_actionMonitor = null;
+			}
+		}
+	}
+	
+	private void cancelAction(AgentModel am)
+	{
+		if(_actionMonitor!=null)
+		{
+			if(_actionMonitor.getStep().getAgent().toString().equals(Constants.SELF))
+			{
+				am.getRemoteAgent().cancelAction();
+			}
+			_actionMonitor = null;
+		}
+		
+		_selectedAction = null;
+	}
+	
+	
+	/**
+	 * Changes a Goal's Importance
+	 * @param goalName - the name of the goal to change
+	 * @param importance - the new value for the importance
+	 * @param importanceType - the type of importance: 
+	 * 						   the String "CIS" changes the importance of success
+	 * 						   the String "CIF" changes the importance of failure
+	 */
+	public void changeGoalImportance(AgentModel am, String goalName, float importance, String importanceType) {
+		ListIterator<Goal> li;
+		
+		synchronized (this) {
+			li = _goals.listIterator();
+			Goal g;
+			
+			while(li.hasNext()) {
+				g = (Goal) li.next();
+				if(goalName.equals(g.getName().toString())) {
+					if(importanceType.equals("CIS")) {
+						g.SetImportanceOfSuccess(am, importance);
+					}
+					else {
+						g.SetImportanceOfFailure(am, importance);
+					}
+					break;
+				}
+			}	
+		}
 	}
 	
 	/**
-	 * Gets the agent's goals
-	 * @return a list with the agent's goals
+	 * Updates all the plans that the deliberative layer is currently working with, i.e.,
+	 * it updates all plans of all current active intentions
 	 */
-	public ArrayList<Goal> GetGoals() {
-		return _goals;
+	public void checkLinks(AgentModel am) {
+		Iterator<Intention> it;
+		
+		synchronized(this)
+		{
+			it = _intentions.values().iterator();
+			while (it.hasNext()) {
+				((Intention) it.next()).CheckLinks(am);
+			}
+		}
+	}
+	
+	public boolean containsIntention(ActivePursuitGoal goal)
+	{
+		String goalName = goal.getNameWithCharactersOrdered();
+		
+		return _intentions.containsKey(goalName);
+		
+		
+		/*
+		while(it.hasNext())
+		{
+			i = (Intention) it.next();
+			if (i.containsIntention(goalName)) return true;
+		}
+		
+		return false;*/
+	}
+	
+	@Override
+	public AgentDisplayPanel createDisplayPanel(AgentModel am) {
+		return null;
+	}
+	
+	@Override
+	public IComponent createModelOfOther() {
+		return new DeliberativeProcess(_planner);
+	}
+	
+	public ActivePursuitGoal filter(AgentModel am, ArrayList<ActivePursuitGoal> options) {
+		ActivePursuitGoal g; 
+		ActivePursuitGoal maxGoal = null;
+		float maxUtility;
+		// expected utility of achieving a goal
+		float EU;
+		
+		maxUtility = -200;
+		
+		ListIterator<ActivePursuitGoal> li = options.listIterator();
+		while(li.hasNext())
+		{
+			g = li.next();
+			if(!containsIntention(g))
+			{		
+				EU = _EUStrategy.getExpectedUtility(am, g);
+				
+				if(EU > maxUtility)
+				{
+					maxUtility = EU;
+					maxGoal = g;
+				}
+			}
+		}
+		
+		if(maxGoal != null)
+		{
+			if(maxUtility >= MINIMUMUTILITY)
+			{
+				if(_currentIntention == null ||
+						maxUtility > _EUStrategy.getExpectedUtility(am,_currentIntention)*SELECTIONTHRESHOLD)
+				{
+					return maxGoal;
+				}
+			}
+		}
+		
+		
+		return null;
 	}
 	
 	/**
-	 * Gets the library of goals (all goals specified for the domain)
-	 * @return the GoalLibrary with all goals specified for the domain
+	 * Filters the most relevant intention from the set of possible intentions/goals.
+	 * Corresponds to Focusing on a given goal
+	 * @return - the most relevant intention (the one with highest expected utility)
 	 */
-	public GoalLibrary getGoalLibrary() {
-		return _goalLibrary;
+	public Intention filter2ndLevel(AgentModel am) {
+		Iterator<Intention> it;
+		Intention intention;
+		float highestUtility; 
+		Intention maxIntention = null;
+		float EU;
+		
+		if(_currentIntention != null)
+		{
+			highestUtility = _EUStrategy.getExpectedUtility(am, _currentIntention);
+			
+			maxIntention = _currentIntention;
+			//TODO selection threshold here!
+		}
+		else
+		{
+			maxIntention = null;
+			highestUtility = -200;
+		}
+		
+		synchronized(this)
+		{
+			it = _intentions.values().iterator();
+			
+
+			while (it.hasNext()) {
+				
+				intention = (Intention) it.next();
+				
+				if(intention != _currentIntention) 
+				{
+					EU = _EUStrategy.getExpectedUtility(am, intention); 
+					
+					if(EU > highestUtility && EU > MINIMUMUTILITY)
+					{
+						highestUtility = EU;
+						maxIntention = intention;
+					}
+				}
+			}
+		}
+		
+		if(this._currentIntention != maxIntention)
+		{
+			AgentLogger.GetInstance().logAndPrint("Switching 2nd level intention from " + this._currentIntention + " to " + maxIntention);
+		}
+		
+		this._currentIntention = maxIntention;
+		
+		return maxIntention;
+	}
+	
+	
+	public IDetectThreatStrategy getDetectThreatStrategy()
+	{
+		return _isThreatStrat;
 	}
 	
 	/**
@@ -565,43 +814,293 @@ public class DeliberativeProcess implements Serializable, IComponent, IBehaviour
 	    return _planner;
 	}
 	
+	public float getExpectedUtility(AgentModel am, ActivePursuitGoal g) {
+		return _UStrategy.getUtility(am, g) * _PStrategy.getProbability(am, g);
+	}
+	
+	public float getExpectedUtility(AgentModel am, Intention i) {
+		return _UStrategy.getUtility(am, i.getGoal()) * _PStrategy.getProbability(am, i);
+	}
+	
+	public IExpectedUtilityStrategy getExpectedUtilityStrategy()
+	{
+		return _EUStrategy;
+	}
+	
+	/**
+	 * Gets the agent's goals
+	 * @return a list with the agent's goals
+	 */
+	public ArrayList<Goal> getGoals() {
+		return _goals;
+	}
+
 	/**
 	 * Gets a set of IntentionKeys
 	 * @return a set with the keys used to store all intentions
 	 */
-	public Set<String> GetIntentionKeysSet() {
+	public Set<String> getIntentionKeysSet() {
 		synchronized(this)
 		{
 			return _intentions.keySet();
 		}
 	}
-
+	
+	
+	
 	/**
 	 * Gets a iterator that allows you to iterate over the set of active
 	 * Intentions
 	 * @return
 	 */
-	public Iterator<Intention> GetIntentionsIterator() {
+	public Iterator<Intention> getIntentionsIterator() {
 		return _intentions.values().iterator();
 	}
 	
-	public void EnforceCopingStrategy(AgentModel am, String coping)
+	public IProbabilityStrategy getProbabilityStrategy()
+	{
+		return _PStrategy;
+	}
+	
+	/**
+	 * Gets the action selected in the coping cycle, if any.
+	 * @return the action selected for execution, or null 
+	 * 	       if no such action exists 
+	 */
+	private ValuedAction getSelectedAction() {
+	 
+		Event e;
+		
+	    if(_selectedAction == null) 
+	    {
+	    	return null;
+	    }
+	    
+	    /*
+		 * Prepares the action selected for execution, by adding a monitor to it (that
+		 * detects when the action finishes). Finally it removes the action from the 
+		 * selected state so that it is not selected again.
+		 */
+	    
+	    if(!_selectedAction.getAgent().isGrounded())
+	    {
+	    	//in this situation the agent that is going to perform the action
+	    	//is not defined. Since the agent needs this action to be performed
+	    	//it will check if he can do it himself by applying the [SELF]
+	    	//substitution to the plan and testing if the resulting plan is valid
+	    	
+	    	Substitution sub = new Substitution(_selectedAction.getAgent(),
+	    			new Symbol(Constants.SELF));
+	    	
+	    	Plan clonedPlan = (Plan) _selectedPlan.clone();
+	    	clonedPlan.AddBindingConstraint(sub);
+	    	if(clonedPlan.isValid())
+	    	{
+	    		//this means that the agent can indeed perform the action
+	    		
+	    		//TODO I should clone the step before grounding it,
+	    		//however I can only do it if the UpdatePlan method in class
+	    		//Plan starts to work properly with unbound preconditions
+	    		//_selectedAction = (Step) _selectedAction.clone();
+	    		//I know that this sucks, but for the moment I have to do it
+	    		//like this
+	    		_selectedPlan.AddBindingConstraint(sub);
+	    		_selectedPlan.CheckProtectedConstraints();
+	    		_selectedPlan.CheckCausalConflicts();
+	    	}
+	    	else
+	    	{
+	    		//the agent cannot perform the action, we must inform
+	    		//the step that it cannot be executed by the agent, so
+	    		//that the plan's probability is correctly updated
+	    		_selectedAction.SetSelfExecutable(false);
+	    	}
+	    }
+	    else if(!_selectedAction.getAgent().toString().equals(Constants.SELF))
+	    {
+	    	//we have to wait for another agent to act
+	    	AgentLogger.GetInstance().logAndPrint("Waiting for agent " + _selectedAction.getAgent().toString() + " to do:" + _selectedAction.getName().toString());
+	    	
+	    	e = new Event(_selectedAction.getAgent().toString(),null,null);
+	    	_actionMonitor = new ExpirableActionMonitor(waitingTime,_selectedAction,e);
+	    	_selectedAction = null;
+	    	_selectedActionEmotion = null;
+	    	return null;
+	    }
+	    
+	    return new ValuedAction(DeliberativeProcess.NAME, _selectedAction.getName(),_selectedActionEmotion);
+	}
+	
+	public IGetUtilityForOthers getUtilityForOthersStrategy()
+	{
+		return _UOthersStrategy;
+	}
+	
+	public IUtilityStrategy getUtilityStrategy()
+	{
+		return _UStrategy;
+	}
+	
+	@Override
+	public void initialize(AgentModel ag) {	
+	}
+	
+	@Override
+	public void inverseAppraisal(AgentModel am, AppraisalFrame af) {
+	}
+	
+	@Override
+	public String name() {
+		return DeliberativeProcess.NAME;
+	}
+	
+	public ArrayList<ActivePursuitGoal> options(AgentModel am)
 	{
 		Goal g;
-		coping = coping.toLowerCase();
-		for(ListIterator<Goal> li = _goalLibrary.GetGoals();li.hasNext();)
+		ActivePursuitGoal aGoal;
+		ListIterator<Goal> li;
+		ListIterator<SubstitutionSet> li2;
+		ActivePursuitGoal desire;
+		SubstitutionSet subSet;
+		ArrayList<SubstitutionSet> substitutionSets;
+		ArrayList<ActivePursuitGoal> options;
+		
+		options = new ArrayList<ActivePursuitGoal>();	
+		
+		
+		//TODO optimize the goal activation verification
+		synchronized (this)
 		{
-			g = (Goal) li.next();
-			if(g.getName().toString().toLowerCase().startsWith(coping)
-					|| (coping.equals("standup") && g.getName().toString().startsWith("ReplyNegatively")))
-			{
-				AgentLogger.GetInstance().logAndPrint("");
-				AgentLogger.GetInstance().logAndPrint("Enforcing coping strategy: " + g.getName());
-				AgentLogger.GetInstance().logAndPrint("");
-				g.IncreaseImportanceOfFailure(am, 2);
-				g.IncreaseImportanceOfSuccess(am, 2);
+			li = _goals.listIterator();
+			while (li.hasNext()) {
+				g = (Goal) li.next();
+				if (g instanceof ActivePursuitGoal) {
+					aGoal = (ActivePursuitGoal) g;
+					
+					
+					substitutionSets = Condition.CheckActivation(am, aGoal.GetPreconditions()); 
+					if(substitutionSets != null) {
+						li2 = substitutionSets.listIterator();
+						while(li2.hasNext()) {
+							
+							subSet = (SubstitutionSet) li2.next();
+							
+							desire = (ActivePursuitGoal) aGoal.clone();
+							desire.MakeGround(subSet.GetSubstitutions());
+							
+							//In addition to testing the preconditions, we only add a goal
+							// as a desire if it's success and failure conditions are not satisfied
+							
+							if(!desire.CheckSuccess(am) && !desire.CheckFailure(am))
+							{
+
+									options.add(desire);	
+							}
+						}
+					}
+				}
 			}
 		}
+		
+		return options;
+	}
+	
+	@Override
+	public AppraisalFrame reappraisal(AgentModel am) {
+		return null;
+	}
+	
+	/**
+	 * Removes all the agent's goals
+	 *
+	 */
+	public void removeAllGoals() {
+		
+		synchronized (this)
+		{
+			_goals.clear();
+			_options.clear();
+			_intentions.clear();
+		}
+	}
+	
+	/**
+	 * Removes a given goal from the agent's goal list
+	 * @param goalName - the name of the goal to remove
+	 */
+	public void removeGoal(String goalName) {
+		Goal g;
+		
+		synchronized (this)
+		{
+			for(int i=0; i < _goals.size(); i++) {
+				g = (Goal) _goals.get(i);
+				if(goalName.equals(g.getName().toString())) {
+					_goals.remove(i);
+					break;
+				}
+			}
+		}
+	}
+
+
+	public void removeIntention(Intention i)
+	{
+		if(i.isRootIntention())
+		{
+			synchronized(this)
+			{
+				_intentions.remove(i.getGoal().getNameWithCharactersOrdered().toString());
+			}
+			_currentIntention = null;
+		}
+		else
+		{
+			//TODO remove or change this
+			this.removeIntention(i.getParentIntention());
+			//i.getParentIntention().RemoveSubIntention();
+		}
+	}
+	
+	/**
+	 * Resets the deliberative layer. Clears the events to be appraised,
+	 * the current intentions and actions.
+	 */
+	@Override
+	public void reset() {
+		//TODO incomplete
+		_options.clear();
+		_intentions.clear();
+		_actionMonitor = null;
+		_selectedAction = null;
+		_selectedActionEmotion = null;
+	}
+
+	public void setDetectThreatStrategy(IDetectThreatStrategy strat)
+	{
+		_isThreatStrat = strat;
+	}
+
+	public void setExpectedUtilityStrategy(IExpectedUtilityStrategy strategy)
+	{
+		_EUStrategy = strategy;
+	}
+	
+	public void setProbabilityStrategy(IProbabilityStrategy strategy)
+	{
+		_PStrategy = strategy;
+	}
+
+
+	public void setUtilityForOthersStrategy(IGetUtilityForOthers strat)
+	{
+		_UOthersStrategy = strat;
+	}
+
+
+	public void setUtilityStrategy(IUtilityStrategy strategy)
+	{
+		_UStrategy = strategy;
 	}
 	
 	/**
@@ -686,9 +1185,28 @@ public class DeliberativeProcess implements Serializable, IComponent, IBehaviour
 	
 	@Override
 	public void update(AgentModel am, Event event) {
+		ArrayList<IPlanningOperator> canceledActions;
 		
-		CheckLinks(am);
-	
+		if(_selectedPlan != null)
+		{
+			canceledActions = _selectedPlan.UpdatePlan(am);
+			
+			if(_actionMonitor != null)
+			{
+				for(IPlanningOperator op : canceledActions)
+				{
+					if(_actionMonitor.getStep().getName().equals(op.getName()))
+					{
+						cancelAction(am);
+						checkLinks(am);
+						return;
+					}
+				}
+				
+			}
+		}
+		
+		checkLinks(am);
 		
 		if(_actionMonitor != null && _actionMonitor.matchEvent(event)) {
 		    if(_actionMonitor.getStep().getAgent().isGrounded() &&  
@@ -724,534 +1242,22 @@ public class DeliberativeProcess implements Serializable, IComponent, IBehaviour
 		    	_actionMonitor.getStep().updateEffectsProbability(am);
 		    }
 		    		
-			UpdateProbabilities();
+			updateProbabilities();
 			_actionMonitor = null;
 		}
 	}
-	
-	public ArrayList<ActivePursuitGoal> options(AgentModel am)
-	{
-		Goal g;
-		ActivePursuitGoal aGoal;
-		ListIterator<Goal> li;
-		ListIterator<SubstitutionSet> li2;
-		ActivePursuitGoal desire;
-		SubstitutionSet subSet;
-		ArrayList<SubstitutionSet> substitutionSets;
-		ArrayList<ActivePursuitGoal> options;
-		
-		options = new ArrayList<ActivePursuitGoal>();	
-		
-		
-		//TODO optimize the goal activation verification
-		synchronized (this)
-		{
-			li = _goals.listIterator();
-			while (li.hasNext()) {
-				g = (Goal) li.next();
-				if (g instanceof ActivePursuitGoal) {
-					aGoal = (ActivePursuitGoal) g;
-					
-					
-					substitutionSets = Condition.CheckActivation(am, aGoal.GetPreconditions()); 
-					if(substitutionSets != null) {
-						li2 = substitutionSets.listIterator();
-						while(li2.hasNext()) {
-							
-							subSet = (SubstitutionSet) li2.next();
-							
-							desire = (ActivePursuitGoal) aGoal.clone();
-							desire.MakeGround(subSet.GetSubstitutions());
-							
-							//In addition to testing the preconditions, we only add a goal
-							// as a desire if it's success and failure conditions are not satisfied
-							
-							if(!desire.CheckSuccess(am) && !desire.CheckFailure(am))
-							{
 
-									options.add(desire);	
-							}
-						}
-					}
-				}
-			}
-		}
-		
-		return options;
-	}
-	
-	public ActivePursuitGoal Filter(AgentModel am, ArrayList<ActivePursuitGoal> options) {
-		ActivePursuitGoal g; 
-		ActivePursuitGoal maxGoal = null;
-		float maxUtility;
-		// expected utility of achieving a goal
-		float EU;
-		
-		maxUtility = -200;
-		
-		ListIterator<ActivePursuitGoal> li = options.listIterator();
-		while(li.hasNext())
-		{
-			g = li.next();
-			if(!ContainsIntention(g))
-			{		
-				EU = _EUStrategy.getExpectedUtility(am, g);
-				
-				if(EU > maxUtility)
-				{
-					maxUtility = EU;
-					maxGoal = g;
-				}
-			}
-		}
-		
-		if(maxGoal != null)
-		{
-			if(maxUtility >= MINIMUMUTILITY)
-			{
-				if(_currentIntention == null ||
-						maxUtility > _EUStrategy.getExpectedUtility(am,_currentIntention)*SELECTIONTHRESHOLD)
-				{
-					return maxGoal;
-				}
-			}
-		}
-		
-		
-		return null;
-	}
-	
-	/**
-	 * Filters the most relevant intention from the set of possible intentions/goals.
-	 * Corresponds to Focusing on a given goal
-	 * @return - the most relevant intention (the one with highest expected utility)
-	 */
-	public Intention Filter2ndLevel(AgentModel am) {
-		Iterator<Intention> it;
-		Intention intention;
-		float highestUtility; 
-		Intention maxIntention = null;
-		float EU;
-		
-		if(_currentIntention != null)
-		{
-			highestUtility = _EUStrategy.getExpectedUtility(am, _currentIntention);
-			
-			maxIntention = _currentIntention;
-			//TODO selection threshold here!
-		}
-		else
-		{
-			maxIntention = null;
-			highestUtility = -200;
-		}
-		
-		synchronized(this)
-		{
-			it = _intentions.values().iterator();
-			
-
-			while (it.hasNext()) {
-				
-				intention = (Intention) it.next();
-				
-				if(intention != _currentIntention) 
-				{
-					EU = _EUStrategy.getExpectedUtility(am, intention); 
-					
-					if(EU > highestUtility && EU > MINIMUMUTILITY)
-					{
-						highestUtility = EU;
-						maxIntention = intention;
-					}
-				}
-			}
-		}
-		
-		if(this._currentIntention != maxIntention)
-		{
-			AgentLogger.GetInstance().logAndPrint("Switching 2nd level intention from " + this._currentIntention + " to " + maxIntention);
-		}
-		
-		this._currentIntention = maxIntention;
-		
-		return maxIntention;
-	}
-	
-	/**
-	 * Deliberative Coping process. Gets the most relevant intention, thinks about it
-	 * for one reasoning cycle (planning) and if possible selects an action for 
-	 * execution.
-	 */
-	@Override
-	public ValuedAction actionSelection(AgentModel am) {
-		
-		Intention i = null;
-		ActiveEmotion fear;
-		ActiveEmotion hope;
-		
-		IPlanningOperator copingAction;
-		
-		_selectedActionEmotion = null;
-		_selectedAction = null;
-		_selectedPlan = null;
-		
-		_options.clear();
-		for(IOptionsStrategy strategy : _optionStrategies)
-		{
-			_options.addAll(strategy.options(am));
-		}
-		
-		//deliberation;
-		ActivePursuitGoal g = Filter(am, this._options);
-		
-		if(g != null)
-		{
-			AddIntention(am, g);
-		}
-		
-		//means-end reasoning
-		_currentIntention = Filter2ndLevel(am);
-		if(_currentIntention != null) {
-			i = _currentIntention.GetSubIntention();
-					
-			//TODO adding and removing intentions from memory.
-			// ok, this needs some explaining. If you play close attention to the following
-			// code u'll see that if an intention has no available plans (i.e. failed), I will not
-			// remove the intention unless it has been strongly committed. This is intended. 
-			// If not strongly committed the intention needs to stay in the list of current intentions.
-			// This is because if we would remove it, the agent would immediately select the intention
-			// again not knowing that he would fail to create a plan for it. So he needs to remember that 
-			// the intention is not feasible. What we should do latter is to remove the intention from memory
-			// after some significant time has passed, or if a maximum number of stored intentions is reached
-			
-			if(i.getGoal().CheckSuccess(am))
-			{
-				RemoveIntention(i);
-				for(IGoalSuccessStrategy s: _goalSuccessStrategies)
-				{
-					s.perceiveGoalSuccess(am, i.getGoal());
-				}
-				i.ProcessIntentionSuccess(am);
-				cancelAction(am);
-			}
-			else if(i.getGoal().CheckFailure(am))
-			{
-				RemoveIntention(i);
-				for(IGoalFailureStrategy s: _goalFailureStrategies)
-				{
-					s.perceiveGoalFailure(am, i.getGoal());
-				}
-				i.ProcessIntentionFailure(am);
-				cancelAction(am);
-			}
-			else if(i.NumberOfAlternativePlans() == 0)
-			{
-				for(IGoalFailureStrategy s: _goalFailureStrategies)
-				{
-					s.perceiveGoalFailure(am, i.getGoal());
-				}
-				i.ProcessIntentionFailure(am);
-				_currentIntention = null;
-				//we need to maintain the goal failure in memory (remembering there is no way to achieve the goal) 
-				//if there is no strong commitment
-				if(i.IsStrongCommitment())
-				{
-					RemoveIntention(i);	
-				}
-				cancelAction(am);
-			}
-			else if(!i.getGoal().checkPreconditions(am))
-			{
-				//this is done only if the agent hasn't tried to do anything yet, he cancels the goal out
-				//if the preconditions are not yet established
-				if(!i.IsStrongCommitment())
-				{
-					RemoveIntention(i);
-				}
-			}
-			else
-			{
-				_selectedPlan = _planner.ThinkAbout(am, i);
-			}
-			
-			if(_actionMonitor == null && _selectedPlan != null) {
-				AgentLogger.GetInstance().logAndPrint("Plan Finished: " + _selectedPlan.toString());
-				copingAction = _selectedPlan.UnexecutedAction(am);
-				
-				if(copingAction != null) {
-					if(!i.IsStrongCommitment())
-					{
-						i.SetStrongCommitment(am);
-						AgentLogger.GetInstance().log("Plan Commited: " + _selectedPlan.toString());
-					}
-					String actionName = copingAction.getName().GetFirstLiteral().toString();
-					
-					if(copingAction instanceof ActivePursuitGoal)
-					{
-						AddSubIntention(am, _currentIntention, (ActivePursuitGoal) copingAction);	
-					}
-					else if(!actionName.startsWith("Inference") && !actionName.endsWith("Appraisal") && !actionName.startsWith("SA"))
-					{
-						fear = i.GetFear(am.getEmotionalState());
-						hope = i.GetHope(am.getEmotionalState());
-						if(hope != null)
-						{
-							if(fear != null)
-							{
-								if(hope.GetIntensity() >= fear.GetIntensity())
-								{
-									_selectedActionEmotion = hope;
-								}
-								else
-								{
-									_selectedActionEmotion = fear;
-								}
-							}
-							else
-							{
-								_selectedActionEmotion = hope;
-							}
-						} 
-						else
-						{
-							_selectedActionEmotion = fear;
-						}
-							
-						
-						_selectedAction = (Step) copingAction;
-						AgentLogger.GetInstance().log("Selecting Action: " + _selectedAction.toString() + "from plan:" +_selectedPlan.toString());
-					}
-					else if(actionName.startsWith("SA"))
-					{
-						Effect eff;
-					
-					    for(ListIterator<Effect> li =  copingAction.getEffects().listIterator(); li.hasNext();)
-					    {
-					      eff = (Effect) li.next();
-					      if(eff.isGrounded())
-					    	  am.getMemory().getSemanticMemory().Tell(eff.GetEffect().getName(), eff.GetEffect().GetValue().toString());
-					    }
-					    this.CheckLinks(am);
-					}
-					else
-					{
-						//this should never be selected
-						System.out.println("InferenceOperator selected for execution");
-					}
-				}
-				else
-				{
-					//If a complete plan does not have a valid next action to execute (ex: the next
-					//action to execute by self contains unboundvariables),
-					//it means that the plan cannot be executed, and the plan must be removed
-					i.RemovePlan(_selectedPlan);
-					AgentLogger.GetInstance().logAndPrint("Plan with invalid next action removed!");
-				}
-			}
-		}
-		
-		return GetSelectedAction();
-	}
-	
-	private void cancelAction(AgentModel am)
-	{
-		if(_actionMonitor!=null)
-		{
-			if(_actionMonitor.getStep().getAgent().toString().equals(Constants.SELF))
-			{
-				am.getRemoteAgent().cancelAction();
-			}
-			_actionMonitor = null;
-		}
-		
-		_selectedAction = null;
-	}
-	
-	public void AppraiseSelfActionFailed(Event e)
-	{
-		if(_actionMonitor != null)
-		{
-			if(_actionMonitor.matchEvent(e))
-			{
-				_actionMonitor = null;
-			}
-		}
-	}
-	
-	/**
-	 * Gets the action selected in the coping cycle, if any.
-	 * @return the action selected for execution, or null 
-	 * 	       if no such action exists 
-	 */
-	private ValuedAction GetSelectedAction() {
-	 
-		Event e;
-		
-	    if(_selectedAction == null) 
-	    {
-	    	return null;
-	    }
-	    
-	    /*
-		 * Prepares the action selected for execution, by adding a monitor to it (that
-		 * detects when the action finishes). Finally it removes the action from the 
-		 * selected state so that it is not selected again.
-		 */
-	    
-	    if(!_selectedAction.getAgent().isGrounded())
-	    {
-	    	//in this situation the agent that is going to perform the action
-	    	//is not defined. Since the agent needs this action to be performed
-	    	//it will check if he can do it himself by applying the [SELF]
-	    	//substitution to the plan and testing if the resulting plan is valid
-	    	
-	    	Substitution sub = new Substitution(_selectedAction.getAgent(),
-	    			new Symbol(Constants.SELF));
-	    	
-	    	Plan clonedPlan = (Plan) _selectedPlan.clone();
-	    	clonedPlan.AddBindingConstraint(sub);
-	    	if(clonedPlan.isValid())
-	    	{
-	    		//this means that the agent can indeed perform the action
-	    		
-	    		//TODO I should clone the step before grounding it,
-	    		//however I can only do it if the UpdatePlan method in class
-	    		//Plan starts to work properly with unbound preconditions
-	    		//_selectedAction = (Step) _selectedAction.clone();
-	    		//I know that this sucks, but for the moment I have to do it
-	    		//like this
-	    		_selectedPlan.AddBindingConstraint(sub);
-	    		_selectedPlan.CheckProtectedConstraints();
-	    		_selectedPlan.CheckCausalConflicts();
-	    	}
-	    	else
-	    	{
-	    		//the agent cannot perform the action, we must inform
-	    		//the step that it cannot be executed by the agent, so
-	    		//that the plan's probability is correctly updated
-	    		_selectedAction.SetSelfExecutable(false);
-	    	}
-	    }
-	    else if(!_selectedAction.getAgent().toString().equals(Constants.SELF))
-	    {
-	    	//we have to wait for another agent to act
-	    	AgentLogger.GetInstance().logAndPrint("Waiting for agent " + _selectedAction.getAgent().toString() + " to do:" + _selectedAction.getName().toString());
-	    	
-	    	e = new Event(_selectedAction.getAgent().toString(),null,null);
-	    	_actionMonitor = new ExpirableActionMonitor(waitingTime,_selectedAction,e);
-	    	_selectedAction = null;
-	    	_selectedActionEmotion = null;
-	    	return null;
-	    }
-	    
-	    return new ValuedAction(DeliberativeProcess.NAME, _selectedAction.getName(),_selectedActionEmotion);
-	}
-	
-	public void actionSelectedForExecution(ValuedAction selectedAction)
-	{
-		String action;
-		String target=null;
-		Event e;
-		
-		if(_selectedAction == null)
-		{
-			return;
-		}
-		
-		ListIterator<Symbol> li = _selectedAction.getName().GetLiteralList().listIterator();
-	    
-	    action = li.next().toString();
-	    
-	    if(li.hasNext()) {
-	        target = li.next().toString();
-	    }
-	    
-	    e = new Event(Constants.SELF,action,target);
-        _actionMonitor = new ActionMonitor(_selectedAction,e);
-        
-        while(li.hasNext()) {
-	        e.AddParameter(new Parameter("parameter",li.next().toString()));
-	    }
-	    
-	    _selectedActionEmotion = null;
-		_selectedAction = null;
-	}
-	
-	/**
-	 * Resets the deliberative layer. Clears the events to be appraised,
-	 * the current intentions and actions.
-	 */
-	@Override
-	public void reset() {
-		//TODO incomplete
-		_options.clear();
-		_intentions.clear();
-		_actionMonitor = null;
-		_selectedAction = null;
-		_selectedActionEmotion = null;
-	}
-	
-	public void RemoveIntention(Intention i)
-	{
-		if(i.isRootIntention())
-		{
-			synchronized(this)
-			{
-				_intentions.remove(i.getGoal().getNameWithCharactersOrdered().toString());
-			}
-			_currentIntention = null;
-		}
-		else
-		{
-			//TODO remove or change this
-			this.RemoveIntention(i.getParentIntention());
-			//i.getParentIntention().RemoveSubIntention();
-		}
-	}
-	
-	/**
-	 * Forces the recalculation of all plan's probability
-	 */
-	public void UpdateProbabilities() {
-		
-		Iterator<Intention> it; 
-		
-		it = _intentions.values().iterator();
-		while (it.hasNext()) {
-			((Intention) it.next()).UpdateProbabilities();
-		}
-	}
-
-
-	public float getExpectedUtility(AgentModel am, ActivePursuitGoal g) {
-		return _UStrategy.getUtility(am, g) * _PStrategy.getProbability(am, g);
-	}
-	
-	public float getExpectedUtility(AgentModel am, Intention i) {
-		return _UStrategy.getUtility(am, i.getGoal()) * _PStrategy.getProbability(am, i);
-	}
-
-	@Override
-	public String name() {
-		return DeliberativeProcess.NAME;
-	}
-
-	@Override
-	public void initialize(AgentModel ag) {	
-	}
-	
 	@Override
 	public void update(AgentModel am, long time)
 	{
 		if(_actionMonitor != null)
 		{
-			if(_actionMonitor.expired() || !_actionMonitor.checkPreconditions(am))
+			if(_actionMonitor.expired())
 			{
-				AgentLogger.GetInstance().logAndPrint("Action monitor failed or expired: " + _actionMonitor.toString());
-				//If the action expired or failed we must check the plan links (continuous planning)
+				AgentLogger.GetInstance().logAndPrint("Action monitor expired: " + _actionMonitor.toString());
+				//If the action expired we must check the plan links (continuous planning)
 				//just to make sure
-				CheckLinks(am);
+				checkLinks(am);
 				
 				for(IActionFailureStrategy s : _actionFailureStrategies)
 				{
@@ -1259,36 +1265,23 @@ public class DeliberativeProcess implements Serializable, IComponent, IBehaviour
 				}
 				_actionMonitor.getStep().DecreaseProbability(am);
 				
-				UpdateProbabilities();
+				updateProbabilities();
 				
-				cancelAction(am);
 			    _actionMonitor = null;
 			}
 		}
 	}
 
-
-	@Override
-	public IComponent createModelOfOther() {
-		return new DeliberativeProcess(_goalLibrary, _planner);
-	}
-
-
-	@Override
-	public AgentDisplayPanel createDisplayPanel(AgentModel am) {
-		return null;
-	}
-	
-	@Override
-	public void appraisal(AgentModel am, Event e, AppraisalFrame as) {
-	}
-
-	@Override
-	public AppraisalFrame reappraisal(AgentModel am) {
-		return null;
-	}
-
-	@Override
-	public void inverseAppraisal(AgentModel am, AppraisalFrame af) {
+	/**
+	 * Forces the recalculation of all plan's probability
+	 */
+	public void updateProbabilities() {
+		
+		Iterator<Intention> it; 
+		
+		it = _intentions.values().iterator();
+		while (it.hasNext()) {
+			((Intention) it.next()).UpdateProbabilities();
+		}
 	}
 }

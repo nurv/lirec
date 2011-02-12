@@ -200,7 +200,7 @@ public class AgentLoaderHandler extends ReflectXMLHandler {
     	  impOfFailure = Float.parseFloat(attributes.getValue("importanceOfFailure"));
       }
 			
-      _deliberativeLayer.AddGoal(_am, _goalName,impOfSucess,impOfFailure); 
+      _deliberativeLayer.addGoal(_am, _goalName,impOfSucess,impOfFailure); 
     }
     
     public void Predicate(Attributes attributes) 

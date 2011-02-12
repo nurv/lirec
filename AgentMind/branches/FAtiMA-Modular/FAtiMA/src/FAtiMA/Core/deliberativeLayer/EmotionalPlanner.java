@@ -113,7 +113,6 @@ import java.util.ArrayList;
 import java.util.ListIterator;
 
 import FAtiMA.Core.AgentModel;
-import FAtiMA.Core.IntegrityValidator;
 import FAtiMA.Core.OCCAffectDerivation.OCCAppraisalVariables;
 import FAtiMA.Core.OCCAffectDerivation.OCCBaseEmotion;
 import FAtiMA.Core.OCCAffectDerivation.OCCComponent;
@@ -130,11 +129,8 @@ import FAtiMA.Core.deliberativeLayer.plan.IPlanningOperator;
 import FAtiMA.Core.deliberativeLayer.plan.OpenPrecondition;
 import FAtiMA.Core.deliberativeLayer.plan.Plan;
 import FAtiMA.Core.deliberativeLayer.plan.ProtectedCondition;
-import FAtiMA.Core.deliberativeLayer.plan.Step;
 import FAtiMA.Core.emotionalState.ActiveEmotion;
 import FAtiMA.Core.emotionalState.AppraisalFrame;
-import FAtiMA.Core.exceptions.UnknownSpeechActException;
-import FAtiMA.Core.exceptions.UnspecifiedVariableException;
 import FAtiMA.Core.util.AgentLogger;
 import FAtiMA.Core.util.Constants;
 import FAtiMA.Core.wellFormedNames.Name;
@@ -151,7 +147,7 @@ public class EmotionalPlanner implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private ArrayList<Step> _actions;
+	
 	private int _variableIdentifier;
 	
 	
@@ -161,11 +157,9 @@ public class EmotionalPlanner implements Serializable {
 	 * @param operators - a list with the actions to be used in the planner
 	 * @param es - the character's emotional state
 	 */
-	public EmotionalPlanner(ArrayList<Step> operators)
+	public EmotionalPlanner()
 	{
 	    this._variableIdentifier = 1;
-	    //this._closedGoals = new HashMap();
-	    this._actions = operators;
 	}
 	
 	
@@ -210,27 +204,6 @@ public class EmotionalPlanner implements Serializable {
 		
 		return answerUtility;
 	}*/
-	
-	/**
-	 * Checks the integrity of the Planner operators/Steps/actions.
-	 * For instance it checks if a operator references a SpeechAct not 
-	 * defined, or if it uses a unbound variable (in effects or preconditions)
-	 * not used in the operator's name 
-	 * @param val - the IntegrityValidator used to detect problems
-	 * @throws UnspecifiedVariableException - thrown when the operator uses a unbound
-	 * 										  variable in the effects or preconditions
-	 * 									      without using the same variable in the 
-	 * 									      step's name
-	 * @throws UnknownSpeechActException - thrown when the operator references a 
-	 * 									   SpeechAct not defined
-	 */
-	public void CheckIntegrity(IntegrityValidator val) throws UnspecifiedVariableException, UnknownSpeechActException {
-	    ListIterator<Step> li = _actions.listIterator();
-	    
-	    while(li.hasNext()) {
-	         li.next().CheckIntegrity(val);
-	    }
-	}
 
 	
 
@@ -245,7 +218,7 @@ public class EmotionalPlanner implements Serializable {
 	 * 				    from the list of possible operators. true - gets a new
 	 * 					Step, false - uses the steps that the received plan contains
 	 */
-	public void FindStepFor(Intention intention, Plan p, OpenPrecondition openPrecond, boolean newStep) {
+	public void FindStepFor(AgentModel am, Intention intention, Plan p, OpenPrecondition openPrecond, boolean newStep) {
 		ListIterator<? extends IPlanningOperator> li;
 		Condition cond;
 		Effect effect;
@@ -266,7 +239,7 @@ public class EmotionalPlanner implements Serializable {
 		cond = oldOp.getPrecondition(openPrecond.getCondition());
 		
 		if (newStep)
-			li = _actions.listIterator();
+			li = am.getActionLibrary().getActions().listIterator();
 		else
 			li = p.getSteps().listIterator();
 
@@ -355,36 +328,7 @@ public class EmotionalPlanner implements Serializable {
 
 	
 	
-	/**
-	 * Gets the planner's operators/steps/actions
-	 * @return a list with Steps
-	 */
-	public ArrayList<Step> GetOperators() {
-	    return _actions;
-	}
 	
-	public void AddOperator(Step op)
-	{
-		_actions.add(op);
-	}
-	
-	/**
-	 * Gets the operator that corresponds to the given name
-	 * @param name - the name of the step to get
-	 * @return the searched step if it is found, null otherwise
-	 */
-	public Step GetStep(String name) {
-		
-		for(Step s : _actions)
-		{
-			if(s.getName().toString().equals(name))
-			{
-				return s;
-			}
-		}
-		
-		return null;
-	}
 
 	/**
 	 * Implements a cycle of the reasoning/planning process.
@@ -399,7 +343,7 @@ public class EmotionalPlanner implements Serializable {
 	 * 			 were detected, this best plan is returned. If not, the method
 	 * 			 returns null
 	 */
-	public Plan ThinkAbout(AgentModel am, Intention intention) {
+	public Plan ThinkAbout(AgentModel am, DeliberativeProcess dp, Intention intention) {
 		Plan p;
 		Plan newPlan;
 		boolean newPlans = false;
@@ -440,7 +384,7 @@ public class EmotionalPlanner implements Serializable {
 		}
 	
 		prob = p.getProbability(am);
-		goalProb = am.getDeliberativeLayer().getProbabilityStrategy().getProbability(am, intention.getGoal());
+		goalProb = dp.getProbabilityStrategy().getProbability(am, intention.getGoal());
 		if(p.getOpenPreconditions().size() == 0)
 		{
 			planProb = prob;
@@ -681,9 +625,9 @@ public class EmotionalPlanner implements Serializable {
 
 			//TODO talvez possa fazer isto de uma maneira mais eficiente
 			//Tries to find a step in the plan that achieves the precondition
-			FindStepFor(intention, p, openPrecond, false);
+			FindStepFor(am,intention, p, openPrecond, false);
 			//tries to find a new step from the available actions that achieves the precondition  
-			FindStepFor(intention, p, openPrecond, true);
+			FindStepFor(am,intention, p, openPrecond, true);
 
 		}
 
@@ -692,6 +636,7 @@ public class EmotionalPlanner implements Serializable {
 		
 			return null;
 		}
+		
 		//the plan is complete, no flaw was removed
 		else return p;
 	}
@@ -705,14 +650,16 @@ public class EmotionalPlanner implements Serializable {
 	 */
 	public Plan DevelopPlan(AgentModel am, ActivePursuitGoal goal)
     {
-	    Plan p = new Plan(new ArrayList<ProtectedCondition>(),am.getDeliberativeLayer().getDetectThreatStrategy(),goal.GetSuccessConditions());
+		DeliberativeProcess dp = (DeliberativeProcess) am.getComponent(DeliberativeProcess.NAME);
+		
+	    Plan p = new Plan(new ArrayList<ProtectedCondition>(),dp.getDetectThreatStrategy(),goal.GetSuccessConditions());
         Intention i = new Intention(am, goal);
         i.AddPlan(p);
         Plan completePlan = null;
         
         while (i.NumberOfAlternativePlans() > 0)
         {
-            completePlan = ThinkAbout(am, i);
+            completePlan = ThinkAbout(am,dp, i);
             if(completePlan != null)
             {
                 return completePlan;

@@ -30,8 +30,8 @@ import FAtiMA.Core.wellFormedNames.Unifier;
  */
 public class RemoteAgent extends SocketListener {
 
-	final static int MIN_ACTION_DELAY_MS = 500;
-	final static int MAX_ACTION_DELAY_MS = 500;
+	final static int MIN_ACTION_DELAY_MS = 10000;
+	final static int MAX_ACTION_DELAY_MS = 10000;
 	protected Random _generator; 
 	private ArrayList<Property> _properties;
 	private String _name;
@@ -342,6 +342,8 @@ class ActionSimulator extends Thread{
 				aux = aux + " " + x;
 				aux2= aux2 + " " + x;
 			}
+			
+			
 
 			synchronized(_ra){
 				_ra.UpdateActionEffects(_ra.ConvertToActionName(new String (aux2)));
@@ -349,9 +351,10 @@ class ActionSimulator extends Thread{
 
 			String perception = "ACTION-FINISHED " + aux;
 			synchronized(_world){
-				_world.GetUserInterface().WriteLine(aux);
 				_world.SendPerceptionToAll(perception);
+			    _world.GetUserInterface().WriteLine(aux);
 			}	
+			
 		}
 	}
 }

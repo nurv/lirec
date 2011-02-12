@@ -8,6 +8,12 @@ import FAtiMA.Core.wellFormedNames.Name;
 
 public class ActionEffectsOnDrives implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	
 	private Name _actionName;
 	private ArrayList<EffectOnDrive> _effects;
 	

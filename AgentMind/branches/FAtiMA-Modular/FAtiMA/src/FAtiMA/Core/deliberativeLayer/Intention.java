@@ -36,9 +36,7 @@ package FAtiMA.Core.deliberativeLayer;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.ListIterator;
-import java.util.SortedSet;
 
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.OCCAffectDerivation.OCCAppraisalVariables;
@@ -241,10 +239,12 @@ public class Intention implements Serializable {
 	 */
 	public float GetProbability(AgentModel am) {
 		
+		DeliberativeProcess dp = (DeliberativeProcess) am.getComponent(DeliberativeProcess.NAME);
+		
 		float p;
 		float p2;
 		float bestProb = 0;
-		float goalProb = am.getDeliberativeLayer().getProbabilityStrategy().getProbability(am, _goal);
+		float goalProb = dp.getProbabilityStrategy().getProbability(am, _goal);
 		
 		for(Plan plan : _planConstruction)
 		{
@@ -371,9 +371,11 @@ public class Intention implements Serializable {
 	 */
 	public void ProcessIntentionActivation(AgentModel am) 
 	{
+		DeliberativeProcess dp = (DeliberativeProcess) am.getComponent(DeliberativeProcess.NAME);
 	    Event e = _goal.GetActivationEvent();
-	    float goalConduciveness = am.getDeliberativeLayer().getUtilityStrategy().getUtility(am, _goal);
-	    float probability = am.getDeliberativeLayer().getProbabilityStrategy().getProbability(am, _goal);
+	    
+	    float goalConduciveness = dp.getUtilityStrategy().getUtility(am, _goal);
+	    float probability = dp.getProbabilityStrategy().getProbability(am, _goal);
 	    
 	    AgentLogger.GetInstance().logAndPrint("Adding a new Intention: " + _goal.getName().toString());
 	  
@@ -395,6 +397,7 @@ public class Intention implements Serializable {
 	 */
 	public void ProcessIntentionFailure(AgentModel am) 
 	{	
+		DeliberativeProcess dp = (DeliberativeProcess) am.getComponent(DeliberativeProcess.NAME);
 		//mental disengagement consists in lowering the goal's importance
 		_goal.DecreaseImportanceOfFailure(am, 0.5f);
 		
@@ -404,7 +407,7 @@ public class Intention implements Serializable {
 	    
 	    AppraisalFrame af = new AppraisalFrame(e);
 	    af.SetAppraisalVariable(DeliberativeProcess.NAME,(short)8,OCCAppraisalVariables.GOALSTATUS.name(), OCCComponent.GOALDISCONFIRMED);
-	    af.SetAppraisalVariable(DeliberativeProcess.NAME, (short)8,OCCAppraisalVariables.GOALCONDUCIVENESS.name(), am.getDeliberativeLayer().getUtilityStrategy().getUtility(am, _goal));
+	    af.SetAppraisalVariable(DeliberativeProcess.NAME, (short)8,OCCAppraisalVariables.GOALCONDUCIVENESS.name(), dp.getUtilityStrategy().getUtility(am, _goal));
 	    am.updateEmotions(af);
 	    
 	    if(!isRootIntention())
@@ -432,6 +435,7 @@ public class Intention implements Serializable {
 	 */
 	public void ProcessIntentionSuccess(AgentModel am) 
 	{
+		DeliberativeProcess dp = (DeliberativeProcess) am.getComponent(DeliberativeProcess.NAME);
 	    if(!isRootIntention())
 	    {
 	    	getParentIntention().CheckLinks(am);
@@ -441,7 +445,7 @@ public class Intention implements Serializable {
 	    am.getMemory().getEpisodicMemory().StoreAction(am.getMemory(), e);
 	    AppraisalFrame af = new AppraisalFrame(e);
 	    af.SetAppraisalVariable(DeliberativeProcess.NAME,(short)8,OCCAppraisalVariables.GOALSTATUS.name(), OCCComponent.GOALCONFIRMED);
-	    af.SetAppraisalVariable(DeliberativeProcess.NAME, (short)8,OCCAppraisalVariables.GOALCONDUCIVENESS.name(), am.getDeliberativeLayer().getUtilityStrategy().getUtility(am, _goal));
+	    af.SetAppraisalVariable(DeliberativeProcess.NAME, (short)8,OCCAppraisalVariables.GOALCONDUCIVENESS.name(), dp.getUtilityStrategy().getUtility(am, _goal));
 	    am.updateEmotions(af);
 	        		   		
 	    AgentLogger.GetInstance().logAndPrint("Goal SUCCESS - " + getGoal().getName());

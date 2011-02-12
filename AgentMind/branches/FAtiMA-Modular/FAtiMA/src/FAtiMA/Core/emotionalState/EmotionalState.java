@@ -239,8 +239,9 @@ public class EmotionalState implements Serializable {
 		ActiveEmotion em;
 		Iterator<ActiveEmotion> it;
 
-		long currentTime = AgentSimulationTime.GetInstance().Time();;
-		if (currentTime >= _lastTime + 1000) {
+		long currentTime = AgentSimulationTime.GetInstance().Time();
+		long deltaTime = currentTime - _lastTime;
+		if (deltaTime >= 1000L) {
 			_lastTime = currentTime;
 
 			this._mood.DecayMood();

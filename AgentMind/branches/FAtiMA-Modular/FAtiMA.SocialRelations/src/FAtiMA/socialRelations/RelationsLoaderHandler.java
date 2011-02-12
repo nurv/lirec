@@ -61,7 +61,7 @@ public class RelationsLoaderHandler  extends ReflectXMLHandler{
 		{
 			lc = LikeCondition.ParseSocialCondition(attributes);
 			lc.MakeGround(_self);
-			g = _aM.getDeliberativeLayer().getGoalLibrary().GetGoal(Name.ParseName(_currentGoalKey));
+			g = _aM.getGoalLibrary().GetGoal(Name.ParseName(_currentGoalKey));
 			g.AddCondition(_conditionType, lc);
 		}
 		catch(Exception e)
@@ -77,7 +77,7 @@ public class RelationsLoaderHandler  extends ReflectXMLHandler{
 		l = LikeCondition.ParseSocialCondition(attributes);
 		l.MakeGround(_self);
 
-		Step action = _aM.getDeliberativeLayer().getEmotionalPlanner().GetStep(_currentActionKey);
+		Step action = _aM.getActionLibrary().getAction(_currentActionKey);
 		if(_precondition)
 			action.AddPrecondition(l);
 		else {

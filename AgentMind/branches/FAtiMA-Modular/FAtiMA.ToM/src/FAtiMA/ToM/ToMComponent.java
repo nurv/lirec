@@ -13,6 +13,7 @@ import FAtiMA.Core.componentTypes.IAdvancedPerceptionsComponent;
 import FAtiMA.Core.componentTypes.IAppraisalDerivationComponent;
 import FAtiMA.Core.componentTypes.IComponent;
 import FAtiMA.Core.componentTypes.IModelOfOtherComponent;
+import FAtiMA.Core.deliberativeLayer.DeliberativeProcess;
 import FAtiMA.Core.deliberativeLayer.IGetUtilityForOthers;
 import FAtiMA.Core.deliberativeLayer.goals.ActivePursuitGoal;
 import FAtiMA.Core.emotionalState.AppraisalFrame;
@@ -69,9 +70,10 @@ public class ToMComponent implements Serializable, IAppraisalDerivationComponent
 
 	@Override
 	public void initialize(AgentModel am) {
+		DeliberativeProcess dp = (DeliberativeProcess) am.getComponent(DeliberativeProcess.NAME);
 		am.setModelStrategy(this);
-		am.getDeliberativeLayer().setDetectThreatStrategy(new DetectThreatStrategy());
-		am.getDeliberativeLayer().setUtilityForOthersStrategy(this);
+		dp.setDetectThreatStrategy(new DetectThreatStrategy());
+		dp.setUtilityForOthersStrategy(this);
 	}
 	
 	private void initializeModelOfOther(AgentCore ag, String name)
@@ -241,12 +243,13 @@ public class ToMComponent implements Serializable, IAppraisalDerivationComponent
 
 	@Override
 	public float getUtilityForOthers(AgentModel am, ActivePursuitGoal g) {
+		DeliberativeProcess dp = (DeliberativeProcess) am.getComponent(DeliberativeProcess.NAME);
 		
 		float utility = 0;
 		
 		for(ModelOfOther m : _ToM.values())
 		{
-			utility+= m.getDeliberativeLayer().getUtilityStrategy().getUtility(m, g);
+			utility+= dp.getUtilityStrategy().getUtility(m, g);
 		}
 		
 		return utility;

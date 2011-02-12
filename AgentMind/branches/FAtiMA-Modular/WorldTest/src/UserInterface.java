@@ -362,10 +362,7 @@ public class UserInterface implements ActionListener {
     }
     
     public void actionPerformed(ActionEvent evt) {
-		String perception = "ACTION-FINISHED " + inputList.getSelectedItem().toString();
-		this.WriteLine(inputList.getSelectedItem().toString());
-		_world.SendPerceptionToAll(perception);
-		StringTokenizer st = new StringTokenizer(inputList.getSelectedItem().toString(), " ");
+    	StringTokenizer st = new StringTokenizer(inputList.getSelectedItem().toString(), " ");
 		if(st.countTokens() > 1)
 		{
 			String subject = st.nextToken();
@@ -374,6 +371,10 @@ public class UserInterface implements ActionListener {
 				action = action + " " + st.nextToken();
 			this.UpdateActionEffects(subject, ConvertToActionName(action));
 		}
+    	
+		String perception = "ACTION-FINISHED " + inputList.getSelectedItem().toString();
+		this.WriteLine(inputList.getSelectedItem().toString());
+		_world.SendPerceptionToAll(perception);
     }
     
     private void ParseFile(String name) {

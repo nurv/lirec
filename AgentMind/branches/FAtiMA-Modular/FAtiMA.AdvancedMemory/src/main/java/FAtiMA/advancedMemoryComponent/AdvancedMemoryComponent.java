@@ -44,6 +44,8 @@ import FAtiMA.Core.Display.AgentDisplayPanel;
 import FAtiMA.Core.OCCAffectDerivation.OCCAppraisalVariables;
 import FAtiMA.Core.componentTypes.IAppraisalDerivationComponent;
 import FAtiMA.Core.componentTypes.IProcessExternalRequestComponent;
+import FAtiMA.Core.componentTypes.IAppraisalDerivationComponent;
+import FAtiMA.Core.componentTypes.IProcessExternalRequestComponent;
 import FAtiMA.Core.emotionalState.AppraisalFrame;
 import FAtiMA.Core.memory.Memory;
 import FAtiMA.Core.memory.episodicMemory.ActionDetail;

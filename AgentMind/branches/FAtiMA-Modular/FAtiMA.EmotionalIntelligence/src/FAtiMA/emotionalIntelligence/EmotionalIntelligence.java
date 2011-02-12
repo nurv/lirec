@@ -9,7 +9,6 @@ import javax.xml.parsers.SAXParserFactory;
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.Display.AgentDisplayPanel;
 import FAtiMA.Core.componentTypes.IComponent;
-import FAtiMA.Core.deliberativeLayer.EmotionalPlanner;
 import FAtiMA.Core.deliberativeLayer.plan.Step;
 import FAtiMA.Core.reactiveLayer.Action;
 import FAtiMA.Core.sensorEffector.Event;
@@ -34,18 +33,16 @@ public class EmotionalIntelligence implements IComponent {
 
 	@Override
 	public void initialize(AgentModel am) {
-		
-		EmotionalPlanner planner = am.getDeliberativeLayer().getEmotionalPlanner();
-		
+
 		ArrayList<Step> occRules = OCCAppraisalRules.GenerateOCCAppraisalRules(am);
 		for(Step s : occRules)
 		{
-			planner.AddOperator(s);
+			am.getActionLibrary().addAction(s);
 		}
 		
 		for(Action at: am.getReactiveLayer().getActionTendencies().getActions())
 		{
-			planner.AddOperator(ActionTendencyOperatorFactory.CreateATOperator(am, at));
+			am.getActionLibrary().addAction(ActionTendencyOperatorFactory.CreateATOperator(am, at));
 		}
 		
 		LoadOperators(am);

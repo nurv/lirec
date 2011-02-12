@@ -99,12 +99,12 @@ public class GoalsPanel extends AgentDisplayPanel {
         
         DeliberativeProcess deliberative = ag.getDeliberativeLayer();
         
-        if(_goalDisplays.size() != deliberative.GetGoals().size()) {
+        if(_goalDisplays.size() != deliberative.getGoals().size()) {
         	update = true;
         	_goals.removeAll();
         	_goalDisplays.clear();
         	
-        	Iterator<Goal> it = deliberative.GetGoals().iterator();
+        	Iterator<Goal> it = deliberative.getGoals().iterator();
         	GoalDisplay gDisplay;
         	Goal g;
         	while(it.hasNext()) {
@@ -116,11 +116,11 @@ public class GoalsPanel extends AgentDisplayPanel {
         	}
         }
         
-        if(_intentionDisplays.keySet().equals(deliberative.GetIntentionKeysSet())) {
+        if(_intentionDisplays.keySet().equals(deliberative.getIntentionKeysSet())) {
             //in this case, we just have to update the values for the intensity of emotions
             //since the emotions displayed in the previous update are the same emotions
             //in the current update
-             Iterator<Intention> it = deliberative.GetIntentionsIterator();
+             Iterator<Intention> it = deliberative.getIntentionsIterator();
              IntentionDisplay iDisplay;
              Intention i;
              while(it.hasNext()) {
@@ -135,7 +135,7 @@ public class GoalsPanel extends AgentDisplayPanel {
             _intentions.removeAll(); //removes all displayed intentions from the panel
             _intentionDisplays.clear();
             
-            Iterator<Intention> it = deliberative.GetIntentionsIterator();
+            Iterator<Intention> it = deliberative.getIntentionsIterator();
             IntentionDisplay iDisplay;
             Intention i;
             while(it.hasNext()) {

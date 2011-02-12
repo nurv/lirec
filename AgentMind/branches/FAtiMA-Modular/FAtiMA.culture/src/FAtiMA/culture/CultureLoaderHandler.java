@@ -78,8 +78,8 @@ public class CultureLoaderHandler extends ReflectXMLHandler {
 	public CultureLoaderHandler(AgentModel aM, CulturalDimensionsComponent cDM) {
 		_rituals = new ArrayList<Ritual>();
 		_self = new Substitution(new Symbol("[SELF]"), new Symbol(FAtiMA.Core.util.Constants.SELF));
-		_reactiveLayer = aM.getReactiveLayer(); 
-		_deliberativeLayer = aM.getDeliberativeLayer();
+		_reactiveLayer = (ReactiveProcess) aM.getComponent(ReactiveProcess.NAME); 
+		_deliberativeLayer = (DeliberativeProcess) aM.getComponent(DeliberativeProcess.NAME);
 		_am = aM;
 		_culturalComponent = cDM;
 		_beforeRituals = true;
@@ -171,7 +171,7 @@ public class CultureLoaderHandler extends ReflectXMLHandler {
     {
 		if(_beforeRituals){
 			String goalName = attributes.getValue("name");	
-		    _deliberativeLayer.AddGoal(_am, goalName);  
+			_deliberativeLayer.addGoal(_am, goalName);  
 		}
     }
 	
@@ -215,7 +215,7 @@ public class CultureLoaderHandler extends ReflectXMLHandler {
 
 		stepName = Name.ParseName(attributes.getValue("name"));
 		role = new Symbol(attributes.getValue("role"));
-		_ritual.AddStep(stepName, role);
+		_ritual.AddStep(_am, stepName, role);
 	}
 
 	public void Link(Attributes attributes)
@@ -265,7 +265,7 @@ public class CultureLoaderHandler extends ReflectXMLHandler {
 		{	
 			_ritual.AddCondition(_conditionType, cond);
 		}else if (_currentGoalKey != null){
-			Goal g = _deliberativeLayer.getGoalLibrary().GetGoal(Name.ParseName(_currentGoalKey));
+			Goal g = _am.getGoalLibrary().GetGoal(Name.ParseName(_currentGoalKey));
 			g.AddCondition(_conditionType, cond);
 		}
 	}

@@ -20,6 +20,7 @@ import FAtiMA.Core.OCCAffectDerivation.OCCAppraisalVariables;
 import FAtiMA.Core.componentTypes.IAppraisalDerivationComponent;
 import FAtiMA.Core.componentTypes.IComponent;
 import FAtiMA.Core.componentTypes.IModelOfOtherComponent;
+import FAtiMA.Core.deliberativeLayer.DeliberativeProcess;
 import FAtiMA.Core.deliberativeLayer.IActionFailureStrategy;
 import FAtiMA.Core.deliberativeLayer.IExpectedUtilityStrategy;
 import FAtiMA.Core.deliberativeLayer.IGoalFailureStrategy;
@@ -270,9 +271,10 @@ public class MotivationalComponent implements Serializable, Cloneable, IAppraisa
 	}
 	
 	public float getExpectedUtility(AgentModel am, ActivePursuitGoal g)
-	{		
-		float utility = am.getDeliberativeLayer().getUtilityStrategy().getUtility(am, g);
-		float probability = am.getDeliberativeLayer().getProbabilityStrategy().getProbability(am, g);
+	{
+		DeliberativeProcess dp = (DeliberativeProcess) am.getComponent(DeliberativeProcess.NAME);
+		float utility = dp.getUtilityStrategy().getUtility(am, g);
+		float probability = dp.getProbabilityStrategy().getProbability(am, g);
 		
 		float EU = utility * probability * (1 + g.GetGoalUrgency());
 		
@@ -283,8 +285,10 @@ public class MotivationalComponent implements Serializable, Cloneable, IAppraisa
 	
 	public float getExpectedUtility(AgentModel am, Intention i)
 	{
-		float utility = am.getDeliberativeLayer().getUtilityStrategy().getUtility(am, i.getGoal());
-		float probability = am.getDeliberativeLayer().getProbabilityStrategy().getProbability(am, i);
+		DeliberativeProcess dp = (DeliberativeProcess) am.getComponent(DeliberativeProcess.NAME);
+		
+		float utility = dp.getUtilityStrategy().getUtility(am, i.getGoal());
+		float probability = dp.getProbabilityStrategy().getProbability(am, i);
 		
 		float EU = utility * probability * (1 + i.getGoal().GetGoalUrgency());
 		
@@ -459,12 +463,14 @@ public class MotivationalComponent implements Serializable, Cloneable, IAppraisa
 
 	@Override
 	public void initialize(AgentModel am) {
-		am.getDeliberativeLayer().setExpectedUtilityStrategy(this);
-		am.getDeliberativeLayer().setProbabilityStrategy(this);
-		am.getDeliberativeLayer().setUtilityStrategy(this);
-		am.getDeliberativeLayer().addActionFailureStrategy(this);
-		am.getDeliberativeLayer().addGoalFailureStrategy(this);
-		am.getDeliberativeLayer().addGoalSuccessStrategy(this);
+		DeliberativeProcess dp = (DeliberativeProcess) am.getComponent(DeliberativeProcess.NAME);
+		
+		dp.setExpectedUtilityStrategy(this);
+		dp.setProbabilityStrategy(this);
+		dp.setUtilityStrategy(this);
+		dp.addActionFailureStrategy(this);
+		dp.addGoalFailureStrategy(this);
+		dp.addGoalSuccessStrategy(this);
 		LoadNeeds(am);
 	}
 	

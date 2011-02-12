@@ -208,18 +208,20 @@ public class AgentSimulationTime implements Serializable {
 	 */
 	public void Tick()
 	{
+		long elapsedSimulationTime;
 		long currentTime = System.currentTimeMillis();
 		long elapsedRealTime = currentTime - this._lastUpdateTime;
 		
 		this._lastUpdateTime = currentTime;
 		if(this._running)
 		{
-			this._simulationTime += elapsedRealTime * this._timeMultiplier;
+			elapsedSimulationTime = (long) (elapsedRealTime * this._timeMultiplier);
+			this._simulationTime += elapsedSimulationTime;
 		}
 	}
 	
 	/**
-	 * Advances the agent's simulation time. Very usefull if you
+	 * Advances the agent's simulation time. Very useful if you
 	 * want to skip time. 
 	 * @param seconds - the number of seconds you want to advance
 	 *  				in time

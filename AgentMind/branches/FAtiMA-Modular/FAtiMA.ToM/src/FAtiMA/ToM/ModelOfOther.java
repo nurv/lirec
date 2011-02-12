@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
+import FAtiMA.Core.ActionLibrary;
 import FAtiMA.Core.AgentCore;
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.IGetModelStrategy;
@@ -13,6 +14,7 @@ import FAtiMA.Core.componentTypes.IAppraisalDerivationComponent;
 import FAtiMA.Core.componentTypes.IComponent;
 import FAtiMA.Core.componentTypes.IProcessEmotionComponent;
 import FAtiMA.Core.deliberativeLayer.DeliberativeProcess;
+import FAtiMA.Core.deliberativeLayer.goals.GoalLibrary;
 import FAtiMA.Core.emotionalState.ActiveEmotion;
 import FAtiMA.Core.emotionalState.AppraisalFrame;
 import FAtiMA.Core.emotionalState.BaseEmotion;
@@ -189,10 +191,15 @@ public class ModelOfOther implements AgentModel, Serializable {
 	{
 		return _components.values();
 	}
-
-	@Override
-	public DeliberativeProcess getDeliberativeLayer() {
-		return _deliberativeProcess;
+	
+	public GoalLibrary getGoalLibrary()
+	{
+		return null;
+	}
+	
+	public ActionLibrary getActionLibrary()
+	{
+		return null;
 	}
 
 	@Override

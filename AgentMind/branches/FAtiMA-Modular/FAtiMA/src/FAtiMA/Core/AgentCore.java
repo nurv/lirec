@@ -35,6 +35,7 @@ import FAtiMA.Core.componentTypes.IProcessEmotionComponent;
 import FAtiMA.Core.componentTypes.IProcessExternalRequestComponent;
 import FAtiMA.Core.deliberativeLayer.DeliberativeProcess;
 import FAtiMA.Core.deliberativeLayer.EmotionalPlanner;
+import FAtiMA.Core.deliberativeLayer.goals.Goal;
 import FAtiMA.Core.deliberativeLayer.goals.GoalLibrary;
 import FAtiMA.Core.emotionalState.ActiveEmotion;
 import FAtiMA.Core.emotionalState.AppraisalFrame;
@@ -74,6 +75,7 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 	
 	public static final Name ACTION_CONTEXT = Name.ParseName("ActionContext()");
 
+	//components
 	protected HashMap<String, IComponent> _generalComponents;
 	protected ArrayList<IProcessEmotionComponent> _processEmotionComponents;
 	protected ArrayList<IBehaviourComponent> _behaviourComponents;
@@ -83,8 +85,12 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 	protected ArrayList<IAffectDerivationComponent> _affectDerivationComponents;
 	protected ArrayList<IAppraisalDerivationComponent> _appraisalComponents;
 	
+	//Data structures
 	protected EmotionalState _emotionalState;
 	protected Memory _memory;
+	protected GoalLibrary _goalLibrary;
+	protected ActionLibrary _actionLibrary;
+	
 	protected boolean _shutdown;
 	protected DeliberativeProcess _deliberativeLayer;
 	protected ReactiveProcess _reactiveLayer;
@@ -121,12 +127,14 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 		_actionsForExecution = new ArrayList<ValuedAction>();
 		_perceivedEvents = new ArrayList<Event>();
 		_saveDirectory = "";
+		
 		_emotionalState = new EmotionalState();
 		_memory = new Memory();
 		// creating a new episode when the agent starts 13/09/10
 		_memory.getEpisodicMemory().StartEpisode(_memory);
 		_memoryWriter = new MemoryWriter(_memory);
 		_strat = this;
+		_actionLibrary = new ActionLibrary();
 		
 		_generalComponents = new HashMap<String,IComponent>();
 		_processEmotionComponents = new ArrayList<IProcessEmotionComponent>();
@@ -183,17 +191,17 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 				}
 				
 				// Load Plan Operators
-				ActionLibrary.GetInstance().LoadActionsFile(ConfigurationManager.getActionsFile(), this);
-				EmotionalPlanner planner = new EmotionalPlanner(ActionLibrary.GetInstance().GetActions());
+				_actionLibrary.LoadActionsFile(ConfigurationManager.getActionsFile(), this);
+				EmotionalPlanner planner = new EmotionalPlanner();
 	
 				// Load GoalLibrary
-				GoalLibrary goalLibrary = new GoalLibrary(ConfigurationManager.getGoalsFile());
+				_goalLibrary = new GoalLibrary(ConfigurationManager.getGoalsFile());
 	
 				//For efficiency reasons these two are not real processes
 				_reactiveLayer = new ReactiveProcess();
 				addComponent(_reactiveLayer);
 	
-				_deliberativeLayer = new DeliberativeProcess(goalLibrary,planner);
+				_deliberativeLayer = new DeliberativeProcess(planner);
 				addComponent(_deliberativeLayer);
 				
 				addComponent(new OCCComponent());
@@ -356,6 +364,11 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 	{
 		return this._processExternalRequestComponents;
 	}
+	
+	public ActionLibrary getActionLibrary()
+	{
+		return _actionLibrary;
+	}
 
 	/*public void RemoveComponent(IComponent c)
 	{
@@ -365,7 +378,7 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 
 	public void AppraiseSelfActionFailed(Event e)
 	{
-		_deliberativeLayer.AppraiseSelfActionFailed(e);
+		_deliberativeLayer.appraiseSelfActionFailed(e);
 	}
 
 	/**
@@ -404,6 +417,11 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 		return _agentLoaded;
 	}
 	
+	public GoalLibrary getGoalLibrary()
+	{
+		return _goalLibrary;
+	}
+	
 	/**
 	 * Gets the name of the agent
 	 * @return the agent's name
@@ -429,6 +447,25 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 	{
 		_strat = strat;
 	}
+	
+	public void EnforceCopingStrategy(AgentModel am, String coping)
+	{
+		Goal g;
+		coping = coping.toLowerCase();
+		for(ListIterator<Goal> li = _goalLibrary.GetGoals();li.hasNext();)
+		{
+			g = (Goal) li.next();
+			if(g.getName().toString().toLowerCase().startsWith(coping)
+					|| (coping.equals("standup") && g.getName().toString().startsWith("ReplyNegatively")))
+			{
+				AgentLogger.GetInstance().logAndPrint("");
+				AgentLogger.GetInstance().logAndPrint("Enforcing coping strategy: " + g.getName());
+				AgentLogger.GetInstance().logAndPrint("");
+				g.IncreaseImportanceOfFailure(am, 2);
+				g.IncreaseImportanceOfSuccess(am, 2);
+			}
+		}
+	}
 
 
 	@SuppressWarnings("unchecked")
@@ -443,6 +480,8 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 		this._reactiveLayer = (ReactiveProcess) s.readObject();
 		this._emotionalState = (EmotionalState) s.readObject();
 		this._memory = (Memory) s.readObject();
+		this._goalLibrary = (GoalLibrary) s.readObject();
+		this._actionLibrary = (ActionLibrary) s.readObject();
 		//this._dialogManager = (DialogManager) s.readObject();
 		this._role = (String) s.readObject();
 		this._name = (String) s.readObject();
@@ -482,7 +521,6 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 		in.close();
 
 		AgentSimulationTime.LoadState(fileName+"-Timer.dat");
-		ActionLibrary.LoadState(fileName+"-ActionLibrary.dat");
 
 		//_remoteAgent.LoadState(fileName+"-RemoteAgent.dat");
 	}
@@ -506,19 +544,19 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 		//The WorldSimulator Agent loads additional goals provided in the starting goal list
 		if(agentPlatform == AgentPlatform.WORLDSIM){
 			ListIterator<String> lt = goalList.listIterator();
-			String goal;
+			String goalDescription;
 			String goalName;
 			StringTokenizer st;
 			float impOfSuccess;
 			float impOfFailure;
 			while(lt.hasNext()) {
-				goal = (String) lt.next();
-				st = new StringTokenizer(goal, "|");
+				goalDescription = (String) lt.next();
+				st = new StringTokenizer(goalDescription, "|");
 				goalName = st.nextToken();
 				impOfSuccess = Float.parseFloat(st.nextToken());
 				impOfFailure = Float.parseFloat(st.nextToken());
 
-				_deliberativeLayer.AddGoal(this, goalName, impOfSuccess, impOfFailure);   
+				_deliberativeLayer.addGoal(this, goalName, impOfSuccess, impOfFailure);   
 			}	
 		}
 	}
@@ -869,7 +907,6 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 		_memory.getEpisodicMemory().MoveSTEMtoAM();
 
 		AgentSimulationTime.SaveState(fileName+"-Timer.dat");
-		ActionLibrary.SaveState(fileName+"-ActionLibrary.dat");
 		_remoteAgent.SaveState(fileName+"-RemoteAgent.dat");
 
 		try
@@ -881,6 +918,8 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 			s.writeObject(_reactiveLayer);
 			s.writeObject(_emotionalState);
 			s.writeObject(_memory);
+			s.writeObject(_goalLibrary);
+			s.writeObject(_actionLibrary);
 			//s.writeObject(_dialogManager);
 			s.writeObject(_role);
 			s.writeObject(_name);
@@ -969,6 +1008,8 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 			s.writeObject(_reactiveLayer);
 			s.writeObject(_emotionalState);
 			s.writeObject(_memory);
+			s.writeObject(_goalLibrary);
+			s.writeObject(_actionLibrary);
 			//s.writeObject(_motivationalState);
 			//s.writeObject(_dialogManager);
 			//s.writeObject(_role);
@@ -1030,6 +1071,8 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 			this._reactiveLayer = (ReactiveProcess) s.readObject();
 			this._emotionalState = (EmotionalState) s.readObject();
 			this._memory = (Memory) s.readObject();
+			this._goalLibrary = (GoalLibrary) s.readObject();
+			this._actionLibrary = (ActionLibrary) s.readObject();
 			//this._dialogManager = (DialogManager) s.readObject();
 			//this._role = (String) s.readObject();
 			//this._name = (String) s.readObject();
