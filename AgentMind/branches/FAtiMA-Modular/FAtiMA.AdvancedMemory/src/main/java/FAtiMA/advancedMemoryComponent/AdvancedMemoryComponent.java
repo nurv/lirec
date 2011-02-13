@@ -44,8 +44,6 @@ import FAtiMA.Core.Display.AgentDisplayPanel;
 import FAtiMA.Core.OCCAffectDerivation.OCCAppraisalVariables;
 import FAtiMA.Core.componentTypes.IAppraisalDerivationComponent;
 import FAtiMA.Core.componentTypes.IProcessExternalRequestComponent;
-import FAtiMA.Core.componentTypes.IAppraisalDerivationComponent;
-import FAtiMA.Core.componentTypes.IProcessExternalRequestComponent;
 import FAtiMA.Core.emotionalState.AppraisalFrame;
 import FAtiMA.Core.memory.Memory;
 import FAtiMA.Core.memory.episodicMemory.ActionDetail;
@@ -229,23 +227,12 @@ public class AdvancedMemoryComponent implements Serializable, IAppraisalDerivati
 	}
 
 	@Override
-	public void processExternalRequest(String requestMsg) {
+	public void processExternalRequest(AgentModel am, String msgType, String perception) {
 		
-		StringTokenizer st = new StringTokenizer(requestMsg," ");
-		String msgType = st.nextToken();
-		
-		String perception = "";
-		
-		while(st.hasMoreTokens())
-		{
-			perception = perception + st.nextToken() + " ";
-		}
-		
-		perception = perception.trim();
-		
+		StringTokenizer st;
+	
 	    if(msgType.equals(SA_MEMORY))
 		{
-			
 			st = new StringTokenizer(perception, "$");
 			String question = st.nextToken();
 			String known = "";

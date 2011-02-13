@@ -5,9 +5,9 @@ import org.xml.sax.Attributes;
 
 import FAtiMA.Core.AgentModel;
 
-import FAtiMA.Core.deliberativeLayer.plan.Effect;
-import FAtiMA.Core.deliberativeLayer.plan.Step;
 
+import FAtiMA.Core.plans.Effect;
+import FAtiMA.Core.plans.Step;
 import FAtiMA.Core.util.Constants;
 import FAtiMA.Core.util.parsers.ReflectXMLHandler;
 
