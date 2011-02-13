@@ -10,9 +10,10 @@ import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.Display.AgentDisplayPanel;
 import FAtiMA.Core.componentTypes.IComponent;
 import FAtiMA.Core.plans.Step;
-import FAtiMA.Core.reactiveLayer.Action;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.util.AgentLogger;
+import FAtiMA.ReactiveComponent.Action;
+import FAtiMA.ReactiveComponent.ReactiveComponent;
 
 public class EmotionalIntelligence implements IComponent {
 	
@@ -33,6 +34,8 @@ public class EmotionalIntelligence implements IComponent {
 
 	@Override
 	public void initialize(AgentModel am) {
+		
+		ReactiveComponent reactiveComponent = (ReactiveComponent) am.getComponent(ReactiveComponent.NAME);
 
 		ArrayList<Step> occRules = OCCAppraisalRules.GenerateOCCAppraisalRules(am);
 		for(Step s : occRules)
@@ -40,7 +43,7 @@ public class EmotionalIntelligence implements IComponent {
 			am.getActionLibrary().addAction(s);
 		}
 		
-		for(Action at: am.getReactiveLayer().getActionTendencies().getActions())
+		for(Action at: reactiveComponent.getActionTendencies().getActions())
 		{
 			am.getActionLibrary().addAction(ActionTendencyOperatorFactory.CreateATOperator(am, at));
 		}

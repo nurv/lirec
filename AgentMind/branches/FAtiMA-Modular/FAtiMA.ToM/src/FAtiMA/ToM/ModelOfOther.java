@@ -20,11 +20,11 @@ import FAtiMA.Core.emotionalState.EmotionDisposition;
 import FAtiMA.Core.emotionalState.EmotionalState;
 import FAtiMA.Core.goals.GoalLibrary;
 import FAtiMA.Core.memory.Memory;
-import FAtiMA.Core.reactiveLayer.ReactiveProcess;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.sensorEffector.RemoteAgent;
 import FAtiMA.Core.util.Constants;
 import FAtiMA.Core.wellFormedNames.Symbol;
+import FAtiMA.ReactiveComponent.ReactiveComponent;
 
 public class ModelOfOther implements AgentModel, Serializable {
 	
@@ -39,7 +39,7 @@ public class ModelOfOther implements AgentModel, Serializable {
 	private ArrayList<IProcessEmotionComponent> _processEmotionComponents;
 	private ArrayList<IAppraisalDerivationComponent> _appraisalComponents;
 	private ArrayList<IAffectDerivationComponent> _affectDerivationComponents;
-	private ReactiveProcess _reactiveProcess;
+	private ReactiveComponent _reactiveComponent;
 	
 	public ModelOfOther(String name, AgentCore ag) 
 	{
@@ -108,12 +108,13 @@ public class ModelOfOther implements AgentModel, Serializable {
 	
 	public void emotionReading(Event e)
 	{
+		
 		BaseEmotion perceivedEmotion;
 		ActiveEmotion predictedEmotion;
 		AppraisalFrame af;
 		//if the perceived action corresponds to an emotion expression of other, we 
 		//should update its action tendencies accordingly
-		perceivedEmotion = _reactiveProcess.getActionTendencies().RecognizeEmotion(this, e.toStepName());
+		perceivedEmotion = _reactiveComponent.getActionTendencies().RecognizeEmotion(this, e.toStepName());
 		if(perceivedEmotion != null)
 		{
 			predictedEmotion = _es.GetEmotion(perceivedEmotion.GetHashKey());
@@ -153,9 +154,9 @@ public class ModelOfOther implements AgentModel, Serializable {
 	
 	public void addComponent(IComponent c)
 	{
-		if(c.name().equals(ReactiveProcess.NAME))
+		if(c.name().equals(ReactiveComponent.NAME))
 		{
-			_reactiveProcess = (ReactiveProcess) c;
+			_reactiveComponent = (ReactiveComponent) c;
 		}
 		
 		if(c instanceof IProcessEmotionComponent)
@@ -193,12 +194,6 @@ public class ModelOfOther implements AgentModel, Serializable {
 	public ActionLibrary getActionLibrary()
 	{
 		return null;
-	}
-
-	@Override
-	public ReactiveProcess getReactiveLayer() {
-		
-		return _reactiveProcess;
 	}
 
 	@Override

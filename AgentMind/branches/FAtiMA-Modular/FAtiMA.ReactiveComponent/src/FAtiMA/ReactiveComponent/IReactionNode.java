@@ -1,4 +1,4 @@
-package FAtiMA.Core.reactiveLayer;
+package FAtiMA.ReactiveComponent;
 
 import FAtiMA.Core.IIntegrityTester;
 import FAtiMA.Core.sensorEffector.Event;

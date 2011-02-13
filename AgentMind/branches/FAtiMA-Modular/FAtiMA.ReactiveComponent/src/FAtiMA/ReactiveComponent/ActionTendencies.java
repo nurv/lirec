@@ -31,7 +31,7 @@
  * João Dias: 27/12/2006 - Added Method ReinforceActionTendency
  */
 
-package FAtiMA.Core.reactiveLayer;
+package FAtiMA.ReactiveComponent;
 
 import java.io.Serializable;
 import java.util.ArrayList;

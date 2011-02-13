@@ -45,7 +45,6 @@ import FAtiMA.Core.goals.GoalLibrary;
 import FAtiMA.Core.memory.Memory;
 import FAtiMA.Core.memory.semanticMemory.KnowledgeSlot;
 import FAtiMA.Core.plans.IDetectThreatStrategy;
-import FAtiMA.Core.reactiveLayer.ReactiveProcess;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.sensorEffector.IONRemoteAgent;
 import FAtiMA.Core.sensorEffector.RemoteAgent;
@@ -56,8 +55,8 @@ import FAtiMA.Core.util.ConfigurationManager;
 import FAtiMA.Core.util.Constants;
 import FAtiMA.Core.util.VersionChecker;
 import FAtiMA.Core.util.enumerables.AgentPlatform;
-import FAtiMA.Core.util.parsers.AgentLoaderHandler;
 import FAtiMA.Core.util.parsers.BinaryStringConverter;
+import FAtiMA.Core.util.parsers.EmotionDispositionsLoaderHandler;
 import FAtiMA.Core.util.parsers.MemoryLoaderHandler;
 import FAtiMA.Core.util.writers.MemoryWriter;
 import FAtiMA.Core.wellFormedNames.Name;
@@ -93,7 +92,6 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 	protected ActionLibrary _actionLibrary;
 	
 	protected boolean _shutdown;
-	protected ReactiveProcess _reactiveLayer;
 	protected ArrayList<ValuedAction> _actionsForExecution;
 	protected ArrayList<Event> _perceivedEvents;
 	protected RemoteAgent _remoteAgent;
@@ -196,9 +194,6 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 				// Load GoalLibrary
 				_goalLibrary = new GoalLibrary(ConfigurationManager.getGoalsFile());
 	
-				//For efficiency reasons these two are not real processes
-				_reactiveLayer = new ReactiveProcess();
-				addComponent(_reactiveLayer);
 				
 				addComponent(new OCCComponent());
 	
@@ -421,18 +416,6 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 	}
 
 
-	/**
-	 * Gets the agent's Reactive Layer that you can use
-	 * to get access to reactive structures such as 
-	 * ActionTendencies and  EmotionalReactions
-	 * @return the agent's Reactive Layer
-	 */
-	public ReactiveProcess getReactiveLayer()
-	{
-		return this._reactiveLayer;
-	}
-
-
 	public void setModelStrategy(IGetModelStrategy strat)
 	{
 		_strat = strat;
@@ -466,7 +449,6 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 		FileInputStream in = new FileInputStream(fileName);
 		ObjectInputStream s = new ObjectInputStream(in);
 	
-		this._reactiveLayer = (ReactiveProcess) s.readObject();
 		this._emotionalState = (EmotionalState) s.readObject();
 		this._memory = (Memory) s.readObject();
 		this._goalLibrary = (GoalLibrary) s.readObject();
@@ -518,7 +500,7 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 	throws	ParserConfigurationException, SAXException, IOException, UnknownGoalException{
 
 		AgentLogger.GetInstance().log("LOADING Personality: " + personalityFile);
-		AgentLoaderHandler c = new AgentLoaderHandler(_reactiveLayer,_emotionalState);
+		EmotionDispositionsLoaderHandler c = new EmotionDispositionsLoaderHandler(_emotionalState);
 
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		SAXParser parser = factory.newSAXParser();
@@ -876,7 +858,6 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 			FileOutputStream out = new FileOutputStream(fileName);
 			ObjectOutputStream s = new ObjectOutputStream(out);
 			
-			s.writeObject(_reactiveLayer);
 			s.writeObject(_emotionalState);
 			s.writeObject(_memory);
 			s.writeObject(_goalLibrary);
@@ -965,7 +946,6 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 
 			//s.writeObject(_ToM);
 			//s.writeObject(_nearbyAgents);
-			s.writeObject(_reactiveLayer);
 			s.writeObject(_emotionalState);
 			s.writeObject(_memory);
 			s.writeObject(_goalLibrary);
@@ -1027,7 +1007,6 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 					BinaryStringConverter.decodeStringToBinary(state));
 
 			ObjectInputStream s = new ObjectInputStream(in);
-			this._reactiveLayer = (ReactiveProcess) s.readObject();
 			this._emotionalState = (EmotionalState) s.readObject();
 			this._memory = (Memory) s.readObject();
 			this._goalLibrary = (GoalLibrary) s.readObject();

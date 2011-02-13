@@ -42,7 +42,7 @@
  * 						 - Added the methods ReinforceAction and SuppressAction 
  */
 
-package FAtiMA.Core.reactiveLayer;
+package FAtiMA.ReactiveComponent;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -223,7 +223,7 @@ public class Action implements IIntegrityTester, Serializable, IGroundable, Clon
 							//who's intensity is greater than the specified minimum intensity (for this particular action)
 							if (em.GetIntensity() > maxValue && action.isGrounded()) {
 								maxValue = em.GetIntensity();
-								va = new ValuedAction(ReactiveProcess.NAME, action, em);
+								va = new ValuedAction(ReactiveComponent.NAME, action, em);
 							}
 						}
 					}

@@ -47,8 +47,6 @@ import FAtiMA.Core.exceptions.InvalidDimensionTypeException;
 import FAtiMA.Core.exceptions.InvalidEmotionTypeException;
 import FAtiMA.Core.exceptions.UnknownGoalException;
 import FAtiMA.Core.goals.Goal;
-import FAtiMA.Core.reactiveLayer.Reaction;
-import FAtiMA.Core.reactiveLayer.ReactiveProcess;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.util.AgentLogger;
 import FAtiMA.Core.util.parsers.ReflectXMLHandler;
@@ -56,6 +54,8 @@ import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Substitution;
 import FAtiMA.Core.wellFormedNames.Symbol;
 import FAtiMA.DeliberativeComponent.DeliberativeComponent;
+import FAtiMA.ReactiveComponent.Reaction;
+import FAtiMA.ReactiveComponent.ReactiveComponent;
 
 
 public class CultureLoaderHandler extends ReflectXMLHandler {
@@ -68,7 +68,7 @@ public class CultureLoaderHandler extends ReflectXMLHandler {
 	private CulturalDimensionsComponent _culturalComponent;
 	private String _currentGoalKey;
 	
-	ReactiveProcess _reactiveLayer;
+	ReactiveComponent _reactiveComponent;
 	DeliberativeComponent _deliberativeLayer;
 	
 
@@ -78,7 +78,7 @@ public class CultureLoaderHandler extends ReflectXMLHandler {
 	public CultureLoaderHandler(AgentModel aM, CulturalDimensionsComponent cDM) {
 		_rituals = new ArrayList<Ritual>();
 		_self = new Substitution(new Symbol("[SELF]"), new Symbol(FAtiMA.Core.util.Constants.SELF));
-		_reactiveLayer = (ReactiveProcess) aM.getComponent(ReactiveProcess.NAME); 
+		_reactiveComponent = (ReactiveComponent) aM.getComponent(ReactiveComponent.NAME); 
 		_deliberativeLayer = (DeliberativeComponent) aM.getComponent(DeliberativeComponent.NAME);
 		_am = aM;
 		_culturalComponent = cDM;
@@ -139,7 +139,7 @@ public class CultureLoaderHandler extends ReflectXMLHandler {
 		_eventReaction.setEvent(event);
 
 		//Add the emotional reaction to the reactive layer
-		_reactiveLayer.getEmotionalReactions().AddEmotionalReaction(_eventReaction);
+		_reactiveComponent.getEmotionalReactions().AddEmotionalReaction(_eventReaction);
 	}
 
 	public void Rituals(Attributes attributes){

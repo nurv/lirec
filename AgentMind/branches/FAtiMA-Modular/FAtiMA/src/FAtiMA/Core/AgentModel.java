@@ -5,7 +5,6 @@ import FAtiMA.Core.emotionalState.AppraisalFrame;
 import FAtiMA.Core.emotionalState.EmotionalState;
 import FAtiMA.Core.goals.GoalLibrary;
 import FAtiMA.Core.memory.Memory;
-import FAtiMA.Core.reactiveLayer.ReactiveProcess;
 import FAtiMA.Core.sensorEffector.RemoteAgent;
 import FAtiMA.Core.wellFormedNames.Symbol;
 
@@ -21,13 +20,9 @@ public interface AgentModel {
 	
 	public Memory getMemory();
 	
-	//public DeliberativeProcess getDeliberativeLayer();
-	
 	public AgentModel getModelToTest(Symbol ToM);
 	
 	public String getName();
-	
-	public ReactiveProcess getReactiveLayer();
 	
 	public RemoteAgent getRemoteAgent();
 	

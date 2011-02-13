@@ -41,7 +41,7 @@
  * 						   correspond to different instances. Replaced this test by string.equals
  */
 
-package FAtiMA.Core.reactiveLayer;
+package FAtiMA.ReactiveComponent;
 
 import java.io.Serializable;
 import java.util.ArrayList;

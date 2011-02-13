@@ -34,7 +34,7 @@
  * 						 - the class is now groundable and clonable
  */
 
-package FAtiMA.Core.reactiveLayer;
+package FAtiMA.ReactiveComponent;
 
 import java.io.Serializable;
 import java.util.ArrayList;

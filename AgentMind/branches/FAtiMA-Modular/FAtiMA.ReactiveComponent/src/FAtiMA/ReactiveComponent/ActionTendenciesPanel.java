@@ -1,4 +1,4 @@
-package FAtiMA.Core.Display;
+package FAtiMA.ReactiveComponent;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -7,8 +7,7 @@ import javax.swing.JScrollPane;
 
 import FAtiMA.Core.AgentCore;
 import FAtiMA.Core.AgentModel;
-import FAtiMA.Core.reactiveLayer.Action;
-import FAtiMA.Core.reactiveLayer.ActionTendencies;
+import FAtiMA.Core.Display.AgentDisplayPanel;
 
 public class ActionTendenciesPanel extends AgentDisplayPanel {
 	
@@ -19,16 +18,20 @@ public class ActionTendenciesPanel extends AgentDisplayPanel {
 	
 	private JPanel _actionsPanel;
 	private int _numberOfAT;
+	private ReactiveComponent _reactiveComponent;
 
-	public ActionTendenciesPanel()
+	public ActionTendenciesPanel(ReactiveComponent reactiveComponent)
 	{
 		super();
-		this.setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
+		
 		
 		_numberOfAT = 0;
+		_reactiveComponent = reactiveComponent;
 		
+		this.setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
 		_actionsPanel = new JPanel();
 		_actionsPanel.setLayout(new BoxLayout(_actionsPanel,BoxLayout.Y_AXIS));
+		
 		
 		JScrollPane actionsScroll = new JScrollPane(_actionsPanel);
 		actionsScroll.setBorder(BorderFactory.createTitledBorder("ActionTendencies"));
@@ -43,7 +46,7 @@ public class ActionTendenciesPanel extends AgentDisplayPanel {
 
 	@Override
 	public boolean Update(AgentModel am) {
-		ActionTendencies at = am.getReactiveLayer().getActionTendencies();
+		ActionTendencies at = _reactiveComponent.getActionTendencies();
 		if(at.getActions().size() != _numberOfAT)
 		{
 			_actionsPanel.removeAll();

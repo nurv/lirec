@@ -7,11 +7,11 @@ import FAtiMA.Core.conditions.RecentEventCondition;
 import FAtiMA.Core.emotionalState.BaseEmotion;
 import FAtiMA.Core.plans.Effect;
 import FAtiMA.Core.plans.Step;
-import FAtiMA.Core.reactiveLayer.Action;
 import FAtiMA.Core.util.enumerables.ActionEvent;
 import FAtiMA.Core.util.enumerables.EventType;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Symbol;
+import FAtiMA.ReactiveComponent.Action;
 
 public abstract class ActionTendencyOperatorFactory {
 	

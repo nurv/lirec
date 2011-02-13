@@ -5,7 +5,6 @@ import javax.swing.JTabbedPane;
 
 import FAtiMA.Core.AgentCore;
 import FAtiMA.Core.AgentModel;
-import FAtiMA.Core.Display.ActionTendenciesPanel;
 import FAtiMA.Core.Display.AgentDisplayPanel;
 import FAtiMA.Core.Display.EmotionalStatePanel;
 import FAtiMA.Core.Display.KnowledgeBasePanel;
@@ -34,10 +33,7 @@ public class ModelOfOtherPanel extends AgentDisplayPanel {
 	     
 	     _components.addTab("Emotional State", null, new EmotionalStatePanel());
 	     
-	     _components.addTab("ShortTermMemory", null, new ShortTermMemoryPanel());
-	     
-	     _components.addTab("ActionTendencies", null, new ActionTendenciesPanel());
-	     
+	     _components.addTab("ShortTermMemory", null, new ShortTermMemoryPanel());	     
 	     
 	     for(IComponent c: m.getComponents())
 	     {
