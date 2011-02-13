@@ -1,4 +1,4 @@
-package FAtiMA.socialRelations;
+package FAtiMA.socialRelations.display;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -13,6 +13,9 @@ import FAtiMA.Core.AgentCore;
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.Display.AgentDisplayPanel;
 import FAtiMA.Core.util.Constants;
+import FAtiMA.socialRelations.LikeRelation;
+import FAtiMA.socialRelations.Relation;
+import FAtiMA.socialRelations.RespectRelation;
 
 public class SocialRelationsPanel extends AgentDisplayPanel {
 

@@ -1,4 +1,4 @@
-package FAtiMA.socialRelations;
+package FAtiMA.socialRelations.parsers;
 
 import org.xml.sax.Attributes;
 
@@ -13,6 +13,9 @@ import FAtiMA.Core.util.parsers.ReflectXMLHandler;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Substitution;
 import FAtiMA.Core.wellFormedNames.Symbol;
+import FAtiMA.socialRelations.LikeCondition;
+import FAtiMA.socialRelations.LikeRelation;
+import FAtiMA.socialRelations.RespectRelation;
 
 public class RelationsLoaderHandler  extends ReflectXMLHandler{
 

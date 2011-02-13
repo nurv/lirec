@@ -27,7 +27,7 @@
  * History: 
  * João Dias: 26/10/2005 - File created
  */
-package FAtiMA.socialRelations;
+package FAtiMA.socialRelations.display;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -37,6 +37,10 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 
 import FAtiMA.Core.memory.Memory;
+import FAtiMA.socialRelations.LikeRelation;
+import FAtiMA.socialRelations.Relation;
+import FAtiMA.socialRelations.RelationType;
+import FAtiMA.socialRelations.RespectRelation;
 
 
 /**

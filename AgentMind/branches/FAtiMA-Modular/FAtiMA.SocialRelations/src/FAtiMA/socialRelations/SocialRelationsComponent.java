@@ -22,6 +22,8 @@ import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.util.AgentLogger;
 import FAtiMA.Core.util.ConfigurationManager;
 import FAtiMA.Core.util.Constants;
+import FAtiMA.socialRelations.display.SocialRelationsPanel;
+import FAtiMA.socialRelations.parsers.RelationsLoaderHandler;
 
 public class SocialRelationsComponent implements Serializable,
 
