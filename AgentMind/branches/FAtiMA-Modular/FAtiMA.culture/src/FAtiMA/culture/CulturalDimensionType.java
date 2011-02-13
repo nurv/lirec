@@ -1,6 +1,6 @@
 package FAtiMA.culture;
 
-import FAtiMA.Core.exceptions.InvalidDimensionTypeException;
+import FAtiMA.culture.exceptions.InvalidDimensionTypeException;
 
 public class CulturalDimensionType {
 	public static final short POWERDISTANCE = 0;

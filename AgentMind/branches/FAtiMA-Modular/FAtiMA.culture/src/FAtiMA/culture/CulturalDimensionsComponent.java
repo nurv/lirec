@@ -23,11 +23,11 @@ import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.SubstitutionSet;
 import FAtiMA.Core.wellFormedNames.Symbol;
 import FAtiMA.DeliberativeComponent.DeliberativeComponent;
-import FAtiMA.DeliberativeComponent.IExpectedUtilityStrategy;
-import FAtiMA.DeliberativeComponent.IGetUtilityForOthers;
 import FAtiMA.DeliberativeComponent.IOptionsStrategy;
 import FAtiMA.DeliberativeComponent.IUtilityStrategy;
 import FAtiMA.DeliberativeComponent.Intention;
+import FAtiMA.DeliberativeComponent.strategies.IExpectedUtilityStrategy;
+import FAtiMA.DeliberativeComponent.strategies.IGetUtilityForOthers;
 
 
 public class CulturalDimensionsComponent implements IAppraisalDerivationComponent, IOptionsStrategy, IExpectedUtilityStrategy {

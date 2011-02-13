@@ -42,8 +42,6 @@ import FAtiMA.Core.conditions.PredicateCondition;
 import FAtiMA.Core.conditions.PropertyCondition;
 import FAtiMA.Core.conditions.RecentEventCondition;
 import FAtiMA.Core.exceptions.ContextParsingException;
-import FAtiMA.Core.exceptions.DuplicateSymbolTranslatorEntry;
-import FAtiMA.Core.exceptions.InvalidDimensionTypeException;
 import FAtiMA.Core.exceptions.InvalidEmotionTypeException;
 import FAtiMA.Core.exceptions.UnknownGoalException;
 import FAtiMA.Core.goals.Goal;
@@ -56,6 +54,8 @@ import FAtiMA.Core.wellFormedNames.Symbol;
 import FAtiMA.DeliberativeComponent.DeliberativeComponent;
 import FAtiMA.ReactiveComponent.Reaction;
 import FAtiMA.ReactiveComponent.ReactiveComponent;
+import FAtiMA.culture.exceptions.DuplicateSymbolTranslatorEntry;
+import FAtiMA.culture.exceptions.InvalidDimensionTypeException;
 
 
 public class CultureLoaderHandler extends ReflectXMLHandler {

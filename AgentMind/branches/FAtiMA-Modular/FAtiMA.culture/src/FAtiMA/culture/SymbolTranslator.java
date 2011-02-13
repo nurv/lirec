@@ -2,7 +2,7 @@ package FAtiMA.culture;
 
 import java.util.HashMap;
 
-import FAtiMA.Core.exceptions.DuplicateSymbolTranslatorEntry;
+import FAtiMA.culture.exceptions.DuplicateSymbolTranslatorEntry;
 
 /** @author: Samuel Mascarenhas
 */
