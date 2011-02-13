@@ -1,4 +1,4 @@
-package FAtiMA.ReactiveComponent ;
+package FAtiMA.ReactiveComponent.display ;
 
 import java.awt.Dimension;
 
@@ -6,6 +6,8 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+
+import FAtiMA.ReactiveComponent.Action;
 
 
 public class ActionDisplay extends JPanel {

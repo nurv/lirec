@@ -79,6 +79,8 @@ import FAtiMA.Core.emotionalState.AppraisalFrame;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.util.AgentLogger;
 import FAtiMA.Core.util.ConfigurationManager;
+import FAtiMA.ReactiveComponent.display.ActionTendenciesPanel;
+import FAtiMA.ReactiveComponent.parsers.ReactiveLoaderHandler;
 
 
 /**

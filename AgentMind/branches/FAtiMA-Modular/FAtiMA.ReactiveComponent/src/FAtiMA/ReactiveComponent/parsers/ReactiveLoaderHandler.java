@@ -1,4 +1,4 @@
-package FAtiMA.ReactiveComponent;
+package FAtiMA.ReactiveComponent.parsers;
 
 import org.xml.sax.Attributes;
 
@@ -16,6 +16,9 @@ import FAtiMA.Core.util.parsers.ReflectXMLHandler;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Substitution;
 import FAtiMA.Core.wellFormedNames.Symbol;
+import FAtiMA.ReactiveComponent.Action;
+import FAtiMA.ReactiveComponent.Reaction;
+import FAtiMA.ReactiveComponent.ReactiveComponent;
 
 public class ReactiveLoaderHandler extends ReflectXMLHandler{
 	

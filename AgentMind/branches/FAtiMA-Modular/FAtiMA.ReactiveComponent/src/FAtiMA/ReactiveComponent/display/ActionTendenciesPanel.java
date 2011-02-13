@@ -1,4 +1,4 @@
-package FAtiMA.ReactiveComponent;
+package FAtiMA.ReactiveComponent.display;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -8,6 +8,9 @@ import javax.swing.JScrollPane;
 import FAtiMA.Core.AgentCore;
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.Display.AgentDisplayPanel;
+import FAtiMA.ReactiveComponent.Action;
+import FAtiMA.ReactiveComponent.ActionTendencies;
+import FAtiMA.ReactiveComponent.ReactiveComponent;
 
 public class ActionTendenciesPanel extends AgentDisplayPanel {
 	
