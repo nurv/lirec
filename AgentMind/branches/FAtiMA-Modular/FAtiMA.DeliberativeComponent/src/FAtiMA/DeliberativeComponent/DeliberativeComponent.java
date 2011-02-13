@@ -161,6 +161,15 @@ import FAtiMA.Core.wellFormedNames.Substitution;
 import FAtiMA.Core.wellFormedNames.SubstitutionSet;
 import FAtiMA.Core.wellFormedNames.Symbol;
 import FAtiMA.Core.wellFormedNames.Unifier;
+import FAtiMA.DeliberativeComponent.display.GoalsPanel;
+import FAtiMA.DeliberativeComponent.parsers.DeliberativeLoaderHandler;
+import FAtiMA.DeliberativeComponent.strategies.DefaultStrategy;
+import FAtiMA.DeliberativeComponent.strategies.IActionFailureStrategy;
+import FAtiMA.DeliberativeComponent.strategies.IActionSuccessStrategy;
+import FAtiMA.DeliberativeComponent.strategies.IExpectedUtilityStrategy;
+import FAtiMA.DeliberativeComponent.strategies.IGetUtilityForOthers;
+import FAtiMA.DeliberativeComponent.strategies.IGoalFailureStrategy;
+import FAtiMA.DeliberativeComponent.strategies.IGoalSuccessStrategy;
 
 
 /**

@@ -27,7 +27,7 @@
  * History: 
  * João Dias: 26/10/2005 - File created
  */
-package FAtiMA.DeliberativeComponent;
+package FAtiMA.DeliberativeComponent.display;
 
 import java.awt.Dimension;
 

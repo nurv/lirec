@@ -27,7 +27,7 @@
  * João Dias: 02/11/2005 - File created
  */
 
-package FAtiMA.DeliberativeComponent;
+package FAtiMA.DeliberativeComponent.display;
 
 import java.awt.Dimension;
 import java.util.ArrayList;
@@ -44,6 +44,8 @@ import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.Display.AgentDisplayPanel;
 import FAtiMA.Core.goals.Goal;
 import FAtiMA.Core.wellFormedNames.Name;
+import FAtiMA.DeliberativeComponent.DeliberativeComponent;
+import FAtiMA.DeliberativeComponent.Intention;
 
 
 public class GoalsPanel extends AgentDisplayPanel {

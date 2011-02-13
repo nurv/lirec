@@ -1,4 +1,4 @@
-package FAtiMA.DeliberativeComponent;
+package FAtiMA.DeliberativeComponent.strategies;
 
 import java.io.Serializable;
 

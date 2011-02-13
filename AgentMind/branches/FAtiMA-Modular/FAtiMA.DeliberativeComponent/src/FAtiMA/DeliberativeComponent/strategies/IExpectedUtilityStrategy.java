@@ -1,7 +1,8 @@
-package FAtiMA.DeliberativeComponent;
+package FAtiMA.DeliberativeComponent.strategies;
 
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.goals.ActivePursuitGoal;
+import FAtiMA.DeliberativeComponent.Intention;
 
 public interface IExpectedUtilityStrategy {
 	

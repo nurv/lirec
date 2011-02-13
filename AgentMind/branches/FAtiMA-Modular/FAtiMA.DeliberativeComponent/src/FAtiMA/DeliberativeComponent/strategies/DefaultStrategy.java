@@ -1,9 +1,12 @@
-package FAtiMA.DeliberativeComponent;
+package FAtiMA.DeliberativeComponent.strategies;
 
 import java.io.Serializable;
 
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.goals.ActivePursuitGoal;
+import FAtiMA.DeliberativeComponent.IProbabilityStrategy;
+import FAtiMA.DeliberativeComponent.IUtilityStrategy;
+import FAtiMA.DeliberativeComponent.Intention;
 
 public class DefaultStrategy implements Serializable, IUtilityStrategy, IProbabilityStrategy, IGetUtilityForOthers
 {	

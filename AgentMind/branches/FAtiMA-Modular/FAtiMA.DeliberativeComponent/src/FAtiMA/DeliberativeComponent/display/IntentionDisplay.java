@@ -28,7 +28,7 @@
  * João Dias: 02/11/2005 - File created
  */
 
-package FAtiMA.DeliberativeComponent;
+package FAtiMA.DeliberativeComponent.display;
 
 import java.awt.Dimension;
 
@@ -39,6 +39,7 @@ import javax.swing.JPanel;
 
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.Display.EmotionDisplay;
+import FAtiMA.DeliberativeComponent.Intention;
 
 
 public class IntentionDisplay {

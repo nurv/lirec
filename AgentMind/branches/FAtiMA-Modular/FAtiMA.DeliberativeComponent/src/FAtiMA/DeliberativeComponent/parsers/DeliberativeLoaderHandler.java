@@ -1,10 +1,11 @@
-package FAtiMA.DeliberativeComponent;
+package FAtiMA.DeliberativeComponent.parsers;
 
 import org.xml.sax.Attributes;
 
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.exceptions.UnknownGoalException;
 import FAtiMA.Core.util.parsers.ReflectXMLHandler;
+import FAtiMA.DeliberativeComponent.DeliberativeComponent;
 
 public class DeliberativeLoaderHandler extends ReflectXMLHandler{
 	
