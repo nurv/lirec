@@ -39,6 +39,7 @@ import FAtiMA.Core.emotionalState.EmotionalState;
 import FAtiMA.Core.emotionalState.NeutralEmotion;
 import FAtiMA.Core.exceptions.ActionsParsingException;
 import FAtiMA.Core.exceptions.GoalLibParsingException;
+import FAtiMA.Core.exceptions.UndefinedComponentException;
 import FAtiMA.Core.exceptions.UnknownGoalException;
 import FAtiMA.Core.goals.Goal;
 import FAtiMA.Core.goals.GoalLibrary;
@@ -343,7 +344,11 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 
 	public IComponent getComponent(String name)
 	{
-		return this._generalComponents.get(name);
+		if(!this._generalComponents.containsKey(name))
+		{
+			throw new UndefinedComponentException(name);
+		}
+		else return this._generalComponents.get(name);
 	}
 
 	public Collection<IComponent> getComponents()
