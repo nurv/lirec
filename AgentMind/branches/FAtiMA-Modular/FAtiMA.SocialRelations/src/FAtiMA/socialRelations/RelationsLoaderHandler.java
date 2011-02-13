@@ -3,11 +3,11 @@ package FAtiMA.socialRelations;
 import org.xml.sax.Attributes;
 
 import FAtiMA.Core.AgentModel;
-import FAtiMA.Core.deliberativeLayer.goals.Goal;
-import FAtiMA.Core.deliberativeLayer.plan.Effect;
-import FAtiMA.Core.deliberativeLayer.plan.Step;
 import FAtiMA.Core.exceptions.ContextParsingException;
 import FAtiMA.Core.exceptions.InvalidEmotionTypeException;
+import FAtiMA.Core.goals.Goal;
+import FAtiMA.Core.plans.Effect;
+import FAtiMA.Core.plans.Step;
 import FAtiMA.Core.util.Constants;
 import FAtiMA.Core.util.parsers.ReflectXMLHandler;
 import FAtiMA.Core.wellFormedNames.Name;

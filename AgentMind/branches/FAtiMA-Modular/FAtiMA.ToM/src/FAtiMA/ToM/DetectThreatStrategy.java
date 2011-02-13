@@ -1,7 +1,7 @@
 package FAtiMA.ToM;
 
 import FAtiMA.Core.conditions.Condition;
-import FAtiMA.Core.deliberativeLayer.DefaultDetectThreatStrategy;
+import FAtiMA.Core.plans.DefaultDetectThreatStrategy;
 import FAtiMA.Core.util.Constants;
 
 public class DetectThreatStrategy extends DefaultDetectThreatStrategy {

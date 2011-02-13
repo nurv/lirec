@@ -23,10 +23,9 @@ import FAtiMA.Core.util.AgentLogger;
 import FAtiMA.Core.util.ConfigurationManager;
 import FAtiMA.Core.util.Constants;
 
+public class SocialRelationsComponent implements Serializable,
 
-public class SocialRelationsComponent implements Serializable, 
-
-IAppraisalDerivationComponent, IModelOfOtherComponent, 
+IAppraisalDerivationComponent, IModelOfOtherComponent,
 
 IProcessEmotionComponent {
 
@@ -38,44 +37,31 @@ IProcessEmotionComponent {
 	public static final String NAME = "SocialRelations";
 	private ArrayList<String> _parsingFiles;
 
-	public SocialRelationsComponent(ArrayList<String> 
-
-	extraParsingFiles)
-	{
+	public SocialRelationsComponent(ArrayList<String> extraParsingFiles) {
 		_parsingFiles = new ArrayList<String>();
 		_parsingFiles.add(ConfigurationManager.getGoalsFile());
-		_parsingFiles.add
-
-		(ConfigurationManager.getPersonalityFile());
-		_parsingFiles.add(ConfigurationManager.getActionsFile
-
-				());
+		_parsingFiles.add(ConfigurationManager.getPersonalityFile());
+		_parsingFiles.add(ConfigurationManager.getActionsFile());
 		_parsingFiles.addAll(extraParsingFiles);
 	}
 
-	private void loadRelations(AgentModel aM){
+	private void loadRelations(AgentModel aM) {
 
 		AgentLogger.GetInstance().log("LOADING Social Relations:");
-				RelationsLoaderHandler relationsLoader = new 
+		RelationsLoaderHandler relationsLoader = new RelationsLoaderHandler(aM);
 
-				RelationsLoaderHandler(aM);
+		try {
+			SAXParserFactory factory = SAXParserFactory.newInstance();
+			SAXParser parser = factory.newSAXParser();
 
-				try{
-					SAXParserFactory factory = 
+			for (String file : _parsingFiles) {
+				parser.parse(new File(file),relationsLoader);
+			}
 
-						SAXParserFactory.newInstance();
-					SAXParser parser = factory.newSAXParser();
-
-					for(String file : _parsingFiles)
-					{
-						parser.parse(new File(file), 
-
-								relationsLoader);
-					}			
-
-				}catch(Exception e){
-					throw new RuntimeException("Error on Loading the Social Relations XML Files:" + e);
-				}
+		} catch (Exception e) {
+			throw new RuntimeException(
+					"Error on Loading the Social Relations XML Files:" + e);
+		}
 	}
 
 	@Override
@@ -97,182 +83,119 @@ IProcessEmotionComponent {
 	}
 
 	@Override
-	public void update(AgentModel am, Event e)
-	{
+	public void update(AgentModel am, Event e) {
 	}
 
 	@Override
-	public void appraisal(AgentModel am, Event e, AppraisalFrame as) 
-
+	public void appraisal(AgentModel am, Event e, AppraisalFrame as)
 	{
-		if(e.GetSubject().equals(Constants.SELF) && e.GetAction
-
-				().equals("look-at"))
+		if (e.GetSubject().equals(Constants.SELF) && e.GetAction().equals("look-at")) 
 		{
-			int relationShip = Math.round
-
-			(LikeRelation.getRelation(Constants.SELF, e.GetTarget()).getValue
-
-					(am.getMemory()));
-			if(relationShip != 0)
-			{
-				as.SetAppraisalVariable(NAME, (short)7, 
-
-						OCCAppraisalVariables.LIKE.name(), relationShip);
-			}	
+			int relationShip = Math.round(LikeRelation.getRelation(Constants.SELF, e.GetTarget()).getValue(am.getMemory()));
+			if (relationShip != 0) {
+				as.SetAppraisalVariable(NAME, (short) 7,OCCAppraisalVariables.LIKE.name(), relationShip);
+			}
 		}
 	}
 
 	@Override
-	public void inverseAppraisal(AgentModel am, AppraisalFrame af)
-	{
+	public void inverseAppraisal(AgentModel am, AppraisalFrame af) {
 		float like;
 		Event e;
-		like = af.getAppraisalVariable
+		like = af.getAppraisalVariable(OCCAppraisalVariables.LIKE.name());
 
-		(OCCAppraisalVariables.LIKE.name());
-
-		if(like != 0)
-		{
+		if (like != 0) {
 			e = af.getEvent();
-			LikeRelation.getRelation(Constants.SELF, 
-
-					e.GetTarget()).setValue(am.getMemory(), like);
+			LikeRelation.getRelation(Constants.SELF,e.GetTarget()).setValue(am.getMemory(), like);
 		}
 	}
 
-	//updating other's emotional reactions
-
+	// updating other's emotional reactions
 
 	@Override
 	public void emotionActivation(AgentModel am, ActiveEmotion em) {
 		Memory m = am.getMemory();
-		if(em.getType().equalsIgnoreCase
-
-				(OCCEmotionType.ADMIRATION.name()))
+		if (em.getType().equalsIgnoreCase(OCCEmotionType.ADMIRATION.name())) 
 		{
-			if(em.GetDirection() != null)
+			if (em.GetDirection() != null) 
 			{
-				LikeRelation.getRelation
-
-				(Constants.SELF,em.GetDirection().toString()).increment
-
-				(m,em.GetIntensity());
-				RespectRelation.getRelation
-
-				(Constants.SELF,em.GetDirection().toString()).increment(m, 
-
-						em.GetIntensity());		
+				LikeRelation.getRelation(Constants.SELF, em.GetDirection().toString()).increment(m, em.GetIntensity());
+				RespectRelation.getRelation(Constants.SELF, em.GetDirection().toString()).increment(m,em.GetIntensity());
 			}
-		}
-		else if(em.getType().equalsIgnoreCase
-
-				(OCCEmotionType.REPROACH.name()))
+		} else if (em.getType().equalsIgnoreCase(OCCEmotionType.REPROACH.name())) 
 		{
-			if(em.GetDirection() != null)
+			if (em.GetDirection() != null) 
 			{
-				LikeRelation.getRelation
-
-				(Constants.SELF,em.GetDirection().toString()).decrement(m, 
-
-						em.GetIntensity());
-				RespectRelation.getRelation
-
-				(Constants.SELF,em.GetDirection().toString()).decrement(m, 
-
-						em.GetIntensity());
+				LikeRelation.getRelation(Constants.SELF, em.GetDirection().toString()).decrement(m,em.GetIntensity());
+				RespectRelation.getRelation(Constants.SELF, em.GetDirection().toString()).decrement(m,em.GetIntensity());
 			}
-		}
-		else if(em.getType().equalsIgnoreCase
-
-				(OCCEmotionType.HAPPY_FOR.name()))
+		} else if (em.getType().equalsIgnoreCase(OCCEmotionType.HAPPY_FOR.name())) 
 		{
-			if(em.GetDirection() != null)
-			{
-				LikeRelation.getRelation
+			if (em.GetDirection() != null) {
+				LikeRelation.getRelation(Constants.SELF, em.GetDirection().toString()).increment(m,
 
-				(Constants.SELF,em.GetDirection().toString()).increment(m, 
-
-						em.GetIntensity());
+				em.GetIntensity());
 			}
-		}
-		else if(em.getType().equalsIgnoreCase
+		} else if (em.getType().equalsIgnoreCase
 
-				(OCCEmotionType.GLOATING.name()))
-		{
-			if(em.GetDirection() != null)
-			{
+		(OCCEmotionType.GLOATING.name())) {
+			if (em.GetDirection() != null) {
 				LikeRelation.getRelation
 
-				(Constants.SELF,em.GetDirection().toString()).decrement(m, 
+				(Constants.SELF, em.GetDirection().toString()).decrement(m,
 
-						em.GetIntensity());
+				em.GetIntensity());
 			}
-		}
-		else if(em.getType().equalsIgnoreCase
+		} else if (em.getType().equalsIgnoreCase
 
-				(OCCEmotionType.PITTY.name()))
-		{
-			if(em.GetDirection() != null)
-			{
+		(OCCEmotionType.PITTY.name())) {
+			if (em.GetDirection() != null) {
 				LikeRelation.getRelation
 
-				(Constants.SELF,em.GetDirection().toString()).increment(m, 
+				(Constants.SELF, em.GetDirection().toString()).increment(m,
 
-						em.GetIntensity());
+				em.GetIntensity());
 			}
-		}
-		else if(em.getType().equalsIgnoreCase
+		} else if (em.getType().equalsIgnoreCase
 
-				(OCCEmotionType.RESENTMENT.name()))
-		{
-			if(em.GetDirection() != null)
-			{
+		(OCCEmotionType.RESENTMENT.name())) {
+			if (em.GetDirection() != null) {
 				LikeRelation.getRelation
 
-				(Constants.SELF,em.GetDirection().toString()).decrement(m, 
+				(Constants.SELF, em.GetDirection().toString()).decrement(m,
 
-						em.GetIntensity());
+				em.GetIntensity());
 			}
-		}
-		else if(em.getType().equalsIgnoreCase
+		} else if (em.getType().equalsIgnoreCase
 
-				(OCCEmotionType.JOY.name()))
-		{
-			if(em.GetCause().GetTarget() != null && 
+		(OCCEmotionType.JOY.name())) {
+			if (em.GetCause().GetTarget() != null &&
 
-					em.GetCause().GetTarget().equals(Constants.SELF))
-			{
+			em.GetCause().GetTarget().equals(Constants.SELF)) {
 				LikeRelation.getRelation
 
-				(Constants.SELF,em.GetCause().GetSubject()).increment(m, 
+				(Constants.SELF, em.GetCause().GetSubject()).increment(m,
 
-						em.GetIntensity());
+				em.GetIntensity());
 			}
-		}
-		else if(em.getType().equalsIgnoreCase
+		} else if (em.getType().equalsIgnoreCase
 
-				(OCCEmotionType.DISTRESS.name()))
-		{
-			if(em.GetCause().GetTarget() != null && 
+		(OCCEmotionType.DISTRESS.name())) {
+			if (em.GetCause().GetTarget() != null &&
 
-					em.GetCause().GetTarget().equals(Constants.SELF))
-			{
+			em.GetCause().GetTarget().equals(Constants.SELF)) {
 				LikeRelation.getRelation
 
-				(Constants.SELF,em.GetCause().GetSubject()).decrement(m, 
+				(Constants.SELF, em.GetCause().GetSubject()).decrement(m,
 
-						em.GetIntensity());
+				em.GetIntensity());
 			}
 		}
 	}
 
-
 	@Override
 	public IComponent createModelOfOther() {
-		return new SocialRelationsComponent(new 
-
-				ArrayList<String>());
+		return new SocialRelationsComponent(new ArrayList<String>());
 	}
 
 	@Override

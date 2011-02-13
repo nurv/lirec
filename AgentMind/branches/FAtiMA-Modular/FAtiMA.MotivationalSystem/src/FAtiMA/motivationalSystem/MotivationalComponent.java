@@ -20,17 +20,9 @@ import FAtiMA.Core.OCCAffectDerivation.OCCAppraisalVariables;
 import FAtiMA.Core.componentTypes.IAppraisalDerivationComponent;
 import FAtiMA.Core.componentTypes.IComponent;
 import FAtiMA.Core.componentTypes.IModelOfOtherComponent;
-import FAtiMA.Core.deliberativeLayer.DeliberativeProcess;
-import FAtiMA.Core.deliberativeLayer.IActionFailureStrategy;
-import FAtiMA.Core.deliberativeLayer.IExpectedUtilityStrategy;
-import FAtiMA.Core.deliberativeLayer.IGoalFailureStrategy;
-import FAtiMA.Core.deliberativeLayer.IGoalSuccessStrategy;
-import FAtiMA.Core.deliberativeLayer.IProbabilityStrategy;
-import FAtiMA.Core.deliberativeLayer.IUtilityStrategy;
-import FAtiMA.Core.deliberativeLayer.Intention;
-import FAtiMA.Core.deliberativeLayer.goals.ActivePursuitGoal;
-import FAtiMA.Core.deliberativeLayer.plan.Step;
 import FAtiMA.Core.emotionalState.AppraisalFrame;
+import FAtiMA.Core.goals.ActivePursuitGoal;
+import FAtiMA.Core.plans.Step;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.util.AgentLogger;
 import FAtiMA.Core.util.ConfigurationManager;
@@ -39,6 +31,14 @@ import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Substitution;
 import FAtiMA.Core.wellFormedNames.Symbol;
 import FAtiMA.Core.wellFormedNames.Unifier;
+import FAtiMA.DeliberativeComponent.DeliberativeComponent;
+import FAtiMA.DeliberativeComponent.IActionFailureStrategy;
+import FAtiMA.DeliberativeComponent.IExpectedUtilityStrategy;
+import FAtiMA.DeliberativeComponent.IGoalFailureStrategy;
+import FAtiMA.DeliberativeComponent.IGoalSuccessStrategy;
+import FAtiMA.DeliberativeComponent.IProbabilityStrategy;
+import FAtiMA.DeliberativeComponent.IUtilityStrategy;
+import FAtiMA.DeliberativeComponent.Intention;
 
 
 /**
@@ -272,9 +272,9 @@ public class MotivationalComponent implements Serializable, Cloneable, IAppraisa
 	
 	public float getExpectedUtility(AgentModel am, ActivePursuitGoal g)
 	{
-		DeliberativeProcess dp = (DeliberativeProcess) am.getComponent(DeliberativeProcess.NAME);
-		float utility = dp.getUtilityStrategy().getUtility(am, g);
-		float probability = dp.getProbabilityStrategy().getProbability(am, g);
+		DeliberativeComponent dc = (DeliberativeComponent) am.getComponent(DeliberativeComponent.NAME);
+		float utility = dc.getUtilityStrategy().getUtility(am, g);
+		float probability = dc.getProbabilityStrategy().getProbability(am, g);
 		
 		float EU = utility * probability * (1 + g.GetGoalUrgency());
 		
@@ -285,10 +285,10 @@ public class MotivationalComponent implements Serializable, Cloneable, IAppraisa
 	
 	public float getExpectedUtility(AgentModel am, Intention i)
 	{
-		DeliberativeProcess dp = (DeliberativeProcess) am.getComponent(DeliberativeProcess.NAME);
+		DeliberativeComponent dc = (DeliberativeComponent) am.getComponent(DeliberativeComponent.NAME);
 		
-		float utility = dp.getUtilityStrategy().getUtility(am, i.getGoal());
-		float probability = dp.getProbabilityStrategy().getProbability(am, i);
+		float utility = dc.getUtilityStrategy().getUtility(am, i.getGoal());
+		float probability = dc.getProbabilityStrategy().getProbability(am, i);
 		
 		float EU = utility * probability * (1 + i.getGoal().GetGoalUrgency());
 		
@@ -463,7 +463,7 @@ public class MotivationalComponent implements Serializable, Cloneable, IAppraisa
 
 	@Override
 	public void initialize(AgentModel am) {
-		DeliberativeProcess dp = (DeliberativeProcess) am.getComponent(DeliberativeProcess.NAME);
+		DeliberativeComponent dp = (DeliberativeComponent) am.getComponent(DeliberativeComponent.NAME);
 		
 		dp.setExpectedUtilityStrategy(this);
 		dp.setProbabilityStrategy(this);

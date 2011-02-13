@@ -13,15 +13,16 @@ import FAtiMA.Core.componentTypes.IAdvancedPerceptionsComponent;
 import FAtiMA.Core.componentTypes.IAppraisalDerivationComponent;
 import FAtiMA.Core.componentTypes.IComponent;
 import FAtiMA.Core.componentTypes.IModelOfOtherComponent;
-import FAtiMA.Core.deliberativeLayer.DeliberativeProcess;
-import FAtiMA.Core.deliberativeLayer.IGetUtilityForOthers;
-import FAtiMA.Core.deliberativeLayer.goals.ActivePursuitGoal;
 import FAtiMA.Core.emotionalState.AppraisalFrame;
+import FAtiMA.Core.goals.ActivePursuitGoal;
 import FAtiMA.Core.memory.semanticMemory.KnowledgeSlot;
+import FAtiMA.Core.plans.Plan;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.util.Constants;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Symbol;
+import FAtiMA.DeliberativeComponent.DeliberativeComponent;
+import FAtiMA.DeliberativeComponent.IGetUtilityForOthers;
 
 public class ToMComponent implements Serializable, IAppraisalDerivationComponent, IAdvancedPerceptionsComponent, IGetModelStrategy, IGetUtilityForOthers {
 	
@@ -70,10 +71,10 @@ public class ToMComponent implements Serializable, IAppraisalDerivationComponent
 
 	@Override
 	public void initialize(AgentModel am) {
-		DeliberativeProcess dp = (DeliberativeProcess) am.getComponent(DeliberativeProcess.NAME);
+		DeliberativeComponent dc = (DeliberativeComponent) am.getComponent(DeliberativeComponent.NAME);
 		am.setModelStrategy(this);
-		dp.setDetectThreatStrategy(new DetectThreatStrategy());
-		dp.setUtilityForOthersStrategy(this);
+		Plan.setDetectThreatStrategy(new DetectThreatStrategy());
+		dc.setUtilityForOthersStrategy(this);
 	}
 	
 	private void initializeModelOfOther(AgentCore ag, String name)
@@ -243,7 +244,7 @@ public class ToMComponent implements Serializable, IAppraisalDerivationComponent
 
 	@Override
 	public float getUtilityForOthers(AgentModel am, ActivePursuitGoal g) {
-		DeliberativeProcess dp = (DeliberativeProcess) am.getComponent(DeliberativeProcess.NAME);
+		DeliberativeComponent dp = (DeliberativeComponent) am.getComponent(DeliberativeComponent.NAME);
 		
 		float utility = 0;
 		
@@ -262,5 +263,11 @@ public class ToMComponent implements Serializable, IAppraisalDerivationComponent
 
 	@Override
 	public void inverseAppraisal(AgentModel am, AppraisalFrame af) {
+	}
+
+	@Override
+	public void actionFailedPerception(Event e) {
+		// TODO Auto-generated method stub
+		
 	}
 }

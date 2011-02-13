@@ -13,13 +13,12 @@ import FAtiMA.Core.componentTypes.IAffectDerivationComponent;
 import FAtiMA.Core.componentTypes.IAppraisalDerivationComponent;
 import FAtiMA.Core.componentTypes.IComponent;
 import FAtiMA.Core.componentTypes.IProcessEmotionComponent;
-import FAtiMA.Core.deliberativeLayer.DeliberativeProcess;
-import FAtiMA.Core.deliberativeLayer.goals.GoalLibrary;
 import FAtiMA.Core.emotionalState.ActiveEmotion;
 import FAtiMA.Core.emotionalState.AppraisalFrame;
 import FAtiMA.Core.emotionalState.BaseEmotion;
 import FAtiMA.Core.emotionalState.EmotionDisposition;
 import FAtiMA.Core.emotionalState.EmotionalState;
+import FAtiMA.Core.goals.GoalLibrary;
 import FAtiMA.Core.memory.Memory;
 import FAtiMA.Core.reactiveLayer.ReactiveProcess;
 import FAtiMA.Core.sensorEffector.Event;
@@ -41,7 +40,6 @@ public class ModelOfOther implements AgentModel, Serializable {
 	private ArrayList<IAppraisalDerivationComponent> _appraisalComponents;
 	private ArrayList<IAffectDerivationComponent> _affectDerivationComponents;
 	private ReactiveProcess _reactiveProcess;
-	private DeliberativeProcess _deliberativeProcess;
 	
 	public ModelOfOther(String name, AgentCore ag) 
 	{
@@ -158,11 +156,6 @@ public class ModelOfOther implements AgentModel, Serializable {
 		if(c.name().equals(ReactiveProcess.NAME))
 		{
 			_reactiveProcess = (ReactiveProcess) c;
-		}
-		if(c.name().equals(DeliberativeProcess.NAME))
-		{
-			_deliberativeProcess = (DeliberativeProcess) c;
-			return;
 		}
 		
 		if(c instanceof IProcessEmotionComponent)
