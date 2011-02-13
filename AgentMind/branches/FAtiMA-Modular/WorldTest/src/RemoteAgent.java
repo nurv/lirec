@@ -6,8 +6,8 @@ import java.util.Random;
 import java.util.StringTokenizer;
 
 import FAtiMA.Core.conditions.Condition;
-import FAtiMA.Core.deliberativeLayer.plan.Effect;
-import FAtiMA.Core.deliberativeLayer.plan.Step;
+import FAtiMA.Core.plans.Effect;
+import FAtiMA.Core.plans.Step;
 import FAtiMA.Core.sensorEffector.SpeechAct;
 import FAtiMA.Core.util.parsers.SocketListener;
 import FAtiMA.Core.wellFormedNames.Name;

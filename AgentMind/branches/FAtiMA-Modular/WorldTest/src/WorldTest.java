@@ -4,15 +4,13 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 
-import javax.swing.JFileChooser;
-import javax.swing.JPanel;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.xml.sax.SAXException;
 
-import FAtiMA.Core.deliberativeLayer.plan.Step;
+import FAtiMA.Core.plans.Step;
 import FAtiMA.Core.sensorEffector.SpeechAct;
 import FAtiMA.Core.util.parsers.ActionsLoaderHandler;
 import FAtiMA.Core.util.parsers.ScenarioLoaderHandler;
@@ -412,11 +410,11 @@ public class WorldTest {
 	}
 
 	public void CCMemory(){
-		SendPerceptionToAll("AdvancedMemory CC-MEMORY");
+		SendPerceptionToAll("CC-MEMORY");
 	}
 
 	public void SAMemory(String question){
-		SendPerceptionToAll("AdvancedMemory SA-MEMORY " + question + "$" + knownInfo );
+		SendPerceptionToAll("SA-MEMORY " + question + "$" + knownInfo );
 		knownInfo = "";
 	}
 
@@ -426,7 +424,7 @@ public class WorldTest {
 	}
 
 	public void GMemory(){
-		SendPerceptionToAll("AdvancedMemory G-MEMORY " + gAttributes);
+		SendPerceptionToAll("G-MEMORY " + gAttributes);
 		System.out.println("WorldTest gAttributes " + gAttributes);
 		gAttributes = "";
 	}
