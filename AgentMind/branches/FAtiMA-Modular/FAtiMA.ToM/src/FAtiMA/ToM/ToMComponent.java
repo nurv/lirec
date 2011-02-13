@@ -22,7 +22,7 @@ import FAtiMA.Core.util.Constants;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Symbol;
 import FAtiMA.DeliberativeComponent.DeliberativeComponent;
-import FAtiMA.DeliberativeComponent.IGetUtilityForOthers;
+import FAtiMA.DeliberativeComponent.strategies.IGetUtilityForOthers;
 
 public class ToMComponent implements Serializable, IAppraisalDerivationComponent, IAdvancedPerceptionsComponent, IGetModelStrategy, IGetUtilityForOthers {
 	

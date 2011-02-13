@@ -32,13 +32,13 @@ import FAtiMA.Core.wellFormedNames.Substitution;
 import FAtiMA.Core.wellFormedNames.Symbol;
 import FAtiMA.Core.wellFormedNames.Unifier;
 import FAtiMA.DeliberativeComponent.DeliberativeComponent;
-import FAtiMA.DeliberativeComponent.IActionFailureStrategy;
-import FAtiMA.DeliberativeComponent.IExpectedUtilityStrategy;
-import FAtiMA.DeliberativeComponent.IGoalFailureStrategy;
-import FAtiMA.DeliberativeComponent.IGoalSuccessStrategy;
 import FAtiMA.DeliberativeComponent.IProbabilityStrategy;
 import FAtiMA.DeliberativeComponent.IUtilityStrategy;
 import FAtiMA.DeliberativeComponent.Intention;
+import FAtiMA.DeliberativeComponent.strategies.IActionFailureStrategy;
+import FAtiMA.DeliberativeComponent.strategies.IExpectedUtilityStrategy;
+import FAtiMA.DeliberativeComponent.strategies.IGoalFailureStrategy;
+import FAtiMA.DeliberativeComponent.strategies.IGoalSuccessStrategy;
 
 
 /**
