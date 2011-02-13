@@ -39,9 +39,7 @@ import javax.swing.JTabbedPane;
 
 import FAtiMA.Core.AgentCore;
 
-/**
- * @author  bruno
- */
+
 public class AgentDisplay {
     JFrame _frame;
     JTabbedPane _displayPane;
@@ -66,9 +64,6 @@ public class AgentDisplay {
 		
 		panel = new KnowledgeBasePanel();
 		_displayPane.addTab("Knowledge Base",null,panel,"displays all information stored in the KB");
-		
-		panel = new GoalsPanel();
-		_displayPane.addTab("Goals",null,panel,"displays the character's goals and active intentions");
 		
 		panel = new EpisodicMemoryPanel();
 		_displayPane.addTab("Episodic Memory", null, panel, "displays all the records in the character's episodic memory");

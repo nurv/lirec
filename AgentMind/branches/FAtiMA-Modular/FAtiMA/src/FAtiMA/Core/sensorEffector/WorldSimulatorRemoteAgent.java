@@ -412,7 +412,7 @@ public class WorldSimulatorRemoteAgent extends RemoteAgent {
 		{
 			// we need to change the event subject to SELF, before we can appraise it
 			event.SetSubject(Constants.SELF);
-			_agent.AppraiseSelfActionFailed(event);
+			_agent.PerceiveActionFailed(event);
 			_canAct = true;
 		}	
 	}

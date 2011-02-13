@@ -51,19 +51,16 @@ package FAtiMA.Core.util.parsers;
 
 import org.xml.sax.Attributes;
 
-import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.conditions.EmotionCondition;
 import FAtiMA.Core.conditions.MoodCondition;
 import FAtiMA.Core.conditions.PastEventCondition;
 import FAtiMA.Core.conditions.PredicateCondition;
 import FAtiMA.Core.conditions.PropertyCondition;
 import FAtiMA.Core.conditions.RecentEventCondition;
-import FAtiMA.Core.deliberativeLayer.DeliberativeProcess;
 import FAtiMA.Core.emotionalState.ElicitingEmotion;
 import FAtiMA.Core.emotionalState.EmotionDisposition;
 import FAtiMA.Core.emotionalState.EmotionalState;
 import FAtiMA.Core.exceptions.InvalidEmotionTypeException;
-import FAtiMA.Core.exceptions.UnknownGoalException;
 import FAtiMA.Core.reactiveLayer.Action;
 import FAtiMA.Core.reactiveLayer.Reaction;
 import FAtiMA.Core.reactiveLayer.ReactiveProcess;
@@ -76,24 +73,20 @@ import FAtiMA.Core.wellFormedNames.Symbol;
 public class AgentLoaderHandler extends ReflectXMLHandler {
 	
     private ReactiveProcess _reactiveLayer;
-    private DeliberativeProcess _deliberativeLayer;
+    //private DeliberativeProcess _deliberativeLayer;
     private EmotionalState _emotionalState;
     
 	private Action _action;
-    private String _goalName;
     private ElicitingEmotion _elicitingEmotion;
     private Reaction _eventReaction;
     private Substitution _self;
-    private AgentModel _am;
     
-    public AgentLoaderHandler(AgentModel am, ReactiveProcess reactiveLayer, DeliberativeProcess deliberativeLayer, EmotionalState es)
+    public AgentLoaderHandler(ReactiveProcess reactiveLayer, EmotionalState es)
     {
     	this._reactiveLayer = reactiveLayer;
-    	this._deliberativeLayer = deliberativeLayer;
     	this._emotionalState = es;
     	//this is just because of compatibility issues.
     	this._self = new Substitution(new Symbol("[SELF]"), new Symbol(Constants.SELF));
-    	this._am = am;
     }
     
     public void ActionTendency(Attributes attributes) {
@@ -181,27 +174,7 @@ public class AgentLoaderHandler extends ReflectXMLHandler {
     	_reactiveLayer.getEmotionalReactions().AddEmotionalReaction(_eventReaction);
     }
 
-    public void Goal(Attributes attributes) throws UnknownGoalException 
-    {
-  
-      float impOfSucess = 0;
-      float impOfFailure = 0;
-
-      _goalName = attributes.getValue("name");
-      String aux = attributes.getValue("importanceOfSuccess");
-      if(aux != null)
-      {
-    	  impOfSucess = Float.parseFloat(aux);
-      }
-      
-      aux = attributes.getValue("importanceOfFailure");
-      if(aux != null)
-      {
-    	  impOfFailure = Float.parseFloat(attributes.getValue("importanceOfFailure"));
-      }
-			
-      _deliberativeLayer.addGoal(_am, _goalName,impOfSucess,impOfFailure); 
-    }
+    
     
     public void Predicate(Attributes attributes) 
     {

@@ -6,8 +6,8 @@ import java.util.ListIterator;
 
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.conditions.Condition;
-import FAtiMA.Core.deliberativeLayer.plan.Effect;
-import FAtiMA.Core.deliberativeLayer.plan.Step;
+import FAtiMA.Core.plans.Effect;
+import FAtiMA.Core.plans.Step;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.SubstitutionSet;
 import FAtiMA.Core.wellFormedNames.Symbol;

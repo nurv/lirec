@@ -349,9 +349,10 @@ public class IONRemoteAgent extends RemoteAgent {
 		if(rmAction.getSubject().equals(_agent.getName()))
 		{
 			AgentLogger.GetInstance().logAndPrint("Self action failed, agent can act again");
-			_agent.AppraiseSelfActionFailed(rmAction.toEvent(ActionEvent.FAILURE));
 			_canAct = true;
 		}
+		
+		_agent.PerceiveActionFailed(rmAction.toEvent(ActionEvent.FAILURE));
 	}
 
 	public void handleSocketException() {

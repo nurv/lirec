@@ -37,10 +37,10 @@ import java.util.ListIterator;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import FAtiMA.Core.deliberativeLayer.plan.Step;
 import FAtiMA.Core.exceptions.ActionsParsingException;
 import FAtiMA.Core.exceptions.UnknownSpeechActException;
 import FAtiMA.Core.exceptions.UnspecifiedVariableException;
+import FAtiMA.Core.plans.Step;
 import FAtiMA.Core.util.AgentLogger;
 import FAtiMA.Core.util.parsers.ActionsLoaderHandler;
 import FAtiMA.Core.wellFormedNames.Name;

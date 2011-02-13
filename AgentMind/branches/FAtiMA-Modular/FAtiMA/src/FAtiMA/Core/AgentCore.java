@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.ListIterator;
-import java.util.StringTokenizer;
 import java.util.logging.Logger;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -33,10 +32,6 @@ import FAtiMA.Core.componentTypes.IComponent;
 import FAtiMA.Core.componentTypes.IModelOfOtherComponent;
 import FAtiMA.Core.componentTypes.IProcessEmotionComponent;
 import FAtiMA.Core.componentTypes.IProcessExternalRequestComponent;
-import FAtiMA.Core.deliberativeLayer.DeliberativeProcess;
-import FAtiMA.Core.deliberativeLayer.EmotionalPlanner;
-import FAtiMA.Core.deliberativeLayer.goals.Goal;
-import FAtiMA.Core.deliberativeLayer.goals.GoalLibrary;
 import FAtiMA.Core.emotionalState.ActiveEmotion;
 import FAtiMA.Core.emotionalState.AppraisalFrame;
 import FAtiMA.Core.emotionalState.BaseEmotion;
@@ -45,8 +40,11 @@ import FAtiMA.Core.emotionalState.NeutralEmotion;
 import FAtiMA.Core.exceptions.ActionsParsingException;
 import FAtiMA.Core.exceptions.GoalLibParsingException;
 import FAtiMA.Core.exceptions.UnknownGoalException;
+import FAtiMA.Core.goals.Goal;
+import FAtiMA.Core.goals.GoalLibrary;
 import FAtiMA.Core.memory.Memory;
 import FAtiMA.Core.memory.semanticMemory.KnowledgeSlot;
+import FAtiMA.Core.plans.IDetectThreatStrategy;
 import FAtiMA.Core.reactiveLayer.ReactiveProcess;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.sensorEffector.IONRemoteAgent;
@@ -85,6 +83,9 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 	protected ArrayList<IAffectDerivationComponent> _affectDerivationComponents;
 	protected ArrayList<IAppraisalDerivationComponent> _appraisalComponents;
 	
+	//Strategies
+	protected IDetectThreatStrategy _detectThreatStrat;
+	
 	//Data structures
 	protected EmotionalState _emotionalState;
 	protected Memory _memory;
@@ -92,7 +93,6 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 	protected ActionLibrary _actionLibrary;
 	
 	protected boolean _shutdown;
-	protected DeliberativeProcess _deliberativeLayer;
 	protected ReactiveProcess _reactiveLayer;
 	protected ArrayList<ValuedAction> _actionsForExecution;
 	protected ArrayList<Event> _perceivedEvents;
@@ -192,7 +192,6 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 				
 				// Load Plan Operators
 				_actionLibrary.LoadActionsFile(ConfigurationManager.getActionsFile(), this);
-				EmotionalPlanner planner = new EmotionalPlanner();
 	
 				// Load GoalLibrary
 				_goalLibrary = new GoalLibrary(ConfigurationManager.getGoalsFile());
@@ -200,9 +199,6 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 				//For efficiency reasons these two are not real processes
 				_reactiveLayer = new ReactiveProcess();
 				addComponent(_reactiveLayer);
-	
-				_deliberativeLayer = new DeliberativeProcess(planner);
-				addComponent(_deliberativeLayer);
 				
 				addComponent(new OCCComponent());
 	
@@ -376,9 +372,14 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 	}*/
 
 
-	public void AppraiseSelfActionFailed(Event e)
+	public void PerceiveActionFailed(Event e)
 	{
-		_deliberativeLayer.appraiseSelfActionFailed(e);
+		Event e2 = e.ApplyPerspective(_name);
+		
+		for(IAdvancedPerceptionsComponent c : _processPerceptionsComponents)
+		{
+			c.actionFailedPerception(e2);
+		}
 	}
 
 	/**
@@ -389,17 +390,6 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 		return _displayName;
 	}
 
-
-	/**
-	 * Gets the agent's Deliberative Layer that you can use
-	 * to get access to Deliberative structures such as 
-	 * the goals and planner
-	 * @return the agent's Deliberative Layer
-	 */
-	public DeliberativeProcess getDeliberativeLayer()
-	{
-		return this._deliberativeLayer;
-	}
 
 	public EmotionalState getEmotionalState()
 	{
@@ -476,7 +466,6 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 		FileInputStream in = new FileInputStream(fileName);
 		ObjectInputStream s = new ObjectInputStream(in);
 	
-		this._deliberativeLayer = (DeliberativeProcess) s.readObject();
 		this._reactiveLayer = (ReactiveProcess) s.readObject();
 		this._emotionalState = (EmotionalState) s.readObject();
 		this._memory = (Memory) s.readObject();
@@ -529,36 +518,11 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 	throws	ParserConfigurationException, SAXException, IOException, UnknownGoalException{
 
 		AgentLogger.GetInstance().log("LOADING Personality: " + personalityFile);
-		AgentLoaderHandler c = new AgentLoaderHandler(this,_reactiveLayer,_deliberativeLayer,_emotionalState);
+		AgentLoaderHandler c = new AgentLoaderHandler(_reactiveLayer,_emotionalState);
 
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		SAXParser parser = factory.newSAXParser();
 		parser.parse(new File(personalityFile), c);
-
-		//The ION Agent does not load the goals initially from the personality file, therefore we
-		//must clear all the goals loaded.
-		//if(agentPlatform == AgentPlatform.ION){
-		//	_deliberativeLayer.RemoveAllGoals();
-		//}
-
-		//The WorldSimulator Agent loads additional goals provided in the starting goal list
-		if(agentPlatform == AgentPlatform.WORLDSIM){
-			ListIterator<String> lt = goalList.listIterator();
-			String goalDescription;
-			String goalName;
-			StringTokenizer st;
-			float impOfSuccess;
-			float impOfFailure;
-			while(lt.hasNext()) {
-				goalDescription = (String) lt.next();
-				st = new StringTokenizer(goalDescription, "|");
-				goalName = st.nextToken();
-				impOfSuccess = Float.parseFloat(st.nextToken());
-				impOfFailure = Float.parseFloat(st.nextToken());
-
-				_deliberativeLayer.addGoal(this, goalName, impOfSuccess, impOfFailure);   
-			}	
-		}
 	}
 
 	/**
@@ -863,8 +827,7 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 		_memoryWriter.outputMemorytoXML(_saveDirectory + MEMORY_FILENAME);
 		for(IProcessExternalRequestComponent ip: _processExternalRequestComponents)
 		{
-			if(ip.name().equals("AdvancedMemory"))
-				ip.processExternalRequest("SAVE_ADV_MEMORY");
+			ip.processExternalRequest(this,"SAVE_ADV_MEMORY","");
 		}
 		
 	}
@@ -891,8 +854,7 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 	{
 		for(IProcessExternalRequestComponent ip: _processExternalRequestComponents)
 		{
-			if(ip.name().equals("AdvancedMemory"))
-				ip.processExternalRequest("LOAD_ADV_MEMORY");
+			ip.processExternalRequest(this,"LOAD_ADV_MEMORY","");
 		}
 	}
 	
@@ -914,7 +876,6 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 			FileOutputStream out = new FileOutputStream(fileName);
 			ObjectOutputStream s = new ObjectOutputStream(out);
 			
-			s.writeObject(_deliberativeLayer);
 			s.writeObject(_reactiveLayer);
 			s.writeObject(_emotionalState);
 			s.writeObject(_memory);
@@ -1004,7 +965,6 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 
 			//s.writeObject(_ToM);
 			//s.writeObject(_nearbyAgents);
-			s.writeObject(_deliberativeLayer);
 			s.writeObject(_reactiveLayer);
 			s.writeObject(_emotionalState);
 			s.writeObject(_memory);
@@ -1067,7 +1027,6 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 					BinaryStringConverter.decodeStringToBinary(state));
 
 			ObjectInputStream s = new ObjectInputStream(in);
-			this._deliberativeLayer = (DeliberativeProcess) s.readObject();
 			this._reactiveLayer = (ReactiveProcess) s.readObject();
 			this._emotionalState = (EmotionalState) s.readObject();
 			this._memory = (Memory) s.readObject();

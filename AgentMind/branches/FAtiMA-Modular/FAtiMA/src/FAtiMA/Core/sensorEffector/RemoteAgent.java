@@ -89,7 +89,6 @@ import FAtiMA.Core.AgentCore;
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.AgentSimulationTime;
 import FAtiMA.Core.ValuedAction;
-import FAtiMA.Core.componentTypes.IComponent;
 import FAtiMA.Core.componentTypes.IProcessExternalRequestComponent;
 import FAtiMA.Core.emotionalState.EmotionalState;
 import FAtiMA.Core.util.AgentLogger;
@@ -111,11 +110,6 @@ public abstract class RemoteAgent extends SocketListener {
 	
 	protected static final String SHUTDOWN = "SHUTDOWN";
 	protected static final String CMD = "CMD";
-	protected static final String CHANGE_IMPORTANCE_SUCCESS = "CIS";
-	protected static final String CHANGE_IMPORTANCE_FAILURE = "CIF";
-	protected static final String ADD_GOALS = "ADDGOALS";
-	protected static final String REMOVE_GOAL = "REMOVEGOAL";
-	protected static final String REMOVE_ALL_GOALS = "REMOVEALLGOALS";
 	protected static final String AGENTS = "AGENTS";
 	protected static final String LOOK_AT = "LOOK-AT";
 	protected static final String ENTITY_ADDED = "ENTITY-ADDED";
@@ -282,20 +276,6 @@ public abstract class RemoteAgent extends SocketListener {
 			{
 				CmdPerception(perception);
 			}
-			else if(msgType.equals(CHANGE_IMPORTANCE_SUCCESS) 
-					|| msgType.equals(CHANGE_IMPORTANCE_FAILURE))
-			{
-				ChangeImportancePerception(msgType, perception);
-			}
-			else if(msgType.equals(ADD_GOALS)) {
-				AddGoalsPerception(perception);
-			}
-			else if(msgType.equals(REMOVE_GOAL)) {
-				RemoveGoalPerception(perception);
-			}
-			else if (msgType.equals(REMOVE_ALL_GOALS)) {
-				RemoveAllGoalsPerception(perception);
-			}
 			else if(msgType.equals(AGENTS)) {
 				AgentsPerception(perception);
 			}
@@ -349,10 +329,7 @@ public abstract class RemoteAgent extends SocketListener {
 			{
 				for(IProcessExternalRequestComponent c : _agent.getProcessExternalRequestComponents())
 				{
-					if(msgType.equals(((IComponent)c).name()))
-					{
-						c.processExternalRequest(perception);
-					}
+					c.processExternalRequest(_agent,msgType,perception);
 				}
 			}
 			
@@ -701,13 +678,7 @@ public abstract class RemoteAgent extends SocketListener {
 		_agent.getMemory().getEpisodicMemory().applySubstitution(new Substitution(new Symbol(id),new Symbol(userName)));
 	}
 	
-	protected void ChangeImportancePerception(String type, String perc)
-	{
-		StringTokenizer st = new StringTokenizer(perc," ");
-		String goalName = st.nextToken();
-		float importance = new Float(st.nextToken()).floatValue();
-		_agent.getDeliberativeLayer().changeGoalImportance(_agent, goalName,importance,type);
-	}
+	
 	
 	protected void CmdPerception(String perc)
 	{
@@ -782,40 +753,6 @@ public abstract class RemoteAgent extends SocketListener {
 			_agent.setSerializedState(state);
 			this.Send("STATE-SET");
 		}
-}
-	
-	protected void AddGoalsPerception(String perc)
-	{
-		String goalDescription;
-		String goalName;
-		float importance;
-		float importance2;
-		StringTokenizer st2;
-		StringTokenizer st = new StringTokenizer(perc," ");
-		
-		while(st.hasMoreTokens()) {
-			goalDescription = st.nextToken();
-			st2 = new StringTokenizer(goalDescription,"|");
-			goalName = st2.nextToken();
-			importance = new Float(st2.nextToken()).floatValue();
-			importance2 = new Float(st2.nextToken()).floatValue();
-			try {
-				_agent.getDeliberativeLayer().addGoal(_agent, goalName,importance,importance2);
-			}
-			catch(Exception e) {
-				e.printStackTrace();
-			}
-		}
-	}
-	
-	protected void RemoveGoalPerception(String perc)
-	{
-		_agent.getDeliberativeLayer().removeGoal(perc);	
-	}
-	
-	protected void RemoveAllGoalsPerception(String perc)
-	{
-		_agent.getDeliberativeLayer().removeAllGoals();
 	}
 	
 	protected void AgentsPerception(String perc)

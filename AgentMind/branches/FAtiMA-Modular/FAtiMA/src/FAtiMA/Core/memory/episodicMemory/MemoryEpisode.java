@@ -40,8 +40,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
 
-import FAtiMA.Core.deliberativeLayer.goals.Goal;
 import FAtiMA.Core.emotionalState.BaseEmotion;
+import FAtiMA.Core.goals.Goal;
 import FAtiMA.Core.memory.Memory;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.util.Constants;
