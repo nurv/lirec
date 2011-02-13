@@ -1,4 +1,4 @@
-package FAtiMA.Core.OCCAffectDerivation;
+package FAtiMA.OCCAffectDerivation;
 
 import java.io.Serializable;
 import java.util.ArrayList;

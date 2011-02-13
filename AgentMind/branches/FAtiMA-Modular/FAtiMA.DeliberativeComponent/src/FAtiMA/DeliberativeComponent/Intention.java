@@ -39,8 +39,6 @@ import java.util.ArrayList;
 import java.util.ListIterator;
 
 import FAtiMA.Core.AgentModel;
-import FAtiMA.Core.OCCAffectDerivation.OCCAppraisalVariables;
-import FAtiMA.Core.OCCAffectDerivation.OCCComponent;
 import FAtiMA.Core.emotionalState.ActiveEmotion;
 import FAtiMA.Core.emotionalState.AppraisalFrame;
 import FAtiMA.Core.emotionalState.EmotionalState;
@@ -49,6 +47,8 @@ import FAtiMA.Core.goals.Goal;
 import FAtiMA.Core.plans.Plan;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.util.AgentLogger;
+import FAtiMA.OCCAffectDerivation.OCCAppraisalVariables;
+import FAtiMA.OCCAffectDerivation.OCCComponent;
 
 
 /**

@@ -1,4 +1,4 @@
-package FAtiMA.Core.OCCAffectDerivation;
+package FAtiMA.OCCAffectDerivation;
 
 import FAtiMA.Core.util.enumerables.EmotionValence;
 

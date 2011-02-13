@@ -113,10 +113,6 @@ import java.util.ArrayList;
 import java.util.ListIterator;
 
 import FAtiMA.Core.AgentModel;
-import FAtiMA.Core.OCCAffectDerivation.OCCAppraisalVariables;
-import FAtiMA.Core.OCCAffectDerivation.OCCBaseEmotion;
-import FAtiMA.Core.OCCAffectDerivation.OCCComponent;
-import FAtiMA.Core.OCCAffectDerivation.OCCEmotionType;
 import FAtiMA.Core.conditions.Condition;
 import FAtiMA.Core.conditions.PropertyNotEqual;
 import FAtiMA.Core.emotionalState.ActiveEmotion;
@@ -138,6 +134,10 @@ import FAtiMA.Core.wellFormedNames.Substitution;
 import FAtiMA.Core.wellFormedNames.SubstitutionSet;
 import FAtiMA.Core.wellFormedNames.Symbol;
 import FAtiMA.Core.wellFormedNames.Unifier;
+import FAtiMA.OCCAffectDerivation.OCCAppraisalVariables;
+import FAtiMA.OCCAffectDerivation.OCCBaseEmotion;
+import FAtiMA.OCCAffectDerivation.OCCComponent;
+import FAtiMA.OCCAffectDerivation.OCCEmotionType;
 
 
 public class EmotionalPlanner implements Serializable {

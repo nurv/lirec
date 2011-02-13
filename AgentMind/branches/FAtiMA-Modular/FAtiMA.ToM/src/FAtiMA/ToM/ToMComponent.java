@@ -8,7 +8,6 @@ import FAtiMA.Core.AgentCore;
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.IGetModelStrategy;
 import FAtiMA.Core.Display.AgentDisplayPanel;
-import FAtiMA.Core.OCCAffectDerivation.OCCAppraisalVariables;
 import FAtiMA.Core.componentTypes.IAdvancedPerceptionsComponent;
 import FAtiMA.Core.componentTypes.IAppraisalDerivationComponent;
 import FAtiMA.Core.componentTypes.IComponent;
@@ -23,6 +22,7 @@ import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Symbol;
 import FAtiMA.DeliberativeComponent.DeliberativeComponent;
 import FAtiMA.DeliberativeComponent.strategies.IGetUtilityForOthers;
+import FAtiMA.OCCAffectDerivation.OCCAppraisalVariables;
 
 public class ToMComponent implements Serializable, IAppraisalDerivationComponent, IAdvancedPerceptionsComponent, IGetModelStrategy, IGetUtilityForOthers {
 	

@@ -16,7 +16,6 @@ import javax.xml.parsers.SAXParserFactory;
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.AgentSimulationTime;
 import FAtiMA.Core.Display.AgentDisplayPanel;
-import FAtiMA.Core.OCCAffectDerivation.OCCAppraisalVariables;
 import FAtiMA.Core.componentTypes.IAppraisalDerivationComponent;
 import FAtiMA.Core.componentTypes.IComponent;
 import FAtiMA.Core.componentTypes.IModelOfOtherComponent;
@@ -39,6 +38,7 @@ import FAtiMA.DeliberativeComponent.strategies.IActionFailureStrategy;
 import FAtiMA.DeliberativeComponent.strategies.IExpectedUtilityStrategy;
 import FAtiMA.DeliberativeComponent.strategies.IGoalFailureStrategy;
 import FAtiMA.DeliberativeComponent.strategies.IGoalSuccessStrategy;
+import FAtiMA.OCCAffectDerivation.OCCAppraisalVariables;
 
 
 /**

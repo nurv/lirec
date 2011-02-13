@@ -3,7 +3,6 @@ package FAtiMA.emotionalIntelligence;
 import java.util.ArrayList;
 
 import FAtiMA.Core.AgentModel;
-import FAtiMA.Core.OCCAffectDerivation.OCCEmotionType;
 import FAtiMA.Core.conditions.EmotionCondition;
 import FAtiMA.Core.conditions.NewEventCondition;
 import FAtiMA.Core.emotionalState.EmotionDisposition;
@@ -13,6 +12,7 @@ import FAtiMA.Core.util.enumerables.ActionEvent;
 import FAtiMA.Core.util.enumerables.EventType;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Symbol;
+import FAtiMA.OCCAffectDerivation.OCCEmotionType;
 
 
 public abstract class OCCAppraisalRules {

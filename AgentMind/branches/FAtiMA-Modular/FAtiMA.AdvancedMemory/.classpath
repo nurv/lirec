@@ -10,5 +10,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/FAtiMA"/>
 	<classpathentry kind="lib" path="/FAtiMA/xmlenc-0.52.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Drools"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/FAtiMA.OCCAffectDerivation"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

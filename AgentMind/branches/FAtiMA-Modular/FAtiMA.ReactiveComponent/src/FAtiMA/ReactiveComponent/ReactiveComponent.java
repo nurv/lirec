@@ -70,7 +70,6 @@ import javax.xml.parsers.SAXParserFactory;
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.ValuedAction;
 import FAtiMA.Core.Display.AgentDisplayPanel;
-import FAtiMA.Core.OCCAffectDerivation.OCCAppraisalVariables;
 import FAtiMA.Core.componentTypes.IAppraisalDerivationComponent;
 import FAtiMA.Core.componentTypes.IBehaviourComponent;
 import FAtiMA.Core.componentTypes.IComponent;
@@ -79,6 +78,7 @@ import FAtiMA.Core.emotionalState.AppraisalFrame;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.util.AgentLogger;
 import FAtiMA.Core.util.ConfigurationManager;
+import FAtiMA.OCCAffectDerivation.OCCAppraisalVariables;
 import FAtiMA.ReactiveComponent.display.ActionTendenciesPanel;
 import FAtiMA.ReactiveComponent.parsers.ReactiveLoaderHandler;
 

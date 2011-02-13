@@ -1,4 +1,4 @@
-package FAtiMA.Core.OCCAffectDerivation;
+package FAtiMA.OCCAffectDerivation;
 
 import FAtiMA.Core.emotionalState.BaseEmotion;
 import FAtiMA.Core.sensorEffector.Event;

@@ -23,7 +23,6 @@ import org.xml.sax.SAXException;
 
 import FAtiMA.Core.Display.AgentDisplay;
 import FAtiMA.Core.Display.AgentDisplayPanel;
-import FAtiMA.Core.OCCAffectDerivation.OCCComponent;
 import FAtiMA.Core.componentTypes.IAdvancedPerceptionsComponent;
 import FAtiMA.Core.componentTypes.IAffectDerivationComponent;
 import FAtiMA.Core.componentTypes.IAppraisalDerivationComponent;
@@ -195,8 +194,6 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 				// Load GoalLibrary
 				_goalLibrary = new GoalLibrary(ConfigurationManager.getGoalsFile());
 	
-				
-				addComponent(new OCCComponent());
 	
 				//TODO:PARSETHEGOALS
 				loadPersonality(ConfigurationManager.getPersonalityFile(),ConfigurationManager.getPlatform(),new ArrayList<String>());

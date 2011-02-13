@@ -41,7 +41,6 @@ import javax.xml.parsers.SAXParserFactory;
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.AgentSimulationTime;
 import FAtiMA.Core.Display.AgentDisplayPanel;
-import FAtiMA.Core.OCCAffectDerivation.OCCAppraisalVariables;
 import FAtiMA.Core.componentTypes.IAppraisalDerivationComponent;
 import FAtiMA.Core.componentTypes.IProcessExternalRequestComponent;
 import FAtiMA.Core.emotionalState.AppraisalFrame;
@@ -50,6 +49,7 @@ import FAtiMA.Core.memory.episodicMemory.ActionDetail;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.util.AgentLogger;
 import FAtiMA.Core.util.ConfigurationManager;
+import FAtiMA.OCCAffectDerivation.OCCAppraisalVariables;
 
 public class AdvancedMemoryComponent implements Serializable, IAppraisalDerivationComponent, IProcessExternalRequestComponent {
 

@@ -11,7 +11,6 @@ import javax.xml.parsers.SAXParserFactory;
 
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.Display.AgentDisplayPanel;
-import FAtiMA.Core.OCCAffectDerivation.OCCAppraisalVariables;
 import FAtiMA.Core.componentTypes.IAppraisalDerivationComponent;
 import FAtiMA.Core.conditions.Condition;
 import FAtiMA.Core.emotionalState.AppraisalFrame;
@@ -28,6 +27,7 @@ import FAtiMA.DeliberativeComponent.IUtilityStrategy;
 import FAtiMA.DeliberativeComponent.Intention;
 import FAtiMA.DeliberativeComponent.strategies.IExpectedUtilityStrategy;
 import FAtiMA.DeliberativeComponent.strategies.IGetUtilityForOthers;
+import FAtiMA.OCCAffectDerivation.OCCAppraisalVariables;
 
 
 public class CulturalDimensionsComponent implements IAppraisalDerivationComponent, IOptionsStrategy, IExpectedUtilityStrategy {

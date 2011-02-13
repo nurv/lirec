@@ -9,8 +9,6 @@ import javax.xml.parsers.SAXParserFactory;
 
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.Display.AgentDisplayPanel;
-import FAtiMA.Core.OCCAffectDerivation.OCCAppraisalVariables;
-import FAtiMA.Core.OCCAffectDerivation.OCCEmotionType;
 import FAtiMA.Core.componentTypes.IAppraisalDerivationComponent;
 import FAtiMA.Core.componentTypes.IComponent;
 import FAtiMA.Core.componentTypes.IModelOfOtherComponent;
@@ -22,6 +20,8 @@ import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.util.AgentLogger;
 import FAtiMA.Core.util.ConfigurationManager;
 import FAtiMA.Core.util.Constants;
+import FAtiMA.OCCAffectDerivation.OCCAppraisalVariables;
+import FAtiMA.OCCAffectDerivation.OCCEmotionType;
 import FAtiMA.socialRelations.display.SocialRelationsPanel;
 import FAtiMA.socialRelations.parsers.RelationsLoaderHandler;
 
