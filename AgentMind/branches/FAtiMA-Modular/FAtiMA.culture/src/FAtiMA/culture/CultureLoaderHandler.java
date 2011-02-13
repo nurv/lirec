@@ -41,13 +41,12 @@ import FAtiMA.Core.conditions.PastEventCondition;
 import FAtiMA.Core.conditions.PredicateCondition;
 import FAtiMA.Core.conditions.PropertyCondition;
 import FAtiMA.Core.conditions.RecentEventCondition;
-import FAtiMA.Core.deliberativeLayer.DeliberativeProcess;
-import FAtiMA.Core.deliberativeLayer.goals.Goal;
 import FAtiMA.Core.exceptions.ContextParsingException;
 import FAtiMA.Core.exceptions.DuplicateSymbolTranslatorEntry;
 import FAtiMA.Core.exceptions.InvalidDimensionTypeException;
 import FAtiMA.Core.exceptions.InvalidEmotionTypeException;
 import FAtiMA.Core.exceptions.UnknownGoalException;
+import FAtiMA.Core.goals.Goal;
 import FAtiMA.Core.reactiveLayer.Reaction;
 import FAtiMA.Core.reactiveLayer.ReactiveProcess;
 import FAtiMA.Core.sensorEffector.Event;
@@ -56,6 +55,7 @@ import FAtiMA.Core.util.parsers.ReflectXMLHandler;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Substitution;
 import FAtiMA.Core.wellFormedNames.Symbol;
+import FAtiMA.DeliberativeComponent.DeliberativeComponent;
 
 
 public class CultureLoaderHandler extends ReflectXMLHandler {
@@ -69,7 +69,7 @@ public class CultureLoaderHandler extends ReflectXMLHandler {
 	private String _currentGoalKey;
 	
 	ReactiveProcess _reactiveLayer;
-	DeliberativeProcess _deliberativeLayer;
+	DeliberativeComponent _deliberativeLayer;
 	
 
 	private Context _contextBeingParsed;
@@ -79,7 +79,7 @@ public class CultureLoaderHandler extends ReflectXMLHandler {
 		_rituals = new ArrayList<Ritual>();
 		_self = new Substitution(new Symbol("[SELF]"), new Symbol(FAtiMA.Core.util.Constants.SELF));
 		_reactiveLayer = (ReactiveProcess) aM.getComponent(ReactiveProcess.NAME); 
-		_deliberativeLayer = (DeliberativeProcess) aM.getComponent(DeliberativeProcess.NAME);
+		_deliberativeLayer = (DeliberativeComponent) aM.getComponent(DeliberativeComponent.NAME);
 		_am = aM;
 		_culturalComponent = cDM;
 		_beforeRituals = true;

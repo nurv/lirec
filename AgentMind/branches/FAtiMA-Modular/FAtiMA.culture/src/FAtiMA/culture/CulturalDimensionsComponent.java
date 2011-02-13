@@ -14,20 +14,20 @@ import FAtiMA.Core.Display.AgentDisplayPanel;
 import FAtiMA.Core.OCCAffectDerivation.OCCAppraisalVariables;
 import FAtiMA.Core.componentTypes.IAppraisalDerivationComponent;
 import FAtiMA.Core.conditions.Condition;
-import FAtiMA.Core.deliberativeLayer.DeliberativeProcess;
-import FAtiMA.Core.deliberativeLayer.IExpectedUtilityStrategy;
-import FAtiMA.Core.deliberativeLayer.IGetUtilityForOthers;
-import FAtiMA.Core.deliberativeLayer.IOptionsStrategy;
-import FAtiMA.Core.deliberativeLayer.IUtilityStrategy;
-import FAtiMA.Core.deliberativeLayer.Intention;
-import FAtiMA.Core.deliberativeLayer.goals.ActivePursuitGoal;
 import FAtiMA.Core.emotionalState.AppraisalFrame;
+import FAtiMA.Core.goals.ActivePursuitGoal;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.util.AgentLogger;
 import FAtiMA.Core.util.Constants;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.SubstitutionSet;
 import FAtiMA.Core.wellFormedNames.Symbol;
+import FAtiMA.DeliberativeComponent.DeliberativeComponent;
+import FAtiMA.DeliberativeComponent.IExpectedUtilityStrategy;
+import FAtiMA.DeliberativeComponent.IGetUtilityForOthers;
+import FAtiMA.DeliberativeComponent.IOptionsStrategy;
+import FAtiMA.DeliberativeComponent.IUtilityStrategy;
+import FAtiMA.DeliberativeComponent.Intention;
 
 
 public class CulturalDimensionsComponent implements IAppraisalDerivationComponent, IOptionsStrategy, IExpectedUtilityStrategy {
@@ -57,10 +57,10 @@ public class CulturalDimensionsComponent implements IAppraisalDerivationComponen
 	//unused interface methods:
 	@Override
 	public void initialize(AgentModel aM){
-		DeliberativeProcess dp = (DeliberativeProcess) aM.getComponent(DeliberativeProcess.NAME);
+		DeliberativeComponent dc = (DeliberativeComponent) aM.getComponent(DeliberativeComponent.NAME);
 		this.loadCulture(aM);
-		dp.addOptionsStrategy(this);
-		dp.setExpectedUtilityStrategy(this);
+		dc.addOptionsStrategy(this);
+		dc.setExpectedUtilityStrategy(this);
 		aM.getRemoteAgent().setProcessActionStrategy(new CultureProcessActionStrategy());
 	}
 
@@ -112,7 +112,7 @@ public class CulturalDimensionsComponent implements IAppraisalDerivationComponen
 		ArrayList<SubstitutionSet> substitutions, substitutions2;
 		Ritual r2, r3;
 		String ritualName;
-		DeliberativeProcess dp = (DeliberativeProcess) am.getComponent(DeliberativeProcess.NAME);
+		DeliberativeComponent dc = (DeliberativeComponent) am.getComponent(DeliberativeComponent.NAME);
 		
 		//this section detects if a ritual has started with another agent's action
 		if(!e.GetSubject().equals(Constants.SELF))
@@ -140,7 +140,7 @@ public class CulturalDimensionsComponent implements IAppraisalDerivationComponen
 							{
 								ritualName = r3.getNameWithCharactersOrdered();
 								r3.setUrgency(2);
-								if(!_ritualOptions.containsKey(ritualName) && !dp.containsIntention(r3))
+								if(!_ritualOptions.containsKey(ritualName) && !dc.containsIntention(r3))
 								{
 									AgentLogger.GetInstance().logAndPrint("Reactive Activation of a Ritual:" + r3.getName());
 									_ritualOptions.put(ritualName,r3);
@@ -162,7 +162,7 @@ public class CulturalDimensionsComponent implements IAppraisalDerivationComponen
 	
 	private void loadCulture(AgentModel aM){
 		
-		DeliberativeProcess dp = (DeliberativeProcess) aM.getComponent(DeliberativeProcess.NAME);
+		DeliberativeComponent dp = (DeliberativeComponent) aM.getComponent(DeliberativeComponent.NAME);
 
 		AgentLogger.GetInstance().log("LOADING Culture: " + this.cultureFile);
 		CultureLoaderHandler cultureLoader = new CultureLoaderHandler(aM,this);
@@ -280,7 +280,7 @@ public class CulturalDimensionsComponent implements IAppraisalDerivationComponen
 	@Override
 	public Collection<? extends ActivePursuitGoal> options(AgentModel am) {
 		
-		DeliberativeProcess dp = (DeliberativeProcess) am.getComponent(DeliberativeProcess.NAME);
+		DeliberativeComponent dc = (DeliberativeComponent) am.getComponent(DeliberativeComponent.NAME);
 		
 		Iterator<Ritual> it = _ritualOptions.values().iterator();
 		Ritual r;
@@ -288,7 +288,7 @@ public class CulturalDimensionsComponent implements IAppraisalDerivationComponen
 		while(it.hasNext())
 		{
 			r = it.next();
-			if(dp.containsIntention(r))
+			if(dc.containsIntention(r))
 			{
 				it.remove();
 			}
@@ -300,13 +300,13 @@ public class CulturalDimensionsComponent implements IAppraisalDerivationComponen
 	
 	private float culturalEU(AgentModel am, ActivePursuitGoal g, float probability)
 	{
-		DeliberativeProcess dp = (DeliberativeProcess) am.getComponent(DeliberativeProcess.NAME);
+		DeliberativeComponent dc = (DeliberativeComponent) am.getComponent(DeliberativeComponent.NAME);
 		
-		IUtilityStrategy str =  dp.getUtilityStrategy();
+		IUtilityStrategy str =  dc.getUtilityStrategy();
 		
 		float contributionToSelf = str.getUtility(am, g);
 		
-		IGetUtilityForOthers ostrat = dp.getUtilityForOthersStrategy();
+		IGetUtilityForOthers ostrat = dc.getUtilityForOthersStrategy();
 		
 		float contributionOthers = ostrat.getUtilityForOthers(am, g);
 				
@@ -322,16 +322,16 @@ public class CulturalDimensionsComponent implements IAppraisalDerivationComponen
 
 	@Override
 	public float getExpectedUtility(AgentModel am, ActivePursuitGoal g) {
-		DeliberativeProcess dp = (DeliberativeProcess) am.getComponent(DeliberativeProcess.NAME);
+		DeliberativeComponent dc = (DeliberativeComponent) am.getComponent(DeliberativeComponent.NAME);
 		
-		float probability = dp.getProbabilityStrategy().getProbability(am, g);
+		float probability = dc.getProbabilityStrategy().getProbability(am, g);
 		return culturalEU(am,g,probability);
 	}
 	
 	@Override
 	public float getExpectedUtility(AgentModel am, Intention i) {
 		
-		DeliberativeProcess dp = (DeliberativeProcess) am.getComponent(DeliberativeProcess.NAME); 
+		DeliberativeComponent dp = (DeliberativeComponent) am.getComponent(DeliberativeComponent.NAME); 
 		
 		float probability = dp.getProbabilityStrategy().getProbability(am, i);
 		

@@ -37,16 +37,15 @@ import java.util.ListIterator;
 
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.conditions.Condition;
-import FAtiMA.Core.deliberativeLayer.DeliberativeProcess;
-import FAtiMA.Core.deliberativeLayer.goals.ActivePursuitGoal;
-import FAtiMA.Core.deliberativeLayer.plan.CausalLink;
-import FAtiMA.Core.deliberativeLayer.plan.Effect;
-import FAtiMA.Core.deliberativeLayer.plan.IPlanningOperator;
-import FAtiMA.Core.deliberativeLayer.plan.OrderingConstraint;
-import FAtiMA.Core.deliberativeLayer.plan.Plan;
-import FAtiMA.Core.deliberativeLayer.plan.ProtectedCondition;
-import FAtiMA.Core.deliberativeLayer.plan.Step;
 import FAtiMA.Core.exceptions.InvalidReplaceUnboundVariableException;
+import FAtiMA.Core.goals.ActivePursuitGoal;
+import FAtiMA.Core.plans.CausalLink;
+import FAtiMA.Core.plans.Effect;
+import FAtiMA.Core.plans.IPlanningOperator;
+import FAtiMA.Core.plans.OrderingConstraint;
+import FAtiMA.Core.plans.Plan;
+import FAtiMA.Core.plans.ProtectedCondition;
+import FAtiMA.Core.plans.Step;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Substitution;
@@ -163,11 +162,10 @@ public class Ritual extends ActivePursuitGoal {
 	
 	public void BuildPlan(AgentModel am)
 	{
-		DeliberativeProcess dp = (DeliberativeProcess) am.getComponent(DeliberativeProcess.NAME);
 		
 		Step s;
 		OrderingConstraint o;
-		_plan = new Plan(new ArrayList<ProtectedCondition>(),dp.getDetectThreatStrategy(),_successConditions);
+		_plan = new Plan(new ArrayList<ProtectedCondition>(),_successConditions);
 		
 		for(int i=0; i < _steps.size(); i++)
 		{
