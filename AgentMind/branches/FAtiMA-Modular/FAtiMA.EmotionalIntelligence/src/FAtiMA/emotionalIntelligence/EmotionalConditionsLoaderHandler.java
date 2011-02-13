@@ -3,7 +3,7 @@ package FAtiMA.emotionalIntelligence;
 import org.xml.sax.Attributes;
 
 import FAtiMA.Core.AgentModel;
-import FAtiMA.Core.deliberativeLayer.goals.Goal;
+import FAtiMA.Core.goals.Goal;
 import FAtiMA.Core.util.Constants;
 import FAtiMA.Core.util.parsers.ReflectXMLHandler;
 import FAtiMA.Core.wellFormedNames.Name;

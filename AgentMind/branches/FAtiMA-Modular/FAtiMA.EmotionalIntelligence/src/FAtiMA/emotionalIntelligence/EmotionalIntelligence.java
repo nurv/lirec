@@ -9,7 +9,7 @@ import javax.xml.parsers.SAXParserFactory;
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.Display.AgentDisplayPanel;
 import FAtiMA.Core.componentTypes.IComponent;
-import FAtiMA.Core.deliberativeLayer.plan.Step;
+import FAtiMA.Core.plans.Step;
 import FAtiMA.Core.reactiveLayer.Action;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.util.AgentLogger;
