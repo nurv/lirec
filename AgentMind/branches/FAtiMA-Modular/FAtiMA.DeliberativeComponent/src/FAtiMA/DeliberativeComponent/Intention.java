@@ -48,7 +48,7 @@ import FAtiMA.Core.plans.Plan;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.util.AgentLogger;
 import FAtiMA.OCCAffectDerivation.OCCAppraisalVariables;
-import FAtiMA.OCCAffectDerivation.OCCComponent;
+import FAtiMA.OCCAffectDerivation.OCCAffectDerivationComponent;
 
 
 /**
@@ -89,7 +89,7 @@ public class Intention implements Serializable {
 		_hopeEmotionID = null;
 		_strongCommitment = false;
 		_appraisalFrame = new AppraisalFrame(g.GetActivationEvent());
-		_appraisalFrame.SetAppraisalVariable(DeliberativeComponent.NAME, (short) 7, OCCAppraisalVariables.GOALSTATUS.name(), OCCComponent.GOALUNCONFIRMED);
+		_appraisalFrame.SetAppraisalVariable(DeliberativeComponent.NAME, (short) 7, OCCAppraisalVariables.GOALSTATUS.name(), OCCAffectDerivationComponent.GOALUNCONFIRMED);
 	}
 	
 	
@@ -384,7 +384,7 @@ public class Intention implements Serializable {
 	    _appraisalFrame.SetAppraisalVariable(DeliberativeComponent.NAME, (short)7, OCCAppraisalVariables.SUCCESSPROBABILITY.name(), probability);
 	    _appraisalFrame.SetAppraisalVariable(DeliberativeComponent.NAME, (short)7, OCCAppraisalVariables.FAILUREPROBABILITY.name(), 1-probability);
 	    _appraisalFrame.SetAppraisalVariable(DeliberativeComponent.NAME, (short)7, OCCAppraisalVariables.GOALCONDUCIVENESS.name(), goalConduciveness);
-	    _appraisalFrame.SetAppraisalVariable(DeliberativeComponent.NAME, (short)7, OCCAppraisalVariables.GOALSTATUS.name(), OCCComponent.GOALUNCONFIRMED);
+	    _appraisalFrame.SetAppraisalVariable(DeliberativeComponent.NAME, (short)7, OCCAppraisalVariables.GOALSTATUS.name(), OCCAffectDerivationComponent.GOALUNCONFIRMED);
 	    
 	    am.updateEmotions(_appraisalFrame);
 		
@@ -406,7 +406,7 @@ public class Intention implements Serializable {
 	    am.getMemory().getEpisodicMemory().StoreAction(am.getMemory(), e);
 	    
 	    AppraisalFrame af = new AppraisalFrame(e);
-	    af.SetAppraisalVariable(DeliberativeComponent.NAME,(short)8,OCCAppraisalVariables.GOALSTATUS.name(), OCCComponent.GOALDISCONFIRMED);
+	    af.SetAppraisalVariable(DeliberativeComponent.NAME,(short)8,OCCAppraisalVariables.GOALSTATUS.name(), OCCAffectDerivationComponent.GOALDISCONFIRMED);
 	    af.SetAppraisalVariable(DeliberativeComponent.NAME, (short)8,OCCAppraisalVariables.GOALCONDUCIVENESS.name(), dp.getUtilityStrategy().getUtility(am, _goal));
 	    am.updateEmotions(af);
 	    
@@ -444,7 +444,7 @@ public class Intention implements Serializable {
 	    Event e = _goal.GetSuccessEvent();
 	    am.getMemory().getEpisodicMemory().StoreAction(am.getMemory(), e);
 	    AppraisalFrame af = new AppraisalFrame(e);
-	    af.SetAppraisalVariable(DeliberativeComponent.NAME,(short)8,OCCAppraisalVariables.GOALSTATUS.name(), OCCComponent.GOALCONFIRMED);
+	    af.SetAppraisalVariable(DeliberativeComponent.NAME,(short)8,OCCAppraisalVariables.GOALSTATUS.name(), OCCAffectDerivationComponent.GOALCONFIRMED);
 	    af.SetAppraisalVariable(DeliberativeComponent.NAME, (short)8,OCCAppraisalVariables.GOALCONDUCIVENESS.name(), dp.getUtilityStrategy().getUtility(am, _goal));
 	    am.updateEmotions(af);
 	        		   		

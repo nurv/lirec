@@ -49,6 +49,8 @@
 
 package FAtiMA.Core.util.parsers;
 
+import java.util.Locale;
+
 import org.xml.sax.Attributes;
 
 import FAtiMA.Core.emotionalState.EmotionDisposition;
@@ -68,7 +70,7 @@ public class EmotionDispositionsLoaderHandler extends ReflectXMLHandler {
     public void EmotionalThreshold(Attributes attributes) throws InvalidEmotionTypeException {
     	String emotionName;
  
-    	emotionName = attributes.getValue("emotion");
+    	emotionName = attributes.getValue("emotion").toUpperCase(Locale.ENGLISH);
   
         _emotionalState.AddEmotionDisposition(new EmotionDisposition(emotionName,
                                                               new Integer(attributes.getValue("threshold")).intValue(),

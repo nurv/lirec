@@ -433,6 +433,7 @@ public class DeliberativeComponent implements Serializable, IComponent, IBehavio
 					s.perceiveGoalSuccess(am, i.getGoal());
 				}
 				i.ProcessIntentionSuccess(am);
+				return null;
 			}
 			else if(i.getGoal().CheckFailure(am))
 			{
@@ -443,6 +444,7 @@ public class DeliberativeComponent implements Serializable, IComponent, IBehavio
 				}
 				i.ProcessIntentionFailure(am);
 				cancelAction(am);
+				return null;
 			}
 			else if(i.NumberOfAlternativePlans() == 0)
 			{
@@ -459,6 +461,7 @@ public class DeliberativeComponent implements Serializable, IComponent, IBehavio
 					removeIntention(i);	
 				}
 				cancelAction(am);
+				return null;
 			}
 			else if(!i.IsStrongCommitment() && !i.getGoal().checkPreconditions(am))
 			{
@@ -475,6 +478,7 @@ public class DeliberativeComponent implements Serializable, IComponent, IBehavio
 			{
 				i.ProcessIntentionCancel(am);
 				removeIntention(i);
+				return null;
 			}
 			
 			if(_actionMonitor == null && _selectedPlan != null) {

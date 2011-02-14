@@ -10,10 +10,9 @@ import FAtiMA.Core.exceptions.ActionsParsingException;
 import FAtiMA.Core.exceptions.GoalLibParsingException;
 import FAtiMA.Core.exceptions.UnknownGoalException;
 import FAtiMA.Core.util.ConfigurationManager;
-import FAtiMA.ToM.ToMComponent;
-import FAtiMA.culture.CulturalDimensionsComponent;
-import FAtiMA.motivationalSystem.MotivationalComponent;
-import FAtiMA.socialRelations.SocialRelationsComponent;
+import FAtiMA.DeliberativeComponent.DeliberativeComponent;
+import FAtiMA.OCCAffectDerivation.OCCAffectDerivationComponent;
+import FAtiMA.ReactiveComponent.ReactiveComponent;
 
 public class AgentLauncher {
 	
@@ -36,10 +35,14 @@ public class AgentLauncher {
 		if (!aG.getAgentLoad())
 		{
 			extraFiles.add(cultureFile);
-			aG.addComponent(new SocialRelationsComponent(extraFiles));
-			aG.addComponent(new MotivationalComponent(extraFiles));
-			aG.addComponent(new ToMComponent(ConfigurationManager.getName()));
-			aG.addComponent(new CulturalDimensionsComponent(cultureFile));
+			
+			aG.addComponent(new ReactiveComponent());
+			aG.addComponent(new OCCAffectDerivationComponent());
+			aG.addComponent(new DeliberativeComponent());
+			//aG.addComponent(new SocialRelationsComponent(extraFiles));
+			//aG.addComponent(new MotivationalComponent(extraFiles));
+			//aG.addComponent(new ToMComponent(ConfigurationManager.getName()));
+			//aG.addComponent(new CulturalDimensionsComponent(cultureFile));
 			//aG.addComponent(new AdvancedMemoryComponent());
 		}
 		aG.StartAgent();

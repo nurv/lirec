@@ -15,7 +15,7 @@ import FAtiMA.Core.emotionalState.EmotionDisposition;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.wellFormedNames.Name;
 
-public class OCCComponent implements Serializable, IAffectDerivationComponent, IModelOfOtherComponent {
+public class OCCAffectDerivationComponent implements Serializable, IAffectDerivationComponent, IModelOfOtherComponent {
 	
 	private static final long serialVersionUID = 1L;
 	
@@ -24,7 +24,7 @@ public class OCCComponent implements Serializable, IAffectDerivationComponent, I
 	public static final int GOALUNCONFIRMED = 0;
 	public static final int GOALDISCONFIRMED = 2;
 	
-	public OCCComponent()
+	public OCCAffectDerivationComponent()
 	{
 	}
 
@@ -357,6 +357,6 @@ public class OCCComponent implements Serializable, IAffectDerivationComponent, I
 
 	@Override
 	public IComponent createModelOfOther() {
-		return new OCCComponent();
+		return new OCCAffectDerivationComponent();
 	}
 }

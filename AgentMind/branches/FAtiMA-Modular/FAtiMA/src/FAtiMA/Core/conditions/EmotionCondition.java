@@ -32,6 +32,7 @@ package FAtiMA.Core.conditions;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Locale;
 
 import org.xml.sax.Attributes;
 
@@ -77,7 +78,7 @@ public class EmotionCondition extends PredicateCondition {
 		}
 		else active = true;
 
-		emotionType = attributes.getValue("emotion");
+		emotionType = attributes.getValue("emotion").toUpperCase(Locale.ENGLISH);
 		
 		aux = attributes.getValue("agent");
 		if(aux != null)

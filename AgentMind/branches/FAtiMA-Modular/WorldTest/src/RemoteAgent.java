@@ -30,8 +30,8 @@ import FAtiMA.Core.wellFormedNames.Unifier;
  */
 public class RemoteAgent extends SocketListener {
 
-	final static int MIN_ACTION_DELAY_MS = 10000;
-	final static int MAX_ACTION_DELAY_MS = 10000;
+	final static int MIN_ACTION_DELAY_MS = 1000;
+	final static int MAX_ACTION_DELAY_MS = 3000;
 	protected Random _generator; 
 	private ArrayList<Property> _properties;
 	private String _name;

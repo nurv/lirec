@@ -1,5 +1,7 @@
 package FAtiMA.ReactiveComponent.parsers;
 
+import java.util.Locale;
+
 import org.xml.sax.Attributes;
 
 import FAtiMA.Core.conditions.EmotionCondition;
@@ -64,6 +66,8 @@ public class ReactiveLoaderHandler extends ReflectXMLHandler{
     	if(emotionName.equalsIgnoreCase("fears-confirmed")){
     		emotionName = "fears_confirmed";
 		}
+    	
+    	emotionName = emotionName.toUpperCase(Locale.ENGLISH);
     	
     	minIntensity = new Integer(attributes.getValue("minIntensity"));
     	_elicitingEmotion = new ElicitingEmotion(emotionName,minIntensity.intValue());

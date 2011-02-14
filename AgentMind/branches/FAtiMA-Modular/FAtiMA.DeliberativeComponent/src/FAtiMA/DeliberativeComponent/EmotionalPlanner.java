@@ -136,7 +136,7 @@ import FAtiMA.Core.wellFormedNames.Symbol;
 import FAtiMA.Core.wellFormedNames.Unifier;
 import FAtiMA.OCCAffectDerivation.OCCAppraisalVariables;
 import FAtiMA.OCCAffectDerivation.OCCBaseEmotion;
-import FAtiMA.OCCAffectDerivation.OCCComponent;
+import FAtiMA.OCCAffectDerivation.OCCAffectDerivationComponent;
 import FAtiMA.OCCAffectDerivation.OCCEmotionType;
 
 
@@ -440,7 +440,7 @@ public class EmotionalPlanner implements Serializable {
 			AppraisalFrame auxFrame = new AppraisalFrame(tGoal.GetActivationEvent());
 			auxFrame.SetAppraisalVariable(DeliberativeComponent.NAME, (short)6, OCCAppraisalVariables.FAILUREPROBABILITY.name(), prob);
 			auxFrame.SetAppraisalVariable(DeliberativeComponent.NAME, (short)6, OCCAppraisalVariables.GOALCONDUCIVENESS.name(), -tGoal.GetImportanceOfFailure(am));
-			auxFrame.SetAppraisalVariable(DeliberativeComponent.NAME, (short)6, OCCAppraisalVariables.GOALSTATUS.name(), OCCComponent.GOALUNCONFIRMED);
+			auxFrame.SetAppraisalVariable(DeliberativeComponent.NAME, (short)6, OCCAppraisalVariables.GOALSTATUS.name(), OCCAffectDerivationComponent.GOALUNCONFIRMED);
 			am.updateEmotions(auxFrame);
 			 
 			
