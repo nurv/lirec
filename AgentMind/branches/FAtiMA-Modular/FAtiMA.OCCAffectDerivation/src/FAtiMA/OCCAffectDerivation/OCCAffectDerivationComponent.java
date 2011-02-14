@@ -24,35 +24,164 @@ public class OCCAffectDerivationComponent implements Serializable, IAffectDeriva
 	public static final int GOALUNCONFIRMED = 0;
 	public static final int GOALDISCONFIRMED = 2;
 	
-	public OCCAffectDerivationComponent()
+	private static OCCBaseEmotion AppraiseGoalEnd(OCCEmotionType hopefullOutcome, OCCEmotionType fearfullOutcome, 
+			ActiveEmotion hopeEmotion, ActiveEmotion fearEmotion, float goalConduciveness, Event e) {
+	
+		OCCEmotionType finalEmotion;
+		float potential = 0;
+		
+		if(hopeEmotion != null) {
+			if(fearEmotion != null && fearEmotion.GetIntensity() > hopeEmotion.GetIntensity()) {
+				potential = fearEmotion.GetPotential();
+				finalEmotion = fearfullOutcome;
+			}
+			else {
+				potential = hopeEmotion.GetPotential();
+				finalEmotion = hopefullOutcome;
+			}
+		}
+		else if(fearEmotion != null) {
+			potential = fearEmotion.GetPotential();
+			finalEmotion = fearfullOutcome;
+		}
+		else return null;
+		
+		//Change, the goal importance now affects 66% of the final potential value for the emotion
+		potential = (potential +  2* goalConduciveness) / 3;
+		
+		return new OCCBaseEmotion(finalEmotion, potential, e);
+	}
+
+	private static OCCBaseEmotion OCCAppraiseAttribution(Event event, float like)
 	{
+		OCCBaseEmotion em;
+		
+		if(like >= 0) {
+			em = new OCCBaseEmotion(OCCEmotionType.LOVE, like*0.7f, event, Name.ParseName(event.GetTarget()));
+		}
+		else {
+			em = new OCCBaseEmotion(OCCEmotionType.HATE, -like*0.7f, event, Name.ParseName(event.GetTarget()));
+		}
+		
+		return em;
 	}
 
-	@Override
-	public String name() {
-		return NAME;
+	private static OCCBaseEmotion OCCAppraiseFortuneOfOthers(Event event, float desirability, float desirabilityForOther, String target) {
+		OCCBaseEmotion em;
+		float potential;
+		
+		potential = (Math.abs(desirabilityForOther) + Math.abs(desirability)) / 2.0f;
+		
+		if(desirability >= 0) {
+			if(desirabilityForOther >= 0) {
+				em = new OCCBaseEmotion(OCCEmotionType.HAPPY_FOR, potential, event, Name.ParseName(target));	
+			}
+			else {
+				em = new OCCBaseEmotion(OCCEmotionType.GLOATING,potential, event, Name.ParseName(target));
+			}
+		}
+		else {
+			if(desirabilityForOther >= 0) {
+				em = new OCCBaseEmotion(OCCEmotionType.RESENTMENT, potential, event, Name.ParseName(target));
+			}
+			else {
+				em = new OCCBaseEmotion(OCCEmotionType.PITTY, potential, event, Name.ParseName(target));
+			}
+		}
+		
+		return em;
 	}
 
-	@Override
-	public void initialize(AgentModel am) {
+	private static OCCBaseEmotion OCCAppraisePraiseworthiness(String appraisingAgent, Event event, float praiseworthiness) {
+		OCCBaseEmotion em;
+		
+		if(praiseworthiness >= 0) {
+			if(event.GetSubject().equals(appraisingAgent)) {
+				em = new OCCBaseEmotion(OCCEmotionType.PRIDE, praiseworthiness, event, Name.ParseName("SELF"));
+			}
+			else {
+				em = new OCCBaseEmotion(OCCEmotionType.ADMIRATION, praiseworthiness, event, Name.ParseName(event.GetSubject()));
+			}
+		}
+		else {
+			if(event.GetSubject().equals(appraisingAgent)) {
+				em = new OCCBaseEmotion(OCCEmotionType.SHAME, -praiseworthiness, event, Name.ParseName("SELF"));
+			}
+			else {
+				em = new OCCBaseEmotion(OCCEmotionType.REPROACH, -praiseworthiness, event, Name.ParseName(event.GetSubject()));
+			}
+		}
+		
+		return em;
 	}
 
-	@Override
-	public void reset() {
-	}
-
-	@Override
-	public void update(AgentModel am, long time) {
+	private static OCCBaseEmotion OCCAppraiseWellBeing(Event event, float desirability) {
+		OCCBaseEmotion em;
+		
+		if(desirability >= 0) {
+			em = new OCCBaseEmotion(OCCEmotionType.JOY, desirability, event);
+		}
+		else {
+			em = new OCCBaseEmotion(OCCEmotionType.DISTRESS, -desirability, event);
+		}
+		return em;
 	}
 	
-	@Override
-	public void update(AgentModel am, Event e)
-	{
+	/**
+	 * Appraises a Goal's Failure according to the emotions that the agent is experiencing
+	 * @param hopeEmotion - the emotion of Hope for achieving the goal that the character feels
+	 * @param fearEmotion - the emotion of Fear for not achieving the goal that the character feels
+	 * @param g - the Goal that failed
+	 */
+	public static OCCBaseEmotion AppraiseGoalFailure(AgentModel am, ActiveEmotion hopeEmotion, ActiveEmotion fearEmotion, float conduciveness, Event e) {
+		return AppraiseGoalEnd(OCCEmotionType.DISAPPOINTMENT,OCCEmotionType.FEARS_CONFIRMED,hopeEmotion,fearEmotion,conduciveness,e);
 	}
 
-	@Override
-	public AgentDisplayPanel createDisplayPanel(AgentModel am) {
-		return null;
+	/**
+	 * Appraises a Goal's likelihood of failure
+	 * @param g - the goal
+	 * @param probability - the probability of the goal to fail
+	 * @return - the emotion created
+	 */
+	public static OCCBaseEmotion AppraiseGoalFailureProbability(AgentModel am , Event e, float goalConduciveness, float prob)
+	{
+		float potential;
+		potential = prob * goalConduciveness;
+		
+		OCCBaseEmotion em = new  OCCBaseEmotion(OCCEmotionType.FEAR, potential, e);
+		
+		return em;
+	}
+	
+	/**
+	 * Appraises a Goal's success according to the emotions that the agent is experiencing
+	 * @param hopeEmotion - the emotion of Hope for achieving the goal that the character feels
+	 * @param fearEmotion - the emotion of Fear for not achieving the goal that the character feels
+	 * @param g - the Goal that succeeded
+	 * @return - the emotion created
+	 */
+	public static OCCBaseEmotion AppraiseGoalSuccess(AgentModel am, ActiveEmotion hopeEmotion, ActiveEmotion fearEmotion, float conduciveness, Event e) {
+		return AppraiseGoalEnd(OCCEmotionType.SATISFACTION,OCCEmotionType.RELIEF,hopeEmotion,fearEmotion,conduciveness,e);
+	}
+	
+	/**
+	 * Appraises a Goal's likelihood of succeeding
+	 * @param g - the goal
+	 * @param probability - the probability of the goal to succeed
+	 * @return - the BaseEmotion created
+	 */
+	public static OCCBaseEmotion AppraiseGoalSuccessProbability(AgentModel am, Event e, float goalConduciveness, float prob) {
+	
+		float potential;
+		potential = prob * goalConduciveness;
+	
+		OCCBaseEmotion em = new  OCCBaseEmotion(OCCEmotionType.HOPE, potential, e);
+	
+		return em;
+	}
+	
+	public OCCAffectDerivationComponent()
+	{
 	}
 	
 	@Override
@@ -150,6 +279,29 @@ public class OCCAffectDerivationComponent implements Serializable, IAffectDeriva
 	}
 	
 	@Override
+	public AgentDisplayPanel createDisplayPanel(AgentModel am) {
+		return null;
+	}
+
+	
+	@Override
+	public IComponent createModelOfOther() {
+		return new OCCAffectDerivationComponent();
+	}
+	
+	@Override
+	public String[] getComponentDependencies() {
+		String[] dependencies = {};
+		return dependencies;
+	}
+	
+	@Override
+	public void initialize(AgentModel am) {
+	}
+	
+	
+
+	@Override
 	public void inverseAffectDerivation(AgentModel am, BaseEmotion em, AppraisalFrame af)
 	{
 		//ignoring mood for now
@@ -193,170 +345,24 @@ public class OCCAffectDerivationComponent implements Serializable, IAffectDeriva
 					   break;
 		}
 	}
-	
-	private static OCCBaseEmotion OCCAppraiseAttribution(Event event, float like)
-	{
-		OCCBaseEmotion em;
-		
-		if(like >= 0) {
-			em = new OCCBaseEmotion(OCCEmotionType.LOVE, like*0.7f, event, Name.ParseName(event.GetTarget()));
-		}
-		else {
-			em = new OCCBaseEmotion(OCCEmotionType.HATE, -like*0.7f, event, Name.ParseName(event.GetTarget()));
-		}
-		
-		return em;
-	}
-	
-	private static OCCBaseEmotion OCCAppraiseWellBeing(Event event, float desirability) {
-		OCCBaseEmotion em;
-		
-		if(desirability >= 0) {
-			em = new OCCBaseEmotion(OCCEmotionType.JOY, desirability, event);
-		}
-		else {
-			em = new OCCBaseEmotion(OCCEmotionType.DISTRESS, -desirability, event);
-		}
-		return em;
-	}
-	
-	private static OCCBaseEmotion OCCAppraisePraiseworthiness(String appraisingAgent, Event event, float praiseworthiness) {
-		OCCBaseEmotion em;
-		
-		if(praiseworthiness >= 0) {
-			if(event.GetSubject().equals(appraisingAgent)) {
-				em = new OCCBaseEmotion(OCCEmotionType.PRIDE, praiseworthiness, event, Name.ParseName("SELF"));
-			}
-			else {
-				em = new OCCBaseEmotion(OCCEmotionType.ADMIRATION, praiseworthiness, event, Name.ParseName(event.GetSubject()));
-			}
-		}
-		else {
-			if(event.GetSubject().equals(appraisingAgent)) {
-				em = new OCCBaseEmotion(OCCEmotionType.SHAME, -praiseworthiness, event, Name.ParseName("SELF"));
-			}
-			else {
-				em = new OCCBaseEmotion(OCCEmotionType.REPROACH, -praiseworthiness, event, Name.ParseName(event.GetSubject()));
-			}
-		}
-		
-		return em;
-	}
-
-	
-	/**
-	 * Appraises a Goal's likelihood of failure
-	 * @param g - the goal
-	 * @param probability - the probability of the goal to fail
-	 * @return - the emotion created
-	 */
-	public static OCCBaseEmotion AppraiseGoalFailureProbability(AgentModel am , Event e, float goalConduciveness, float prob)
-	{
-		float potential;
-		potential = prob * goalConduciveness;
-		
-		OCCBaseEmotion em = new  OCCBaseEmotion(OCCEmotionType.FEAR, potential, e);
-		
-		return em;
-	}
-	
-	/**
-	 * Appraises a Goal's likelihood of succeeding
-	 * @param g - the goal
-	 * @param probability - the probability of the goal to succeed
-	 * @return - the BaseEmotion created
-	 */
-	public static OCCBaseEmotion AppraiseGoalSuccessProbability(AgentModel am, Event e, float goalConduciveness, float prob) {
-	
-		float potential;
-		potential = prob * goalConduciveness;
-	
-		OCCBaseEmotion em = new  OCCBaseEmotion(OCCEmotionType.HOPE, potential, e);
-	
-		return em;
-	}
-	
-	/**
-	 * Appraises a Goal's Failure according to the emotions that the agent is experiencing
-	 * @param hopeEmotion - the emotion of Hope for achieving the goal that the character feels
-	 * @param fearEmotion - the emotion of Fear for not achieving the goal that the character feels
-	 * @param g - the Goal that failed
-	 */
-	public static OCCBaseEmotion AppraiseGoalFailure(AgentModel am, ActiveEmotion hopeEmotion, ActiveEmotion fearEmotion, float conduciveness, Event e) {
-		return AppraiseGoalEnd(OCCEmotionType.DISAPPOINTMENT,OCCEmotionType.FEARS_CONFIRMED,hopeEmotion,fearEmotion,conduciveness,e);
-	}
-	
-	
-
-	/**
-	 * Appraises a Goal's success according to the emotions that the agent is experiencing
-	 * @param hopeEmotion - the emotion of Hope for achieving the goal that the character feels
-	 * @param fearEmotion - the emotion of Fear for not achieving the goal that the character feels
-	 * @param g - the Goal that succeeded
-	 * @return - the emotion created
-	 */
-	public static OCCBaseEmotion AppraiseGoalSuccess(AgentModel am, ActiveEmotion hopeEmotion, ActiveEmotion fearEmotion, float conduciveness, Event e) {
-		return AppraiseGoalEnd(OCCEmotionType.SATISFACTION,OCCEmotionType.RELIEF,hopeEmotion,fearEmotion,conduciveness,e);
-	}
 
 	
 	
-	private static OCCBaseEmotion OCCAppraiseFortuneOfOthers(Event event, float desirability, float desirabilityForOther, String target) {
-		OCCBaseEmotion em;
-		float potential;
-		
-		potential = (Math.abs(desirabilityForOther) + Math.abs(desirability)) / 2.0f;
-		
-		if(desirability >= 0) {
-			if(desirabilityForOther >= 0) {
-				em = new OCCBaseEmotion(OCCEmotionType.HAPPY_FOR, potential, event, Name.ParseName(target));	
-			}
-			else {
-				em = new OCCBaseEmotion(OCCEmotionType.GLOATING,potential, event, Name.ParseName(target));
-			}
-		}
-		else {
-			if(desirabilityForOther >= 0) {
-				em = new OCCBaseEmotion(OCCEmotionType.RESENTMENT, potential, event, Name.ParseName(target));
-			}
-			else {
-				em = new OCCBaseEmotion(OCCEmotionType.PITTY, potential, event, Name.ParseName(target));
-			}
-		}
-		
-		return em;
+	@Override
+	public String name() {
+		return NAME;
 	}
 	
-	private static OCCBaseEmotion AppraiseGoalEnd(OCCEmotionType hopefullOutcome, OCCEmotionType fearfullOutcome, 
-			ActiveEmotion hopeEmotion, ActiveEmotion fearEmotion, float goalConduciveness, Event e) {
-	
-		OCCEmotionType finalEmotion;
-		float potential = 0;
-		
-		if(hopeEmotion != null) {
-			if(fearEmotion != null && fearEmotion.GetIntensity() > hopeEmotion.GetIntensity()) {
-				potential = fearEmotion.GetPotential();
-				finalEmotion = fearfullOutcome;
-			}
-			else {
-				potential = hopeEmotion.GetPotential();
-				finalEmotion = hopefullOutcome;
-			}
-		}
-		else if(fearEmotion != null) {
-			potential = fearEmotion.GetPotential();
-			finalEmotion = fearfullOutcome;
-		}
-		else return null;
-		
-		//Change, the goal importance now affects 66% of the final potential value for the emotion
-		potential = (potential +  2* goalConduciveness) / 3;
-		
-		return new OCCBaseEmotion(finalEmotion, potential, e);
+	@Override
+	public void reset() {
 	}
 
 	@Override
-	public IComponent createModelOfOther() {
-		return new OCCAffectDerivationComponent();
+	public void update(AgentModel am, Event e)
+	{
+	}
+	
+	@Override
+	public void update(AgentModel am, long time) {
 	}
 }

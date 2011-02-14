@@ -87,36 +87,24 @@ public class AdvancedMemoryComponent implements Serializable, IAppraisalDerivati
 		this._gerWriter = new AdvancedMemoryWriter(this._generalisation.getAllGERs());
 	}
 	
-	public CompoundCue getCompoundCue()
-	{
-		return _compoundCue;
-	}
-	
-	public SpreadActivate getSpreadActivate()
-	{
-		return _spreadActivate;
-	}
-	
-	public Generalisation getGeneralisation()
-	{
-		return _generalisation;
-	}
-	
-	private void loadMemoryProcessesConditions(AgentModel ag){
-
-		AgentLogger.GetInstance().log("LOADING GeneralMemory Conditions: ");
+	/**
+	 * Extract generalisation attributes
+	 * @param 
+	 * @return
+	 * added by Meiyii 1/12/10
+	 */
+	private void extractGAttributes(String attributes)
+	{			
+		this._gAttributes.clear();
 		
-		ActionsLoaderHandler generalMemoryLoader = new ActionsLoaderHandler(ag);
-		
-		try{
-			SAXParserFactory factory = SAXParserFactory.newInstance();
-			SAXParser parser = factory.newSAXParser();
-			parser.parse(new File(ConfigurationManager.getActionsFile()),generalMemoryLoader);
-			
-
-		}catch(Exception e){
-			throw new RuntimeException("GeneralMemory Error on Loading the Actions XML File:" + e);
+		StringTokenizer st = new StringTokenizer(attributes, "*");
+		while(st.hasMoreTokens())
+		{
+			String attributeStr = st.nextToken();
+			_gAttributes.add(attributeStr);
+			System.out.println("gAttribute " + attributeStr);
 		}
+		//this._gmPanel.PanelAttributes(_gAttributes);
 	}
 	
 	/**
@@ -139,63 +127,23 @@ public class AdvancedMemoryComponent implements Serializable, IAppraisalDerivati
 		return knownInfo;
 	}
 	
-	/**
-	 * Extract generalisation attributes
-	 * @param 
-	 * @return
-	 * added by Meiyii 1/12/10
-	 */
-	private void extractGAttributes(String attributes)
-	{			
-		this._gAttributes.clear();
+	private void loadMemoryProcessesConditions(AgentModel ag){
+
+		AgentLogger.GetInstance().log("LOADING GeneralMemory Conditions: ");
 		
-		StringTokenizer st = new StringTokenizer(attributes, "*");
-		while(st.hasMoreTokens())
-		{
-			String attributeStr = st.nextToken();
-			_gAttributes.add(attributeStr);
-			System.out.println("gAttribute " + attributeStr);
+		ActionsLoaderHandler generalMemoryLoader = new ActionsLoaderHandler(ag);
+		
+		try{
+			SAXParserFactory factory = SAXParserFactory.newInstance();
+			SAXParser parser = factory.newSAXParser();
+			parser.parse(new File(ConfigurationManager.getActionsFile()),generalMemoryLoader);
+			
+
+		}catch(Exception e){
+			throw new RuntimeException("GeneralMemory Error on Loading the Actions XML File:" + e);
 		}
-		//this._gmPanel.PanelAttributes(_gAttributes);
 	}
-
-	@Override
-	public String name() {
-		return AdvancedMemoryComponent.NAME;
-	}
-
-	@Override
-	public void initialize(AgentModel am) {
-		_memory = am.getMemory();
-		loadMemoryProcessesConditions(am);
-	}
-
-	@Override
-	public void reset() {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void update(AgentModel am, long time) {
-		/*if (time >= _lastTime + 86400000) {
-			_lastTime = time;
-			
-			_gAttributes.clear();
-			_gAttributes.add("subject");
-			_gAttributes.add("target");
-			_gAttributes.add("action");
-			_gAttributes.add("desirability");
-			_gAttributes.add("praiseworthiness");
-			_gAttributes.add("time");
-			
-			this._generalisation.generalise(_gAttributes, _episodicMemory);		
-		}*/
-	}
-
-	@Override
-	public void update(AgentModel am, Event e) {
-	}
-
+	
 	@Override
 	public void appraisal(AgentModel am, Event e, AppraisalFrame af) {
 		
@@ -218,12 +166,48 @@ public class AdvancedMemoryComponent implements Serializable, IAppraisalDerivati
 			}	
 		}
 	}
-
+	
 	@Override
 	public AgentDisplayPanel createDisplayPanel(AgentModel am) {
 		
 		this._gmPanel = new GeneralMemoryPanel(this);
 		return this._gmPanel;
+	}
+	
+	@Override
+	public String[] getComponentDependencies() {
+		String[] dependencies = {};
+		return dependencies;
+	}
+
+	public CompoundCue getCompoundCue()
+	{
+		return _compoundCue;
+	}
+
+	public Generalisation getGeneralisation()
+	{
+		return _generalisation;
+	}
+
+	public SpreadActivate getSpreadActivate()
+	{
+		return _spreadActivate;
+	}
+
+	@Override
+	public void initialize(AgentModel am) {
+		_memory = am.getMemory();
+		loadMemoryProcessesConditions(am);
+	}
+
+	@Override
+	public void inverseAppraisal(AgentModel am, AppraisalFrame af) {
+	}
+
+	@Override
+	public String name() {
+		return AdvancedMemoryComponent.NAME;
 	}
 
 	@Override
@@ -318,11 +302,33 @@ public class AdvancedMemoryComponent implements Serializable, IAppraisalDerivati
 	}
 
 	@Override
-	public void inverseAppraisal(AgentModel am, AppraisalFrame af) {
+	public AppraisalFrame reappraisal(AgentModel am) {
+		return null;
 	}
 
 	@Override
-	public AppraisalFrame reappraisal(AgentModel am) {
-		return null;
+	public void reset() {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void update(AgentModel am, Event e) {
+	}
+
+	@Override
+	public void update(AgentModel am, long time) {
+		/*if (time >= _lastTime + 86400000) {
+			_lastTime = time;
+			
+			_gAttributes.clear();
+			_gAttributes.add("subject");
+			_gAttributes.add("target");
+			_gAttributes.add("action");
+			_gAttributes.add("desirability");
+			_gAttributes.add("praiseworthiness");
+			_gAttributes.add("time");
+			
+			this._generalisation.generalise(_gAttributes, _episodicMemory);		
+		}*/
 	}
 }

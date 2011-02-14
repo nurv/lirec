@@ -18,4 +18,6 @@ public interface IComponent {
 	
 	public AgentDisplayPanel createDisplayPanel(AgentModel am);
 	
+	public String[] getComponentDependencies();
+	
 }

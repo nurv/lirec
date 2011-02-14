@@ -14,6 +14,7 @@ import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.util.AgentLogger;
 import FAtiMA.ReactiveComponent.Action;
 import FAtiMA.ReactiveComponent.ReactiveComponent;
+import FAtiMA.advancedMemoryComponent.AdvancedMemoryComponent;
 
 public class EmotionalIntelligence implements IComponent {
 	
@@ -25,30 +26,6 @@ public class EmotionalIntelligence implements IComponent {
 	{
 		_parsingFiles = new ArrayList<String>();
 		_parsingFiles.addAll(extraFiles);
-	}
-
-	@Override
-	public AgentDisplayPanel createDisplayPanel(AgentModel am) {
-		return null;
-	}
-
-	@Override
-	public void initialize(AgentModel am) {
-		
-		ReactiveComponent reactiveComponent = (ReactiveComponent) am.getComponent(ReactiveComponent.NAME);
-
-		ArrayList<Step> occRules = OCCAppraisalRules.GenerateOCCAppraisalRules(am);
-		for(Step s : occRules)
-		{
-			am.getActionLibrary().addAction(s);
-		}
-		
-		for(Action at: reactiveComponent.getActionTendencies().getActions())
-		{
-			am.getActionLibrary().addAction(ActionTendencyOperatorFactory.CreateATOperator(am, at));
-		}
-		
-		LoadOperators(am);
 	}
 
 	private void LoadOperators(AgentModel am)
@@ -71,22 +48,52 @@ public class EmotionalIntelligence implements IComponent {
 	}
 
 	@Override
-	public String name() {
-		return EmotionalIntelligence.NAME; 
+	public AgentDisplayPanel createDisplayPanel(AgentModel am) {
+		return null;
 	}
 
 	@Override
-	public void reset() {
+	public String[] getComponentDependencies() {
+		String[] dependencies = {ReactiveComponent.NAME,AdvancedMemoryComponent.NAME};
+		return dependencies;
+	}
+
+	@Override
+	public void initialize(AgentModel am) {
+		
+		ReactiveComponent reactiveComponent = (ReactiveComponent) am.getComponent(ReactiveComponent.NAME);
+
+		ArrayList<Step> occRules = OCCAppraisalRules.GenerateOCCAppraisalRules(am);
+		for(Step s : occRules)
+		{
+			am.getActionLibrary().addAction(s);
+		}
+		
+		for(Action at: reactiveComponent.getActionTendencies().getActions())
+		{
+			am.getActionLibrary().addAction(ActionTendencyOperatorFactory.CreateATOperator(am, at));
+		}
+		
+		LoadOperators(am);
+	}
+
+	@Override
+	public String name() {
+		return EmotionalIntelligence.NAME; 
 	}
 	
 	
 	@Override
-	public void update(AgentModel am, long time) {
-		// TODO Auto-generated method stub
+	public void reset() {
 	}
 	
 	@Override
 	public void update(AgentModel am, Event e)
 	{
+	}
+	
+	@Override
+	public void update(AgentModel am, long time) {
+		// TODO Auto-generated method stub
 	}
 }

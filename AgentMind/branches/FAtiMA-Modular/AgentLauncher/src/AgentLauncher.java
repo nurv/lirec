@@ -12,7 +12,7 @@ import FAtiMA.Core.exceptions.UnknownGoalException;
 import FAtiMA.Core.util.ConfigurationManager;
 import FAtiMA.DeliberativeComponent.DeliberativeComponent;
 import FAtiMA.OCCAffectDerivation.OCCAffectDerivationComponent;
-import FAtiMA.ReactiveComponent.ReactiveComponent;
+import FAtiMA.motivationalSystem.MotivationalComponent;
 
 public class AgentLauncher {
 	
@@ -36,9 +36,9 @@ public class AgentLauncher {
 		{
 			extraFiles.add(cultureFile);
 			
-			aG.addComponent(new ReactiveComponent());
-			aG.addComponent(new OCCAffectDerivationComponent());
-			aG.addComponent(new DeliberativeComponent());
+			//aG.addComponent(new ReactiveComponent());
+			//aG.addComponent(new OCCAffectDerivationComponent());
+			//aG.addComponent(new DeliberativeComponent());
 			//aG.addComponent(new SocialRelationsComponent(extraFiles));
 			//aG.addComponent(new MotivationalComponent(extraFiles));
 			//aG.addComponent(new ToMComponent(ConfigurationManager.getName()));

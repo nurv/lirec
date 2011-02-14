@@ -67,28 +67,6 @@ IProcessEmotionComponent {
 	}
 
 	@Override
-	public String name() {
-		return SocialRelationsComponent.NAME;
-	}
-
-	@Override
-	public void initialize(AgentModel am) {
-		this.loadRelations(am);
-	}
-
-	@Override
-	public void reset() {
-	}
-
-	@Override
-	public void update(AgentModel am, long time) {
-	}
-
-	@Override
-	public void update(AgentModel am, Event e) {
-	}
-
-	@Override
 	public void appraisal(AgentModel am, Event e, AppraisalFrame as)
 	{
 		if (e.GetSubject().equals(Constants.SELF) && e.GetAction().equals("look-at")) 
@@ -101,18 +79,14 @@ IProcessEmotionComponent {
 	}
 
 	@Override
-	public void inverseAppraisal(AgentModel am, AppraisalFrame af) {
-		float like;
-		Event e;
-		like = af.getAppraisalVariable(OCCAppraisalVariables.LIKE.name());
-
-		if (like != 0) {
-			e = af.getEvent();
-			LikeRelation.getRelation(Constants.SELF,e.GetTarget()).setValue(am.getMemory(), like);
-		}
+	public AgentDisplayPanel createDisplayPanel(AgentModel am) {
+		return new SocialRelationsPanel();
 	}
 
-	// updating other's emotional reactions
+	@Override
+	public IComponent createModelOfOther() {
+		return new SocialRelationsComponent(new ArrayList<String>());
+	}
 
 	@Override
 	public void emotionActivation(AgentModel am, ActiveEmotion em) {
@@ -196,17 +170,49 @@ IProcessEmotionComponent {
 	}
 
 	@Override
-	public IComponent createModelOfOther() {
-		return new SocialRelationsComponent(new ArrayList<String>());
+	public String[] getComponentDependencies() {
+		String[] dependencies = {};
+		return dependencies;
 	}
 
 	@Override
-	public AgentDisplayPanel createDisplayPanel(AgentModel am) {
-		return new SocialRelationsPanel();
+	public void initialize(AgentModel am) {
+		this.loadRelations(am);
+	}
+
+	@Override
+	public void inverseAppraisal(AgentModel am, AppraisalFrame af) {
+		float like;
+		Event e;
+		like = af.getAppraisalVariable(OCCAppraisalVariables.LIKE.name());
+
+		if (like != 0) {
+			e = af.getEvent();
+			LikeRelation.getRelation(Constants.SELF,e.GetTarget()).setValue(am.getMemory(), like);
+		}
+	}
+
+	// updating other's emotional reactions
+
+	@Override
+	public String name() {
+		return SocialRelationsComponent.NAME;
 	}
 
 	@Override
 	public AppraisalFrame reappraisal(AgentModel am) {
 		return null;
+	}
+
+	@Override
+	public void reset() {
+	}
+
+	@Override
+	public void update(AgentModel am, Event e) {
+	}
+	
+	@Override
+	public void update(AgentModel am, long time) {
 	}
 }

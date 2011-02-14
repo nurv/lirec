@@ -23,6 +23,7 @@ import FAtiMA.Core.wellFormedNames.Symbol;
 import FAtiMA.DeliberativeComponent.DeliberativeComponent;
 import FAtiMA.DeliberativeComponent.strategies.IGetUtilityForOthers;
 import FAtiMA.OCCAffectDerivation.OCCAppraisalVariables;
+import FAtiMA.ReactiveComponent.ReactiveComponent;
 
 public class ToMComponent implements Serializable, IAppraisalDerivationComponent, IAdvancedPerceptionsComponent, IGetModelStrategy, IGetUtilityForOthers {
 	
@@ -53,30 +54,6 @@ public class ToMComponent implements Serializable, IAppraisalDerivationComponent
 		}
 	}
 	
-	private boolean isPerson(AgentCore ag, String agent)
-	{
-		Name isPerson = Name.ParseName(agent + "(isPerson)");
-		return ag.getMemory().getSemanticMemory().AskPredicate(isPerson);
-	}
-	
-	public HashMap<String,ModelOfOther> getToM()
-	{
-		return this._ToM;
-	}
-
-	@Override
-	public String name() {
-		return ToMComponent.NAME;
-	}
-
-	@Override
-	public void initialize(AgentModel am) {
-		DeliberativeComponent dc = (DeliberativeComponent) am.getComponent(DeliberativeComponent.NAME);
-		am.setModelStrategy(this);
-		Plan.setDetectThreatStrategy(new DetectThreatStrategy());
-		dc.setUtilityForOthersStrategy(this);
-	}
-	
 	private void initializeModelOfOther(AgentCore ag, String name)
 	{
 		if(!_ToM.containsKey(name))
@@ -97,37 +74,15 @@ public class ToMComponent implements Serializable, IAppraisalDerivationComponent
 		}
 	}
 	
-	public void RemoveNearByAgent(String entity)
+	private boolean isPerson(AgentCore ag, String agent)
 	{
-		this._nearbyAgents.remove(entity);
+		Name isPerson = Name.ParseName(agent + "(isPerson)");
+		return ag.getMemory().getSemanticMemory().AskPredicate(isPerson);
 	}
 
 	@Override
-	public void reset() {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void update(AgentModel am,long time) {
-		
-		for(String s : _nearbyAgents)
-		{
-			ModelOfOther m = _ToM.get(s);
-			m.update(time);
-		}		
-	}
-	
-	@Override
-	public void update(AgentModel am, Event e)
-	{
-		Event e2 = e.RemovePerspective(_name);
-		Event e3;
-		for(String s : _nearbyAgents)
-		{
-			ModelOfOther m = _ToM.get(s);
-			e3 = e2.ApplyPerspective(s);
-			m.update(e3);
-		}		
+	public void actionFailedPerception(Event e) {
+		// TODO Auto-generated method stub	
 	}
 
 	@Override
@@ -158,6 +113,16 @@ public class ToMComponent implements Serializable, IAppraisalDerivationComponent
 		}
 	}
 	
+	@Override
+	public AgentDisplayPanel createDisplayPanel(AgentModel am) {
+		return new ToMPanel(this);
+	}
+	
+	@Override
+	public void entityRemovedPerception(String entity) {
+		_nearbyAgents.remove(entity);
+	}
+
 	public AgentModel execute(Symbol ToM)
 	{
 		if(ToM.isGrounded() && !ToM.equals(Constants.UNIVERSAL) && !_ToM.toString().equals(Constants.SELF))
@@ -171,27 +136,40 @@ public class ToMComponent implements Serializable, IAppraisalDerivationComponent
 	}
 
 	@Override
-	public void propertyChangedPerception(String ToM, Name propertyName, String value) 
+	public String[] getComponentDependencies() {
+		String[] dependencies = {ReactiveComponent.NAME,DeliberativeComponent.NAME};
+		return dependencies;
+	}
+	
+	public HashMap<String,ModelOfOther> getToM()
 	{
-		Name propertyName2 = AgentCore.removePerspective(propertyName, _name);
+		return this._ToM;
+	}
+
+	@Override
+	public float getUtilityForOthers(AgentModel am, ActivePursuitGoal g) {
+		DeliberativeComponent dp = (DeliberativeComponent) am.getComponent(DeliberativeComponent.NAME);
 		
-		if(ToM.equals(Constants.UNIVERSAL.toString()))
+		float utility = 0;
+		
+		for(ModelOfOther m : _ToM.values())
 		{
-			for(String other : _nearbyAgents)
-			{
-				ModelOfOther m = _ToM.get(other);
-				m.getMemory().getSemanticMemory().Tell(AgentCore.applyPerspective(propertyName2,other), value);
-			}
-		}
-		else if(!ToM.equals(_name))
-		{
-			ModelOfOther m = _ToM.get(ToM);
-			if(m != null)
-			{
-				m.getMemory().getSemanticMemory().Tell(AgentCore.applyPerspective(propertyName2,ToM), value);
-			}
+			utility+= dp.getUtilityStrategy().getUtility(m, g);
 		}
 		
+		return utility;
+	}
+	
+	@Override
+	public void initialize(AgentModel am) {
+		DeliberativeComponent dc = (DeliberativeComponent) am.getComponent(DeliberativeComponent.NAME);
+		am.setModelStrategy(this);
+		Plan.setDetectThreatStrategy(new DetectThreatStrategy());
+		dc.setUtilityForOthersStrategy(this);
+	}
+
+	@Override
+	public void inverseAppraisal(AgentModel am, AppraisalFrame af) {
 	}
 
 	@Override
@@ -233,27 +211,32 @@ public class ToMComponent implements Serializable, IAppraisalDerivationComponent
 	}
 
 	@Override
-	public void entityRemovedPerception(String entity) {
-		_nearbyAgents.remove(entity);
+	public String name() {
+		return ToMComponent.NAME;
 	}
 
 	@Override
-	public AgentDisplayPanel createDisplayPanel(AgentModel am) {
-		return new ToMPanel(this);
-	}
-
-	@Override
-	public float getUtilityForOthers(AgentModel am, ActivePursuitGoal g) {
-		DeliberativeComponent dp = (DeliberativeComponent) am.getComponent(DeliberativeComponent.NAME);
+	public void propertyChangedPerception(String ToM, Name propertyName, String value) 
+	{
+		Name propertyName2 = AgentCore.removePerspective(propertyName, _name);
 		
-		float utility = 0;
-		
-		for(ModelOfOther m : _ToM.values())
+		if(ToM.equals(Constants.UNIVERSAL.toString()))
 		{
-			utility+= dp.getUtilityStrategy().getUtility(m, g);
+			for(String other : _nearbyAgents)
+			{
+				ModelOfOther m = _ToM.get(other);
+				m.getMemory().getSemanticMemory().Tell(AgentCore.applyPerspective(propertyName2,other), value);
+			}
+		}
+		else if(!ToM.equals(_name))
+		{
+			ModelOfOther m = _ToM.get(ToM);
+			if(m != null)
+			{
+				m.getMemory().getSemanticMemory().Tell(AgentCore.applyPerspective(propertyName2,ToM), value);
+			}
 		}
 		
-		return utility;
 	}
 
 	@Override
@@ -261,13 +244,36 @@ public class ToMComponent implements Serializable, IAppraisalDerivationComponent
 		return null;
 	}
 
-	@Override
-	public void inverseAppraisal(AgentModel am, AppraisalFrame af) {
+	public void RemoveNearByAgent(String entity)
+	{
+		this._nearbyAgents.remove(entity);
 	}
 
 	@Override
-	public void actionFailedPerception(Event e) {
+	public void reset() {
 		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void update(AgentModel am, Event e)
+	{
+		Event e2 = e.RemovePerspective(_name);
+		Event e3;
+		for(String s : _nearbyAgents)
+		{
+			ModelOfOther m = _ToM.get(s);
+			e3 = e2.ApplyPerspective(s);
+			m.update(e3);
+		}		
+	}
+	
+	@Override
+	public void update(AgentModel am,long time) {
 		
+		for(String s : _nearbyAgents)
+		{
+			ModelOfOther m = _ToM.get(s);
+			m.update(time);
+		}		
 	}
 }

@@ -28,6 +28,7 @@ import FAtiMA.DeliberativeComponent.Intention;
 import FAtiMA.DeliberativeComponent.strategies.IExpectedUtilityStrategy;
 import FAtiMA.DeliberativeComponent.strategies.IGetUtilityForOthers;
 import FAtiMA.OCCAffectDerivation.OCCAppraisalVariables;
+import FAtiMA.ReactiveComponent.ReactiveComponent;
 
 
 public class CulturalDimensionsComponent implements IAppraisalDerivationComponent, IOptionsStrategy, IExpectedUtilityStrategy {
@@ -360,5 +361,11 @@ public class CulturalDimensionsComponent implements IAppraisalDerivationComponen
 
 	@Override
 	public void inverseAppraisal(AgentModel am, AppraisalFrame af) {
+	}
+
+	@Override
+	public String[] getComponentDependencies() {
+		String[] dependencies = {ReactiveComponent.NAME,DeliberativeComponent.NAME};
+		return dependencies;
 	}	
 }

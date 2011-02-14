@@ -235,6 +235,12 @@ public class ReactiveComponent implements Serializable, IComponent, IBehaviourCo
 		return _actionTendencies;
 	}
 	
+	@Override
+	public String[] getComponentDependencies() {
+		String[] dependencies = {};
+		return dependencies;
+	}
+
 	/**
 	 * Gets the agent's emotional reactions
 	 * @return the root EmotionalReactionTreeNode that stores 
@@ -278,18 +284,18 @@ public class ReactiveComponent implements Serializable, IComponent, IBehaviourCo
 			AddEmotionalReaction(r);
 		}
 	}
-
+	
 	@Override
 	public String name() {
 		return ReactiveComponent.NAME;
 	}
+
 	
 	@Override
 	public AppraisalFrame reappraisal(AgentModel am) {
 		return null;
 	}
 
-	
 	/**
 	 * Resets the reactive layer, clearing all received events that
 	 * were not appraised yet
@@ -307,7 +313,7 @@ public class ReactiveComponent implements Serializable, IComponent, IBehaviourCo
 	public void update(AgentModel am, Event e)
 	{
 	}
-
+	
 	@Override
 	public void update(AgentModel am,long time) {
 	}

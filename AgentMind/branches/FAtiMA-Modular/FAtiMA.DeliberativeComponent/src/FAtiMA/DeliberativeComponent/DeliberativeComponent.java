@@ -251,6 +251,30 @@ public class DeliberativeComponent implements Serializable, IComponent, IBehavio
 		_actionSuccessStrategies = new ArrayList<IActionSuccessStrategy>();
 	}
 	
+	private void AddGoalsRequest(AgentModel am, String perc)
+	{
+		String goalDescription;
+		String goalName;
+		float importance;
+		float importance2;
+		StringTokenizer st2;
+		StringTokenizer st = new StringTokenizer(perc," ");
+		
+		while(st.hasMoreTokens()) {
+			goalDescription = st.nextToken();
+			st2 = new StringTokenizer(goalDescription,"|");
+			goalName = st2.nextToken();
+			importance = new Float(st2.nextToken()).floatValue();
+			importance2 = new Float(st2.nextToken()).floatValue();
+			try {
+				addGoal(am, goalName,importance,importance2);
+			}
+			catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
 	private void cancelAction(AgentModel am)
 	{
 		if(_actionMonitor!=null)
@@ -686,12 +710,13 @@ public class DeliberativeComponent implements Serializable, IComponent, IBehavio
 			intention.ProcessIntentionActivation(am);
 		}
 	}
-	
+		
 	public void addOptionsStrategy(IOptionsStrategy strategy)
 	{
 		_optionStrategies.add(strategy);
 	}
-		
+	
+	
 	/**
 	 * Adds a ProtectionConstraint to the DeliberativeLayer. The planner will detect
 	 * when there are threats to these ProtectionConstraints and deal with them
@@ -703,7 +728,6 @@ public class DeliberativeComponent implements Serializable, IComponent, IBehavio
 	public void addProtectionConstraint(ProtectedCondition cond) {
 		_protectionConstraints.add(cond);
 	}
-	
 	
 	public void addSubIntention(AgentModel am, Intention mainIntention, ActivePursuitGoal goal)
 	{
@@ -906,6 +930,12 @@ public class DeliberativeComponent implements Serializable, IComponent, IBehavio
 		return maxIntention;
 	}
 	
+	@Override
+	public String[] getComponentDependencies() {
+		String[] dependencies = {};
+		return dependencies;
+	}
+
 	/**
 	 * Gets the agent's emotional planner used in the deliberative reasoning process
 	 * @return the agent's EmotionalPlanner
@@ -914,15 +944,15 @@ public class DeliberativeComponent implements Serializable, IComponent, IBehavio
 	    return _planner;
 	}
 	
+	
+	
 	public float getExpectedUtility(AgentModel am, ActivePursuitGoal g) {
 		return _UStrategy.getUtility(am, g) * _PStrategy.getProbability(am, g);
 	}
-
+	
 	public float getExpectedUtility(AgentModel am, Intention i) {
 		return _UStrategy.getUtility(am, i.getGoal()) * _PStrategy.getProbability(am, i);
 	}
-	
-	
 	
 	public IExpectedUtilityStrategy getExpectedUtilityStrategy()
 	{
@@ -998,7 +1028,8 @@ public class DeliberativeComponent implements Serializable, IComponent, IBehavio
 	@Override
 	public void lookAtPerception(AgentCore ag, String subject, String target) {
 	}
-	
+
+
 	@Override
 	public String name() {
 		return DeliberativeComponent.NAME;
@@ -1055,15 +1086,41 @@ public class DeliberativeComponent implements Serializable, IComponent, IBehavio
 		return options;
 	}
 
-
+	@Override
+	public void processExternalRequest(AgentModel am, String type, String perception) {
+		
+		StringTokenizer st;
+		
+		
+		if(type.equals(CHANGE_IMPORTANCE_SUCCESS) 
+				|| type.equals(CHANGE_IMPORTANCE_FAILURE))
+		{
+			st = new StringTokenizer(perception," ");
+			String goalName = st.nextToken();
+			float importance = new Float(st.nextToken()).floatValue();
+			changeGoalImportance(am, goalName,importance,type);
+		}
+		else if(type.equals(ADD_GOALS)) {
+			AddGoalsRequest(am, perception);
+		}
+		else if(type.equals(REMOVE_GOAL)) {
+			removeGoal(perception);
+		}
+		else if (type.equals(REMOVE_ALL_GOALS)) {
+			removeAllGoals();
+		}
+	}
+	
 	@Override
 	public void propertyChangedPerception(String ToM, Name propertyName,String value) {
 	}
-	
+
+
 	@Override
 	public AppraisalFrame reappraisal(AgentModel am) {
 		return null;
 	}
+
 
 	/**
 	 * Removes all the agent's goals
@@ -1098,7 +1155,6 @@ public class DeliberativeComponent implements Serializable, IComponent, IBehavio
 		}
 	}
 
-
 	public void removeIntention(Intention i)
 	{
 		if(i.isRootIntention())
@@ -1117,7 +1173,6 @@ public class DeliberativeComponent implements Serializable, IComponent, IBehavio
 		}
 	}
 
-
 	/**
 	 * Resets the deliberative layer. Clears the events to be appraised,
 	 * the current intentions and actions.
@@ -1131,7 +1186,7 @@ public class DeliberativeComponent implements Serializable, IComponent, IBehavio
 		_selectedAction = null;
 		_selectedActionEmotion = null;
 	}
-	
+
 	public void setExpectedUtilityStrategy(IExpectedUtilityStrategy strategy)
 	{
 		_EUStrategy = strategy;
@@ -1295,7 +1350,7 @@ public class DeliberativeComponent implements Serializable, IComponent, IBehavio
 			_actionMonitor = null;
 		}
 	}
-
+	
 	@Override
 	public void update(AgentModel am, long time)
 	{
@@ -1320,7 +1375,7 @@ public class DeliberativeComponent implements Serializable, IComponent, IBehavio
 			}
 		}
 	}
-
+	
 	/**
 	 * Forces the recalculation of all plan's probability
 	 */
@@ -1331,55 +1386,6 @@ public class DeliberativeComponent implements Serializable, IComponent, IBehavio
 		it = _intentions.values().iterator();
 		while (it.hasNext()) {
 			((Intention) it.next()).UpdateProbabilities();
-		}
-	}
-
-	@Override
-	public void processExternalRequest(AgentModel am, String type, String perception) {
-		
-		StringTokenizer st;
-		
-		
-		if(type.equals(CHANGE_IMPORTANCE_SUCCESS) 
-				|| type.equals(CHANGE_IMPORTANCE_FAILURE))
-		{
-			st = new StringTokenizer(perception," ");
-			String goalName = st.nextToken();
-			float importance = new Float(st.nextToken()).floatValue();
-			changeGoalImportance(am, goalName,importance,type);
-		}
-		else if(type.equals(ADD_GOALS)) {
-			AddGoalsRequest(am, perception);
-		}
-		else if(type.equals(REMOVE_GOAL)) {
-			removeGoal(perception);
-		}
-		else if (type.equals(REMOVE_ALL_GOALS)) {
-			removeAllGoals();
-		}
-	}
-	
-	private void AddGoalsRequest(AgentModel am, String perc)
-	{
-		String goalDescription;
-		String goalName;
-		float importance;
-		float importance2;
-		StringTokenizer st2;
-		StringTokenizer st = new StringTokenizer(perc," ");
-		
-		while(st.hasMoreTokens()) {
-			goalDescription = st.nextToken();
-			st2 = new StringTokenizer(goalDescription,"|");
-			goalName = st2.nextToken();
-			importance = new Float(st2.nextToken()).floatValue();
-			importance2 = new Float(st2.nextToken()).floatValue();
-			try {
-				addGoal(am, goalName,importance,importance2);
-			}
-			catch(Exception e) {
-				e.printStackTrace();
-			}
 		}
 	}
 }
