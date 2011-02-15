@@ -1,12 +1,14 @@
 package FAtiMA.empathy;
 
+import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.emotionalState.ActiveEmotion;
-import FAtiMA.Core.emotionalState.EmotionalState;
-import FAtiMA.Core.memory.semanticMemory.KnowledgeBase;
-import FAtiMA.Core.util.enumerables.EmotionType;
 import FAtiMA.Core.wellFormedNames.Name;
+import FAtiMA.OCCAffectDerivation.OCCEmotionType;
 
 public class FacialExpressionSimulator {
+	
+	final private Name FACIAL_EXP_PROPERTY = Name.ParseName("SELF(facial-exp)");
+	
 	
 	/**
 	 * Singleton pattern 
@@ -24,75 +26,74 @@ public class FacialExpressionSimulator {
 	} 
 	
 	
-	public String UpdateFacialExpression(Name facialExpressionProperty){
+	public String updateFacialExpression(AgentModel am){
 		    
 		//search for the previous facial expression in the KB
-		String previousFacialExpression = (String)KnowledgeBase.GetInstance().AskProperty(facialExpressionProperty);
-
+		String facialExpressionValue = (String) am.getMemory().getSemanticMemory().AskProperty(FACIAL_EXP_PROPERTY);
+		
+		FacialExpressionType previousFacialExpression = FacialExpressionType.valueOf(facialExpressionValue);
+		
         //checks the current strongest active emotion that is based on the reactive appraisal
-		ActiveEmotion currentSrongestEmotion = EmotionalState.GetInstance().GetStrongestExpressiveEmotion();
-	
-		short newFacialExpression = -1;
+		ActiveEmotion currentSrongestEmotion = am.getEmotionalState().GetStrongestEmotion();
+		
+		FacialExpressionType newFacialExpression;
 		
 	    //changes the facial expression accordingly
 		if(currentSrongestEmotion == null){
 			newFacialExpression = FacialExpressionType.NEUTRAL;
 		}else{
-			switch(currentSrongestEmotion.GetType()){
+			switch(OCCEmotionType.valueOf(currentSrongestEmotion.getType())){
 				
-			    case EmotionType.ANGER : 
-				case EmotionType.HATE : newFacialExpression = FacialExpressionType.ANGRY; 
+			    case ANGER : 
+				case HATE : newFacialExpression = FacialExpressionType.ANGRY; 
 										break;
-				
-				case EmotionType.JOY :
-				case EmotionType.ADMIRATION :
-				case EmotionType.GLOATING:				
-				case EmotionType.LOVE : newFacialExpression = FacialExpressionType.HAPPY; 
-				                        break;
-				 
-				case EmotionType.DISTRESS : newFacialExpression = FacialExpressionType.SAD;
-											break;
+				case JOY :
+				case ADMIRATION :
+				case GLOATING:				
+				case LOVE : newFacialExpression = FacialExpressionType.HAPPY; 
+				        break;
+				case DISTRESS : newFacialExpression = FacialExpressionType.SAD;
+					break;
 				                    
 				default : newFacialExpression = FacialExpressionType.NEUTRAL; break;
 			}
 		}
 		
-		String newFacialExpressionName = FacialExpressionType.GetName(newFacialExpression);
+		String newFacialExpressionName = newFacialExpression.name();
 		
-		if(!newFacialExpressionName.equalsIgnoreCase(previousFacialExpression)){	
-			
-			KnowledgeBase.GetInstance().Tell(facialExpressionProperty, newFacialExpressionName);			
+		if(!newFacialExpressionName.equalsIgnoreCase(previousFacialExpression.name())){	
+			am.getMemory().getSemanticMemory().Tell(FACIAL_EXP_PROPERTY, newFacialExpressionName);			
 			return newFacialExpressionName;
 		}else{
 			return null;
 		}	
 	}
 	
-	public String CalculateFacialExpression(ActiveEmotion e){	    
+	public FacialExpressionType CalculateFacialExpression(ActiveEmotion e){	    
    
 		if(e == null){
-			return FacialExpressionType.GetName(FacialExpressionType.NEUTRAL);
+			return FacialExpressionType.NEUTRAL;
 		}else{
-			switch(e.GetType()){				
-			    case EmotionType.ANGER : 
-				case EmotionType.HATE : return FacialExpressionType.GetName(FacialExpressionType.ANGRY); 		
-				case EmotionType.JOY :
-				case EmotionType.ADMIRATION :
-				case EmotionType.GLOATING:				
-				case EmotionType.LOVE :  return FacialExpressionType.GetName(FacialExpressionType.HAPPY);
-				case EmotionType.DISTRESS : return FacialExpressionType.GetName(FacialExpressionType.SAD);
-				default : return FacialExpressionType.GetName(FacialExpressionType.NEUTRAL);
+			switch(OCCEmotionType.valueOf(e.getType())){				
+			    case ANGER : 
+				case HATE :return FacialExpressionType.ANGRY; 		
+				case JOY :
+				case ADMIRATION :
+				case GLOATING:				
+				case LOVE : return FacialExpressionType.HAPPY;
+				case DISTRESS : return FacialExpressionType.SAD;
+				default : return FacialExpressionType.NEUTRAL;
 			}
 		}
 	}
 
-	public short CalculateEmotionType(short facialExpressionType) {
+	public OCCEmotionType CalculateEmotionType(FacialExpressionType facialExpressionType) {
 		switch(facialExpressionType){
-			case FacialExpressionType.ANGRY: return EmotionType.ANGER;
-			case FacialExpressionType.HAPPY: return EmotionType.JOY;
-			case FacialExpressionType.SAD: return EmotionType.DISTRESS;
-			case FacialExpressionType.NEUTRAL : return EmotionType.NEUTRAL;
-			default : return EmotionType.NEUTRAL;
+			case ANGRY: return OCCEmotionType.ANGER;
+			case HAPPY: return OCCEmotionType.JOY;
+			case SAD: return OCCEmotionType.DISTRESS;
+			case NEUTRAL : return null;
+			default : return null;
 		}
 	}
 }
