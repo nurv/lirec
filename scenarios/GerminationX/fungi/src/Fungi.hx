@@ -173,7 +173,7 @@ class Spirit extends SkeletonEntity
 		super(world,pos);
         Name = name;
         Speed=0.1;
-        UpdateFreq=5;
+        UpdateFreq=2;
         Hide(true);
         DesiredPos=new Vec2(LogicalPos.x,LogicalPos.y);
         RawEmotions={Love:0,Hate:0,Hope:0,Fear:0,Satisfaction:0,
