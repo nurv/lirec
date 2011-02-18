@@ -230,4 +230,10 @@ public class ModelOfOther implements AgentModel, Serializable {
 		}	
 	}
 
+	@Override
+	public EmotionalState simulateEmotionalState(Event ficticiousEvent,
+			IComponent callingComponent) {
+		return null;
+	}
+
 }
