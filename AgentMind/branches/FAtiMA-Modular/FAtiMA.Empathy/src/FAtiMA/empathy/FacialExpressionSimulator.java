@@ -2,12 +2,17 @@ package FAtiMA.empathy;
 
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.emotionalState.ActiveEmotion;
+import FAtiMA.Core.emotionalState.BaseEmotion;
+import FAtiMA.Core.sensorEffector.Event;
+import FAtiMA.Core.util.Constants;
 import FAtiMA.Core.wellFormedNames.Name;
+import FAtiMA.OCCAffectDerivation.OCCBaseEmotion;
 import FAtiMA.OCCAffectDerivation.OCCEmotionType;
 
 public class FacialExpressionSimulator {
 	
-	final private Name FACIAL_EXP_PROPERTY = Name.ParseName("SELF(facial-exp)");
+	final private String FACIAL_EXP_PROPERTY = "(facial-exp)";
+	final private float DEFAULT_EMOTION_POTENTIAL = 5;
 	
 	
 	/**
@@ -20,18 +25,25 @@ public class FacialExpressionSimulator {
 		if(_facialSim == null)
 		{
 			_facialSim = new FacialExpressionSimulator();
+		
+		
+			
 		}
 		
 		return _facialSim;
 	} 
 	
 	
-	public String updateFacialExpression(AgentModel am){
+	public FacialExpressionType updateFacialExpression(AgentModel am){
 		    
 		//search for the previous facial expression in the KB
-		String facialExpressionValue = (String) am.getMemory().getSemanticMemory().AskProperty(FACIAL_EXP_PROPERTY);
+		FacialExpressionType previousFacialExpression = (FacialExpressionType) am.getMemory().getSemanticMemory().AskProperty(Name.ParseName(Constants.SELF + FACIAL_EXP_PROPERTY));
 		
-		FacialExpressionType previousFacialExpression = FacialExpressionType.valueOf(facialExpressionValue);
+		if(previousFacialExpression == null){
+			//Set the initial FacialExpression
+			am.getMemory().getSemanticMemory().Tell(Name.ParseName(Constants.SELF + FACIAL_EXP_PROPERTY), FacialExpressionType.NEUTRAL);
+			previousFacialExpression = FacialExpressionType.NEUTRAL;
+		}
 		
         //checks the current strongest active emotion that is based on the reactive appraisal
 		ActiveEmotion currentSrongestEmotion = am.getEmotionalState().GetStrongestEmotion();
@@ -59,17 +71,15 @@ public class FacialExpressionSimulator {
 			}
 		}
 		
-		String newFacialExpressionName = newFacialExpression.name();
-		
-		if(!newFacialExpressionName.equalsIgnoreCase(previousFacialExpression.name())){	
-			am.getMemory().getSemanticMemory().Tell(FACIAL_EXP_PROPERTY, newFacialExpressionName);			
-			return newFacialExpressionName;
+		if(newFacialExpression != previousFacialExpression){	
+			am.getMemory().getSemanticMemory().Tell(Name.ParseName(Constants.SELF + FACIAL_EXP_PROPERTY), newFacialExpression);			
+			return newFacialExpression;
 		}else{
 			return null;
 		}	
 	}
 	
-	public FacialExpressionType CalculateFacialExpression(ActiveEmotion e){	    
+	public FacialExpressionType CalculateFacialExpression(BaseEmotion e){	    
    
 		if(e == null){
 			return FacialExpressionType.NEUTRAL;
@@ -87,13 +97,25 @@ public class FacialExpressionSimulator {
 		}
 	}
 
-	public OCCEmotionType CalculateEmotionType(FacialExpressionType facialExpressionType) {
+	public OCCBaseEmotion recognizeEmotion(FacialExpressionType facialExpressionType, Event e) {
 		switch(facialExpressionType){
-			case ANGRY: return OCCEmotionType.ANGER;
-			case HAPPY: return OCCEmotionType.JOY;
-			case SAD: return OCCEmotionType.DISTRESS;
+			case ANGRY: return new OCCBaseEmotion(OCCEmotionType.ANGER, DEFAULT_EMOTION_POTENTIAL, e);
+			case HAPPY: return new OCCBaseEmotion(OCCEmotionType.JOY, DEFAULT_EMOTION_POTENTIAL, e);
+			case SAD: return new OCCBaseEmotion(OCCEmotionType.DISTRESS,DEFAULT_EMOTION_POTENTIAL, e);
 			case NEUTRAL : return null;
 			default : return null;
 		}
+	}
+	
+	public FacialExpressionType determineTargetFacialExpression(String target, AgentModel am){
+		//search for the previous facial expression in the KB
+		FacialExpressionType targetFacialExpression = (FacialExpressionType)am.getMemory().getSemanticMemory().AskProperty(Name.ParseName(target + FACIAL_EXP_PROPERTY));
+		
+		if(targetFacialExpression == null){
+			return FacialExpressionType.NEUTRAL;
+		}else{
+			return targetFacialExpression;
+		}
+		
 	}
 }
