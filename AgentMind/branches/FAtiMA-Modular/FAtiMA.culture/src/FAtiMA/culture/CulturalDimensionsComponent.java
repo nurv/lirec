@@ -29,6 +29,8 @@ import FAtiMA.DeliberativeComponent.strategies.IExpectedUtilityStrategy;
 import FAtiMA.DeliberativeComponent.strategies.IGetUtilityForOthers;
 import FAtiMA.OCCAffectDerivation.OCCAppraisalVariables;
 import FAtiMA.ReactiveComponent.ReactiveComponent;
+import FAtiMA.ToM.ToMComponent;
+import FAtiMA.motivationalSystem.MotivationalComponent;
 
 
 public class CulturalDimensionsComponent implements IAppraisalDerivationComponent, IOptionsStrategy, IExpectedUtilityStrategy {
@@ -365,7 +367,7 @@ public class CulturalDimensionsComponent implements IAppraisalDerivationComponen
 
 	@Override
 	public String[] getComponentDependencies() {
-		String[] dependencies = {ReactiveComponent.NAME,DeliberativeComponent.NAME};
+		String[] dependencies = {ReactiveComponent.NAME,DeliberativeComponent.NAME,MotivationalComponent.NAME,ToMComponent.NAME};
 		return dependencies;
 	}	
 }
