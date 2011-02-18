@@ -87,7 +87,7 @@ public class EmpathyComponent  implements IAppraisalDerivationComponent, IAffect
 	
 	@Override
 	public void appraisal(AgentModel am, Event e, AppraisalFrame af) {
-		ArrayList<String> empathicTargets = determineEmpathicTargets(e);
+		ArrayList<String> empathicTargets = determineEmpathicTargets(e,am);
 		BaseEmotion elicitedEmotion;
 		float affectiveLink; 
 		
@@ -146,7 +146,7 @@ public class EmpathyComponent  implements IAppraisalDerivationComponent, IAffect
 		EmpathicEmotion empathicEmotion;
 		FacialExpressionType targetFacialExpression;
 		ArrayList<BaseEmotion> potentialEmpathicEmotions = new ArrayList<BaseEmotion>();
-		ArrayList<String> empathicTargets = determineEmpathicTargets(af.getEvent());
+		ArrayList<String> empathicTargets = determineEmpathicTargets(af.getEvent(),am);
 		
 		for(String empathicTarget : empathicTargets){
 			if(af.containsAppraisalVariable(AppraisalVariables.AFFECTIVE_LINK + empathicTarget)){
@@ -179,17 +179,25 @@ public class EmpathyComponent  implements IAppraisalDerivationComponent, IAffect
 	}
 	
 	
-	//TODO: Check if the empathicTargets are agents or not
-	private ArrayList<String> determineEmpathicTargets(Event e){
+	
+	private ArrayList<String> determineEmpathicTargets(Event e, AgentModel am){
+		
+		String[] possibleEmpathicTargets = {e.GetSubject(),e.GetTarget()};
+		
 		ArrayList<String> empathicTargets = new ArrayList<String>();
 		
-		if(!e.GetSubject().equalsIgnoreCase(Constants.SELF)){
-			empathicTargets.add(e.GetSubject());
+		for(String possibleEmpathicTarget : possibleEmpathicTargets){
+			
+			if(possibleEmpathicTarget != null && !possibleEmpathicTarget.equalsIgnoreCase(Constants.SELF)){			
+			
+				if(FacialExpressionSimulator.gI().determineTargetFacialExpression(possibleEmpathicTarget, am) != null){
+					empathicTargets.add(possibleEmpathicTarget);
+				}else{
+					//If it has no facial expression then the agent assumes it's an object
+				}	
+			}
 		}
-		
-		if(e.GetTarget() != null && !e.GetTarget().equalsIgnoreCase(Constants.SELF)){
-			empathicTargets.add(e.GetTarget());
-		}
+	
 		return empathicTargets;
 	}
 	

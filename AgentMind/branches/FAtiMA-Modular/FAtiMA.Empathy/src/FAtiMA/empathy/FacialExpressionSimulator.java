@@ -37,12 +37,12 @@ public class FacialExpressionSimulator {
 	public FacialExpressionType updateFacialExpression(AgentModel am){
 		    
 		//search for the previous facial expression in the KB
-		FacialExpressionType previousFacialExpression = (FacialExpressionType) am.getMemory().getSemanticMemory().AskProperty(Name.ParseName(Constants.SELF + FACIAL_EXP_PROPERTY));
+		String previousFacialExpression = (String) am.getMemory().getSemanticMemory().AskProperty(Name.ParseName(Constants.SELF + FACIAL_EXP_PROPERTY));
 		
 		if(previousFacialExpression == null){
 			//Set the initial FacialExpression
-			am.getMemory().getSemanticMemory().Tell(Name.ParseName(Constants.SELF + FACIAL_EXP_PROPERTY), FacialExpressionType.NEUTRAL);
-			previousFacialExpression = FacialExpressionType.NEUTRAL;
+			am.getMemory().getSemanticMemory().Tell(Name.ParseName(Constants.SELF + FACIAL_EXP_PROPERTY), FacialExpressionType.NEUTRAL.name());
+			previousFacialExpression = FacialExpressionType.NEUTRAL.name();
 		}
 		
         //checks the current strongest active emotion that is based on the reactive appraisal
@@ -71,8 +71,8 @@ public class FacialExpressionSimulator {
 			}
 		}
 		
-		if(newFacialExpression != previousFacialExpression){	
-			am.getMemory().getSemanticMemory().Tell(Name.ParseName(Constants.SELF + FACIAL_EXP_PROPERTY), newFacialExpression);			
+		if(newFacialExpression != FacialExpressionType.valueOf(previousFacialExpression)){	
+			am.getMemory().getSemanticMemory().Tell(Name.ParseName(Constants.SELF + FACIAL_EXP_PROPERTY), newFacialExpression.name());			
 			return newFacialExpression;
 		}else{
 			return null;
@@ -109,12 +109,12 @@ public class FacialExpressionSimulator {
 	
 	public FacialExpressionType determineTargetFacialExpression(String target, AgentModel am){
 		//search for the previous facial expression in the KB
-		FacialExpressionType targetFacialExpression = (FacialExpressionType)am.getMemory().getSemanticMemory().AskProperty(Name.ParseName(target + FACIAL_EXP_PROPERTY));
+		String targetFacialExpression = (String)am.getMemory().getSemanticMemory().AskProperty(Name.ParseName(target + FACIAL_EXP_PROPERTY));
 		
 		if(targetFacialExpression == null){
-			return FacialExpressionType.NEUTRAL;
+			return null;
 		}else{
-			return targetFacialExpression;
+			return FacialExpressionType.valueOf(targetFacialExpression);
 		}
 		
 	}

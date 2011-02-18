@@ -15,7 +15,7 @@ public class EmpathicEmotionsPanel extends EmotionalStatePanel{
 	  	EmotionalState empathicEmotionalState = es.clone();
 		
 	  	for(ActiveEmotion aE : empathicEmotionalState.getEmotionPool()){
-	  		if(!(aE.getBaseEmotionClass() instanceof EmpathicEmotion)){
+	  		if(!(aE.getBaseEmotionClass() == EmpathicEmotion.class)){
 	  			empathicEmotionalState.RemoveEmotion(aE);
 	  		}
 	  	}
