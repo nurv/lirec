@@ -53,6 +53,7 @@ public class ActiveEmotion extends BaseEmotion {
 	protected int _decay;
 	protected float _intensity;	
 	protected int _threshold;
+	protected Object _baseEmotionClass;
 	
 	/**
 	 * Creates a new ActiveEmotion
@@ -63,10 +64,12 @@ public class ActiveEmotion extends BaseEmotion {
 	 */
 	public ActiveEmotion(BaseEmotion potEm, float potential, int threshold, int decay){
 		super(potEm);
+		
 		_potential = potential;
 		_threshold = threshold;
 		_decay = decay;
 		SetIntensity(potential);
+		_baseEmotionClass = potEm.getClass();
 	}
 
 	/**
@@ -88,6 +91,10 @@ public class ActiveEmotion extends BaseEmotion {
 		return _intensity;
 	}
 
+	public Object getBaseEmotionClass(){
+		return _baseEmotionClass;
+	}
+	
 	/**
 	 * Reforces the intensity of the emotion by a given potential
 	 * @param potential - the potential for the reinformcement of the emotion's intensity

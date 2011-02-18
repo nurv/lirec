@@ -5,6 +5,7 @@ import FAtiMA.Core.emotionalState.AppraisalFrame;
 import FAtiMA.Core.emotionalState.EmotionalState;
 import FAtiMA.Core.goals.GoalLibrary;
 import FAtiMA.Core.memory.Memory;
+import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.sensorEffector.RemoteAgent;
 import FAtiMA.Core.wellFormedNames.Symbol;
 
@@ -31,5 +32,8 @@ public interface AgentModel {
 	public void setModelStrategy(IGetModelStrategy strat);
 	
 	public void updateEmotions(AppraisalFrame af);
+	
+	public EmotionalState simulateEmotionalState(Event ficticiousEvent,IComponent callingComponent);
+	
 	
 }

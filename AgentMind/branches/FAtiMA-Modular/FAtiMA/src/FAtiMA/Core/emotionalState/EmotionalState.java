@@ -102,6 +102,16 @@ public class EmotionalState implements Serializable {
 		_lastTime = AgentSimulationTime.GetInstance().Time();
 	}
 	
+	public EmotionalState clone(){
+		EmotionalState eS = new EmotionalState();
+		eS._emotionPool = new Hashtable<String, ActiveEmotion>(this._emotionPool);
+		eS._emotionDispositions  = new Hashtable<String,EmotionDisposition>(this._emotionDispositions);
+		eS._mood = this._mood;
+		eS._lastTime = this._lastTime;
+		return eS;
+	}
+	
+	
 	private float DeterminePotential(BaseEmotion potEm) {
 	    float potential = potEm.GetPotential();
 
@@ -305,6 +315,7 @@ public class EmotionalState implements Serializable {
 	public Iterator<ActiveEmotion> GetEmotionsIterator() {
 		return _emotionPool.values().iterator();
 	}
+
 	
 	/**
 	 * Gets a float value that represents the characters mood.
@@ -489,6 +500,10 @@ public class EmotionalState implements Serializable {
 			return _emotionDispositions.get(emotionName);
 		}
 		else return DEFAULT_EMOTION_DISPOSITION;
+	}
+
+	public Collection<ActiveEmotion> getEmotionPool() {
+		return _emotionPool.values();
 	}
 	
 }

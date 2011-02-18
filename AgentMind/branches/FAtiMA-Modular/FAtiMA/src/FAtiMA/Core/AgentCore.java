@@ -794,7 +794,41 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 			}
 		}
 	}
+	
+	@Override
+	public EmotionalState simulateEmotionalState(Event simulatedEvent,IComponent callingComponent) {
+		AppraisalFrame appraisalFrame = new AppraisalFrame(simulatedEvent);
+		EmotionalState simulatedEmotionalState = null;
+		
+		for(IAppraisalDerivationComponent c : this._appraisalComponents)
+		{
+			if(c != callingComponent){ //to prevent infinite loops
+				c.appraisal(this,simulatedEvent, appraisalFrame);
+			}
+		}
+		if(appraisalFrame.hasChanged())
+		{
+			simulatedEmotionalState = this._emotionalState.clone(); 
+			simulatedEmotionalState.Clear(); //only want the emotions caused by the simulatedEvent
+			
+			for(IAffectDerivationComponent ac : this._affectDerivationComponents)
+			{
+				if(ac != callingComponent){ //again to prevent infinite loops
+					ArrayList<BaseEmotion> emotions = ac.affectDerivation(this, appraisalFrame);
+					for(BaseEmotion em : emotions)
+					{
+						simulatedEmotionalState.AddEmotion(em, this);
+					}		
+				}
+			}
+			
+		}
+	
+		return simulatedEmotionalState;
+	}
 
+	
+	
 	private void updateSimulationTimer() {
 		// //updates the agent's simulation timer
 		AgentSimulationTime.GetInstance().Tick();
@@ -1075,4 +1109,8 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 			}
 		}	
 	}
+	
+	
+	
+
 }

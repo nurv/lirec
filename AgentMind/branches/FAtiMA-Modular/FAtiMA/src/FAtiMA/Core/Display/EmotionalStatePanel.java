@@ -104,6 +104,11 @@ public class EmotionalStatePanel extends AgentDisplayPanel {
     	return Update((AgentModel) ag);
     }
     
+    protected EmotionalState getEmotionalState(AgentModel am){
+    	return am.getEmotionalState();
+    }
+    
+    
     public boolean Update(AgentModel am) {
         Float aux;
         ActiveEmotion em;
