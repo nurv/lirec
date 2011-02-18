@@ -1,10 +1,6 @@
 package FAtiMA.empathy;
 
-import javax.swing.JPanel;
-
-import FAtiMA.Core.AgentCore;
 import FAtiMA.Core.AgentModel;
-import FAtiMA.Core.Display.AgentDisplayPanel;
 import FAtiMA.Core.Display.EmotionalStatePanel;
 import FAtiMA.Core.emotionalState.ActiveEmotion;
 import FAtiMA.Core.emotionalState.EmotionalState;

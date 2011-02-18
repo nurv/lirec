@@ -2,19 +2,8 @@ package FAtiMA.empathy;
 
 import org.xml.sax.Attributes;
 
-import FAtiMA.Core.AgentModel;
-import FAtiMA.Core.conditions.EmotionCondition;
-import FAtiMA.Core.conditions.MoodCondition;
-import FAtiMA.Core.conditions.PastEventCondition;
-import FAtiMA.Core.conditions.PredicateCondition;
-import FAtiMA.Core.conditions.PropertyCondition;
-import FAtiMA.Core.emotionalState.ElicitingEmotion;
-import FAtiMA.Core.emotionalState.EmotionalState;
 import FAtiMA.Core.exceptions.InvalidEmotionTypeException;
-import FAtiMA.Core.util.Constants;
 import FAtiMA.Core.wellFormedNames.Name;
-import FAtiMA.Core.wellFormedNames.Substitution;
-import FAtiMA.Core.wellFormedNames.Symbol;
 import FAtiMA.ReactiveComponent.Action;
 import FAtiMA.ReactiveComponent.parsers.ReactiveLoaderHandler;
 

@@ -21,10 +21,8 @@ import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.util.AgentLogger;
 import FAtiMA.Core.util.ConfigurationManager;
 import FAtiMA.Core.util.Constants;
-import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.ReactiveComponent.ActionTendencies;
 import FAtiMA.ReactiveComponent.ReactiveComponent;
-import FAtiMA.ReactiveComponent.display.ActionTendenciesPanel;
 import FAtiMA.socialRelations.LikeRelation;
 import FAtiMA.socialRelations.SocialRelationsComponent;
 

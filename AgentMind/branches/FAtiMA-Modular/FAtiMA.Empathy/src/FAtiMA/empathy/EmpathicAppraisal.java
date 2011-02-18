@@ -2,7 +2,6 @@ package FAtiMA.empathy;
 
 import FAtiMA.Core.emotionalState.AppraisalFrame;
 import FAtiMA.Core.emotionalState.BaseEmotion;
-import FAtiMA.Core.emotionalState.EmotionalState;
 
 
 public class EmpathicAppraisal{
