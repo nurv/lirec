@@ -25,16 +25,21 @@ import FAtiMA.ReactiveComponent.ReactiveComponent;
 public class ReactiveLoaderHandler extends ReflectXMLHandler{
 	
 	private ReactiveComponent _reactiveComponent;
-	private Action _action;
-    private ElicitingEmotion _elicitingEmotion;
+	protected Action _action;
+  	protected ElicitingEmotion _elicitingEmotion;
     private Reaction _eventReaction;
     private Substitution _self;
 	
+    public ReactiveLoaderHandler(){
+    	//this is just because of compatibility issues.
+    	this._self = new Substitution(new Symbol("[SELF]"), new Symbol(Constants.SELF));
+   
+    }
+    
 	public ReactiveLoaderHandler(ReactiveComponent reactiveComponent)
 	{
 		this._reactiveComponent = reactiveComponent;
-		//this is just because of compatibility issues.
-    	this._self = new Substitution(new Symbol("[SELF]"), new Symbol(Constants.SELF));
+		this._self = new Substitution(new Symbol("[SELF]"), new Symbol(Constants.SELF));
 	}
 	
 	public void ActionTendency(Attributes attributes) {
@@ -52,12 +57,7 @@ public class ReactiveLoaderHandler extends ReflectXMLHandler{
     	_elicitingEmotion.SetCause(event);
     }
 
-    public void ElicitingEmotion(Attributes attributes) throws InvalidEmotionTypeException {
-    	String emotionName;
-    	Integer minIntensity;
- 
-    	
-    	emotionName = attributes.getValue("type");
+    protected void parseElicitingEmotion(String emotionName, Integer minIntensity){
     	
     	//Just to prevent typing errors
     	if(emotionName.equalsIgnoreCase("happy-for")){
@@ -66,12 +66,15 @@ public class ReactiveLoaderHandler extends ReflectXMLHandler{
     	if(emotionName.equalsIgnoreCase("fears-confirmed")){
     		emotionName = "fears_confirmed";
 		}
-    	
+   
     	emotionName = emotionName.toUpperCase(Locale.ENGLISH);
-    	
-    	minIntensity = new Integer(attributes.getValue("minIntensity"));
+ 
     	_elicitingEmotion = new ElicitingEmotion(emotionName,minIntensity.intValue());
     	_action.SetElicitingEmotion(_elicitingEmotion);
+    }
+    
+    public void ElicitingEmotion(Attributes attributes) throws InvalidEmotionTypeException {
+    	parseElicitingEmotion(attributes.getValue("type"),new Integer(attributes.getValue("minIntensity")));
     	_reactiveComponent.getActionTendencies().AddAction(_action);
     }
 

@@ -67,7 +67,7 @@ public class ActionTendencies implements Serializable, Cloneable {
 	private static final long serialVersionUID = 1L;
 	
 	protected ArrayList<Action> _actions;
-	private HashMap<String,Long> _filteredActions;
+	protected HashMap<String,Long> _filteredActions;
 	
 	/**
 	 * Create a new ActionTendenciesSet

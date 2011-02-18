@@ -108,6 +108,7 @@ public class ReactiveComponent implements Serializable, IComponent, IBehaviourCo
 		this._emotionalReactions = new EmotionalReactionTreeNode(EmotionalReactionTreeNode.subjectNode);
 	}
 	
+	@Override
 	public void actionSelectedForExecution(ValuedAction action)
 	{		
 		/*
@@ -265,7 +266,7 @@ public class ReactiveComponent implements Serializable, IComponent, IBehaviourCo
 
 		} catch (Exception e) {
 			throw new RuntimeException(
-					"Error on loading goals from the agent XML Files:" + e);
+					"Error reading the agent XML Files:" + e);
 		}
 	}
 
