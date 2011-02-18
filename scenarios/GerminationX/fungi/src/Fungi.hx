@@ -27,6 +27,8 @@ import truffle.SpriteEntity;
 import truffle.SkeletonEntity;
 import truffle.Bone;
 
+import Critters;
+
 // todo: remove this
 import flash.display.Graphics;
 import flash.display.Shape;
@@ -173,7 +175,7 @@ class Spirit extends SkeletonEntity
 		super(world,pos);
         Name = name;
         Speed=0.1;
-        UpdateFreq=2;
+        UpdateFreq=5;
         Hide(true);
         DesiredPos=new Vec2(LogicalPos.x,LogicalPos.y);
         RawEmotions={Love:0,Hate:0,Hope:0,Fear:0,Satisfaction:0,
@@ -300,8 +302,10 @@ class Spirit extends SkeletonEntity
         var c=this;
         Root.Recurse(function(b:Bone,depth:Int) 
         {
-            b.SetRotate((c.Emotions.Love+
-                         c.Emotions.Admiration)*5*Math.sin(
+            var excitement = c.Emotions.Love+c.Emotions.Admiration;
+            if (excitement>10) excitement=10;
+            
+            b.SetRotate(excitement*5*Math.sin(
                              (((10-depth)+frame*0.04+c.Emotions.Gratitude*0.01)+
                              c.Emotions.Joy*0.1)) +
             ((world.MyRndGen.RndFlt()-0.5)*10*(c.Emotions.Hate+
@@ -378,6 +382,7 @@ class FungiWorld extends World
 	var MyRndGen:RndGen;
 	public var MyTextEntry:TextEntry;
 	public var Plants:Array<Plant>;
+    //public var TheCritters:Critters;
 	var MyName:String;
     var Frame:Int;
     var TickTime:Int;
@@ -402,6 +407,7 @@ class FungiWorld extends World
 		MyRndGen = new RndGen();
         Server = new ServerConnection();
         MyName = "";
+
 
         var arrow1 = new SpriteEntity(this,new Vec3(7,-2,1), Resources.Get("arr3"));
         arrow1.Spr.MouseUp(this,function(c) { c.UpdateWorld(c.WorldPos.Add(new Vec3(0,-1,0))); });
@@ -445,6 +451,8 @@ class FungiWorld extends World
 		
 		MyTextEntry=new TextEntry(300,10,310,30,NameCallback);
 		addChild(MyTextEntry);	
+
+        //TheCritters = new Critters(this,3);
 
         Update(0);
         SortScene();
@@ -578,7 +586,8 @@ class FungiWorld extends World
         super.Update(time);
 
         Server.Update();
-
+        //TheCritters.Update();
+        
         if (time>TickTime)
         {
             Server.Request("spirit-info",this,UpdateGhosts);

@@ -25,6 +25,7 @@ class SpriteEntity extends Entity
 		super(world,pos);
         Spr = new Sprite(new Vec2(Pos.x,Pos.y),t,true,viz);
         world.AddSprite(Spr);
+        Hide(!viz);
 	}
 		
     override function Destroy(world:World)

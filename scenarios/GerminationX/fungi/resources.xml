@@ -62,6 +62,7 @@
                       <bitmap id="Plant003FruitBTex" import="textures/plant-003-fruit-b.png"/>                     
                       <bitmap id="Plant003FruitCTex" import="textures/plant-003-fruit-c.png"/>                     
 
+                      <bitmap id="WingTex" import="textures/wing.png"/>                     
 
                 </library>
         </frame>

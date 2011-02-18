@@ -43,6 +43,11 @@ class RndGen
 		State=cast(State*214013+2531011,Int);
 		return cast(Math.abs(State),Int);
 	}
+
+    public function RndRange(lo:Int, hi:Int) : Int
+    {
+        return lo+RndInt()%(hi-lo);
+    }
 	
 	public function RndFlt() : Float
 	{

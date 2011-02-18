@@ -92,6 +92,8 @@ class Plant003FruitATex extends BitmapData { public function new() { super(0,0);
 class Plant003FruitBTex extends BitmapData { public function new() { super(0,0); } }
 class Plant003FruitCTex extends BitmapData { public function new() { super(0,0); } }
 
+class WingTex extends BitmapData { public function new() { super(0,0); } }
+
 
 class Resources
 {
@@ -174,7 +176,7 @@ class Resources
         case "plant-003-fruit-b": tex.data = new Plant003FruitBTex();
         case "plant-003-fruit-c": tex.data = new Plant003FruitCTex();
 
-
+        case "wing": tex.data = new WingTex();
         }
 
         return tex;
