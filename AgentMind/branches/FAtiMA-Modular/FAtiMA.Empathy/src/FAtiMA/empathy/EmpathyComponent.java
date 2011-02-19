@@ -158,7 +158,7 @@ public class EmpathyComponent  implements IAppraisalDerivationComponent, IAffect
 					if(similarity > 0){
 						BaseEmotion elicitedEmotion = _elicitedEmotions.get(af.getEvent() + empathicTarget);
 						if(elicitedEmotion != null){
-							empathicEmotion = new EmpathicEmotion(elicitedEmotion);
+							empathicEmotion = new EmpathicEmotion(elicitedEmotion,af.getEvent());
 							empathicEmotion.increasePotential(empathicEmotion.GetPotential() * ((affectiveLink/10)*2));
 							potentialEmpathicEmotions.add(empathicEmotion);	
 						}
@@ -166,7 +166,7 @@ public class EmpathyComponent  implements IAppraisalDerivationComponent, IAffect
 						targetFacialExpression = FacialExpressionSimulator.gI().determineTargetFacialExpression(empathicTarget, am);				
 						BaseEmotion recognizedEmotion = FacialExpressionSimulator.gI().recognizeEmotion(targetFacialExpression,af.getEvent());
 						if(recognizedEmotion != null){
-							empathicEmotion = new EmpathicEmotion(recognizedEmotion);
+							empathicEmotion = new EmpathicEmotion(recognizedEmotion,af.getEvent());
 							empathicEmotion.setPotential(empathicEmotion.GetPotential() * (affectiveLink/10));
 							potentialEmpathicEmotions.add(empathicEmotion);	
 						}
@@ -208,7 +208,16 @@ public class EmpathyComponent  implements IAppraisalDerivationComponent, IAffect
 	}
 	
 	private BaseEmotion selfProjectionAppraisal(String empathicTarget, Event e, AgentModel am){
-		Event selfProjectedEvent = e.ApplyPerspective(empathicTarget);
+		Event selfProjectedEvent;
+		
+		if(e.GetTarget().equalsIgnoreCase(Constants.SELF) || e.GetSubject().equalsIgnoreCase(Constants.SELF)){   
+			//special situation where the self is already involved in the event
+			//in order to prevent appraising twice the same event we switch SELF with empathicTarget
+			selfProjectedEvent = new Event(e.GetTarget(),e.GetAction(),e.GetSubject());		
+		}else{
+		   selfProjectedEvent = e.ApplyPerspective(empathicTarget);			
+		}
+		
 		EmotionalState eS = am.simulateEmotionalState(selfProjectedEvent, this);
 		if(eS!=null){
 			return eS.GetStrongestEmotion();

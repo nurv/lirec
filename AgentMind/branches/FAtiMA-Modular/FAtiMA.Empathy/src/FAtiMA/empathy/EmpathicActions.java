@@ -20,7 +20,7 @@ public class EmpathicActions extends ActionTendencies {
 		EmotionalState emState = am.getEmotionalState();
 		ArrayList<ActiveEmotion> empathicEmotions = new ArrayList<ActiveEmotion>();
 		
-		for(ActiveEmotion activeEmotion : emState.getEmotionPool()){
+		for(ActiveEmotion activeEmotion : emState.getEmotionPoolValues()){
 			if(activeEmotion.getBaseEmotionClass() instanceof EmpathicEmotion){
 				empathicEmotions.add(activeEmotion);
 			}
