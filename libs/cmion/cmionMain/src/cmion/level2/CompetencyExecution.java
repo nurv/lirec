@@ -246,6 +246,10 @@ public class CompetencyExecution extends CmionComponent {
 		// get the plan that this competency is part of realizing
 		CompetencyExecutionPlan plan = runningCompetencies.get(competency);
 		
+		// if there is no plan, this competency must have been started in another way (e.g. background)
+		// in that case we are not interested in it here
+		if (plan == null) return;
+		
 		// mark the competency as not executing anymore
 		runningCompetencies.remove(competency);
 				
@@ -276,6 +280,10 @@ public class CompetencyExecution extends CmionComponent {
 	{
 		// get the plan that this competency is part of realizing
 		CompetencyExecutionPlan plan = runningCompetencies.get(competency);
+	
+		// if there is no plan, this competency must have been started in another way (e.g. background)
+		// in that case we are not interested in it here
+		if (plan == null) return;
 		
 		// mark the competency as not executing anymore
 		runningCompetencies.remove(competency);
@@ -308,6 +316,10 @@ public class CompetencyExecution extends CmionComponent {
 	{
 		// get the plan that this competency is part of realizing
 		CompetencyExecutionPlan plan = runningCompetencies.get(competency);
+		
+		// if there is no plan, this competency must have been started in another way (e.g. background)
+		// in that case we are not interested in it here
+		if (plan == null) return;
 		
 		// mark the competency as not executing anymore
 		runningCompetencies.remove(competency);
