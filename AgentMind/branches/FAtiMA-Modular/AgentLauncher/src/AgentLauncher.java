@@ -12,7 +12,12 @@ import FAtiMA.Core.exceptions.UnknownGoalException;
 import FAtiMA.Core.util.ConfigurationManager;
 import FAtiMA.DeliberativeComponent.DeliberativeComponent;
 import FAtiMA.OCCAffectDerivation.OCCAffectDerivationComponent;
+import FAtiMA.ReactiveComponent.ReactiveComponent;
+import FAtiMA.ToM.ToMComponent;
+import FAtiMA.advancedMemoryComponent.AdvancedMemoryComponent;
+import FAtiMA.culture.CulturalDimensionsComponent;
 import FAtiMA.motivationalSystem.MotivationalComponent;
+import FAtiMA.socialRelations.SocialRelationsComponent;
 
 public class AgentLauncher {
 	
@@ -36,11 +41,15 @@ public class AgentLauncher {
 		{
 			extraFiles.add(cultureFile);
 			
-			//aG.addComponent(new ReactiveComponent());
-			//aG.addComponent(new OCCAffectDerivationComponent());
-			//aG.addComponent(new DeliberativeComponent());
-			//aG.addComponent(new SocialRelationsComponent(extraFiles));
+			
+			//FAtiMA Light
+			aG.addComponent(new ReactiveComponent());
+			aG.addComponent(new OCCAffectDerivationComponent());
+			aG.addComponent(new DeliberativeComponent());
+			
+			//FAtiMA Advanced Components
 			//aG.addComponent(new MotivationalComponent(extraFiles));
+			//aG.addComponent(new SocialRelationsComponent(extraFiles));
 			//aG.addComponent(new ToMComponent(ConfigurationManager.getName()));
 			//aG.addComponent(new CulturalDimensionsComponent(cultureFile));
 			//aG.addComponent(new AdvancedMemoryComponent());
