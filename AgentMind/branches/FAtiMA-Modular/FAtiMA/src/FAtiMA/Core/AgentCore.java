@@ -1076,6 +1076,7 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 			this._appraisalComponents = (ArrayList<IAppraisalDerivationComponent>) s.readObject();
 			
 			AgentSimulationTime.LoadState(s);
+			s.close();
 			//this._saveDirectory = (String) s.readObject();
 		}
 		catch (Exception e)
