@@ -39,11 +39,11 @@ class Butterfly extends SkeletonEntity
 
         LeftWing = new Bone(new Vec2(0,0), Resources.Get("wing"));
         Root = LeftWing;
-        LeftWing.Centre=new Vec2(22,18);
+        LeftWing.Centre=new Vec2(11,9);
         world.AddSprite(LeftWing);
         RightWing = new Bone(new Vec2(0,0), Resources.Get("wing"));
         RightWing.SetScale(new Vec2(-1,1));
-        RightWing.Centre=new Vec2(22,18);
+        RightWing.Centre=new Vec2(11,9);
         LeftWing.AddChild(world,RightWing);
     }
 
