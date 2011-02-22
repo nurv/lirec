@@ -16,6 +16,7 @@ import FAtiMA.ReactiveComponent.ReactiveComponent;
 import FAtiMA.ToM.ToMComponent;
 import FAtiMA.advancedMemoryComponent.AdvancedMemoryComponent;
 import FAtiMA.culture.CulturalDimensionsComponent;
+import FAtiMA.emotionalIntelligence.EmotionalIntelligenceComponent;
 import FAtiMA.motivationalSystem.MotivationalComponent;
 import FAtiMA.socialRelations.SocialRelationsComponent;
 
@@ -35,7 +36,8 @@ public class AgentLauncher {
 		
 		AgentCore aG = initializeAgentCore(args);
 		ArrayList<String> extraFiles = new ArrayList<String>();
-		String cultureFile = ConfigurationManager.getMindPath() + ConfigurationManager.getOptionalConfigurationValue("cultureName") + ".xml"; 
+		String cultureFile = ConfigurationManager.getMindPath() + ConfigurationManager.getOptionalConfigurationValue("cultureName") + ".xml";
+		String EIFile = ConfigurationManager.getMindPath() + "EmotionalIntelligence.xml"; //fixed for now, read it as an optional configuration value latter
 		
 		if (!aG.getAgentLoad())
 		{
@@ -53,6 +55,8 @@ public class AgentLauncher {
 			//aG.addComponent(new ToMComponent(ConfigurationManager.getName()));
 			//aG.addComponent(new CulturalDimensionsComponent(cultureFile));
 			//aG.addComponent(new AdvancedMemoryComponent());
+			//aG.addComponent(new EmotionalIntelligenceComponent(EIFile, extraFiles));
+			
 		}
 		aG.StartAgent();
 	}

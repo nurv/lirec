@@ -73,6 +73,11 @@ public class GoalLibrary implements Serializable {
 		//SetGoalLinks();
 	}
 	
+	public void AddGoal(Goal g)
+	{
+		_goals.add(g);
+	}
+	
 	/**
 	 * Gets a ListIterator that allows you to iterate over the goals stored in
 	 * the goal's library

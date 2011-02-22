@@ -46,5 +46,15 @@
 				<Property name="power" value="5"/>
 			</Properties>	
 		</Agent>
+		<Agent name="Johnny" displayName="Johnny" role="GuilhasDrives" platform="worldsim" host="localhost" 
+			   port="46874" displayMode="True" sex="M" actionsFile="SimpleActionsWithDrives" 
+			   goalsFile="SimpleGoalLibraryWithDrives" cultureName="SimpleCulture">
+			<Properties>				
+				<Property name="location" value="Office"/>
+				<Property name="time" value="Morning"/>
+				<Property name="isPerson" value="True"/>
+				<Property name="power" value="5"/>
+			</Properties>	
+		</Agent>
 	</Scenario>	
 </Scenarios>
