@@ -58,6 +58,7 @@ package FAtiMA.Core.emotionalState;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Set;
@@ -502,8 +503,8 @@ public class EmotionalState implements Serializable {
 		else return DEFAULT_EMOTION_DISPOSITION;
 	}
 
-	public Collection<ActiveEmotion> getEmotionPool() {
-		return _emotionPool.values();
+	public Collection<ActiveEmotion> getEmotionPoolValues() {
+		return Collections.unmodifiableCollection(_emotionPool.values());
 	}
 	
 }

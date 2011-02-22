@@ -104,7 +104,7 @@ public class EmotionalStatePanel extends AgentDisplayPanel {
     	return Update((AgentModel) ag);
     }
     
-    protected EmotionalState getEmotionalState(AgentModel am){
+    protected synchronized EmotionalState getEmotionalState(AgentModel am){
     	return am.getEmotionalState();
     }
     
@@ -112,7 +112,7 @@ public class EmotionalStatePanel extends AgentDisplayPanel {
     public boolean Update(AgentModel am) {
         Float aux;
         ActiveEmotion em;
-        EmotionalState es = am.getEmotionalState();
+        EmotionalState es = this.getEmotionalState(am);
         boolean updated = false;
         
         //aux = new Float(es.GetArousal());
