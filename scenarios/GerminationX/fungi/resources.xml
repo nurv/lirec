@@ -62,6 +62,34 @@
                       <bitmap id="Plant003FruitBTex" import="textures/plant-003-fruit-b.png"/>                     
                       <bitmap id="Plant003FruitCTex" import="textures/plant-003-fruit-c.png"/>                     
 
+                      <bitmap id="CherryGrowATex" import="textures/cherry-grow-a.png"/>                     
+                      <bitmap id="CherryGrowBTex" import="textures/cherry-grow-b.png"/>                     
+                      <bitmap id="CherryGrowCTex" import="textures/cherry-grow-c.png"/>                     
+                      <bitmap id="CherryGrownTex" import="textures/cherry-grown.png"/>                     
+                      <bitmap id="CherryDecayATex" import="textures/cherry-decay-a.png"/>                     
+                      <bitmap id="CherryDecayBTex" import="textures/cherry-decay-b.png"/>                     
+                      <bitmap id="CherryDecayCTex" import="textures/cherry-decay-c.png"/>                     
+                      <bitmap id="CherryIllATex" import="textures/cherry-ill-a.png"/>                     
+                      <bitmap id="CherryIllBTex" import="textures/cherry-ill-b.png"/>                     
+                      <bitmap id="CherryIllCTex" import="textures/cherry-ill-c.png"/>                     
+                      <bitmap id="CherryFruitATex" import="textures/cherry-fruit-a.png"/>                     
+                      <bitmap id="CherryFruitBTex" import="textures/cherry-fruit-b.png"/>                     
+                      <bitmap id="CherryFruitCTex" import="textures/cherry-fruit-c.png"/>                     
+
+                      <bitmap id="AppleGrowATex" import="textures/apple-grow-a.png"/>                     
+                      <bitmap id="AppleGrowBTex" import="textures/apple-grow-b.png"/>                     
+                      <bitmap id="AppleGrowCTex" import="textures/apple-grow-c.png"/>                     
+                      <bitmap id="AppleGrownTex" import="textures/apple-grown.png"/>                     
+                      <bitmap id="AppleDecayATex" import="textures/apple-decay-a.png"/>                     
+                      <bitmap id="AppleDecayBTex" import="textures/apple-decay-b.png"/>                     
+                      <bitmap id="AppleDecayCTex" import="textures/apple-decay-c.png"/>                     
+                      <bitmap id="AppleIllATex" import="textures/apple-ill-a.png"/>                     
+                      <bitmap id="AppleIllBTex" import="textures/apple-ill-b.png"/>                     
+                      <bitmap id="AppleIllCTex" import="textures/apple-ill-c.png"/>                     
+                      <bitmap id="AppleFruitATex" import="textures/apple-fruit-a.png"/>                     
+                      <bitmap id="AppleFruitBTex" import="textures/apple-fruit-b.png"/>                     
+                      <bitmap id="AppleFruitCTex" import="textures/apple-fruit-c.png"/>                     
+
                       <bitmap id="WingTex" import="textures/wing.png"/>                     
 
                 </library>

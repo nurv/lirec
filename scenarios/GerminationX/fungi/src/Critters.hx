@@ -128,8 +128,8 @@ class Critters
         {
             var critter = new Butterfly(world,new Vec3(0,0,4));
             CritterList.push(critter);
-            var critter2 = new Bug(world,new Vec3(0,0,4));
-            CritterList.push(critter2);
+            /*var critter2 = new Bug(world,new Vec3(0,0,4));
+            CritterList.push(critter2);*/
         }
     }
 

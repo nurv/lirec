@@ -50,7 +50,9 @@
   (cond
    (= type "plant-001") "cover"
    (= type "plant-002") "canopy"
-   (= type "plant-003") "vertical"))
+   (= type "plant-003") "vertical"
+   (= type "apple") "canopy"
+   (= type "cherry") "canopy"))
   
 (defn make-plant [pos type owner size]
   (plant. (generate-id) pos type (plant-type->layer type)
@@ -59,7 +61,7 @@
 (defn make-random-plant []
   (make-plant
    (make-vec2 (Math/floor (rand 15)) (Math/floor (rand 15)))
-   (rand-nth (list "plant-001" "plant-002" "plant-003"))
+   (rand-nth (list "plant-001" "plant-002" "plant-003" "apple" "cherry"))
    "the garden"
    (Math/round (+ 50 (rand 100)))))
 

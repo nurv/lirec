@@ -179,14 +179,14 @@ class Spirit extends SkeletonEntity
         Hide(true);
         DesiredPos=new Vec2(LogicalPos.x,LogicalPos.y);
         RawEmotions={Love:0,Hate:0,Hope:0,Fear:0,Satisfaction:0,
-                     Relief:0,Fears_Confirmed:0,Disappointment:0,
-                     Joy:0,Distress:0,Happy_For:0,Pitty:0,
+                     Relief:0,/*Fears_Confirmed:0,*/Disappointment:0,
+                     Joy:0,Distress:0,/*Happy_For:0,*/Pitty:0,
                      Resentment:0,Gloating:0,Pride:0,Shame:0,
                      Gratification:0,Remorse:0,Admiration:0,
                      Reproach:0,Gratitude:0,Anger:0};
         Emotions={Love:0,Hate:0,Hope:0,Fear:0,Satisfaction:0,
-                  Relief:0,Fears_Confirmed:0,Disappointment:0,
-                  Joy:0,Distress:0,Happy_For:0,Pitty:0,
+                  Relief:0,/*Fears_Confirmed:0,*/Disappointment:0,
+                  Joy:0,Distress:0,/*Happy_For:0,*/Pitty:0,
                   Resentment:0,Gloating:0,Pride:0,Shame:0,
                   Gratification:0,Remorse:0,Admiration:0,
                   Reproach:0,Gratitude:0,Anger:0};
@@ -382,7 +382,7 @@ class FungiWorld extends World
 	var MyRndGen:RndGen;
 	public var MyTextEntry:TextEntry;
 	public var Plants:Array<Plant>;
-    //public var TheCritters:Critters;
+    public var TheCritters:Critters;
 	var MyName:String;
     var Frame:Int;
     var TickTime:Int;
@@ -452,7 +452,7 @@ class FungiWorld extends World
 		MyTextEntry=new TextEntry(300,10,310,30,NameCallback);
 		addChild(MyTextEntry);	
 
-        //TheCritters = new Critters(this,3);
+        TheCritters = new Critters(this,3);
 
         Update(0);
         SortScene();
@@ -586,7 +586,7 @@ class FungiWorld extends World
         super.Update(time);
 
         Server.Update();
-        //TheCritters.Update();
+        TheCritters.Update();
         
         if (time>TickTime)
         {

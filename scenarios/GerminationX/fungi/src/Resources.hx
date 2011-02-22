@@ -92,6 +92,34 @@ class Plant003FruitATex extends BitmapData { public function new() { super(0,0);
 class Plant003FruitBTex extends BitmapData { public function new() { super(0,0); } }
 class Plant003FruitCTex extends BitmapData { public function new() { super(0,0); } }
 
+class CherryGrowATex extends BitmapData { public function new() { super(0,0); } }
+class CherryGrowBTex extends BitmapData { public function new() { super(0,0); } }
+class CherryGrowCTex extends BitmapData { public function new() { super(0,0); } }
+class CherryGrownTex extends BitmapData { public function new() { super(0,0); } }
+class CherryDecayATex extends BitmapData { public function new() { super(0,0); } }
+class CherryDecayBTex extends BitmapData { public function new() { super(0,0); } }
+class CherryDecayCTex extends BitmapData { public function new() { super(0,0); } }
+class CherryIllATex extends BitmapData { public function new() { super(0,0); } }
+class CherryIllBTex extends BitmapData { public function new() { super(0,0); } }
+class CherryIllCTex extends BitmapData { public function new() { super(0,0); } }
+class CherryFruitATex extends BitmapData { public function new() { super(0,0); } }
+class CherryFruitBTex extends BitmapData { public function new() { super(0,0); } }
+class CherryFruitCTex extends BitmapData { public function new() { super(0,0); } }
+
+class AppleGrowATex extends BitmapData { public function new() { super(0,0); } }
+class AppleGrowBTex extends BitmapData { public function new() { super(0,0); } }
+class AppleGrowCTex extends BitmapData { public function new() { super(0,0); } }
+class AppleGrownTex extends BitmapData { public function new() { super(0,0); } }
+class AppleDecayATex extends BitmapData { public function new() { super(0,0); } }
+class AppleDecayBTex extends BitmapData { public function new() { super(0,0); } }
+class AppleDecayCTex extends BitmapData { public function new() { super(0,0); } }
+class AppleIllATex extends BitmapData { public function new() { super(0,0); } }
+class AppleIllBTex extends BitmapData { public function new() { super(0,0); } }
+class AppleIllCTex extends BitmapData { public function new() { super(0,0); } }
+class AppleFruitATex extends BitmapData { public function new() { super(0,0); } }
+class AppleFruitBTex extends BitmapData { public function new() { super(0,0); } }
+class AppleFruitCTex extends BitmapData { public function new() { super(0,0); } }
+
 class WingTex extends BitmapData { public function new() { super(0,0); } }
 
 
@@ -175,6 +203,34 @@ class Resources
         case "plant-003-fruit-a": tex.data = new Plant003FruitATex();
         case "plant-003-fruit-b": tex.data = new Plant003FruitBTex();
         case "plant-003-fruit-c": tex.data = new Plant003FruitCTex();
+
+        case "cherry-grow-a": tex.data = new CherryGrowATex();
+        case "cherry-grow-b": tex.data = new CherryGrowBTex();
+        case "cherry-grow-c": tex.data = new CherryGrowCTex();
+        case "cherry-grown": tex.data = new CherryGrownTex();
+        case "cherry-ill-a": tex.data = new CherryIllATex();
+        case "cherry-ill-b": tex.data = new CherryIllBTex();
+        case "cherry-ill-c": tex.data = new CherryIllCTex();
+        case "cherry-decay-a": tex.data = new CherryDecayATex();
+        case "cherry-decay-b": tex.data = new CherryDecayBTex();
+        case "cherry-decay-c": tex.data = new CherryDecayCTex();
+        case "cherry-fruit-a": tex.data = new CherryFruitATex();
+        case "cherry-fruit-b": tex.data = new CherryFruitBTex();
+        case "cherry-fruit-c": tex.data = new CherryFruitCTex();
+ 
+        case "apple-grow-a": tex.data = new AppleGrowATex();
+        case "apple-grow-b": tex.data = new AppleGrowBTex();
+        case "apple-grow-c": tex.data = new AppleGrowCTex();
+        case "apple-grown": tex.data = new AppleGrownTex();
+        case "apple-ill-a": tex.data = new AppleIllATex();
+        case "apple-ill-b": tex.data = new AppleIllBTex();
+        case "apple-ill-c": tex.data = new AppleIllCTex();
+        case "apple-decay-a": tex.data = new AppleDecayATex();
+        case "apple-decay-b": tex.data = new AppleDecayBTex();
+        case "apple-decay-c": tex.data = new AppleDecayCTex();
+        case "apple-fruit-a": tex.data = new AppleFruitATex();
+        case "apple-fruit-b": tex.data = new AppleFruitBTex();
+        case "apple-fruit-c": tex.data = new AppleFruitCTex();
 
         case "wing": tex.data = new WingTex();
         }
