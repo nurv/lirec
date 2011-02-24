@@ -43,8 +43,10 @@ public class AppraisalFrame implements Serializable {
 	
 	private static final short DEFAULTCOMPONENTWEIGHT = 5;
 
-	private class Pair
+	private class Pair implements Serializable
 	{
+		private static final long serialVersionUID = 1L;
+		
 		protected float _value;
 		protected short _weight;
 		
@@ -55,8 +57,11 @@ public class AppraisalFrame implements Serializable {
 		}
 	}
 	
-	private class AppraisalVariable
+	private class AppraisalVariable implements Serializable
 	{
+
+		private static final long serialVersionUID = 1L;
+		
 		protected HashMap<String,Pair> _values;
 		protected short _weight;
 		

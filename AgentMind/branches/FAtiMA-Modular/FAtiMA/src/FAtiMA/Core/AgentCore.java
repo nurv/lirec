@@ -1005,7 +1005,17 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 			s.writeObject(_actionsForExecution);
 			s.writeObject(_perceivedEvents);
 			
-			s.writeObject(_strat);
+			// prevent saving of the whole AgentCore which contains _agentDisplay as this would 
+			// lead to NonSerializableException
+			if (_strat != this)
+			{
+				s.writeObject(_strat);
+			}
+			else
+			{
+				s.writeObject(new String("SELF"));
+			}	
+			
 			s.writeObject(_generalComponents);
 			s.writeObject(_processEmotionComponents);
 			s.writeObject(_behaviourComponents);
@@ -1065,7 +1075,20 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 			this._actionsForExecution = (ArrayList<ValuedAction>) s.readObject();
 			this._perceivedEvents = (ArrayList<Event>) s.readObject();
 			
-			this._strat = (IGetModelStrategy) s.readObject();
+			Object stratObject = s.readObject();
+			if (stratObject instanceof IGetModelStrategy)
+			{
+				this._strat = (IGetModelStrategy) stratObject;
+			}
+			else 
+			{	
+				if (stratObject instanceof String)
+				{
+					String stratObjectStr = (String) stratObject;
+					if (stratObjectStr.equals("SELF")) this._strat = this;
+				}
+			}
+
 			this._generalComponents = (HashMap<String,IComponent>) s.readObject();
 			this._processEmotionComponents = (ArrayList<IProcessEmotionComponent>) s.readObject();
 			this._behaviourComponents = (ArrayList<IBehaviourComponent>) s.readObject();
