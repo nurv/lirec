@@ -37,7 +37,7 @@
        (list))))
 
 ;(def my-game-world (ref (game-world-load state-filename)))
-(def my-game-world (ref (make-game-world 100 1)))
+(def my-game-world (ref (make-game-world 1000 1)))
 
 (append-spit log-filename (str (str (Date.)) " server started\n"))
 
@@ -60,7 +60,7 @@
                       time 1))))
   (recur))
 
-;(tick)
+(tick)
 
 (defroutes main-routes
   (GET "/get-tile/:tilex/:tiley" [tilex tiley]

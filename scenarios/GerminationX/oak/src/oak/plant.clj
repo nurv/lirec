@@ -19,6 +19,7 @@
   (:require
    clojure.contrib.math))
 
+(def season-length (* 60 2))
 (def min-health 10)
 (def max-health 90)
 (def start-health 20)
@@ -53,54 +54,77 @@
    (= type "plant-003") "vertical"
    (= type "apple") "canopy"
    (= type "cherry") "canopy"))
+
+(defn plant-type->id [type]
+  (cond
+   (= type "cherry") 0
+   (= type "apple") 1
+   (= type "plant-002") 1 ; temp apple tree
+   (= type "aronia") 2
+   (= type "plant-003") 2 ; temp aronia
+   (= type "dandelion") 3
+   (= type "plant-001") 3 ; temp dandelion
+   (= type "clover") 4))
   
 (defn make-plant [pos type owner size]
   (plant. (generate-id) pos type (plant-type->layer type)
-          'grow-a '() owner size 0 (+ 30 (Math/floor (rand 10))) start-health))
+          'grow-a '() owner size 0 (+ (/ season-length 80) (Math/floor (rand 10))) start-health))
 
 (defn make-random-plant []
   (make-plant
    (make-vec2 (Math/floor (rand 15)) (Math/floor (rand 15)))
    (rand-nth (list "plant-001" "plant-002" "plant-003" "apple" "cherry"))
    "the garden"
-   (Math/round (+ 50 (rand 100)))))
+   (Math/round (+ 1 (rand 10)))))
 
 ; the plant state machine, advance state, based on health
-(defn adv-state [state health]
+(defn adv-state [state health season]
+  (println "advancing state...")
   (cond
    (= state 'grow-a) (cond (> health min-health) 'grow-b :else (rand-nth (list 'grow-a 'grow-b)))
    (= state 'grow-b) (cond (> health min-health) 'grow-c :else (rand-nth (list 'grow-b 'grow-c)))
    (= state 'grow-c) (cond (> health min-health) 'grown :else (rand-nth (list 'grow-c 'grown)))
    (= state 'grown) (cond
-           (> health max-health) (rand-nth (list 'grown 'fruit-a))
-           (< health min-health) (rand-nth (list 'grown 'ill-a))
-           :else 'grown)
-   (= state 'decay-a) (cond (> health max-health) 'decay-a :else 'decay-b)
-   (= state 'decay-b) (cond (> health max-health) 'decay-b :else 'decay-c)
-   (= state 'decay-c) (cond (> health max-health) 'decay-c :else 'decayed)
+                     (and (> health max-health)
+                          (or (= season 'spring)
+                              (= season 'summer)))
+                     'fruit-a
+                     (or (= season 'autumn) (= season 'winter))
+                     'decay-a
+                     :else 'grown)
    (= state 'fruit-a) 'fruit-b
    (= state 'fruit-b) 'fruit-c
-   (= state 'fruit-c) 'grown
-   (= state 'ill-a) (cond (< health min-health) 'ill-b
-                (> health max-health) 'grown
-                :else 'ill-a)
-   (= state 'ill-b) (cond (< health min-health) 'ill-c
-                (> health max-health) 'ill-a
-                :else 'ill-b)
+   (= state 'fruit-c) (if (or (= season 'autumn) (= season 'winter)) 'decay-a 'fruit-c)
+   (= state 'decay-a) 'decay-b
+   (= state 'decay-b) 'decay-c
+   (= state 'decay-c) (cond (and (or (= season 'spring) (= season 'summer))
+                                 (> health min-health)) 'grown
+                                 :else (if (< health min-health) 'ill-c 'decay-c))
    (= state 'ill-c) (cond (< health min-health) 'decayed
-                (> health max-health) 'ill-b
+                (> health max-health) 'grown
                 :else 'ill-c)
    (= state 'decayed) 'decayed))
 
-(defn plant-update [plant time delta neighbours]
+(defn load-companion-rules [filename]
+  (read-string (slurp filename)))
+
+(defn get-relationship [from to rules]
+  (nth (nth rules (plant-type->id from))
+       (plant-type->id to)))
+       
+(defn plant-update [plant time delta neighbours rules season]
+  (println (str season " " (:state plant) " " (:health plant)))
   (modify
    :health
    (fn [health]
-     (cond
-      (< (count neighbours) min-neighbours) (max 0 (- health 1))
-      (> (count neighbours) max-neighbours) (max 0 (- health 1))
-      (= (:state plant) 'fruit-c) (max 0 (- health 10))
-      :else (min 100 (+ health 1))))
+     health (max 0 (min 100
+                        (+ health
+                           (reduce
+                            (fn [r n]
+                              (+ r (get-relationship
+                                    (:type plant) (:type n) rules)))
+                            (if (empty? neighbours) -1 1)
+                            neighbours)))))
    (modify
     :timer
     (fn [timer]
@@ -108,7 +132,9 @@
     (if (> (:timer plant) (:tick plant))
       (modify
        :state
-       (fn [state] (adv-state state (:health plant)))
+       (fn [state] (adv-state state
+                              (:health plant)
+                              season))
        (modify
         :timer (fn [t] 0) plant))
       plant))))

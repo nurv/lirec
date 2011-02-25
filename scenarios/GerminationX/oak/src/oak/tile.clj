@@ -53,20 +53,31 @@
 (defn tile-get-neighbours [tile pos]
   (reduce
    (fn [l e]
-     (if (< (vec2-dist (:pos e) pos) 2)
+     (if (and (< (vec2-dist (:pos e) pos) 3)
+              (not (vec2-eq? pos (:pos e))))
        (cons e l) l))
    '()
    (:entities tile)))
 
-(defn tile-update [tile time delta]
-  (modify :entities
-          (fn [entities]
-            (doall (map
-                    (fn [e]
-                      ;; todo dispatch on entity type
-                      (plant-update e time delta (tile-get-neighbours tile (:pos e))))
-                    (doall (filter
-                            (fn [e]
-                              (not (= (:state e) 'decayed)))
-                            entities)))))
-          tile))
+(defn tile-update [tile time delta rules]
+  (let [st (/ (mod time season-length) season-length)
+        season (cond
+                (< st 0.25) 'spring
+                (< st 0.50) 'summer
+                (< st 0.74) 'autumn
+                :else 'winter)]
+    (modify :entities
+            (fn [entities]
+              (doall (map
+                      (fn [e]
+                        ;; todo dispatch on entity type
+                        (plant-update
+                         e time delta
+                         (tile-get-neighbours tile (:pos e))
+                         rules
+                         season))
+                      (doall (filter
+                              (fn [e]
+                                (not (= (:state e) 'decayed)))
+                              entities)))))
+            tile)))

@@ -121,14 +121,15 @@
                        (:state plant) (:health plant))))))
 
 (defn game-world-update [game-world time delta]
-  (modify :tiles
-          (fn [tiles]
-            (doall (map
-                    (fn [tile]
-                      (tile-update tile time delta))
-                    tiles)))
-          game-world))
-
+  (let [rules (load-companion-rules "rules.txt")]
+    (modify :tiles
+            (fn [tiles]
+              (doall (map
+                      (fn [tile]
+                        (tile-update tile time delta rules))
+                      tiles)))
+            game-world)))
+  
 (defn game-world-find-spirit [game-world name]
   (reduce
    (fn [r spirit]
