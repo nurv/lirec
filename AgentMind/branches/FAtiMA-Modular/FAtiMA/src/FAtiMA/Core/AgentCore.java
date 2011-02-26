@@ -1100,6 +1100,9 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 			
 			AgentSimulationTime.LoadState(s);
 			s.close();
+			
+			resetDisplay();
+			
 			//this._saveDirectory = (String) s.readObject();
 		}
 		catch (Exception e)
@@ -1108,6 +1111,27 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 		}
 	}
 
+	// reset the display after having overwritten the agents internal state 
+	// (setSerializedState method)
+	private void resetDisplay()
+	{
+		if (_agentDisplay!=null)
+		{
+			// first remove all panels that are linked to our old components
+			_agentDisplay.clearAllComponentTabs();
+			
+			// now let all the new components create new panels			
+			for (IComponent c : _generalComponents.values())
+			{
+				AgentDisplayPanel panel = c.createDisplayPanel(this);
+				if(panel != null & _showStateWindow)
+				{
+					this._agentDisplay.AddPanel(panel, c.name(),"");
+				}
+			}
+		}
+	}
+	
 	public void updateEmotions(AppraisalFrame af) {
 		
 		ArrayList<BaseEmotion> emotions;

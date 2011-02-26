@@ -31,6 +31,8 @@
 
 package FAtiMA.Core.Display;
 
+import java.util.ArrayList;
+
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -46,9 +48,14 @@ public class AgentDisplay {
     
     AgentCore _ag;
     
+    ArrayList<String> _componentTabsNames;
+    
     public AgentDisplay(AgentCore ag) {
         
         _ag = ag;
+        
+        _componentTabsNames = new ArrayList<String>();
+        
         _frame = new JFrame(ag.displayName());
         _frame.getContentPane().setLayout(new BoxLayout(_frame.getContentPane(),BoxLayout.Y_AXIS));
 		_frame.setSize(850,650);
@@ -88,6 +95,19 @@ public class AgentDisplay {
     public void AddPanel(AgentDisplayPanel panel, String title, String description)
     {
     	_displayPane.addTab(title,null,panel, description);
+    	_componentTabsNames.add(title);
+    }
+
+    public void clearAllComponentTabs()
+    {
+    	for (String title : _componentTabsNames)
+    	{
+    		int tabIndex = _displayPane.indexOfTab(title);
+    		if (tabIndex!=-1)
+    		{
+    			_displayPane.removeTabAt(tabIndex);
+    		}		
+    	}  	
     }
     
     public void update() {
