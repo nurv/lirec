@@ -107,7 +107,8 @@ public class AgentDisplay {
     		{
     			_displayPane.removeTabAt(tabIndex);
     		}		
-    	}  	
+    	} 
+    	 _componentTabsNames.clear();
     }
     
     public void update() {
