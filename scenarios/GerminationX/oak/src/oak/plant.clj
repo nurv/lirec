@@ -79,6 +79,7 @@
 
 ; the plant state machine, advance state, based on health
 (defn adv-state [state health season]
+  (println "hello")
   (cond
    (= state 'grow-a) (cond (> health min-health) 'grow-b :else (rand-nth (list 'grow-a 'grow-b)))
    (= state 'grow-b) (cond (> health min-health) 'grow-c :else (rand-nth (list 'grow-b 'grow-c)))
@@ -112,7 +113,7 @@
        (plant-type->id to)))
        
 (defn plant-update [plant time delta neighbours rules season]
-;  (println (str season " " (:state plant) " " (:health plant)))
+  (println (str season " " (:state plant) " " (:health plant) " " (:timer plant) " " (:tick plant)))
   (modify
    :health
    (fn [health]
