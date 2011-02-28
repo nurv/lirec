@@ -1,0 +1,18 @@
+;          cherry    apple   aronia   dandelion   clover
+(
+; cherry     
+(            -1       -1       0          0         1)     
+
+; apple      
+(            -1       -1       0          0         1)
+
+; aronia     
+(            0        -1      -1          0         1)
+
+; dandelion  
+(            0         0      -1          0         0)
+
+; clover     
+(            1         1       0         -1         1)
+
+)
