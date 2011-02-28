@@ -60,7 +60,7 @@
                       time 1))))
   (recur))
 
-(tick)
+;(tick)
 
 (defroutes main-routes
   (GET "/get-tile/:tilex/:tiley" [tilex tiley]
@@ -89,7 +89,7 @@
        (json/encode-to-str '("ok")))
   
   (GET "/spirit-sprites/:name" [name]
-       (update-islands (str "./" name) (str "./" name))
+       ;(update-islands (str "./" name) (str "./" name))
        (read-islands (str "./public/" name)))
 
   (GET "/spirit-info" []

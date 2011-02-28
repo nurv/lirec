@@ -169,6 +169,7 @@ class Spirit extends SkeletonEntity
     var RawEmotions:Dynamic;
     var Emotions:Dynamic;
     var DesiredPos:Vec2;
+    public var LastData:Array<Dynamic>;
     
 	public function new(world:World, name:String, pos)
 	{
@@ -177,6 +178,7 @@ class Spirit extends SkeletonEntity
         Speed=0.1;
         UpdateFreq=5;
         Hide(true);
+        LastData=[];
         DesiredPos=new Vec2(LogicalPos.x,LogicalPos.y);
         RawEmotions={Love:0,Hate:0,Hope:0,Fear:0,Satisfaction:0,
                      Relief:0,/*Fears_Confirmed:0,*/Disappointment:0,
@@ -467,6 +469,7 @@ class FungiWorld extends World
             {
                 var sp:Spirit = new Spirit(c,names[i],positions[i]);
                 sp.NeedsUpdate=true;
+                sp.LastData=data;
                 sp.Build(c,data);
                 sp.BuildDebug(c);
                 c.SortScene();
@@ -474,6 +477,33 @@ class FungiWorld extends World
             });
         }
 	}
+
+    function CompareLists(a:Array<Dynamic>,b:Array<Dynamic>): Bool
+    {
+        if (a.length!=b.length) return false;
+        for (i in 0...a.length)
+        {
+            if (a[i].name!=b[i].name) return false;
+        }
+        return true;
+    }
+
+    public function UpdateSpiritSprites()
+    {
+        for (s in Spirits)
+        {
+            Server.Request("spirit-sprites/"+s.Name,
+            this,
+            function (c,data:Array<Dynamic>)
+            {
+                if (!c.CompareLists(data,s.LastData))
+                {
+                    s.Build(cast(c,World),data);
+                    s.LastData=data;
+                }
+            });
+        }        
+    }
 	
 	public function NameCallback(name)
 	{
@@ -590,6 +620,8 @@ class FungiWorld extends World
         
         if (time>TickTime)
         {
+            UpdateSpiritSprites();
+            
             Server.Request("spirit-info",this,UpdateGhosts);
 
             Server.Request("get-tile/"+Std.string(cast(WorldPos.x,Int))+"/"

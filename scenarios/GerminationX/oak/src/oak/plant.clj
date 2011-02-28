@@ -19,7 +19,7 @@
   (:require
    clojure.contrib.math))
 
-(def season-length (* 60 2))
+(def season-length (* 60 10))
 (def min-health 10)
 (def max-health 90)
 (def start-health 20)
@@ -68,7 +68,7 @@
   
 (defn make-plant [pos type owner size]
   (plant. (generate-id) pos type (plant-type->layer type)
-          'grow-a '() owner size 0 (+ (/ season-length 80) (Math/floor (rand 10))) start-health))
+          'grow-a '() owner size 0 (+ (/ season-length 10) (Math/floor (rand 10))) start-health))
 
 (defn make-random-plant []
   (make-plant
@@ -79,7 +79,6 @@
 
 ; the plant state machine, advance state, based on health
 (defn adv-state [state health season]
-  (println "advancing state...")
   (cond
    (= state 'grow-a) (cond (> health min-health) 'grow-b :else (rand-nth (list 'grow-a 'grow-b)))
    (= state 'grow-b) (cond (> health min-health) 'grow-c :else (rand-nth (list 'grow-b 'grow-c)))
@@ -113,7 +112,7 @@
        (plant-type->id to)))
        
 (defn plant-update [plant time delta neighbours rules season]
-  (println (str season " " (:state plant) " " (:health plant)))
+;  (println (str season " " (:state plant) " " (:health plant)))
   (modify
    :health
    (fn [health]

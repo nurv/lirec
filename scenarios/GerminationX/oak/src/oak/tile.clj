@@ -19,14 +19,15 @@
    oak.forms))
 
 (defrecord tile
-  [pos
+  [season
+   pos
    entities])
 
 (defn tile-pos [tile] (:pos tile))
 (defn tile-entities [tile] (:entities tile))
 
 (defn make-tile [pos entity-list]
-  (tile. pos entity-list))
+  (tile. 'summer pos entity-list))
 
 (defn tile-position-taken? [tile pos]
   (reduce
@@ -64,7 +65,7 @@
         season (cond
                 (< st 0.25) 'spring
                 (< st 0.50) 'summer
-                (< st 0.74) 'autumn
+                (< st 0.75) 'autumn
                 :else 'winter)]
     (modify :entities
             (fn [entities]
@@ -80,4 +81,4 @@
                               (fn [e]
                                 (not (= (:state e) 'decayed)))
                               entities)))))
-            tile)))
+            (modify :season (fn [s] season) tile))))

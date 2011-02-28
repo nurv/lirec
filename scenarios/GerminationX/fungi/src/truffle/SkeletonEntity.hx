@@ -31,6 +31,7 @@ class SkeletonEntity extends truffle.Entity
         Root = null;
         // hack for the animation
         Id=cast(pos.y,Int);
+        bones=[];
 	}
 
     function GetClosest(pos:Vec2, bones:List<Bone>) : Bone
@@ -100,6 +101,11 @@ class SkeletonEntity extends truffle.Entity
 
     public function Build(world:World,desc:Array<Dynamic>)
     {
+        for (b in bones)
+        {
+            world.RemoveSprite(b);
+        }
+
         bones=BuildBones(desc);
         var top=FindTop(desc);
         g=CalculateMST(bones,top);
