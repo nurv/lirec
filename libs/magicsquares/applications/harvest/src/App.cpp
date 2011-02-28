@@ -40,6 +40,10 @@ m_SingleImage(false)
 {
 	if (filename=="")
 	{
+
+        //int ncams = cvcamGetCamerasCount( );    //returns the number of available cameras in the system
+        //int* out; int nselected = cvcamSelectCamera(&out);
+
 		m_Capture = cvCaptureFromCAM(0);
 	}
 	else
@@ -100,32 +104,48 @@ void App::Run()
 	cvShowImage("harvest", camera.m_Image);
 }
 
+char *spirits[]={"CanopySpirit","VerticalSpirit","CoverSpirit"};
+
 void App::Update(Image &camera)
 {	
 	///////////////////////////////////
 	// dispatch from input
 
 	int key=cvWaitKey(10);
+
+//    usleep(500);
 	
-	static int t=200;
-    bool viewthresh=false;
+	static int t=150;
+    static bool viewthresh=false;
+    static bool off=false;
+    static int spirit=0;
 
 	switch (key)
 	{
-    case 'q': t--; viewthresh=true; break;
-    case 'w': t++; viewthresh=true; break;
+    case 't': viewthresh=!viewthresh; break;
+    case 'q': t--; break;
+    case 'w': t++; break;
+    case 'o': off=!off; break;
+    case 'p': spirit++; break;
 	}			
+
+    if (off) 
+    {
+        sleep(1);
+        cerr<<"off..."<<endl;
+        return;
+    }
 
     Image thresh=camera.RGB2GRAY();
     cvThreshold(thresh.m_Image,thresh.m_Image,t,255,CV_THRESH_BINARY);
-    //cvFloodFill(thresh.m_Image,cvPoint(10,10), cvScalar(255),cvScalar(0),cvScalar(255));
+    // copy the threshold into a colour image
+    Image tofill=thresh.GRAY2RGB();
+    cvFloodFill(tofill.m_Image,cvPoint(10,10), CV_RGB(0,255,0),cvScalar(0),cvScalar(255));
     
     CBlobResult blobs;
     blobs = CBlobResult( thresh.m_Image, NULL, 255 );
     // exclude the ones smaller than param2 value
-    blobs.Filter( blobs, B_EXCLUDE, CBlobGetArea(), B_LESS, 10);
-
-    if (viewthresh) camera=thresh;
+    blobs.Filter( blobs, B_EXCLUDE, CBlobGetArea(), B_LESS, 100);
 
     CBlob *currentBlob;
     Image *out=NULL;
@@ -142,11 +162,22 @@ void App::Update(Image &camera)
             for(int x=0; x<camera.m_Image->width; x++)
             {
                 CvScalar col = cvGet2D(camera.m_Image,y,x);
-                CvScalar alpha = cvGet2D(thresh.m_Image,y,x);
-                col.val[3]=256-alpha.val[0];
+                CvScalar alpha = cvGet2D(tofill.m_Image,y,x);
+                if (alpha.val[0]==0 && 
+                    alpha.val[1]==255 && 
+                    alpha.val[2]==0)
+                    col.val[3]=0;
+                else
+                    col.val[3]=255;
                 cvSet2D(out->m_Image,y,x,col);
             }
         }   
+    }
+
+    if (key=='s')
+    {
+        cerr<<"deleting old images in islands/"<<endl;
+        int r=system("rm islands/*");
     }
     
     for (int i = 0; i < blobs.GetNumBlobs(); i++ )
@@ -172,7 +203,9 @@ void App::Update(Image &camera)
         {
             char buf[256];
             sprintf(buf,"%d",currentBlob->GetID());
-            cvPutText(camera.m_Image, buf, cvPoint(rect.x,rect.y), &m_Font, colors[0]);
+            cvPutText(camera.m_Image, buf, cvPoint(rect.x+rect.width/2,
+                                                   rect.y+rect.height/2), 
+                      &m_Font, colors[0]);
             
             cvRectangle(camera.m_Image, 
                         cvPoint(rect.x,rect.y), 
@@ -180,6 +213,27 @@ void App::Update(Image &camera)
                         colors[1]);
         }
     }
+
+    if (key=='s')
+    {
+        cerr<<"copying images to server"<<endl;
+        //int r=system("scp -r islands garden@t0.fo.am:/home/garden/GerminationX/oak/");
+        string path("/home/dave/code/lirec/scenarios/GerminationX/oak/public/");
+        path+=string(spirits[spirit%3]);
+        string command=string("rm ")+path+string("/*.*");
+        int r=system(command.c_str());
+        string command2=string("cp islands/* ")+path;
+        r=system(command2.c_str());
+        //cerr<<"finished copying...("<<r<<")"<<endl;
+    }
+
+    if (viewthresh) camera=tofill;
+
+    char buf[256];
+    sprintf(buf,"spirit: %s thresh: %d", spirits[spirit%3], t);
+    cvPutText(camera.m_Image, buf, cvPoint(10,10), 
+              &m_Font, colors[0]);
+
 
     if (out!=NULL) delete out;
 }

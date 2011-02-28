@@ -4,7 +4,7 @@
 
 #include "list"
 #include "cv.h"
-#include "cxtypes.h"
+//#include "cxtypes.h"
 
 //! Type of chain codes
 typedef unsigned char t_chainCode;
