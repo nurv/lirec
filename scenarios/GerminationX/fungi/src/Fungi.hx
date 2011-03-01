@@ -487,7 +487,7 @@ class FungiWorld extends World
         TileInfo.x=100;
         TileInfo.y=20;
         TileInfo.height=10;
-        TileInfo.width=100;
+        TileInfo.width=120;
         TileInfo.background = false;
         TileInfo.autoSize = flash.text.TextFieldAutoSize.LEFT;
         TileInfo.border = true;
@@ -505,7 +505,7 @@ class FungiWorld extends World
         tf.x=100;
         tf.y=100;
         tf.height=500;
-        tf.width=500;
+        tf.width=250;
         tf.background = false;
         tf.autoSize = flash.text.TextFieldAutoSize.LEFT;
         tf.border = true;
@@ -545,6 +545,12 @@ class FungiWorld extends World
                                          text+=i[0]+": "+i[1]+"\n";
                                      }
                                      tf.text=text;
+
+                                     var t = new flash.text.TextFormat();
+                                     t.font = "Verdana"; 
+                                     t.size = 12;                
+                                     t.color= 0x000000;           
+                                     tf.setTextFormat(t);
 
                                      BG.clear();
                                      BG.beginFill(0xffffff,0.5);
@@ -754,6 +760,11 @@ class FungiWorld extends World
             function (c:truffle.World,d)
             {
                 c.TileInfo.text="Season: "+d.season;
+                var t = new flash.text.TextFormat();
+                t.font = "Verdana"; 
+                t.size = 12;                
+                t.color= 0x000000;           
+                c.TileInfo.setTextFormat(t);
 
                 var data:Array<Dynamic>=cast(d.entities,Array<Dynamic>);
                 for (p in data)
