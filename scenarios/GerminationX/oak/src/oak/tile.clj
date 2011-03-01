@@ -51,6 +51,17 @@
    false
    (:entities tile)))
 
+(defn tile-modify-entity [tile id f]
+  (modify
+   :entities
+   (fn [entities]
+     (map
+      (fn [e]
+        (if (= id (:id e))
+          (f e) e))
+      entities))
+   tile))
+
 (defn tile-get-neighbours [tile pos]
   (reduce
    (fn [l e]

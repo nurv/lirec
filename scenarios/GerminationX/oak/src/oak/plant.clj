@@ -19,7 +19,7 @@
   (:require
    clojure.contrib.math))
 
-(def season-length (* 60 10))
+(def season-length (* 60 5))
 (def min-health 10)
 (def max-health 90)
 (def start-health 20)
@@ -37,7 +37,8 @@
    size
    timer
    tick
-   health])
+   health
+   fruit])
   
 (defn plant-pos [plant] (:pos plant))
 (defn plant-type [plant] (:type plant))
@@ -49,9 +50,8 @@
 
 (defn plant-type->layer [type]
   (cond
-   (= type "plant-001") "cover"
-   (= type "plant-002") "canopy"
-   (= type "plant-003") "vertical"
+   (= type "dandelion") "cover"
+   (= type "aronia") "vertical"
    (= type "apple") "canopy"
    (= type "cherry") "canopy"))
 
@@ -65,17 +65,25 @@
    (= type "dandelion") 3
    (= type "plant-001") 3 ; temp dandelion
    (= type "clover") 4))
-  
+
+(defn layer->spirit-name [layer]
+  (cond
+   (= layer "canopy") "CanopySpirit"
+   (= layer "vertical") "VerticalSpirit"
+   (= layer "cover") "CoverSpirit"
+   :else "UnknownSpirit"))
+
 (defn make-plant [pos type owner size]
   (plant. (generate-id) pos type (plant-type->layer type)
-          'grow-a '() owner size 0 (+ (/ season-length 10) (Math/floor (rand 10))) start-health))
+          'grow-a '() owner size 0 (+ (/ season-length 50) (Math/floor (rand 10))) start-health false))
 
 (defn make-random-plant []
-  (make-plant
-   (make-vec2 (Math/floor (rand 15)) (Math/floor (rand 15)))
-   (rand-nth (list "plant-001" "plant-002" "plant-003" "apple" "cherry"))
-   "the garden"
-   (Math/round (+ 1 (rand 10)))))
+  (let [type (rand-nth (list "aronia" "dandelion" "apple" "cherry"))]
+    (make-plant
+     (make-vec2 (Math/floor (rand 15)) (Math/floor (rand 15)))
+     type
+     (layer->spirit-name (plant-type->layer type))
+     (Math/round (+ 1 (rand 10))))))
 
 ; the plant state machine, advance state, based on health
 (defn adv-state [state health season]
@@ -125,16 +133,21 @@
                             (if (empty? neighbours) -1 1)
                             neighbours)))))
    (modify
-    :timer
-    (fn [timer]
-      (+ timer delta))
-    (if (> (:timer plant) (:tick plant))
-      (modify
-       :state
-       (fn [state] (adv-state state
-                              (:health plant)
-                              season))
+    :fruit
+    (fn [f]
+      (if (and (not f) (= (:state plant) 'fruit-c))
+        true f))
+    (modify
+     :timer
+     (fn [timer]
+       (+ timer delta))
+     (if (> (:timer plant) (:tick plant))
        (modify
-        :timer (fn [t] 0) plant))
-      plant))))
+        :state
+        (fn [state] (adv-state state
+                               (:health plant)
+                               season))
+        (modify
+         :timer (fn [t] 0) plant))
+       plant)))))
 

@@ -121,6 +121,8 @@ class AppleFruitBTex extends BitmapData { public function new() { super(0,0); } 
 class AppleFruitCTex extends BitmapData { public function new() { super(0,0); } }
 
 class WingTex extends BitmapData { public function new() { super(0,0); } }
+class ActionDropLeavesTex extends BitmapData { public function new() { super(0,0); } }
+class ActionFlowerTex extends BitmapData { public function new() { super(0,0); } }
 
 
 class Resources
@@ -162,47 +164,33 @@ class Resources
         case "rock-cube-05": tex.data = new RockCube05Tex();
         case "rock-cube-06": tex.data = new RockCube06Tex();
 
-        case "plant-001-grow-a": tex.data = new Plant001GrowATex();
-        case "plant-001-grow-b": tex.data = new Plant001GrowBTex();
-        case "plant-001-grow-c": tex.data = new Plant001GrowCTex();
-        case "plant-001-grown": tex.data = new Plant001GrownTex();
-        case "plant-001-ill-a": tex.data = new Plant001IllATex();
-        case "plant-001-ill-b": tex.data = new Plant001IllBTex();
-        case "plant-001-ill-c": tex.data = new Plant001IllCTex();
-        case "plant-001-decay-a": tex.data = new Plant001DecayATex();
-        case "plant-001-decay-b": tex.data = new Plant001DecayBTex();
-        case "plant-001-decay-c": tex.data = new Plant001DecayCTex();
-        case "plant-001-fruit-a": tex.data = new Plant001FruitATex();
-        case "plant-001-fruit-b": tex.data = new Plant001FruitBTex();
-        case "plant-001-fruit-c": tex.data = new Plant001FruitCTex();
+        case "dandelion-grow-a": tex.data = new Plant001GrowATex();
+        case "dandelion-grow-b": tex.data = new Plant001GrowBTex();
+        case "dandelion-grow-c": tex.data = new Plant001GrowCTex();
+        case "dandelion-grown": tex.data = new Plant001GrownTex();
+        case "dandelion-ill-a": tex.data = new Plant001IllATex();
+        case "dandelion-ill-b": tex.data = new Plant001IllBTex();
+        case "dandelion-ill-c": tex.data = new Plant001IllCTex();
+        case "dandelion-decay-a": tex.data = new Plant001DecayATex();
+        case "dandelion-decay-b": tex.data = new Plant001DecayBTex();
+        case "dandelion-decay-c": tex.data = new Plant001DecayCTex();
+        case "dandelion-fruit-a": tex.data = new Plant001FruitATex();
+        case "dandelion-fruit-b": tex.data = new Plant001FruitBTex();
+        case "dandelion-fruit-c": tex.data = new Plant001FruitCTex();
 
-        case "plant-002-grow-a": tex.data = new Plant002GrowATex();
-        case "plant-002-grow-b": tex.data = new Plant002GrowBTex();
-        case "plant-002-grow-c": tex.data = new Plant002GrowCTex();
-        case "plant-002-grown": tex.data = new Plant002GrownTex();
-        case "plant-002-ill-a": tex.data = new Plant002IllATex();
-        case "plant-002-ill-b": tex.data = new Plant002IllBTex();
-        case "plant-002-ill-c": tex.data = new Plant002IllCTex();
-        case "plant-002-decay-a": tex.data = new Plant002DecayATex();
-        case "plant-002-decay-b": tex.data = new Plant002DecayBTex();
-        case "plant-002-decay-c": tex.data = new Plant002DecayCTex();
-        case "plant-002-fruit-a": tex.data = new Plant002FruitATex();
-        case "plant-002-fruit-b": tex.data = new Plant002FruitBTex();
-        case "plant-002-fruit-c": tex.data = new Plant002FruitCTex();
-
-        case "plant-003-grow-a": tex.data = new Plant003GrowATex();
-        case "plant-003-grow-b": tex.data = new Plant003GrowBTex();
-        case "plant-003-grow-c": tex.data = new Plant003GrowCTex();
-        case "plant-003-grown": tex.data = new Plant003GrownTex();
-        case "plant-003-ill-a": tex.data = new Plant003IllATex();
-        case "plant-003-ill-b": tex.data = new Plant003IllBTex();
-        case "plant-003-ill-c": tex.data = new Plant003IllCTex();
-        case "plant-003-decay-a": tex.data = new Plant003DecayATex();
-        case "plant-003-decay-b": tex.data = new Plant003DecayBTex();
-        case "plant-003-decay-c": tex.data = new Plant003DecayCTex();
-        case "plant-003-fruit-a": tex.data = new Plant003FruitATex();
-        case "plant-003-fruit-b": tex.data = new Plant003FruitBTex();
-        case "plant-003-fruit-c": tex.data = new Plant003FruitCTex();
+        case "aronia-grow-a": tex.data = new Plant003GrowATex();
+        case "aronia-grow-b": tex.data = new Plant003GrowBTex();
+        case "aronia-grow-c": tex.data = new Plant003GrowCTex();
+        case "aronia-grown": tex.data = new Plant003GrownTex();
+        case "aronia-ill-a": tex.data = new Plant003IllATex();
+        case "aronia-ill-b": tex.data = new Plant003IllBTex();
+        case "aronia-ill-c": tex.data = new Plant003IllCTex();
+        case "aronia-decay-a": tex.data = new Plant003DecayATex();
+        case "aronia-decay-b": tex.data = new Plant003DecayBTex();
+        case "aronia-decay-c": tex.data = new Plant003DecayCTex();
+        case "aronia-fruit-a": tex.data = new Plant003FruitATex();
+        case "aronia-fruit-b": tex.data = new Plant003FruitBTex();
+        case "aronia-fruit-c": tex.data = new Plant003FruitCTex();
 
         case "cherry-grow-a": tex.data = new CherryGrowATex();
         case "cherry-grow-b": tex.data = new CherryGrowBTex();
@@ -233,6 +221,8 @@ class Resources
         case "apple-fruit-c": tex.data = new AppleFruitCTex();
 
         case "wing": tex.data = new WingTex();
+        case "action-flower": tex.data = new ActionFlowerTex();
+        case "action-drop-leaves": tex.data = new ActionDropLeavesTex();
         }
 
         return tex;

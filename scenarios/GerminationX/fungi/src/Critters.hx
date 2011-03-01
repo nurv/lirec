@@ -45,6 +45,8 @@ class Butterfly extends SkeletonEntity
         RightWing.SetScale(new Vec2(-1,1));
         RightWing.Centre=new Vec2(11,9);
         LeftWing.AddChild(world,RightWing);
+        RightWing.Hide(true);
+        LeftWing.Hide(true);
     }
 
     override function Update(frame:Int,world:World)

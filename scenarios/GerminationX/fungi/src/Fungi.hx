@@ -62,6 +62,7 @@ class Cube extends SpriteEntity
 
 class Plant extends SpriteEntity 
 {
+    public var Id:Int;
 	public var Owner:String;
 	var PlantScale:Float;
 	public var Age:Int;
@@ -71,9 +72,10 @@ class Plant extends SpriteEntity
     var Seeds:Array<Sprite>;
     var Layer:String;
 
-	public function new(world:World, owner:String, pos, type:String, state:String)
+	public function new(world:World, id:Int, owner:String, pos, type:String, state:String, fruit:Bool)
 	{
 		super(world,pos,Resources.Get(type+"-"+state),false);
+        Id=id;
         PlantType=type;
         State=state;
 		Owner=owner;
@@ -106,20 +108,28 @@ class Plant extends SpriteEntity
         tf.setTextFormat(t);
         Spr.parent.addChild(tf);
         tf.visible=false;
-        Spr.MouseOver(this,function(c) { tf.visible=true; });
-        Spr.MouseOut(this,function(c) { tf.visible=false; });
+        Spr.MouseDown(this,function(c) { tf.visible=!tf.visible; });
+        //Spr.MouseOut(this,function(c) { tf.visible=false; });
+
+        if (fruit) Fruit(world);
 	}
 
-    public function StateUpdate(state,world:World)
+    public function StateUpdate(state,fruit,world:World)
     {
         State=state;
         if (State!="decayed")
         {
             Spr.ChangeBitmap(Resources.Get(PlantType+"-"+State));
         }
-        if (State=="fruit-c" && Seeds.length==0)
+        if (fruit && Seeds.length==0)
         {
             Fruit(world);
+        }
+        if (!fruit && Seeds.length!=0)
+        {
+            // assume only one seed...
+            world.RemoveSprite(Seeds[0]);
+            Seeds=[];        
         }
     }
 
@@ -152,6 +162,12 @@ class Plant extends SpriteEntity
                 {
                     p.Seeds.remove(f);
                     world.RemoveSprite(f);
+                    world.Server.Request("pick/"+
+                                         Std.string(cast(world.WorldPos.x,Int))+"/"+
+                                         Std.string(cast(world.WorldPos.y,Int))+"/"+
+                                         Std.string(p.Id),
+                                         p,
+                                         function (c) {});
                 }
             }
         });
@@ -170,13 +186,14 @@ class Spirit extends SkeletonEntity
     var Emotions:Dynamic;
     var DesiredPos:Vec2;
     public var LastData:Array<Dynamic>;
+    var Action:Sprite;
     
 	public function new(world:World, name:String, pos)
 	{
 		super(world,pos);
         Name = name;
         Speed=0.1;
-        UpdateFreq=5;
+        UpdateFreq=2;
         Hide(true);
         LastData=[];
         DesiredPos=new Vec2(LogicalPos.x,LogicalPos.y);
@@ -230,6 +247,11 @@ class Spirit extends SkeletonEntity
             tf.visible=!tf.visible;
             figures.visible=!figures.visible;
         });
+
+        Action = new Sprite(new Vec2(0,0),Resources.Get(""));
+        Action.Hide(true);
+        c.AddSprite(Action);
+
 	}
 
     public function UpdateEmotions(e:Dynamic,world:World)
@@ -271,6 +293,22 @@ class Spirit extends SkeletonEntity
         {
             text+=acs[i].msg+"\n";
         }
+        
+        Action.Hide(true);
+        if (acs.length>0 && !Hidden)
+        {
+            if (StringTools.startsWith(acs[0].msg,"flower"))
+            {
+                Action.ChangeBitmap(Resources.Get("action-flower"));
+                Action.Hide(false);
+            }
+            
+            if (StringTools.startsWith(acs[0].msg,"drop-leaves"))
+            {
+                Action.ChangeBitmap(Resources.Get("action-drop-leaves"));
+                Action.Hide(false);
+            }
+        }
 
         Debug.text=text;
 
@@ -300,18 +338,28 @@ class Spirit extends SkeletonEntity
             //trace(f);
         }
 
+        Action.Pos.x=Root.Pos.x-50;
+        Action.Pos.y=Root.Pos.y-50;
+        Action.Update(0,null);
+
         //Draw(cast(world,truffle.World));
         var c=this;
+
+        var excitement = c.Emotions.Love+c.Emotions.Admiration;
+        if (excitement>10) excitement=10;
+        var irritation = c.Emotions.Hate+c.Emotions.Distress;
+        if (irritation>5) irritation=5;
+        var bouncyness = c.Emotions.Gratitude;
+        var bounce=new Vec2(0,0);
+
         Root.Recurse(function(b:Bone,depth:Int) 
-        {
-            var excitement = c.Emotions.Love+c.Emotions.Admiration;
-            if (excitement>10) excitement=10;
-            
-            b.SetRotate(excitement*5*Math.sin(
+        {    
+            b.SetRotate((excitement*5+1)*Math.sin(
                              (((10-depth)+frame*0.04+c.Emotions.Gratitude*0.01)+
                              c.Emotions.Joy*0.1)) +
-            ((world.MyRndGen.RndFlt()-0.5)*10*(c.Emotions.Hate+
-                    c.Emotions.Distress)));
+            ((world.MyRndGen.RndFlt()-0.5)*10*irritation));
+            bounce.y=bouncyness*5*Math.abs(Math.sin(frame*0.25));
+            b.SetPos(b.BindPos.Add(bounce));
            
         });
 
@@ -392,7 +440,8 @@ class FungiWorld extends World
     var Spirits:Array<Spirit>;
     public var Seeds:SeedStore;
     var Server : ServerConnection;
-
+    var TileInfo: flash.text.TextField;
+ 
 	public function new(w:Int, h:Int) 
 	{
 		super();
@@ -409,7 +458,6 @@ class FungiWorld extends World
 		MyRndGen = new RndGen();
         Server = new ServerConnection();
         MyName = "";
-
 
         var arrow1 = new SpriteEntity(this,new Vec3(7,-2,1), Resources.Get("arr3"));
         arrow1.Spr.MouseUp(this,function(c) { c.UpdateWorld(c.WorldPos.Add(new Vec3(0,-1,0))); });
@@ -430,6 +478,82 @@ class FungiWorld extends World
         arrow4.Spr.MouseUp(this,function(c) { c.UpdateWorld(c.WorldPos.Add(new Vec3(1,0,0))); });
         arrow4.Spr.MouseOver(this,function(c) { arrow4.Spr.SetScale(new Vec2(1.1,1.1)); arrow4.Spr.Update(0,null); });
         arrow4.Spr.MouseOut(this,function(c) { arrow4.Spr.SetScale(new Vec2(1,1)); arrow4.Spr.Update(0,null); });
+
+        // move this crap out you stupid copy/paste programmer...
+
+        // tile info
+        TileInfo = new flash.text.TextField();
+        TileInfo.text = "Loading...";
+        TileInfo.x=100;
+        TileInfo.y=20;
+        TileInfo.height=10;
+        TileInfo.width=100;
+        TileInfo.background = false;
+        TileInfo.autoSize = flash.text.TextFieldAutoSize.LEFT;
+        TileInfo.border = true;
+        TileInfo.wordWrap = true;
+        var t = new flash.text.TextFormat();
+        t.font = "Verdana"; 
+        t.size = 8;                
+        t.color= 0x000000;           
+        TileInfo.setTextFormat(t);
+        addChild(TileInfo);
+
+        // hiscores table
+        var tf = new flash.text.TextField();
+        tf.text = "Loading...";
+        tf.x=100;
+        tf.y=100;
+        tf.height=500;
+        tf.width=500;
+        tf.background = false;
+        tf.autoSize = flash.text.TextFieldAutoSize.LEFT;
+        tf.border = true;
+        tf.wordWrap = true;
+        var t = new flash.text.TextFormat();
+        t.font = "Verdana"; 
+        t.size = 8;                
+        t.color= 0x000000;           
+        tf.setTextFormat(t);
+
+        var figures:Shape = new Shape();
+        var BG = figures.graphics;
+        BG.beginFill(0xffffff,0.5);
+        BG.drawRect(tf.x,tf.y,tf.width,tf.height);
+        BG.endFill();
+        figures.visible=false;
+        cast(this,truffle.flash.FlashWorld).addChild(figures);
+
+        addChild(tf);
+        tf.visible=false;
+
+        var hiscores = new Sprite(new Vec2(50,50), Resources.Get(""));
+        AddSprite(hiscores);
+        hiscores.MouseDown(this,function(c)
+        {
+            tf.visible=!tf.visible;
+            figures.visible=!figures.visible;
+            if (tf.visible)
+            {
+                cast(c,FungiWorld).Server.Request("hiscores",
+                                 c,
+                                 function(c,data:Array<Dynamic>)
+                                 {
+                                     var text="Hi Scores Table\n Number of plants currently alive, by player.\n\n";
+                                     for (i in data)
+                                     {
+                                         text+=i[0]+": "+i[1]+"\n";
+                                     }
+                                     tf.text=text;
+
+                                     BG.clear();
+                                     BG.beginFill(0xffffff,0.5);
+                                     BG.drawRect(tf.x,tf.y,tf.width,tf.height);
+                                     BG.endFill();
+                                 });
+                           
+            }
+        });
 
 		for (y in 0...h)
 		{
@@ -629,6 +753,8 @@ class FungiWorld extends World
             this,
             function (c:truffle.World,d)
             {
+                c.TileInfo.text="Season: "+d.season;
+
                 var data:Array<Dynamic>=cast(d.entities,Array<Dynamic>);
                 for (p in data)
                 {
@@ -641,7 +767,7 @@ class FungiWorld extends World
                         if (cube!=null)
                         {
                             var pos = new Vec3(p.pos.x,p.pos.y,cube.LogicalPos.z+1);   
-                            var plant = new Plant(c,p.owner,pos,p.type,p.state);
+                            var plant = new Plant(c,Std.parseInt(p.id),p.owner,pos,p.type,p.state,p.fruit);
                             c.Plants.push(plant);
                         }
                     }
@@ -650,7 +776,7 @@ class FungiWorld extends World
                         //trace("updating plant");
                         //trace(e);
                         //trace(p.state);
-                        cast(e,Plant).StateUpdate(p.state,c);
+                        cast(e,Plant).StateUpdate(p.state,p.fruit,c);
                     }
                 }
                 c.SortScene();

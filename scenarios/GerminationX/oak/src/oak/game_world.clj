@@ -64,13 +64,6 @@
    false
    (:spirits world)))
 
-(defn layer->spirit-name [layer]
-  (cond
-   (= layer "canopy") "CanopySpirit"
-   (= layer "vertical") "VerticalSpirit"
-   (= layer "cover") "CoverSpirit"
-   :else "UnknownSpirit"))
-
 (defn game-world-summon-spirit [world tile-pos entity]
   (let [spirit-name (layer->spirit-name (:layer entity))]
     (modify :spirits
@@ -120,6 +113,26 @@
                        (:x (:pos plant)) (:y (:pos plant))
                        (:state plant) (:health plant))))))
 
+; returns the frequency of plants to owners in the world
+(defn game-world-hiscores [game-world]
+  (let [freq (reduce
+              (fn [r tile]
+                (reduce
+                 (fn [r plant]
+                   (let [count (get r (:owner plant))] 
+                     (if count
+                       (merge r {(:owner plant) (+ 1 count)})
+                       (merge r {(:owner plant) 1}))))
+                 r
+                 (tile-entities tile)))
+              '{}
+              (game-world-tiles game-world))]
+    ; sort by values so highest is first
+    (into (sorted-map-by
+           (fn [key1 key2]
+             (compare (get freq key2) (get freq key1))))
+          freq)))
+    
 (defn game-world-update [game-world time delta]
   (let [rules (load-companion-rules "rules.txt")]
     (modify :tiles

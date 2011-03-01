@@ -20,11 +20,13 @@ class Bone extends Sprite
 {
     public var Parent:Bone;
     public var Children:List<Bone>;
+    public var BindPos:Vec2;
 
 	public function new(pos:Vec2, t:TextureDesc) 
     {
         Children = new List<Bone>();
         super(pos,t);
+        BindPos=pos;
     }
 
     public function AddChild(world:World,c:Bone)
@@ -32,7 +34,7 @@ class Bone extends Sprite
         Children.add(c);
         c.Parent=this;
         world.AddSprite(c);
-    }
+     }
 
     public function GetGlobalPos() : Vec2
     {

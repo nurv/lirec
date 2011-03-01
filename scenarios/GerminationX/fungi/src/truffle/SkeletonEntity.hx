@@ -123,6 +123,7 @@ class SkeletonEntity extends truffle.Entity
         for (b in 0...bones.length)
         {
             bones[b].Pos=relative[b].Mul(0.5);
+            bones[b].BindPos=bones[b].Pos;
         }
     }
 

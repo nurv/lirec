@@ -11,7 +11,8 @@
    oak.game-world
    oak.vec2
    oak.plant
-   oak.tile)
+   oak.tile
+   oak.forms)
   (:import
    java.util.concurrent.Executors
    java.util.Date)
@@ -84,9 +85,31 @@
                   (deref my-game-world)
                   (make-vec2 (parse-number tilex) (parse-number tiley))
                   (make-plant (make-vec2 (parse-number posx) (parse-number posy)) type owner size))))
-       ;(game-world-save (deref my-game-world) state-filename)
+       (game-world-save (deref my-game-world) state-filename)
        ;(println (deref my-game-world))
        (json/encode-to-str '("ok")))
+
+  (GET "/pick/:tilex/:tiley/:plant-id" [tilex tiley plant-id]
+       (dosync
+        (ref-set my-game-world
+                 (game-world-modify-tile
+                  (deref my-game-world)
+                  (make-vec2 (parse-number tilex)
+                             (parse-number tiley))
+                  (fn [tile]
+                    (tile-modify-entity
+                     tile
+                     (parse-number plant-id)
+                     (fn [plant]
+                       (modify :fruit (fn [f] false) plant)))))))
+       (json/encode-to-str '("ok")))
+
+  (GET "/hiscores" []
+       (json/encode-to-str
+        (map
+         (fn [s]
+           (list (first s) (second s)))
+         (game-world-hiscores (deref my-game-world)))))
   
   (GET "/spirit-sprites/:name" [name]
        ;(update-islands (str "./" name) (str "./" name))
