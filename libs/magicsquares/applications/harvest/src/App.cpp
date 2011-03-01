@@ -44,7 +44,7 @@ m_SingleImage(false)
         //int ncams = cvcamGetCamerasCount( );    //returns the number of available cameras in the system
         //int* out; int nselected = cvcamSelectCamera(&out);
 
-		m_Capture = cvCaptureFromCAM(0);
+		m_Capture = cvCaptureFromCAM(1);
 	}
 	else
 	{
@@ -119,15 +119,42 @@ void App::Update(Image &camera)
     static bool viewthresh=false;
     static bool off=false;
     static int spirit=0;
+    static int crop_x=0;
+    static int crop_y=0;
+    static int crop_w=camera.m_Image->width;
+    static int crop_h=camera.m_Image->height;
 
 	switch (key)
 	{
     case 't': viewthresh=!viewthresh; break;
     case 'q': t--; break;
     case 'w': t++; break;
+    case 'e': t-=20; break;
+    case 'r': t+=20; break;
     case 'o': off=!off; break;
     case 'p': spirit++; break;
+    case 'z': crop_x+=10; break;    
+    case 'x': crop_x-=10; break;    
+    case 'c': crop_y+=10; break;    
+    case 'v': crop_y-=10; break;    
+    case 'b': crop_w+=10; break;    
+    case 'n': crop_w-=10; break;    
+    case 'm': crop_h+=10; break;    
+    case ',': crop_h-=10; break;    
 	}			
+
+    if (crop_x<0) crop_x=0;
+    if (crop_x>=camera.m_Image->width) crop_x=camera.m_Image->width; 
+    if (crop_y<0) crop_x=0;
+    if (crop_y>=camera.m_Image->width) crop_x=camera.m_Image->width; 
+    if (crop_w+crop_x>camera.m_Image->width)
+    { 
+        crop_w=camera.m_Image->width-crop_x;
+    } 
+    if (crop_h+crop_y>camera.m_Image->height)
+    { 
+        crop_h=camera.m_Image->height-crop_y;
+    } 
 
     if (off) 
     {
@@ -136,7 +163,7 @@ void App::Update(Image &camera)
         return;
     }
 
-    Image thresh=camera.RGB2GRAY();
+    Image thresh=camera.RGB2GRAY().SubImage(crop_x,crop_y,crop_w,crop_h);
     cvThreshold(thresh.m_Image,thresh.m_Image,t,255,CV_THRESH_BINARY);
     // copy the threshold into a colour image
     Image tofill=thresh.GRAY2RGB();
@@ -153,15 +180,16 @@ void App::Update(Image &camera)
     if (key=='s')
     {
         // add the alpha channel
-        out = new Image(camera.m_Image->width,
-                        camera.m_Image->height, 8, 4);    
+        Image src=camera.SubImage(crop_x,crop_y,crop_w,crop_h);
+        out = new Image(src.m_Image->width,
+                        src.m_Image->height, 8, 4);    
         
-        for(int y=0; y<camera.m_Image->height; y++)
+        for(int y=0; y<src.m_Image->height; y++)
         {
 
-            for(int x=0; x<camera.m_Image->width; x++)
+            for(int x=0; x<src.m_Image->width; x++)
             {
-                CvScalar col = cvGet2D(camera.m_Image,y,x);
+                CvScalar col = cvGet2D(src.m_Image,y,x);
                 CvScalar alpha = cvGet2D(tofill.m_Image,y,x);
                 if (alpha.val[0]==0 && 
                     alpha.val[1]==255 && 
@@ -203,13 +231,14 @@ void App::Update(Image &camera)
         {
             char buf[256];
             sprintf(buf,"%d",currentBlob->GetID());
-            cvPutText(camera.m_Image, buf, cvPoint(rect.x+rect.width/2,
-                                                   rect.y+rect.height/2), 
+            cvPutText(camera.m_Image, buf, cvPoint(crop_x+rect.x+rect.width/2,
+                                                   crop_y+rect.y+rect.height/2), 
                       &m_Font, colors[0]);
             
             cvRectangle(camera.m_Image, 
-                        cvPoint(rect.x,rect.y), 
-                        cvPoint(rect.x+rect.width,rect.y+rect.height), 
+                        cvPoint(crop_x+rect.x,crop_y+rect.y), 
+                        cvPoint(crop_x+rect.x+rect.width,
+                                crop_y+rect.y+rect.height), 
                         colors[1]);
         }
     }
@@ -234,6 +263,10 @@ void App::Update(Image &camera)
     cvPutText(camera.m_Image, buf, cvPoint(10,10), 
               &m_Font, colors[0]);
 
+    cvRectangle(camera.m_Image, 
+                cvPoint(crop_x,crop_y), 
+                cvPoint(crop_x+crop_w,crop_y+crop_h), 
+                colors[2]);
 
     if (out!=NULL) delete out;
 }
