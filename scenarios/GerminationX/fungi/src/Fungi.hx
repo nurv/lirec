@@ -108,8 +108,8 @@ class Plant extends SpriteEntity
         tf.setTextFormat(t);
         Spr.parent.addChild(tf);
         tf.visible=false;
-        Spr.MouseDown(this,function(c) { tf.visible=!tf.visible; });
-        //Spr.MouseOut(this,function(c) { tf.visible=false; });
+        Spr.MouseDown(this,function(c) { tf.visible=true; });
+        Spr.MouseOut(this,function(c) { tf.visible=false; });
 
         if (fruit) Fruit(world);
 	}
@@ -441,6 +441,8 @@ class FungiWorld extends World
     public var Seeds:SeedStore;
     var Server : ServerConnection;
     var TileInfo: flash.text.TextField;
+    var Spiral:Sprite;
+    var SpiralScale:Float;
  
 	public function new(w:Int, h:Int) 
 	{
@@ -453,6 +455,7 @@ class FungiWorld extends World
 		Plants = [];
         Objs = [];
         Spirits = [];
+        SpiralScale=0;
         Seeds = new SeedStore(1);
 		WorldPos = new Vec3(0,0,0);
 		MyRndGen = new RndGen();
@@ -572,6 +575,8 @@ class FungiWorld extends World
                     var type=c.Seeds.Remove(cast(c,truffle.World));
                     if (type!="")
                     {
+                        c.SpiralScale=1;
+                        c.Spiral.SetPos(new Vec2(ob.mouseX,ob.mouseY));
                         c.AddServerPlant(ob.LogicalPos.Add(new Vec3(0,0,1)),type);
                     }
                 });
@@ -586,11 +591,14 @@ class FungiWorld extends World
 
         TheCritters = new Critters(this,3);
 
+        Spiral = new Sprite(new Vec2(0,0), Resources.Get("spiral"));
+        AddSprite(Spiral);
+
         Update(0);
         SortScene();
         var names = ["CanopySpirit","VerticalSpirit","CoverSpirit"];
         var positions = [new Vec3(0,5,4), new Vec3(7,0,4), new Vec3(2,10,4)];
-
+ 
         for (i in 0...3)
         {
             Server.Request("spirit-sprites/"+names[i],
@@ -747,6 +755,15 @@ class FungiWorld extends World
 
         Server.Update();
         TheCritters.Update();
+
+        if (SpiralScale>0.1)
+        {
+            Spiral.Hide(false);
+            SpiralScale-=0.05;
+            Spiral.SetRotate(time*12);
+            Spiral.SetScale(new Vec2(SpiralScale,SpiralScale));
+            Spiral.Update(time,null);
+        }
         
         if (time>TickTime)
         {

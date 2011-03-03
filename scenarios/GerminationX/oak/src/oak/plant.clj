@@ -51,6 +51,7 @@
 (defn plant-type->layer [type]
   (cond
    (= type "dandelion") "cover"
+   (= type "clover") "cover"
    (= type "aronia") "vertical"
    (= type "apple") "canopy"
    (= type "cherry") "canopy"))
@@ -78,7 +79,7 @@
           'grow-a '() owner size 0 (+ (/ season-length 50) (Math/floor (rand 10))) start-health false))
 
 (defn make-random-plant []
-  (let [type (rand-nth (list "aronia" "dandelion" "apple" "cherry"))]
+  (let [type (rand-nth (list "aronia" "dandelion" "apple" "cherry" "clover"))]
     (make-plant
      (make-vec2 (Math/floor (rand 15)) (Math/floor (rand 15)))
      type
