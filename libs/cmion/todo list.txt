@@ -1,0 +1,23 @@
+TODO soon:
+----------
+
+- A Gui interface for simulating remote actions (actions by the user)
+
+- Loading initial world model from file
+
+- Expressive Behaviour Generator as outlined in D3.5 
+
+- Extend Comp. Manager to allow competencies to be restarted with new parameters while running (if the competency permits and supports it)
+
+
+Ideas for future:
+-----------------
+
+
+- Simple Resource Management System: Every Competency can define which resources it uses. A resource conflict occurs when a competency is supposed to start while another competency that utilises the same resource is already running. Resolving conflicts could involve waiting or cancelling execution (actions could have priorities to determine which takes precedence. Reservations: Often prefereed to deal with resource conflicts on level 1, as level 2 cannot always accurately know the resources needed.
+
+- There are some problems with using multiple instances of the same competency, it's fine if they are used as background/perception competencies, but it does not work for effector competencies (those selected by the competency manager and executed by the competency execution system). Actually there is a workaround for that (passing the competencyType as a constructorParameter in the competency library) but it's not the best solution. But a better solution would require a lot of reworking and it doesnt seem to be required by anyone right now
+
+- No one asked for this yet, but another Gui tool missing would be a BlackBoard manipulator, should be relatively easy to do as it just requires a few changes from the world model manipulator
+
+- There are parallels between the insides of CMION and the SAIBA framework, in particular Competency Execution Plans could be expressed in BML, that would allow for more detailed synchronization possibilities. Competency Execution Component would the be a BML Realizer and could be possibly exchanged with other BML compatible systems. Practically though this would require a lot of work for no immeadiate gain that's why its not on the todo list (yet). Biggest effort would probably be making the competency execution system support all the BML language features like synchronization points, forcing competencies to have a certain duration, etc.  
