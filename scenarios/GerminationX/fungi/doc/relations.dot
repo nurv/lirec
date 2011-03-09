@@ -1,0 +1,48 @@
+digraph {
+
+"cherry-grow-a" [image="textures/cherry-grow-a.png", labelloc="b"];
+"cherry-fruit-c" [image="textures/cherry-fruit-c.png", labelloc="b"];
+"cherry-ill-a" [image="textures/cherry-ill-a.png", labelloc="b"];
+"apple-grow-a" [image="textures/apple-grow-a.png", labelloc="b"];
+"apple-fruit-c" [image="textures/apple-fruit-c.png", labelloc="b"];
+"apple-ill-a" [image="textures/apple-ill-a.png", labelloc="b"];
+"aronia-grow-a" [image="textures/aronia-grow-a.png", labelloc="b"];
+"aronia-fruit-c" [image="textures/aronia-fruit-c.png", labelloc="b"];
+"aronia-ill-a" [image="textures/aronia-ill-a.png", labelloc="b"];
+"dandelion-grow-a" [image="textures/plant-001-grow-a.png", labelloc="b"];
+"dandelion-fruit-c" [image="textures/plant-001-fruit-c.png", labelloc="b"];
+"dandelion-ill-a" [image="textures/plant-001-ill-a.png", labelloc="b"];
+"clover-grow-a" [image="textures/clover-grow-a.png", labelloc="b"];
+"clover-fruit-c" [image="textures/clover-fruit-c.png", labelloc="b"];
+"clover-ill-a" [image="textures/clover-ill-a.png", labelloc="b"];
+
+"cover-spirit" [image="coverspirit.png", labelloc="b"];
+"tree-spirit" [image="treespirit.png", labelloc="b"];
+"shrub-spirit" [image="shrubspirit.png", labelloc="b"];
+
+"cover-spirit" -> "tree-spirit" [color="#ff0000"]
+"cover-spirit" -> "shrub-spirit" [color="#00ff00"]
+"tree-spirit" -> "cover-spirit" [color="#00ff00"]
+"tree-spirit" -> "shrub-spirit" [color="#00ff00"]
+"shrub-spirit" -> "cover-spirit" [color="#00ff00"]
+"shrub-spirit" -> "tree-spirit" [color="#00ff00"]
+
+"cover-spirit" -> "clover-grow-a" [color="#00ff00"]
+"cover-spirit" -> "clover-fruit-c" [color="#00ff00"]
+"cover-spirit" -> "clover-ill-a" [color="#ff0000"]
+"cover-spirit" -> "dandelion-grow-a" [color="#00ff00"]
+"cover-spirit" -> "dandelion-fruit-c" [color="#00ff00"]
+"cover-spirit" -> "dandelion-ill-a" [color="#ff0000"]
+
+"tree-spirit" -> "cherry-grow-a" [color="#00ff00"]
+"tree-spirit" -> "cherry-fruit-c" [color="#00ff00"]
+"tree-spirit" -> "cherry-ill-a" [color="#ff0000"]
+"tree-spirit" -> "apple-grow-a" [color="#00ff00"]
+"tree-spirit" -> "apple-fruit-c" [color="#00ff00"]
+"tree-spirit" -> "apple-ill-a" [color="#ff0000"]
+
+"shrub-spirit" -> "aronia-grow-a" [color="#00ff00"]
+"shrub-spirit" -> "aronia-fruit-c" [color="#00ff00"]
+"shrub-spirit" -> "aronia-ill-a" [color="#ff0000"]
+
+}

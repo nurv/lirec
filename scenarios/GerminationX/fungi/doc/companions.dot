@@ -1,0 +1,27 @@
+digraph {
+
+cherry [image="textures/cherry-grown.png", labelloc="b"];
+apple [image="textures/apple-grown.png", labelloc="b"];
+aronia [image="textures/aronia-grown.png", labelloc="b"];
+dandelion [image="textures/plant-001-grown.png", labelloc="b"];
+clover [image="textures/clover-grown.png", labelloc="b"];
+
+cherry -> cherry [color="#ff0000"]
+cherry -> apple [color="#ff0000"]
+cherry -> clover [color="#00ff00"]
+apple -> cherry [color="#ff0000"]
+apple -> apple [color="#ff0000"]
+apple -> clover [color="#00ff00"]
+aronia -> apple [color="#ff0000"]
+aronia -> aronia [color="#ff0000"]
+aronia -> clover [color="#00ff00"]
+dandelion -> aronia [color="#ff0000"]
+clover -> cherry [color="#00ff00"]
+clover -> apple [color="#00ff00"]
+clover -> dandelion [color="#ff0000"]
+clover -> clover [color="#00ff00"]
+
+
+
+
+}

@@ -1,0 +1,33 @@
+digraph {
+
+"grow-a" [image="textures/clover-grow-a.png", labelloc="t"];
+"grow-b" [image="textures/clover-grow-b.png", labelloc="t"];
+"grow-c" [image="textures/clover-grow-c.png", labelloc="t"];
+"grown" [image="textures/clover-grown.png", labelloc="t"];
+"fruit-a" [image="textures/clover-fruit-a.png", labelloc="t"];
+"fruit-b" [image="textures/clover-fruit-b.png", labelloc="t"];
+"fruit-c" [image="textures/clover-fruit-c.png", labelloc="t"];
+"decay-a" [image="textures/clover-decay-a.png", labelloc="t"];
+"decay-b" [image="textures/clover-decay-b.png", labelloc="t"];
+"decay-c" [image="textures/clover-decay-c.png", labelloc="t"];
+"ill-a" [image="textures/clover-ill-a.png", labelloc="t"];
+
+"grow-a" -> "grow-b"
+"grow-b" -> "grow-c"
+"grow-c" -> "grown"
+"grown" -> "decay-a" [label="autumn/illness"]
+"grown" -> "fruit-a"
+"fruit-a" -> "fruit-b"
+"fruit-a" -> "decay-a" [label="illness"]
+"fruit-b" -> "fruit-c"
+"fruit-b" -> "decay-a" [label="illness"]
+"fruit-c" -> "grown"
+"fruit-c" -> "decay-a" [label="illness"]
+"decay-a" -> "decay-b"
+"decay-b" -> "decay-c"
+"decay-c" -> "grow-a" [label="springtime"]
+"decay-c" -> "ill-a"
+"ill-a" -> "grown"
+"ill-a" -> "decayed"
+
+}
