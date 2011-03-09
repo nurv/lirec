@@ -1,0 +1,77 @@
+<Character role="TreeSpirit">
+	<EmotionalThresholds>
+		<EmotionalThreshold emotion="Love" threshold="3" decay="10"/>
+		<EmotionalThreshold emotion="Hate" threshold="2" decay="5"/>
+		<EmotionalThreshold emotion="Hope" threshold="3" decay="2"/>
+		<EmotionalThreshold emotion="Fear" threshold="4" decay="8"/>
+		<EmotionalThreshold emotion="Satisfaction" threshold="2" decay="5"/>
+		<EmotionalThreshold emotion="Relief" threshold="3" decay="5"/>
+		<EmotionalThreshold emotion="Fears-Confirmed" threshold="2" decay="8"/>
+		<EmotionalThreshold emotion="Disappointment" threshold="2" decay="2"/>
+		<EmotionalThreshold emotion="Joy" threshold="3" decay="2"/>
+		<EmotionalThreshold emotion="Distress" threshold="1" decay="2"/>
+		<EmotionalThreshold emotion="Happy-For" threshold="2" decay="8"/>
+		<EmotionalThreshold emotion="Pitty" threshold="2" decay="8"/>
+		<EmotionalThreshold emotion="Resentment" threshold="2" decay="2"/>
+		<EmotionalThreshold emotion="Gloating" threshold="2" decay="8"/>
+		<EmotionalThreshold emotion="Pride" threshold="2" decay="8"/>
+		<EmotionalThreshold emotion="Shame" threshold="1" decay="2"/>
+		<EmotionalThreshold emotion="Gratification" threshold="1" decay="5"/>
+		<EmotionalThreshold emotion="Remorse" threshold="2" decay="8"/>
+		<EmotionalThreshold emotion="Admiration" threshold="1" decay="8"/>
+		<EmotionalThreshold emotion="Reproach" threshold="2" decay="8"/>
+		<EmotionalThreshold emotion="Gratitude" threshold="1" decay="5"/>
+		<EmotionalThreshold emotion="Anger" threshold="1" decay="8"/>
+	</EmotionalThresholds>
+	
+	<Goals>
+		<Goal name="AvoidGettingHarmed" importanceOfSuccess="2" importanceOfFailure="10"/>
+	</Goals>
+	
+	<InterpersonalRelations>
+		<Relation target="ShrubSpirit" like="3" respect="10"/>
+		<Relation target="CoverSpirit" like="2" respect="1"/>
+        <Relation target="tree-grow-a" like="6" respect="1"/>
+        <Relation target="tree-fruit-a" like="2" respect="1"/>
+        <Relation target="tree-fruit-b" like="4" respect="1"/>
+        <Relation target="tree-fruit-c" like="6" respect="1"/>
+        <Relation target="tree-ill-a" like="-4" respect="1"/>
+        <Relation target="tree-ill-b" like="-6" respect="1"/>
+        <Relation target="tree-ill-c" like="-8" respect="1"/>
+	</InterpersonalRelations>
+	
+	<EventReactions>
+
+		<!-- General emotional reactions used in more than one episode -->
+	
+		<EmotionalReaction desirability="3" desirabilityForOther="1" praiseworthiness="5"> 
+			<Event subject="*" action="flower"/>
+		</EmotionalReaction>
+
+		<EmotionalReaction desirability="-3" desirabilityForOther="-1" praiseworthiness="-2"> 
+			<Event subject="*" action="drop-leaves"/>
+		</EmotionalReaction>
+		
+	</EventReactions>
+	
+	<ActionTendencies>
+		
+		<!-- Generic action tendencies -->
+		<ActionTendency action="flower([Target])">
+			<Preconditions>
+            </Preconditions>
+			<ElicitingEmotion type="Love" minIntensity="4">
+				<CauseEvent/>
+			</ElicitingEmotion>
+		</ActionTendency>
+
+		<ActionTendency action="drop-leaves([Target])">
+			<Preconditions>
+            </Preconditions>
+			<ElicitingEmotion type="Hate" minIntensity="4">
+				<CauseEvent/>
+			</ElicitingEmotion>
+		</ActionTendency>
+       
+	</ActionTendencies>
+</Character>

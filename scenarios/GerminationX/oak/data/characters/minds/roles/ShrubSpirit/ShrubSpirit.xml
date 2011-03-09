@@ -1,0 +1,76 @@
+<Character role="ShrubSpirit">
+	<EmotionalThresholds>
+		<EmotionalThreshold emotion="Love" threshold="2" decay="5"/>
+		<EmotionalThreshold emotion="Hate" threshold="1" decay="5"/>
+		<EmotionalThreshold emotion="Hope" threshold="1" decay="2"/>
+		<EmotionalThreshold emotion="Fear" threshold="5" decay="8"/>
+		<EmotionalThreshold emotion="Satisfaction" threshold="3" decay="5"/>
+		<EmotionalThreshold emotion="Relief" threshold="2" decay="5"/>
+		<EmotionalThreshold emotion="Fears-Confirmed" threshold="5" decay="8"/>
+		<EmotionalThreshold emotion="Disappointment" threshold="2" decay="2"/>
+		<EmotionalThreshold emotion="Joy" threshold="3" decay="1"/>
+		<EmotionalThreshold emotion="Distress" threshold="3" decay="2"/>
+		<EmotionalThreshold emotion="Happy-For" threshold="5" decay="8"/>
+		<EmotionalThreshold emotion="Pitty" threshold="5" decay="8"/>
+		<EmotionalThreshold emotion="Resentment" threshold="2" decay="2"/>
+		<EmotionalThreshold emotion="Gloating" threshold="1" decay="8"/>
+		<EmotionalThreshold emotion="Pride" threshold="1" decay="8"/>
+		<EmotionalThreshold emotion="Shame" threshold="5" decay="2"/>
+		<EmotionalThreshold emotion="Gratification" threshold="1" decay="5"/>
+		<EmotionalThreshold emotion="Remorse" threshold="5" decay="8"/>
+		<EmotionalThreshold emotion="Admiration" threshold="5" decay="8"/>
+		<EmotionalThreshold emotion="Reproach" threshold="1" decay="8"/>
+		<EmotionalThreshold emotion="Gratitude" threshold="3" decay="5"/>
+		<EmotionalThreshold emotion="Anger" threshold="3" decay="8"/>
+	</EmotionalThresholds>
+	
+	<Goals>
+		<Goal name="AvoidGettingHarmed" importanceOfSuccess="2" importanceOfFailure="10"/>
+	</Goals>
+	
+	<InterpersonalRelations>
+		<Relation target="TreeSpirit" like="3" respect="5"/>
+		<Relation target="CoverSpirit" like="1" respect="1"/>
+        <Relation target="shrub-grow-a" like="6" respect="1"/>
+        <Relation target="shrub-fruit-a" like="2" respect="1"/>
+        <Relation target="shrub-fruit-b" like="4" respect="1"/>
+        <Relation target="shrub-fruit-c" like="6" respect="1"/>
+        <Relation target="shrub-ill-a" like="-4" respect="1"/>
+        <Relation target="shrub-ill-b" like="-7" respect="1"/>
+        <Relation target="shrub-ill-c" like="-10" respect="1"/>
+	</InterpersonalRelations>
+	
+	<EventReactions>
+		
+		<EmotionalReaction desirability="3" desirabilityForOther="1" praiseworthiness="5"> 
+			<Event subject="*" action="flower"/>
+		</EmotionalReaction>
+
+		<EmotionalReaction desirability="-3" desirabilityForOther="-1" praiseworthiness="-2"> 
+			<Event subject="*" action="drop-leaves"/>
+		</EmotionalReaction>
+
+	</EventReactions>
+	
+	<ActionTendencies>
+		
+		<!-- Generic action tendencies -->
+
+		<ActionTendency action="flower([Target])">
+			<Preconditions>
+            </Preconditions>
+			<ElicitingEmotion type="Love" minIntensity="4">
+				<CauseEvent/>
+			</ElicitingEmotion>
+		</ActionTendency>
+
+		<ActionTendency action="drop-leaves([Target])">
+			<Preconditions>
+            </Preconditions>
+			<ElicitingEmotion type="Hate" minIntensity="2">
+				<CauseEvent/>
+			</ElicitingEmotion>
+		</ActionTendency>
+       
+	</ActionTendencies>
+</Character>
