@@ -68,11 +68,11 @@ class Plant extends SpriteEntity
 	public var Age:Int;
     var Scale:Float;
     var PlantType:String;
-    var State:String;
+    public var State:String;
     var Seeds:Array<Sprite>;
     var Layer:String;
 
-	public function new(world:World, id:Int, owner:String, pos, type:String, state:String, fruit:Bool)
+	public function new(world:World, id:Int, owner:String, pos, type:String, state:String, fruit:Bool, layer:String)
 	{
 		super(world,pos,Resources.Get(type+"-"+state),false);
         Id=id;
@@ -82,12 +82,7 @@ class Plant extends SpriteEntity
         PlantScale=0;
         //NeedsUpdate=true;
         Seeds=[];
-
-        Layer="none";
-        if (type=="plant-001") Layer="cover";
-        if (type=="plant-002") Layer="canopy";
-        if (type=="plant-003") Layer="vertical";
-
+        Layer=layer;
         Spr.Hide(false);
         
         var tf = new flash.text.TextField();
@@ -161,6 +156,7 @@ class Plant extends SpriteEntity
                 if (world.Seeds.Add(world,s))
                 {
                     p.Seeds.remove(f);
+                    world.ActivatePlants(false);
                     world.RemoveSprite(f);
                     world.Server.Request("pick/"+
                                          Std.string(cast(world.WorldPos.x,Int))+"/"+
@@ -244,8 +240,14 @@ class Spirit extends SkeletonEntity
 
         Root.MouseDown(c,function(c)
         {
-            tf.visible=!tf.visible;
-            figures.visible=!figures.visible;
+            tf.visible=true;
+            figures.visible=true;
+        });
+
+        Root.MouseOut(c,function(c)
+        {
+            tf.visible=false;
+            figures.visible=false;
         });
 
         Action = new Sprite(new Vec2(0,0),Resources.Get(""));
@@ -350,6 +352,7 @@ class Spirit extends SkeletonEntity
         var irritation = c.Emotions.Hate+c.Emotions.Distress;
         if (irritation>5) irritation=5;
         var bouncyness = c.Emotions.Gratitude;
+        if (bouncyness>5) bouncyness=5;
         var bounce=new Vec2(0,0);
 
         Root.Recurse(function(b:Bone,depth:Int) 
@@ -491,7 +494,7 @@ class FungiWorld extends World
         TileInfo.y=20;
         TileInfo.height=10;
         TileInfo.width=120;
-        TileInfo.background = false;
+        TileInfo.background = true;
         TileInfo.autoSize = flash.text.TextFieldAutoSize.LEFT;
         TileInfo.border = true;
         TileInfo.wordWrap = true;
@@ -575,8 +578,9 @@ class FungiWorld extends World
                     var type=c.Seeds.Remove(cast(c,truffle.World));
                     if (type!="")
                     {
+                        c.ActivatePlants(true);
                         c.SpiralScale=1;
-                        c.Spiral.SetPos(new Vec2(ob.mouseX,ob.mouseY));
+                        c.Spiral.SetPos(new Vec2(ob.Pos.x,ob.Pos.y-32));
                         c.AddServerPlant(ob.LogicalPos.Add(new Vec3(0,0,1)),type);
                     }
                 });
@@ -591,12 +595,12 @@ class FungiWorld extends World
 
         TheCritters = new Critters(this,3);
 
-        Spiral = new Sprite(new Vec2(0,0), Resources.Get("spiral"));
+        Spiral = new Sprite(new Vec2(0,0), Resources.Get("spiral"), true);
         AddSprite(Spiral);
 
         Update(0);
         SortScene();
-        var names = ["CanopySpirit","VerticalSpirit","CoverSpirit"];
+        var names = ["TreeSpirit","ShrubSpirit","CoverSpirit"];
         var positions = [new Vec3(0,5,4), new Vec3(7,0,4), new Vec3(2,10,4)];
  
         for (i in 0...3)
@@ -706,6 +710,14 @@ class FungiWorld extends World
         }
 	}
 
+    public function ActivatePlants(s:Bool) : Void
+    {
+        for (plant in Plants)
+        {
+            plant.Spr.EnableMouse(s);
+        }
+	}
+
     public function ClearPlants() : Void
     {
         for (plant in Plants)
@@ -795,7 +807,13 @@ class FungiWorld extends World
                         if (cube!=null)
                         {
                             var pos = new Vec3(p.pos.x,p.pos.y,cube.LogicalPos.z+1);   
-                            var plant = new Plant(c,Std.parseInt(p.id),p.owner,pos,p.type,p.state,p.fruit);
+                            var plant = new Plant(c,Std.parseInt(p.id),
+                                                  p.owner,
+                                                  pos,
+                                                  p.type,
+                                                  p.state,
+                                                  p.fruit,
+                                                  p.layer);
                             c.Plants.push(plant);
                         }
                     }
@@ -807,6 +825,18 @@ class FungiWorld extends World
                         cast(e,Plant).StateUpdate(p.state,p.fruit,c);
                     }
                 }
+
+                var temp=c.Plants;
+                for (plant in cast(c,FungiWorld).Plants)
+                {
+                    if (plant.State=="decayed")
+                    {
+                        c.Remove(plant);
+                        temp.remove(plant);
+                    }
+                }
+                c.Plants=temp;
+
                 c.SortScene();
             });            
             

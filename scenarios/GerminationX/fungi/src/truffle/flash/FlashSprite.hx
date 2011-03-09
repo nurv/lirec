@@ -65,6 +65,7 @@ class FlashSprite implements truffle.interfaces.Sprite, extends flash.display.Sp
         Centre=new Vec2(0,0);
         DoCentreMiddleBottom=midbot;
         ChangeBitmap(t);
+        EnableMouse(false);
         Update(0,null); // <-- calls inherited class update???
 	}
 
@@ -76,6 +77,7 @@ class FlashSprite implements truffle.interfaces.Sprite, extends flash.display.Sp
 
 	public function MouseDown(c:Dynamic, f:Dynamic -> Void=null)
 	{
+        EnableMouse(true);
         MouseDownFunc=f;
         MouseDownContext=c;
 		addEventListener(MouseEvent.MOUSE_DOWN, MouseDownCB);
@@ -88,6 +90,7 @@ class FlashSprite implements truffle.interfaces.Sprite, extends flash.display.Sp
 
 	public function MouseUp(c:Dynamic, f:Dynamic -> Void=null)
 	{
+        EnableMouse(true);
         MouseUpFunc=f;
         MouseUpContext=c;
 		addEventListener(MouseEvent.MOUSE_UP, MouseUpCB);
@@ -100,6 +103,7 @@ class FlashSprite implements truffle.interfaces.Sprite, extends flash.display.Sp
 
 	public function MouseOver(c:Dynamic, f:Dynamic -> Void=null)
 	{
+        EnableMouse(true);
         MouseOverFunc=f;
         MouseOverContext=c;
 		addEventListener(MouseEvent.MOUSE_OVER, MouseOverCB);
@@ -112,6 +116,7 @@ class FlashSprite implements truffle.interfaces.Sprite, extends flash.display.Sp
 
 	public function MouseOut(c:Dynamic, f:Dynamic -> Void=null)
 	{
+        EnableMouse(true);
         MouseOutFunc=f;
         MouseOutContext=c;
 		addEventListener(MouseEvent.MOUSE_OUT, MouseOutCB);
@@ -152,6 +157,12 @@ class FlashSprite implements truffle.interfaces.Sprite, extends flash.display.Sp
             Centre.x=Width/2;
             Centre.y=Height/2;
         }
+    }
+
+    public function EnableMouse(s:Bool)
+    {
+        mouseEnabled=s;
+        mouseChildren=s;
     }
 
 	public function ChangeBitmap(t:TextureDesc)

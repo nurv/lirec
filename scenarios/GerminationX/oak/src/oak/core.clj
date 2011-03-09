@@ -38,7 +38,7 @@
        (list))))
 
 ;(def my-game-world (ref (game-world-load state-filename)))
-(def my-game-world (ref (make-game-world 1000 1)))
+(def my-game-world (ref (make-game-world 300 1)))
 
 (append-spit log-filename (str (str (Date.)) " server started\n"))
 

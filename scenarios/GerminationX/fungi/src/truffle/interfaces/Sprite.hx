@@ -32,6 +32,7 @@ interface Sprite
 	public function MouseUp(c:Dynamic, f:Dynamic -> Void=null) : Void;
 	public function MouseOver(c:Dynamic, f:Dynamic -> Void=null) : Void;	
 	public function MouseOut(c:Dynamic, f:Dynamic -> Void=null) : Void;
+    public function EnableMouse(s:Bool): Void;
     public function ChangeBitmap(t:TextureDesc) : Void;
 
     public function SetPos(s:Vec2) : Void;

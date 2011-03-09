@@ -19,7 +19,7 @@
   (:require
    clojure.contrib.math))
 
-(def season-length (* 60 5))
+(def season-length (* 60 10))
 (def min-health 10)
 (def max-health 90)
 (def start-health 20)
@@ -52,9 +52,9 @@
   (cond
    (= type "dandelion") "cover"
    (= type "clover") "cover"
-   (= type "aronia") "vertical"
-   (= type "apple") "canopy"
-   (= type "cherry") "canopy"))
+   (= type "aronia") "shrub"
+   (= type "apple") "tree"
+   (= type "cherry") "tree"))
 
 (defn plant-type->id [type]
   (cond
@@ -87,7 +87,7 @@
      (Math/round (+ 1 (rand 10))))))
 
 ; the plant state machine, advance state, based on health
-(defn adv-state [state health season]
+(defn adv-state [state health season annual]
   (cond
    (= state 'grow-a) (cond (> health min-health) 'grow-b :else (rand-nth (list 'grow-a 'grow-b)))
    (= state 'grow-b) (cond (> health min-health) 'grow-c :else (rand-nth (list 'grow-b 'grow-c)))
@@ -97,17 +97,22 @@
                           (or (= season 'spring)
                               (= season 'summer)))
                      'fruit-a
-                     (or (= season 'autumn) (= season 'winter))
+                     (or (= season 'autumn) (= season 'winter)
+                         (< health min-health))
                      'decay-a
                      :else 'grown)
-   (= state 'fruit-a) 'fruit-b
-   (= state 'fruit-b) 'fruit-c
-   (= state 'fruit-c) (if (or (= season 'autumn) (= season 'winter)) 'decay-a 'fruit-c)
+   (= state 'fruit-a) (if (< health min-health) 'decay-a 'fruit-b)
+   (= state 'fruit-b) (if (< health min-health) 'decay-a'fruit-c)
+   (= state 'fruit-c) (if (or (= season 'autumn) (= season 'winter)
+                              (< health min-health))
+                        'decay-a 'grown)
    (= state 'decay-a) 'decay-b
    (= state 'decay-b) 'decay-c
    (= state 'decay-c) (cond (and (or (= season 'spring) (= season 'summer))
-                                 (> health min-health)) 'grown
-                                 :else (if (< health min-health) 'ill-c 'decay-c))
+                                 (> health min-health))
+                            (if annual 'grow-a 'grown)
+                            :else
+                            (if (< health min-health) 'ill-c 'decay-c))
    (= state 'ill-c) (cond (< health min-health) 'decayed
                 (> health max-health) 'grown
                 :else 'ill-c)
@@ -147,7 +152,10 @@
         :state
         (fn [state] (adv-state state
                                (:health plant)
-                               season))
+                               season
+                               ; for the moment assume cover plants
+                               ; are annuals
+                               (= (:layer plant) "cover")))
         (modify
          :timer (fn [t] 0) plant))
        plant)))))
