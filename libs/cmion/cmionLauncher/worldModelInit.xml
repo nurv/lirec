@@ -1,0 +1,24 @@
+<!DOCTYPE WorldModel SYSTEM "WorldModelInit.dtd">
+<WorldModel>
+	<Agent Name="UserA">
+		<Property Name = "speaksEnglish" Value="True"/>
+		<Property Name = "speaksChinese" Value="False"/>		
+	</Agent>
+	
+	<Agent Name="UserB">
+		<Property Name = "speaksEnglish" Value="False"/>
+		<Property Name = "speaksChinese" Value="True"/>		
+	</Agent>
+
+	<Object Name="Vase">
+		<Property Name = "onTable"  Value="True" />
+		<Property Name = "hasWater"  Value="True" />
+		<Property Name = "broken"  Value="False" />		
+	</Object>
+
+	<Object Name="Cake">
+		<Property Name = "onTable"  Value="True" />
+		<Property Name = "chocolate"  Value="True" />
+	</Object>
+
+</WorldModel>

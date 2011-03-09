@@ -1,0 +1,20 @@
+<!-- Main element of architecture configuration file-->
+<!ELEMENT WorldModel (Agent|Object)*>
+
+<!--an agent on the world model-->
+<!ELEMENT Agent (Property)*>
+<!--the name of the agent-->
+<!ATTLIST Agent Name CDATA #REQUIRED>
+
+<!--an object on the world model-->
+<!ELEMENT Object (Property)*>
+<!--the name of the agent-->
+<!ATTLIST Object Name CDATA #REQUIRED>
+
+<!--a property of an agent or object-->
+<!ELEMENT Property EMPTY>
+<!--the name of the property-->
+<!ATTLIST Property Name CDATA #REQUIRED>
+<!--the name of the property-->
+<!ATTLIST Property Value CDATA #REQUIRED>
+

@@ -46,7 +46,6 @@ import cmion.architecture.EventCmionReady;
 import cmion.architecture.IArchitecture;
 import cmion.level2.CompetencyExecution;
 import cmion.level2.CompetencyLibrary;
-import cmion.level2.migration.MigrationUtils;
 import cmion.level3.CompetencyManager;
 import cmion.storage.BlackBoard;
 import cmion.storage.WorldModel;
@@ -80,6 +79,9 @@ public class Architecture extends Element implements IArchitecture {
 	
 	/** the name of the file with the competency library configuration */
 	private String competencyLibraryFile;
+	
+	/** the name of the file with the initial world model content */
+	private String worldModelInitFile;
 	
 	/** This list stores all custom components that are loaded dynamically, depending on the 
 	 *  architecture configuration, i.e. the scenario*/
@@ -128,8 +130,15 @@ public class Architecture extends Element implements IArchitecture {
 		for (Element element : Simulation.instance.getElements())
 			if (element instanceof CmionComponent)
 				((CmionComponent)element).registerHandlers();
-		
+
 		Simulation.instance.update();
+		
+		// load world model initial state, if an init file was specified 
+		if (worldModelInitFile!=null)
+		{	
+			worldModel.loadInitFile(worldModelInitFile);
+			Simulation.instance.update();
+		}
 		
 		System.out.println("CMION initialised");
 	}
@@ -168,6 +177,14 @@ public class Architecture extends Element implements IArchitecture {
 			competencyLibraryFile = atrCompLibFile.getNodeValue();
 		else
 			throw new Exception("Architecture Configuration file does not specify competency library configuration file. Attribute CompetencyLibraryConfigurationFile not found.");
+
+		// read optional attribute WorldModelInitFile
+		Node atrWorldModelFile = attribs.getNamedItem("WorldModelInitFile");
+		if (atrWorldModelFile!=null) 
+			worldModelInitFile = atrWorldModelFile.getNodeValue();
+		else
+			worldModelInitFile=null;
+
 		
 		// load custom components and create them
 		

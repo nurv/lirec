@@ -4,6 +4,8 @@
 <!ATTLIST ArchitectureConfiguration CompetencyManagerRulesFile CDATA #REQUIRED>
 <!-- The xml file in which the competency library is set up-->
 <!ATTLIST ArchitectureConfiguration CompetencyLibraryConfigurationFile CDATA #REQUIRED>
+<!-- (optional) the xml file from which to load the initial content of the world model -->
+<!ATTLIST ArchitectureConfiguration WorldModelInitFile CDATA #IMPLIED>
 
 <!ELEMENT ArchitectureComponent EMPTY>
 <!--The full name of the java class (subclass of lirec.architecture.LirecComponent), in

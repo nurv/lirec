@@ -51,11 +51,10 @@ import cmion.architecture.IArchitecture;
 import cmion.level2.AndroidCompetencyLibrary;
 import cmion.level2.CompetencyExecution;
 import cmion.level2.CompetencyLibrary;
-import cmion.level2.migration.MigrationUtils;
 import cmion.level3.AndroidCompetencyManager;
 import cmion.level3.CompetencyManager;
 import cmion.storage.BlackBoard;
-import cmion.storage.WorldModel;
+import cmion.storage.AndroidWorldModel;
 
 import ion.Meta.Element;
 import ion.Meta.Simulation;
@@ -66,7 +65,7 @@ import ion.Meta.Simulation;
 public class AndroidArchitecture extends Element implements IArchitecture {
 		
 	/** the world model in which we store high level symbolic information */
-	private WorldModel worldModel;
+	private AndroidWorldModel worldModel;
 
 	/** the black board that stores lower level information for competencies to share
 	 *  between each other */
@@ -86,6 +85,9 @@ public class AndroidArchitecture extends Element implements IArchitecture {
 	
 	/** the name of the file with the competency library configuration */
 	private String competencyLibraryFile;
+	
+	/** the name of the file with the initial world model content */
+	private String worldModelInitFile;
 	
 	/** This list stores all custom components that are loaded dynamically, depending on the 
 	 *  architecture configuration, i.e. the scenario*/
@@ -112,7 +114,7 @@ public class AndroidArchitecture extends Element implements IArchitecture {
 		// now build default components
 		
 		// 1: create data storage components: Worldmodel and Blackboard
-		worldModel = new WorldModel(this,"WorldModel");
+		worldModel = new AndroidWorldModel(this,"WorldModel");
 		Simulation.instance.getElements().add(worldModel);
 		Simulation.instance.update();
 		
@@ -141,6 +143,13 @@ public class AndroidArchitecture extends Element implements IArchitecture {
 				((CmionComponent)element).registerHandlers();
 		
 		Simulation.instance.update();
+		
+		// load world model initial state, if an init file was specified 
+		if (worldModelInitFile!=null)
+		{	
+			worldModel.loadInitFile(worldModelInitFile);
+			Simulation.instance.update();
+		}
 		
 		System.out.println("CMION initialised");
 	}
@@ -182,6 +191,13 @@ public class AndroidArchitecture extends Element implements IArchitecture {
 			competencyLibraryFile = atrCompLibFile.getNodeValue();
 		else
 			throw new Exception("Architecture Configuration file does not specify competency library configuration file. Attribute CompetencyLibraryConfigurationFile not found.");
+		
+		// read optional attribute WorldModelInitFile
+		Node atrWorldModelFile = attribs.getNamedItem("WorldModelInitFile");
+		if (atrWorldModelFile!=null) 
+			worldModelInitFile = atrWorldModelFile.getNodeValue();
+		else
+			worldModelInitFile=null;
 		
 		// load custom components and create them
 		
@@ -287,7 +303,7 @@ public class AndroidArchitecture extends Element implements IArchitecture {
 	
 	/** returns the world model component */
 	@Override
-	public WorldModel getWorldModel()
+	public AndroidWorldModel getWorldModel()
 	{
 		return worldModel;
 	}
