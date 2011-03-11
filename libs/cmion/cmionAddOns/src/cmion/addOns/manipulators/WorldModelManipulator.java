@@ -38,6 +38,7 @@ import java.awt.event.ActionListener;
 import java.util.HashMap;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -60,6 +61,7 @@ import cmion.storage.EventPropertyChanged;
 import cmion.storage.EventPropertyRemoved;
 import cmion.storage.EventSubContainerAdded;
 import cmion.storage.EventSubContainerRemoved;
+import cmion.storage.WorldModel;
 
 
 /** this class can be used to directly manipulate and change the world model */
@@ -251,6 +253,7 @@ private class SimulatorWindow extends JPanel implements ActionListener, TreeSele
     protected JTextField txtPropertyValue;
     protected JButton btnSetProperty;
     protected JButton btnRemoveProperty;
+    protected JComboBox agentOrObject;
 
     
     public SimulatorWindow() {
@@ -280,6 +283,14 @@ private class SimulatorWindow extends JPanel implements ActionListener, TreeSele
         txtEntity = new JTextField();
         txtEntity.setPreferredSize(new Dimension(70,25));
         toolBar.add(txtEntity);
+
+        JLabel lblType = new JLabel("type ");
+        toolBar.add(lblType);
+
+        String[] comboTypes = { WorldModel.AGENT_TYPE_NAME, WorldModel.OBJECT_TYPE_NAME};
+        agentOrObject = new JComboBox(comboTypes);
+        agentOrObject.setSelectedIndex(0);
+        toolBar.add(agentOrObject);
         
         btnAddEntity = new JButton("add");
         btnAddEntity.addActionListener(this);
@@ -420,12 +431,14 @@ private class SimulatorWindow extends JPanel implements ActionListener, TreeSele
         	{
         		Property prop = (Property) selectedObject;
         		txtPropertyName.setText(prop.name);
-        		txtEntity.setText(prop.getParent().getContainerName());  	
+        		txtEntity.setText(prop.getParent().getContainerName()); 
+        		agentOrObject.setSelectedItem(prop.getParent().getContainerType());
         	}
         	else if (selectedObject instanceof CmionStorageContainer)
         	{
         		CmionStorageContainer cont = (CmionStorageContainer) selectedObject;
         		txtEntity.setText(cont.getContainerName());  		
+        		agentOrObject.setSelectedItem(cont.getContainerType());
         	}	
     	}  	
     }
@@ -437,7 +450,12 @@ private class SimulatorWindow extends JPanel implements ActionListener, TreeSele
 		{
 			String entityName = this.txtEntity.getText().trim();
 			if ((entityName.length()>0) && (!architecture.getWorldModel().hasSubContainer(entityName)))
-				architecture.getWorldModel().requestAddAgent(entityName);
+			{
+				if (agentOrObject.getSelectedIndex()==0)
+					architecture.getWorldModel().requestAddAgent(entityName);
+				else
+					architecture.getWorldModel().requestAddObject(entityName);
+			}
 		}
 		else if (arg0.getSource() == this.btnRemoveEntity)
 		{
