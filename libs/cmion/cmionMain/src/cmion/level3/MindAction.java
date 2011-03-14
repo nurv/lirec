@@ -203,4 +203,15 @@ public class MindAction
 		}
 		return mappings;
 	}
+	
+	/** returns a textual representation of this mind action */
+	@Override
+	public String toString()
+	{
+		String pStr = "";
+		for (String parameter : parameters) 
+			pStr = pStr + parameter + " ";
+		
+		return subject + " " + name + " " + pStr.trim();
+	}
 }

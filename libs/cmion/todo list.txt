@@ -1,10 +1,6 @@
 TODO soon:
 ----------
 
-- A Gui interface for simulating remote actions (actions by the user)
-
-- Loading initial world model from file
-
 - Expressive Behaviour Generator as outlined in D3.5 
 
 - Extend Comp. Manager to allow competencies to be restarted with new parameters while running (if the competency permits and supports it)
@@ -21,3 +17,10 @@ Ideas for future:
 - No one asked for this yet, but another Gui tool missing would be a BlackBoard manipulator, should be relatively easy to do as it just requires a few changes from the world model manipulator
 
 - There are parallels between the insides of CMION and the SAIBA framework, in particular Competency Execution Plans could be expressed in BML, that would allow for more detailed synchronization possibilities. Competency Execution Component would the be a BML Realizer and could be possibly exchanged with other BML compatible systems. Practically though this would require a lot of work for no immeadiate gain that's why its not on the todo list (yet). Biggest effort would probably be making the competency execution system support all the BML language features like synchronization points, forcing competencies to have a certain duration, etc.  
+
+Recently Added:
+---------------
+
+- A Gui interface for simulating remote actions (actions by the user)
+
+- Loading initial world model from file
