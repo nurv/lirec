@@ -178,6 +178,10 @@ public class FAtiMAListenerThread extends SocketListener {
 			response += FAtiMAutils.getPropertiesString(worldModel.getObject(target));
 	
 		send(response);
+		
+		response = "ACTION-FINISHED " + this.agentName + " look-at " + target;
+
+		send(response);
 	}
 	
 	/** returns the name of the FAtiMA agent that is connected to this thread */
