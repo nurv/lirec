@@ -110,7 +110,7 @@ public class ScenarioLoaderHandler extends ReflectXMLHandler{
 				this._foundAgent = true;
 				
 				for(int i=0; i < attributes.getLength(); i++ ){
-					_agentConfiguration.put(attributes.getLocalName(i), attributes.getValue(i));
+					_agentConfiguration.put(attributes.getQName(i), attributes.getValue(i));
 				}
 			}else{
 				this._isPretendedCharacter = false;

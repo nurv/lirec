@@ -40,9 +40,7 @@ public class AgentLogger {
 		if (VersionChecker.runningOnAndroid())
 			outFile = new BufferedWriter(new FileWriter("/sdcard/"+logName+"-Log.txt"));		
 		else
-			outFile = new BufferedWriter(new FileWriter(logName+"-Log.txt"));
-		
-		System.out.println("Log Initialized");
+			outFile = new BufferedWriter(new FileWriter(logName+"-log.txt"));
 		
 		this._debugMode = debugMode;
 		this._initialized = true;
