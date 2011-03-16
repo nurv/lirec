@@ -15,6 +15,7 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include <assert.h>
+#include <list>
 #include "App.h"
 #include "FileTools.h"
 #include "PCA.h"
@@ -54,7 +55,7 @@ m_SingleImage(false)
         m_SingleImage=true;
 	}
 	
-	cvInitFont( &m_Font, CV_FONT_HERSHEY_PLAIN, 0.5, 0.5, 0, 1, CV_AA );
+	cvInitFont( &m_Font, CV_FONT_HERSHEY_PLAIN, 1, 1, 0, 1, CV_AA );
 	cvInitFont( &m_LargeFont, CV_FONT_HERSHEY_PLAIN, 5, 5, 0, 10, CV_AA );    
 	cvNamedWindow( "harvest", 1 );
 }
@@ -104,10 +105,30 @@ void App::Run()
 	cvShowImage("harvest", camera.m_Image);
 }
 
-char *spirits[]={"CanopySpirit","VerticalSpirit","CoverSpirit"};
+char *spirits[]={"TreeSpirit","ShrubSpirit","CoverSpirit"};
+
+bool PointInside(int x, int y, CvRect b)
+{
+    return (x>b.x && x<b.x+b.width &&
+            y>b.y && y<b.y+b.height);
+}
+
+bool Inside(CvRect a, CvRect b)
+{
+    return PointInside(a.x,a.y,b) ||
+        PointInside(a.x+a.width,a.y,b) ||
+        PointInside(a.x,a.y+a.height,b) ||
+        PointInside(a.x+a.width,
+                    a.y+a.height,b);
+}
 
 void App::Update(Image &camera)
 {	
+    camera=camera.Scale(camera.m_Image->width/2,
+                        camera.m_Image->height/2);
+
+    cvFlip(camera.m_Image, NULL, 0);
+
 	///////////////////////////////////
 	// dispatch from input
 
@@ -144,9 +165,9 @@ void App::Update(Image &camera)
 	}			
 
     if (crop_x<0) crop_x=0;
-    if (crop_x>=camera.m_Image->width) crop_x=camera.m_Image->width; 
+    if (crop_x>=camera.m_Image->width) crop_x=camera.m_Image->width-1; 
     if (crop_y<0) crop_x=0;
-    if (crop_y>=camera.m_Image->width) crop_x=camera.m_Image->width; 
+    if (crop_y>=camera.m_Image->height) crop_y=camera.m_Image->height-1; 
     if (crop_w+crop_x>camera.m_Image->width)
     { 
         crop_w=camera.m_Image->width-crop_x;
@@ -172,7 +193,7 @@ void App::Update(Image &camera)
     CBlobResult blobs;
     blobs = CBlobResult( thresh.m_Image, NULL, 255 );
     // exclude the ones smaller than param2 value
-    blobs.Filter( blobs, B_EXCLUDE, CBlobGetArea(), B_LESS, 100);
+    blobs.Filter( blobs, B_EXCLUDE, CBlobGetArea(), B_LESS, 10);
 
     CBlob *currentBlob;
     Image *out=NULL;
@@ -208,12 +229,35 @@ void App::Update(Image &camera)
         int r=system("rm islands/*");
     }
     
+    list<CvRect> allrects;
+
     for (int i = 0; i < blobs.GetNumBlobs(); i++ )
     {
         currentBlob = blobs.GetBlob(i);
-        //currentBlob->FillBlob( camera.m_Image, CV_RGB(255,0,0));
+        allrects.push_back(currentBlob->GetBoundingBox());
+    }
 
-        CvRect rect = currentBlob->GetBoundingBox();
+    list<CvRect> filteredrects=allrects;
+
+    /* for (list<CvRect>::iterator i=allrects.begin(); 
+         i!=allrects.end(); ++i)
+    {
+        bool in=false;
+        for (list<CvRect>::iterator j=allrects.begin(); 
+             j!=allrects.end(); ++j)
+        {
+            if (Inside(*i,*j)) in=true;
+        }
+        if (!in) filteredrects.push_back(*i);    
+        }*/
+
+    unsigned int instance = rand();
+
+    unsigned int count=0;
+    for (list<CvRect>::iterator i=filteredrects.begin(); 
+         i!=filteredrects.end(); ++i)
+    {
+        CvRect rect = *i;
 
         if (key=='s')
         {
@@ -221,26 +265,30 @@ void App::Update(Image &camera)
                                          rect.width,rect.height);
             
             char buf[256];
-            sprintf(buf,"islands/island-%d-%d-%d.png",i,
+            sprintf(buf,"islands/island-%d-%d-%d.png",count,
                     rect.x+rect.width/2,
                     rect.y+rect.height/2);
             cerr<<"saving "<<buf<<endl;
             island.Save(buf);
+
+            sprintf(buf,"dump/island-%d-%d-%d-%d.png",
+                    instance,
+                    count,
+                    rect.x+rect.width/2,
+                    rect.y+rect.height/2);
+            cerr<<"saving "<<buf<<endl;
+            island.Save(buf);
+
         }
         else
         {
-            char buf[256];
-            sprintf(buf,"%d",currentBlob->GetID());
-            cvPutText(camera.m_Image, buf, cvPoint(crop_x+rect.x+rect.width/2,
-                                                   crop_y+rect.y+rect.height/2), 
-                      &m_Font, colors[0]);
-            
             cvRectangle(camera.m_Image, 
                         cvPoint(crop_x+rect.x,crop_y+rect.y), 
                         cvPoint(crop_x+rect.x+rect.width,
                                 crop_y+rect.y+rect.height), 
                         colors[1]);
         }
+        count++;
     }
 
     if (key=='s')
@@ -260,7 +308,7 @@ void App::Update(Image &camera)
 
     char buf[256];
     sprintf(buf,"spirit: %s thresh: %d", spirits[spirit%3], t);
-    cvPutText(camera.m_Image, buf, cvPoint(10,10), 
+    cvPutText(camera.m_Image, buf, cvPoint(10,20), 
               &m_Font, colors[0]);
 
     cvRectangle(camera.m_Image, 
