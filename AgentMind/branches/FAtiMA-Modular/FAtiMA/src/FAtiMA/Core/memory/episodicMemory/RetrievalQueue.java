@@ -71,15 +71,6 @@ public class RetrievalQueue implements Serializable {
 		return retrievalTimes;
 	}
 
-	public String toXML() {
-		String xml = "<RetrievalQueue>";
-		for (Time time : this.getRetrievalTimes()) {
-			xml += time.toXML();
-		}
-		xml += "</RetrievalQueue>";
-		return xml;
-	}
-
 	public String toString() {
 		String str = "Retrieval queue for id " + detailID + ":\n";
 		for (Time time : retrievalTimes) {

@@ -699,8 +699,6 @@ public class ActionDetail implements Serializable {
 		action += "<Praiseworthiness>" + this.getPraiseworthiness() + "</Praiseworthiness>";
 		action += "<Time>" + this.getTime().getRealTime() + "</Time>";
 		action += "<Location>" + this.getLocation() + "</Location>";
-		action += this.getRetrievalQueue().toXML();
-		action += this.getActivationValue().toXML();
 		action += "</Event>\n";
 		
 		return action;
