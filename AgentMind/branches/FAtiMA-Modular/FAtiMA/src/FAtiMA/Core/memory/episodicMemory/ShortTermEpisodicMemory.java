@@ -25,8 +25,8 @@
  * 
  * History: 
  * Meiyii Lim: 11/03/09 - File created
- * 
- * **/
+ * Matthias Keysermann: 09/03/2011 - added retrieval storage to VerifiesKey/s, GetDetailsByKey/s 
+ */
 
 package FAtiMA.Core.memory.episodicMemory;
 
@@ -154,6 +154,9 @@ public class ShortTermEpisodicMemory implements Serializable {
 			action = li.next();
 			if(action.verifiesKeys(searchKeys))
 			{
+				// 09/03/11 - Matthias
+				action.getRetrievalQueue().addRetrievalTime(new Time());
+				
 				return true;
 			}
 		}
@@ -170,7 +173,13 @@ public class ShortTermEpisodicMemory implements Serializable {
 		while(li.hasNext())
 		{
 			action = (ActionDetail) li.next();
-			if(action.verifiesKey(k)) return true;
+			if(action.verifiesKey(k))
+			{
+				// 09/03/11 - Matthias
+				action.getRetrievalQueue().addRetrievalTime(new Time());
+				
+				return true;
+			}
 		}
 		return false;
 	}	
@@ -187,6 +196,9 @@ public class ShortTermEpisodicMemory implements Serializable {
 			action =  li.next();
 			if(action.verifiesKey(key)) 
 			{
+				// 09/03/11 - Matthias
+				action.getRetrievalQueue().addRetrievalTime(new Time());
+				
 				details.add(action);
 			}
 		}
@@ -206,6 +218,9 @@ public class ShortTermEpisodicMemory implements Serializable {
 			action = li.next();
 			if(action.verifiesKeys(keys) && !details.contains(action)) 
 			{
+				// 09/03/11 - Matthias
+				action.getRetrievalQueue().addRetrievalTime(new Time());
+				
 				details.add(action);
 			}
 		}

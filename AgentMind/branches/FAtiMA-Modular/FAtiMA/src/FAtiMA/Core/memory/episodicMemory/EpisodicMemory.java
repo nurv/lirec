@@ -68,6 +68,9 @@ public class EpisodicMemory implements Serializable {
 	
 	private ArrayList<ActionDetail> _newRecords;	
 	
+	// 09/03/11 - Matthias
+	private static final double DECAY_VALUE = 0.8;
+	
 	public EpisodicMemory()
 	{
 		_stm = new ShortTermEpisodicMemory();
@@ -360,4 +363,127 @@ public class EpisodicMemory implements Serializable {
 	{
 		_stm = stem;
 	}
+	
+	
+	
+	// 09/03/11 - Matthias
+	public void calculateActivationValues() {
+		calculateActivationValues(new Time(), DECAY_VALUE);
+	}
+		
+	// 09/03/11 - Matthias
+	public void calculateActivationValues(Time timeCalculated, double decayValue) {
+		
+		// calculate values for Autobiographic Memory		
+		for(MemoryEpisode episode : _am.GetAllEpisodes()) {
+			for(ActionDetail detail : episode.getDetails()) {
+				detail.calculateActivationValue(timeCalculated, decayValue);
+			}			
+		}
+		
+		// calculate values for Short-Term Memory
+		for(ActionDetail detail : _stm.getDetails()) {
+			detail.calculateActivationValue(timeCalculated, decayValue);
+		}
+		
+	}
+		
+	// 09/03/11 - Matthias
+	public ArrayList<ActionDetail> activationBasedSelectionByThreshold(double threshold) {	
+		
+		ArrayList<ActionDetail> selected = new ArrayList<ActionDetail>();
+
+		// select details from Autobiographic Memory
+		for(MemoryEpisode episode : _am.GetAllEpisodes()) {
+			for(ActionDetail detail : episode.getDetails()) {
+				double value = detail.getActivationValue().getValue();
+				if(value > threshold) {
+					selected.add(detail);
+					// DEBUG
+					System.out.println("selected detail " + detail.getID() + " with value " + value);					
+				}
+			}			
+		}
+		
+		// select details from Short-Term Memory
+		for(ActionDetail detail : _stm.getDetails()) {					
+			double value = detail.getActivationValue().getValue();
+			if(value > threshold) {
+				selected.add(detail);
+				// DEBUG
+				System.out.println("selected detail " + detail.getID() + " with value " + value);					
+			}
+		}
+		
+		return selected;		
+	}
+	
+	// 09/03/11 - Matthias
+	public ArrayList<ActionDetail> activationBasedSelectionByCount(int countMax) {
+		
+		// merge details into one list
+		ArrayList<ActionDetail> merged = new ArrayList<ActionDetail>();
+		// add details from Autobiographic Memory
+		for(MemoryEpisode episode : _am.GetAllEpisodes()) {
+			merged.addAll(episode.getDetails());			
+		}
+		// add details from Short-Term Memory
+		merged.addAll(_stm.getDetails());
+
+		// sort by value (descending)
+		// bubble sort
+		// TODO: faster sort algorithm
+		boolean swapped;
+		do {
+			swapped = false;
+			for(int i = 0; i < merged.size() - 1; i++) {
+				ActionDetail detailA = merged.get(i);
+				double valueA = detailA.getActivationValue().getValue();
+				ActionDetail detailB = merged.get(i + 1);				
+				double valueB = detailB.getActivationValue().getValue();
+				if(valueA < valueB) {
+					merged.set(i, detailB);
+					merged.set(i + 1, detailA);
+					swapped = true;
+				}
+			}
+		} while (swapped);
+		
+		// select head of list (highest values)
+		ArrayList<ActionDetail> selected = new ArrayList<ActionDetail>();
+		int iMax = Math.min(countMax, merged.size());
+		for(int i = 0; i < iMax; i++) {
+			selected.add(merged.get(i));
+			// DEBUG
+			System.out.println("selected detail " + merged.get(i).getID() + " with value " + merged.get(i).getActivationValue().getValue());
+		}
+
+		return selected;
+	}
+
+	// 09/03/11 - Matthias
+	public ArrayList<ActionDetail> activationBasedSelectionByAmount(double amount) {
+		
+		// validate amount
+		if(amount < 0) {
+			amount = 0;
+		}
+		else if(amount > 1) {
+			amount = 1;
+		}
+		
+		// determine corresponding count
+		double countTotal = 0;
+		for(MemoryEpisode episode : _am.GetAllEpisodes()) {
+			countTotal += episode.getDetails().size();
+		}
+		countTotal += _stm.getDetails().size();
+		int countMax = (int) Math.round(countTotal * amount);
+		
+		// select details by count
+		ArrayList<ActionDetail> selected = activationBasedSelectionByCount(countMax);
+		
+		return selected;
+	}
+	
 }

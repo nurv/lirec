@@ -20,27 +20,32 @@
  * Company: GAIPS/INESC-ID
  * Project: FAtiMA
  * Created: 18/07/2006 
- * @author: João Dias
+ * @author: Joï¿½o Dias
  * Email to: joao.assis@tagus.ist.utl.pt
  * 
  * History: 
- * João Dias: 18/07/2006 - File created
- * João Dias: 06/09/2006 - Changed everything about the evaluation
+ * Joï¿½o Dias: 18/07/2006 - File created
+ * Joï¿½o Dias: 06/09/2006 - Changed everything about the evaluation
  * 						   used to determine the interpersonal relation between
  * 						   characters and objects. Now, the evaluation field is an arraylist
  * 						   of objects and characters and corresponding like values. These values
  * 						   are changed by emotions such as Pitty, HappyFor, Repproach
- * João Dias: 02/10/2006 - Changes in the way that parameters are compared for MemoryRetrieval
+ * Joï¿½o Dias: 02/10/2006 - Changes in the way that parameters are compared for MemoryRetrieval
  * Bruno Azenha: 09/04/2007 - Reimplemented the method UpdateEmotionValues so that it uses the SocialRelation
  * 							  package
- * João Dias: 24/03/2008 - Added time to individual actions stored in AM
+ * Joï¿½o Dias: 24/03/2008 - Added time to individual actions stored in AM
  * Meiyii Lim: 11/03/2009 - Added location to individual actions 
  * Meiyii Lim: 13/03/2009 - Moved the class from FAtiMA.autobiographicalMemory package
+ * Matthias Keysermann: 08/03/2011 - Added (reference to) retrieval queue
+ * Matthias Keysermann: 09/03/2011 - Added (reference to) activation value 
+ * Matthias Keysermann: 15/03/2011 - Added retrieval queue to toXML()
+ * Matthias Keysermann: 15/03/2011 - Added activation value to toXML()
  */
 package FAtiMA.Core.memory.episodicMemory;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.ListIterator;
 
 import FAtiMA.Core.emotionalState.ActiveEmotion;
@@ -60,7 +65,7 @@ import FAtiMA.Core.wellFormedNames.Substitution;
 
 
 /**
- * @author João Dias
+ * @author Joï¿½o Dias
  * Window - Preferences - Java - Code Style - Code Templates
  */
 public class ActionDetail implements Serializable {
@@ -74,7 +79,7 @@ public class ActionDetail implements Serializable {
 	
 	private String _subject;
 	private String _action;
-	private String _target;	
+	private String _target;
 	private Time _time;
 	private String _location;
 	
@@ -92,7 +97,14 @@ public class ActionDetail implements Serializable {
 	
 	private Memory _memory;
 	
-		
+	// 08/03/11 - Matthias
+	private RetrievalQueue _retrievalQueue;	
+	
+	// 09/03/11 - Matthias
+	private ActivationValue _activationValue;
+	
+	
+	
 	public ActionDetail(Memory m, int ID, Event e, String location)
 	{  
 		Parameter p;
@@ -127,6 +139,13 @@ public class ActionDetail implements Serializable {
 		}
 		
 		this._emotion = new NeutralEmotion(e);
+		
+		// 08/03/11 - Matthias
+		this._retrievalQueue = new RetrievalQueue(this._id);
+		this._retrievalQueue.addRetrievalTime(new Time());
+		
+		// 09/03/11 - Matthias
+		this._activationValue = new ActivationValue(this._id);
 	}
 
 	/*
@@ -151,6 +170,13 @@ public class ActionDetail implements Serializable {
 		
 		this._desirability = desirability;
 		this._praiseworthiness = praiseworthiness;
+		
+		// 08/03/11 - Matthias
+		this._retrievalQueue = new RetrievalQueue(this._id);
+		this._retrievalQueue.addRetrievalTime(new Time());
+		
+		// 09/03/11 - Matthias
+		this._activationValue = new ActivationValue(this._id);
 	}
 	
 	public ActionDetail(int ID, String subject, String action, String target, ArrayList<Parameter> parameters, Time time, String location, BaseEmotion emotion)
@@ -164,6 +190,14 @@ public class ActionDetail implements Serializable {
 		
 		this._time = time;
 		this._emotion = emotion;
+		
+		// 08/03/11 - Matthias
+		this._retrievalQueue = new RetrievalQueue(this._id);
+		this._retrievalQueue.addRetrievalTime(new Time());
+		
+		// 09/03/11 - Matthias
+		this._activationValue = new ActivationValue(this._id);
+
 	}
 	
 	public void setParameters(ArrayList<Parameter> parameters)
@@ -339,6 +373,75 @@ public class ActionDetail implements Serializable {
 	{
 		return this._praiseworthiness;
 	}
+	
+	
+	
+	// 08/03/11 - Matthias
+	public void setRetrievalQueue(RetrievalQueue retrievalQueue) {
+		this._retrievalQueue = retrievalQueue;
+	}
+
+	// 09/03/11 - Matthias
+	public void setActivationValue(ActivationValue activationValue) {
+		this._activationValue = activationValue;
+	}
+
+	// 08/03/11 - Matthias
+	public RetrievalQueue getRetrievalQueue() {
+		return _retrievalQueue;
+	}
+
+	// 09/03/11 - Matthias
+	public ActivationValue getActivationValue() {
+		return _activationValue;
+	}
+	
+	// 09/03/11 - Matthias
+	public void calculateActivationValue(Time timeCalculated, double decayValue) {
+		
+		// fetch retrieval times
+		LinkedList<Time> retrievalTimes = _retrievalQueue.getRetrievalTimes();
+
+		// initialise sum
+		double sum = 0;
+
+		// loop over retrievals
+		for (Time timeRetrieval : retrievalTimes) {
+
+			// calculate time difference
+			long timeDifference = timeCalculated.getNarrativeTime() - timeRetrieval.getNarrativeTime();
+			
+			// DEBUG
+			//System.out.println("  time difference is " + timeDifference);
+
+			// ignore time difference of 0
+			if(timeDifference > 0) {
+				// sum up
+				sum += Math.pow(timeDifference, -decayValue);
+			}
+
+		}
+		
+		// DEBUG
+		//System.out.println("  sum is " + sum);
+
+		// calculate activation value
+		double value = 0;
+		if(sum > 0) {
+			// log not required if we only select by maximum values afterwards
+			value = Math.log(sum);
+		}
+
+		// set values
+		_activationValue.setValue(value);
+		_activationValue.setNumRetrievals(retrievalTimes.size());
+		
+		// DEBUG
+		System.out.println("Activation value for detail id " + this._id + " is " + value);
+
+	}
+	
+	
 	
 //	TODO em revisao 15.03.2007
 	public boolean UpdateEmotionValues(Memory m, ActiveEmotion em)
@@ -524,7 +627,7 @@ public class ActionDetail implements Serializable {
 			{
 				return false;
 			}
-		}
+		}		
 		return true;
 	}
 
@@ -596,6 +699,8 @@ public class ActionDetail implements Serializable {
 		action += "<Praiseworthiness>" + this.getPraiseworthiness() + "</Praiseworthiness>";
 		action += "<Time>" + this.getTime().getRealTime() + "</Time>";
 		action += "<Location>" + this.getLocation() + "</Location>";
+		action += this.getRetrievalQueue().toXML();
+		action += this.getActivationValue().toXML();
 		action += "</Event>\n";
 		
 		return action;

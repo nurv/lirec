@@ -20,17 +20,18 @@
  * Company: GAIPS/INESC-ID
  * Project: FAtiMA
  * Created: 18/Jul/2006 
- * @author: João Dias
+ * @author: Joï¿½o Dias
  * Email to: joao.assis@tagus.ist.utl.pt
  * 
  * History: 
- * João Dias: 18/Jul/2006 - File created
- * João Dias: 14/01/2007 - Added setLocation method
- * João Dias: 16/01/2007 - Removed the abstract field and corresponding Getter
+ * Joï¿½o Dias: 18/Jul/2006 - File created
+ * Joï¿½o Dias: 14/01/2007 - Added setLocation method
+ * Joï¿½o Dias: 16/01/2007 - Removed the abstract field and corresponding Getter
  * 			 			 - Restructured the generation of the summary of an event. Defined new
  * 						   methods that construct the summary and return an xml description
- *						   ready to be used by the LanguageEngine 
- * **/
+ *						   ready to be used by the LanguageEngine
+ * Matthias Keysermann: 08/03/2011 - added retrieval storage to VerifiesKey/s, GetDetailsByKey/s 
+ */
 
 package FAtiMA.Core.memory.episodicMemory;
 
@@ -621,6 +622,9 @@ public class MemoryEpisode implements Serializable {
 			action = (ActionDetail) li.next();
 			if(action.verifiesKeys(searchKeys))
 			{
+				// 08/03/11 - Matthias
+				action.getRetrievalQueue().addRetrievalTime(new Time());
+				
 				return true;
 			}
 		}
@@ -652,7 +656,13 @@ public class MemoryEpisode implements Serializable {
 			while(li.hasNext())
 			{
 				action = li.next();
-				if(action.verifiesKey(k)) return true;
+				if(action.verifiesKey(k))
+				{
+					// 08/03/11 - Matthias
+					action.getRetrievalQueue().addRetrievalTime(new Time());
+					
+					return true;
+				}
 			}
 			return false;
 		}
@@ -666,6 +676,9 @@ public class MemoryEpisode implements Serializable {
 		{
 			if(action.verifiesKey(key)) 
 			{
+				// 08/03/11 - Matthias
+				action.getRetrievalQueue().addRetrievalTime(new Time());
+				
 				details.add(action);
 			}
 		}
@@ -681,6 +694,9 @@ public class MemoryEpisode implements Serializable {
 		{
 			if(action.verifiesKeys(keys) && !details.contains(action)) 
 			{
+				// 08/03/11 - Matthias
+				action.getRetrievalQueue().addRetrievalTime(new Time());
+				
 				details.add(action);
 			}
 		}
@@ -705,4 +721,5 @@ public class MemoryEpisode implements Serializable {
 		
 		return episode;
 	}
+	
 }
