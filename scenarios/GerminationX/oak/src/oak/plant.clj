@@ -72,6 +72,8 @@
    (= layer "canopy") "CanopySpirit"
    (= layer "vertical") "VerticalSpirit"
    (= layer "cover") "CoverSpirit"
+   (= layer "tree") "TreeSpirit"
+   (= layer "shrub") "ShrubSpirit"
    :else "UnknownSpirit"))
 
 (defn make-plant [pos type owner size]

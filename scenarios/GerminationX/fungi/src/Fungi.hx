@@ -351,7 +351,7 @@ class Spirit extends SkeletonEntity
         if (excitement>10) excitement=10;
         var irritation = c.Emotions.Hate+c.Emotions.Distress;
         if (irritation>5) irritation=5;
-        var bouncyness = c.Emotions.Gratitude;
+        var bouncyness = c.Emotions.Gratitude*0.2;
         if (bouncyness>5) bouncyness=5;
         var bounce=new Vec2(0,0);
 
@@ -852,7 +852,7 @@ class Fungi extends App
 {
     public function new() 
 	{
-//        Log.setColor(0xFFFFFF);
+        Log.setColor(0xFFFFFF);
         super(new FungiWorld(15,15));
     }
 	
