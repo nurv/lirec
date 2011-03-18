@@ -24,7 +24,7 @@
  * 
  * History: 
  * Meiyii Lim: 15/12/10 - File created
- * 
+ * Matthias Keysermann: 18/03/11 - included RetrievalQueue
  * **/
 
 package FAtiMA.Core.util.writers;
@@ -43,6 +43,8 @@ import FAtiMA.Core.memory.episodicMemory.MemoryEpisode;
 import FAtiMA.Core.memory.semanticMemory.KnowledgeSlot;
 import FAtiMA.Core.sensorEffector.Parameter;
 import FAtiMA.Core.util.enumerables.EventType;
+import FAtiMA.Core.memory.episodicMemory.Time;
+
 
 
 public class MemoryWriter implements Serializable{
@@ -135,7 +137,7 @@ public class MemoryWriter implements Serializable{
 				_outputter.endTag(); //Episode
 			}
 			_outputter.endTag(); //AutobiographicMemory			
-			_outputter.whitespace("\n");
+			//_outputter.whitespace("\n");
 			
 			// ShortTermEpisodicMemory entries
 			_outputter.startTag("STEpisodicMemory");					
@@ -203,8 +205,21 @@ public class MemoryWriter implements Serializable{
 				_outputter.attribute("valence", ad.getEmotion().getValence().name());
 				if(ad.getEmotion().GetDirection() != null)
 					_outputter.attribute("direction", ad.getEmotion().GetDirection().toString());
-				if(ad.getEmotion().GetAppraisalVariables() != null)
-					_outputter.attribute("appraisalVariables", ad.getEmotion().GetAppraisalVariables().toString());	//ArrayList
+				
+				// Matthias 18/03/11: extract appraisal variables
+				String[] appraisalVariables = ad.getEmotion().GetAppraisalVariables();
+				if(appraisalVariables != null) {
+					String aux = "[";
+					if(appraisalVariables.length > 0) {						
+						aux += appraisalVariables[0];
+						for(int i = 1; i < appraisalVariables.length; i++) {
+							aux += ", " + appraisalVariables[i];
+						}
+					}
+					aux += "]";
+					_outputter.attribute("appraisalVariables", aux);					
+				}
+				
 				_outputter.attribute("potential", Float.toString(ad.getEmotion().GetPotential()));
 				
 				//cause event
@@ -243,6 +258,20 @@ public class MemoryWriter implements Serializable{
 			_outputter.attribute("realTime", Long.toString(ad.getTime().getRealTime()));
 			_outputter.attribute("eventSequence", Integer.toString(ad.getTime().getEventSequence()));
 			_outputter.endTag();	//EventTime
+			
+			// Matthias 18/03/11
+			
+			// retrieval queue
+			_outputter.startTag("RetrievalQueue");
+			for(Time retrievalTime : ad.getRetrievalQueue().getRetrievalTimes()) {
+				_outputter.startTag("RetrievalTime");
+				_outputter.attribute("narrativeTime", Long.toString(retrievalTime.getNarrativeTime()));
+				_outputter.attribute("realTime", Long.toString(retrievalTime.getRealTime()));
+				_outputter.attribute("eventSequence", Integer.toString(retrievalTime.getEventSequence()));
+				_outputter.endTag();	//RetrievalTime				
+			}
+			_outputter.endTag();	//RetrievalQueue
+
 		}
 		catch(IOException e)
 		{

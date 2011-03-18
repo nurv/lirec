@@ -23,7 +23,7 @@
  * 
  * History: 
  * Meiyii Lim: 17/12/10 - File created
- * 
+ * Matthias Keysermann: 18/03/11 - Added RetrievalQueue, RetrievalTime
  * **/
 
 package FAtiMA.Core.util.parsers;
@@ -40,6 +40,7 @@ import FAtiMA.Core.memory.episodicMemory.AutobiographicalMemory;
 import FAtiMA.Core.memory.episodicMemory.MemoryEpisode;
 import FAtiMA.Core.memory.episodicMemory.ShortTermEpisodicMemory;
 import FAtiMA.Core.memory.episodicMemory.Time;
+import FAtiMA.Core.memory.episodicMemory.RetrievalQueue;
 import FAtiMA.Core.memory.semanticMemory.KnowledgeBase;
 import FAtiMA.Core.memory.semanticMemory.WorkingMemory;
 import FAtiMA.Core.sensorEffector.Event;
@@ -59,6 +60,7 @@ public class MemoryLoaderHandler extends ReflectXMLHandler {
 	private BaseEmotion _currentEmotion;
 	private Event _currentCause;
 	private ShortTermEpisodicMemory _currentSTEM;
+	private RetrievalQueue _currentRetrievalQueue;
 	
 	private class MemoryBaseEmotion extends BaseEmotion{
 		protected MemoryBaseEmotion(String type, EmotionValence valence,
@@ -75,8 +77,8 @@ public class MemoryLoaderHandler extends ReflectXMLHandler {
 		_currentKB = new KnowledgeBase();
 		_currentWM = new WorkingMemory();
 		_currentAM = new AutobiographicalMemory();
-		_currentSTEM = new ShortTermEpisodicMemory();
-		
+		_currentSTEM = new ShortTermEpisodicMemory();		
+
 		_memory.getSemanticMemory().putKnowledgeBase(_currentKB);
 		_memory.getSemanticMemory().putWorkingMemory(_currentWM);
 		_memory.getEpisodicMemory().putAutobiographicalMemory(_currentAM);
@@ -147,7 +149,25 @@ public class MemoryLoaderHandler extends ReflectXMLHandler {
 	    //System.out.println("EpisodeTime");
 	    //System.out.println(narrativeTime + " " + realTime + " " + eventSequence);
 	}
-
+	
+	public void RetrievalQueue(Attributes attributes) {	    
+		_currentRetrievalQueue = new RetrievalQueue(_currentAD.getID());
+		_currentAD.setRetrievalQueue(_currentRetrievalQueue);
+		// DEBUG
+		//System.out.println("new queue created for id " + _currentAD.getID());
+	}
+	
+	public void RetrievalTime(Attributes attributes) {
+		Long narrativeTime = Long.parseLong(attributes.getValue("narrativeTime"));
+	    Long realTime = Long.parseLong(attributes.getValue("realTime"));
+	    int eventSequence = Integer.parseInt(attributes.getValue("eventSequence"));
+	    Time retrievalTime = new Time(narrativeTime, realTime, eventSequence);	
+	    _currentRetrievalQueue.addRetrievalTime(retrievalTime);
+	    // DEBUG
+		//System.out.println("added retrieval time");
+		//System.out.println(retrievalTime);
+	}
+	
 	public void AMEvent(Attributes attributes) {
 	    int eventID = Integer.parseInt(attributes.getValue("eventID"));
 	    String subject = attributes.getValue("subject");
@@ -157,10 +177,10 @@ public class MemoryLoaderHandler extends ReflectXMLHandler {
 	    String target = attributes.getValue("target");
 	    String location = attributes.getValue("location");
 	    float desirability = Float.parseFloat(attributes.getValue("desirability"));
-	    float praiseworthiness = Float.parseFloat(attributes.getValue("praiseworthiness"));	
+	    float praiseworthiness = Float.parseFloat(attributes.getValue("praiseworthiness"));		    
 	    
 	    _currentAD = new ActionDetail(_memory, eventID, subject, eType, event, status, target, location, desirability, praiseworthiness);
-	    _currentME.putActionDetail(_currentAD);     
+	    _currentME.putActionDetail(_currentAD);
 	    _currentParameters = new ArrayList<Parameter>();
 	    _currentAD.setParameters(_currentParameters);
 	    
@@ -185,7 +205,14 @@ public class MemoryLoaderHandler extends ReflectXMLHandler {
  		EmotionValence valence = EmotionValence.valueOf(attributes.getValue("valence").toUpperCase());
  		Name direction = Name.ParseName(attributes.getValue("direction"));
  		String aux = attributes.getValue("appraisalVariables");
- 		String[] appraisalVariables = (String[]) extractItems(aux).toArray();
+ 		
+ 		// Matthias 18/03/11: parse appraisal variables
+ 		ArrayList<String> auxList = extractItems(aux);
+ 		String[] appraisalVariables = new String[auxList.size()];
+ 		for(int i = 0; i < auxList.size(); i++) {
+ 			appraisalVariables[i] = auxList.get(i);
+ 		}
+ 		
 	    float potential = Float.parseFloat(attributes.getValue("potential"));
 	    	    
 	    _currentEmotion = new MemoryBaseEmotion(type,valence,appraisalVariables, potential, null, direction);
@@ -245,7 +272,7 @@ public class MemoryLoaderHandler extends ReflectXMLHandler {
 	    String location = attributes.getValue("location");
 	    float desirability = Float.parseFloat(attributes.getValue("desirability"));
 	    float praiseworthiness = Float.parseFloat(attributes.getValue("praiseworthiness"));	    
-	  
+
 	    _currentAD = new ActionDetail(_memory, eventID, subject, eType, event, status, target, location, desirability, praiseworthiness);
 	    _currentSTEM.putActionDetail(_currentAD);     
 	    _currentParameters = new ArrayList<Parameter>();
