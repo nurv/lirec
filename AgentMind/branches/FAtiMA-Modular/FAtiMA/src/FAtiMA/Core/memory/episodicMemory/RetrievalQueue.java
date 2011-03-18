@@ -35,7 +35,7 @@ public class RetrievalQueue implements Serializable {
 
 	private static final long serialVersionUID = 1;
 
-	private final static int MAX_RETRIEVAL_TIMES_DEFAULT = 5;
+	private final static int MAX_RETRIEVAL_TIMES_DEFAULT = 10;
 
 	private long detailID;
 	private int maxRetrievalTimes;

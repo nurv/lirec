@@ -430,6 +430,7 @@ public class ActionDetail implements Serializable {
 		if(sum > 0) {
 			// log not required if we only select by maximum values afterwards
 			value = Math.log(sum);
+			//value = sum;
 		}
 
 		// set values
@@ -437,7 +438,9 @@ public class ActionDetail implements Serializable {
 		_activationValue.setNumRetrievals(retrievalTimes.size());
 		
 		// DEBUG
-		System.out.println("Activation value for detail id " + this._id + " is " + value);
+		System.out.println("Activation value for detail id " + this._id + 
+				" is " + _activationValue.getValue() + 
+				" (" + _activationValue.getNumRetrievals() + " retrievals)");
 
 	}
 	

@@ -624,6 +624,8 @@ public class MemoryEpisode implements Serializable {
 			{
 				// 08/03/11 - Matthias
 				action.getRetrievalQueue().addRetrievalTime(new Time());
+				// DEBUG
+				//System.out.println("MemoryEpisode.java: retrieval of detail " + action.getID());
 				
 				return true;
 			}
@@ -660,6 +662,8 @@ public class MemoryEpisode implements Serializable {
 				{
 					// 08/03/11 - Matthias
 					action.getRetrievalQueue().addRetrievalTime(new Time());
+					// DEBUG
+					//System.out.println("MemoryEpisode.java: retrieval of detail " + action.getID());
 					
 					return true;
 				}
@@ -678,6 +682,8 @@ public class MemoryEpisode implements Serializable {
 			{
 				// 08/03/11 - Matthias
 				action.getRetrievalQueue().addRetrievalTime(new Time());
+				// DEBUG
+				//System.out.println("MemoryEpisode.java: retrieval of detail " + action.getID());
 				
 				details.add(action);
 			}
@@ -696,6 +702,8 @@ public class MemoryEpisode implements Serializable {
 			{
 				// 08/03/11 - Matthias
 				action.getRetrievalQueue().addRetrievalTime(new Time());
+				// DEBUG
+				//System.out.println("MemoryEpisode.java: retrieval of detail " + action.getID());
 				
 				details.add(action);
 			}

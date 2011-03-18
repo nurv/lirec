@@ -76,15 +76,6 @@ public class ActivationValue implements Serializable {
 		this.numRetrievals = numRetrievals;
 	}
 
-	public String toXML() {
-		String xml = "<ActivationValue";
-		xml += " detailID=\"" + this.getDetailID() + "\"";
-		xml += " value=\"" + this.getValue() + "\"";
-		xml += " numRetrievals=\"" + this.getNumRetrievals() + "\"";
-		xml += "/>";
-		return xml;
-	}
-
 	public String toString() {
 		String str = "Activation value for id " + detailID + ":"
 				+ this.getValue() + "(" + this.getNumRetrievals()

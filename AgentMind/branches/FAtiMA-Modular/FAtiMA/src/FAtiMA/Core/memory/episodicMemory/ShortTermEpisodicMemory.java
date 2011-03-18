@@ -156,6 +156,8 @@ public class ShortTermEpisodicMemory implements Serializable {
 			{
 				// 09/03/11 - Matthias
 				action.getRetrievalQueue().addRetrievalTime(new Time());
+				// DEBUG
+				//System.out.println("ShortTermEpisodicMemory.java: retrieval of detail " + action.getID());
 				
 				return true;
 			}
@@ -177,6 +179,8 @@ public class ShortTermEpisodicMemory implements Serializable {
 			{
 				// 09/03/11 - Matthias
 				action.getRetrievalQueue().addRetrievalTime(new Time());
+				// DEBUG
+				//System.out.println("ShortTermEpisodicMemory.java: retrieval of detail " + action.getID());
 				
 				return true;
 			}
@@ -198,6 +202,8 @@ public class ShortTermEpisodicMemory implements Serializable {
 			{
 				// 09/03/11 - Matthias
 				action.getRetrievalQueue().addRetrievalTime(new Time());
+				// DEBUG
+				//System.out.println("ShortTermEpisodicMemory.java: retrieval of detail " + action.getID());
 				
 				details.add(action);
 			}
@@ -220,6 +226,8 @@ public class ShortTermEpisodicMemory implements Serializable {
 			{
 				// 09/03/11 - Matthias
 				action.getRetrievalQueue().addRetrievalTime(new Time());
+				// DEBUG
+				//System.out.println("ShortTermEpisodicMemory.java: retrieval of detail " + action.getID());
 				
 				details.add(action);
 			}

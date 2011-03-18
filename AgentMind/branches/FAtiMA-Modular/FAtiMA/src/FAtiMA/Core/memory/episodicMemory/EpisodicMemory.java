@@ -300,6 +300,13 @@ public class EpisodicMemory implements Serializable {
 			
 			this._newData = true;
 		}
+		
+		// DEBUG Matthias
+		//if(_am.countMemoryDetails() % 20 == 10) {
+		//	this.calculateActivationValues();
+		//	this.activationBasedSelectionByCount(5);
+		//}
+		
 	}
 	
 	/* 
@@ -430,7 +437,7 @@ public class EpisodicMemory implements Serializable {
 		// add details from Short-Term Memory
 		merged.addAll(_stm.getDetails());
 
-		// sort by value (descending)
+		// sort by value (ascending)
 		// bubble sort
 		// TODO: faster sort algorithm
 		boolean swapped;
@@ -441,7 +448,7 @@ public class EpisodicMemory implements Serializable {
 				double valueA = detailA.getActivationValue().getValue();
 				ActionDetail detailB = merged.get(i + 1);				
 				double valueB = detailB.getActivationValue().getValue();
-				if(valueA < valueB) {
+				if(valueA > valueB) {
 					merged.set(i, detailB);
 					merged.set(i + 1, detailA);
 					swapped = true;
@@ -449,13 +456,14 @@ public class EpisodicMemory implements Serializable {
 			}
 		} while (swapped);
 		
-		// select head of list (highest values)
+		// select tail of list (highest values)
 		ArrayList<ActionDetail> selected = new ArrayList<ActionDetail>();
 		int iMax = Math.min(countMax, merged.size());
-		for(int i = 0; i < iMax; i++) {
+		for(int i = merged.size()-1; i > merged.size()-1-iMax; i--) {
 			selected.add(merged.get(i));
 			// DEBUG
-			System.out.println("selected detail " + merged.get(i).getID() + " with value " + merged.get(i).getActivationValue().getValue());
+			System.out.println("selected detail " + merged.get(i).getID() + 
+					" with value " + merged.get(i).getActivationValue().getValue());
 		}
 
 		return selected;
