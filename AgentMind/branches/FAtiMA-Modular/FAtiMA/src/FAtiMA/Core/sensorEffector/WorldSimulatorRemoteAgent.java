@@ -276,13 +276,15 @@ public class WorldSimulatorRemoteAgent extends RemoteAgent {
 		_agent.PerceiveEvent(event);
 
 		//the agent last action suceeded!
-		if(subject.equals(_agent.getName())) {
-	
-			AgentLogger.GetInstance().log("can act now!");
-			_currentAction = null;
-			_canAct = true;
+		if(_currentAction != null && event.GetSubject().equals(_agent.getName()))
+		{
+			if(_currentAction.getAction().GetFirstLiteral().toString().equals(event.GetAction()))
+			{
+				AgentLogger.GetInstance().log("can act now!");
+				_currentAction = null;
+				_canAct = true;
+			}
 		}
-		
 	}
 
 	protected void ActionFailedPerception(String perc) {

@@ -327,9 +327,13 @@ public class IONRemoteAgent extends RemoteAgent {
 		_agent.PerceiveEvent(event);
 		
 		//the agent last action suceeded!
-		if(event.GetSubject().equals(_agent.getName())) {
-			_currentAction = null;
-			_canAct = true;
+		if(_currentAction != null && event.GetSubject().equals(_agent.getName()))
+		{
+			if(_currentAction.getAction().GetFirstLiteral().toString().equals(event.GetAction()))
+			{
+				_currentAction = null;
+				_canAct = true;
+			}
 		}
 	}
 	
