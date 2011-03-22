@@ -24,6 +24,7 @@
  * 
  * History: 
  * Matthias Keysermann: 08/03/2011 - File created
+ * Matthias Keysermann: 22/03/2011 - added minimum time interval
  */
 
 package FAtiMA.Core.memory.episodicMemory;
@@ -35,22 +36,30 @@ public class RetrievalQueue implements Serializable {
 
 	private static final long serialVersionUID = 1;
 
+	// size of FIFO queue (number of retrieval times)
+	// a negative number means no limit
 	private final static int MAX_RETRIEVAL_TIMES_DEFAULT = 10;
+
+	// minimum time interval between retrievals (in ms)
+	private final static long MIN_TIME_INTERVAL_DEFAULT = 1000;
 
 	private long detailID;
 	private int maxRetrievalTimes;
 	private LinkedList<Time> retrievalTimes;
+	private long minTimeInterval;
 
 	public RetrievalQueue(long detailID) {
-		this(detailID, MAX_RETRIEVAL_TIMES_DEFAULT);
+		this(detailID, MAX_RETRIEVAL_TIMES_DEFAULT, MIN_TIME_INTERVAL_DEFAULT);
 	}
 
-	public RetrievalQueue(long detailID, int maxRetrievalTimes) {
+	public RetrievalQueue(long detailID, int maxRetrievalTimes,
+			long minTimeInterval) {
 		this.detailID = detailID;
 		// maxRetrievalTimes is the queue size
 		// a negative number means no limit
 		this.maxRetrievalTimes = maxRetrievalTimes;
 		this.retrievalTimes = new LinkedList<Time>();
+		this.minTimeInterval = minTimeInterval;
 	}
 
 	public long getDetailID() {
@@ -58,13 +67,33 @@ public class RetrievalQueue implements Serializable {
 	}
 
 	public void addRetrievalTime(Time time) {
+
+		// check for minimum time interval
+		if (retrievalTimes.size() > 0) {
+			long difference = time.getNarrativeTime()
+					- retrievalTimes.getLast().getNarrativeTime();
+			if (difference < minTimeInterval) {
+				// DEBUG
+				// System.out
+				// .println("RetrievalQueue.java: Minimum time interval deceeded!");
+				return;
+			}
+		}
+
+		// add retrieval time to end of queue
 		retrievalTimes.add(time);
+		// DEBUG
+		// System.out.println("RetrievalQueue.java: added retrieval time for id "
+		// + this.getDetailID());
+
+		// non-negative number means queue has a size limit
 		if (maxRetrievalTimes >= 0) {
-			// queue has a size limit
+			// check for queue size limit
 			if (retrievalTimes.size() > maxRetrievalTimes) {
 				retrievalTimes.removeFirst();
 			}
 		}
+
 	}
 
 	public LinkedList<Time> getRetrievalTimes() {
