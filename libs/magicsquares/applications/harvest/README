@@ -1,2 +1,16 @@
+A drawing scanning program for reading webcamera images and 
+converting them into seperated, background removed png images.
 
+There are lots of controls for thresholding and crop areas, for
+now read the source (in App.cpp) to find out what they do.
 
+The images have the original centroid positions encoded in the 
+filename. This allows them to be reassembled and animated using
+dynamically created skeletons.
+
+At the moment skeletons are calculated and procedurally animated
+using Prims MST algorithm in the Germination X game 
+(see lirec/scenarios/GerminationX/)
+
+dave@fo.am
+ 

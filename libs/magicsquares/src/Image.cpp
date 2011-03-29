@@ -192,7 +192,9 @@ Image Image::SubImage(int x, int y, int w, int h)
 	newimage = cvCreateImage( cvSize(roi.width, roi.height), m_Image->depth, m_Image->nChannels );
 	cvCopy(m_Image,newimage);	
 	cvResetImageROI(m_Image);
-	return newimage;
+	Image ret(newimage);
+    cvReleaseImage(&newimage);
+    return ret;
 }
 
 Image Image::GRAY2RGB()
