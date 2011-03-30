@@ -1,8 +1,6 @@
 TODO soon:
 ----------
 
-- Expressive Behaviour Generator as outlined in D3.5 
-
 - Extend Comp. Manager to allow competencies to be restarted with new parameters while running (if the competency permits and supports it)
 
 
@@ -22,5 +20,7 @@ Recently Added:
 ---------------
 
 - A Gui interface for simulating remote actions (actions by the user)
+
+- A Gui interface for simulating agent actions (agent mind simulator)
 
 - Loading initial world model from file

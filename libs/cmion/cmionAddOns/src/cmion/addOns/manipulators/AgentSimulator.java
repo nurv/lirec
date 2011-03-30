@@ -25,17 +25,19 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import cmion.architecture.CmionComponent;
 import cmion.architecture.IArchitecture;
+import cmion.level3.EventMindActionSucceeded;
 import cmion.level3.EventRemoteAction;
 import cmion.level3.MindAction;
+import cmion.level3.RequestNewMindAction;
 
-public class RemoteActionSimulator extends CmionComponent 
+public class AgentSimulator extends CmionComponent 
 {
 
 	/** the gui for the simulator */
 	SimulatorWindow window;
 
 	/** create a new simulator */
-	public RemoteActionSimulator(IArchitecture architecture) 
+	public AgentSimulator(IArchitecture architecture) 
 	{
 		super(architecture);
 	    
@@ -55,7 +57,7 @@ public class RemoteActionSimulator extends CmionComponent
 	 */
 	private void createAndShowGUI() {
 	    //Create and set up the window.
-	    JFrame frame = new JFrame("Remote Action Simulator");
+	    JFrame frame = new JFrame("Agent Simulator");
 	    frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 
 	    //Add contents to the window.
@@ -67,12 +69,12 @@ public class RemoteActionSimulator extends CmionComponent
 	    frame.setVisible(true);
 	}
 
-	public void newRA(final MindAction ma)
+	public void newMA(final MindAction ma)
 	{
 	    javax.swing.SwingUtilities.invokeLater(new Runnable() {
 	        public void run() 
 	        {
-	        	window.addRA(ma);
+	        	window.addMA(ma);
 	        }
 	    });		
 	}	
@@ -82,25 +84,25 @@ public class RemoteActionSimulator extends CmionComponent
 	public void registerHandlers() 
 	{
 		// create a new handler
-		HandleRemoteActionEvent handler = new HandleRemoteActionEvent();
-		// listen to any remote action events (any source)
-		Simulation.instance.getEventHandlers().add(handler);
+		HandleMindActionEvent handler = new HandleMindActionEvent();
+		// listen to any mind action suceeded events (source always comp manager)
+		architecture.getCompetencyManager().getEventHandlers().add(handler);
 	}
 
 	/** internal event handler class for listening to any event */
-	public class HandleRemoteActionEvent extends EventHandler {
+	private class HandleMindActionEvent extends EventHandler {
 
-	    public HandleRemoteActionEvent() {
-	        super(EventRemoteAction.class);
+	    public HandleMindActionEvent() {
+	        super(EventMindActionSucceeded.class);
 	    }
 
 	    @Override
 	    public void invoke(IEvent evt) 
 	    {
-	    	if (evt instanceof EventRemoteAction)
+	    	if (evt instanceof EventMindActionSucceeded)
 	    	{
-	    		EventRemoteAction evt1 = (EventRemoteAction) evt;
-	    		newRA(evt1.getRemoteAction());
+	    		EventMindActionSucceeded evt1 = (EventMindActionSucceeded) evt;
+	    		newMA(evt1.getMindAction());
 	    	}
 	    }
 	}
@@ -112,7 +114,7 @@ public class RemoteActionSimulator extends CmionComponent
 		
 		private static final long serialVersionUID = 1L;
 		
-		protected LinkedList<MindAction> remoteActions;
+		protected LinkedList<MindAction> mindActions;
 		
 	    protected JList list;
 	    protected JPanel toolBar;
@@ -125,7 +127,7 @@ public class RemoteActionSimulator extends CmionComponent
 	    public SimulatorWindow() {
 	        super(new BorderLayout());
 
-	        remoteActions = new LinkedList<MindAction>();
+	        mindActions = new LinkedList<MindAction>();
 	        list = new JList();
 
 	        //Listen for when the selection changes.
@@ -135,7 +137,7 @@ public class RemoteActionSimulator extends CmionComponent
 	        JScrollPane scrollPane = new JScrollPane(list);
 
 	        // create toolbar
-	        JLabel lblSubject = new JLabel("subject: ");
+	        JLabel lblSubject = new JLabel("agent name: ");
 	        Font f =lblSubject.getFont();
 	        lblSubject.setFont(f.deriveFont(f.getStyle() ^ Font.BOLD));
 	        toolBar.add(lblSubject);
@@ -171,11 +173,11 @@ public class RemoteActionSimulator extends CmionComponent
 	        add(scrollPane, BorderLayout.CENTER);
 	    }
 
-	    public void addRA(MindAction ma)
+	    public void addMA(MindAction ma)
 	    {
-	    	remoteActions.addLast(ma);
-	    	if (remoteActions.size() > 100) remoteActions.removeFirst();
-	    	list.setListData(remoteActions.toArray());
+	    	mindActions.addLast(ma);
+	    	if (mindActions.size() > 100) mindActions.removeFirst();
+	    	list.setListData(mindActions.toArray());
 	    }
 	    
 		@Override
@@ -189,7 +191,7 @@ public class RemoteActionSimulator extends CmionComponent
 				
 				if (subjectName.equals(""))
 				{
-					JOptionPane.showMessageDialog(this, "Cannot perform action with no subject");
+					JOptionPane.showMessageDialog(this, "Cannot perform action without agent name");
 					return;
 				}
 
@@ -205,7 +207,7 @@ public class RemoteActionSimulator extends CmionComponent
 				
 				MindAction ma = new MindAction(subjectName,actionName,parameters);
 				
-				RemoteActionSimulator.this.raise(new EventRemoteAction(ma));
+				architecture.getCompetencyManager().schedule(new RequestNewMindAction(ma));
 			}
 
 		}
