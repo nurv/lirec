@@ -1062,6 +1062,8 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 			ObjectInputStream s = new ObjectInputStream(in);
 			this._emotionalState = (EmotionalState) s.readObject();
 			this._memory = (Memory) s.readObject();
+			// we need to recreate the memory writer because it holds a reference to the memory object
+			this._memoryWriter = new MemoryWriter(this._memory);
 			this._goalLibrary = (GoalLibrary) s.readObject();
 			this._actionLibrary = (ActionLibrary) s.readObject();
 			//this._dialogManager = (DialogManager) s.readObject();
