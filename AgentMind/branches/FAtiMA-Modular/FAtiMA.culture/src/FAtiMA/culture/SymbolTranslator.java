@@ -9,8 +9,8 @@ import FAtiMA.culture.exceptions.DuplicateSymbolTranslatorEntry;
 
 public class SymbolTranslator {
 
-	private HashMap<String,String> _symbolToAction; //symbols are Strings
-	private HashMap<String,String> _actionToSymbol; //actions are Strings
+	private HashMap<String,String> _symbolToMeaning; //symbols are Strings
+	private HashMap<String,String> _meaningToSymbol; //actions are Strings
 	
 	/**
 	 * Singleton pattern 
@@ -19,8 +19,8 @@ public class SymbolTranslator {
 	
 	
 	private SymbolTranslator(){
-		this._symbolToAction = new HashMap<String,String>();
-		this._actionToSymbol = new HashMap<String,String>();
+		this._symbolToMeaning = new HashMap<String,String>();
+		this._meaningToSymbol = new HashMap<String,String>();
 	}
 	
 	
@@ -33,14 +33,14 @@ public class SymbolTranslator {
 		return _symbolLibraryInstance;
 	}
 	
-	public void addEntry(String symbol, String action) throws DuplicateSymbolTranslatorEntry{
+	public void addEntry(String symbol, String meaning) throws DuplicateSymbolTranslatorEntry{
 		
-		if(this._symbolToAction.containsKey(symbol) ||
-				this._actionToSymbol.containsKey(action)){
+		if(this._symbolToMeaning.containsKey(symbol) ||
+				this._meaningToSymbol.containsKey(meaning)){
 			throw new DuplicateSymbolTranslatorEntry();
 		}else{
-			_symbolToAction.put(symbol, action);
-			_actionToSymbol.put(action, symbol);
+			_symbolToMeaning.put(symbol, meaning);
+			_meaningToSymbol.put(meaning, symbol);
 		}
 	}
 	
@@ -49,8 +49,8 @@ public class SymbolTranslator {
 	 * @return The action associated to symbolName. If there isn't any action 
 	 * associated then it returns the parameter symbolName 
 	 */
-	public String translateSymbolToAction(String symbolName){
-		String result = (String)_symbolToAction.get(symbolName);
+	public String translateSymbolToMeaning(String symbolName){
+		String result = (String)_symbolToMeaning.get(symbolName);
 		
 		if(result == null){
 			return symbolName;
@@ -64,9 +64,9 @@ public class SymbolTranslator {
 	 * @return The symbol associated to actionName. If there isn't any symbol 
 	 * associated then it returns the parameter actionName 
 	 */
-	public String translateActionToSymbol(String actionName/*RemoteAction ra*/){
+	public String translateMeaningToSymbol(String actionName/*RemoteAction ra*/){
 		
-		String result = (String)_actionToSymbol.get(actionName);
+		String result = (String)_meaningToSymbol.get(actionName);
 		
 		if(result == null){
 			return actionName;
@@ -77,7 +77,7 @@ public class SymbolTranslator {
 	
 	
 	public void clearAll(){
-		this._actionToSymbol.clear();
-		this._symbolToAction.clear();
+		this._meaningToSymbol.clear();
+		this._symbolToMeaning.clear();
 	}
 }

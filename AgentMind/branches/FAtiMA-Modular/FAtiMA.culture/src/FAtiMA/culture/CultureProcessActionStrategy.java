@@ -9,13 +9,13 @@ public class CultureProcessActionStrategy implements IProcessActionStrategy {
 	@Override
 	public RemoteAction ProcessActionToWorld(RemoteAction action) {
 		
-		action.setActionType(SymbolTranslator.GetInstance().translateSymbolToAction(action.getActionType()));
+		action.setActionType(SymbolTranslator.GetInstance().translateMeaningToSymbol(action.getActionType()));
 		return action;
 	}
 
 	@Override
 	public RemoteAction ProcessActionFromWorld(RemoteAction action) {
-		action.setActionType(SymbolTranslator.GetInstance().translateActionToSymbol(action.getActionType()));
+		action.setActionType(SymbolTranslator.GetInstance().translateSymbolToMeaning(action.getActionType()));
 		return action;
 	}
 

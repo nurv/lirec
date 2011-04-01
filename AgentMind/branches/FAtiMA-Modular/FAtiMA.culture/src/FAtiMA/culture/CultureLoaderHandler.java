@@ -71,8 +71,6 @@ public class CultureLoaderHandler extends ReflectXMLHandler {
 	ReactiveComponent _reactiveComponent;
 	DeliberativeComponent _deliberativeLayer;
 	
-
-	private Context _contextBeingParsed;
 	private boolean _beforeRituals;
 
 	public CultureLoaderHandler(AgentModel aM, CulturalDimensionsComponent cDM) {
@@ -205,6 +203,7 @@ public class CultureLoaderHandler extends ReflectXMLHandler {
 	public void Role(Attributes attributes) {
 		Symbol role;
 		role = new Symbol(attributes.getValue("name"));
+		role.MakeGround(_self);
 		_ritual.AddRole(role);
 	}
 
@@ -215,6 +214,7 @@ public class CultureLoaderHandler extends ReflectXMLHandler {
 
 		stepName = Name.ParseName(attributes.getValue("name"));
 		role = new Symbol(attributes.getValue("role"));
+		role.MakeGround(_self);
 		_ritual.AddStep(_am, stepName, role);
 	}
 
@@ -259,7 +259,8 @@ public class CultureLoaderHandler extends ReflectXMLHandler {
 		RitualCondition cond;
 
 		cond = RitualCondition.ParseRitualCondition(attributes);
-
+		cond.MakeGround(this._self);
+		
 		cond.setRepeat(Boolean.parseBoolean(attributes.getValue("repeat")));
 		if(_ritual != null)
 		{	
@@ -347,34 +348,5 @@ public class CultureLoaderHandler extends ReflectXMLHandler {
 		{
 			e.printStackTrace();
 		}
-	}
-
-	public void Context( Attributes attributes ){
-		_contextBeingParsed = new Context();
-		if(_ritual != null)
-		{
-			_ritual.AddCondition(_conditionType, _contextBeingParsed);
-		}
-	}
-
-	public void Time( Attributes attributes ) throws ContextParsingException{
-		if( _contextBeingParsed == null )
-			throw new ContextParsingException("Trying to parse a TimeCondition outside of a Context");
-
-		_contextBeingParsed.SetTimeCondition( TimeCondition.Parse(attributes) );
-	}
-
-	public void Place(Attributes attributes ) throws ContextParsingException{
-		if( _contextBeingParsed == null )
-			throw new ContextParsingException("Trying to parse a PlaceCondition outside of a Context");
-
-		_contextBeingParsed.SetPlaceCondition( PlaceCondition.Parse(attributes) );
-	}
-
-	public void Social(Attributes attributes ) throws ContextParsingException{
-		if( _contextBeingParsed == null )
-			throw new ContextParsingException("Trying to parse a SocialCondition outside of a Context");
-
-		_contextBeingParsed.AddSocialCondition( SocialCondition.Parse(attributes) );
 	}
 }

@@ -47,6 +47,9 @@ import FAtiMA.Core.plans.Plan;
 import FAtiMA.Core.plans.ProtectedCondition;
 import FAtiMA.Core.plans.Step;
 import FAtiMA.Core.sensorEffector.Event;
+import FAtiMA.Core.sensorEffector.Parameter;
+import FAtiMA.Core.util.Constants;
+import FAtiMA.Core.util.enumerables.EventType;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Substitution;
 import FAtiMA.Core.wellFormedNames.SubstitutionSet;
@@ -80,6 +83,7 @@ public class Ritual extends ActivePursuitGoal {
 		_steps = new ArrayList<Step>(5);
 		_links = new ArrayList<OrderingConstraint>();
 		_roles = new ArrayList<Symbol>(3);
+		_appliedSubstitutions = new ArrayList<Substitution>();
 	}
 	
 	public void AddStep(AgentModel am, Name actionName, Name role)
@@ -104,7 +108,7 @@ public class Ritual extends ActivePursuitGoal {
 			//    he must multiply the probabilities to determine the ritual probability of success
 			// However we cannot make it 100%, because we want to assume that is always better to have 
 			// a ritual where you execute the actions, than a ritual where someone else does the actions. The rational
-			// is that the agent can allways trust his decisions, but not other ones. As such, the probability will 
+			// is that the agent can always trust his decisions, but not other ones. As such, the probability will 
 			// be set sligthly smaller than 100%
 			action.setProbability(0.9f);
 			_steps.add(action);
@@ -210,7 +214,7 @@ public class Ritual extends ActivePursuitGoal {
 			
 			
 			e = this.GetSuccessEvent();
-			ritualCondition = new RitualCondition(this._name.GetFirstLiteral(),_roles);
+			ritualCondition = new RitualCondition(this._name.GetFirstLiteral(),_roles, new Symbol("*"));
 			this.addEffect(new Effect(am, e.GetTarget(),1.0f,ritualCondition));
 		} 
 	}
@@ -327,6 +331,8 @@ public class Ritual extends ActivePursuitGoal {
     {
     	
     	this._name.MakeGround(bindings);
+    	
+    	this._appliedSubstitutions.addAll(bindings);
 
     	for(Condition c : this._preConditions)
     	{
@@ -385,6 +391,8 @@ public class Ritual extends ActivePursuitGoal {
 	 */
     public void MakeGround(Substitution subst)
     {
+    	this._appliedSubstitutions.add(subst);
+    	
     	this._name.MakeGround(subst);
 
     	for(Condition c : this._preConditions)
@@ -437,6 +445,12 @@ public class Ritual extends ActivePursuitGoal {
 		r._numberOfTries = this._numberOfTries;
 		
 		r._key = this._key;
+		
+		r._appliedSubstitutions = new ArrayList<Substitution>(this._appliedSubstitutions.size());
+		for(Substitution s : this._appliedSubstitutions)
+		{
+			r._appliedSubstitutions.add((Substitution) s.clone());
+		}
 		
 		if(this._preConditions != null)
 		{
@@ -536,5 +550,19 @@ public class Ritual extends ActivePursuitGoal {
 			return f.floatValue();
 		}
 		else return 1.0f;
+	}
+	
+	@Override
+	protected Event generateEventDescription(short goalEventType)
+	{
+		ListIterator<Symbol> li = this._name.GetLiteralList().listIterator();
+		Event e = new Event(Constants.SELF,li.next().toString(),"",EventType.GOAL,goalEventType);
+		
+	    while(li.hasNext())
+	    {
+	    	e.AddParameter(new Parameter("param",li.next().toString()));
+	    }
+	    
+	    return e;
 	}
 }

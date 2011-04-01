@@ -30,6 +30,7 @@
 package FAtiMA.culture;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.StringTokenizer;
 
@@ -37,9 +38,15 @@ import org.xml.sax.Attributes;
 
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.conditions.PredicateCondition;
+import FAtiMA.Core.goals.Goal;
+import FAtiMA.Core.memory.episodicMemory.ActionDetail;
+import FAtiMA.Core.memory.episodicMemory.AutobiographicalMemory;
 import FAtiMA.Core.memory.episodicMemory.SearchKey;
+import FAtiMA.Core.sensorEffector.Parameter;
+import FAtiMA.Core.util.PermutationGenerator;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Substitution;
+import FAtiMA.Core.wellFormedNames.SubstitutionSet;
 import FAtiMA.Core.wellFormedNames.Symbol;
 
 
@@ -75,11 +82,12 @@ public class RitualCondition extends PredicateCondition {
 		if(aux != null) {
 			StringTokenizer st = new StringTokenizer(aux, ",");
 			while(st.hasMoreTokens()) {
-				roles.add(new Symbol(st.nextToken()));
+				Symbol role = new Symbol(st.nextToken());
+				roles.add(role);
 			}
 		}
 		
-		return new RitualCondition(ritualName,roles);
+		return new RitualCondition(ritualName,roles,new Symbol("*"));
 	}
 	
 	protected ArrayList<Symbol> _roles;
@@ -90,8 +98,9 @@ public class RitualCondition extends PredicateCondition {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public RitualCondition(Symbol ritualName, ArrayList<Symbol> roles)
+	public RitualCondition(Symbol ritualName, ArrayList<Symbol> roles, Symbol ToM)
 	{
+		this._ToM = ToM;
 		this._ritualName = ritualName;
 		this._positive = true;
 		this._roles = (ArrayList<Symbol>) roles.clone();
@@ -122,6 +131,7 @@ public class RitualCondition extends PredicateCondition {
 		rc._positive = this._positive;
 		rc._ritualName = (Symbol) this._ritualName.clone();
 		rc._name = (Name) this._name.clone();
+		rc._ToM = (Symbol) _ToM.clone();
 		
 		rc._roles = new ArrayList<Symbol>(this._roles.size());
 		ListIterator<Symbol> li = this._roles.listIterator();
@@ -195,28 +205,78 @@ public class RitualCondition extends PredicateCondition {
 		
 		if(!_name.isGrounded()) return false;
 		
-		ArrayList<SearchKey> keys = new ArrayList<SearchKey>();
-		
-		keys.add(new SearchKey(SearchKey.SUBJECT,am.getName()));
-		
-		keys.add(new SearchKey(SearchKey.ACTION,"succeed"));
-		
-		keys.add(new SearchKey(SearchKey.TARGET,this._ritualName.toString()));
-		
+		ArrayList<SearchKey> searchKeys = getSearchKeys();
 		for(int i = 0; i < _roles.size(); i++)
 		{
-			keys.add(new SearchKey(SearchKey.CONTAINSPARAMETER,_roles.get(i).toString()));
+			searchKeys.add(new SearchKey(SearchKey.CONTAINSPARAMETER,_roles.get(i).toString()));
 			
 		}
+		
+		return am.getMemory().getEpisodicMemory().ContainsRecentEvent(searchKeys);
+		
+	}
+	
+	private ArrayList<SearchKey> getSearchKeys()
+	{
+		ArrayList<SearchKey> keys = new ArrayList<SearchKey>();
+		
+		keys.add(new SearchKey(SearchKey.STATUS,Goal.SUCCESSEVENT));
+		
+		keys.add(new SearchKey(SearchKey.INTENTION,this._ritualName.toString()));
+		
 		
 		if(this._repeat){
 			keys.add(new SearchKey(SearchKey.MAXELAPSEDTIME, new Long(1000)));
 		}
 		
+		return keys;
+	}
+	
+	public ArrayList<SubstitutionSet> GetValidBindings(AgentModel am) {
+		ActionDetail detail;
+		Substitution sub;
+		SubstitutionSet subSet;
+		Symbol param;
+		ArrayList<SubstitutionSet> bindingSets = new ArrayList<SubstitutionSet>();
+		ArrayList<ActionDetail> details;
 		
-		return am.getMemory().getEpisodicMemory().ContainsRecentEvent(keys);
+		if (_name.isGrounded()) {
+			if(CheckCondition(am))
+			{
+				bindingSets.add(new SubstitutionSet());
+				return bindingSets;
+			}
+			else return null;
+		}
+		
+		details = am.getMemory().getEpisodicMemory().SearchForRecentEvents(getSearchKeys());
+		
+		if(details.size() == 0) return null;
+		
+		Iterator<ActionDetail> it = details.iterator();
+		while(it.hasNext())
+		{
+			detail = (ActionDetail) it.next();
+			subSet = new SubstitutionSet();
+	
+			PermutationGenerator pGenerator = new PermutationGenerator(_roles.size());
+			
+			//we are assuming that all roles are not grounded
+			while(pGenerator.hasMore()){
+				int [] indices = pGenerator.getNext();
+				subSet = new SubstitutionSet();
+				for (int i = 0; i < indices.length; i++) {
+					sub = new Substitution(_roles.get(i),new Symbol(detail.getParameters().get(indices[i]).GetValue().toString()));
+					subSet.AddSubstitution(sub);
+				}
+				bindingSets.add(subSet);
+			}
+		}
+	
+		return bindingSets;
 		
 	}
+	
 	
 
 	public void setRepeat(boolean repeat) {

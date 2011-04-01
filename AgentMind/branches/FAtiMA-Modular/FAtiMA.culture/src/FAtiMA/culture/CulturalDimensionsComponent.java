@@ -17,6 +17,7 @@ import FAtiMA.Core.emotionalState.AppraisalFrame;
 import FAtiMA.Core.goals.ActivePursuitGoal;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.util.AgentLogger;
+import FAtiMA.Core.util.ConfigurationManager;
 import FAtiMA.Core.util.Constants;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.SubstitutionSet;
@@ -174,12 +175,14 @@ public class CulturalDimensionsComponent implements IAppraisalDerivationComponen
 			SAXParserFactory factory = SAXParserFactory.newInstance();
 			SAXParser parser = factory.newSAXParser();
 				
-				parser.parse(new File(this.cultureFile), cultureLoader);
+			parser.parse(new File(this.cultureFile), cultureLoader);
 
 			for(Ritual r : cultureLoader.GetRituals(aM)){
 				this._rituals.add(r);
 				dp.addGoal(r);
 			}
+			cultureLoader = new CultureLoaderHandler(aM,this);
+			parser.parse(new File(ConfigurationManager.getGoalsFile()), cultureLoader);
 
 		}catch(Exception e){
 			throw new RuntimeException("Error on Loading the Culture XML File:" + e);
@@ -315,7 +318,7 @@ public class CulturalDimensionsComponent implements IAppraisalDerivationComponen
 				
 		float culturalGoalUtility = determineCulturalUtility(am, g,contributionToSelf,contributionOthers);		
 		
-		float EU = culturalGoalUtility * probability + (1 + g.GetGoalUrgency());
+		float EU = (culturalGoalUtility + g.GetGoalUrgency()) * probability;
 		
 		
 		AgentLogger.GetInstance().intermittentLog("Goal: " + g.getName() + " CulturalUtilitity: " + culturalGoalUtility + " Competence: " + probability +
