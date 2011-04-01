@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/FAtiMA"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/FAtiMA.DeliberativeComponent"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/FAtiMA.ReactiveComponent"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/FAtiMA.OCCAffectDerivation"/>
+	<classpathentry kind="src" path="/FAtiMA.MotivationalSystem"/>
+	<classpathentry kind="src" path="/FAtiMA.ToM"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
