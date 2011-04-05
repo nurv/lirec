@@ -342,8 +342,17 @@ public abstract class Goal implements IGroundable, Cloneable, Serializable {
 	*/
 	private Event generateEventDescription(short goalEventType)
 	{
+		String target = "";
+		String name;
 		ListIterator<Symbol> li = this._name.GetLiteralList().listIterator();
-		Event e = new Event("SELF",li.next().toString(),li.next().toString(),EventType.GOAL,goalEventType);
+		
+		name = li.next().toString();
+		if(li.hasNext())
+		{
+			target = li.next().toString();
+		}
+		
+		Event e = new Event("SELF",name,target,EventType.GOAL,goalEventType);
 		
 	    while(li.hasNext())
 	    {
