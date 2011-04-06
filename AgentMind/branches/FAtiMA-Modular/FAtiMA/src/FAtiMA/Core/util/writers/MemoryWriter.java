@@ -153,6 +153,7 @@ public class MemoryWriter implements Serializable{
 			_outputter.endTag(); //Memory
 			_outputter.endDocument(); 
 		    _outputter.getWriter().flush();
+            _writer.close();
 		}
 		catch(IOException e)
 		{
