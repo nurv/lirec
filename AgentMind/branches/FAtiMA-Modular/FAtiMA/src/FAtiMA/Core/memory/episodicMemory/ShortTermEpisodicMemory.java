@@ -25,7 +25,8 @@
  * 
  * History: 
  * Meiyii Lim: 11/03/09 - File created
- * Matthias Keysermann: 09/03/2011 - added retrieval storage to VerifiesKey/s, GetDetailsByKey/s 
+ * Matthias Keysermann: 09/03/2011 - added retrieval storage to VerifiesKey/s, GetDetailsByKey/s
+ * Matthias Keysermann: 07/04/2011 - added GetEventID 
  */
 
 package FAtiMA.Core.memory.episodicMemory;
@@ -97,7 +98,12 @@ public class ShortTermEpisodicMemory implements Serializable {
 	{
 		return this._details.size();
 	}
-	
+
+	// 07/04/11 Matthias
+	public int GetEventID() {
+		return ShortTermEpisodicMemory.eventID;
+	}
+
 	public void SetEventID(int eventID)
 	{
 		ShortTermEpisodicMemory.eventID = eventID;

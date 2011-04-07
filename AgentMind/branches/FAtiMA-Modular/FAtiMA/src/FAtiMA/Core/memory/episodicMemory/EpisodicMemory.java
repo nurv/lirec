@@ -80,6 +80,16 @@ public class EpisodicMemory implements Serializable {
 		_previousLocation = Constants.EMPTY_LOCATION;
 	}
 	
+	// 07/04/11 Matthias
+	public int getNextEventID() {
+		return _stm.GetEventID();
+	}
+	
+	// 07/04/11 Matthias
+	public void setNextEventID(int nextEventID) {
+		_stm.SetEventID(nextEventID);
+	}
+	
 	public float AssessGoalFamiliarity(Goal g)
 	{
 		float similarEvents = 0;
