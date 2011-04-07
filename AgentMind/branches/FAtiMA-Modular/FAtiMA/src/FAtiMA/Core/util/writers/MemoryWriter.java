@@ -25,6 +25,7 @@
  * History: 
  * Meiyii Lim: 15/12/10 - File created
  * Matthias Keysermann: 18/03/11 - included RetrievalQueue
+ * Matthias Keysermann: 07/04/11 - included nextEventID
  * **/
 
 package FAtiMA.Core.util.writers;
@@ -108,6 +109,9 @@ public class MemoryWriter implements Serializable{
 			
 			// EpisodicMemory
 			_outputter.startTag("EpisodicMemory");
+			// next event id
+			_outputter.attribute("nextEventID", Integer.toString(_memory.getEpisodicMemory().getNextEventID()));
+			
 			// AutobiographicalMemory entries
 			_outputter.startTag("AutobiographicalMemory");			
 			for (MemoryEpisode me: _memory.getEpisodicMemory().GetAllEpisodes())
@@ -146,14 +150,14 @@ public class MemoryWriter implements Serializable{
 				_outputter.startTag("STEvent");
 				actionDetailtoXML(ad);				
 				_outputter.endTag();	//STEvent
-			}
+			}			
 			_outputter.endTag(); //STEpisodicMemory			
 			_outputter.endTag(); //EpisodicMemory
 			
 			_outputter.endTag(); //Memory
 			_outputter.endDocument(); 
 		    _outputter.getWriter().flush();
-            _writer.close();
+            _outputter.getWriter().close();            
 		}
 		catch(IOException e)
 		{

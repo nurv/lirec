@@ -24,12 +24,15 @@
  * History: 
  * Meiyii Lim: 17/12/10 - File created
  * Matthias Keysermann: 18/03/11 - Added RetrievalQueue, RetrievalTime
+ * Matthias Keysermann: 07/04/11 - Added nextEventID
  * **/
 
 package FAtiMA.Core.util.parsers;
 
 import java.util.ArrayList;
 import java.util.StringTokenizer;
+
+import javax.xml.stream.events.Attribute;
 
 import org.xml.sax.Attributes;
 
@@ -83,6 +86,12 @@ public class MemoryLoaderHandler extends ReflectXMLHandler {
 		_memory.getSemanticMemory().putWorkingMemory(_currentWM);
 		_memory.getEpisodicMemory().putAutobiographicalMemory(_currentAM);
 		_memory.getEpisodicMemory().putSTEpisodicMemory(_currentSTEM);
+	}
+	
+	// 07/04/11 Matthias
+	public void EpisodicMemory(Attributes attributes) {		
+		int nextEventID = Integer.parseInt(attributes.getValue("nextEventID"));
+		_memory.getEpisodicMemory().setNextEventID(nextEventID);
 	}
 	
 	public void KBSlot(Attributes attributes)
