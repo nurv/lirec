@@ -34,7 +34,7 @@ import java.util.LinkedList;
 
 public class RetrievalQueue implements Serializable {
 
-	private static final long serialVersionUID = 1;
+	private static final long serialVersionUID = 1L;
 
 	// size of FIFO queue (number of retrieval times)
 	// a negative number means no limit
