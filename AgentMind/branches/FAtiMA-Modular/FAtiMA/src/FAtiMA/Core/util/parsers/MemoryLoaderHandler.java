@@ -25,6 +25,9 @@
  * Meiyii Lim: 17/12/10 - File created
  * Matthias Keysermann: 18/03/11 - Added RetrievalQueue, RetrievalTime
  * Matthias Keysermann: 07/04/11 - Added nextEventID
+ * Matthias Keysermann: 12/04/11 - Moved class MemoryBaseEmotion to
+ *                                 FAtiMA.Core.memory.episodicMemory
+ *                                 in order to fix bug when Serializing
  * **/
 
 package FAtiMA.Core.util.parsers;
@@ -44,6 +47,7 @@ import FAtiMA.Core.memory.episodicMemory.MemoryEpisode;
 import FAtiMA.Core.memory.episodicMemory.ShortTermEpisodicMemory;
 import FAtiMA.Core.memory.episodicMemory.Time;
 import FAtiMA.Core.memory.episodicMemory.RetrievalQueue;
+import FAtiMA.Core.memory.episodicMemory.MemoryBaseEmotion;
 import FAtiMA.Core.memory.semanticMemory.KnowledgeBase;
 import FAtiMA.Core.memory.semanticMemory.WorkingMemory;
 import FAtiMA.Core.sensorEffector.Event;
@@ -64,16 +68,7 @@ public class MemoryLoaderHandler extends ReflectXMLHandler {
 	private Event _currentCause;
 	private ShortTermEpisodicMemory _currentSTEM;
 	private RetrievalQueue _currentRetrievalQueue;
-	
-	private class MemoryBaseEmotion extends BaseEmotion{
-		protected MemoryBaseEmotion(String type, EmotionValence valence,
-				String[] appraisalVariables, float potential, Event cause,
-				Name direction) {
-			super(type, valence, appraisalVariables, potential, cause, direction);
 		
-		}
-	}
-	
 	public MemoryLoaderHandler(Memory memory) {
 		_memory = memory;
 
