@@ -60,7 +60,38 @@ public class ABSelectionPanel extends AgentDisplayPanel {
 	private JTextField tfSelectionThreshold;
 	private JCheckBox cbSimulateSelection;
 	private JLabel lbSelectionStatus;
-	private DefaultTableModel tableModel;
+	private MyTableModel tableModel;
+
+	private class MyTableModel extends DefaultTableModel {
+
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public Class getColumnClass(int column) {
+			switch (column) {
+			case 0:
+				return Integer.class;
+			case 9:
+				return Float.class;
+			case 10:
+				return Float.class;
+			case 12:
+				return Long.class;
+			case 14:
+				return Double.class;
+			case 15:
+				return Integer.class;
+			default:
+				return String.class;
+			}
+		}
+
+		@Override
+		public boolean isCellEditable(int row, int column) {
+			return false;
+		}
+
+	}
 
 	private class AlABCalculation implements ActionListener {
 		public void actionPerformed(ActionEvent event) {
@@ -200,7 +231,7 @@ public class ABSelectionPanel extends AgentDisplayPanel {
 		pnDetails.setLayout(new BoxLayout(pnDetails, BoxLayout.Y_AXIS));
 		this.add(pnDetails);
 
-		tableModel = new DefaultTableModel();
+		tableModel = new MyTableModel();
 
 		tableModel.addColumn("ID");
 		tableModel.addColumn("Subject");
@@ -246,11 +277,6 @@ public class ABSelectionPanel extends AgentDisplayPanel {
 			Object[] rowData = new Object[tableModel.getColumnCount()];
 			int j = 0;
 
-			// int digits = 5;
-			// int num = actionDetail.getID();
-			// String format = String.format("%%0%dd", digits);
-			// String result = String.format(format, num);
-			// rowData[j++] = result;
 			rowData[j++] = actionDetail.getID();
 			rowData[j++] = actionDetail.getSubject();
 			rowData[j++] = actionDetail.getAction();
