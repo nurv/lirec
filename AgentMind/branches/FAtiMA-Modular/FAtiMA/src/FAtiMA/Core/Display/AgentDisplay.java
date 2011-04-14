@@ -22,11 +22,12 @@
  * Company: GAIPS/INESC-ID
  * Project: FAtiMA
  * Created: 18/10/2005 
- * @author: João Dias
+ * @author: Joï¿½o Dias
  * Email to: joao.assis@tagus.ist.utl.pt
  * 
  * History: 
- * João Dias: 18/10/2005 - File created
+ * Joï¿½o Dias: 18/10/2005 - File created
+ * Matthias Keysermann: 13/04/2011 - added panel for Activation-Based Selection
  */
 
 package FAtiMA.Core.Display;
@@ -77,6 +78,9 @@ public class AgentDisplay {
 	
 		panel = new ShortTermMemoryPanel();
 		_displayPane.addTab("Short Term Memory", null, panel, "displays all the records in the character's short term memory");
+		
+		panel = new ABSelectionPanel();
+		_displayPane.addTab("Activation-Based Selection", null, panel, "displays information related to Activation-Based Selection");
 		
 		JButton teste = new JButton("Save");
 		teste.addActionListener(new TestAction(ag));
