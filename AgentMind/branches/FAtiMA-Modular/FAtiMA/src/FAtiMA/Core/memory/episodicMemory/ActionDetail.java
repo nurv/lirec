@@ -62,103 +62,92 @@ import FAtiMA.Core.util.enumerables.EventType;
 import FAtiMA.Core.util.enumerables.GoalEvent;
 import FAtiMA.Core.wellFormedNames.Substitution;
 
-
-
 /**
- * @author Jo�o Dias
- * Window - Preferences - Java - Code Style - Code Templates
+ * @author Jo�o Dias Window - Preferences - Java - Code Style - Code Templates
  */
 public class ActionDetail implements Serializable {
-	
+
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
 	private int _id;
-	
+
 	private String _subject;
 	private String _action;
 	private String _target;
 	private Time _time;
 	private String _location;
-	
+
 	private BaseEmotion _emotion;
 	private ArrayList<Parameter> _parameters = null;
-	
+
 	// 06/01/10 - Meiyii
 	private String _intention;
 	private String _status;
 	private String _speechActMeaning;
 	private String _multimediaPath;
-	private String _object;	
+	private String _object;
 	private float _desirability;
 	private float _praiseworthiness;
-	
+
 	private Memory _memory;
-	
+
 	// 08/03/11 - Matthias
-	private RetrievalQueue _retrievalQueue;	
-	
+	private RetrievalQueue _retrievalQueue;
+
 	// 09/03/11 - Matthias
 	private ActivationValue _activationValue;
-	
-	
-	
-	public ActionDetail(Memory m, int ID, Event e, String location)
-	{  
+
+	public ActionDetail(Memory m, int ID, Event e, String location) {
 		Parameter p;
-		
+
 		this._memory = m;
-		
+
 		this._id = ID;
-		
+
 		this._subject = e.GetSubject();
-	
+
 		// Meiyii 07/01/10 separate events into intention and action
-		if(e.GetType() == EventType.GOAL)
-		{
+		if (e.GetType() == EventType.GOAL) {
 			this._intention = e.GetAction();
 			this._status = GoalEvent.GetName(e.GetStatus());
-		}
-		else if (e.GetType() == EventType.ACTION)
-		{
+		} else if (e.GetType() == EventType.ACTION) {
 			this._action = e.GetAction();
 			this._status = ActionEvent.GetName(e.GetStatus());
 		}
-		
+
 		this._target = e.GetTarget();
 		this._location = location;
-		this._time = new Time(); 
-		
-		if(e.GetParameters() != null)
-		{
+		this._time = new Time();
+
+		if (e.GetParameters() != null) {
 			// Meiyii 07/01/10 separate the parameters into individual fields
 			this._parameters = new ArrayList<Parameter>(e.GetParameters());
 			separateParameters();
 		}
-		
+
 		this._emotion = new NeutralEmotion(e);
-		
+
 		// 08/03/11 - Matthias
 		this._retrievalQueue = new RetrievalQueue(this._id);
 		this._retrievalQueue.addRetrievalTime(new Time());
-		
+
 		// 09/03/11 - Matthias
 		this._activationValue = new ActivationValue(this._id);
 	}
 
 	/*
-	 * Meiyii 22/12/10
-	 * Called during loading 
+	 * Meiyii 22/12/10 Called during loading
 	 */
-	public ActionDetail(Memory m, int ID, String subject, Short eType, String event, String status, 
-			String target, String location, float desirability, float praiseworthiness)
-	{
+	public ActionDetail(Memory m, int ID, String subject, Short eType,
+			String event, String status, String target, String location,
+			float desirability, float praiseworthiness) {
 		this._memory = m;
-		
+
 		this._id = ID;
-		
+
 		this._subject = subject;
 		if (eType == EventType.GOAL)
 			this._intention = event;
@@ -167,215 +156,180 @@ public class ActionDetail implements Serializable {
 		this._status = status;
 		this._target = target;
 		this._location = location;
-		
+
 		this._desirability = desirability;
 		this._praiseworthiness = praiseworthiness;
-		
+
 		// 08/03/11 - Matthias
 		this._retrievalQueue = new RetrievalQueue(this._id);
 		this._retrievalQueue.addRetrievalTime(new Time());
-		
+
 		// 09/03/11 - Matthias
 		this._activationValue = new ActivationValue(this._id);
 	}
-	
-	public ActionDetail(int ID, String subject, String action, String target, ArrayList<Parameter> parameters, Time time, String location, BaseEmotion emotion)
-	{
+
+	public ActionDetail(int ID, String subject, String action, String target,
+			ArrayList<Parameter> parameters, Time time, String location,
+			BaseEmotion emotion) {
 		this._id = ID;
-		
+
 		this._subject = subject;
 		this._action = action;
 		this._target = target;
 		this._location = location;
-		
+
 		this._time = time;
 		this._emotion = emotion;
-		
+
 		// 08/03/11 - Matthias
 		this._retrievalQueue = new RetrievalQueue(this._id);
 		this._retrievalQueue.addRetrievalTime(new Time());
-		
+
 		// 09/03/11 - Matthias
 		this._activationValue = new ActivationValue(this._id);
 
 	}
-	
-	public void setParameters(ArrayList<Parameter> parameters)
-	{		
+
+	public void setParameters(ArrayList<Parameter> parameters) {
 		this._parameters = parameters;
-		separateParameters();		
+		separateParameters();
 	}
-	
-	private void separateParameters()
-	{
+
+	private void separateParameters() {
 		Parameter p;
 		ListIterator<Parameter> li = this._parameters.listIterator();
-		while(li.hasNext())
-		{
+		while (li.hasNext()) {
 			p = li.next();
-			if(p.GetName().equals("type"))
-			{
+			if (p.GetName().equals("type")) {
 				this._speechActMeaning = p.GetValue().toString();
-			}				
-			else if(p.GetName().equals("link"))
-			{
+			} else if (p.GetName().equals("link")) {
 				this._multimediaPath = p.GetValue().toString();
-			}
-			else if(p.GetName().equals("param"))
-			{
+			} else if (p.GetName().equals("param")) {
 				String value = p.GetValue().toString();
-				if (!value.equals("SELF"))
-				{
+				if (!value.equals("SELF")) {
 					this._object = value;
 				}
 			}
 		}
 	}
-	
-	public void setEmotion(BaseEmotion emotion)
-	{
+
+	public void setEmotion(BaseEmotion emotion) {
 		this._emotion = emotion;
 	}
-	
-	public void setTime(Time time)
-	{
+
+	public void setTime(Time time) {
 		this._time = time;
 	}
-	
-	public void applySubstitution(Substitution s)
-	{
-		if(this._subject.equalsIgnoreCase(s.getVariable().getName()))
-		{
+
+	public void applySubstitution(Substitution s) {
+		if (this._subject.equalsIgnoreCase(s.getVariable().getName())) {
 			this._subject = s.getValue().getName();
 		}
-		
-		if(this._target.equalsIgnoreCase(s.getVariable().getName()))
-		{
+
+		if (this._target.equalsIgnoreCase(s.getVariable().getName())) {
 			this._target = s.getValue().getName();
 		}
 	}
-	
-	public String getSubject()
-	{
+
+	public String getSubject() {
 		return this._subject;
 	}
-	
-	public String getAction()
-	{
+
+	public String getAction() {
 		return this._action;
 	}
-	
-	public String getTarget()
-	{
+
+	public String getTarget() {
 		return this._target;
 	}
-	
+
 	// Meiyii 11/03/09
-	public String getLocation()
-	{
+	public String getLocation() {
 		return this._location;
 	}
-	
-	public ArrayList<Parameter> getParameters()
-	{
+
+	public ArrayList<Parameter> getParameters() {
 		return this._parameters;
 	}
-	
-	public int getID()
-	{
+
+	public int getID() {
 		return this._id;
 	}
-	
-	public Time getTime()
-	{
+
+	public Time getTime() {
 		return this._time;
 	}
-	
-	
-	public Object getSubjectDetails(String property)
-	{
+
+	public Object getSubjectDetails(String property) {
 		KnowledgeSlot aux = null;
-		if(this._subject != null)
-		{
-			aux = _memory.getSemanticMemory().GetObjectProperty(_subject, property);
+		if (this._subject != null) {
+			aux = _memory.getSemanticMemory().GetObjectProperty(_subject,
+					property);
 			if (aux != null)
 				return aux.getValue();
 		}
 		return aux;
 	}
-	
-	public Object getTargetDetails(String property)
-	{
+
+	public Object getTargetDetails(String property) {
 		KnowledgeSlot aux = null;
-		if(this._target != null)
-		{
-			aux = _memory.getSemanticMemory().GetObjectProperty(_target, property);
+		if (this._target != null) {
+			aux = _memory.getSemanticMemory().GetObjectProperty(_target,
+					property);
 			if (aux != null)
 				return aux.getValue();
 		}
 		return aux;
 	}
-	
-	public Object getObjectDetails(String property)
-	{
+
+	public Object getObjectDetails(String property) {
 		KnowledgeSlot aux = null;
-		if(this._object != null)
-		{
-			aux = _memory.getSemanticMemory().GetObjectProperty(_object, property);
+		if (this._object != null) {
+			aux = _memory.getSemanticMemory().GetObjectProperty(_object,
+					property);
 			if (aux != null)
 				return aux.getValue();
 		}
 		return aux;
 	}
-	
-	public BaseEmotion getEmotion()
-	{
+
+	public BaseEmotion getEmotion() {
 		return this._emotion;
 	}
-	
-	/*public ArrayList<String> getEvaluation()
-	{
-		return this._evaluation;
-	}*/
-	
-	//Meiyii 07/01/10
-	public String getIntention()
-	{
+
+	/*
+	 * public ArrayList<String> getEvaluation() { return this._evaluation; }
+	 */
+
+	// Meiyii 07/01/10
+	public String getIntention() {
 		return this._intention;
 	}
-	
-	public String getStatus()
-	{
+
+	public String getStatus() {
 		return this._status;
 	}
-	
-	public String getSpeechActMeaning()
-	{
+
+	public String getSpeechActMeaning() {
 		return this._speechActMeaning;
 	}
-	
-	public String getMultimediaPath()
-	{
+
+	public String getMultimediaPath() {
 		return this._multimediaPath;
 	}
-	
-	public String getObject()
-	{
+
+	public String getObject() {
 		return this._object;
 	}
-	
-	public float getDesirability()
-	{
+
+	public float getDesirability() {
 		return this._desirability;
 	}
-	
-	public float getPraiseworthiness()
-	{
+
+	public float getPraiseworthiness() {
 		return this._praiseworthiness;
 	}
-	
-	
-	
+
 	// 08/03/11 - Matthias
 	public void setRetrievalQueue(RetrievalQueue retrievalQueue) {
 		this._retrievalQueue = retrievalQueue;
@@ -395,10 +349,10 @@ public class ActionDetail implements Serializable {
 	public ActivationValue getActivationValue() {
 		return _activationValue;
 	}
-	
+
 	// 09/03/11 - Matthias
 	public void calculateActivationValue(Time timeCalculated, double decayValue) {
-		
+
 		// fetch retrieval times
 		LinkedList<Time> retrievalTimes = _retrievalQueue.getRetrievalTimes();
 
@@ -409,301 +363,228 @@ public class ActionDetail implements Serializable {
 		for (Time timeRetrieval : retrievalTimes) {
 
 			// calculate time difference
-			long timeDifference = timeCalculated.getNarrativeTime() - timeRetrieval.getNarrativeTime();
-			
+			long timeDifference = timeCalculated.getNarrativeTime()
+					- timeRetrieval.getNarrativeTime();
+
 			// DEBUG
-			//System.out.println("  time difference is " + timeDifference);
+			// System.out.println("  time difference is " + timeDifference);
 
 			// ignore time difference of 0
-			if(timeDifference > 0) {
+			if (timeDifference > 0) {
 				// sum up
 				sum += Math.pow(timeDifference, -decayValue);
 			}
 
 		}
-		
+
 		// DEBUG
-		//System.out.println("  sum is " + sum);
+		// System.out.println("  sum is " + sum);
 
 		// calculate activation value
 		double value = 0;
-		if(sum > 0) {
+		if (sum > 0) {
 			// log not required if we only select by maximum values afterwards
 			value = Math.log(sum);
-			//value = sum;
+			// value = sum;
 		}
 
 		// set values
 		_activationValue.setValue(value);
 		_activationValue.setNumRetrievals(retrievalTimes.size());
-		
+
 		// DEBUG
-		System.out.println("Activation value for detail id " + this._id + 
-				" is " + _activationValue.getValue() + 
-				" (" + _activationValue.getNumRetrievals() + " retrievals)");
+		// System.out.println("Activation value for detail id " + this._id +
+		// " is " + _activationValue.getValue() +
+		// " (" + _activationValue.getNumRetrievals() + " retrievals)");
 
 	}
-	
-	
-	
-//	TODO em revisao 15.03.2007
-	public boolean UpdateEmotionValues(Memory m, ActiveEmotion em)
-	{
+
+	// TODO em revisao 15.03.2007
+	public boolean UpdateEmotionValues(Memory m, ActiveEmotion em) {
 		boolean updated = false;
 
-		if(em.GetIntensity() > this._emotion.GetPotential())
-		{
-			this._emotion = new BaseEmotion((BaseEmotion)em);
-			if(this._emotion.getValence() == EmotionValence.POSITIVE)
-			{
+		if (em.GetIntensity() > this._emotion.GetPotential()) {
+			this._emotion = new BaseEmotion((BaseEmotion) em);
+			if (this._emotion.getValence() == EmotionValence.POSITIVE) {
 				this._desirability = (float) Math.floor(em.GetPotential());
+			} else {
+				this._desirability = (float) Math.floor(-em.GetPotential());
 			}
-			else
-			{
-				this._desirability = (float) Math.floor(- em.GetPotential());
-			}
-			
+
 			updated = true;
 		}
-		
+
 		return updated;
 	}
-	
-	public boolean ReferencesEvent(Event e)
-	{
-		if(this._subject != null) {
-			if(!this._subject.equals(e.GetSubject()))
-			{
+
+	public boolean ReferencesEvent(Event e) {
+		if (this._subject != null) {
+			if (!this._subject.equals(e.GetSubject())) {
 				return false;
 			}
 		}
-		if(this._action != null)
-		{
-			if(!this._action.equals(e.GetAction()))
-			{
+		if (this._action != null) {
+			if (!this._action.equals(e.GetAction())) {
 				return false;
 			}
 		}
-		if(this._target != null)
-		{
-			if(!this._target.equals(e.GetTarget()))
-			{
+		if (this._target != null) {
+			if (!this._target.equals(e.GetTarget())) {
 				return false;
 			}
 		}
-		if(this._parameters != null)
-		{
-			if(e.GetParameters() != null)
-			{
-				if(!this._parameters.toString().equals(e.GetParameters().toString()))
-				{
+		if (this._parameters != null) {
+			if (e.GetParameters() != null) {
+				if (!this._parameters.toString().equals(
+						e.GetParameters().toString())) {
 					return false;
 				}
-			}
-			else return false;
-		}
-		else if(e.GetParameters() != null)
-		{
+			} else
+				return false;
+		} else if (e.GetParameters() != null) {
 			return false;
 		}
 		return true;
 	}
-	
-	/*public float AssessFamiliarity(Event e)
-	{
-		if(this._subject != null) {
-			if(!this._subject.equals(e.GetSubject()))
-			{
-				return false;
-			}
-		}
-		if(this._action != null)
-		{
-			if(!this._action.equals(e.GetAction()))
-			{
-				return false;
-			}
-		}
-		if(this._target != null)
-		{
-			if(!this._target.equals(e.GetTarget()))
-			{
-				return false;
-			}
-		}
-		if(this._parameters != null)
-		{
-			if(e.GetParameters() != null)
-			{
-				if(!this._parameters.toString().equals(e.GetParameters().toString()))
-				{
-					return false;
-				}
-			}
-			else return false;
-		}
-		else if(e.GetParameters() != null)
-		{
-			return false;
-		}
-		return true;
-		
-	}*/
-	
+
+	/*
+	 * public float AssessFamiliarity(Event e) { if(this._subject != null) {
+	 * if(!this._subject.equals(e.GetSubject())) { return false; } }
+	 * if(this._action != null) { if(!this._action.equals(e.GetAction())) {
+	 * return false; } } if(this._target != null) {
+	 * if(!this._target.equals(e.GetTarget())) { return false; } }
+	 * if(this._parameters != null) { if(e.GetParameters() != null) {
+	 * if(!this._parameters.toString().equals(e.GetParameters().toString())) {
+	 * return false; } } else return false; } else if(e.GetParameters() != null)
+	 * { return false; } return true;
+	 * 
+	 * }
+	 */
+
 	@SuppressWarnings("unchecked")
-	public boolean verifiesKey(SearchKey key)
-	{
-		if(key.getField() == SearchKey.ACTION) 
-		{
+	public boolean verifiesKey(SearchKey key) {
+		if (key.getField() == SearchKey.ACTION) {
 			return key.getKey().equals(this._action);
-		}
-		else if(key.getField() == SearchKey.SUBJECT)
-		{
+		} else if (key.getField() == SearchKey.SUBJECT) {
 			return key.getKey().equals(this._subject);
-		}
-		else if(key.getField() == SearchKey.TARGET)
-		{
+		} else if (key.getField() == SearchKey.TARGET) {
 			return key.getKey().equals(this._target);
-		}
-		else if (key.getField() == SearchKey.MAXELAPSEDTIME)
-		{
+		} else if (key.getField() == SearchKey.MAXELAPSEDTIME) {
 			long max = ((Long) key.getKey()).longValue();
 			return _time.getElapsedNarrativeTime() <= max;
-		}
-		else if(key.getField() == SearchKey.PARAMETERS)
-		{
+		} else if (key.getField() == SearchKey.PARAMETERS) {
 			ArrayList<String> params = (ArrayList<String>) key.getKey();
 			String aux;
 			Parameter p;
-			if(this._parameters.size() < params.size())
-			{
+			if (this._parameters.size() < params.size()) {
 				return false;
 			}
-			for(int i=0; i < params.size(); i++)
-			{
+			for (int i = 0; i < params.size(); i++) {
 				aux = params.get(i);
-				p =  this._parameters.get(i);
-				if(!aux.equals("*") && !aux.equals(p.GetValue()))
-				{
+				p = this._parameters.get(i);
+				if (!aux.equals("*") && !aux.equals(p.GetValue())) {
 					return false;
 				}
 			}
 			return true;
-		}
-		else if(key.getField() == SearchKey.CONTAINSPARAMETER)
-		{
+		} else if (key.getField() == SearchKey.CONTAINSPARAMETER) {
 			String param = (String) key.getKey();
 			Parameter p;
-			
-			for(int i=0; i < this._parameters.size(); i++)
-			{
+
+			for (int i = 0; i < this._parameters.size(); i++) {
 				p = (Parameter) this._parameters.get(i);
-				if(p.GetValue().equals(param))
-				{
+				if (p.GetValue().equals(param)) {
 					return true;
 				}
 			}
 			return false;
 		}
 		// Meiyii - additional search keys
-		else if(key.getField() == SearchKey.INTENTION)
-		{
+		else if (key.getField() == SearchKey.INTENTION) {
 			return key.getKey().equals(this._intention);
-		}
-		else if(key.getField() == SearchKey.STATUS)
-		{
+		} else if (key.getField() == SearchKey.STATUS) {
 			if (this._intention != null)
 				return key.getKey().equals(this._status);
-			else 
+			else
 				return key.getKey().equals(this._status);
 		}
-			
-		else return false;
+
+		else
+			return false;
 	}
-	
-	public boolean verifiesKeys(ArrayList<SearchKey> keys)
-	{
+
+	public boolean verifiesKeys(ArrayList<SearchKey> keys) {
 		ListIterator<SearchKey> li = keys.listIterator();
-		while(li.hasNext())
-		{
-			if(!this.verifiesKey(li.next()))
-			{
+		while (li.hasNext()) {
+			if (!this.verifiesKey(li.next())) {
 				return false;
 			}
-		}		
+		}
 		return true;
 	}
 
-	public boolean equals(Object o)
-	{
+	public boolean equals(Object o) {
 		ActionDetail action;
-		
-		if(!(o instanceof ActionDetail))
-		{
+
+		if (!(o instanceof ActionDetail)) {
 			return false;
 		}
-		
+
 		action = (ActionDetail) o;
-		
-		if(this._subject != null) {
-			if(!this._subject.equals(action._subject))
-			{
+
+		if (this._subject != null) {
+			if (!this._subject.equals(action._subject)) {
 				return false;
 			}
 		}
-		if(this._action != null)
-		{
-			if(!this._action.equals(action._action))
-			{
+		if (this._action != null) {
+			if (!this._action.equals(action._action)) {
 				return false;
 			}
 		}
-		if(this._target != null)
-		{
-			if(!this._target.equals(action._target))
-			{
+		if (this._target != null) {
+			if (!this._target.equals(action._target)) {
 				return false;
 			}
 		}
-		if(this._parameters != null)
-		{
-			if(action._parameters != null)
-			{
-				if(!this._parameters.toString().equals(action._parameters.toString()))
-				{
+		if (this._parameters != null) {
+			if (action._parameters != null) {
+				if (!this._parameters.toString().equals(
+						action._parameters.toString())) {
 					return false;
 				}
-			}
-			else return false;
-		}
-		else if(action._parameters != null)
-		{
+			} else
+				return false;
+		} else if (action._parameters != null) {
 			return false;
 		}
-		
+
 		return true;
 	}
-	
-	public String toXML()
-	{
+
+	public String toXML() {
 		String action = "<Event>";
 		action += "<EventID>" + this.getID() + "</EventID>";
-		action += "<Emotion>" + this.getEmotion().getType() + " " + this.getEmotion().GetPotential() + "</Emotion>";
+		action += "<Emotion>" + this.getEmotion().getType() + " "
+				+ this.getEmotion().GetPotential() + "</Emotion>";
 		action += "<Subject>" + this.getSubject() + "</Subject>";
 		action += "<Intention>" + this.getIntention() + "</Intention>";
 		action += "<Status>" + this.getStatus() + "</Status>";
 		action += "<Action>" + this.getAction() + "</Action>";
 		action += "<Target>" + this.getTarget() + "</Target>";
 		action += "<Parameters>" + this.getParameters() + "</Parameters>";
-		action += "<SpeechActMeaning>" + this.getSpeechActMeaning() + "</SpeechActMeaning>";
-		action += "<MultimediaPath>" + this.getMultimediaPath() + "</MultimediaPath>";
+		action += "<SpeechActMeaning>" + this.getSpeechActMeaning()
+				+ "</SpeechActMeaning>";
+		action += "<MultimediaPath>" + this.getMultimediaPath()
+				+ "</MultimediaPath>";
 		action += "<Object>" + this.getObject() + "</Object>";
 		action += "<Desirability>" + this.getDesirability() + "</Desirability>";
-		action += "<Praiseworthiness>" + this.getPraiseworthiness() + "</Praiseworthiness>";
+		action += "<Praiseworthiness>" + this.getPraiseworthiness()
+				+ "</Praiseworthiness>";
 		action += "<Time>" + this.getTime().getRealTime() + "</Time>";
 		action += "<Location>" + this.getLocation() + "</Location>";
 		action += "</Event>\n";
-		
+
 		return action;
 	}
 }

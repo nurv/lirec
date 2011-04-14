@@ -35,28 +35,28 @@ public class ActivationValue implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private long detailID;
+	private int detailID;
 	private double value;
 	private int numRetrievals;
 
-	public ActivationValue(long detailID) {
+	public ActivationValue(int detailID) {
 		this.detailID = detailID;
 		value = 0;
 		numRetrievals = 0;
 	}
 
-	public ActivationValue(long detailID, double activationValue,
+	public ActivationValue(int detailID, double activationValue,
 			int numRetrievals) {
 		this.detailID = detailID;
 		this.value = activationValue;
 		this.numRetrievals = numRetrievals;
 	}
 
-	public long getDetailID() {
+	public int getDetailID() {
 		return detailID;
 	}
 
-	public void setDetailID(long detailID) {
+	public void setDetailID(int detailID) {
 		this.detailID = detailID;
 	}
 

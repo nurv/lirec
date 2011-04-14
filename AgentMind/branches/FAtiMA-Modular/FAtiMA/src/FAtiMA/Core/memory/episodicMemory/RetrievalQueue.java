@@ -43,16 +43,16 @@ public class RetrievalQueue implements Serializable {
 	// minimum time interval between retrievals (in ms)
 	private final static long MIN_TIME_INTERVAL_DEFAULT = 1000;
 
-	private long detailID;
+	private int detailID;
 	private int maxRetrievalTimes;
 	private LinkedList<Time> retrievalTimes;
 	private long minTimeInterval;
 
-	public RetrievalQueue(long detailID) {
+	public RetrievalQueue(int detailID) {
 		this(detailID, MAX_RETRIEVAL_TIMES_DEFAULT, MIN_TIME_INTERVAL_DEFAULT);
 	}
 
-	public RetrievalQueue(long detailID, int maxRetrievalTimes,
+	public RetrievalQueue(int detailID, int maxRetrievalTimes,
 			long minTimeInterval) {
 		this.detailID = detailID;
 		// maxRetrievalTimes is the queue size
@@ -62,7 +62,7 @@ public class RetrievalQueue implements Serializable {
 		this.minTimeInterval = minTimeInterval;
 	}
 
-	public long getDetailID() {
+	public int getDetailID() {
 		return detailID;
 	}
 
