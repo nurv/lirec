@@ -29,6 +29,8 @@
 
 package FAtiMA.Core.Display;
 
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -60,11 +62,17 @@ public class ABSelectionPanel extends AgentDisplayPanel {
 	private JTextField tfSelectionThreshold;
 	private JCheckBox cbSimulateSelection;
 	private JLabel lbSelectionStatus;
+	private MyTable table;
 	private MyTableModel tableModel;
+	private ArrayList<Integer> selectedIDs;
 
 	private class MyTableModel extends DefaultTableModel {
 
 		private static final long serialVersionUID = 1L;
+
+		public MyTableModel() {
+			super();
+		}
 
 		@Override
 		public Class getColumnClass(int column) {
@@ -93,6 +101,28 @@ public class ABSelectionPanel extends AgentDisplayPanel {
 
 	}
 
+	private class MyTable extends JTable {
+
+		private static final long serialVersionUID = 1L;
+
+		public MyTable(TableModel tableModel) {
+			super(tableModel);
+		}
+
+		@Override
+		public Component prepareRenderer(TableCellRenderer renderer, int row,
+				int column) {
+			Component component = super.prepareRenderer(renderer, row, column);
+			int rowID = (Integer) table.getValueAt(row, 0);
+			if (selectedIDs.contains(rowID)) {
+				component.setBackground(Color.YELLOW);
+			} else {
+				component.setBackground(getBackground());
+			}
+			return component;
+		}
+	}
+
 	private class AlABCalculation implements ActionListener {
 		public void actionPerformed(ActionEvent event) {
 			calculateValues();
@@ -108,6 +138,7 @@ public class ABSelectionPanel extends AgentDisplayPanel {
 
 	public ABSelectionPanel() {
 		super();
+		selectedIDs = new ArrayList<Integer>();
 		createGUI();
 	}
 
@@ -157,7 +188,7 @@ public class ABSelectionPanel extends AgentDisplayPanel {
 		pnCalculationButton.add(btABCalculation);
 
 		cbConstantUpdate = new JCheckBox("Constant Update");
-		cbConstantUpdate.setSelected(false);
+		cbConstantUpdate.setSelected(true);
 		pnCalculationButton.add(cbConstantUpdate);
 
 		JPanel pnCalculationStatus = new JPanel();
@@ -250,7 +281,7 @@ public class ABSelectionPanel extends AgentDisplayPanel {
 		tableModel.addColumn("Activation");
 		tableModel.addColumn("Retrievals");
 
-		JTable table = new JTable(tableModel);
+		table = new MyTable(tableModel);
 		table.setAutoCreateRowSorter(true);
 
 		JScrollPane scrollPane = new JScrollPane(table);
@@ -314,24 +345,34 @@ public class ABSelectionPanel extends AgentDisplayPanel {
 	private void performSelection() {
 
 		Time timeSelected = new Time();
+		ArrayList<ActionDetail> selected = new ArrayList<ActionDetail>();
 
 		if (rbSelectionCount.isSelected()) {
 			int countMax = Integer.valueOf(spSelectionCount.getValue()
 					.toString());
-			episodicMemory.activationBasedSelectionByCount(countMax);
+			selected = episodicMemory.activationBasedSelectionByCount(countMax);
 
 		} else if (rbSelectionRatio.isSelected()) {
 			double amount = Double.valueOf(spSelectionRatio.getValue()
 					.toString());
-			episodicMemory.activationBasedSelectionByAmount(amount);
+			selected = episodicMemory.activationBasedSelectionByAmount(amount);
 
 		} else if (rbSelectionThreshold.isSelected()) {
 			double threshold = Double.valueOf(tfSelectionThreshold.getText());
-			episodicMemory.activationBasedSelectionByThreshold(threshold);
+			selected = episodicMemory
+					.activationBasedSelectionByThreshold(threshold);
 		}
 
 		lbSelectionStatus.setText("Selected at narrative time "
 				+ timeSelected.getNarrativeTime());
+
+		ArrayList<Integer> selectedIDsTemp = new ArrayList<Integer>();
+		for (ActionDetail actionDetail : selected) {
+			selectedIDsTemp.add(new Integer(actionDetail.getID()));
+		}
+		selectedIDs = selectedIDsTemp;
+
+		table.repaint();
 	}
 
 	public boolean Update(AgentCore ag) {
