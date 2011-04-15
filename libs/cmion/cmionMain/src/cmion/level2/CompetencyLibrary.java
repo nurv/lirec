@@ -64,7 +64,7 @@ public class CompetencyLibrary extends CmionComponent {
 	/** the list of competencies that should run in the background constantly, started
 	 *  up when the architecture is started */
 	private ArrayList<Competency> backgroundCompetencies;
-
+	
 	/** a list of Samgar competency info objects for all Samgar competencies 
 	 *  available in this scenario. */
 	private ArrayList<SamgarCompetencyInfo> samgarCompetencyInfos;
@@ -354,11 +354,8 @@ public class CompetencyLibrary extends CmionComponent {
 
 	    				// what we do now depends on whether the competency runs in the background or not
 	    				if (comp.runsInBackground())
-	    				{
-	    					// add it to background competencies
-	    					backgroundCompetencies.add(comp);
-	    					
-	    					// and add it to the to-start competencies
+	    				{   					
+	    					// add it to the to-start competencies (will be started at next ion update)
 	    					competenciesToStart.add(comp);
 	    				
 	    				}
