@@ -55,7 +55,7 @@ public class ABSelectionPanel extends AgentDisplayPanel {
 	private JCheckBox cbConstantUpdate;
 	private JLabel lbCalculationStatus;
 	private JRadioButton rbSelectionCount;
-	private JSpinner spSelectionCount;
+	private JTextField spSelectionCount;
 	private JRadioButton rbSelectionRatio;
 	private JSpinner spSelectionRatio;
 	private JRadioButton rbSelectionThreshold;
@@ -65,6 +65,8 @@ public class ABSelectionPanel extends AgentDisplayPanel {
 	private MyTable table;
 	private MyTableModel tableModel;
 	private ArrayList<Integer> selectedIDs;
+	private double activationValueMin;
+	private double activationValueMax;
 
 	private class MyTableModel extends DefaultTableModel {
 
@@ -80,14 +82,10 @@ public class ABSelectionPanel extends AgentDisplayPanel {
 			case 0:
 				return Integer.class;
 			case 9:
-				return Float.class;
-			case 10:
-				return Float.class;
-			case 12:
 				return Long.class;
-			case 14:
+			case 11:
 				return Double.class;
-			case 15:
+			case 12:
 				return Integer.class;
 			default:
 				return String.class;
@@ -117,7 +115,17 @@ public class ABSelectionPanel extends AgentDisplayPanel {
 			if (selectedIDs.contains(rowID)) {
 				component.setBackground(Color.YELLOW);
 			} else {
-				component.setBackground(getBackground());
+				double activationValue = (Double) table.getValueAt(row, 11);
+				double range = activationValueMax - activationValueMin;
+				int grey = (int) Math
+						.round((activationValue - activationValueMin) / range
+								* 155) + 100;
+				if (grey < 0)
+					grey = 0;
+				if (grey > 255)
+					grey = 255;
+				component.setBackground(new Color(grey, grey, grey));
+				// component.setBackground(Color.WHITE);
 			}
 			return component;
 		}
@@ -222,8 +230,8 @@ public class ABSelectionPanel extends AgentDisplayPanel {
 				BoxLayout.Y_AXIS));
 		pnSelection.add(pnSelectionParams);
 
-		spSelectionCount = new JSpinner();
-		spSelectionCount.setModel(new SpinnerNumberModel(10, 0, 100, 1));
+		spSelectionCount = new JTextField();
+		spSelectionCount.setText("10");
 		spSelectionCount.setMinimumSize(new Dimension(60, 20));
 		spSelectionCount.setMaximumSize(new Dimension(60, 20));
 		pnSelectionParams.add(spSelectionCount);
@@ -271,10 +279,7 @@ public class ABSelectionPanel extends AgentDisplayPanel {
 		tableModel.addColumn("Target");
 		tableModel.addColumn("Status");
 		tableModel.addColumn("Meaning");
-		tableModel.addColumn("Path");
 		tableModel.addColumn("Object");
-		tableModel.addColumn("Desirability");
-		tableModel.addColumn("Praiseworthiness");
 		tableModel.addColumn("Feeling");
 		tableModel.addColumn("Time");
 		tableModel.addColumn("Location");
@@ -299,11 +304,22 @@ public class ABSelectionPanel extends AgentDisplayPanel {
 		// Short-Term Memory
 		actionDetails.addAll(episodicMemory.getSTEM().getDetails());
 
+		// set initial minimum and maximum for cell colouring
+		if (actionDetails.size() > 0) {
+			activationValueMin = actionDetails.get(0).getActivationValue()
+					.getValue();
+		} else {
+			activationValueMin = 0;
+		}
+		activationValueMax = activationValueMin;
+
+		// clear table model
 		int rowCount = tableModel.getRowCount();
 		for (int i = 0; i < rowCount; i++) {
 			tableModel.removeRow(0);
 		}
 
+		// add action details to table model
 		for (ActionDetail actionDetail : actionDetails) {
 			Object[] rowData = new Object[tableModel.getColumnCount()];
 			int j = 0;
@@ -315,10 +331,7 @@ public class ABSelectionPanel extends AgentDisplayPanel {
 			rowData[j++] = actionDetail.getTarget();
 			rowData[j++] = actionDetail.getStatus();
 			rowData[j++] = actionDetail.getSpeechActMeaning();
-			rowData[j++] = actionDetail.getMultimediaPath();
 			rowData[j++] = actionDetail.getObject();
-			rowData[j++] = actionDetail.getDesirability();
-			rowData[j++] = actionDetail.getPraiseworthiness();
 			rowData[j++] = actionDetail.getEmotion().getType() + "-"
 					+ actionDetail.getEmotion().GetPotential();
 			rowData[j++] = actionDetail.getTime().getNarrativeTime();
@@ -327,6 +340,15 @@ public class ABSelectionPanel extends AgentDisplayPanel {
 			rowData[j++] = actionDetail.getActivationValue().getNumRetrievals();
 
 			tableModel.addRow(rowData);
+
+			// save minimum and maximum for cell colouring
+			double activationValue = actionDetail.getActivationValue()
+					.getValue();
+			if (activationValue < activationValueMin)
+				activationValueMin = activationValue;
+			if (activationValue > activationValueMax)
+				activationValueMax = activationValue;
+
 		}
 
 	}
@@ -348,8 +370,8 @@ public class ABSelectionPanel extends AgentDisplayPanel {
 		ArrayList<ActionDetail> selected = new ArrayList<ActionDetail>();
 
 		if (rbSelectionCount.isSelected()) {
-			int countMax = Integer.valueOf(spSelectionCount.getValue()
-					.toString());
+			int countMax = Integer.valueOf(Integer.valueOf(spSelectionCount
+					.getText()));
 			selected = episodicMemory.activationBasedSelectionByCount(countMax);
 
 		} else if (rbSelectionRatio.isSelected()) {
