@@ -20,12 +20,13 @@
  * Company: GAIPS/INESC-ID
  * Project: FAtiMA
  * Created: 18/Jul/2006 
- * @author: João Dias
+ * @author: Joï¿½o Dias
  * Email to: joao.assis@tagus.ist.utl.pt
  * 
  * History: 
- * João Dias: 18/Jul/2006 - File created
+ * Joï¿½o Dias: 18/Jul/2006 - File created
  * Meiyii Lim: 13/03/2009 - Moved the class from FAtiMA.autobiographicalMemory package
+ * Matthias Keysermann: 20/04/2011 - Added get/set methods for _eventCounter
  * **/
 
 package FAtiMA.Core.memory.episodicMemory;
@@ -39,9 +40,6 @@ import FAtiMA.Core.AgentSimulationTime;
 
 public class Time implements Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	private static int _eventCounter = 1;
@@ -112,6 +110,16 @@ public class Time implements Serializable {
 	public long getElapsedEvents()
 	{
 		return _eventCounter - this._eventSequence - 1;
+	}
+	
+	public static int getEventCounter()
+	{
+		return _eventCounter;
+	}
+	
+	public static void setEventCounter(int eventCounter)
+	{
+		_eventCounter = eventCounter;
 	}
 	
 	public String toString()
