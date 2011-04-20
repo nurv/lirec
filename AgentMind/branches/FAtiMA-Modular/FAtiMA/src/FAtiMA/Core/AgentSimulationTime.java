@@ -22,14 +22,15 @@
  * Company: GAIPS/INESC-ID
  * Project: FAtiMA
  * Created: 2/Jul/2006 
- * @author: João Dias
+ * @author: Joï¿½o Dias
  * Email to: joao.assis@tagus.ist.utl.pt
  * 
  * History: 
- * João Dias: 2/Jul/2006 - File created
- * João Dias: 10/07/2006 - the class is now serializable
- * João Dias: 17/07/2006 - added the SaveState and LoadState methods
- * João Dias: 29/08/2006 - Solved small bug in LoadState method
+ * Joï¿½o Dias: 2/Jul/2006 - File created
+ * Joï¿½o Dias: 10/07/2006 - the class is now serializable
+ * Joï¿½o Dias: 17/07/2006 - added the SaveState and LoadState methods
+ * Joï¿½o Dias: 29/08/2006 - Solved small bug in LoadState method
+ * Matthias Keysermann: 20/04/2011 - added set method for simulation time
  */
 package FAtiMA.Core;
 
@@ -42,7 +43,7 @@ import java.io.Serializable;
 import FAtiMA.Core.util.AgentLogger;
 
 /**
- * @author João Dias
+ * @author Joï¿½o Dias
  * Class that implements the simulation time experienced
  * by the agent. It allows the agent to freeze its time, 
  * to advance time, and to speed up time. You cannot create
@@ -281,4 +282,14 @@ public class AgentSimulationTime implements Serializable {
 	{
 		return this._simulationTime;
 	}
+	
+	/**
+	 * Sets the agent simulation time
+	 * @param simulationTime agent simulation time
+	 */
+	public void SetSimulationTime(long simulationTime)
+	{
+		this._simulationTime = simulationTime;
+	}
+	
 }
