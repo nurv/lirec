@@ -28,6 +28,10 @@
  * Matthias Keysermann: 12/04/11 - Moved class MemoryBaseEmotion to
  *                                 FAtiMA.Core.memory.episodicMemory
  *                                 in order to fix bug when Serializing
+ * Matthias Keysermann: 20/04/11 - added agentSimulationTime
+ *                                 agentSimulationTime is used for the narrativeTime
+ *                                 narrativeTime is used for calculating activation values
+ * Matthias Keysermann: 20/04/11 - added eventCounter
  * **/
 
 package FAtiMA.Core.util.parsers;
@@ -35,10 +39,9 @@ package FAtiMA.Core.util.parsers;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
-import javax.xml.stream.events.Attribute;
-
 import org.xml.sax.Attributes;
 
+import FAtiMA.Core.AgentSimulationTime;
 import FAtiMA.Core.emotionalState.BaseEmotion;
 import FAtiMA.Core.memory.Memory;
 import FAtiMA.Core.memory.episodicMemory.ActionDetail;
@@ -83,10 +86,13 @@ public class MemoryLoaderHandler extends ReflectXMLHandler {
 		_memory.getEpisodicMemory().putSTEpisodicMemory(_currentSTEM);
 	}
 	
-	// 07/04/11 Matthias
 	public void EpisodicMemory(Attributes attributes) {		
 		int nextEventID = Integer.parseInt(attributes.getValue("nextEventID"));
 		_memory.getEpisodicMemory().setNextEventID(nextEventID);
+		long agentSimulationTime = Long.parseLong(attributes.getValue("agentSimulationTime"));
+		AgentSimulationTime.GetInstance().SetSimulationTime(agentSimulationTime);
+		int eventCounter = Integer.parseInt(attributes.getValue("eventCounter"));
+		Time.setEventCounter(eventCounter);
 	}
 	
 	public void KBSlot(Attributes attributes)

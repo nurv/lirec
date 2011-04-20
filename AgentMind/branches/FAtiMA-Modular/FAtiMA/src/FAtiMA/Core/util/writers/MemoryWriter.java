@@ -26,6 +26,10 @@
  * Meiyii Lim: 15/12/10 - File created
  * Matthias Keysermann: 18/03/11 - included RetrievalQueue
  * Matthias Keysermann: 07/04/11 - included nextEventID
+ * Matthias Keysermann: 20/04/11 - included agentSimulationTime
+ *                                 agentSimulationTime is used for the narrativeTime
+ *                                 narrativeTime is used for calculating activation values
+ * Matthias Keysermann: 20/04/11 - included eventCounter
  * **/
 
 package FAtiMA.Core.util.writers;
@@ -38,6 +42,7 @@ import java.io.Writer;
 import org.znerd.xmlenc.LineBreak;
 import org.znerd.xmlenc.XMLOutputter;
 
+import FAtiMA.Core.AgentSimulationTime;
 import FAtiMA.Core.memory.Memory;
 import FAtiMA.Core.memory.episodicMemory.ActionDetail;
 import FAtiMA.Core.memory.episodicMemory.MemoryEpisode;
@@ -48,8 +53,10 @@ import FAtiMA.Core.memory.episodicMemory.Time;
 
 
 
-public class MemoryWriter implements Serializable{
+public class MemoryWriter implements Serializable {
 
+	private static final long serialVersionUID = 1L;
+	
 	final String encoding = "iso-8859-1";
 	private Writer _writer;
 	private XMLOutputter _outputter;
@@ -109,8 +116,9 @@ public class MemoryWriter implements Serializable{
 			
 			// EpisodicMemory
 			_outputter.startTag("EpisodicMemory");
-			// next event id
 			_outputter.attribute("nextEventID", Integer.toString(_memory.getEpisodicMemory().getNextEventID()));
+			_outputter.attribute("agentSimulationTime", Long.toString(AgentSimulationTime.GetInstance().Time()));
+			_outputter.attribute("eventCounter", Integer.toString(Time.getEventCounter()));
 			
 			// AutobiographicalMemory entries
 			_outputter.startTag("AutobiographicalMemory");			
