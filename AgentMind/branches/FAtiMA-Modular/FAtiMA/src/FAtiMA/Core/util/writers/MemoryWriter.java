@@ -30,6 +30,7 @@
  *                                 agentSimulationTime is used for the narrativeTime
  *                                 narrativeTime is used for calculating activation values
  * Matthias Keysermann: 20/04/11 - included eventCounter
+ * Matthias Keysermann: 27/04/11 - real time (Calendar) is exported as milliseconds
  * **/
 
 package FAtiMA.Core.util.writers;

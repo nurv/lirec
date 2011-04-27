@@ -27,11 +27,13 @@
  * Jo�o Dias: 18/Jul/2006 - File created
  * Meiyii Lim: 13/03/2009 - Moved the class from FAtiMA.autobiographicalMemory package
  * Matthias Keysermann: 20/04/2011 - Added get/set methods for _eventCounter
+ * Matthias Keysermann: 27/04/2011 - Calendar for _realTime, getRealTime() returns milliseconds
  * **/
 
 package FAtiMA.Core.memory.episodicMemory;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
@@ -45,34 +47,26 @@ public class Time implements Serializable {
 	private static long _eventCounter = 1;
 	
 	private long _narrativeTime;
-	private long _realTime;
-	private String _strRealTime;
+	private Calendar _realTime;
+	private SimpleDateFormat simpleDateFormat;
 	private long _eventSequence;
 	
 	public Time()
 	{
+        simpleDateFormat = new SimpleDateFormat();		
 		this._narrativeTime = AgentSimulationTime.GetInstance().Time();
-		GregorianCalendar gcal = new GregorianCalendar();
-		this._realTime = gcal.get(Calendar.HOUR_OF_DAY);
-		setStrRealTime();
+		this._realTime = new GregorianCalendar();
 		this._eventSequence = _eventCounter;
 		_eventCounter++;
 	}
 	
-	public Time(Long narrativeTime, Long realTime, long eventSequence)
+	public Time(Long narrativeTime, long realTime, long eventSequence)
 	{
+        simpleDateFormat = new SimpleDateFormat();		
 		this._narrativeTime = narrativeTime;
-		this._realTime = realTime;
-		setStrRealTime();
+		this._realTime = new GregorianCalendar();
+		this._realTime.setTimeInMillis(realTime);
 		this._eventSequence = eventSequence;
-	}
-	
-	private void setStrRealTime()
-	{
-		if(this._realTime >= 0 && this._realTime < 12)
-			this._strRealTime = "Morning";
-		else
-			this._strRealTime = "Afternoon";
 	}
 	
 	public long getNarrativeTime()
@@ -82,12 +76,22 @@ public class Time implements Serializable {
 	
 	public long getRealTime()
 	{
-		return this._realTime;
+		//return this._realTime.get(Calendar.HOUR_OF_DAY);
+		return this._realTime.getTimeInMillis();
+	}
+	
+	public String getRealTimeFormatted() {
+		return simpleDateFormat.format(this._realTime.getTime());
 	}
 	
 	public String getStrRealTime()
 	{
-		return this._strRealTime;
+		String strRealTime = "";
+		if(this._realTime.get(Calendar.HOUR_OF_DAY) >= 0 && this._realTime.get(Calendar.HOUR_OF_DAY) < 12)
+			strRealTime = "Morning";
+		else
+			strRealTime = "Afternoon";		
+		return strRealTime;
 	}
 	
 	public long getEventSequence()
@@ -104,7 +108,7 @@ public class Time implements Serializable {
 	public long getElapsedRealTime()
 	{
 		long currentTime = System.currentTimeMillis();
-		return currentTime - this._realTime;
+		return currentTime - this._realTime.getTimeInMillis();
 	}
 	
 	public long getElapsedEvents()
@@ -123,7 +127,7 @@ public class Time implements Serializable {
 	}
 	
 	public String toString()
-	{
-		return "(RT) " + _realTime + "\n(NT) " + _narrativeTime + "\n(ES) " + _eventSequence; 
+	{        	
+		return "(RT) " + this.getRealTimeFormatted() + "\n(NT) " + _narrativeTime + "\n(ES) " + _eventSequence; 
 	}
 }
