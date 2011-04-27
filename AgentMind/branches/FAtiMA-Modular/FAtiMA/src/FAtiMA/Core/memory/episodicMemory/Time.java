@@ -42,12 +42,12 @@ public class Time implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private static int _eventCounter = 1;
+	private static long _eventCounter = 1;
 	
 	private long _narrativeTime;
 	private long _realTime;
 	private String _strRealTime;
-	private int _eventSequence;
+	private long _eventSequence;
 	
 	public Time()
 	{
@@ -59,7 +59,7 @@ public class Time implements Serializable {
 		_eventCounter++;
 	}
 	
-	public Time(Long narrativeTime, Long realTime, int eventSequence)
+	public Time(Long narrativeTime, Long realTime, long eventSequence)
 	{
 		this._narrativeTime = narrativeTime;
 		this._realTime = realTime;
@@ -90,7 +90,7 @@ public class Time implements Serializable {
 		return this._strRealTime;
 	}
 	
-	public int getEventSequence()
+	public long getEventSequence()
 	{
 		return this._eventSequence;
 	}
@@ -112,12 +112,12 @@ public class Time implements Serializable {
 		return _eventCounter - this._eventSequence - 1;
 	}
 	
-	public static int getEventCounter()
+	public static long getEventCounter()
 	{
 		return _eventCounter;
 	}
 	
-	public static void setEventCounter(int eventCounter)
+	public static void setEventCounter(long eventCounter)
 	{
 		_eventCounter = eventCounter;
 	}

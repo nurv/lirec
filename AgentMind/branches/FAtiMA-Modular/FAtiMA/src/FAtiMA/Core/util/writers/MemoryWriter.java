@@ -118,7 +118,7 @@ public class MemoryWriter implements Serializable {
 			_outputter.startTag("EpisodicMemory");
 			_outputter.attribute("nextEventID", Integer.toString(_memory.getEpisodicMemory().getNextEventID()));
 			_outputter.attribute("agentSimulationTime", Long.toString(AgentSimulationTime.GetInstance().Time()));
-			_outputter.attribute("eventCounter", Integer.toString(Time.getEventCounter()));
+			_outputter.attribute("eventCounter", Long.toString(Time.getEventCounter()));
 			
 			// AutobiographicalMemory entries
 			_outputter.startTag("AutobiographicalMemory");			
@@ -136,7 +136,7 @@ public class MemoryWriter implements Serializable {
 				_outputter.startTag("EpisodeTime");
 				_outputter.attribute("narrativeTime", Long.toString(me.getTime().getNarrativeTime()));
 				_outputter.attribute("realTime", Long.toString(me.getTime().getRealTime()));
-				_outputter.attribute("eventSequence", Integer.toString(me.getTime().getEventSequence()));
+				_outputter.attribute("eventSequence", Long.toString(me.getTime().getEventSequence()));
 				_outputter.endTag();	//EpisodeTime
 				
 				// episode events
@@ -269,7 +269,7 @@ public class MemoryWriter implements Serializable {
 			_outputter.startTag("EventTime");
 			_outputter.attribute("narrativeTime", Long.toString(ad.getTime().getNarrativeTime()));
 			_outputter.attribute("realTime", Long.toString(ad.getTime().getRealTime()));
-			_outputter.attribute("eventSequence", Integer.toString(ad.getTime().getEventSequence()));
+			_outputter.attribute("eventSequence", Long.toString(ad.getTime().getEventSequence()));
 			_outputter.endTag();	//EventTime
 			
 			// Matthias 18/03/11
@@ -280,7 +280,7 @@ public class MemoryWriter implements Serializable {
 				_outputter.startTag("RetrievalTime");
 				_outputter.attribute("narrativeTime", Long.toString(retrievalTime.getNarrativeTime()));
 				_outputter.attribute("realTime", Long.toString(retrievalTime.getRealTime()));
-				_outputter.attribute("eventSequence", Integer.toString(retrievalTime.getEventSequence()));
+				_outputter.attribute("eventSequence", Long.toString(retrievalTime.getEventSequence()));
 				_outputter.endTag();	//RetrievalTime				
 			}
 			_outputter.endTag();	//RetrievalQueue

@@ -91,7 +91,7 @@ public class MemoryLoaderHandler extends ReflectXMLHandler {
 		_memory.getEpisodicMemory().setNextEventID(nextEventID);
 		long agentSimulationTime = Long.parseLong(attributes.getValue("agentSimulationTime"));
 		AgentSimulationTime.GetInstance().SetSimulationTime(agentSimulationTime);
-		int eventCounter = Integer.parseInt(attributes.getValue("eventCounter"));
+		long eventCounter = Long.parseLong(attributes.getValue("eventCounter"));
 		Time.setEventCounter(eventCounter);
 	}
 	
@@ -151,7 +151,7 @@ public class MemoryLoaderHandler extends ReflectXMLHandler {
 	   
 		Long narrativeTime = Long.parseLong(attributes.getValue("narrativeTime"));
 	    Long realTime = Long.parseLong(attributes.getValue("realTime"));
-	    int eventSequence = Integer.parseInt(attributes.getValue("eventSequence"));
+	    long eventSequence = Long.parseLong(attributes.getValue("eventSequence"));
 	    Time time = new Time(narrativeTime, realTime, eventSequence);	
 	    
 	    _currentME.setTime(time);
@@ -170,7 +170,7 @@ public class MemoryLoaderHandler extends ReflectXMLHandler {
 	public void RetrievalTime(Attributes attributes) {
 		Long narrativeTime = Long.parseLong(attributes.getValue("narrativeTime"));
 	    Long realTime = Long.parseLong(attributes.getValue("realTime"));
-	    int eventSequence = Integer.parseInt(attributes.getValue("eventSequence"));
+	    long eventSequence = Long.parseLong(attributes.getValue("eventSequence"));
 	    Time retrievalTime = new Time(narrativeTime, realTime, eventSequence);	
 	    _currentRetrievalQueue.addRetrievalTime(retrievalTime);
 	    // DEBUG
@@ -262,7 +262,7 @@ public class MemoryLoaderHandler extends ReflectXMLHandler {
  	   
 		Long narrativeTime = Long.parseLong(attributes.getValue("narrativeTime"));
 	    Long realTime = Long.parseLong(attributes.getValue("realTime"));
-	    int eventSequence = Integer.parseInt(attributes.getValue("eventSequence"));
+	    long eventSequence = Long.parseLong(attributes.getValue("eventSequence"));
 	    Time time = new Time(narrativeTime, realTime, eventSequence);	    
 
 	    _currentAD.setParameters(_currentParameters);
