@@ -131,7 +131,9 @@ public class RecordDetailPanel extends JPanel {
         _evaluation.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
         this.add(_evaluation);*/
         
-        _time = new JTextField(String.valueOf(detail.getTime().getRealTime()));
+        // Matthias 27/04/11: formatted Calendar data
+        //_time = new JTextField(String.valueOf(detail.getTime().getRealTime()));              
+        _time = new JTextField(detail.getTime().getRealTimeFormatted());
         _time.setMinimumSize(new Dimension(100,30));
         _time.setMaximumSize(new Dimension(100,30));
         _time.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
