@@ -1,0 +1,26 @@
+<GoalLibrary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:noNamespaceSchemaLocation="./schemas/GoalLibrary.xsd">
+
+	<ActivePursuitGoal name="respondYes([target],[person],[task],[item])">
+		<PreConditions>
+			<NewEvent occurred="True" subject="[target]" action="ask" target="[SELF]" parameters="[person],[task],[item]" />
+			<RecentEvent occurred="True" subject="[person]" action="[task]" target="[item]" />
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[person]" action="[task]" target="[item]" />
+			<NewEvent occurred="True" subject="[SELF]" action="respondYes" target="[target]" parameters="[person],[task],[item]" />
+		</SucessConditions>
+	</ActivePursuitGoal>
+
+	<ActivePursuitGoal name="respondNo([target],[person],[task],[item])">
+		<PreConditions>
+			<NewEvent occurred="True" subject="[target]" action="ask" target="[SELF]" parameters="[person],[task],[item]" />
+			<RecentEvent occurred="False" subject="[person]" action="[task]" target="[item]" />
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="False" subject="[person]" action="[task]" target="[item]" />
+			<NewEvent occurred="True" subject="[SELF]" action="respondNo" target="[target]" parameters="[person],[task],[item]" />
+		</SucessConditions>
+	</ActivePursuitGoal>
+
+</GoalLibrary>

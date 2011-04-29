@@ -1,0 +1,16 @@
+<DomainActions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:noNamespaceSchemaLocation="./schemas/Actions.xsd">
+
+	<Action name="read([person],[item])">
+	</Action>
+
+	<Action name="ask([target],[person],[task],[item])">
+	</Action>
+
+	<Action name="respondYes([target],[person],[task],[item])">
+	</Action>
+
+	<Action name="respondNo([target],[person],[task],[item])">
+	</Action>
+
+</DomainActions>

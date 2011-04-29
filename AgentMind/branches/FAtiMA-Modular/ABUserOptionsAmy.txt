@@ -1,0 +1,16 @@
+Amy read book
+Amy read newspaper
+Amy read magazine
+Amy read journal
+Amy read novel
+Amy read drama
+Amy read report
+Amy read letter
+John ask ABRobot Amy read book
+John ask ABRobot Amy read newspaper
+John ask ABRobot Amy read magazine
+John ask ABRobot Amy read journal
+John ask ABRobot Amy read novel
+John ask ABRobot Amy read drama
+John ask ABRobot Amy read report
+John ask ABRobot Amy read letter

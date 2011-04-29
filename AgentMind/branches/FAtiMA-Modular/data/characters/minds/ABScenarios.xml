@@ -1,0 +1,28 @@
+<Scenarios>
+	
+	<Scenario name="ABShortTerm">
+		<WorldSimulator port="46874" scenery="AmyHouse" actionsFile="data/characters/minds/ABActions.xml" 
+						agentLanguageFile="data/characters/minds/language/agent/en/language-set-1"
+						userLanguageFile="data/characters/minds/language/user/en/language-set-1" 
+						userOptionsFile="ABUserOptions">
+			<Objects>
+				<Object name="Amy"/>
+				<Object name="John"/>
+				<Object name="book"/>
+				<Object name="newspaper"/>
+				<Object name="magazine"/>
+				<Object name="journal"/>
+				<Object name="novel"/>
+				<Object name="drama"/>
+				<Object name="report"/>
+				<Object name="letter"/>
+			</Objects>
+		</WorldSimulator>
+		<Agent name="ABRobot" displayName="ABRobot" role="ABRobot" platform="worldsim" host="localhost" 
+			   port="46874" displayMode="True" sex="M" actionsFile="ABActions" 
+			   goalsFile="ABGoalLibrary" cultureName="ABCulture" 
+			   saveDirectory="data/characters/minds/state/" agentLoad="False" memoryLoad="False">
+		</Agent>
+	</Scenario>
+	
+</Scenarios>
