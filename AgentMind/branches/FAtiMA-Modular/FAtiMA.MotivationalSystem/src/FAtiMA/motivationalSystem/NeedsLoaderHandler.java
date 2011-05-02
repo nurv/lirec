@@ -38,7 +38,7 @@ public class NeedsLoaderHandler  extends ReflectXMLHandler {
 	}
 	
 	public void Goal(Attributes attributes) {
-    	_currentGoalKey = attributes.getValue("key");
+    	_currentGoalKey = attributes.getValue("name");
     }
 	
 	public void ActivePursuitGoal(Attributes attributes) {
