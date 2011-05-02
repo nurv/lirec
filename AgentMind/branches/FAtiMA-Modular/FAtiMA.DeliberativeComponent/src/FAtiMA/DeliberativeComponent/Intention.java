@@ -448,7 +448,7 @@ public class Intention implements Serializable {
 	    af.SetAppraisalVariable(DeliberativeComponent.NAME, (short)8,OCCAppraisalVariables.GOALCONDUCIVENESS.name(), dp.getUtilityStrategy().getUtility(am, _goal));
 	    am.updateEmotions(af);
 	        		   		
-	    AgentLogger.GetInstance().logAndPrint("Goal SUCCESS - " + getGoal().getName());
+	    System.out.println("Goal SUCCESS - " + getGoal().getName());
 	}
 
 }
