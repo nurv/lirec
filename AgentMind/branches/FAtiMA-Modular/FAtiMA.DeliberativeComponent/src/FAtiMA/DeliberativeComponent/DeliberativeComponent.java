@@ -187,7 +187,7 @@ public class DeliberativeComponent implements Serializable, IComponent, IBehavio
 	 */
 	private static final long serialVersionUID = 1L;
 	private static final long waitingTime = 30000;
-	private static final float MINIMUMUTILITY = 1;
+	private static final float MINIMUMUTILITY = 5;
 	private static final float SELECTIONTHRESHOLD = 1.2f; 
 	public static final String NAME = "Deliberative";
 	
@@ -346,7 +346,7 @@ public class DeliberativeComponent implements Serializable, IComponent, IBehavio
 	    else if(!_selectedAction.getAgent().toString().equals(Constants.SELF))
 	    {
 	    	//we have to wait for another agent to act
-	    	AgentLogger.GetInstance().logAndPrint("Waiting for agent " + _selectedAction.getAgent().toString() + " to do:" + _selectedAction.getName().toString());
+	    	System.out.println("Waiting for agent " + _selectedAction.getAgent().toString() + " to do:" + _selectedAction.getName().toString());
 	    	
 	    	e = new Event(_selectedAction.getAgent().toString(),null,null);
 	    	_actionMonitor = new ExpirableActionMonitor(waitingTime,_selectedAction,e);
@@ -1358,7 +1358,7 @@ public class DeliberativeComponent implements Serializable, IComponent, IBehavio
 		{
 			if(_actionMonitor.expired())
 			{
-				AgentLogger.GetInstance().logAndPrint("Action monitor expired: " + _actionMonitor.toString());
+				System.out.println("Action monitor expired: " + _actionMonitor.toString());
 				//If the action expired we must check the plan links (continuous planning)
 				//just to make sure
 				checkLinks(am);
