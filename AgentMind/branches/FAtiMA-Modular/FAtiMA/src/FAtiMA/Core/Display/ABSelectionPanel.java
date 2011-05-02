@@ -261,7 +261,7 @@ public class ABSelectionPanel extends AgentDisplayPanel {
 
 		cbSimulateSelection = new JCheckBox("Simulate Selection");
 		cbSimulateSelection.setSelected(true);
-		cbSimulateSelection.setEnabled(false);
+		// cbSimulateSelection.setEnabled(false);
 		pnSelectionButton.add(cbSimulateSelection);
 
 		JButton btABSelection = new JButton("Activation-Based Selection");
@@ -467,13 +467,11 @@ public class ABSelectionPanel extends AgentDisplayPanel {
 		}
 		selectedIDs = selectedIDsTemp;
 
-		table.repaint();
-
-		/*
 		if (!cbSimulateSelection.isSelected()) {
-			episodicMemory.activationBasedForgetting(selected);
+			episodicMemory.activationBasedForgetting(selectedIDs);
 		}
-		*/
+
+		table.repaint();
 
 	}
 
@@ -487,7 +485,6 @@ public class ABSelectionPanel extends AgentDisplayPanel {
 		updateTable();
 
 		return true;
-
 	}
 
 	public boolean Update(AgentModel am) {
@@ -500,7 +497,6 @@ public class ABSelectionPanel extends AgentDisplayPanel {
 		updateTable();
 
 		return true;
-
 	}
 
 }
