@@ -13,6 +13,7 @@ import FAtiMA.Core.emotionalState.AppraisalFrame;
 import FAtiMA.Core.emotionalState.BaseEmotion;
 import FAtiMA.Core.emotionalState.EmotionDisposition;
 import FAtiMA.Core.sensorEffector.Event;
+import FAtiMA.Core.util.Constants;
 import FAtiMA.Core.wellFormedNames.Name;
 
 public class OCCAffectDerivationComponent implements Serializable, IAffectDerivationComponent, IModelOfOtherComponent {
@@ -92,11 +93,11 @@ public class OCCAffectDerivationComponent implements Serializable, IAffectDeriva
 		return em;
 	}
 
-	private static OCCBaseEmotion OCCAppraisePraiseworthiness(String appraisingAgent, Event event, float praiseworthiness) {
+	private static OCCBaseEmotion OCCAppraisePraiseworthiness(Event event, float praiseworthiness) {
 		OCCBaseEmotion em;
 		
 		if(praiseworthiness >= 0) {
-			if(event.GetSubject().equals(appraisingAgent)) {
+			if(event.GetSubject().equals(Constants.SELF)) {
 				em = new OCCBaseEmotion(OCCEmotionType.PRIDE, praiseworthiness, event, Name.ParseName("SELF"));
 			}
 			else {
@@ -104,7 +105,7 @@ public class OCCAffectDerivationComponent implements Serializable, IAffectDeriva
 			}
 		}
 		else {
-			if(event.GetSubject().equals(appraisingAgent)) {
+			if(event.GetSubject().equals(Constants.SELF)) {
 				em = new OCCBaseEmotion(OCCEmotionType.SHAME, -praiseworthiness, event, Name.ParseName("SELF"));
 			}
 			else {
@@ -222,7 +223,7 @@ public class OCCAffectDerivationComponent implements Serializable, IAffectDeriva
 			float praiseworthiness = af.getAppraisalVariable(OCCAppraisalVariables.PRAISEWORTHINESS.name());
 			if(praiseworthiness!=0)
 			{
-				emotions.add(OCCAppraisePraiseworthiness(am.getName(), event, praiseworthiness));
+				emotions.add(OCCAppraisePraiseworthiness(event, praiseworthiness));
 			}
 		}
 		if(af.containsAppraisalVariable(OCCAppraisalVariables.LIKE.name()))
