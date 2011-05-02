@@ -504,4 +504,54 @@ public class EpisodicMemory implements Serializable {
 		return selected;
 	}
 	
+	// 02/05/11 - Matthias
+	public void activationBasedForgetting(ArrayList<Integer> selectedIDs) {
+		
+		// workaround for java.util.ConcurrentModificationException:
+		// create temporary copy of episode list
+		ArrayList<MemoryEpisode> episodes = new ArrayList<MemoryEpisode>();
+		episodes.addAll(_am.GetAllEpisodes());
+		
+		// forget in each episode		
+		for(MemoryEpisode episode : episodes) {
+			
+			ArrayList<ActionDetail> selectedEpisodeDetails = new ArrayList<ActionDetail>();
+			for(ActionDetail detail : episode.getDetails()) {
+				if(selectedIDs.contains(detail.getID())) {
+					selectedEpisodeDetails.add(detail);
+				}
+			}
+			
+			// TODO: delete summary? (regenerated when adding details)
+			episode.getPeople().clear();
+			episode.getLocation().clear();
+			episode.getObjects().clear();
+			
+			// temporarily remove details
+			episode.getDetails().clear();
+			for(ActionDetail detail : selectedEpisodeDetails) {
+				// add selected details (regenerates summary)
+				episode.AddActionDetail(detail);
+			}
+			
+			// TODO: delete empty episodes?
+			if(episode.getDetails().size() == 0) {
+				_am.GetAllEpisodes().remove(episode);
+			}
+			
+		}
+		
+		// forget in Short-Term Memory
+		ArrayList<ActionDetail> selectedShortTermDetails = new ArrayList<ActionDetail>();
+		for(ActionDetail detail : _stm.getDetails()) {
+			if(selectedIDs.contains(detail.getID())) {
+				selectedShortTermDetails.add(detail);
+			}
+		}
+		// temporarily remove details
+		_stm.getDetails().clear();
+		// add selected details
+		_stm.getDetails().addAll(selectedShortTermDetails);
+	}
+	
 }
