@@ -25,6 +25,8 @@
  * 
  * History: 
  * Matthias Keysermann: 13/04/11 - File created
+ * Matthias Keysermann: 02/05/11 - table uses copies of corresponding objects
+ * Matthias Keysermann: 02/05/11 - remove and recreate row sorter in order to minimise java.awt exceptions
  * **/
 
 package FAtiMA.Core.Display;
@@ -50,6 +52,8 @@ public class ABSelectionPanel extends AgentDisplayPanel {
 
 	private static final long serialVersionUID = 1L;
 
+	private static final String nullString = "";
+
 	private EpisodicMemory episodicMemory;
 	private JSpinner spDecayValue;
 	private JCheckBox cbConstantUpdate;
@@ -64,6 +68,7 @@ public class ABSelectionPanel extends AgentDisplayPanel {
 	private JLabel lbSelectionStatus;
 	private MyTable table;
 	private MyTableModel tableModel;
+	private TableRowSorter<MyTableModel> tableRowSorter;
 	private ArrayList<Integer> selectedIDs;
 	private double activationValueMin;
 	private double activationValueMax;
@@ -76,6 +81,7 @@ public class ABSelectionPanel extends AgentDisplayPanel {
 			super();
 		}
 
+		@SuppressWarnings("unchecked")
 		@Override
 		public Class getColumnClass(int column) {
 			switch (column) {
@@ -287,7 +293,8 @@ public class ABSelectionPanel extends AgentDisplayPanel {
 		tableModel.addColumn("Retrievals");
 
 		table = new MyTable(tableModel);
-		table.setAutoCreateRowSorter(true);
+		tableRowSorter = new TableRowSorter<MyTableModel>(tableModel);
+		table.setRowSorter(tableRowSorter);
 
 		JScrollPane scrollPane = new JScrollPane(table);
 		pnDetails.add(scrollPane);
@@ -297,6 +304,7 @@ public class ABSelectionPanel extends AgentDisplayPanel {
 	private void updateTable() {
 
 		ArrayList<ActionDetail> actionDetails = new ArrayList<ActionDetail>();
+
 		// Autobiographic Memory
 		for (MemoryEpisode episode : episodicMemory.getAM().GetAllEpisodes()) {
 			actionDetails.addAll(episode.getDetails());
@@ -313,6 +321,9 @@ public class ABSelectionPanel extends AgentDisplayPanel {
 		}
 		activationValueMax = activationValueMin;
 
+		// remove row sorter
+		table.setRowSorter(null);
+
 		// clear table model
 		int rowCount = tableModel.getRowCount();
 		for (int i = 0; i < rowCount; i++) {
@@ -321,24 +332,79 @@ public class ABSelectionPanel extends AgentDisplayPanel {
 
 		// add action details to table model
 		for (ActionDetail actionDetail : actionDetails) {
+
 			Object[] rowData = new Object[tableModel.getColumnCount()];
 			int j = 0;
 
-			rowData[j++] = actionDetail.getID();
-			rowData[j++] = actionDetail.getSubject();
-			rowData[j++] = actionDetail.getAction();
-			rowData[j++] = actionDetail.getIntention();
-			rowData[j++] = actionDetail.getTarget();
-			rowData[j++] = actionDetail.getStatus();
-			rowData[j++] = actionDetail.getSpeechActMeaning();
-			rowData[j++] = actionDetail.getObject();
-			rowData[j++] = actionDetail.getEmotion().getType() + "-"
-					+ actionDetail.getEmotion().GetPotential();
-			rowData[j++] = actionDetail.getTime().getNarrativeTime();
-			rowData[j++] = actionDetail.getLocation();
-			rowData[j++] = actionDetail.getActivationValue().getValue();
-			rowData[j++] = actionDetail.getActivationValue().getNumRetrievals();
+			// work with copies of values in table
 
+			rowData[j++] = new Integer(actionDetail.getID());
+
+			if (actionDetail.getSubject() != null)
+				rowData[j++] = new String(actionDetail.getSubject());
+			else
+				rowData[j++] = nullString;
+
+			if (actionDetail.getAction() != null)
+				rowData[j++] = new String(actionDetail.getAction());
+			else
+				rowData[j++] = nullString;
+
+			if (actionDetail.getIntention() != null)
+				rowData[j++] = new String(actionDetail.getIntention());
+			else
+				rowData[j++] = nullString;
+
+			if (actionDetail.getTarget() != null)
+				rowData[j++] = new String(actionDetail.getTarget());
+			else
+				rowData[j++] = nullString;
+
+			if (actionDetail.getStatus() != null)
+				rowData[j++] = new String(actionDetail.getStatus());
+			else
+				rowData[j++] = nullString;
+
+			if (actionDetail.getSpeechActMeaning() != null)
+				rowData[j++] = new String(actionDetail.getSpeechActMeaning());
+			else
+				rowData[j++] = nullString;
+
+			if (actionDetail.getObject() != null)
+				rowData[j++] = new String(actionDetail.getObject());
+			else
+				rowData[j++] = nullString;
+
+			if (actionDetail.getEmotion() != null)
+				rowData[j++] = new String(actionDetail.getEmotion().getType()
+						+ "-" + actionDetail.getEmotion().GetPotential());
+			else
+				rowData[j++] = nullString;
+
+			if (actionDetail.getTime() != null)
+				rowData[j++] = new Long(actionDetail.getTime()
+						.getNarrativeTime());
+			else
+				rowData[j++] = nullString;
+
+			if (actionDetail.getLocation() != null)
+				rowData[j++] = new String(actionDetail.getLocation());
+			else
+				rowData[j++] = nullString;
+
+			if (actionDetail.getActivationValue() != null)
+				rowData[j++] = new Double(actionDetail.getActivationValue()
+						.getValue());
+			else
+				rowData[j++] = nullString;
+
+			if (actionDetail.getActivationValue() != null)
+				rowData[j++] = new Integer(actionDetail.getActivationValue()
+						.getNumRetrievals());
+			else
+				rowData[j++] = nullString;
+
+			// add row data
 			tableModel.addRow(rowData);
 
 			// save minimum and maximum for cell colouring
@@ -350,6 +416,13 @@ public class ABSelectionPanel extends AgentDisplayPanel {
 				activationValueMax = activationValue;
 
 		}
+
+		// add row sorter with old sort keys
+		TableRowSorter<MyTableModel> tableRowSorterNew = new TableRowSorter<MyTableModel>(
+				tableModel);
+		tableRowSorterNew.setSortKeys(tableRowSorter.getSortKeys());
+		table.setRowSorter(tableRowSorterNew);
+		tableRowSorter = tableRowSorterNew;
 
 	}
 
@@ -395,6 +468,13 @@ public class ABSelectionPanel extends AgentDisplayPanel {
 		selectedIDs = selectedIDsTemp;
 
 		table.repaint();
+
+		/*
+		if (!cbSimulateSelection.isSelected()) {
+			episodicMemory.activationBasedForgetting(selected);
+		}
+		*/
+
 	}
 
 	public boolean Update(AgentCore ag) {
