@@ -27,6 +27,7 @@
  * Matthias Keysermann: 13/04/11 - File created
  * Matthias Keysermann: 02/05/11 - table uses copies of corresponding objects
  * Matthias Keysermann: 02/05/11 - remove and recreate row sorter in order to minimise java.awt exceptions
+ * Matthias Keysermann: 03/05/11 - added functionality to show/hide STEM events/AM events
  * **/
 
 package FAtiMA.Core.Display;
@@ -52,7 +53,14 @@ public class ABSelectionPanel extends AgentDisplayPanel {
 
 	private static final long serialVersionUID = 1L;
 
-	private static final String nullString = "";
+	private static final String NULL_STRING = "";
+
+	// Show events from the Short-Term Episodic Memory?
+	private static final boolean SHOW_STEM = true;
+	// Show events from the Autobiographic Memory?
+	private static final boolean SHOW_AM = true;
+	// It is suggested to set these variables according to
+	// AB_FORGETTING_STEM and AB_FORGETTING_AM (in EpisodicMemory.java)
 
 	private EpisodicMemory episodicMemory;
 	private JSpinner spDecayValue;
@@ -81,7 +89,6 @@ public class ABSelectionPanel extends AgentDisplayPanel {
 			super();
 		}
 
-		@SuppressWarnings("unchecked")
 		@Override
 		public Class getColumnClass(int column) {
 			switch (column) {
@@ -202,7 +209,7 @@ public class ABSelectionPanel extends AgentDisplayPanel {
 		pnCalculationButton.add(btABCalculation);
 
 		cbConstantUpdate = new JCheckBox("Constant Update");
-		cbConstantUpdate.setSelected(true);
+		cbConstantUpdate.setSelected(false);
 		pnCalculationButton.add(cbConstantUpdate);
 
 		JPanel pnCalculationStatus = new JPanel();
@@ -303,14 +310,21 @@ public class ABSelectionPanel extends AgentDisplayPanel {
 
 	private void updateTable() {
 
+		// hold details to be shown in one list for iterating over
 		ArrayList<ActionDetail> actionDetails = new ArrayList<ActionDetail>();
 
-		// Autobiographic Memory
-		for (MemoryEpisode episode : episodicMemory.getAM().GetAllEpisodes()) {
-			actionDetails.addAll(episode.getDetails());
+		if (SHOW_AM) {
+			// Autobiographic Memory
+			for (MemoryEpisode episode : episodicMemory.getAM()
+					.GetAllEpisodes()) {
+				actionDetails.addAll(episode.getDetails());
+			}
 		}
-		// Short-Term Memory
-		actionDetails.addAll(episodicMemory.getSTEM().getDetails());
+
+		if (SHOW_STEM) {
+			// Short-Term Memory
+			actionDetails.addAll(episodicMemory.getSTEM().getDetails());
+		}
 
 		// set initial minimum and maximum for cell colouring
 		if (actionDetails.size() > 0) {
@@ -343,66 +357,66 @@ public class ABSelectionPanel extends AgentDisplayPanel {
 			if (actionDetail.getSubject() != null)
 				rowData[j++] = new String(actionDetail.getSubject());
 			else
-				rowData[j++] = nullString;
+				rowData[j++] = NULL_STRING;
 
 			if (actionDetail.getAction() != null)
 				rowData[j++] = new String(actionDetail.getAction());
 			else
-				rowData[j++] = nullString;
+				rowData[j++] = NULL_STRING;
 
 			if (actionDetail.getIntention() != null)
 				rowData[j++] = new String(actionDetail.getIntention());
 			else
-				rowData[j++] = nullString;
+				rowData[j++] = NULL_STRING;
 
 			if (actionDetail.getTarget() != null)
 				rowData[j++] = new String(actionDetail.getTarget());
 			else
-				rowData[j++] = nullString;
+				rowData[j++] = NULL_STRING;
 
 			if (actionDetail.getStatus() != null)
 				rowData[j++] = new String(actionDetail.getStatus());
 			else
-				rowData[j++] = nullString;
+				rowData[j++] = NULL_STRING;
 
 			if (actionDetail.getSpeechActMeaning() != null)
 				rowData[j++] = new String(actionDetail.getSpeechActMeaning());
 			else
-				rowData[j++] = nullString;
+				rowData[j++] = NULL_STRING;
 
 			if (actionDetail.getObject() != null)
 				rowData[j++] = new String(actionDetail.getObject());
 			else
-				rowData[j++] = nullString;
+				rowData[j++] = NULL_STRING;
 
 			if (actionDetail.getEmotion() != null)
 				rowData[j++] = new String(actionDetail.getEmotion().getType()
 						+ "-" + actionDetail.getEmotion().GetPotential());
 			else
-				rowData[j++] = nullString;
+				rowData[j++] = NULL_STRING;
 
 			if (actionDetail.getTime() != null)
 				rowData[j++] = new Long(actionDetail.getTime()
 						.getNarrativeTime());
 			else
-				rowData[j++] = nullString;
+				rowData[j++] = NULL_STRING;
 
 			if (actionDetail.getLocation() != null)
 				rowData[j++] = new String(actionDetail.getLocation());
 			else
-				rowData[j++] = nullString;
+				rowData[j++] = NULL_STRING;
 
 			if (actionDetail.getActivationValue() != null)
 				rowData[j++] = new Double(actionDetail.getActivationValue()
 						.getValue());
 			else
-				rowData[j++] = nullString;
+				rowData[j++] = NULL_STRING;
 
 			if (actionDetail.getActivationValue() != null)
 				rowData[j++] = new Integer(actionDetail.getActivationValue()
 						.getNumRetrievals());
 			else
-				rowData[j++] = nullString;
+				rowData[j++] = NULL_STRING;
 
 			// add row data
 			tableModel.addRow(rowData);
