@@ -35,7 +35,7 @@ import FAtiMA.motivationalSystem.MotivationalComponent;
 
 
 public class CulturalDimensionsComponent implements IAppraisalDerivationComponent, IOptionsStrategy, IExpectedUtilityStrategy {
-	final String NAME = "CulturalDimensionsComponent";
+	static public final String NAME = "CulturalDimensionsComponent";
 	
 	final float ALPHA = 0.3f;
 	final float POWER_DISTANCE_K = 1.2f;
@@ -139,7 +139,7 @@ public class CulturalDimensionsComponent implements IAppraisalDerivationComponen
 							r3.MakeGround(sSet2.GetSubstitutions());
 							//the last thing we need to check is if the agent is included in the ritual's
 							//roles and if the ritual has not succeeded, because if not there is no sense in including the ritual as a goal
-							if(r3.GetRoles().contains(new Symbol(am.getName()))
+							if(r3.GetRoles().contains(Constants.SELF)
 									&& !r3.CheckSuccess(am))
 							{
 								ritualName = r3.getNameWithCharactersOrdered();

@@ -261,7 +261,6 @@ public class CultureLoaderHandler extends ReflectXMLHandler {
 		cond = RitualCondition.ParseRitualCondition(attributes);
 		cond.MakeGround(this._self);
 		
-		cond.setRepeat(Boolean.parseBoolean(attributes.getValue("repeat")));
 		if(_ritual != null)
 		{	
 			_ritual.AddCondition(_conditionType, cond);

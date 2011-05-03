@@ -214,7 +214,7 @@ public class Ritual extends ActivePursuitGoal {
 			
 			
 			e = this.GetSuccessEvent();
-			ritualCondition = new RitualCondition(this._name.GetFirstLiteral(),_roles, new Symbol("*"));
+			ritualCondition = new RitualCondition(this._name.GetFirstLiteral(),_roles, new Symbol("*"),true,false);
 			this.addEffect(new Effect(am, e.GetTarget(),1.0f,ritualCondition));
 		} 
 	}
@@ -555,14 +555,24 @@ public class Ritual extends ActivePursuitGoal {
 	@Override
 	protected Event generateEventDescription(short goalEventType)
 	{
+		String target = "";
+		String name;
 		ListIterator<Symbol> li = this._name.GetLiteralList().listIterator();
-		Event e = new Event(Constants.SELF,li.next().toString(),"",EventType.GOAL,goalEventType);
 		
-	    while(li.hasNext())
-	    {
-	    	e.AddParameter(new Parameter("param",li.next().toString()));
-	    }
-	    
+		name = li.next().toString();
+		if(li.hasNext())
+		{
+			target = li.next().toString();
+		}
+		
+		Event e = new Event("SELF",name,target,EventType.GOAL,goalEventType);
+		
+		
+		for(Symbol role : _roles){
+			e.AddParameter(new Parameter("param",role.toString()));
+		}
+		
 	    return e;
 	}
+	
 }

@@ -57,7 +57,7 @@ import FAtiMA.Core.wellFormedNames.Symbol;
 
 public class RitualCondition extends PredicateCondition {
 	
-	boolean _repeat; 
+
 	
 	
 	/**
@@ -70,6 +70,8 @@ public class RitualCondition extends PredicateCondition {
 		ArrayList<Symbol> roles = new ArrayList<Symbol>();
     	String aux;
     	Symbol ritualName = null;
+    	boolean occurred = true; //default
+    	boolean repeat = false; // default    	
     	
     	aux = attributes.getValue("name");
     	if(aux != null)
@@ -77,9 +79,18 @@ public class RitualCondition extends PredicateCondition {
     		ritualName = new Symbol(aux);
     	}
     	
-    	aux = attributes.getValue("roles");
-		
-		if(aux != null) {
+    	if(attributes.getValue("repeat") != null){
+			Boolean.parseBoolean(attributes.getValue("repeat"));
+    	}
+
+    	if(attributes.getValue("occurred") != null){
+    		occurred = Boolean.parseBoolean(attributes.getValue("occurred"));
+    	}
+    	
+ 		aux = attributes.getValue("roles");
+    	
+    	
+    	if(aux != null) {
 			StringTokenizer st = new StringTokenizer(aux, ",");
 			while(st.hasMoreTokens()) {
 				Symbol role = new Symbol(st.nextToken());
@@ -87,22 +98,19 @@ public class RitualCondition extends PredicateCondition {
 			}
 		}
 		
-		return new RitualCondition(ritualName,roles,new Symbol("*"));
+		return new RitualCondition(ritualName,roles,new Symbol("*"),occurred,repeat);
 	}
 	
 	protected ArrayList<Symbol> _roles;
 	protected Symbol _ritualName;
-
-	protected RitualCondition()
-	{
-	}
+	boolean _repeat; 
 	
+
 	@SuppressWarnings("unchecked")
-	public RitualCondition(Symbol ritualName, ArrayList<Symbol> roles, Symbol ToM)
+	public RitualCondition(Symbol ritualName, ArrayList<Symbol> roles, Symbol ToM, boolean occurred, boolean repeat)
 	{
-		this._ToM = ToM;
+		super(occurred,null,ToM);
 		this._ritualName = ritualName;
-		this._positive = true;
 		this._roles = (ArrayList<Symbol>) roles.clone();
 		
 		String name = ritualName + "(";
@@ -120,28 +128,23 @@ public class RitualCondition extends PredicateCondition {
 		
 		name+= ")";
 		
-		this._name = Name.ParseName(name);
+		this.setName(Name.ParseName(name));
 	}
 
-	public Object clone() {
+	
+	public RitualCondition(RitualCondition rC){
+		super(rC);
 		
-		RitualCondition rc = new RitualCondition();
-		
-		rc._repeat = this._repeat;
-		rc._positive = this._positive;
-		rc._ritualName = (Symbol) this._ritualName.clone();
-		rc._name = (Name) this._name.clone();
-		rc._ToM = (Symbol) _ToM.clone();
-		
-		rc._roles = new ArrayList<Symbol>(this._roles.size());
-		ListIterator<Symbol> li = this._roles.listIterator();
-		
-		while(li.hasNext())
-		{
-			rc._roles.add((Symbol)li.next().clone());
+		_ritualName = (Symbol) rC._ritualName.clone();
+		_roles = new ArrayList<Symbol>();	
+		for(Symbol role : rC._roles){
+			_roles.add((Symbol)role.clone());
 		}
-		
-		return rc;
+		_repeat = rC._repeat;	
+	}
+	
+	public Object clone() {
+		return new RitualCondition(this);
 	}
 
 	public Object GenerateName(int id) {
@@ -151,7 +154,7 @@ public class RitualCondition extends PredicateCondition {
 	}
 
 	public void ReplaceUnboundVariables(int variableID) {
-		this._name.ReplaceUnboundVariables(variableID);
+		this.getName().ReplaceUnboundVariables(variableID);
 		this._ritualName.ReplaceUnboundVariables(variableID);
 		
 		ListIterator<Symbol> li = this._roles.listIterator();
@@ -169,7 +172,7 @@ public class RitualCondition extends PredicateCondition {
 	}
 
 	public void MakeGround(ArrayList<Substitution> bindings) {
-		this._name.MakeGround(bindings);
+		this.getName().MakeGround(bindings);
 		this._ritualName.MakeGround(bindings);
 				
 		ListIterator<Symbol> li = this._roles.listIterator();
@@ -186,7 +189,7 @@ public class RitualCondition extends PredicateCondition {
 	}
 
 	public void MakeGround(Substitution subst) {
-		this._name.MakeGround(subst);
+		this.getName().MakeGround(subst);
 		this._ritualName.MakeGround(subst);
 		
 		ListIterator<Symbol> li = this._roles.listIterator();
@@ -202,18 +205,34 @@ public class RitualCondition extends PredicateCondition {
 	 * @see AutobiographicalMemory
 	 */
 	public boolean CheckCondition(AgentModel am) {
+		boolean result = false;
 		
-		if(!_name.isGrounded()) return false;
+		if(!getName().isGrounded()) return false;
 		
-		ArrayList<SearchKey> searchKeys = getSearchKeys();
-		for(int i = 0; i < _roles.size(); i++)
-		{
-			searchKeys.add(new SearchKey(SearchKey.CONTAINSPARAMETER,_roles.get(i).toString()));
+		
+		PermutationGenerator pGenerator = new PermutationGenerator(_roles.size());
+//		ArrayList<SearchKey> searchKeys = getSearchKeys();
+//		for (int i = 0; i < _roles.size(); i++) {
+//			searchKeys.add(new SearchKey(SearchKey.CONTAINSPARAMETER,_roles.get(i).toString()));				
+//		}
+		
+		while(pGenerator.hasMore()){
+			int [] indices = pGenerator.getNext();
+		
+			ArrayList<SearchKey> searchKeys = getSearchKeys();
+			for (int i = 0; i < indices.length; i++) {
+				searchKeys.add(new SearchKey(SearchKey.CONTAINSPARAMETER,_roles.get(indices[i]).toString()));				
+			}
 			
-		}
+			result = am.getMemory().getEpisodicMemory().ContainsRecentEvent(searchKeys);
+				
+			if(result ==  getPositive()){
+				return result == getPositive();
+			}
+		}	
 		
-		return am.getMemory().getEpisodicMemory().ContainsRecentEvent(searchKeys);
 		
+		return result == getPositive();
 	}
 	
 	private ArrayList<SearchKey> getSearchKeys()
@@ -226,7 +245,7 @@ public class RitualCondition extends PredicateCondition {
 		
 		
 		if(this._repeat){
-			keys.add(new SearchKey(SearchKey.MAXELAPSEDTIME, new Long(1000)));
+			keys.add(new SearchKey(SearchKey.MAXELAPSEDTIME, new Long(10000)));
 		}
 		
 		return keys;
@@ -240,7 +259,7 @@ public class RitualCondition extends PredicateCondition {
 		ArrayList<SubstitutionSet> bindingSets = new ArrayList<SubstitutionSet>();
 		ArrayList<ActionDetail> details;
 		
-		if (_name.isGrounded()) {
+		if (getName().isGrounded()) {
 			if(CheckCondition(am))
 			{
 				bindingSets.add(new SubstitutionSet());
@@ -274,13 +293,6 @@ public class RitualCondition extends PredicateCondition {
 		}
 	
 		return bindingSets;
-		
-	}
-	
-	
-
-	public void setRepeat(boolean repeat) {
-		_repeat = repeat;
 		
 	}
 }
