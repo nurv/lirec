@@ -111,6 +111,7 @@ public class GoalsPanel extends AgentDisplayPanel {
 				for(Condition c : ((ActivePursuitGoal) g).GetPreconditions()){
 					if (c.hasChangedVerifiability()){
 						update = true;
+						break;
 					}
 				}
 			}
