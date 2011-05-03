@@ -31,19 +31,24 @@
 package FAtiMA.Core.Display;
 
 import java.awt.Dimension;
+import java.io.File;
 import java.util.ListIterator;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import FAtiMA.Core.conditions.Condition;
+import FAtiMA.Core.util.ConfigurationManager;
 
 
 public class ConditionsPanel extends JPanel {
-
+	private static Icon VERIFIED_ICON = new ImageIcon(ConfigurationManager.getMindPath() + "/icons/verifiedIcon.png");
+	private static Icon NOT_VERIFIED_ICON = new ImageIcon(ConfigurationManager.getMindPath() + "/icons/notVerifiedIcon.png");
 	
 	/**
 	 * 
@@ -53,6 +58,8 @@ public class ConditionsPanel extends JPanel {
 	public ConditionsPanel(String title, ListIterator<Condition> conditions) {
 		
 		super();
+		
+		
 		this.setBorder(BorderFactory.createTitledBorder(title));
         this.setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
         
@@ -72,6 +79,13 @@ public class ConditionsPanel extends JPanel {
 		while(conditions.hasNext()) {
 			c = (Condition) conditions.next();
 			lbl = new JLabel(c.toString());
+			
+			if(c.isVerifiable()){
+				lbl.setIcon(VERIFIED_ICON);
+			}else{
+				lbl.setIcon(NOT_VERIFIED_ICON);	
+			}
+			
 			prop.add(lbl);
 		}
 		
