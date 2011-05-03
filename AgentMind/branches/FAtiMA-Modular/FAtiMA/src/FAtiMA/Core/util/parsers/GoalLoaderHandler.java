@@ -62,8 +62,8 @@ import FAtiMA.Core.wellFormedNames.Symbol;
 
 public class GoalLoaderHandler extends ReflectXMLHandler {
     protected String _conditionType;
-    private Goal _currentGoal;
-    private ArrayList<Goal> _goals;
+    protected Goal _currentGoal;
+    protected ArrayList<Goal> _goals;
     private Substitution _self;
 
     public GoalLoaderHandler() {
