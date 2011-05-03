@@ -60,7 +60,23 @@ public class PropertyLesserEqual extends PropertyCondition {
 	public PropertyLesserEqual(Name name, Name value, Symbol ToM) {
 		super(name, value, ToM);
 	}
+	
+	protected PropertyLesserEqual(PropertyLesserEqual pLE)
+	{
+		super(pLE);
+	}
 
+	/**
+	 * Clones this PropertyTest, returning an equal copy.
+	 * If this clone is changed afterwards, the original object remains the same.
+	 * @return The PropertyTest's copy.
+	 */
+	public Object clone()
+	{
+		return new PropertyLesserEqual(this);
+	}
+	
+	
 	/**
      * Checks if the Property Condition is verified in the agent's Memory (KB + AM)
      * @return true if the condition is verified, false otherwise
@@ -71,13 +87,13 @@ public class PropertyLesserEqual extends PropertyCondition {
 		Float aux;
 		Float aux2;
 
-        AgentModel perspective = am.getModelToTest(_ToM);
+        AgentModel perspective = am.getModelToTest(getToM());
 
         if (!super.CheckCondition(am))
             return false;
         
-        propertyValue = this._name.evaluate(perspective.getMemory());
-        value = this._value.evaluate(perspective.getMemory());
+        propertyValue = this.getName().evaluate(perspective.getMemory());
+        value = this.GetValue().evaluate(perspective.getMemory());
 
 		if (propertyValue == null || value == null || propertyValue =="null" || value == "null")
 			return false;
@@ -86,19 +102,6 @@ public class PropertyLesserEqual extends PropertyCondition {
 		return aux.floatValue() <= aux2.floatValue();
 	}
 
-	/**
-	 * Clones this PropertyTest, returning an equal copy.
-	 * If this clone is changed afterwards, the original object remains the same.
-	 * @return The PropertyTest's copy.
-	 */
-	public Object clone()
-	{
-	    PropertyLesserEqual ple =  new PropertyLesserEqual((Name) this._name.clone(), (Name) this._value.clone(), (Symbol) this._ToM.clone());
-	    
-	    ple._verifiable = this._verifiable;
-	    
-	    return ple;
-	}
 
 	/**
 	 * Prints the PropertyTest to the Standard Output
@@ -113,6 +116,6 @@ public class PropertyLesserEqual extends PropertyCondition {
      * @return the Converted String
      */
 	public String toString() {
-		return _name + " <= " + _value;
+		return getName() + " <= " + GetValue();
 	}
 }

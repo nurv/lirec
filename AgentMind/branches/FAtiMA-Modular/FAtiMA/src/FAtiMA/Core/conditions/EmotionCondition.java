@@ -59,6 +59,43 @@ public class EmotionCondition extends PredicateCondition {
 	protected Symbol _intensity;
 	protected Symbol _direction;
 	
+	public EmotionCondition(boolean active, String emotion)
+	{
+		super(active,null,Constants.UNIVERSAL);
+		this._emotionType = emotion;	
+		this._direction = null;
+		this._intensity = new Symbol("0");
+		UpdateName();
+	}
+	
+	public EmotionCondition(boolean active, Symbol ToM, String emotion)
+	{
+		super(active,null,ToM);
+		this._emotionType = emotion;	
+		this._direction = null;
+		this._intensity = new Symbol("0");	
+		UpdateName();
+	}
+	
+	protected EmotionCondition(EmotionCondition eC){
+    	super(eC);
+    	_emotionType = eC._emotionType;
+		_intensity = (Symbol) eC._intensity.clone();
+		if(eC._direction != null)
+		{
+			_direction = (Symbol) eC._direction.clone();
+		}
+	}
+    
+	/**
+	 * Clones this EmotionCondition, returning an equal copy.
+	 * If this clone is changed afterwards, the original object remains the same.
+	 * @return The EmotionCondition's copy.
+	 */
+	public Object clone(){
+		return new EmotionCondition(this);
+	}
+	
 	/**
 	 * Parses a EmotionCondition given a XML attribute list
 	 * @param attributes - A list of XMl attributes
@@ -113,31 +150,7 @@ public class EmotionCondition extends PredicateCondition {
 		return new Symbol(Double.valueOf(oneDForm.format(f)).toString()); 
 	}
 	
-	private EmotionCondition()
-	{
-	}
 	
-	public EmotionCondition(boolean active, String emotion)
-	{
-		this._positive = active;
-		this._emotionType = emotion;	
-		this._direction = null;
-		this._intensity = new Symbol("0");
-		this._ToM = Constants.UNIVERSAL;
-		
-		UpdateName();
-	}
-	
-	public EmotionCondition(boolean active, Symbol ToM, String emotion)
-	{
-		this._positive = active;
-		this._emotionType = emotion;	
-		this._direction = null;
-		this._intensity = new Symbol("0");
-		this._ToM = ToM;
-		
-		UpdateName();
-	}
 	
 	public void SetIntensity(Symbol intensity)
 	{
@@ -164,9 +177,12 @@ public class EmotionCondition extends PredicateCondition {
 			aux += this._direction;
 		}
 		aux+=")";
-		this._name = Name.ParseName(aux);
+		
+		setName(Name.ParseName(aux));
 	}
 	
+	
+
 	/**
 	 * Gets the condition's value - the object compared against the condition's name
 	 * @return the condition's value
@@ -183,13 +199,12 @@ public class EmotionCondition extends PredicateCondition {
 	 */
 	public boolean CheckCondition(AgentModel am) {
 		boolean result;
-		if(!_ToM.isGrounded()) return false;
+		if(!getToM().isGrounded()) return false;
 		
-		
-		if(!_name.isGrounded() || !_intensity.isGrounded()) return false;
+		if(!getName().isGrounded() || !_intensity.isGrounded()) return false;
 		
 		result = SearchEmotion(am).size() > 0; 
-		return _positive == result;
+		return getPositive() == result;
 	}
 	
 	/**
@@ -202,7 +217,7 @@ public class EmotionCondition extends PredicateCondition {
 		ArrayList<SubstitutionSet> bindingSets = new ArrayList<SubstitutionSet>();
 		ArrayList<SubstitutionSet> subSets;
 		
-		if (_name.isGrounded() && _intensity.isGrounded()) {
+		if (getName().isGrounded() && _intensity.isGrounded()) {
 			if(CheckCondition(am))
 			{
 				bindingSets.add(new SubstitutionSet());
@@ -213,7 +228,7 @@ public class EmotionCondition extends PredicateCondition {
 		
 		//we cannot determine bindings for negative emotion conditions,
 		//assume false
-		if(!this._positive) return null;
+		if(!this.getPositive()) return null;
 		subSets = SearchEmotion(am);
 		if(subSets.size() == 0) return null;
 		return subSets;
@@ -224,7 +239,7 @@ public class EmotionCondition extends PredicateCondition {
 		ActiveEmotion aem;
 		ArrayList<Substitution> bindings;
 		ArrayList <SubstitutionSet>substitutionSets = new ArrayList<SubstitutionSet>();
-		AgentModel perspective = am.getModelToTest(_ToM);
+		AgentModel perspective = am.getModelToTest(getToM());
 		
 		EmotionalState es = perspective.getEmotionalState();
 		
@@ -303,8 +318,8 @@ public class EmotionCondition extends PredicateCondition {
 	 */
     public void ReplaceUnboundVariables(int variableID)
     {
-    	this._ToM.ReplaceUnboundVariables(variableID);
-    	this._name.ReplaceUnboundVariables(variableID);
+    	this.getToM().ReplaceUnboundVariables(variableID);
+    	this.getName().ReplaceUnboundVariables(variableID);
     	this._intensity.ReplaceUnboundVariables(variableID);
     	if(this._direction != null)
     	{
@@ -337,8 +352,8 @@ public class EmotionCondition extends PredicateCondition {
 	 */
     public void MakeGround(ArrayList<Substitution> bindings)
     {
-    	this._ToM.MakeGround(bindings);
-    	this._name.MakeGround(bindings);
+    	this.getToM().MakeGround(bindings);
+    	this.getName().MakeGround(bindings);
     	this._intensity.MakeGround(bindings);
     	if(this._direction != null)
     	{
@@ -371,35 +386,12 @@ public class EmotionCondition extends PredicateCondition {
 	 */
     public void MakeGround(Substitution subst)
     {
-    	this._ToM.MakeGround(subst);
-    	this._name.MakeGround(subst);
+    	this.getToM().MakeGround(subst);
+    	this.getName().MakeGround(subst);
     	this._intensity.MakeGround(subst);
     	if(this._direction != null)
     	{
     		this._direction.MakeGround(subst);
     	}
     }
-	
-	/**
-	 * Clones this EmotionCondition, returning an equal copy.
-	 * If this clone is changed afterwards, the original object remains the same.
-	 * @return The EmotionCondition's copy.
-	 */
-	public Object clone()
-	{
-		EmotionCondition ec = new EmotionCondition();
-		ec._positive = this._positive;
-		ec._ToM = (Symbol) this._ToM.clone();
-		ec._emotionType = this._emotionType;
-		ec._name = (Name) this._name.clone();
-		ec._verifiable = this._verifiable;
-		ec._intensity = (Symbol) this._intensity.clone();
-		
-		if(this._direction != null)
-		{
-			ec._direction = (Symbol) this._direction.clone();
-		}
-	    
-		return ec;
-	}
 }

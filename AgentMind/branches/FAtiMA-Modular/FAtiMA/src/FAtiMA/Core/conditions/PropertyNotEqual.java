@@ -106,6 +106,22 @@ public class PropertyNotEqual extends PropertyCondition {
     public PropertyNotEqual(Name name, Name value, Symbol ToM) {
 		super(name, value, ToM);
 	}
+    
+    
+    protected PropertyNotEqual(PropertyNotEqual pNE)
+	{
+		super(pNE);
+	}
+
+	/**
+	 * Clones this PropertyTest, returning an equal copy.
+	 * If this clone is changed afterwards, the original object remains the same.
+	 * @return The PropertyTest's copy.
+	 */
+	public Object clone()
+	{
+		return new PropertyNotEqual(this);
+	}
 	
 	/**
      * Checks if the Property Condition is verified in the agent's Memory (KB + AM)
@@ -115,14 +131,14 @@ public class PropertyNotEqual extends PropertyCondition {
 		Object propertyValue;
 		Object value;
 		
-        AgentModel perspective = am.getModelToTest(_ToM);
+        AgentModel perspective = am.getModelToTest(getToM());
 
         if (!super.CheckCondition(am))
             return false;
         
         
-        propertyValue = this._name.evaluate(perspective.getMemory());
-        value = this._value.evaluate(perspective.getMemory());
+        propertyValue = this.getName().evaluate(perspective.getMemory());
+        value = this.GetValue().evaluate(perspective.getMemory());
 
 		if (propertyValue == null || value == null) 
 		{
@@ -148,11 +164,11 @@ public class PropertyNotEqual extends PropertyCondition {
 		//if the value part of a PropertyNotEqual is not grounded, we cannot
 		//determine the possible range of substitutions for it, so we assume
 		//that this property test returns false in those situations
-		if(!_value.isGrounded())
+		if(!GetValue().isGrounded())
 		{
 			return null;
 		}
-		if (_name.isGrounded()) {
+		if (getName().isGrounded()) {
 			//if the name is ground, both name and value are grounded and we
 			//just need to call the checkcondition function
 			if(CheckCondition(am))
@@ -163,10 +179,10 @@ public class PropertyNotEqual extends PropertyCondition {
 			else return null;
 		}
 		
-		AgentModel perspective = am.getModelToTest(_ToM);
+		AgentModel perspective = am.getModelToTest(getToM());
 		
 		//if the name is not grounded we try to get all possible bindings for it
-		bindingSets = perspective.getMemory().getSemanticMemory().GetPossibleBindings(_name);
+		bindingSets = perspective.getMemory().getSemanticMemory().GetPossibleBindings(getName());
 		if (bindingSets == null)
 			return null;
 
@@ -206,13 +222,13 @@ public class PropertyNotEqual extends PropertyCondition {
 		//in order to work, at least one part of the NotEqual Condition 
 		//must be grounded. i.e, we cannot determine inequalities between
 		// [X] != [Y]
-		if (_name.isGrounded()) {
-			bindings = this.GetBindings(am,_name,_value);
+		if (getName().isGrounded()) {
+			bindings = this.GetBindings(am,getName(),GetValue());
 			if (bindings == null)
 				return null;
 		}
-		else if(_value.isGrounded()) {
-			bindings = this.GetBindings(am,_value,_name);
+		else if(GetValue().isGrounded()) {
+			bindings = this.GetBindings(am,GetValue(),getName());
 			if (bindings == null)
 				return null;
 		}
@@ -235,17 +251,7 @@ public class PropertyNotEqual extends PropertyCondition {
 		return null;
 	}
 	
-	/**
-	 * Clones this PropertyTest, returning an equal copy.
-	 * If this clone is changed afterwards, the original object remains the same.
-	 * @return The PropertyTest's copy.
-	 */
-	public Object clone()
-	{
-	    PropertyNotEqual pne = new PropertyNotEqual((Name) this._name.clone(), (Name) this._value.clone(), (Symbol) this._ToM.clone());
-	    pne._verifiable = this._verifiable;
-	    return pne;
-	}
+
 
 	/**
 	 * Prints the PropertyTest to the Standard Output
@@ -260,6 +266,6 @@ public class PropertyNotEqual extends PropertyCondition {
      * @return the Converted String
      */
 	public String toString() {
-		return _name + " != " + _value;
+		return getName() + " != " + GetValue();
 	}
 }

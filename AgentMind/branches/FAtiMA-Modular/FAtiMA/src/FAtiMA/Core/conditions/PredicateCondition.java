@@ -71,12 +71,40 @@ import FAtiMA.Core.wellFormedNames.Symbol;
  */
 
 public class PredicateCondition extends Condition {
-	
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
+	private boolean _positive;
+	
+		
+	/**
+	 * Creates a new Test to a Predicate
+	 * @param positive - Indicates if the Predicate is positive or negative
+	 * @param name - the predicate's name
+	 */
+	public PredicateCondition(boolean positive, Name name, Symbol ToM) {
+		super(name,ToM);
+		_positive = positive;
+	}
+
+	protected PredicateCondition(PredicateCondition pC){
+		super(pC);
+		_positive = pC._positive;
+	}
+	
+	/**
+	 * Clones this Predicate, returning an equal copy.
+	 * If this clone is changed afterwards, the original object remains the same.
+	 * @return The Predicates's copy.
+	 */
+	public Object clone()
+	{
+	    return new PredicateCondition(this);
+	}
+	
+	
+	protected boolean getPositive(){
+		return _positive;
+	}
 	
 	/**
 	 * Parses a Predicate given a XML attribute list
@@ -110,22 +138,8 @@ public class PredicateCondition extends Condition {
 		return new PredicateCondition(positive,name,ToM);
 	}
 			
-	protected boolean _positive;
 	
 	
-	protected PredicateCondition()
-	{
-	}
-		
-	/**
-	 * Creates a new Test to a Predicate
-	 * @param positive - Indicates if the Predicate is positive or negative
-	 * @param name - the predicate's name
-	 */
-	public PredicateCondition(boolean positive, Name name, Symbol ToM) {
-		super(name,ToM);
-		_positive = positive;
-	}
 	
 	/**
 	 * Checks if the Predicate is verified in the agent's KnowledgeBase
@@ -134,11 +148,11 @@ public class PredicateCondition extends Condition {
 	 */
 	public boolean CheckCondition(AgentModel am) {
 		boolean result;
-		AgentModel perspective = am.getModelToTest(_ToM);
-		if(!_name.isGrounded()) return false;
+		AgentModel perspective = am.getModelToTest(getToM());
+		if(!getName().isGrounded()) return false;
 		
 		
-		result = perspective.getMemory().getSemanticMemory().AskPredicate(_name); 
+		result = perspective.getMemory().getSemanticMemory().AskPredicate(getName()); 
 		return _positive == result;
 	}
 	
@@ -174,8 +188,8 @@ public class PredicateCondition extends Condition {
 	 */
     public void ReplaceUnboundVariables(int variableID)
     {
-    	this._name.ReplaceUnboundVariables(variableID);
-    	this._ToM.ReplaceUnboundVariables(variableID);
+    	this.getName().ReplaceUnboundVariables(variableID);
+    	this.getToM().ReplaceUnboundVariables(variableID);
     }
 	
     /**
@@ -203,8 +217,8 @@ public class PredicateCondition extends Condition {
 	 */
     public void MakeGround(ArrayList<Substitution> bindings)
     {
-    	this._name.MakeGround(bindings);
-    	this._ToM.MakeGround(bindings);
+    	this.getName().MakeGround(bindings);
+    	this.getToM().MakeGround(bindings);
     }
 	
     /**
@@ -232,8 +246,8 @@ public class PredicateCondition extends Condition {
 	 */
     public void MakeGround(Substitution subst)
     {
-    	this._name.MakeGround(subst);
-    	this._ToM.MakeGround(subst);
+    	this.getName().MakeGround(subst);
+    	this.getToM().MakeGround(subst);
     }
 	
 	/**
@@ -242,7 +256,7 @@ public class PredicateCondition extends Condition {
 	 * @return true if the Predicate is grounded, false otherwise
 	 */
 	public boolean isGrounded() {
-		return _name.isGrounded() && _ToM.isGrounded();
+		return getName().isGrounded() && getToM().isGrounded();
 	}
 	
 	/**
@@ -259,22 +273,10 @@ public class PredicateCondition extends Condition {
 	 * @return the converted String
 	 */
 	public String toString() {
-		if (_positive) return _ToM + ":" + _name;
-		else return   _ToM + ":!" + _name;
+		if (_positive) return getToM() + ":" + getName();
+		else return   getToM() + ":!" + getName();
 	}
 	
-	/**
-	 * Clones this Predicate, returning an equal copy.
-	 * If this clone is changed afterwards, the original object remains the same.
-	 * @return The Predicates's copy.
-	 */
-	public Object clone()
-	{
-	    PredicateCondition pc = new PredicateCondition(this._positive,(Name) this._name.clone(), (Symbol) this._ToM.clone());
-	    pc._verifiable = this._verifiable;
-	    
-	    return pc;
-	}
 	
 	/**
 	 * Find a set of Substitutions for the second part of the Predicate, which will 

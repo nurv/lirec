@@ -62,7 +62,6 @@ import FAtiMA.Core.wellFormedNames.Symbol;
 
 public class PropertyEqual extends PropertyCondition
 {
-
     /**
 	 * 
 	 */
@@ -80,6 +79,23 @@ public class PropertyEqual extends PropertyCondition
     {
         super(name, value,ToM);
     }
+    
+    
+    protected PropertyEqual(PropertyEqual pE)
+    {
+        super(pE);
+    }
+    
+    /**
+	 * Clones this PropertyTest, returning an equal copy.
+	 * If this clone is changed afterwards, the original object remains the same.
+	 * @return The PropertyTest's copy.
+	 */
+    public Object clone()
+    {
+    	return new PropertyEqual(this);
+    }
+
 
     /**
      * Checks if the Property Condition is verified in the agent's memory (KB + AM)
@@ -89,13 +105,13 @@ public class PropertyEqual extends PropertyCondition
     {
         Object propertyValue;
         Object value;
-        AgentModel perspective = am.getModelToTest(_ToM);
+        AgentModel perspective = am.getModelToTest(getToM());
 
         if (!super.CheckCondition(am))
             return false;
         
-        propertyValue = this._name.evaluate(perspective.getMemory());
-        value = this._value.evaluate(perspective.getMemory());
+        propertyValue = this.getName().evaluate(perspective.getMemory());
+        value = this.GetValue().evaluate(perspective.getMemory());
 
         if (propertyValue == null || value == null)
             return false;
@@ -103,21 +119,7 @@ public class PropertyEqual extends PropertyCondition
             return propertyValue.equals(value);
     }
 
-    /**
-	 * Clones this PropertyTest, returning an equal copy.
-	 * If this clone is changed afterwards, the original object remains the same.
-	 * @return The PropertyTest's copy.
-	 */
-    public Object clone()
-    {
-    	PropertyEqual pe = new PropertyEqual((Name) this._name
-                .clone(), (Name) this._value.clone(), (Symbol) this._ToM.clone());
-    	
-    	pe._verifiable = this._verifiable;
-    	
-    	return pe;
-    }
-
+   
     /**
 	 * Prints the PropertyTest to the Standard Output
 	 */
@@ -133,6 +135,6 @@ public class PropertyEqual extends PropertyCondition
      */
     public String toString()
     {
-        return _name + " = " + _value;
+        return getName() + " = " + GetValue();
     }
 }

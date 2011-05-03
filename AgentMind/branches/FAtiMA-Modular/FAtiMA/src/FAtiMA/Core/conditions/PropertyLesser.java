@@ -83,6 +83,21 @@ public class PropertyLesser extends PropertyCondition {
 	public PropertyLesser(Name name, Name value, Symbol ToM) {
 		super(name, value, ToM);
 	}
+	
+	protected PropertyLesser(PropertyLesser pL)
+	{
+		super(pL);
+	}
+
+	/**
+	 * Clones this PropertyTest, returning an equal copy.
+	 * If this clone is changed afterwards, the original object remains the same.
+	 * @return The PropertyTest's copy.
+	 */
+	public Object clone()
+	{
+		return new PropertyLesser(this);
+	}
 
 	/**
      * Checks if the Property Condition is verified in the agent's Memory (KB + AM)
@@ -94,13 +109,13 @@ public class PropertyLesser extends PropertyCondition {
 		Float aux;
 		Float aux2;
 
-        AgentModel perspective = am.getModelToTest(_ToM);
+        AgentModel perspective = am.getModelToTest(getToM());
 
         if (!super.CheckCondition(am))
             return false;
         
-        propertyValue = this._name.evaluate(perspective.getMemory());
-        value = this._value.evaluate(perspective.getMemory());
+        propertyValue = this.getName().evaluate(perspective.getMemory());
+        value = this.GetValue().evaluate(perspective.getMemory());
 
 		if (propertyValue == null || value == null || propertyValue =="null" || value == "null")
 			return false;
@@ -109,17 +124,7 @@ public class PropertyLesser extends PropertyCondition {
 		return aux.floatValue() < aux2.floatValue();
 	}
 	
-	/**
-	 * Clones this PropertyTest, returning an equal copy.
-	 * If this clone is changed afterwards, the original object remains the same.
-	 * @return The PropertyTest's copy.
-	 */
-	public Object clone()
-	{
-	    PropertyLesser pl = new PropertyLesser((Name) this._name.clone(), (Name) this._value.clone(), (Symbol) this._ToM.clone());
-	    pl._verifiable = true;
-	    return pl;
-	}
+
 
 	/**
 	 * Prints the PropertyTest to the Standard Output
@@ -134,6 +139,6 @@ public class PropertyLesser extends PropertyCondition {
      * @return the Converted String
      */
 	public String toString() {
-		return _name + " < " + _value;
+		return getName() + " < " + GetValue();
 	}
 }

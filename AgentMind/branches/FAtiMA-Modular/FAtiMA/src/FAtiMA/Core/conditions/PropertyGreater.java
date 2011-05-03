@@ -66,49 +66,32 @@ import FAtiMA.Core.wellFormedNames.Symbol;
 
 public class PropertyGreater extends PropertyCondition {
 
-	
-    /**
+
+	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
 	/**
-     * Creates a new PropertyTest of Type Greater
-     * 
-     * @param name -
-     *            the PropertyTest's name
-     * @param value -
-     *            the PropertyTest's value
-     */
+	 * Creates a new PropertyTest of Type Greater
+	 * 
+	 * @param name -
+	 *            the PropertyTest's name
+	 * @param value -
+	 *            the PropertyTest's value
+	 */
+	
 	public PropertyGreater(Name name, Name value, Symbol ToM) {
 		super(name, value,ToM);
 	}
-	
-	/**
-     * Checks if the Property Condition is verified in the agent's memory (KB + AM)
-     * @return true if the condition is verified, false otherwise
-     */
-	public boolean CheckCondition(AgentModel am) {
-		Object propertyValue;
-		Object value;
-		Float aux;
-		Float aux2;
 
-        AgentModel perspective = am.getModelToTest(_ToM);
 
-        if (!super.CheckCondition(am))
-            return false;
-        
-        propertyValue = this._name.evaluate(perspective.getMemory());
-        value = this._value.evaluate(perspective.getMemory());
 
-		if (propertyValue == null || value == null)
-			return false;
-		aux = new Float(propertyValue.toString());
-		aux2 = new Float(value.toString());
-		return aux.floatValue() > aux2.floatValue();
+	protected PropertyGreater(PropertyGreater pG)
+	{
+		super(pG);
 	}
-	
+
 	/**
 	 * Clones this PropertyTest, returning an equal copy.
 	 * If this clone is changed afterwards, the original object remains the same.
@@ -116,12 +99,34 @@ public class PropertyGreater extends PropertyCondition {
 	 */
 	public Object clone()
 	{
-	    PropertyGreater pg = new PropertyGreater((Name) this._name.clone(), (Name) this._value.clone(), (Symbol) this._ToM.clone());
-	
-	    pg._verifiable = this._verifiable;
-	    
-	    return pg;
+		return new PropertyGreater(this);
 	}
+
+	/**
+	 * Checks if the Property Condition is verified in the agent's memory (KB + AM)
+	 * @return true if the condition is verified, false otherwise
+	 */
+	public boolean CheckCondition(AgentModel am) {
+		Object propertyValue;
+		Object value;
+		Float aux;
+		Float aux2;
+
+		AgentModel perspective = am.getModelToTest(getToM());
+
+		if (!super.CheckCondition(am))
+			return false;
+
+		propertyValue = this.getName().evaluate(perspective.getMemory());
+		value = this.GetValue().evaluate(perspective.getMemory());
+
+		if (propertyValue == null || value == null)
+			return false;
+		aux = new Float(propertyValue.toString());
+		aux2 = new Float(value.toString());
+		return aux.floatValue() > aux2.floatValue();
+	}
+
 
 	/**
 	 * Prints the PropertyTest to the Standard Output
@@ -132,10 +137,10 @@ public class PropertyGreater extends PropertyCondition {
 	}
 
 	/**
-     * Converts the PropertyTest to a String
-     * @return the Converted String
-     */
+	 * Converts the PropertyTest to a String
+	 * @return the Converted String
+	 */
 	public String toString() {
-		return _name + " > " + _value;
+		return getName() + " > " + GetValue();
 	}
 }

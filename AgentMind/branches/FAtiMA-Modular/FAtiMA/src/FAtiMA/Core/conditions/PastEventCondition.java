@@ -58,6 +58,20 @@ import FAtiMA.Core.wellFormedNames.Symbol;
  *
  */
 public class PastEventCondition extends PredicateCondition {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	protected Symbol _subject;
+	protected Symbol _action;
+	protected Symbol _target;
+	protected ArrayList<Symbol> _parameters;
+	
+	//Meiyii - 12/01/10
+	protected short _type = -1;
+	protected short _status = -1;
+	
 	
 	/**
 	 * Parses a RecentEventCondition given a XML attribute list
@@ -100,35 +114,15 @@ public class PastEventCondition extends PredicateCondition {
 		return new PastEventCondition(occurred,EventType.ACTION,ActionEvent.SUCCESS,subject,action,target,parameters);
 	}
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	
-	protected Symbol _subject;
-	protected Symbol _action;
-	protected Symbol _target;
-	protected ArrayList<Symbol> _parameters;
-	
-	//Meiyii - 12/01/10
-	protected short _type = -1;
-	protected short _status = -1;
-	
-	protected PastEventCondition()
-	{
-	}
 	
 	public PastEventCondition(boolean occurred, short type, short status, Symbol subject, Symbol action, Symbol target, ArrayList<Symbol> parameters)
 	{
-		this._ToM = Constants.UNIVERSAL;
+		super(occurred,null,Constants.UNIVERSAL);
 		this._type = type;
 		this._status = status;
-		
-		this._positive = occurred;
 		this._subject = subject;
 		this._action = action;
 		this._target = target;
-		
 		this._parameters = parameters;
 		
 		String aux = this._subject + "," + this._action;
@@ -143,13 +137,13 @@ public class PastEventCondition extends PredicateCondition {
 			aux = aux + "," + li.next();
 		}
 		
-		this._name = Name.ParseName("EVENT(" + aux + ")");
+		this.setName(Name.ParseName("EVENT(" + aux + ")"));
 	}
 	
 	public PastEventCondition(boolean occurred, Event e)
 	{
-		this._ToM = new Symbol(Constants.SELF);
-		this._positive = occurred;
+		super(occurred,null,new Symbol(Constants.SELF));
+		
 		this._subject = new Symbol(e.GetSubject());
 		this._action = new Symbol(e.GetAction());
 		this._target = new Symbol(e.GetTarget());
@@ -174,7 +168,7 @@ public class PastEventCondition extends PredicateCondition {
 			aux = aux + "," + p.GetValue();
 		}
 		
-		this._name = Name.ParseName("EVENT(" + aux + ")");
+		this.setName(Name.ParseName("EVENT(" + aux + ")"));
 	}
 	
 	// Meiyii - 12/01/10 added type and status
@@ -200,36 +194,27 @@ public class PastEventCondition extends PredicateCondition {
 		this._status = status;
 	}
 	
+	public PastEventCondition(PastEventCondition pEC){
+		super(pEC);
+		
+		_type = pEC._type;
+		_status = pEC._status;
+		_subject = (Symbol) pEC._subject.clone();
+		_action = (Symbol) pEC._action.clone();
+		if(pEC._target != null)
+		{
+			_target = (Symbol) pEC._target.clone();
+		}
+		_parameters = new ArrayList<Symbol>(pEC._parameters.size());
+		
+		for(Symbol p : pEC._parameters){
+			_parameters.add((Symbol) p.clone());
+		}
+		
+	}
+	
 	public Object clone() {
-		PastEventCondition newEvent = new PastEventCondition();
-		
-		newEvent._positive = this._positive;
-		newEvent._ToM = (Symbol) this._ToM.clone();
-		
-		// Meiyii
-		newEvent._type = this._type;
-		newEvent._status = this._status;
-		
-		newEvent._name = (Name) this._name.clone();
-		newEvent._verifiable = this._verifiable;
-		
-		newEvent._subject = (Symbol) this._subject.clone();
-		newEvent._action = (Symbol) this._action.clone();
-		if(this._target != null)
-		{
-			newEvent._target = (Symbol) this._target.clone();
-		}
-		
-		newEvent._parameters = new ArrayList<Symbol>(this._parameters.size());
-		
-		ListIterator<Symbol> li = this._parameters.listIterator();
-		
-		while(li.hasNext())
-		{
-			newEvent._parameters.add((Symbol)li.next().clone());
-		}
-		
-		return newEvent;
+		return new PastEventCondition(this);
 	}
 
 	public Object GenerateName(int id) {
@@ -270,7 +255,7 @@ public class PastEventCondition extends PredicateCondition {
 		ArrayList<SubstitutionSet> bindingSets = new ArrayList<SubstitutionSet>();
 		ArrayList<ActionDetail> details;
 		
-		if (_name.isGrounded()) {
+		if (getName().isGrounded()) {
 			if(CheckCondition(am))
 			{
 				bindingSets.add(new SubstitutionSet());
@@ -283,7 +268,7 @@ public class PastEventCondition extends PredicateCondition {
 		
 		//we cannot determine bindings for negative event conditions,
 		//assume false
-		if(!this._positive)
+		if(!getPositive())
 		{
 			if(details.size() == 0) 
 			{
@@ -350,9 +335,9 @@ public class PastEventCondition extends PredicateCondition {
 	 */
 	public boolean CheckCondition(AgentModel am) {
 		
-		if(!_name.isGrounded()) return false;
+		if(!(getName().isGrounded())) return false;
 		
-		return _positive == am.getMemory().getEpisodicMemory().ContainsPastEvent(GetSearchKeys()); 
+		return getPositive() == am.getMemory().getEpisodicMemory().ContainsPastEvent(GetSearchKeys()); 
 	}
 	
 	protected ArrayList<SearchKey> GetSearchKeys()

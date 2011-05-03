@@ -60,23 +60,10 @@ public class RecentEventCondition extends PastEventCondition {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	protected RecentEventCondition()
-	{
-	}
-	
+
 	public RecentEventCondition(PastEventCondition cond)
 	{
-		this._ToM = Constants.UNIVERSAL;
-		this._subject = cond._subject;
-		this._action = cond._action;
-		this._target = cond._target;
-		this._name = cond._name;
-		this._positive = cond._positive;
-		this._parameters = cond._parameters;
-		
-		// Meiyii
-		this._type = cond._type;
-		this._status = cond._status;
+		super(cond);
 	}
 	
 	//Meiyii - 12/01/12 added type and status 
@@ -97,36 +84,8 @@ public class RecentEventCondition extends PastEventCondition {
 		super(occurred, e);
 	}
 
-	public Object clone() {
-		RecentEventCondition newEvent = new RecentEventCondition();
-		
-		newEvent._ToM = (Symbol) this._ToM.clone();
-		newEvent._positive = this._positive;
-		
-		newEvent._name = (Name) this._name.clone();
-		newEvent._verifiable = this._verifiable;
-		    
-		newEvent._subject = (Symbol) this._subject.clone();
-		newEvent._action = (Symbol) this._action.clone();
-		if(this._target != null)
-		{
-			newEvent._target = (Symbol) this._target.clone();
-		}
-		
-		newEvent._parameters = new ArrayList<Symbol>(this._parameters.size());
-		
-		ListIterator<Symbol> li = this._parameters.listIterator();
-		
-		while(li.hasNext())
-		{
-			newEvent._parameters.add((Symbol)li.next().clone());
-		}
-		
-		// Meiyii
-		newEvent._type = this._type;
-		newEvent._status = this._status;
-		
-		return newEvent;
+	public Object clone() {		
+		return new RecentEventCondition(this);
 	}
 
 	public Object GenerateName(int id) {
@@ -136,8 +95,8 @@ public class RecentEventCondition extends PastEventCondition {
 	}
 
 	public void ReplaceUnboundVariables(int variableID) {
-		this._ToM.ReplaceUnboundVariables(variableID);
-		this._name.ReplaceUnboundVariables(variableID);
+		this.getToM().ReplaceUnboundVariables(variableID);
+		this.getName().ReplaceUnboundVariables(variableID);
 		this._subject.ReplaceUnboundVariables(variableID);
 		this._action.ReplaceUnboundVariables(variableID);
 		if(this._target != null)
@@ -160,8 +119,8 @@ public class RecentEventCondition extends PastEventCondition {
 	}
 
 	public void MakeGround(ArrayList<Substitution> bindings) {
-		this._ToM.MakeGround(bindings);
-		this._name.MakeGround(bindings);
+		this.getToM().MakeGround(bindings);
+		this.getName().MakeGround(bindings);
 		this._subject.MakeGround(bindings);
 		this._action.MakeGround(bindings);
 		if(this._target != null)
@@ -183,8 +142,8 @@ public class RecentEventCondition extends PastEventCondition {
 	}
 
 	public void MakeGround(Substitution subst) {
-		this._ToM.MakeGround(subst);
-		this._name.MakeGround(subst);
+		this.getToM().MakeGround(subst);
+		this.getName().MakeGround(subst);
 		this._subject.MakeGround(subst);
 		this._action.MakeGround(subst);
 		if(this._target != null)
@@ -206,13 +165,13 @@ public class RecentEventCondition extends PastEventCondition {
 	 */
 	public boolean CheckCondition(AgentModel am) {
 		
-		if(!_name.isGrounded()) return false;
+		if(!getName().isGrounded()) return false;
 		
-		if(_positive == false){
+		if(getPositive() == false){
 			System.out.print("");
 		}
 		
-		boolean result = _positive == am.getMemory().getEpisodicMemory().ContainsRecentEvent(GetSearchKeys()); 
+		boolean result = getPositive() == am.getMemory().getEpisodicMemory().ContainsRecentEvent(GetSearchKeys()); 
  
 		
 		return result; 	

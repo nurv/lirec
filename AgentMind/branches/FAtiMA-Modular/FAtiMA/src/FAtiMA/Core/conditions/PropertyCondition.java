@@ -75,14 +75,34 @@ import FAtiMA.Core.wellFormedNames.Unifier;
  * @author João Dias
  */
 
-public abstract class PropertyCondition extends Condition {
+public class PropertyCondition extends Condition {
 
     /**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
+	private Name _value;
+	
 	/**
+	 * Creates a new Property
+	 * @param name - the property's name
+	 * @param value - the property's value
+	 */
+	public PropertyCondition(Name name, Name value,Symbol ToM) {
+		super(name,ToM);
+		_value = value;
+	}
+	
+	protected PropertyCondition(PropertyCondition pC){
+		super(pC);
+		_value = (Name) pC._value.clone();
+	}
+	
+	@Override
+	public Object clone(){
+		return new PropertyCondition(this);
+	}
+		/**
 	 * Parses a PropertyTest given a XML attribute list
 	 * @param attributes - A list of XMl attributes
 	 * @return - the PropertyTest Parsed
@@ -133,52 +153,15 @@ public abstract class PropertyCondition extends Condition {
 		return cond;
 	}
 	
-	/*public static PropertyCondition ParseProperty(String name, String op, String value){
-		PropertyCondition cond = null;
-		Name nameParsed;
-		Name valueParsed;
-		
-		nameParsed = Name.ParseName(name);
-		valueParsed = Name.ParseName(value);
-		
-		if (op == null || op.equals("="))
-			cond = new PropertyEqual(nameParsed, valueParsed);
-		else if (op.equals("!="))
-			cond = new PropertyNotEqual(nameParsed, valueParsed);
-		else if (op.equals("GreaterThan"))
-			cond = new PropertyGreater(nameParsed, valueParsed);
-		else if (op.equals("LesserThan"))
-			cond = new PropertyLesser(nameParsed, valueParsed);
-		else if (op.equals("GreaterEqual"))
-			cond = new PropertyGreaterEqual(nameParsed, valueParsed);
-		else if (op.equals("LesserEqual"))
-			cond = new PropertyLesserEqual(nameParsed,valueParsed);
-		else
-			cond = new PropertyEqual(nameParsed, valueParsed);
+	
 
-		return cond;
-	}*/
-
-
-
-	protected Name _value;
-
-	/**
-	 * Creates a new Property
-	 * @param name - the property's name
-	 * @param value - the property's value
-	 */
-	public PropertyCondition(Name name, Name value,Symbol ToM) {
-		super(name,ToM);
-		_value = value;
-	}
 
 	/**
 	 * Checks if the Property Condition is verified in the agent's memory (KB + AM)
 	 * @return true if the condition is verified, false otherwise
 	 */
 	public boolean CheckCondition(AgentModel am) {
-		if (!_name.isGrounded() && !_value.isGrounded())
+		if (!getName().isGrounded() && !_value.isGrounded())
 			return false;
 		return true;
 	}
@@ -216,9 +199,9 @@ public abstract class PropertyCondition extends Condition {
 	 */
     public void ReplaceUnboundVariables(int variableID) 
     {
-    	this._name.ReplaceUnboundVariables(variableID);
+    	this.getName().ReplaceUnboundVariables(variableID);
     	this._value.ReplaceUnboundVariables(variableID);
-    	this._ToM.ReplaceUnboundVariables(variableID);
+    	this.getToM().ReplaceUnboundVariables(variableID);
     }
     
     /**
@@ -247,9 +230,9 @@ public abstract class PropertyCondition extends Condition {
 	 */
     public void MakeGround(ArrayList<Substitution> bindings)
     {
-    	this._name.MakeGround(bindings);
+    	this.getName().MakeGround(bindings);
     	this._value.MakeGround(bindings);
-    	this._ToM.MakeGround(bindings);
+    	this.getToM().MakeGround(bindings);
     }
     
    
@@ -279,9 +262,9 @@ public abstract class PropertyCondition extends Condition {
 	 */
     public void MakeGround(Substitution subst)
     {
-    	this._name.MakeGround(subst);
+    	this.getName().MakeGround(subst);
     	this._value.MakeGround(subst);
-    	this._ToM.MakeGround(subst);
+    	this.getToM().MakeGround(subst);
     }
 
 	/**
@@ -290,21 +273,21 @@ public abstract class PropertyCondition extends Condition {
 	 * @return true if the condition is grounded, false otherwise
 	 */
 	public boolean isGrounded() {
-		return (_name.isGrounded() && _value.isGrounded() && _ToM.isGrounded());
+		return (getName().isGrounded() && _value.isGrounded() && getToM().isGrounded());
 	}
 
 	/**
 	 * Prints the PropertyTest to the Standard Output
 	 */
 	public void Print() {
-		AgentLogger.GetInstance().logAndPrint("Property= " + _name + " value= " + _value);
+		AgentLogger.GetInstance().logAndPrint("Property= " + getName() + " value= " + _value);
 	}
 	
 	protected ArrayList<Substitution> GetBindings(AgentModel am, Name groundValue, Name value) {
 		
 		Object val;
 		ArrayList<Substitution> bindings;
-		AgentModel perspective = am.getModelToTest(_ToM);
+		AgentModel perspective = am.getModelToTest(getToM());
 		
 		if (!groundValue.isGrounded())
 			return null;
@@ -334,6 +317,6 @@ public abstract class PropertyCondition extends Condition {
      * @return returns all set of Substitutions that make the condition valid.
      */
 	protected ArrayList<Substitution> GetValueBindings(AgentModel am) {
-		return GetBindings(am, _name, _value);
+		return GetBindings(am, getName(), _value);
 	}
 }

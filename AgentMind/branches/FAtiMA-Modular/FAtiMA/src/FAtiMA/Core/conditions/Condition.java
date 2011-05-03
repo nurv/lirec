@@ -90,10 +90,29 @@ public abstract class Condition implements IGroundable, Cloneable, Serializable 
 	private static final long serialVersionUID = 1L;
 
 	
-	protected boolean _verifiable;
-	protected Name _name;
-	protected Symbol _ToM;
+	private boolean _verifiable;
+	private Name _name;
+	private Symbol _ToM;
 	private boolean _hasChangedVerifiability = false;
+	
+	public Name getName() {
+		return _name;
+	}
+	
+	public Symbol getToM()
+	{
+		return this._ToM;
+	}
+	
+	public boolean isVerifiable()
+	{
+		return this._verifiable;
+	}
+	
+	protected void setName(Name name){
+		this._name = name;
+	}
+	
 	
 	/**
 	 * Checks if a list of conditions (usually preconditions) to see
@@ -211,16 +230,31 @@ public abstract class Condition implements IGroundable, Cloneable, Serializable 
 	}
 
 
-
 	/**
 	 * Creates a new Condition - not used directly because its an abstract class
 	 *
 	 */
-	protected Condition()
+	protected Condition(Condition c)
 	{
+		_name = (Name) c._name.clone();
+		_ToM = (Symbol) c._ToM;
+		_verifiable = c._verifiable;
+		_hasChangedVerifiability = c._hasChangedVerifiability;	
+	}
+	
+	protected Condition(){
 		_verifiable = false;
 	}
 
+	
+	/**
+	 * Clones this Condition, returning an equal copy.
+	 * If this clone is changed afterwards, the original object remains the same.
+	 * @return The Conditions's copy.
+	 */
+	public abstract Object clone();
+
+	
 	/**
 	 * Creates a new Condition - not used directly because its an abstract class
 	 * @param name - the condition's name
@@ -246,23 +280,7 @@ public abstract class Condition implements IGroundable, Cloneable, Serializable 
 	 */
 	public abstract boolean CheckCondition(AgentModel am);
 
-	/**
-	 * Get's the condition's name - the object to be tested
-	 * @return the condition's name
-	 */
-	public Name getName() {
-		return _name;
-	}
 	
-	public Symbol getToM()
-	{
-		return this._ToM;
-	}
-	
-	public boolean isVerifiable()
-	{
-		return this._verifiable;
-	}
 	
 	
 	/**
@@ -317,13 +335,6 @@ public abstract class Condition implements IGroundable, Cloneable, Serializable 
 	 * @return the condition's value
 	 */
 	public abstract Name GetValue();
-	
-	/**
-	 * Clones this Condition, returning an equal copy.
-	 * If this clone is changed afterwards, the original object remains the same.
-	 * @return The Conditions's copy.
-	 */
-	public abstract Object clone();
 
 
 	/**

@@ -57,7 +57,36 @@ public class MoodCondition extends Condition {
 	
 	protected float _value;
 	protected short _operator;
-
+	
+	public MoodCondition(short operator, float value)
+	{
+		super(Name.ParseName("mood(" + operator + ")"),Constants.UNIVERSAL);
+		
+		this._operator = operator;
+		
+		if(value > 10) {
+			this._value = 10;
+		}
+		else if(value < -10)
+		{
+			this._value = -10;
+		}
+		else
+		{
+			this._value = value;
+		}		
+	}
+	
+	protected MoodCondition(MoodCondition mC)
+	{
+		super(mC);
+		_operator = mC._operator;
+		_value = mC._value;
+	}
+	
+	public Object clone(){
+		return new MoodCondition(this);
+	}
 	
 	/**
 	 * Parses a EmotionCondition given a XML attribute list
@@ -119,29 +148,8 @@ public class MoodCondition extends Condition {
 		return mc;
 	}
 	
-	private MoodCondition()
-	{
-	}
 	
-	public MoodCondition(short operator, float value)
-	{
-		this._ToM = Constants.UNIVERSAL;
-		this._operator = operator;
-		
-		if(value > 10) {
-			this._value = 10;
-		}
-		else if(value < -10)
-		{
-			this._value = -10;
-		}
-		else
-		{
-			this._value = value;
-		}
-		
-		this._name = Name.ParseName("mood(" + this._operator + ")");
-	}
+
 	
 	
 	/**
@@ -244,7 +252,7 @@ public class MoodCondition extends Condition {
 	 */
     public void ReplaceUnboundVariables(int variableID)
     {
-    	this._ToM.ReplaceUnboundVariables(variableID);
+    	getToM().ReplaceUnboundVariables(variableID);
     }
 	
     /**
@@ -272,7 +280,7 @@ public class MoodCondition extends Condition {
 	 */
     public void MakeGround(ArrayList<Substitution> bindings)
     {
-    	this._ToM.MakeGround(bindings);
+    	getToM().MakeGround(bindings);
     }
 	
     /**
@@ -308,15 +316,5 @@ public class MoodCondition extends Condition {
 	 * If this clone is changed afterwards, the original object remains the same.
 	 * @return The EmotionCondition's copy.
 	 */
-	public Object clone()
-	{
-		MoodCondition mc = new MoodCondition();
-		mc._ToM = (Symbol) this._ToM.clone();
-		mc._operator = this._operator;
-		mc._value = this._value;
-		mc._name = (Name) this._name.clone();
-		mc._verifiable = this._verifiable;
-		
-		return mc;
-	}
+	
 }

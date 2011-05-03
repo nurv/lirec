@@ -62,6 +62,21 @@ public class PropertyGreaterEqual extends PropertyCondition {
 		super(name, value, ToM);
 	}
 	
+	protected PropertyGreaterEqual(PropertyGreaterEqual pGE)
+	{
+		super(pGE);
+	}
+
+	/**
+	 * Clones this PropertyTest, returning an equal copy.
+	 * If this clone is changed afterwards, the original object remains the same.
+	 * @return The PropertyTest's copy.
+	 */
+	public Object clone()
+	{
+		return new PropertyGreaterEqual(this);
+	}
+	
 	/**
      * Checks if the Property Condition is verified in the agent's memory (KB + AM)
      * @return true if the condition is verified, false otherwise
@@ -72,13 +87,13 @@ public class PropertyGreaterEqual extends PropertyCondition {
 		Float aux;
 		Float aux2;
 
-        AgentModel perspective = am.getModelToTest(_ToM);
+        AgentModel perspective = am.getModelToTest(getToM());
 
         if (!super.CheckCondition(am))
             return false;
         
-        propertyValue = this._name.evaluate(perspective.getMemory());
-        value = this._value.evaluate(perspective.getMemory());
+        propertyValue = this.getName().evaluate(perspective.getMemory());
+        value = this.GetValue().evaluate(perspective.getMemory());
 
 		if (propertyValue == null || value == null)
 			return false;
@@ -87,18 +102,7 @@ public class PropertyGreaterEqual extends PropertyCondition {
 		return aux.floatValue() >= aux2.floatValue();
 	}
 	
-	/**
-	 * Clones this PropertyTest, returning an equal copy.
-	 * If this clone is changed afterwards, the original object remains the same.
-	 * @return The PropertyTest's copy.
-	 */
-	public Object clone()
-	{
-	    PropertyGreaterEqual pge = new PropertyGreaterEqual((Name) this._name.clone(), (Name) this._value.clone(), (Symbol) this._ToM.clone());
-	    pge._verifiable = this._verifiable;
-	    
-	    return pge;
-	}
+
 	
 
 	/**
@@ -114,6 +118,6 @@ public class PropertyGreaterEqual extends PropertyCondition {
      * @return the Converted String
      */
 	public String toString() {
-		return _name + " >= " + _value;
+		return getName() + " >= " + GetValue();
 	}
 }
