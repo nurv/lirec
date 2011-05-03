@@ -41,14 +41,14 @@ public class LikeCondition extends Condition {
 	private static Operator NOT_EQUAL = new NotEqual();
 	
 	private Operator _operator;
-	private float _value;
+	private Symbol _value;
 	
 	public static LikeCondition ParseSocialCondition(Attributes attributes) throws InvalidEmotionTypeException, ContextParsingException {
 		LikeCondition sc;
 		Symbol subject;
 		Symbol target = null;
 		Operator op;
-		float value = 0;
+		Symbol value = new Symbol("0");
 		String aux;
 		
 		
@@ -75,7 +75,7 @@ public class LikeCondition extends Condition {
 		aux = attributes.getValue("value");
 		if(aux != null)
 		{
-			value = Float.parseFloat(aux);	
+			value = new Symbol(aux);	
 		}
 		
 		sc = new LikeCondition(subject,target,value,op);
@@ -83,7 +83,7 @@ public class LikeCondition extends Condition {
 		return sc;
 	}
 	
-	protected LikeCondition(Symbol subject, Symbol target, float value, Operator op){
+	protected LikeCondition(Symbol subject, Symbol target, Symbol value, Operator op){
 		super(target,subject);
 		this._value = value;
 		this._operator = op;
@@ -103,15 +103,31 @@ public class LikeCondition extends Condition {
 	
 	public boolean CheckCondition(AgentModel am) {
 		float existingValue;
+		String targetName;
 		
 		if(!this.isGrounded()) return false;
 		
 		AgentModel perspective = am.getModelToTest(getToM());
 		
+		if(_ToM.toString().equals(Constants.SELF))
+		{
+			targetName = _name.toString();
+		}
+		else
+		{
+			if(_name.toString().equals(Constants.SELF))
+			{
+				targetName = am.getName();
+			}
+			else
+			{
+				targetName = _name.toString();
+			}
+		}
 		
-		existingValue = LikeRelation.getRelation(Constants.SELF, getName().toString()).getValue(perspective.getMemory());
+		existingValue = LikeRelation.getRelation(Constants.SELF, targetName).getValue(perspective.getMemory());
 		
-		return _operator.process(existingValue, _value);
+		return _operator.process(existingValue, Float.parseFloat(_value.toString()));
 	}
 	
 	
@@ -220,6 +236,7 @@ public class LikeCondition extends Condition {
 	@Override
 	public ArrayList<SubstitutionSet> GetValidBindings(AgentModel am) {
 		ArrayList<SubstitutionSet> bindingSets = new ArrayList<SubstitutionSet>();
+		String targetName;
 		
 		if(!this.getToM().isGrounded()) return null;
 		
@@ -233,10 +250,26 @@ public class LikeCondition extends Condition {
 			else return null;
 		}
 		
-		
 		AgentModel perspective = am.getModelToTest(getToM());
 		
-		Name likeProperty = Name.ParseName("Like(" + Constants.SELF + "," + this.getName().toString() + ")");
+		if(_ToM.toString().equals(Constants.SELF))
+		{
+			targetName = _name.toString();
+		}
+		else
+		{
+			if(_name.toString().equals(Constants.SELF))
+			{
+				targetName = am.getName();
+			}
+			else
+			{
+				targetName = _name.toString();
+			}
+		}
+	
+		Name likeProperty = Name.ParseName("Like(" + Constants.SELF + "," + targetName + ")");
+		
 		bindingSets = perspective.getMemory().getSemanticMemory().GetPossibleBindings(likeProperty);
 		
 		return bindingSets;
@@ -265,20 +298,23 @@ public class LikeCondition extends Condition {
 
 	@Override
 	public void MakeGround(ArrayList<Substitution> bindings) {
-		this.getToM().MakeGround(bindings);
-		this.getName().MakeGround(bindings);	
+		this._ToM.MakeGround(bindings);
+		this._name.MakeGround(bindings);
+		this._value.MakeGround(bindings);
 	}
 
 	@Override
 	public void MakeGround(Substitution subst) {
-		this.getToM().MakeGround(subst);
-		this.getName().MakeGround(subst);	
+		this._ToM.MakeGround(subst);
+		this._name.MakeGround(subst);
+		this._value.MakeGround(subst);
 	}
 
 	@Override
 	public void ReplaceUnboundVariables(int variableID) {
 		this.getToM().ReplaceUnboundVariables(variableID);
 		this.getName().ReplaceUnboundVariables(variableID);
+		this._value.ReplaceUnboundVariables(variableID);
 	}
 
 	@Override

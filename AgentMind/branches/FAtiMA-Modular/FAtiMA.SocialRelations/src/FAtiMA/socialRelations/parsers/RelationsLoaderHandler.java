@@ -36,11 +36,24 @@ public class RelationsLoaderHandler  extends ReflectXMLHandler{
 	public void Relation(Attributes attributes)
 	{
 		float respect;
+		String subject = attributes.getValue("subject");
 		String target = attributes.getValue("target");
 		float like = Float.parseFloat(attributes.getValue("like"));
-		LikeRelation.getRelation(Constants.SELF, target).setValue(_aM.getMemory(),like);
-
 		String auxRespect = attributes.getValue("respect");
+		
+		if(subject == null || subject.equals(_aM.getName()))
+		{
+			subject = Constants.SELF;
+		}
+		else 
+		{
+			return;
+		}
+		
+		
+		LikeRelation.getRelation(subject, target).setValue(_aM.getMemory(),like);
+
+		
 		if(auxRespect == null)
 		{
 			respect = 0;
@@ -49,7 +62,8 @@ public class RelationsLoaderHandler  extends ReflectXMLHandler{
 		{
 			respect = Float.parseFloat(auxRespect);
 		}
-		RespectRelation.getRelation(Constants.SELF, target).setValue(_aM.getMemory(),respect);
+		
+		RespectRelation.getRelation(subject, target).setValue(_aM.getMemory(),respect);
 	}
 	
 	

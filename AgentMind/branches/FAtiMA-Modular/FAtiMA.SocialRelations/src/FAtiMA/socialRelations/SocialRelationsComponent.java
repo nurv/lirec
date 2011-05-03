@@ -39,8 +39,9 @@ IProcessEmotionComponent {
 	public static final String NAME = "SocialRelations";
 	private ArrayList<String> _parsingFiles;
 
-	public SocialRelationsComponent(ArrayList<String> extraParsingFiles) {
+	public SocialRelationsComponent(String socialRelationsFile, ArrayList<String> extraParsingFiles) {
 		_parsingFiles = new ArrayList<String>();
+		_parsingFiles.add(socialRelationsFile);
 		_parsingFiles.add(ConfigurationManager.getGoalsFile());
 		_parsingFiles.add(ConfigurationManager.getPersonalityFile());
 		_parsingFiles.add(ConfigurationManager.getActionsFile());
@@ -57,7 +58,10 @@ IProcessEmotionComponent {
 			SAXParser parser = factory.newSAXParser();
 
 			for (String file : _parsingFiles) {
-				parser.parse(new File(file),relationsLoader);
+				if(file != null)
+				{
+					parser.parse(new File(file),relationsLoader);
+				}
 			}
 
 		} catch (Exception e) {
@@ -85,7 +89,7 @@ IProcessEmotionComponent {
 
 	@Override
 	public IComponent createModelOfOther() {
-		return new SocialRelationsComponent(new ArrayList<String>());
+		return new SocialRelationsComponent(null, new ArrayList<String>());
 	}
 
 	@Override
@@ -108,61 +112,31 @@ IProcessEmotionComponent {
 		} else if (em.getType().equalsIgnoreCase(OCCEmotionType.HAPPY_FOR.name())) 
 		{
 			if (em.GetDirection() != null) {
-				LikeRelation.getRelation(Constants.SELF, em.GetDirection().toString()).increment(m,
-
-				em.GetIntensity());
+				LikeRelation.getRelation(Constants.SELF, em.GetDirection().toString()).increment(m,em.GetIntensity());
 			}
 		} else if (em.getType().equalsIgnoreCase
 
 		(OCCEmotionType.GLOATING.name())) {
 			if (em.GetDirection() != null) {
-				LikeRelation.getRelation
-
-				(Constants.SELF, em.GetDirection().toString()).decrement(m,
-
-				em.GetIntensity());
+				LikeRelation.getRelation(Constants.SELF, em.GetDirection().toString()).decrement(m,em.GetIntensity());
 			}
-		} else if (em.getType().equalsIgnoreCase
-
-		(OCCEmotionType.PITTY.name())) {
+		} else if (em.getType().equalsIgnoreCase(OCCEmotionType.PITTY.name())) {
 			if (em.GetDirection() != null) {
-				LikeRelation.getRelation
-
-				(Constants.SELF, em.GetDirection().toString()).increment(m,
-
-				em.GetIntensity());
+				LikeRelation.getRelation(Constants.SELF, em.GetDirection().toString()).increment(m,em.GetIntensity());
 			}
-		} else if (em.getType().equalsIgnoreCase
-
-		(OCCEmotionType.RESENTMENT.name())) {
+		} else if (em.getType().equalsIgnoreCase(OCCEmotionType.RESENTMENT.name())) {
 			if (em.GetDirection() != null) {
-				LikeRelation.getRelation
-
-				(Constants.SELF, em.GetDirection().toString()).decrement(m,
+				LikeRelation.getRelation(Constants.SELF, em.GetDirection().toString()).decrement(m,
 
 				em.GetIntensity());
 			}
-		} else if (em.getType().equalsIgnoreCase
-
-		(OCCEmotionType.JOY.name())) {
-			if (em.GetCause().GetTarget() != null &&
-
-			em.GetCause().GetTarget().equals(Constants.SELF)) {
-				LikeRelation.getRelation
-
-				(Constants.SELF, em.GetCause().GetSubject()).increment(m,
-
-				em.GetIntensity());
+		} else if (em.getType().equalsIgnoreCase(OCCEmotionType.JOY.name())) {
+			if (em.GetCause().GetTarget() != null && em.GetCause().GetTarget().equals(Constants.SELF)) {
+				LikeRelation.getRelation(Constants.SELF, em.GetCause().GetSubject()).increment(m,em.GetIntensity());
 			}
-		} else if (em.getType().equalsIgnoreCase
-
-		(OCCEmotionType.DISTRESS.name())) {
-			if (em.GetCause().GetTarget() != null &&
-
-			em.GetCause().GetTarget().equals(Constants.SELF)) {
-				LikeRelation.getRelation
-
-				(Constants.SELF, em.GetCause().GetSubject()).decrement(m,
+		} else if (em.getType().equalsIgnoreCase(OCCEmotionType.DISTRESS.name())) {
+			if (em.GetCause().GetTarget() != null && em.GetCause().GetTarget().equals(Constants.SELF)) {
+				LikeRelation.getRelation(Constants.SELF, em.GetCause().GetSubject()).decrement(m,
 
 				em.GetIntensity());
 			}
