@@ -12,6 +12,8 @@ import FAtiMA.Core.util.enumerables.ActionEvent;
 import FAtiMA.Core.util.enumerables.EventType;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Symbol;
+import FAtiMA.OCCAffectDerivation.OCCAffectDerivationComponent;
+import FAtiMA.OCCAffectDerivation.OCCAppraisalVariables;
 import FAtiMA.OCCAffectDerivation.OCCEmotionType;
 
 
@@ -46,10 +48,10 @@ public abstract class OCCAppraisalRules {
 		threshold = disp.getThreshold();
 		
 		params = new ArrayList<Symbol>();
-		//params.add(new Symbol("[p1]"));
+		params.add(new Symbol("[p1]"));
 		//params.add(new Symbol("[p2]"));
 		appraisal = new AppraisalCondition(new Symbol("[AGENT]"),
-				"DESIRABILITY", new Symbol("[X]"),
+				OCCAppraisalVariables.DESIRABILITY.name(), new Symbol("[X]"),
 				threshold, 
 				(short)0,
 				new Symbol("[s]"),
@@ -57,7 +59,7 @@ public abstract class OCCAppraisalRules {
 				new Symbol("[t]"), params);
 		joyOperator.AddPrecondition(appraisal);
 		
-		Name ev = Name.ParseName("EVENT([s],[a],[t])");
+		Name ev = Name.ParseName("EVENT([s],[a],[t],[p1])");
 		
 		event = new NewEventCondition(true, EventType.ACTION,ActionEvent.SUCCESS,ev);
 		joyOperator.AddPrecondition(event);
@@ -77,16 +79,20 @@ public abstract class OCCAppraisalRules {
 		
 		params = new ArrayList<Symbol>();
 		params.add(new Symbol("[p1]"));
-		params.add(new Symbol("[p2]"));
+		//params.add(new Symbol("[p2]"));
 		appraisal = new AppraisalCondition(new Symbol("[AGENT]"),
-				"desirability", new Symbol("[X]"),
+				OCCAppraisalVariables.DESIRABILITY.name(), new Symbol("[X]"),
 				threshold,
-				(short)0,
+				(short)1,
 				new Symbol("[s]"),
 				new Symbol("[a]"),
 				new Symbol("[t]"), params);
 		
-		event = new NewEventCondition(appraisal);
+		distressOperator.AddPrecondition(appraisal);
+		
+		ev = Name.ParseName("EVENT([s],[a],[t],[p1])");
+		
+		event = new NewEventCondition(true, EventType.ACTION,ActionEvent.SUCCESS,ev);
 		
 		distressOperator.AddPrecondition(event);
 		

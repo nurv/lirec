@@ -40,6 +40,7 @@ import FAtiMA.Core.emotionalState.BaseEmotion;
 import FAtiMA.Core.emotionalState.EmotionalState;
 import FAtiMA.Core.exceptions.InvalidEmotionTypeException;
 import FAtiMA.Core.memory.episodicMemory.MemoryEpisode;
+import FAtiMA.Core.memory.episodicMemory.ShortTermEpisodicMemory;
 import FAtiMA.Core.util.Constants;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Substitution;
@@ -120,14 +121,20 @@ public class EmotionalEpisodeCondition extends Condition {
 		
 		episodes = am.getMemory().getEpisodicMemory().GetAllEpisodes();
 		
-		int id = Integer.parseInt(this._name.toString());
+		if(this._name.toString().equals("STM"))
+		{
+			ShortTermEpisodicMemory stem = am.getMemory().getEpisodicMemory().getSTEM();
+			emotion = stem.getStrongestEmotion();
+		}
+		else
+		{
+			int id = Integer.parseInt(this._name.toString());
+			episode = episodes.get(id);
+			emotion = episode.getStrongestEmotion();
+		}
 		
-		episode = episodes.get(id);
 		
-		emotion = episode.getStrongestEmotion();
-		
-		
-		if(emotion.getType().equalsIgnoreCase(this._emotion.toString()))
+		if(emotion != null && emotion.getType().equalsIgnoreCase(this._emotion.toString()))
 		{
 			if(emotion.GetPotential() >= this._value)
 			{
@@ -196,15 +203,26 @@ public class EmotionalEpisodeCondition extends Condition {
 			else return null;
 		}
 		
+		ShortTermEpisodicMemory stem = am.getMemory().getEpisodicMemory().getSTEM();
+		
 		try
 		{
 		
 			if(_name.isGrounded())
 			{
-				int id = Integer.parseInt(this._name.toString());
-				episode = am.getMemory().getEpisodicMemory().GetAllEpisodes().get(id);
-				emotion = episode.getStrongestEmotion();
-				if(emotion.GetPotential() > this._value)
+				if(_name.toString().equals("STM"))
+				{
+					emotion = stem.getStrongestEmotion();
+				}
+				else
+				{
+					int id = Integer.parseInt(this._name.toString());
+					episode = am.getMemory().getEpisodicMemory().GetAllEpisodes().get(id);
+					emotion = episode.getStrongestEmotion();
+				}
+				
+				
+				if(emotion != null && emotion.GetPotential() > this._value)
 				{
 					ss = new SubstitutionSet();
 					if(!_emotion.isGrounded())
@@ -223,12 +241,35 @@ public class EmotionalEpisodeCondition extends Condition {
 				return bindingSets;
 			}
 			
+			
+			emotion = stem.getStrongestEmotion();
+			{
+				if(emotion!= null && emotion.GetPotential() > this._value)
+				{
+					ss = new SubstitutionSet();
+					s = new Substitution((Symbol) this._name,new Symbol("STM"));
+					ss.AddSubstitution(s);
+					if(!_emotion.isGrounded())
+					{
+						
+						s = new Substitution(this._emotion,new Symbol(emotion.getType()));
+						ss.AddSubstitution(s);
+						bindingSets.add(ss);
+						
+					}
+					else if(emotion.getType().equalsIgnoreCase(this._emotion.toString()))
+					{
+						bindingSets.add(ss);
+					}	
+				}
+			}
+			
 			i = 0;
 			for(MemoryEpisode ep : am.getMemory().getEpisodicMemory().GetAllEpisodes())
 			{
 				
 				emotion = ep.getStrongestEmotion();
-				if(emotion.GetPotential() > this._value)
+				if(emotion!= null && emotion.GetPotential() > this._value)
 				{
 					ss = new SubstitutionSet();
 					s = new Substitution((Symbol) this._name,new Symbol(String.valueOf(i)));

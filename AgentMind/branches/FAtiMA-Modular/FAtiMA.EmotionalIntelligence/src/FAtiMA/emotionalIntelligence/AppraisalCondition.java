@@ -13,6 +13,7 @@ import FAtiMA.Core.wellFormedNames.Substitution;
 import FAtiMA.Core.wellFormedNames.SubstitutionSet;
 import FAtiMA.Core.wellFormedNames.Symbol;
 import FAtiMA.advancedMemoryComponent.AdvancedMemoryComponent;
+import FAtiMA.motivationalSystem.MotivationalComponent;
 
 public class AppraisalCondition extends PastEventCondition {
 
@@ -20,6 +21,8 @@ public class AppraisalCondition extends PastEventCondition {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	private static final float K = 0.1f; 
 	
 	private String _appraisalVariable;
 	private Symbol _value;
@@ -65,7 +68,7 @@ public class AppraisalCondition extends PastEventCondition {
 	}
 	
 	public boolean CheckCondition(AgentModel am) {
-		return this._action.isGrounded();		 
+		return this._action.isGrounded();
 	}
 	
 	public Object clone()
@@ -79,7 +82,7 @@ public class AppraisalCondition extends PastEventCondition {
 		
 		newCondition._appraisalVariable = this._appraisalVariable;
 		newCondition._value = (Symbol) this._value.clone();
-		newCondition._ToM = (Symbol) this._value.clone();
+		newCondition._ToM = (Symbol) this._ToM.clone();
 		newCondition._threshold = this._threshold;
 		newCondition._test = this._test;
 		
@@ -111,12 +114,10 @@ public class AppraisalCondition extends PastEventCondition {
 
 	public ArrayList<SubstitutionSet> GetValidBindings(AgentModel am) {
 		
-		Symbol target;
-		float finalvalue;
-		ArrayList<SubstitutionSet> subs = new ArrayList<SubstitutionSet>();
-		SubstitutionSet sset;
+		float finalemotionvalue;
+		float appraisalVariableValue;
+		ArrayList<SubstitutionSet> subs;
 		float mood;
-		AdvancedMemoryComponent advMem;
 	
 		AgentModel modelToTest = am.getModelToTest(this._ToM);
 	 	
@@ -124,20 +125,51 @@ public class AppraisalCondition extends PastEventCondition {
 		
 		mood = modelToTest.getEmotionalState().GetMood();
 		
-		if(_test == 0)
-		{
-			finalvalue = Float.parseFloat(this._value.toString()) + _threshold;
-			finalvalue = finalvalue - (mood * EmotionalPameters.MoodInfluenceOnEmotion);
+		finalemotionvalue = Float.parseFloat(this._value.toString()) + _threshold + K;
+		
+		//meaning that the valence of the corresponding emotion is positive
+		if(_test == 0){
 			
+			appraisalVariableValue = finalemotionvalue - (mood * EmotionalPameters.MoodInfluenceOnEmotion);
+			if(appraisalVariableValue < 0)
+			{
+				appraisalVariableValue = 0;
+			}
 		}
 		else
 		{
-			finalvalue = Float.parseFloat(this._value.toString()) - _threshold;
-			finalvalue = finalvalue - (mood * EmotionalPameters.MoodInfluenceOnEmotion);
+			//meaning that the valence of the corresponding emotion is negative
+			appraisalVariableValue = - finalemotionvalue + (mood * EmotionalPameters.MoodInfluenceOnEmotion);
+			if(appraisalVariableValue > 0)
+			{
+				appraisalVariableValue = 0;
+			}
 		}
+
+	
+		
+		//subs = searchMemoryAppraisals(modelToTest, appraisalVariableValue);
+		subs = new ArrayList<SubstitutionSet>();
+		
+		subs.addAll(searchDrivesAppraisals(modelToTest, appraisalVariableValue));
+	
+		if(subs.size() > 0)
+		{
+			return subs;
+		}
+		else return null;
+		
+	}
+	
+	private ArrayList<SubstitutionSet> searchMemoryAppraisals(AgentModel am, float desirability)
+	{
+		ArrayList<SubstitutionSet> subs = new ArrayList<SubstitutionSet>();
+		SubstitutionSet sset;
+		Symbol target;
+		AdvancedMemoryComponent advMem;
 		
 		ArrayList<String> knownInfo = new ArrayList<String>();
-		knownInfo.add("desirability " + finalvalue);
+		knownInfo.add("desirability " + desirability);
 		//float desirability = Float.parseFloat(this._value.toString());
 		/*if(desirability >= 0)
 		{
@@ -152,7 +184,7 @@ public class AppraisalCondition extends PastEventCondition {
 		
 		advMem = (AdvancedMemoryComponent) am.getComponent(AdvancedMemoryComponent.NAME);
 		
-		advMem.getSpreadActivate().Spread(question, knownInfo, modelToTest.getMemory().getEpisodicMemory());
+		advMem.getSpreadActivate().Spread(question, knownInfo, am.getMemory().getEpisodicMemory());
 		
 		ArrayList<ActionDetail> details = advMem.getSpreadActivate().getDetails();
 		
@@ -173,11 +205,16 @@ public class AppraisalCondition extends PastEventCondition {
 				sset.AddSubstitution(new Substitution(this._target,target));
 				subs.add(sset);
 			}
-			
-			return subs;
 		}
+		
+		return subs;
+	}
 	
-		return null;
+	private ArrayList<SubstitutionSet> searchDrivesAppraisals(AgentModel am, float desirability)
+	{
+		MotivationalComponent motivationalComponent = (MotivationalComponent) am.getComponent(MotivationalComponent.NAME);
+		
+		return motivationalComponent.searchEventsWithAppraisal(am, _subject, _action, _target, _parameters.get(0), desirability);	
 	}
 
 	public Object Ground(ArrayList<Substitution> bindingConstraints) {

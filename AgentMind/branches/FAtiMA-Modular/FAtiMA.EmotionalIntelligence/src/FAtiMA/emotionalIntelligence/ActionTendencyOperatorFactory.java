@@ -3,7 +3,7 @@ package FAtiMA.emotionalIntelligence;
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.conditions.Condition;
 import FAtiMA.Core.conditions.EmotionCondition;
-import FAtiMA.Core.conditions.RecentEventCondition;
+import FAtiMA.Core.conditions.NewEventCondition;
 import FAtiMA.Core.emotionalState.BaseEmotion;
 import FAtiMA.Core.plans.Effect;
 import FAtiMA.Core.plans.Step;
@@ -32,7 +32,7 @@ public abstract class ActionTendencyOperatorFactory {
 		s.AddPrecondition(ec);
 		
 		String eventName = "EVENT([AGENT]," + at.getName() + ")";
-		RecentEventCondition ev = new RecentEventCondition(true,EventType.ACTION,ActionEvent.SUCCESS,Name.ParseName(eventName));
+		NewEventCondition ev = new NewEventCondition(true,EventType.ACTION,ActionEvent.SUCCESS,Name.ParseName(eventName));
 		
 		s.AddEffect(new Effect(am, at.getName().toString(), 1.0f, ev));
 		
