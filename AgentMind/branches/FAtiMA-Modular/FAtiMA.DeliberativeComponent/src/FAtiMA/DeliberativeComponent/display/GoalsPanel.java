@@ -42,6 +42,8 @@ import javax.swing.JScrollPane;
 import FAtiMA.Core.AgentCore;
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.Display.AgentDisplayPanel;
+import FAtiMA.Core.conditions.Condition;
+import FAtiMA.Core.goals.ActivePursuitGoal;
 import FAtiMA.Core.goals.Goal;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.DeliberativeComponent.DeliberativeComponent;
@@ -49,108 +51,115 @@ import FAtiMA.DeliberativeComponent.Intention;
 
 
 public class GoalsPanel extends AgentDisplayPanel {
-    
-    /**
+
+	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
+
 	private DeliberativeComponent _deliberativeComponent;
 	private HashMap<Name,IntentionDisplay> _intentionDisplays;
-    private ArrayList<GoalDisplay> _goalDisplays;
-    private JPanel _goals;
-    private JPanel _intentions;
-    
-    public GoalsPanel(DeliberativeComponent deliberativeComponent) {
-    	
-    	//"displays the character's goals and active intentions"
-        
-        super();
-        
-        _deliberativeComponent = deliberativeComponent;
-        _intentionDisplays = new HashMap<Name, IntentionDisplay>();
-        _goalDisplays = new ArrayList<GoalDisplay>();
-        
-        this.setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
-		
+	private ArrayList<GoalDisplay> _goalDisplays;
+	private JPanel _goals;
+	private JPanel _intentions;
+
+	public GoalsPanel(DeliberativeComponent deliberativeComponent) {
+
+		//"displays the character's goals and active intentions"
+
+		super();
+
+		_deliberativeComponent = deliberativeComponent;
+		_intentionDisplays = new HashMap<Name, IntentionDisplay>();
+		_goalDisplays = new ArrayList<GoalDisplay>();
+
+		this.setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
+
 		_goals = new JPanel();
 		_goals.setBorder(BorderFactory.createTitledBorder("Goals"));
 		_goals.setLayout(new BoxLayout(_goals,BoxLayout.Y_AXIS));
-		
+
 		_goals.setMaximumSize(new Dimension(350,400));
 		_goals.setMinimumSize(new Dimension(350,400));
-		
+
 		JScrollPane goalsScrool = new JScrollPane(_goals);
-		
+
 		this.add(goalsScrool);
-		
+
 		_intentions = new JPanel();
 		_intentions.setBorder(BorderFactory.createTitledBorder("Active Intentions"));
 		_intentions.setLayout(new BoxLayout(_intentions,BoxLayout.Y_AXIS));
-		
+
 		JScrollPane intentionsScroll = new JScrollPane(_intentions);
-		
+
 		this.add(intentionsScroll);
-    }
-    
-    public boolean Update(AgentModel am)
-    {
-    	return false;
-    }
-    
-    
-    public boolean Update(AgentCore ag) {
-    	
-    	boolean update = false;
-        
-        if(_goalDisplays.size() != _deliberativeComponent.getGoals().size()) {
-        	update = true;
-        	_goals.removeAll();
-        	_goalDisplays.clear();
-        	
-        	Iterator<Goal> it = _deliberativeComponent.getGoals().iterator();
-        	GoalDisplay gDisplay;
-        	Goal g;
-        	while(it.hasNext()) {
-        		g = it.next();
-        		gDisplay = new GoalDisplay(ag, g);
-        		
-        		_goals.add(gDisplay.getGoalPanel());
-        		_goalDisplays.add(gDisplay);
-        	}
-        }
-        
-        if(_intentionDisplays.keySet().equals(_deliberativeComponent.getIntentionKeysSet())) {
-            //in this case, we just have to update the values for the intensity of emotions
-            //since the emotions displayed in the previous update are the same emotions
-            //in the current update
-             Iterator<Intention> it = _deliberativeComponent.getIntentionsIterator();
-             IntentionDisplay iDisplay;
-             Intention i;
-             while(it.hasNext()) {
-                 
-                 i = it.next();     
-                 iDisplay = (IntentionDisplay) _intentionDisplays.get(i.getGoal().getName().toString());
-                 iDisplay.Update(ag, i);
-             }    
-        }
-        else {
-        	update = true;
-            _intentions.removeAll(); //removes all displayed intentions from the panel
-            _intentionDisplays.clear();
-            
-            Iterator<Intention> it = _deliberativeComponent.getIntentionsIterator();
-            IntentionDisplay iDisplay;
-            Intention i;
-            while(it.hasNext()) {
-                i = it.next();
-                iDisplay = new IntentionDisplay(ag, i);
-                
-                _intentions.add(iDisplay.getIntentionPanel());
-                _intentionDisplays.put(i.getGoal().getName(),iDisplay);
-          
-           }
-        }   
-        return update;
-    }
+	}
+
+	public boolean Update(AgentModel am)
+	{
+		return false;
+	}
+
+
+	public boolean Update(AgentCore ag) {
+
+		boolean update = false;
+		GoalDisplay gDisplay;
+
+		for(Goal g : _deliberativeComponent.getGoals()){
+			if(g instanceof ActivePursuitGoal){
+				for(Condition c : ((ActivePursuitGoal) g).GetPreconditions()){
+					if (c.hasChangedVerifiability()){
+						update = true;
+					}
+				}
+			}
+		}
+		
+		if(update){
+			_goals.removeAll();
+			_goalDisplays.clear();
+			for(Goal g : _deliberativeComponent.getGoals()){
+				if(g instanceof ActivePursuitGoal){	
+					gDisplay = new GoalDisplay(ag, g);
+					_goals.add(gDisplay.getGoalPanel());
+					_goalDisplays.add(gDisplay);
+				}
+			}
+		}
+
+
+		if(_intentionDisplays.keySet().equals(_deliberativeComponent.getIntentionKeysSet())) {
+			//in this case, we just have to update the values for the intensity of emotions
+			//since the emotions displayed in the previous update are the same emotions
+			//in the current update
+			Iterator<Intention> it = _deliberativeComponent.getIntentionsIterator();
+			IntentionDisplay iDisplay;
+			Intention i;
+			while(it.hasNext()) {
+
+				i = it.next();     
+				iDisplay = (IntentionDisplay) _intentionDisplays.get(i.getGoal().getName().toString());
+				iDisplay.Update(ag, i);
+			}    
+		}
+		else {
+			update = true;
+			_intentions.removeAll(); //removes all displayed intentions from the panel
+			_intentionDisplays.clear();
+
+			Iterator<Intention> it = _deliberativeComponent.getIntentionsIterator();
+			IntentionDisplay iDisplay;
+			Intention i;
+			while(it.hasNext()) {
+				i = it.next();
+				iDisplay = new IntentionDisplay(ag, i);
+
+				_intentions.add(iDisplay.getIntentionPanel());
+				_intentionDisplays.put(i.getGoal().getName(),iDisplay);
+
+			}
+		}   
+		return update;
+	}
 }
