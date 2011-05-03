@@ -9,6 +9,7 @@ import FAtiMA.Core.conditions.Condition;
 import FAtiMA.Core.plans.Effect;
 import FAtiMA.Core.plans.Step;
 import FAtiMA.Core.sensorEffector.SpeechAct;
+import FAtiMA.Core.util.Constants;
 import FAtiMA.Core.util.parsers.SocketListener;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Substitution;
@@ -229,9 +230,17 @@ public class RemoteAgent extends SocketListener {
 
 					_world.GetUserInterface().WriteLine(msg);
 					this._world.SendPerceptionToAll(msg);
+					
+					if(c.getToM().equals(Constants.UNIVERSAL))
+					{
+						this._world.SendPerceptionToAll(msg);
+					}
+					else
+					{
+						this._world.SendPerceptionTo(c.getToM().toString(), msg);
+					}
 				}
 			}
-
 		}
 	}
 
@@ -259,7 +268,7 @@ class ActionSimulator extends Thread{
 
 	}
 
-	public void run(){
+	public void run() {
 		
 		StringTokenizer st = new StringTokenizer(_msg," ");
 
@@ -277,6 +286,7 @@ class ActionSimulator extends Thread{
 
 			String aux = _msg.substring(3);
 			SpeechAct say = (SpeechAct) SpeechAct.ParseFromXml(aux);
+			
 			if(say != null)
 			{
 				String actionName = say.getActionType() + "(";
@@ -296,7 +306,14 @@ class ActionSimulator extends Thread{
 
 				String utterance = null;
 				synchronized(_world){
-					utterance = _world.Say(say.toLanguageEngine());
+					if(say.getMeaning().equals("episodesummary"))
+					{
+						utterance = _world.SaySummary(say.getAMSummary());
+					}
+					else
+					{
+						utterance = _world.Say(say.toLanguageEngine());
+					}
 				}
 
 				String receiver = say.getReceiver();

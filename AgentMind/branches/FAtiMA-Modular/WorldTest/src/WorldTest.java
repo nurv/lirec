@@ -46,8 +46,8 @@ public class WorldTest {
 	private ArrayList<RemoteAgent> _agents;
 	private String _scenery;
 	private ArrayList<Step> _actions;
-	private LanguageEngine _agentLanguage;
-	private LanguageEngine _userLanguage;
+	private Language.LanguageEngine _agentLanguage;
+	private Language.LanguageEngine _userLanguage;
 	private static UserInterface _userInterface;
 	private String _userOptionsFile;
 	private GretaAgent _ga;
@@ -108,11 +108,11 @@ public class WorldTest {
 		try{
 			
 			if(agentLanguageFile != null){
-				_agentLanguage = this.initializeLanguageEngine("name", "Victim", "M", agentLanguageFile);
+				_agentLanguage = this.initializeLanguageEngine("name", "victim", "M", agentLanguageFile);
 			}
 			
 			if(userLanguageFile != null){
-				_userLanguage = this.initializeLanguageEngine("name", "User", "M", userLanguageFile);
+				_userLanguage = this.initializeLanguageEngine("name", "user", "M", userLanguageFile);
 			}
 			
 			_userInterface.WriteLine("Finished ALE initialization!");
@@ -229,6 +229,17 @@ public class WorldTest {
 			ag.Send(perception);
 		}
 	}
+	
+	public void SendPerceptionTo(String agent, String perception)
+	{
+		for(RemoteAgent ag : _agents)
+		{
+			if(ag.Name().equals(agent))
+			{
+				ag.Send(perception);
+			}
+		}
+	}
 
 	public String GetPropertiesList(String target) {
 
@@ -252,6 +263,32 @@ public class WorldTest {
 	public ArrayList<Step> GetActions()
 	{
 		return this._actions;
+	}
+	
+	public String SaySummary(String speech)
+	{
+		String utterance;
+		String aux;
+		String[] aux2;
+
+		//System.out.println("Generating SpeechAct:" + speech);
+		if(this._agentLanguage!= null)
+		{
+			try
+			{
+				aux = this._agentLanguage.Narrate(speech);
+				aux2 = aux.split("<Summary>");
+				if(aux2.length > 1){
+					utterance = aux2[1].split("</Summary>")[0];
+					return utterance;
+				}
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+		}	
+		return null;
 	}
 
 	public String Say(String speech)
