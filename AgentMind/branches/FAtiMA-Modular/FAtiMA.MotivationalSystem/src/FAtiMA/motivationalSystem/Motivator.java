@@ -21,7 +21,8 @@ public class Motivator implements Serializable {
 	/**
 	 * Constant value that defines how fast should a drive decay over time.
 	 */
-	public static final float MotivatorDecayFactor = 0.0025f;
+	//public static final float MotivatorDecayFactor = 0.0025f;
+	public static final float MotivatorDecayFactor = 0.001f;
 
 	private final short _type;
 	private float _decayFactor;	
