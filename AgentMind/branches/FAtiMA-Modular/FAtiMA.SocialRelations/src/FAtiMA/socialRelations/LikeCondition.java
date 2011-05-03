@@ -109,19 +109,19 @@ public class LikeCondition extends Condition {
 		
 		AgentModel perspective = am.getModelToTest(getToM());
 		
-		if(_ToM.toString().equals(Constants.SELF))
+		if(getToM().toString().equals(Constants.SELF))
 		{
-			targetName = _name.toString();
+			targetName = getName().toString();
 		}
 		else
 		{
-			if(_name.toString().equals(Constants.SELF))
+			if(getName().toString().equals(Constants.SELF))
 			{
 				targetName = am.getName();
 			}
 			else
 			{
-				targetName = _name.toString();
+				targetName = getName().toString();
 			}
 		}
 		
@@ -252,19 +252,19 @@ public class LikeCondition extends Condition {
 		
 		AgentModel perspective = am.getModelToTest(getToM());
 		
-		if(_ToM.toString().equals(Constants.SELF))
+		if(getToM().toString().equals(Constants.SELF))
 		{
-			targetName = _name.toString();
+			targetName = getName().toString();
 		}
 		else
 		{
-			if(_name.toString().equals(Constants.SELF))
+			if(getName().toString().equals(Constants.SELF))
 			{
 				targetName = am.getName();
 			}
 			else
 			{
-				targetName = _name.toString();
+				targetName = getName().toString();
 			}
 		}
 	
@@ -298,15 +298,15 @@ public class LikeCondition extends Condition {
 
 	@Override
 	public void MakeGround(ArrayList<Substitution> bindings) {
-		this._ToM.MakeGround(bindings);
-		this._name.MakeGround(bindings);
+		this.getToM().MakeGround(bindings);
+		this.getName().MakeGround(bindings);
 		this._value.MakeGround(bindings);
 	}
 
 	@Override
 	public void MakeGround(Substitution subst) {
-		this._ToM.MakeGround(subst);
-		this._name.MakeGround(subst);
+		this.getToM().MakeGround(subst);
+		this.getName().MakeGround(subst);
 		this._value.MakeGround(subst);
 	}
 
