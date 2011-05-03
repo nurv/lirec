@@ -380,7 +380,7 @@ public class EmotionalPlanner implements Serializable {
 		else if (p.getOpenPreconditions().size() == 0 && p.getSteps().size() == 0) {
 		    //There aren't open conditions left and no steps in the plan, it means that the goal has been achieved
 			
-			return null;
+			return p;
 		}
 	
 		prob = p.getProbability(am);
@@ -439,7 +439,7 @@ public class EmotionalPlanner implements Serializable {
 			
 			AppraisalFrame auxFrame = new AppraisalFrame(tGoal.GetActivationEvent());
 			auxFrame.SetAppraisalVariable(DeliberativeComponent.NAME, (short)6, OCCAppraisalVariables.FAILUREPROBABILITY.name(), prob);
-			auxFrame.SetAppraisalVariable(DeliberativeComponent.NAME, (short)6, OCCAppraisalVariables.GOALCONDUCIVENESS.name(), -tGoal.GetImportanceOfFailure(am));
+			auxFrame.SetAppraisalVariable(DeliberativeComponent.NAME, (short)6, OCCAppraisalVariables.GOALCONDUCIVENESS.name(), tGoal.GetImportanceOfFailure(am));
 			auxFrame.SetAppraisalVariable(DeliberativeComponent.NAME, (short)6, OCCAppraisalVariables.GOALSTATUS.name(), OCCAffectDerivationComponent.GOALUNCONFIRMED);
 			am.updateEmotions(auxFrame);
 			 

@@ -65,7 +65,6 @@ public class Intention implements Serializable {
 	private static final int MAXPLANS = 150;
 	
 	private String _fearEmotionID;
-
 	private String _hopeEmotionID;
 	private ActivePursuitGoal _goal;
 	private ArrayList<Plan> _planConstruction;
@@ -272,6 +271,13 @@ public class Intention implements Serializable {
 	 */
 	public int NumberOfAlternativePlans() {
 		return _planConstruction.size();
+	}
+	
+	public void ResetPlans()
+	{
+		_planConstruction.clear();
+		_subIntention = null;
+		_strongCommitment = true;
 	}
 
 	/**
