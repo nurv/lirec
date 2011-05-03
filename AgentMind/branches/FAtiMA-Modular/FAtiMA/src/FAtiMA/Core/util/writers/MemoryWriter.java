@@ -39,6 +39,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.Writer;
+import java.util.Date;
 
 import org.znerd.xmlenc.LineBreak;
 import org.znerd.xmlenc.XMLOutputter;
@@ -135,6 +136,7 @@ public class MemoryWriter implements Serializable {
 				
 				//episode time
 				_outputter.startTag("EpisodeTime");
+				
 				_outputter.attribute("narrativeTime", Long.toString(me.getTime().getNarrativeTime()));
 				_outputter.attribute("realTime", Long.toString(me.getTime().getRealTime()));
 				_outputter.attribute("eventSequence", Long.toString(me.getTime().getEventSequence()));

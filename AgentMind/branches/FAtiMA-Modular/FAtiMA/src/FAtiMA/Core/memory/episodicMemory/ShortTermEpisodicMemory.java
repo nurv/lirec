@@ -33,12 +33,17 @@ package FAtiMA.Core.memory.episodicMemory;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.ListIterator;
 
 import FAtiMA.Core.emotionalState.ActiveEmotion;
+import FAtiMA.Core.emotionalState.BaseEmotion;
 import FAtiMA.Core.goals.Goal;
 import FAtiMA.Core.memory.Memory;
 import FAtiMA.Core.sensorEffector.Event;
+import FAtiMA.Core.util.Constants;
+import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Substitution;
 
 
@@ -129,6 +134,139 @@ public class ShortTermEpisodicMemory implements Serializable {
 		this._details.remove(0);
 	}
 	
+	public BaseEmotion getStrongestEmotion()
+	{
+		BaseEmotion em;
+		BaseEmotion strongestEmotion = null;
+		
+		for(ActionDetail action : this._details)
+		{
+			em = action.getEmotion();
+			if(em != null)
+			{
+				if(strongestEmotion == null || em.GetPotential() > strongestEmotion.GetPotential())
+				{
+					strongestEmotion = em;
+				}
+			}
+		}
+		
+		return strongestEmotion;
+	}
+	
+	private ArrayList<ActionDetail> FilterExternalEvents(ArrayList<ActionDetail> events)
+	{
+		ActionDetail action;
+		ArrayList<ActionDetail> newList = new ArrayList<ActionDetail>();
+		for(ListIterator<ActionDetail> li = events.listIterator();li.hasNext();)
+		{
+			action = li.next();
+			if(action.getAction()!=null)
+			{
+				newList.add(action);
+			}
+		}
+		return newList;
+	}
+	
+	
+	public String GenerateSummary(Memory m)
+	{
+		ActionDetail action;
+		BaseEmotion strongestEmotion = null;
+		BaseEmotion secondStrongestEmotion = null;
+		int numberOfDetails = 3;
+		
+		Name locationKey = Name.ParseName(Constants.SELF + "(location)");
+		String location = (String) m.getSemanticMemory().AskProperty(locationKey);
+		
+		if(location == null)
+		{
+			location = Constants.EMPTY_LOCATION;
+		}
+		
+		// version with both internal and external events
+		List<ActionDetail> auxList = new ArrayList<ActionDetail>(_details);
+		// version with only internal events
+		//List auxList = (List) FilterInternalEvents(_details);
+		//// version with only external events
+		//List auxList = (List) FilterExternalEvents(_details);
+		// version with empty summary
+		//List auxList = (List) new ArrayList();
+		
+		
+		Collections.sort(auxList, new ActionDetailComparator(ActionDetailComparator.CompareByEmotionIntensity));
+		if(auxList.size() > numberOfDetails)
+		{
+			auxList = auxList.subList(auxList.size()-numberOfDetails,auxList.size());
+		}
+		
+		if(auxList.size() > 0) 
+		{
+			//determine the strongest feeling
+			action = (ActionDetail) auxList.get(auxList.size()-1);
+			strongestEmotion = action.getEmotion();
+			
+			if(auxList.size() > 1)
+			{
+				for(int i = auxList.size() - 2;i >= 0; i--)
+				{
+					action = (ActionDetail) auxList.get(i);
+					secondStrongestEmotion = action.getEmotion();
+					if(secondStrongestEmotion.getType() != strongestEmotion.getType())
+					{
+						break;
+					}
+					else 
+					{
+						secondStrongestEmotion = null;
+					}
+				}
+			}
+		}
+		
+		Collections.sort(auxList, new ActionDetailComparator(ActionDetailComparator.CompareByOrder));
+		
+		String AMSummary = "";
+		boolean firstEvent = true;
+		
+		ListIterator<ActionDetail> li = auxList.listIterator();
+		while(li.hasNext())
+		{
+			action = li.next();
+			if(action.getEmotion().GetPotential() > 0)
+			{
+				AMSummary += "<Event>";
+				if(firstEvent)
+				{
+					AMSummary +="<Location>" + location + "</Location>";
+					AMSummary += SummaryGenerator.generateTimeDescription(1000);
+					firstEvent = false;
+				}
+				
+				AMSummary += SummaryGenerator.GenerateActionSummary(m, action);
+				
+				if(strongestEmotion != null &&
+						action.getEmotion().getType() == strongestEmotion.getType() &&
+						action.getEmotion().GetPotential() == strongestEmotion.GetPotential())
+				{
+					AMSummary += SummaryGenerator.GenerateEmotionSummary(m, strongestEmotion);
+				}
+				
+				/*if(secondStrongestEmotion != null &&
+						action.getEmotion().GetType() == secondStrongestEmotion.GetType() &&
+						action.getEmotion().GetPotential() == secondStrongestEmotion.GetPotential())
+				{
+					AMSummary += SummaryGenerator.GenerateEmotionSummary(secondStrongestEmotion);
+				}*/
+				
+				AMSummary += "</Event>";
+			}
+		}
+		
+		return AMSummary;
+	}
+	
 	public void AssociateEmotionToDetail(Memory m, ActiveEmotion em, Event cause, String location)
 	{
 		ActionDetail action;
@@ -148,7 +286,8 @@ public class ShortTermEpisodicMemory implements Serializable {
 			//_details.add(action);
 			//action.UpdateEmotionValues(m, em);
 		}
-	}	
+	}
+	
 	
 	public boolean VerifiesKeys(ArrayList<SearchKey> searchKeys)
 	{

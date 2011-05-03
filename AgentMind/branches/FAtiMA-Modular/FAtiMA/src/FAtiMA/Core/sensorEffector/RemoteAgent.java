@@ -512,8 +512,8 @@ public abstract class RemoteAgent extends SocketListener {
 			
 			if(speechAct.getMeaning().equals("episodesummary"))
 			{
-				String summaryInfo = "<ABMemory><Receiver>" + you + "</Receiver>";
-				//summaryInfo += am.getMemory().getEpisodicMemory().SummarizeLastEvent(am.getMemory());
+				String summaryInfo = "<ABMemory><Receiver>" + speechAct.getReceiver() + "</Receiver>";
+				summaryInfo += am.getMemory().getEpisodicMemory().SummarizeEpisode(am.getMemory(), speechAct.GetParameters().get(0));
 				summaryInfo += "</ABMemory>";
 				AgentLogger.GetInstance().log(summaryInfo);
 				speechAct.setAMSummary(summaryInfo);

@@ -358,9 +358,14 @@ public class EpisodicMemory implements Serializable {
 		return _stm;
 	}
 	
-	public String SummarizeEpisode(Memory m, int episode)
+	public String SummarizeEpisode(Memory m, String episode)
 	{
-		return _am.SummarizeEpisode(m, episode);
+		if(episode.equals("STM"))
+		{
+			return _stm.GenerateSummary(m);
+		}
+		int num = Integer.parseInt(episode);
+		return _am.SummarizeEpisode(m, num);
 	}
 	
 	public String toXML()

@@ -57,6 +57,7 @@ import FAtiMA.Core.util.Constants;
 import FAtiMA.Core.util.VersionChecker;
 import FAtiMA.Core.util.enumerables.AgentPlatform;
 import FAtiMA.Core.util.parsers.BinaryStringConverter;
+import FAtiMA.Core.util.parsers.CentralXMLParser;
 import FAtiMA.Core.util.parsers.EmotionDispositionsLoaderHandler;
 import FAtiMA.Core.util.parsers.MemoryLoaderHandler;
 import FAtiMA.Core.util.writers.MemoryWriter;
@@ -87,6 +88,7 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 	protected IDetectThreatStrategy _detectThreatStrat;
 	
 	//Data structures
+	protected CentralXMLParser _centralParser;
 	protected EmotionalState _emotionalState;
 	protected Memory _memory;
 	protected GoalLibrary _goalLibrary;
@@ -165,7 +167,6 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 			else
 			{
 				_agentLoaded = false;
-				AgentLogger.GetInstance().initialize(_name,_showStateWindow);
 				
 				_showStateWindow = ConfigurationManager.getDisplayMode();
 				_displayName = ConfigurationManager.getDisplayName();
@@ -173,6 +174,8 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 				_sex = ConfigurationManager.getSex();
 				_saveDirectory = ConfigurationManager.getSaveDirectory();
 				_memory.setSaveDirectory(_saveDirectory);
+				
+				AgentLogger.GetInstance().initialize(_name,_showStateWindow);
 				
 				if(_showStateWindow && !VersionChecker.runningOnAndroid()){
 					_agentDisplay = new AgentDisplay(this);

@@ -110,7 +110,10 @@ public class ActionsLoaderHandler extends ReflectXMLHandler {
 		if(action.toString().startsWith("Inference"))
 		{
 			//inference operator, we must add it to the KnowledgeBase
-			_am.getMemory().getSemanticMemory().AddInferenceOperator(_currentOperator);
+			if(_am!= null)
+			{
+				_am.getMemory().getSemanticMemory().AddInferenceOperator(_currentOperator);
+			}
 		}
 		else
 		{

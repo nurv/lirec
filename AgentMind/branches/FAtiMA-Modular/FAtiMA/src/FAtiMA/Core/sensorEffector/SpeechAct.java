@@ -105,12 +105,23 @@ public class SpeechAct extends RemoteAction {
 	 */
 	public static RemoteAction ParseFromXml(String xml) {
 		SpeechActHandler sh = new SpeechActHandler();
+		SpeechAct sa;
 		
 		try {
 			SAXParserFactory factory = SAXParserFactory.newInstance();
 			SAXParser saxParser = factory.newSAXParser();
 			saxParser.parse(new InputSource(new ByteArrayInputStream(xml.getBytes("UTF-8"))), sh);
-			return sh.getSpeechAct();
+			
+			sa = sh.getSpeechAct();
+			
+			String[] aux = xml.split("<AMSummary>");
+			if(aux.length > 1){
+				String summary = aux[1].split("</AMSummary>")[0];
+				
+				sa.setAMSummary(summary);
+			}
+			
+			return sa;
 		}
 		catch (Exception ex) {
 			return null;
@@ -311,10 +322,10 @@ public class SpeechAct extends RemoteAction {
 			event.AddParameter(new Parameter("param",li.next()));
 		}
 		
-		for(Parameter p : _contextVariables)
+		/*for(Parameter p : _contextVariables)
 		{
 			event.AddParameter(p);
-		}
+		}*/
 		
 		
 		return event;
@@ -395,6 +406,11 @@ public class SpeechAct extends RemoteAction {
 	    	+ "</Sender><Receiver>" + _target
 	    	+ "</Receiver><Type>" + speechType + "</Type>";
 	    
+	    /*for(String param : _parameters)
+	    {
+	    	aux += "<Param>" + param + "</Param>";
+	    }*/
+	    
 	    ListIterator<Parameter> li = _contextVariables.listIterator();
 	    while(li.hasNext()) {
 	        p = li.next();
@@ -409,6 +425,7 @@ public class SpeechAct extends RemoteAction {
 	    {
 	    	aux = aux + _emotion.toXml();
 	    }
+	    
 	    
 	    aux = aux + cameraToXMl();
 	  

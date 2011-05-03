@@ -51,6 +51,8 @@ public abstract class SummaryGenerator {
 	{
 		
 		String actionSummary = "<Subject>";
+		String actionName;
+		String status;
 		
 		if(action.getSubject().equals(Constants.SELF))
 		{
@@ -61,39 +63,58 @@ public abstract class SummaryGenerator {
 			actionSummary += translateNameToDisplayName(m, action.getSubject());
 		}
 		
-		actionSummary += "</Subject><Action>"; 
+		actionSummary += "</Subject>"; 
 		
-		if(SpeechAct.isSpeechAct(action.getAction()))
+		actionName = action.getAction();
+		
+		actionSummary += "<Action>";
+		
+		if(actionName != null)
 		{
-			ArrayList<Parameter> params = action.getParameters();
-			actionSummary += params.get(0);
 			
-			if(action.getAction().equals(SpeechAct.Reply))
+			//normal action
+			if(SpeechAct.isSpeechAct(actionName))
 			{
-				actionSummary += params.get(1);
+				ArrayList<Parameter> params = action.getParameters();
+				actionSummary += params.get(0);
+				
+				if(actionName.equals(SpeechAct.Reply))
+				{
+					actionSummary += params.get(1);
+				}
+					
+					/*if(action.getTarget().equals(AutobiographicalMemory.GetInstance().getSelf()))
+					{
+						description += "my ";
+					}
+					else
+					{
+						description += action.getTarget() + "'s ";
+					}
+					
+					description += params.get(0);
+					
+					return description;
+				*/
 			}
-				
-				/*if(action.getTarget().equals(AutobiographicalMemory.GetInstance().getSelf()))
-				{
-					description += "my ";
-				}
-				else
-				{
-					description += action.getTarget() + "'s ";
-				}
-				
-				description += params.get(0);
-				
-				return description;
-			*/
+			else 
+			{
+				actionSummary += actionName;
+			}
+			
 		}
-		else 
+		else
 		{
-			actionSummary += action.getAction();
+			actionSummary += action.getIntention();
 		}
-		
 		actionSummary += "</Action>";
 		
+		status = action.getStatus();
+		
+		if(status != null)
+		{
+			actionSummary += "<Status>" + status + "</Status>";
+		}
 		
 		if(action.getTarget() != null)
 		{
