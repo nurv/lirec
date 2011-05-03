@@ -35,8 +35,8 @@ xsi:noNamespaceSchemaLocation="../../schemas/Character.xsd">
 	</MotivationalParameters>
 
 	<Goals>
-		<Goal name="respondYes([target],[person],[task],[item])" importanceOfSuccess="4" importanceOfFailure="4"/>
-		<Goal name="respondNo([target],[person],[task],[item])" importanceOfSuccess="4" importanceOfFailure="4"/>
+		<Goal name="respondYes([target],[person],[task],[item])" importanceOfSuccess="8" importanceOfFailure="8"/>
+		<Goal name="respondNo([target],[person],[task],[item])" importanceOfSuccess="8" importanceOfFailure="8"/>
 	</Goals>
 	
 	<InterpersonalRelations>
