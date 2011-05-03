@@ -12,6 +12,7 @@ import FAtiMA.Core.wellFormedNames.Symbol;
 public class NewEventCondition extends RecentEventCondition {
 
 	private boolean _conditionAlreadyVerified = false;  
+	private int TIME_INTERVAL_MS = 5000; 
 	
 	
 	/**
@@ -30,6 +31,7 @@ public class NewEventCondition extends RecentEventCondition {
 		newEvent._positive = this._positive;
 		newEvent._conditionAlreadyVerified = this._conditionAlreadyVerified;
 		newEvent._name = (Name) this._name.clone();
+		newEvent._verifiable = this._verifiable;
 		newEvent._subject = (Symbol) this._subject.clone();
 		newEvent._action = (Symbol) this._action.clone();
 		if(this._target != null)
@@ -102,7 +104,7 @@ public class NewEventCondition extends RecentEventCondition {
 		ArrayList<SearchKey> keys = super.GetSearchKeys();
 		
 		//we only want to search for events that happened at most 1 second before
-		keys.add(new SearchKey(SearchKey.MAXELAPSEDTIME, new Long(1000)));
+		keys.add(new SearchKey(SearchKey.MAXELAPSEDTIME, new Long(TIME_INTERVAL_MS)));
 		
 		return keys;
 	}

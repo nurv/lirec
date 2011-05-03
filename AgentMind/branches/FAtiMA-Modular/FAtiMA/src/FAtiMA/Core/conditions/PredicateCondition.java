@@ -86,6 +86,7 @@ public class PredicateCondition extends Condition {
     public static PredicateCondition ParsePredicate(Attributes attributes) {
 		String aux;
 		Symbol ToM;
+	
 		Name name;
 		boolean positive = true;
 		aux = attributes.getValue("name");
@@ -269,7 +270,10 @@ public class PredicateCondition extends Condition {
 	 */
 	public Object clone()
 	{
-	    return new PredicateCondition(this._positive,(Name) this._name.clone(), (Symbol) this._ToM.clone());
+	    PredicateCondition pc = new PredicateCondition(this._positive,(Name) this._name.clone(), (Symbol) this._ToM.clone());
+	    pc._verifiable = this._verifiable;
+	    
+	    return pc;
 	}
 	
 	/**

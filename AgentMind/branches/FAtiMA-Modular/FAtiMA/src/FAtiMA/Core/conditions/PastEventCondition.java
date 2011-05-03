@@ -211,6 +211,8 @@ public class PastEventCondition extends PredicateCondition {
 		newEvent._status = this._status;
 		
 		newEvent._name = (Name) this._name.clone();
+		newEvent._verifiable = this._verifiable;
+		
 		newEvent._subject = (Symbol) this._subject.clone();
 		newEvent._action = (Symbol) this._action.clone();
 		if(this._target != null)

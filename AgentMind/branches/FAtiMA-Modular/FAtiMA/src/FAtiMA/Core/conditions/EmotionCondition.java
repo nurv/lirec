@@ -392,6 +392,7 @@ public class EmotionCondition extends PredicateCondition {
 		ec._ToM = (Symbol) this._ToM.clone();
 		ec._emotionType = this._emotionType;
 		ec._name = (Name) this._name.clone();
+		ec._verifiable = this._verifiable;
 		ec._intensity = (Symbol) this._intensity.clone();
 		
 		if(this._direction != null)

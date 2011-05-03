@@ -315,6 +315,7 @@ public class MoodCondition extends Condition {
 		mc._operator = this._operator;
 		mc._value = this._value;
 		mc._name = (Name) this._name.clone();
+		mc._verifiable = this._verifiable;
 		
 		return mc;
 	}

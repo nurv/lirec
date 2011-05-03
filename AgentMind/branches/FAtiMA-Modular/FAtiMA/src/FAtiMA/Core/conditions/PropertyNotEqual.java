@@ -242,7 +242,9 @@ public class PropertyNotEqual extends PropertyCondition {
 	 */
 	public Object clone()
 	{
-	    return new PropertyNotEqual((Name) this._name.clone(), (Name) this._value.clone(), (Symbol) this._ToM.clone());
+	    PropertyNotEqual pne = new PropertyNotEqual((Name) this._name.clone(), (Name) this._value.clone(), (Symbol) this._ToM.clone());
+	    pne._verifiable = this._verifiable;
+	    return pne;
 	}
 
 	/**

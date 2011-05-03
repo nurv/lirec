@@ -116,7 +116,9 @@ public class PropertyLesser extends PropertyCondition {
 	 */
 	public Object clone()
 	{
-	    return new PropertyLesser((Name) this._name.clone(), (Name) this._value.clone(), (Symbol) this._ToM.clone());
+	    PropertyLesser pl = new PropertyLesser((Name) this._name.clone(), (Name) this._value.clone(), (Symbol) this._ToM.clone());
+	    pl._verifiable = true;
+	    return pl;
 	}
 
 	/**

@@ -116,7 +116,11 @@ public class PropertyGreater extends PropertyCondition {
 	 */
 	public Object clone()
 	{
-	    return new PropertyGreater((Name) this._name.clone(), (Name) this._value.clone(), (Symbol) this._ToM.clone());
+	    PropertyGreater pg = new PropertyGreater((Name) this._name.clone(), (Name) this._value.clone(), (Symbol) this._ToM.clone());
+	
+	    pg._verifiable = this._verifiable;
+	    
+	    return pg;
 	}
 
 	/**

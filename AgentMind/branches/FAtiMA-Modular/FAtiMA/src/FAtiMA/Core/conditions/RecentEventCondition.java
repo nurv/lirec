@@ -104,6 +104,8 @@ public class RecentEventCondition extends PastEventCondition {
 		newEvent._positive = this._positive;
 		
 		newEvent._name = (Name) this._name.clone();
+		newEvent._verifiable = this._verifiable;
+		    
 		newEvent._subject = (Symbol) this._subject.clone();
 		newEvent._action = (Symbol) this._action.clone();
 		if(this._target != null)
@@ -206,7 +208,14 @@ public class RecentEventCondition extends PastEventCondition {
 		
 		if(!_name.isGrounded()) return false;
 		
-		return _positive == am.getMemory().getEpisodicMemory().ContainsRecentEvent(GetSearchKeys()); 
+		if(_positive == false){
+			System.out.print("");
+		}
+		
+		boolean result = _positive == am.getMemory().getEpisodicMemory().ContainsRecentEvent(GetSearchKeys()); 
+ 
+		
+		return result; 	
 	}
 	
 	protected ArrayList<ActionDetail> GetPossibleBindings(AgentModel am)

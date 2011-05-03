@@ -110,8 +110,12 @@ public class PropertyEqual extends PropertyCondition
 	 */
     public Object clone()
     {
-        return new PropertyEqual((Name) this._name
+    	PropertyEqual pe = new PropertyEqual((Name) this._name
                 .clone(), (Name) this._value.clone(), (Symbol) this._ToM.clone());
+    	
+    	pe._verifiable = this._verifiable;
+    	
+    	return pe;
     }
 
     /**

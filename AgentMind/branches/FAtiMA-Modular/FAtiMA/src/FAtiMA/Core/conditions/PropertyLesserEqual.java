@@ -93,7 +93,11 @@ public class PropertyLesserEqual extends PropertyCondition {
 	 */
 	public Object clone()
 	{
-	    return new PropertyLesserEqual((Name) this._name.clone(), (Name) this._value.clone(), (Symbol) this._ToM.clone());
+	    PropertyLesserEqual ple =  new PropertyLesserEqual((Name) this._name.clone(), (Name) this._value.clone(), (Symbol) this._ToM.clone());
+	    
+	    ple._verifiable = this._verifiable;
+	    
+	    return ple;
 	}
 
 	/**

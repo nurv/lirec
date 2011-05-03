@@ -86,12 +86,15 @@ import FAtiMA.Core.wellFormedNames.Symbol;
  */
 
 public abstract class Condition implements IGroundable, Cloneable, Serializable {
-
-	/**
-	 * 
-	 */
+	
 	private static final long serialVersionUID = 1L;
 
+	
+	protected boolean _verifiable;
+	protected Name _name;
+	protected Symbol _ToM;
+	private boolean _hasChangedVerifiability = false;
+	
 	/**
 	 * Checks if a list of conditions (usually preconditions) to see
 	 * if all of them are verified. The method returns a list of possible 
@@ -124,6 +127,8 @@ public abstract class Condition implements IGroundable, Cloneable, Serializable 
 		
 		for(Condition cond : preconditions)
 		{
+			cond.setVerifiable(false);
+			
 			//For each condition we need to verify if it is valid
 			
 
@@ -154,11 +159,14 @@ public abstract class Condition implements IGroundable, Cloneable, Serializable 
 					//that individually can satisfy the new condition
 					aux = newCond.GetValidBindings(am);
 					if (aux != null) {
+						
+						cond.setVerifiable(true);		
 						//if the list is not null, it means that the condition can be verified 
 						//in this case we need to apply more substitutions to make the last condition
 						//true, and there might exist more than one set of substitutions that does that.
 						//So, for each valid set of substitutions we need to add the substitutions
 						//that satisfy the previous conditions, and the result is a valid SubstitutionSet
+					
 						for(SubstitutionSet newSubSet : aux){
 						 	//We're adding the substitutions needed for the previous conditions
 						 	//to the SubstitutionSet that verifies the current condition 
@@ -167,6 +175,7 @@ public abstract class Condition implements IGroundable, Cloneable, Serializable 
 						 	newValidSubstitutionsSet.add(newSubSet);
 						}
 					}
+					
 				}
 				if(newValidSubstitutionsSet.size() == 0) 
 				{
@@ -178,9 +187,12 @@ public abstract class Condition implements IGroundable, Cloneable, Serializable 
 				//previous condition tests
 				aux = cond.GetValidBindings(am);
 				if (aux != null && aux.size() > 0) {
+					cond.setVerifiable(true);
 					newValidSubstitutionsSet.addAll(aux);
 				}
-				else return null;
+				else{
+					return null;
+				}
 			}
 			validSubstitutionsSet = newValidSubstitutionsSet;
 		}
@@ -190,15 +202,23 @@ public abstract class Condition implements IGroundable, Cloneable, Serializable 
 	}
 	
 	
-	protected Name _name;
-	protected Symbol _ToM;
 	
+	public void setVerifiable(boolean newVerifiableValue) {
+		if(_verifiable != newVerifiableValue){
+			_verifiable = newVerifiableValue;
+			_hasChangedVerifiability = true;
+		}
+	}
+
+
+
 	/**
 	 * Creates a new Condition - not used directly because its an abstract class
 	 *
 	 */
 	protected Condition()
 	{
+		_verifiable = false;
 	}
 
 	/**
@@ -208,12 +228,14 @@ public abstract class Condition implements IGroundable, Cloneable, Serializable 
 	public Condition(Name name) {
 		_name = name;
 		_ToM = Constants.UNIVERSAL;
+		_verifiable = false;
 	}
 	
 	public Condition(Name name, Symbol ToM)
 	{
 		_name = name;
 		_ToM = ToM;
+		_verifiable = false;
 	}
 	
 	/**
@@ -236,6 +258,12 @@ public abstract class Condition implements IGroundable, Cloneable, Serializable 
 	{
 		return this._ToM;
 	}
+	
+	public boolean isVerifiable()
+	{
+		return this._verifiable;
+	}
+	
 	
 	/**
 	 * This method finds all the possible sets of Substitutions that applied to the condition
@@ -308,4 +336,10 @@ public abstract class Condition implements IGroundable, Cloneable, Serializable 
      * @return returns all set of Substitutions that make the condition valid.
 	 */
 	protected abstract ArrayList<Substitution> GetValueBindings(AgentModel am);
+
+	public boolean hasChangedVerifiability() {
+		boolean temp = _hasChangedVerifiability;
+		_hasChangedVerifiability = false;
+		return temp;
+	}	
 }

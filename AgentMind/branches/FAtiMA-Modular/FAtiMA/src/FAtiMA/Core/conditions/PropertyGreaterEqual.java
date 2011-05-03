@@ -94,8 +94,12 @@ public class PropertyGreaterEqual extends PropertyCondition {
 	 */
 	public Object clone()
 	{
-	    return new PropertyGreaterEqual((Name) this._name.clone(), (Name) this._value.clone(), (Symbol) this._ToM.clone());
+	    PropertyGreaterEqual pge = new PropertyGreaterEqual((Name) this._name.clone(), (Name) this._value.clone(), (Symbol) this._ToM.clone());
+	    pge._verifiable = this._verifiable;
+	    
+	    return pge;
 	}
+	
 
 	/**
 	 * Prints the PropertyTest to the Standard Output
