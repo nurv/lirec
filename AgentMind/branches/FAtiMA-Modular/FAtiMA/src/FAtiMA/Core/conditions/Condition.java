@@ -89,12 +89,12 @@ public abstract class Condition implements IGroundable, Cloneable, Serializable 
 	
 	private static final long serialVersionUID = 1L;
 
-	
-	private boolean _verifiable;
+	private boolean _previousVerifiableStatus;
+	private boolean _currentVerifiableStatus;
+	private boolean _hasChangedVerifiability;	
 	private Name _name;
 	private Symbol _ToM;
-	private boolean _hasChangedVerifiability = false;
-	
+
 	public Name getName() {
 		return _name;
 	}
@@ -106,7 +106,7 @@ public abstract class Condition implements IGroundable, Cloneable, Serializable 
 	
 	public boolean isVerifiable()
 	{
-		return this._verifiable;
+		return this._currentVerifiableStatus;
 	}
 	
 	protected void setName(Name name){
@@ -146,11 +146,10 @@ public abstract class Condition implements IGroundable, Cloneable, Serializable 
 		
 		for(Condition cond : preconditions)
 		{
-			cond.setVerifiable(false);
+			boolean previousVerifiableStatus = cond._currentVerifiableStatus;
+			cond._currentVerifiableStatus = false;
 			
 			//For each condition we need to verify if it is valid
-			
-
 			//This list contains the SubstitutionSets that correspond to Substitutions 
 			//that if applied to the tested conditions, will make them true
 			//this list is rebuilt from scratch at each condition, because a previous
@@ -178,8 +177,10 @@ public abstract class Condition implements IGroundable, Cloneable, Serializable 
 					//that individually can satisfy the new condition
 					aux = newCond.GetValidBindings(am);
 					if (aux != null) {
-						
-						cond.setVerifiable(true);		
+						cond._currentVerifiableStatus = true;
+						if(previousVerifiableStatus == false){
+							cond._hasChangedVerifiability = true;		
+						}
 						//if the list is not null, it means that the condition can be verified 
 						//in this case we need to apply more substitutions to make the last condition
 						//true, and there might exist more than one set of substitutions that does that.
@@ -206,7 +207,10 @@ public abstract class Condition implements IGroundable, Cloneable, Serializable 
 				//previous condition tests
 				aux = cond.GetValidBindings(am);
 				if (aux != null && aux.size() > 0) {
-					cond.setVerifiable(true);
+					cond._currentVerifiableStatus = true;
+					if(previousVerifiableStatus == false){
+						cond._hasChangedVerifiability = true;		
+					}
 					newValidSubstitutionsSet.addAll(aux);
 				}
 				else{
@@ -214,21 +218,27 @@ public abstract class Condition implements IGroundable, Cloneable, Serializable 
 				}
 			}
 			validSubstitutionsSet = newValidSubstitutionsSet;
+			
+			if(previousVerifiableStatus == true && cond._currentVerifiableStatus == false){
+				cond._hasChangedVerifiability = true;
+			}
 		}
+		
 		
 		if(validSubstitutionsSet.size() == 0) return null;	
 		else return validSubstitutionsSet;
 	}
 	
 	
-	
-	public void setVerifiable(boolean newVerifiableValue) {
-		if(_verifiable != newVerifiableValue){
-			_verifiable = newVerifiableValue;
-			_hasChangedVerifiability = true;
-		}
+	public void setVerifiable(boolean verifiableStatus) {
+		_currentVerifiableStatus = verifiableStatus;
+		
 	}
-
+	public boolean hasChangedVerifiability() {
+		boolean aux = _hasChangedVerifiability;
+		_hasChangedVerifiability = false;
+		return aux;
+	}
 
 	/**
 	 * Creates a new Condition - not used directly because its an abstract class
@@ -238,14 +248,20 @@ public abstract class Condition implements IGroundable, Cloneable, Serializable 
 	{
 		_name = (Name) c._name.clone();
 		_ToM = (Symbol) c._ToM;
-		_verifiable = c._verifiable;
-		_hasChangedVerifiability = c._hasChangedVerifiability;	
+		_currentVerifiableStatus = c._currentVerifiableStatus;
+		_previousVerifiableStatus = c._previousVerifiableStatus;
+		_hasChangedVerifiability = c._hasChangedVerifiability;
 	}
 	
 	protected Condition(){
-		_verifiable = false;
+		_currentVerifiableStatus = false;
+		_previousVerifiableStatus = false;
+		_hasChangedVerifiability = false;	
 	}
+	
+		
 
+	
 	
 	/**
 	 * Clones this Condition, returning an equal copy.
@@ -262,14 +278,14 @@ public abstract class Condition implements IGroundable, Cloneable, Serializable 
 	public Condition(Name name) {
 		_name = name;
 		_ToM = Constants.UNIVERSAL;
-		_verifiable = false;
+		_currentVerifiableStatus = false;
 	}
 	
 	public Condition(Name name, Symbol ToM)
 	{
 		_name = name;
 		_ToM = ToM;
-		_verifiable = false;
+		_currentVerifiableStatus = false;
 	}
 	
 	/**
@@ -348,9 +364,7 @@ public abstract class Condition implements IGroundable, Cloneable, Serializable 
 	 */
 	protected abstract ArrayList<Substitution> GetValueBindings(AgentModel am);
 
-	public boolean hasChangedVerifiability() {
-		boolean temp = _hasChangedVerifiability;
-		_hasChangedVerifiability = false;
-		return temp;
-	}	
+	
+
+
 }

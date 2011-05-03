@@ -39,9 +39,9 @@ import java.util.ListIterator;
 
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.memory.episodicMemory.ActionDetail;
+import FAtiMA.Core.memory.episodicMemory.AutobiographicalMemory;
 import FAtiMA.Core.memory.episodicMemory.SearchKey;
 import FAtiMA.Core.sensorEffector.Event;
-import FAtiMA.Core.util.Constants;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Substitution;
 import FAtiMA.Core.wellFormedNames.Symbol;

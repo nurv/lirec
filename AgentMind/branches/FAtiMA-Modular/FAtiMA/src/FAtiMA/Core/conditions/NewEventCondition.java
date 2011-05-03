@@ -1,13 +1,10 @@
 package FAtiMA.Core.conditions;
 
 import java.util.ArrayList;
-import java.util.ListIterator;
 
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.memory.episodicMemory.SearchKey;
-import FAtiMA.Core.util.Constants;
 import FAtiMA.Core.wellFormedNames.Name;
-import FAtiMA.Core.wellFormedNames.Symbol;
 
 public class NewEventCondition extends RecentEventCondition {
 
