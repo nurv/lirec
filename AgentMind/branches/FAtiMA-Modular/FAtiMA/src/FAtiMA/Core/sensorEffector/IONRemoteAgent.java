@@ -150,11 +150,18 @@ public class IONRemoteAgent extends RemoteAgent {
 	protected void PropertyChangedPerception(String perc)
 	{
 		StringTokenizer st = new StringTokenizer(perc," ");
+		String visibility;
 		//a object/agent has one of its properties changed
 		//the perception specifies which property was changed and its new value
 		//percept-type object property newvalue 
 		//Ex: PROPERTYCHANGED Luke pose onfloor
-		String visibility = st.nextToken();
+		
+		if(st.countTokens() == 4){
+			visibility = st.nextToken();	
+		}else{
+			visibility = "*";
+		}
+		
 		String subject = st.nextToken();
 		String property = st.nextToken();
 		String value = st.nextToken();
