@@ -69,6 +69,7 @@ import org.xml.sax.InputSource;
 
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.ValuedAction;
+import FAtiMA.Core.util.Constants;
 import FAtiMA.Core.util.enumerables.EventType;
 import FAtiMA.Core.util.parsers.SpeechActHandler;
 import FAtiMA.Core.wellFormedNames.Name;
@@ -163,14 +164,14 @@ public class SpeechAct extends RemoteAction {
 	 * @param receiver - the receiver of the SpeechAct 
 	 * @param meaning - the SpeechAct's meaning (insult, greeting, etc)
 	 */
-	public SpeechAct(String actType, String sender, String receiver, String meaning) {
+	/*public SpeechAct(String actType, String sender, String receiver, String meaning) {
 	    _target = receiver;
 	    _subject = sender;
 	    _meaning = meaning;
 	    _actionType = actType;
 	    this._AMsummary = null;
 	    _contextVariables = new ArrayList<Parameter>();
-	}
+	}*/
 	
 	/**
 	 * Creates a new SpeechAct from a ValuedAction
@@ -190,6 +191,10 @@ public class SpeechAct extends RemoteAction {
 		}
 		
 		_target = li.next().toString();
+		if(_target.equals(Constants.SELF))
+		{
+			_target = am.getName();
+		}
 		_meaning = li.next().toString();
 		
 		this._AMsummary = null;
@@ -197,21 +202,47 @@ public class SpeechAct extends RemoteAction {
 		_contextVariables = new ArrayList<Parameter>();
 		
 		//third literal of a speech acts corresponds to a third person or object,
-		if(li.hasNext())
-		{
-			String it = li.next().toString(); 
-			if(!_actionType.equals(Reply))
-			{
-				_contextVariables.add(new Parameter("it",it));
-			}
-			_parameters.add(it);
+//		if(li.hasNext())
+//		{
+//			String it = li.next().toString();
+//			if(it.equals(Constants.SELF))
+//			{
+//				it = am.getName();
+//			}
+//			if(!_actionType.equals(Reply))
+//			{
+//				_contextVariables.add(new Parameter("it",it));
+//			}
+//			_parameters.add(it);
+//		}
+		
+		//third literal of a speech corresponds to the topic
+		if(li.hasNext()){
+			String topic = li.next().toString();
+			_contextVariables.add(new Parameter("topic",topic));
 		}
 		
+		//fourth literal of a speech corresponds to the verbal-style adopted
+		if(li.hasNext()){
+			String verbalStyle = li.next().toString();
+			_contextVariables.add(new Parameter("verbal-style",verbalStyle));
+			
+		}
+		
+		_contextVariables.add(new Parameter("me", _subject));
+		
+		_contextVariables.add(new Parameter("you", _target));
+		
+			
 		int counter = 1;
 		while(li.hasNext())
 		{
 			counter++;
 			String it = li.next().toString();
+			if(it.equals(Constants.SELF))
+			{
+				it = am.getName();
+			}
 			_parameters.add(it);
 			_contextVariables.add(new Parameter("it"+counter,it));
 		}

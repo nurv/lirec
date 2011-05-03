@@ -53,6 +53,7 @@ import org.xml.sax.InputSource;
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.ValuedAction;
 import FAtiMA.Core.emotionalState.ActiveEmotion;
+import FAtiMA.Core.util.Constants;
 import FAtiMA.Core.util.enumerables.EventType;
 import FAtiMA.Core.util.parsers.RemoteActionHandler;
 import FAtiMA.Core.wellFormedNames.Symbol;
@@ -110,6 +111,7 @@ public class RemoteAction implements Serializable {
 		
 
 		String actionName;
+		String aux;
 		ListIterator<Symbol> li = va.getAction().GetLiteralList().listIterator();
 		
 		actionName = li.next().toString();
@@ -122,15 +124,23 @@ public class RemoteAction implements Serializable {
 		
 		if(li.hasNext())
 		{
-			_target = li.next().toString(); 	
+			_target = li.next().toString();
+			
+			if(_target.equals(Constants.SELF))
+			{
+				_target = am.getName();
+			}
 			
 			while(li.hasNext())
 			{
-				_parameters.add(li.next().toString());
+				aux = li.next().toString();
+				
+				if(aux.equals(Constants.SELF))
+				{
+					aux = am.getName();
+				}
+				_parameters.add(aux);
 			}
-			
-			
-			
 		}
 		_emotion = va.getEmotion(am.getEmotionalState());
 

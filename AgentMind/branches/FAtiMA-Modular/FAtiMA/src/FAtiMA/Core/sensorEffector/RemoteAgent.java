@@ -563,7 +563,7 @@ public abstract class RemoteAgent extends SocketListener {
 		_canAct = false;
 		SendAction(rAction);
 
-		System.out.println("Sent action for execution: " + rAction._actionType);
+		System.out.println("Sent action for execution: " + rAction._actionType + rAction._target + rAction._parameters);
 		AgentLogger.GetInstance().logAndPrint("Cannot act now!");
 		
 	}
