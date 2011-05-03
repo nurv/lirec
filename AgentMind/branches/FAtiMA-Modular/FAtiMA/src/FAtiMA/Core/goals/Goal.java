@@ -340,7 +340,7 @@ public abstract class Goal implements IGroundable, Cloneable, Serializable {
 	 * Modify the description so that the goal action (activation, success, failure)
 	 * is stored in the field status instead of action, added a GOAL eventType 
 	*/
-	private Event generateEventDescription(short goalEventType)
+	protected Event generateEventDescription(short goalEventType)
 	{
 		String target = "";
 		String name;

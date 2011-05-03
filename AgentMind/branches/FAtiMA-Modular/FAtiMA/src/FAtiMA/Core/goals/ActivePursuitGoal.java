@@ -167,15 +167,17 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
 	 * @return true if the goal failed, false otherwise
 	 */
 	public boolean CheckFailure(AgentModel am) {
-	    ListIterator<Condition> li;
-		Condition cond;
-		li = _failureConditions.listIterator();
-		
-		while (li.hasNext()) {
-			cond = (Condition) li.next();
-			if (cond.GetValidBindings(am) != null)
+	 
+		for (Condition c : _failureConditions){
+			if(c.GetValidBindings(am) != null)
+			{
+				c.setVerifiable(false);
 				return true;
+			}else{
+				c.setVerifiable(true);
+			}
 		}
+
 		return false;
 	}
 	
@@ -203,13 +205,14 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
 	public boolean CheckSuccess(AgentModel am) {
 	    ListIterator<Condition> li;
 		Condition cond;
-		li = _successConditions.listIterator();
 		
-		while (li.hasNext()) {
-			cond = (Condition) li.next();
-			if(cond.GetValidBindings(am) == null)
+		for (Condition c : _successConditions){
+			if(c.GetValidBindings(am) == null)
 			{
+				c.setVerifiable(false);
 				return false;
+			}else{
+				c.setVerifiable(true);
 			}
 		}
 		return true;
