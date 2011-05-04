@@ -6,7 +6,6 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
 
-import FAtiMA.Conversation.ConversationComponent;
 import FAtiMA.Core.AgentCore;
 import FAtiMA.Core.exceptions.ActionsParsingException;
 import FAtiMA.Core.exceptions.GoalLibParsingException;
@@ -48,7 +47,7 @@ public class AgentLauncher {
 			aG.addComponent(new ReactiveComponent());
 			aG.addComponent(new OCCAffectDerivationComponent());
 			aG.addComponent(new DeliberativeComponent());
-			aG.addComponent(new SocialRelationsComponent(extraFiles));
+			//aG.addComponent(new SocialRelationsComponent(extraFiles));
 			//aG.addComponent(new EmpathyComponent());
 			aG.addComponent(new MotivationalComponent(extraFiles));
 			aG.addComponent(new ToMComponent(ConfigurationManager.getName()));
