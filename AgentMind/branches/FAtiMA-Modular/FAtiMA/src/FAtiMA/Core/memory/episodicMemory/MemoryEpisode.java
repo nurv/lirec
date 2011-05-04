@@ -30,7 +30,9 @@
  * 			 			 - Restructured the generation of the summary of an event. Defined new
  * 						   methods that construct the summary and return an xml description
  *						   ready to be used by the LanguageEngine
- * Matthias Keysermann: 08/03/2011 - added retrieval storage to VerifiesKey/s, GetDetailsByKey/s 
+ * Matthias Keysermann: 08/03/2011 - added retrieval storage to VerifiesKey/s, GetDetailsByKey/s
+ * Matthias Keysermann: 04/05/2011 - verifiesKey/s loops always over all details and then returns true/false
+ *                                   retrievals for all matching details are created (instead of only the first)
  */
 
 package FAtiMA.Core.memory.episodicMemory;
@@ -617,6 +619,8 @@ public class MemoryEpisode implements Serializable {
 		ActionDetail action;
 		ListIterator<ActionDetail> li = _details.listIterator();
 		
+		boolean status = false;
+		
 		while(li.hasNext())
 		{
 			action = (ActionDetail) li.next();
@@ -627,11 +631,11 @@ public class MemoryEpisode implements Serializable {
 				// DEBUG
 				//System.out.println("MemoryEpisode.java: retrieval of detail " + action.getID());
 				
-				return true;
+				status = true;
 			}
 		}
 		
-		return false;
+		return status;
 	}
 	
 	public boolean VerifiesKey(SearchKey k)
@@ -655,6 +659,9 @@ public class MemoryEpisode implements Serializable {
 		else
 		{
 			li = this._details.listIterator();
+			
+			boolean status = false;
+			
 			while(li.hasNext())
 			{
 				action = li.next();
@@ -665,10 +672,11 @@ public class MemoryEpisode implements Serializable {
 					// DEBUG
 					//System.out.println("MemoryEpisode.java: retrieval of detail " + action.getID());
 					
-					return true;
+					status = true;
 				}
 			}
-			return false;
+			
+			return status;
 		}
 	}	
 	

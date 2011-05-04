@@ -26,7 +26,9 @@
  * History: 
  * Meiyii Lim: 11/03/09 - File created
  * Matthias Keysermann: 09/03/2011 - added retrieval storage to VerifiesKey/s, GetDetailsByKey/s
- * Matthias Keysermann: 07/04/2011 - added GetEventID 
+ * Matthias Keysermann: 07/04/2011 - added GetEventID
+ * Matthias Keysermann: 04/05/2011 - verifiesKey/s loops always over all details and then returns true/false
+ *                                   retrievals for all matching details are created (instead of only the first)
  */
 
 package FAtiMA.Core.memory.episodicMemory;
@@ -61,7 +63,7 @@ public class ShortTermEpisodicMemory implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private static int eventID = 0;
 	
-	public static final short MAXRECORDS = 10000;
+	public static final short MAXRECORDS = 10;
 	private ArrayList<ActionDetail> _details;
 	
 	public ShortTermEpisodicMemory()
@@ -293,7 +295,9 @@ public class ShortTermEpisodicMemory implements Serializable {
 	{
 		ActionDetail action;
 		ListIterator<ActionDetail> li = _details.listIterator();
-		
+
+		boolean status = false;
+
 		while(li.hasNext())
 		{
 			action = li.next();
@@ -304,17 +308,19 @@ public class ShortTermEpisodicMemory implements Serializable {
 				// DEBUG
 				//System.out.println("ShortTermEpisodicMemory.java: retrieval of detail " + action.getID());
 				
-				return true;
+				status = true;
 			}
 		}
 		
-		return false;
+		return status;
 	}
 	
 	public boolean VerifiesKey(SearchKey k)
 	{
 		ListIterator<ActionDetail> li;
 		ActionDetail action;
+
+		boolean status = false;
 		
 		li = this._details.listIterator();
 		while(li.hasNext())
@@ -327,10 +333,11 @@ public class ShortTermEpisodicMemory implements Serializable {
 				// DEBUG
 				//System.out.println("ShortTermEpisodicMemory.java: retrieval of detail " + action.getID());
 				
-				return true;
+				status = true;
 			}
 		}
-		return false;
+		
+		return status;
 	}	
 	
 	public ArrayList<ActionDetail> GetDetailsByKey(SearchKey key)

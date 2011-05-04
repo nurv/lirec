@@ -20,25 +20,26 @@
  * Company: GAIPS/INESC-ID
  * Project: FAtiMA
  * Created: 18/Jul/2006 
- * @author: João Dias
+ * @author: Joï¿½o Dias
  * Email to: joao.assis@tagus.ist.utl.pt
  * 
  * History: 
- * João Dias: 18/Jul/2006 - File created
- * João Dias: 06/09/2006 - changed the way that InterpersonalRelations are determined
+ * Joï¿½o Dias: 18/Jul/2006 - File created
+ * Joï¿½o Dias: 06/09/2006 - changed the way that InterpersonalRelations are determined
  * 						   and stored in memory. Now the like relation can be retrieved
  * 						   directly from semantic memory. So I removed the methods related
  * 						   to InterpersonalRelations from this class
- * João Dias: 09/01/2007 - the field location in the AM is now being created properly when 
+ * Joï¿½o Dias: 09/01/2007 - the field location in the AM is now being created properly when 
  * 						   new information is stored
- * João Dias: 16/02/2007 - the method SummarizeLastEvent now returns an XML description of the summary
+ * Joï¿½o Dias: 16/02/2007 - the method SummarizeLastEvent now returns an XML description of the summary
  * 						   ready to be used by the LanguageEngine
- * João Dias: 22/02/2007 - the Autobiographical memory now registers if new data was added to it and 
+ * Joï¿½o Dias: 22/02/2007 - the Autobiographical memory now registers if new data was added to it and 
  * 						   provides a method that verifies if new data was added since last time it
  * 						   was verified
  * Meiyii Lim: 13/03/2009 - search for recent events is now also performed in STM,
  * 							AM now stores only external events that have an emotional impact on the agent
- * 							and internal events (ie. goal activation, success and failure) 
+ * 							and internal events (ie. goal activation, success and failure)
+ * Matthias Keysermann: 04/05/2011 - ContainsPastEvent loops always over all episodes and then returns true/false
  * **/
 
 package FAtiMA.Core.memory.episodicMemory;
@@ -314,19 +315,25 @@ public class AutobiographicalMemory implements Serializable {
 		MemoryEpisode currentEpisode;
 		
 		synchronized (this) {
+			
+			boolean status = false;
+			
 			if(this._memoryEvents.size() > 0)
 			{
 				currentEpisode = (MemoryEpisode) this._memoryEvents.get(this._memoryEvents.size()-1);				
-				
-				return currentEpisode.VerifiesKeys(searchKeys);
+				status = currentEpisode.VerifiesKeys(searchKeys);
 			}
-			return false;
-		}
+			
+			return status;
+		}		
 	}
 	
 	public boolean ContainsPastEvent(ArrayList<SearchKey> searchKeys)
 	{
 		synchronized (this) {
+			
+			boolean status = false;
+
 			if(this._memoryEvents.size() > 1)
 			{
 				
@@ -334,11 +341,13 @@ public class AutobiographicalMemory implements Serializable {
 				{
 					if(((MemoryEpisode)this._memoryEvents.get(i)).VerifiesKeys(searchKeys))
 					{
-						return true;
+						status = true;
 					}
 				}
+				
 			}
-			return false;
+			
+			return status;
 		}
 	}
 	
