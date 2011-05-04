@@ -174,21 +174,6 @@ public class PropertyCondition extends Condition {
 		return _value;
 	}
 	
-	/**
-     * @deprecated use ReplaceUnboundVariables(int) instead.
-	 * Replaces all unbound variables in the object by applying a numeric
-	 * identifier to each one.
-	 * Example: the variable [X] becomes [X4] if the received ID is 4.
-	 * @param variableID - the identifier to be applied
-	 * @return a new Property with the variables changed 
-	 */
-	public Object GenerateName(int id)
-	{
-		PropertyCondition aux = (PropertyCondition) this.clone();
-		aux.ReplaceUnboundVariables(id);
-		return aux;
-	}
-	
 	
 	/**
 	 * Replaces all unbound variables in the object by applying a numeric 
@@ -199,27 +184,10 @@ public class PropertyCondition extends Condition {
 	 */
     public void ReplaceUnboundVariables(int variableID) 
     {
-    	this.getName().ReplaceUnboundVariables(variableID);
+    	super.ReplaceUnboundVariables(variableID);
     	this._value.ReplaceUnboundVariables(variableID);
-    	this.getToM().ReplaceUnboundVariables(variableID);
     }
     
-    /**
-     * @deprecated use the method MakeGround(ArrayList) instead
-	 * Applies a set of substitutions to the object, grounding it.
-	 * Example: Applying the substitution "[X]/John" in the name "Weak([X])" returns
-	 * "Weak(John)".
-	 * @param bindings - A list of substitutions of the type "[Variable]/value"
-	 * @return a new Property with the substitutions applied
-	 * @see Substitution
-	 */
-	public Object Ground(ArrayList<Substitution> bindingConstraints)
-	{
-		PropertyCondition aux = (PropertyCondition) this.clone();
-		aux.MakeGround(bindingConstraints);
-		return aux;
-	}
-
 	/**
 	 * Applies a set of substitutions to the object, grounding it.
 	 * Example: Applying the substitution "[X]/John" in the name "Weak([X])" returns
@@ -230,27 +198,9 @@ public class PropertyCondition extends Condition {
 	 */
     public void MakeGround(ArrayList<Substitution> bindings)
     {
-    	this.getName().MakeGround(bindings);
+    	super.MakeGround(bindings);
     	this._value.MakeGround(bindings);
-    	this.getToM().MakeGround(bindings);
     }
-    
-   
-    /**
-     * @deprecated use the method MakeGround(Substitution) instead
-	 * Applies a substitution to the object, grounding it.
-	 * Example: Applying the substitution "[X]/John" in the name "Weak([X])" returns
-	 * "Weak(John)".
-	 * @param subst - a substitution of the type "[Variable]/value"
-	 * @return a new Property with the substitution applied
-	 * @see Substitution
-	 */
-	public Object Ground(Substitution subst)
-	{
-		PropertyCondition aux = (PropertyCondition) this.clone();
-		aux.MakeGround(subst);
-		return aux;
-	}
 
 	/**
 	 * Applies a set of substitutions to the object, grounding it.
@@ -262,9 +212,8 @@ public class PropertyCondition extends Condition {
 	 */
     public void MakeGround(Substitution subst)
     {
-    	this.getName().MakeGround(subst);
+    	super.MakeGround(subst);
     	this._value.MakeGround(subst);
-    	this.getToM().MakeGround(subst);
     }
 
 	/**
@@ -273,7 +222,7 @@ public class PropertyCondition extends Condition {
 	 * @return true if the condition is grounded, false otherwise
 	 */
 	public boolean isGrounded() {
-		return (getName().isGrounded() && _value.isGrounded() && getToM().isGrounded());
+		return (super.isGrounded() && _value.isGrounded());
 	}
 
 	/**

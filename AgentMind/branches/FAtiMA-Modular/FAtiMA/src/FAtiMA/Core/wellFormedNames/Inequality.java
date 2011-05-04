@@ -70,21 +70,6 @@ public class Inequality extends Substitution implements IGroundable, Serializabl
 		super(subst._variable, subst._value);
 	}
 	
-	 /**
-     * @deprecated use ReplaceUnboundVariables(int) instead.
-	 * Replaces all unbound variables in the object by applying a numeric
-	 * identifier to each one.
-	 * Example: the variable [X] becomes [X4] if the received ID is 4.
-	 * @param variableID - the identifier to be applied
-	 * @return a new name with the variables changed 
-	 */
-    public Object GenerateName(int id)
-    {
-    	Inequality aux;
-    	aux = (Inequality) this.clone();
-    	aux.ReplaceUnboundVariables(id);
-    	return aux;
-    }
     
     /**
 	 * Replaces all unbound variables in the object by applying a numeric 
@@ -99,41 +84,12 @@ public class Inequality extends Substitution implements IGroundable, Serializabl
     	this._value.ReplaceUnboundVariables(id);
     }
 	
-	/**
-	 * @deprecated use MakeGround(ArrayList) together with clone method instead
-	 * Applies a set of substitutions to the object, grounding it.
-	 * Example: Applying the substitution "[X]/John" in the name "Weak([X])" returns
-	 * "Weak(John)".
-	 * @param bindings - A list of substitutions of the type "[Variable]/value"
-	 * @see Substitution
-	 */
-	public Object Ground(ArrayList<Substitution> substs) {
-		Inequality aux = (Inequality) this.clone();
-		aux.MakeGround(substs);
-		return aux;
-	}
-	
 	public void MakeGround(ArrayList<Substitution> substs)
 	{
 		this._variable.MakeGround(substs);
 		this._value.MakeGround(substs);
 	}
 	
-	/**
-     * @deprecated use the method MakeGround(Substitution) instead
-	 * Applies a substitution to the object, grounding it.
-	 * Example: Applying the substitution "[X]/John" in the name "Weak([X])" returns
-	 * "Weak(John)".
-	 * @param subst - a substitution of the type "[Variable]/value"
-	 * @return a new Name with the substitution applied
-	 * @see Substitution
-	 */
-    public Object Ground(Substitution subst)
-    {
-    	Inequality aux = (Inequality) this.clone();
-    	aux.MakeGround(subst);
-    	return aux;
-    }
     
     /**
 	 * Applies a set of substitutions to the object, grounding it.

@@ -113,6 +113,11 @@ public abstract class Condition implements IGroundable, Cloneable, Serializable 
 		this._name = name;
 	}
 	
+	protected void setToM(Symbol ToM)
+	{
+		this._ToM = ToM;
+	}
+	
 	
 	/**
 	 * Checks if a list of conditions (usually preconditions) to see
@@ -247,7 +252,7 @@ public abstract class Condition implements IGroundable, Cloneable, Serializable 
 	protected Condition(Condition c)
 	{
 		_name = (Name) c._name.clone();
-		_ToM = (Symbol) c._ToM;
+		_ToM = (Symbol) c._ToM.clone();
 		_currentVerifiableStatus = c._currentVerifiableStatus;
 		_previousVerifiableStatus = c._previousVerifiableStatus;
 		_hasChangedVerifiability = c._hasChangedVerifiability;
@@ -258,10 +263,6 @@ public abstract class Condition implements IGroundable, Cloneable, Serializable 
 		_previousVerifiableStatus = false;
 		_hasChangedVerifiability = false;	
 	}
-	
-		
-
-	
 	
 	/**
 	 * Clones this Condition, returning an equal copy.
@@ -296,8 +297,6 @@ public abstract class Condition implements IGroundable, Cloneable, Serializable 
 	 */
 	public abstract boolean CheckCondition(AgentModel am);
 
-	
-	
 	
 	/**
 	 * This method finds all the possible sets of Substitutions that applied to the condition
@@ -363,6 +362,57 @@ public abstract class Condition implements IGroundable, Cloneable, Serializable 
      * @return returns all set of Substitutions that make the condition valid.
 	 */
 	protected abstract ArrayList<Substitution> GetValueBindings(AgentModel am);
+	
+	
+	/**
+	 * Replaces all unbound variables in the object by applying a numeric 
+     * identifier to each one. For example, the variable [x] becomes [x4]
+     * if the received ID is 4. 
+     * Attention, this method modifies the original object.
+     * @param variableID - the identifier to be applied
+	 */
+    public void ReplaceUnboundVariables(int variableID)
+    {
+    	this._name.ReplaceUnboundVariables(variableID);
+    	this._ToM.ReplaceUnboundVariables(variableID);
+    }
+	
+	/**
+	 * Applies a set of substitutions to the object, grounding it.
+	 * Example: Applying the substitution "[X]/John" in the name "Weak([X])" returns
+	 * "Weak(John)". 
+	 * Attention, this method modifies the original object.
+	 * @param bindings - A list of substitutions of the type "[Variable]/value"
+	 * @see Substitution
+	 */
+    public void MakeGround(ArrayList<Substitution> bindings)
+    {
+    	this._name.MakeGround(bindings);
+    	this._ToM.MakeGround(bindings);
+    }
+	
+	/**
+	 * Applies a set of substitutions to the object, grounding it.
+	 * Example: Applying the substitution "[X]/John" in the name "Weak([X])" returns
+	 * "Weak(John)". 
+	 * Attention, this method modifies the original object.
+	 * @param subst - a substitution of the type "[Variable]/value"
+	 * @see Substitution
+	 */
+    public void MakeGround(Substitution subst)
+    {
+    	this._name.MakeGround(subst);
+    	this._ToM.MakeGround(subst);
+    }
+	
+	/**
+	 * Indicates if the Predicate is grounded (no unbound variables in it's WFN)
+	 * Example: Stronger(Luke,John) is grounded while Stronger(John,[X]) is not.
+	 * @return true if the Predicate is grounded, false otherwise
+	 */
+	public boolean isGrounded() {
+		return _name.isGrounded() && _ToM.isGrounded();
+	}
 
 	
 

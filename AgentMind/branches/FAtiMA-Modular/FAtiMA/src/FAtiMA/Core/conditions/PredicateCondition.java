@@ -75,6 +75,19 @@ public class PredicateCondition extends Condition {
 	private static final long serialVersionUID = 1L;
 	private boolean _positive;
 	
+	protected boolean getPositive()
+	{
+		return _positive;
+	}
+	
+	protected void setPositive(boolean positive)
+	{
+		_positive = positive;
+	}
+	
+	public PredicateCondition()
+	{
+	}
 		
 	/**
 	 * Creates a new Test to a Predicate
@@ -101,10 +114,6 @@ public class PredicateCondition extends Condition {
 	    return new PredicateCondition(this);
 	}
 	
-	
-	protected boolean getPositive(){
-		return _positive;
-	}
 	
 	/**
 	 * Parses a Predicate given a XML attribute list
@@ -165,99 +174,6 @@ public class PredicateCondition extends Condition {
 		else return new Symbol("False");
 	}
 	
-	 /**
-     * @deprecated use ReplaceUnboundVariables(int) instead.
-	 * Replaces all unbound variables in the object by applying a numeric
-	 * identifier to each one.
-	 * Example: the variable [X] becomes [X4] if the received ID is 4.
-	 * @param variableID - the identifier to be applied
-	 * @return a new Condition with the variables changed 
-	 */
-	public Object GenerateName(int id) {
-		PredicateCondition aux = (PredicateCondition) this.clone();
-		aux.ReplaceUnboundVariables(id);
-		return aux;
-	}
-	
-	/**
-	 * Replaces all unbound variables in the object by applying a numeric 
-     * identifier to each one. For example, the variable [x] becomes [x4]
-     * if the received ID is 4. 
-     * Attention, this method modifies the original object.
-     * @param variableID - the identifier to be applied
-	 */
-    public void ReplaceUnboundVariables(int variableID)
-    {
-    	this.getName().ReplaceUnboundVariables(variableID);
-    	this.getToM().ReplaceUnboundVariables(variableID);
-    }
-	
-    /**
-     * @deprecated use the method MakeGround(ArrayList) instead
-	 * Applies a set of substitutions to the object, grounding it.
-	 * Example: Applying the substitution "[X]/John" in the name "Weak([X])" returns
-	 * "Weak(John)".
-	 * @param bindings - A list of substitutions of the type "[Variable]/value"
-	 * @return a new Predicate with the substitutions applied
-	 * @see Substitution
-	 */
-	public Object Ground(ArrayList<Substitution> bindings) {
-		PredicateCondition aux = (PredicateCondition) this.clone();
-		aux.MakeGround(bindings);
-		return aux;
-	}
-	
-	/**
-	 * Applies a set of substitutions to the object, grounding it.
-	 * Example: Applying the substitution "[X]/John" in the name "Weak([X])" returns
-	 * "Weak(John)". 
-	 * Attention, this method modifies the original object.
-	 * @param bindings - A list of substitutions of the type "[Variable]/value"
-	 * @see Substitution
-	 */
-    public void MakeGround(ArrayList<Substitution> bindings)
-    {
-    	this.getName().MakeGround(bindings);
-    	this.getToM().MakeGround(bindings);
-    }
-	
-    /**
-     * @deprecated use the method MakeGround(Substitution) instead
-	 * Applies a substitution to the object, grounding it.
-	 * Example: Applying the substitution "[X]/John" in the name "Weak([X])" returns
-	 * "Weak(John)".
-	 * @param subst - a substitution of the type "[Variable]/value"
-	 * @return a new Predicate with the substitution applied
-	 * @see Substitution
-	 */
-	public Object Ground(Substitution subst) {
-		PredicateCondition aux = (PredicateCondition) this.clone();
-		aux.MakeGround(subst);
-		return aux;
-	}
-	
-	/**
-	 * Applies a set of substitutions to the object, grounding it.
-	 * Example: Applying the substitution "[X]/John" in the name "Weak([X])" returns
-	 * "Weak(John)". 
-	 * Attention, this method modifies the original object.
-	 * @param subst - a substitution of the type "[Variable]/value"
-	 * @see Substitution
-	 */
-    public void MakeGround(Substitution subst)
-    {
-    	this.getName().MakeGround(subst);
-    	this.getToM().MakeGround(subst);
-    }
-	
-	/**
-	 * Indicates if the Predicate is grounded (no unbound variables in it's WFN)
-	 * Example: Stronger(Luke,John) is grounded while Stronger(John,[X]) is not.
-	 * @return true if the Predicate is grounded, false otherwise
-	 */
-	public boolean isGrounded() {
-		return getName().isGrounded() && getToM().isGrounded();
-	}
 	
 	/**
 	 * Indicates if the Predicate is positive or negative.

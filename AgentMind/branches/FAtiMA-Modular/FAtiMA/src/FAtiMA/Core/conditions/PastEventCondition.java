@@ -40,6 +40,7 @@ import org.xml.sax.Attributes;
 
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.memory.episodicMemory.ActionDetail;
+import FAtiMA.Core.memory.episodicMemory.AutobiographicalMemory;
 import FAtiMA.Core.memory.episodicMemory.SearchKey;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.sensorEffector.Parameter;
@@ -114,6 +115,9 @@ public class PastEventCondition extends PredicateCondition {
 		return new PastEventCondition(occurred,EventType.ACTION,ActionEvent.SUCCESS,subject,action,target,parameters);
 	}
 
+	protected PastEventCondition()
+	{
+	}
 	
 	public PastEventCondition(boolean occurred, short type, short status, Symbol subject, Symbol action, Symbol target, ArrayList<Symbol> parameters)
 	{
@@ -216,24 +220,80 @@ public class PastEventCondition extends PredicateCondition {
 	public Object clone() {
 		return new PastEventCondition(this);
 	}
-
-	public Object GenerateName(int id) {
-		PastEventCondition event = (PastEventCondition) this.clone();
-		event.ReplaceUnboundVariables(id);
-		return event;
-	}
-
-	public Object Ground(ArrayList<Substitution> bindingConstraints) {
+	
+	public boolean isGrounded()
+	{
+		if(!(super.isGrounded() && this._subject.isGrounded() && this._action.isGrounded()))
+		{
+			return false;
+		}
 		
-		PastEventCondition event = (PastEventCondition) this.clone();
-		event.MakeGround(bindingConstraints);
-		return event;
+		if(this._target != null)
+		{
+			if(!this._target.isGrounded()) return false; 
+		}
+		
+		for(Symbol s : this._parameters)
+		{
+			if(!s.isGrounded())
+			{
+				return false;
+			}
+		}
+		
+		return true; 
+	}
+	
+	public void ReplaceUnboundVariables(int variableID) {
+		super.ReplaceUnboundVariables(variableID);
+		
+		this._subject.ReplaceUnboundVariables(variableID);
+		this._action.ReplaceUnboundVariables(variableID);
+		if(this._target != null)
+		{
+			this._target.ReplaceUnboundVariables(variableID);
+		}
+		
+		ListIterator<Symbol> li = this._parameters.listIterator();
+		while(li.hasNext())
+		{
+			li.next().ReplaceUnboundVariables(variableID);
+		}
 	}
 
-	public Object Ground(Substitution subst) {
-		PastEventCondition event = (PastEventCondition) this.clone();
-		event.MakeGround(subst);
-		return event;
+	
+	public void MakeGround(ArrayList<Substitution> bindings) {
+		super.MakeGround(bindings);
+	
+		this._subject.MakeGround(bindings);
+		this._action.MakeGround(bindings);
+		if(this._target != null)
+		{
+			this._target.MakeGround(bindings);
+		}
+		
+		ListIterator<Symbol> li = this._parameters.listIterator();
+		while(li.hasNext())
+		{
+			li.next().MakeGround(bindings);
+		}
+	}
+
+	public void MakeGround(Substitution subst) {
+		super.MakeGround(subst);
+		
+		this._subject.MakeGround(subst);
+		this._action.MakeGround(subst);
+		if(this._target != null)
+		{
+			this._target.MakeGround(subst);
+		}
+		
+		ListIterator<Symbol> li = this._parameters.listIterator();
+		while(li.hasNext())
+		{
+			li.next().MakeGround(subst);
+		}
 	}
 	
 	protected ArrayList<ActionDetail> GetPossibleBindings(AgentModel am)

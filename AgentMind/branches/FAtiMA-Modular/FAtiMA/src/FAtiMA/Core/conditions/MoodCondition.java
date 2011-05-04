@@ -84,6 +84,12 @@ public class MoodCondition extends Condition {
 		_value = mC._value;
 	}
 	
+	
+	/**
+	 * Clones this EmotionCondition, returning an equal copy.
+	 * If this clone is changed afterwards, the original object remains the same.
+	 * @return The EmotionCondition's copy.
+	 */
 	public Object clone(){
 		return new MoodCondition(this);
 	}
@@ -228,93 +234,4 @@ public class MoodCondition extends Condition {
 	{
 		return true;
 	}
-	
-	 /**
-     * @deprecated use ReplaceUnboundVariables(int) instead.
-	 * Replaces all unbound variables in the object by applying a numeric
-	 * identifier to each one.
-	 * Example: the variable [X] becomes [X4] if the received ID is 4.
-	 * @param variableID - the identifier to be applied
-	 * @return a new Condition with the variables changed 
-	 */
-	public Object GenerateName(int id) {
-		MoodCondition aux = (MoodCondition) this.clone();
-		aux.ReplaceUnboundVariables(id);
-		return aux;
-	}
-	
-	/**
-	 * Replaces all unbound variables in the object by applying a numeric 
-     * identifier to each one. For example, the variable [x] becomes [x4]
-     * if the received ID is 4. 
-     * Attention, this method modifies the original object.
-     * @param variableID - the identifier to be applied
-	 */
-    public void ReplaceUnboundVariables(int variableID)
-    {
-    	getToM().ReplaceUnboundVariables(variableID);
-    }
-	
-    /**
-     * @deprecated use the method MakeGround(ArrayList) instead
-	 * Applies a set of substitutions to the object, grounding it.
-	 * Example: Applying the substitution "[X]/John" in the name "Weak([X])" returns
-	 * "Weak(John)".
-	 * @param bindings - A list of substitutions of the type "[Variable]/value"
-	 * @return a new Predicate with the substitutions applied
-	 * @see Substitution
-	 */
-	public Object Ground(ArrayList<Substitution> bindings) {
-		MoodCondition aux = (MoodCondition) this.clone();
-		aux.MakeGround(bindings);
-		return aux;
-	}
-	
-	/**
-	 * Applies a set of substitutions to the object, grounding it.
-	 * Example: Applying the substitution "[X]/John" in the name "Weak([X])" returns
-	 * "Weak(John)". 
-	 * Attention, this method modifies the original object.
-	 * @param bindings - A list of substitutions of the type "[Variable]/value"
-	 * @see Substitution
-	 */
-    public void MakeGround(ArrayList<Substitution> bindings)
-    {
-    	getToM().MakeGround(bindings);
-    }
-	
-    /**
-     * @deprecated use the method MakeGround(Substitution) instead
-	 * Applies a substitution to the object, grounding it.
-	 * Example: Applying the substitution "[X]/John" in the name "Weak([X])" returns
-	 * "Weak(John)".
-	 * @param subst - a substitution of the type "[Variable]/value"
-	 * @return a new Predicate with the substitution applied
-	 * @see Substitution
-	 */
-	public Object Ground(Substitution subst) {
-		MoodCondition aux = (MoodCondition) this.clone();
-		aux.MakeGround(subst);
-		return aux;
-	}
-	
-	/**
-	 * Applies a set of substitutions to the object, grounding it.
-	 * Example: Applying the substitution "[X]/John" in the name "Weak([X])" returns
-	 * "Weak(John)". 
-	 * Attention, this method modifies the original object.
-	 * @param subst - a substitution of the type "[Variable]/value"
-	 * @see Substitution
-	 */
-    public void MakeGround(Substitution subst)
-    {
-    	this.MakeGround(subst);
-    }
-	
-	/**
-	 * Clones this EmotionCondition, returning an equal copy.
-	 * If this clone is changed afterwards, the original object remains the same.
-	 * @return The EmotionCondition's copy.
-	 */
-	
 }

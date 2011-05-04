@@ -40,7 +40,6 @@ package FAtiMA.Core.wellFormedNames;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.ListIterator;
-import java.util.Locale;
 
 import FAtiMA.Core.memory.Memory;
 
@@ -131,22 +130,6 @@ public class Symbol extends Name implements Serializable
     }
     
     /**
-     * @deprecated use ReplaceUnboundVariables(int) instead.
-	 * Replaces all unbound variables in the object by applying a numeric
-	 * identifier to each one.
-	 * Example: the variable [X] becomes [X4] if the received ID is 4.
-	 * @param variableID - the identifier to be applied
-	 * @return a new name with the variables changed 
-	 */
-    public Object GenerateName(int id)
-    {
-    	Name aux;
-    	aux = (Name) this.clone();
-    	aux.ReplaceUnboundVariables(id);
-    	return aux;
-    }
-    
-    /**
 	 * Replaces all unbound variables in the object by applying a numeric 
      * identifier to each one. For example, the variable [x] becomes [x4]
      * if the received ID is 4. 
@@ -160,21 +143,6 @@ public class Symbol extends Name implements Serializable
     	this._name = this._name.substring(0, this._name.length() - 1) + id + "]";
     }
 
-    /**
-     * @deprecated use the method MakeGround(ArrayList) instead
-	 * Applies a set of substitutions to the object, grounding it.
-	 * Example: Applying the substitution "[X]/John" in the name "Weak([X])" returns
-	 * "Weak(John)".
-	 * @param bindings - A list of substitutions of the type "[Variable]/value"
-	 * @return a new Name with the substitutions applied
-	 * @see Substitution
-	 */
-    public Object Ground(ArrayList<Substitution> bindings)
-    {
-    	Name aux = (Name) this.clone();
-    	aux.MakeGround(bindings);
-    	return aux;
-    }
     
     /**
 	 * Applies a set of substitutions to the object, grounding it.
@@ -203,22 +171,6 @@ public class Symbol extends Name implements Serializable
              	this._constant = b.getValue()._constant;
              }
          }
-    }
-
-    /**
-     * @deprecated use the method MakeGround(Substitution) instead
-	 * Applies a substitution to the object, grounding it.
-	 * Example: Applying the substitution "[X]/John" in the name "Weak([X])" returns
-	 * "Weak(John)".
-	 * @param subst - a substitution of the type "[Variable]/value"
-	 * @return a new Name with the substitution applied
-	 * @see Substitution
-	 */
-    public Object Ground(Substitution subst)
-    {
-    	Name aux = (Name) this.clone();
-    	aux.MakeGround(subst);
-    	return aux;
     }
     
     /**

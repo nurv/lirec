@@ -295,20 +295,6 @@ public class EmotionCondition extends PredicateCondition {
 		return substitutionSets;
 	}
 	
-	 /**
-     * @deprecated use ReplaceUnboundVariables(int) instead.
-	 * Replaces all unbound variables in the object by applying a numeric
-	 * identifier to each one.
-	 * Example: the variable [X] becomes [X4] if the received ID is 4.
-	 * @param variableID - the identifier to be applied
-	 * @return a new Condition with the variables changed 
-	 */
-	public Object GenerateName(int id) {
-		EmotionCondition aux = (EmotionCondition) this.clone();
-		aux.ReplaceUnboundVariables(id);
-		return aux;
-	}
-	
 	/**
 	 * Replaces all unbound variables in the object by applying a numeric 
      * identifier to each one. For example, the variable [x] becomes [x4]
@@ -318,29 +304,13 @@ public class EmotionCondition extends PredicateCondition {
 	 */
     public void ReplaceUnboundVariables(int variableID)
     {
-    	this.getToM().ReplaceUnboundVariables(variableID);
-    	this.getName().ReplaceUnboundVariables(variableID);
+    	super.ReplaceUnboundVariables(variableID);
     	this._intensity.ReplaceUnboundVariables(variableID);
     	if(this._direction != null)
     	{
     		this._direction.ReplaceUnboundVariables(variableID);
     	}
     }
-	
-    /**
-     * @deprecated use the method MakeGround(ArrayList) instead
-	 * Applies a set of substitutions to the object, grounding it.
-	 * Example: Applying the substitution "[X]/John" in the name "Weak([X])" returns
-	 * "Weak(John)".
-	 * @param bindings - A list of substitutions of the type "[Variable]/value"
-	 * @return a new Predicate with the substitutions applied
-	 * @see Substitution
-	 */
-	public Object Ground(ArrayList<Substitution> bindings) {
-		EmotionCondition aux = (EmotionCondition) this.clone();
-		aux.MakeGround(bindings);
-		return aux;
-	}
 	
 	/**
 	 * Applies a set of substitutions to the object, grounding it.
@@ -352,29 +322,13 @@ public class EmotionCondition extends PredicateCondition {
 	 */
     public void MakeGround(ArrayList<Substitution> bindings)
     {
-    	this.getToM().MakeGround(bindings);
-    	this.getName().MakeGround(bindings);
+    	super.MakeGround(bindings);
     	this._intensity.MakeGround(bindings);
     	if(this._direction != null)
     	{
     		this._direction.MakeGround(bindings);
     	}
     }
-	
-    /**
-     * @deprecated use the method MakeGround(Substitution) instead
-	 * Applies a substitution to the object, grounding it.
-	 * Example: Applying the substitution "[X]/John" in the name "Weak([X])" returns
-	 * "Weak(John)".
-	 * @param subst - a substitution of the type "[Variable]/value"
-	 * @return a new Predicate with the substitution applied
-	 * @see Substitution
-	 */
-	public Object Ground(Substitution subst) {
-		EmotionCondition aux = (EmotionCondition) this.clone();
-		aux.MakeGround(subst);
-		return aux;
-	}
 	
 	/**
 	 * Applies a set of substitutions to the object, grounding it.
@@ -386,12 +340,28 @@ public class EmotionCondition extends PredicateCondition {
 	 */
     public void MakeGround(Substitution subst)
     {
-    	this.getToM().MakeGround(subst);
-    	this.getName().MakeGround(subst);
+    	super.MakeGround(subst);
     	this._intensity.MakeGround(subst);
     	if(this._direction != null)
     	{
     		this._direction.MakeGround(subst);
     	}
     }
+    
+    /**
+	 * Indicates if the condition is grounded (no unbound variables in it's WFN)
+	 * Example: Stronger(Luke,John) is grounded while Stronger(John,[X]) is not.
+	 * @return true if the condition is grounded, false otherwise
+	 */
+	public boolean isGrounded() {
+		if(this._direction != null)
+		{
+			if(!this._direction.isGrounded())
+			{
+				return false;
+			}
+		}
+		
+		return (super.isGrounded() && _intensity.isGrounded());
+	}
 }

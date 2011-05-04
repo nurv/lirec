@@ -41,16 +41,6 @@ import java.util.ArrayList;
 
 public interface IGroundable {
 	
-	 /**
-     * @deprecated use ReplaceUnboundVariables(int) instead.
-	 * Replaces all unbound variables in the object by applying a numeric
-	 * identifier to each one.
-	 * Example: the variable [X] becomes [X4] if the received ID is 4.
-	 * @param variableID - the identifier to be applied
-	 * @return a new name with the variables changed 
-	 */
-	public Object GenerateName(int id);
-	
 	
 	/**
 	 * Replaces all unbound variables in the object by applying a numeric 
@@ -60,17 +50,6 @@ public interface IGroundable {
      * @param variableID - the identifier to be applied
 	 */
     public void ReplaceUnboundVariables(int variableID);
-    
-    /**
-     * @deprecated use the method MakeGround(ArrayList) instead
-	 * Applies a set of substitutions to the object, grounding it.
-	 * Example: Applying the substitution "[X]/John" in the name "Weak([X])" returns
-	 * "Weak(John)".
-	 * @param bindings - A list of substitutions of the type "[Variable]/value"
-	 * @return a new Name with the substitutions applied
-	 * @see Substitution
-	 */
-	public Object Ground(ArrayList<Substitution> bindingConstraints);
 
 	/**
 	 * Applies a set of substitutions to the object, grounding it.
@@ -82,17 +61,6 @@ public interface IGroundable {
 	 */
     public void MakeGround(ArrayList<Substitution> bindings);
     
-   
-    /**
-     * @deprecated use the method MakeGround(Substitution) instead
-	 * Applies a substitution to the object, grounding it.
-	 * Example: Applying the substitution "[X]/John" in the name "Weak([X])" returns
-	 * "Weak(John)".
-	 * @param subst - a substitution of the type "[Variable]/value"
-	 * @return a new Name with the substitution applied
-	 * @see Substitution
-	 */
-	public Object Ground(Substitution subst);
 
 	/**
 	 * Applies a set of substitutions to the object, grounding it.

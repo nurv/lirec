@@ -347,22 +347,7 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
 	public ArrayList<Condition> GetPreconditions() {
 		return _preConditions;
 	}
-	
-	/**
-     * @deprecated use ReplaceUnboundVariables(int) instead.
-	 * Replaces all unbound variables in the object by applying a numeric
-	 * identifier to each one.
-	 * Example: the variable [X] becomes [X4] if the received ID is 4.
-	 * @param variableID - the identifier to be applied
-	 * @return a new Goal with the variables changed 
-	 */
-	public Object GenerateName(int id)
-	{
-		ActivePursuitGoal aux = (ActivePursuitGoal) this.clone();
-		aux.ReplaceUnboundVariables(id);
-		return aux;
-	}
-	
+
 	
 	/**
 	 * Replaces all unbound variables in the object by applying a numeric 
@@ -400,22 +385,6 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
     		e.ReplaceUnboundVariables(variableID);
     	}
     }
-    
-    /**
-     * @deprecated use the method MakeGround(ArrayList) instead
-	 * Applies a set of substitutions to the object, grounding it.
-	 * Example: Applying the substitution "[X]/John" in the name "Weak([X])" returns
-	 * "Weak(John)".
-	 * @param bindings - A list of substitutions of the type "[Variable]/value"
-	 * @return a new Goal with the substitutions applied
-	 * @see Substitution
-	 */
-	public Object Ground(ArrayList<Substitution> bindingConstraints) 
-	{
-		ActivePursuitGoal aux = (ActivePursuitGoal) this.clone();
-		aux.MakeGround(bindingConstraints);
-		return aux;
-	}
 
 	/**
 	 * Applies a set of substitutions to the object, grounding it.
@@ -490,21 +459,6 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
 		return orderedName;
     }
    
-    /**
-     * @deprecated use the method MakeGround(Substitution) instead
-	 * Applies a substitution to the object, grounding it.
-	 * Example: Applying the substitution "[X]/John" in the name "Weak([X])" returns
-	 * "Weak(John)".
-	 * @param subst - a substitution of the type "[Variable]/value"
-	 * @return a new Goal with the substitution applied
-	 * @see Substitution
-	 */
-	public Object Ground(Substitution subst)
-	{
-		ActivePursuitGoal aux = (ActivePursuitGoal) this.clone();
-		aux.MakeGround(subst);
-		return aux;
-	}
 
 	/**
 	 * Applies a set of substitutions to the object, grounding it.

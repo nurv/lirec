@@ -123,20 +123,7 @@ public class Effect implements IGroundable, Cloneable, Serializable {
 		if(am == null) return _baseprob;
 		return _baseprob + ((Float) am.getMemory().getSemanticMemory().AskProperty(_biasName)).floatValue();
 	}
-	
-	/**
-	 * @deprecated use ReplaceUnboundVariables instead
-	 * Replaces all unbound variables in the Effect by applying a numeric
-	 * identifier to each one.
-	 * Example: the variable [X] becomes [X4] if the received ID is 4.
-	 * @param id - the identifier to be applied
-	 * @return the new Effect with the variables changed 
-	 */
-	public Object GenerateName(int id) {
-		Effect aux = (Effect) this.clone();
-		aux.ReplaceUnboundVariables(id);
-		return aux;
-	}
+
 	
 	/**
 	 * Replaces all unbound variables in the object by applying a numeric 
@@ -149,21 +136,7 @@ public class Effect implements IGroundable, Cloneable, Serializable {
     {
     	this._effect.ReplaceUnboundVariables(variableID);
     }
-	
-	/**
-	 * @deprecated use MakeGround(ArrayList) instead
-	 * Applies a set of substitutions to the object, grounding it.
-	 * Example: Applying the substitution "[X]/John" in the name "Weak([X])" returns
-	 * "Weak(John)".
-	 * @param bindings - A list of substitutions of the type "[Variable]/value"
-	 * @see Substitution
-	 * @return a new Effect with its variables grounded
-	 */
-	public Object Ground(ArrayList<Substitution> substs) {
-		Effect aux = (Effect) this.clone();
-		aux.MakeGround(substs);
-		return aux;
-	}
+
 	
 	/**
 	 * Applies a set of substitutions to the object, grounding it.
@@ -177,22 +150,6 @@ public class Effect implements IGroundable, Cloneable, Serializable {
     {
     	this._effect.MakeGround(bindings);
     }
-    
-    /**
-     * @deprecated use the method MakeGround(Substitution) instead
-	 * Applies a substitution to the object, grounding it.
-	 * Example: Applying the substitution "[X]/John" in the name "Weak([X])" returns
-	 * "Weak(John)".
-	 * @param subst - a substitution of the type "[Variable]/value"
-	 * @return a new Effect with the substitution applied
-	 * @see Substitution
-	 */
-	public Object Ground(Substitution subst)
-	{
-		Effect aux = (Effect) this.clone();
-		aux.MakeGround(subst);
-		return aux;
-	}
 
 	/**
 	 * Applies a set of substitutions to the object, grounding it.
