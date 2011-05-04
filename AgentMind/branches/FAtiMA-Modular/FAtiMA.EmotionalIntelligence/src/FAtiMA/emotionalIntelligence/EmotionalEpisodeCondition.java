@@ -35,7 +35,6 @@ import org.xml.sax.Attributes;
 
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.conditions.Condition;
-import FAtiMA.Core.conditions.EmotionCondition;
 import FAtiMA.Core.emotionalState.BaseEmotion;
 import FAtiMA.Core.emotionalState.EmotionalState;
 import FAtiMA.Core.exceptions.InvalidEmotionTypeException;
@@ -90,20 +89,22 @@ public class EmotionalEpisodeCondition extends Condition {
 		
 		return new EmotionalEpisodeCondition(episode,emotion,value);
 	}
+	
 	protected Symbol _emotion;
-	
 	protected float _value;
-	
-	private EmotionalEpisodeCondition()
-	{
-	}
 	
 	public EmotionalEpisodeCondition(Symbol episode, Symbol emotion, float value)
 	{
-		this._name = episode;
+		super(episode,Constants.UNIVERSAL);
 		this._emotion = emotion;
 		this._value = value;
-		this._ToM = Constants.UNIVERSAL;
+	}
+	
+	public EmotionalEpisodeCondition(EmotionalEpisodeCondition eec)
+	{
+		super(eec);
+		this._emotion = (Symbol) eec._emotion.clone();
+		this._value = eec._value;
 	}
 	
 	/**
@@ -121,14 +122,14 @@ public class EmotionalEpisodeCondition extends Condition {
 		
 		episodes = am.getMemory().getEpisodicMemory().GetAllEpisodes();
 		
-		if(this._name.toString().equals("STM"))
+		if(this.getName().toString().equals("STM"))
 		{
 			ShortTermEpisodicMemory stem = am.getMemory().getEpisodicMemory().getSTEM();
 			emotion = stem.getStrongestEmotion();
 		}
 		else
 		{
-			int id = Integer.parseInt(this._name.toString());
+			int id = Integer.parseInt(this.getName().toString());
 			episode = episodes.get(id);
 			emotion = episode.getStrongestEmotion();
 		}
@@ -153,30 +154,7 @@ public class EmotionalEpisodeCondition extends Condition {
 	 */
 	public Object clone()
 	{
-		EmotionalEpisodeCondition eec = new EmotionalEpisodeCondition();
-		
-		eec._emotion = (Symbol) this._emotion.clone();
-		eec._value =  this._value;
-		eec._name = (Symbol) this._name.clone();
-		eec._ToM = (Symbol) this._ToM.clone();
-	    
-		return eec;
-	}
-	
-	
-	
-	/**
-     * @deprecated use ReplaceUnboundVariables(int) instead.
-	 * Replaces all unbound variables in the object by applying a numeric
-	 * identifier to each one.
-	 * Example: the variable [X] becomes [X4] if the received ID is 4.
-	 * @param variableID - the identifier to be applied
-	 * @return a new Condition with the variables changed 
-	 */
-	public Object GenerateName(int id) {
-		EmotionCondition aux = (EmotionCondition) this.clone();
-		aux.ReplaceUnboundVariables(id);
-		return aux;
+		return new EmotionalEpisodeCondition(this);
 	}
 	
 	 /**
@@ -194,7 +172,7 @@ public class EmotionalEpisodeCondition extends Condition {
 		BaseEmotion emotion;
 		int i = 0;
 		
-		if (_name.isGrounded() && _emotion.isGrounded()) {
+		if (getName().isGrounded() && _emotion.isGrounded()) {
 			if(CheckCondition(am))
 			{ 
 				bindingSets.add(new SubstitutionSet());
@@ -208,15 +186,15 @@ public class EmotionalEpisodeCondition extends Condition {
 		try
 		{
 		
-			if(_name.isGrounded())
+			if(getName().isGrounded())
 			{
-				if(_name.toString().equals("STM"))
+				if(getName().toString().equals("STM"))
 				{
 					emotion = stem.getStrongestEmotion();
 				}
 				else
 				{
-					int id = Integer.parseInt(this._name.toString());
+					int id = Integer.parseInt(this.getName().toString());
 					episode = am.getMemory().getEpisodicMemory().GetAllEpisodes().get(id);
 					emotion = episode.getStrongestEmotion();
 				}
@@ -247,7 +225,7 @@ public class EmotionalEpisodeCondition extends Condition {
 				if(emotion!= null && emotion.GetPotential() > this._value)
 				{
 					ss = new SubstitutionSet();
-					s = new Substitution((Symbol) this._name,new Symbol("STM"));
+					s = new Substitution((Symbol) this.getName(),new Symbol("STM"));
 					ss.AddSubstitution(s);
 					if(!_emotion.isGrounded())
 					{
@@ -272,7 +250,7 @@ public class EmotionalEpisodeCondition extends Condition {
 				if(emotion!= null && emotion.GetPotential() > this._value)
 				{
 					ss = new SubstitutionSet();
-					s = new Substitution((Symbol) this._name,new Symbol(String.valueOf(i)));
+					s = new Substitution((Symbol) this.getName(),new Symbol(String.valueOf(i)));
 					ss.AddSubstitution(s);
 					if(!_emotion.isGrounded())
 					{
@@ -309,39 +287,9 @@ public class EmotionalEpisodeCondition extends Condition {
 		return null;
 	}
 	
-	/**
-     * @deprecated use the method MakeGround(ArrayList) instead
-	 * Applies a set of substitutions to the object, grounding it.
-	 * Example: Applying the substitution "[X]/John" in the name "Weak([X])" returns
-	 * "Weak(John)".
-	 * @param bindings - A list of substitutions of the type "[Variable]/value"
-	 * @return a new Predicate with the substitutions applied
-	 * @see Substitution
-	 */
-	public Object Ground(ArrayList<Substitution> bindings) {
-		EmotionCondition aux = (EmotionCondition) this.clone();
-		aux.MakeGround(bindings);
-		return aux;
-	}
-	
-    /**
-     * @deprecated use the method MakeGround(Substitution) instead
-	 * Applies a substitution to the object, grounding it.
-	 * Example: Applying the substitution "[X]/John" in the name "Weak([X])" returns
-	 * "Weak(John)".
-	 * @param subst - a substitution of the type "[Variable]/value"
-	 * @return a new Predicate with the substitution applied
-	 * @see Substitution
-	 */
-	public Object Ground(Substitution subst) {
-		EmotionCondition aux = (EmotionCondition) this.clone();
-		aux.MakeGround(subst);
-		return aux;
-	}
-	
 	public boolean isGrounded()
 	{
-		return this._emotion.isGrounded() && this._name.isGrounded();
+		return this._emotion.isGrounded() && this.getName().isGrounded();
 	}
 	
 	/**
@@ -354,8 +302,8 @@ public class EmotionalEpisodeCondition extends Condition {
 	 */
     public void MakeGround(ArrayList<Substitution> bindings)
     {
-    	this._ToM.MakeGround(bindings);
-    	this._name.MakeGround(bindings);
+    	this.getToM().MakeGround(bindings);
+    	this.getName().MakeGround(bindings);
     	this._emotion.MakeGround(bindings);
     }
 
@@ -369,8 +317,8 @@ public class EmotionalEpisodeCondition extends Condition {
 	 */
     public void MakeGround(Substitution subst)
     {
-    	this._ToM.MakeGround(subst);
-    	this._name.MakeGround(subst);
+    	this.getToM().MakeGround(subst);
+    	this.getName().MakeGround(subst);
     	this._emotion.MakeGround(subst);
     }
 
@@ -383,8 +331,8 @@ public class EmotionalEpisodeCondition extends Condition {
 	 */
     public void ReplaceUnboundVariables(int variableID)
     {
-    	this._ToM.ReplaceUnboundVariables(variableID);
-    	this._name.ReplaceUnboundVariables(variableID);
+    	this.getToM().ReplaceUnboundVariables(variableID);
+    	this.getName().ReplaceUnboundVariables(variableID);
     	this._emotion.ReplaceUnboundVariables(variableID);
     }
 }

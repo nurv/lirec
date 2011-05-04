@@ -30,17 +30,25 @@ public class AppraisalCondition extends PastEventCondition {
 	private int _threshold;
 	
 	
-	private AppraisalCondition()
+	private AppraisalCondition(AppraisalCondition ac)
 	{
+		super(ac);
+		this._appraisalVariable = ac._appraisalVariable;
+		this._threshold = ac._threshold;
+		this._test = ac._test;
+		this._value = (Symbol) ac._value.clone();
+		
 	}
 	
 	public AppraisalCondition(Symbol agent, String appraisalVariable, Symbol value, int threshold, short test, Symbol subject, Symbol action, Symbol target, ArrayList<Symbol> parameters)
 	{
 		//this._type = type;
 		//this._status = status;
-		this._ToM = agent;
 		
-		this._positive = true;
+		
+		this.setToM(agent);
+		
+		this.setPositive(true);
 		this._appraisalVariable = appraisalVariable;
 		this._value = value;
 		this._threshold = threshold;
@@ -52,7 +60,7 @@ public class AppraisalCondition extends PastEventCondition {
 		
 		this._parameters = parameters;
 		
-		String aux = this._appraisalVariable + "," + this._ToM + "," + this._subject + "," + this._action;
+		String aux = this._appraisalVariable + "," + this.getToM() + "," + this._subject + "," + this._action;
 		if(this._target != null)
 		{
 			aux = aux + "," + this._target;
@@ -64,7 +72,7 @@ public class AppraisalCondition extends PastEventCondition {
 			aux = aux + "," + li.next();
 		}
 		
-		this._name = Name.ParseName("Appraisal(" + aux + ")");
+		this.setName(Name.ParseName("Appraisal(" + aux + ")"));
 	}
 	
 	public boolean CheckCondition(AgentModel am) {
@@ -73,37 +81,7 @@ public class AppraisalCondition extends PastEventCondition {
 	
 	public Object clone()
 	{
-		AppraisalCondition newCondition = new AppraisalCondition();
-		
-		// Meiyii
-		//newCondition._type = this._type;
-		//newCondition._status = this._status;
-		newCondition._positive = this._positive;
-		
-		newCondition._appraisalVariable = this._appraisalVariable;
-		newCondition._value = (Symbol) this._value.clone();
-		newCondition._ToM = (Symbol) this._ToM.clone();
-		newCondition._threshold = this._threshold;
-		newCondition._test = this._test;
-		
-		newCondition._name = (Name) this._name.clone();
-		newCondition._subject = (Symbol) this._subject.clone();
-		newCondition._action = (Symbol) this._action.clone();
-		if(this._target != null)
-		{
-			newCondition._target = (Symbol) this._target.clone();
-		}
-		
-		newCondition._parameters = new ArrayList<Symbol>(this._parameters.size());
-		
-		ListIterator<Symbol> li = this._parameters.listIterator();
-		
-		while(li.hasNext())
-		{
-			newCondition._parameters.add((Symbol)li.next().clone());
-		}
-		
-		return newCondition;	
+		return new AppraisalCondition(this);	
 	}
 
 	public Object GenerateName(int id) {
@@ -119,7 +97,7 @@ public class AppraisalCondition extends PastEventCondition {
 		ArrayList<SubstitutionSet> subs;
 		float mood;
 	
-		AgentModel modelToTest = am.getModelToTest(this._ToM);
+		AgentModel modelToTest = am.getModelToTest(this.getToM());
 	 	
 		if(!this._value.isGrounded()) return null;
 		
@@ -194,7 +172,7 @@ public class AppraisalCondition extends PastEventCondition {
 			{
 				if(ad.getTarget().equals(Constants.SELF))
 				{
-					target = this._ToM;
+					target = this.getToM();
 				}
 				else
 				{
@@ -233,8 +211,8 @@ public class AppraisalCondition extends PastEventCondition {
 	public void MakeGround(ArrayList<Substitution> bindings) {
 		this._value.MakeGround(bindings);
 		
-		this._name.MakeGround(bindings);
-		this._ToM.MakeGround(bindings);
+		this.getName().MakeGround(bindings);
+		this.getToM().MakeGround(bindings);
 		this._subject.MakeGround(bindings);
 		this._action.MakeGround(bindings);
 		if(this._target != null)
@@ -252,8 +230,8 @@ public class AppraisalCondition extends PastEventCondition {
 	public void MakeGround(Substitution subst) {
 		this._value.MakeGround(subst);
 		
-		this._name.MakeGround(subst);
-		this._ToM.MakeGround(subst);
+		this.getName().MakeGround(subst);
+		this.getToM().MakeGround(subst);
 		this._subject.MakeGround(subst);
 		this._action.MakeGround(subst);
 		if(this._target != null)
@@ -270,9 +248,9 @@ public class AppraisalCondition extends PastEventCondition {
 	
 	public void ReplaceUnboundVariables(int variableID) {
 		this._value.ReplaceUnboundVariables(variableID);
-		this._ToM.ReplaceUnboundVariables(variableID);
+		this.getToM().ReplaceUnboundVariables(variableID);
 		
-		this._name.ReplaceUnboundVariables(variableID);
+		this.getName().ReplaceUnboundVariables(variableID);
 		this._subject.ReplaceUnboundVariables(variableID);
 		this._action.ReplaceUnboundVariables(variableID);
 		
