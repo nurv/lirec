@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -75,12 +76,10 @@ public class GoalsPanel extends AgentDisplayPanel {
 
 		this.setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
 
+		
 		_goals = new JPanel();
 		_goals.setBorder(BorderFactory.createTitledBorder("Goals"));
 		_goals.setLayout(new BoxLayout(_goals,BoxLayout.Y_AXIS));
-
-		_goals.setMaximumSize(new Dimension(350,400));
-		_goals.setMinimumSize(new Dimension(350,400));
 
 		JScrollPane goalsScrool = new JScrollPane(_goals);
 

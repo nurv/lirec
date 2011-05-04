@@ -61,8 +61,8 @@ public class GoalDisplay {
     	_panel = new JPanel();
         _panel.setBorder(BorderFactory.createTitledBorder(g.getName().toString()));
         _panel.setLayout(new BoxLayout(_panel,BoxLayout.Y_AXIS));
-        _panel.setMaximumSize(new Dimension(350,300));
-        _panel.setMinimumSize(new Dimension(350,300));
+        _panel.setMaximumSize(new Dimension(500,300));
+        _panel.setMinimumSize(new Dimension(500,300));
         
         _impOfSuccess = new JLabel();
         _impOfFailure = new JLabel();
@@ -121,34 +121,34 @@ public class GoalDisplay {
         aux = new Float(g.GetImportanceOfFailure(am));
         _impOfFailure.setText(aux.toString());
         
-        if(/*g.getClass().equals(ActivePursuitGoal.class)*/g instanceof ActivePursuitGoal) {
+        if(g instanceof ActivePursuitGoal) {
         	init((ActivePursuitGoal) g);
-        	
         }
         else {
         	init((InterestGoal) g);
         }
+        
     }
     
     private void init(InterestGoal g) {
         _goalType.setText("Interest");
         ConditionsPanel protectedConditions = new ConditionsPanel("Protected Constraints",
-        		g.getProtectionConstraints().listIterator());
+        		g.getProtectionConstraints());
         _panel.add(protectedConditions);
     }
     
     private void init(ActivePursuitGoal g) {
     	_goalType.setText("ActivePursuit");
     	ConditionsPanel preconditions = new ConditionsPanel("Preconditions",
-        		g.GetPreconditions().listIterator());
+        		g.GetPreconditions());
         _panel.add(preconditions);
         
         ConditionsPanel successConditions = new ConditionsPanel("Success Conditions",
-        		g.GetSuccessConditions().listIterator());
+        		g.GetSuccessConditions());
         _panel.add(successConditions);
         
         ConditionsPanel failureConditions = new ConditionsPanel("Failure Conditions",
-        		g.GetFailureConditions().listIterator());
+        		g.GetFailureConditions());
         _panel.add(failureConditions);
         
     }
