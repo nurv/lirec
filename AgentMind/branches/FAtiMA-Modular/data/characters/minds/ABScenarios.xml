@@ -21,7 +21,7 @@
 		<Agent name="ABRobot" displayName="ABRobot" role="ABRobot" platform="worldsim" host="localhost" 
 			   port="46874" displayMode="True" sex="M" actionsFile="ABActions" 
 			   goalsFile="ABGoalLibrary" cultureName="ABCulture" 
-			   saveDirectory="data/characters/minds/state/" agentLoad="False" memoryLoad="True">
+			   saveDirectory="data/characters/minds/state/" agentLoad="False" memoryLoad="False">
 			<Properties>
 				<Property name="location" value="LivingRoom"/>
 			</Properties>
