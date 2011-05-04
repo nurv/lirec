@@ -240,27 +240,6 @@ public class Action implements IIntegrityTester, Serializable, IGroundable, Clon
 	}
 
 	@Override
-	public Object GenerateName(int id) {
-		Action at = (Action) this.clone();
-		at.ReplaceUnboundVariables(id);
-		return at;
-	}
-
-	@Override
-	public Object Ground(ArrayList<Substitution> bindingConstraints) {
-		Action at = (Action) this.clone();
-		at.MakeGround(bindingConstraints);
-		return at;
-	}
-
-	@Override
-	public Object Ground(Substitution subst) {
-		Action at = (Action) this.clone();
-		at.MakeGround(subst);
-		return at;
-	}
-
-	@Override
 	public void MakeGround(ArrayList<Substitution> bindings) {
 		this._name.MakeGround(bindings);
 		ListIterator<Condition> li = this._preConditions.listIterator();
