@@ -73,9 +73,9 @@ public class EpisodicMemory implements Serializable {
 	private static final double DECAY_VALUE = 0.8;
 	
 	// 03/05/11 - Matthias
-	// Activation-Based Forgetting in Short-Term Episodic Memory
+	// Activation-Based Forgetting in Short-Term Episodic Memory?
 	private static final boolean AB_FORGETTING_STEM = true;
-	// Activation-Based Forgetting in Autobiographic Memory?	
+	// Activation-Based Forgetting in Autobiographic Memory?
 	private static final boolean AB_FORGETTING_AM = true;
 	
 	public EpisodicMemory()
@@ -600,12 +600,12 @@ public class EpisodicMemory implements Serializable {
 				}
 			}
 			
-			// TODO: implementation decision
+			// TODO: implementation decision (currently option b)
 			// a) delete old summary, regenerate summary when adding details (summary consistent with details)
 			// b) keep old summary with all values, forget only details (summary can be inconsistent with details)
-			episode.getPeople().clear();
-			episode.getLocation().clear();
-			episode.getObjects().clear();
+			//episode.getPeople().clear();
+			//episode.getLocation().clear();
+			//episode.getObjects().clear();
 			
 			// temporarily remove details
 			episode.getDetails().clear();
@@ -614,12 +614,12 @@ public class EpisodicMemory implements Serializable {
 				episode.AddActionDetail(detail);
 			}
 			
-			// TODO: implementation decision
+			// TODO: implementation decision (currently option b)
 			// a) delete empty episodes
 			// b) keep empty episodes (and summary contains all values)
-			if(episode.getDetails().size() == 0) {
-				_am.GetAllEpisodes().remove(episode);
-			}
+			//if(episode.getDetails().size() == 0) {
+			//	_am.GetAllEpisodes().remove(episode);
+			//}
 			
 		}
 		
