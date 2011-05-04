@@ -276,50 +276,26 @@ public class LikeCondition extends Condition {
 	}
 
 	@Override
-	public Object GenerateName(int id) {
-		LikeCondition cond = (LikeCondition) this.clone();
-		cond.ReplaceUnboundVariables(id);
-		return cond;
-	}
-
-	@Override
-	public Object Ground(ArrayList<Substitution> bindingConstraints) {
-		LikeCondition cond = (LikeCondition) this.clone();
-		cond.MakeGround(bindingConstraints);
-		return cond;
-	}
-
-	@Override
-	public Object Ground(Substitution subst) {
-		LikeCondition cond = (LikeCondition) this.clone();
-		cond.MakeGround(subst);
-		return cond;
-	}
-
-	@Override
 	public void MakeGround(ArrayList<Substitution> bindings) {
-		this.getToM().MakeGround(bindings);
-		this.getName().MakeGround(bindings);
+		super.MakeGround(bindings);
 		this._value.MakeGround(bindings);
 	}
 
 	@Override
 	public void MakeGround(Substitution subst) {
-		this.getToM().MakeGround(subst);
-		this.getName().MakeGround(subst);
+		super.MakeGround(subst);
 		this._value.MakeGround(subst);
 	}
 
 	@Override
 	public void ReplaceUnboundVariables(int variableID) {
-		this.getToM().ReplaceUnboundVariables(variableID);
-		this.getName().ReplaceUnboundVariables(variableID);
+		super.ReplaceUnboundVariables(variableID);
 		this._value.ReplaceUnboundVariables(variableID);
 	}
 
 	@Override
 	public boolean isGrounded() {
-		return this.getToM().isGrounded() && this.getName().isGrounded();
+		return super.isGrounded() && this._value.isGrounded();
 	}
 
 	@Override
