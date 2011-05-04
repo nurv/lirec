@@ -48,12 +48,10 @@ public class Time implements Serializable {
 	
 	private long _narrativeTime;
 	private Calendar _realTime;
-	private SimpleDateFormat simpleDateFormat;
 	private long _eventSequence;
 	
 	public Time()
 	{
-        simpleDateFormat = new SimpleDateFormat();		
 		this._narrativeTime = AgentSimulationTime.GetInstance().Time();
 		this._realTime = new GregorianCalendar();
 		this._eventSequence = _eventCounter;
@@ -62,7 +60,6 @@ public class Time implements Serializable {
 	
 	public Time(Long narrativeTime, long realTime, long eventSequence)
 	{
-        simpleDateFormat = new SimpleDateFormat();		
 		this._narrativeTime = narrativeTime;
 		this._realTime = new GregorianCalendar();
 		this._realTime.setTimeInMillis(realTime);
@@ -81,6 +78,8 @@ public class Time implements Serializable {
 	}
 	
 	public String getRealTimeFormatted() {
+		//SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat();
 		return simpleDateFormat.format(this._realTime.getTime());
 	}
 	
