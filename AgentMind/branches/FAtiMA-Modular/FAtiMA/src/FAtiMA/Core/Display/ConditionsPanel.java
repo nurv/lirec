@@ -31,16 +31,16 @@
 package FAtiMA.Core.Display;
 
 import java.awt.Dimension;
-import java.io.File;
-import java.util.ListIterator;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
+import javax.swing.SwingConstants;
 
 import FAtiMA.Core.conditions.Condition;
 import FAtiMA.Core.util.ConfigurationManager;
@@ -49,45 +49,41 @@ import FAtiMA.Core.util.ConfigurationManager;
 public class ConditionsPanel extends JPanel {
 	private static Icon VERIFIED_ICON = new ImageIcon(ConfigurationManager.getMindPath() + "/icons/verifiedIcon.png");
 	private static Icon NOT_VERIFIED_ICON = new ImageIcon(ConfigurationManager.getMindPath() + "/icons/notVerifiedIcon.png");
-	
+
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public ConditionsPanel(String title, ListIterator<Condition> conditions) {
-		
-		super();
-		
-		
+	public ConditionsPanel(String title, ArrayList<Condition> conditions) {
+
+		super(new GridBagLayout());
 		this.setBorder(BorderFactory.createTitledBorder(title));
-        this.setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
-        
-        JPanel prop = new JPanel();
-		//prop.setBorder(BorderFactory.createTitledBorder(title));
-		prop.setLayout(new BoxLayout(prop,BoxLayout.Y_AXIS));
-		prop.setMaximumSize(new Dimension(350,75));
-		prop.setMinimumSize(new Dimension(350,75));
-		
-		JScrollPane propertiesScroll = new JScrollPane(prop);
-		
-		this.add(propertiesScroll);
-		
 		JLabel lbl;
-		Condition c;
-		
-		while(conditions.hasNext()) {
-			c = (Condition) conditions.next();
+
+		GridBagConstraints constraints = new GridBagConstraints();
+		constraints.gridx = 0;
+		constraints.gridy = 0;
+		constraints.anchor = GridBagConstraints.WEST;	
+		//constraints.fill = GridBagConstraints.BOTH;
+
+
+		for(Condition c : conditions){
 			lbl = new JLabel(c.toString());
-			
+			lbl.setHorizontalAlignment(SwingConstants.LEFT);
+
 			if(c.isVerifiable()){
 				lbl.setIcon(VERIFIED_ICON);
 			}else{
 				lbl.setIcon(NOT_VERIFIED_ICON);	
 			}
-			
-			prop.add(lbl);
+			this.add(lbl,constraints);
+			constraints.gridy++;
 		}
-		
+
+		if(conditions.size()==0){
+			this.add(new JLabel("-"),constraints);
+		}
+
 	}
 }
