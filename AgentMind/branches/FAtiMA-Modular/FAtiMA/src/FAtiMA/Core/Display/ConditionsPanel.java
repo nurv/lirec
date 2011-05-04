@@ -65,9 +65,8 @@ public class ConditionsPanel extends JPanel {
 		constraints.gridx = 0;
 		constraints.gridy = 0;
 		constraints.anchor = GridBagConstraints.WEST;	
-		//constraints.fill = GridBagConstraints.BOTH;
 
-
+		
 		for(Condition c : conditions){
 			lbl = new JLabel(c.toString());
 			lbl.setHorizontalAlignment(SwingConstants.LEFT);
