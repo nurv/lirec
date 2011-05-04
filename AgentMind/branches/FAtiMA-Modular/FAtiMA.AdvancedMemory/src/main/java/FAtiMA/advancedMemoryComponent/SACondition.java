@@ -58,6 +58,21 @@ public class SACondition extends Condition{
 		this._knownVariables = new Hashtable<String, Symbol>();
 	}
 	
+	private SACondition(SACondition sac)
+	{
+		super(sac);
+		this._query = sac._query;
+		this._value = (Symbol) sac._value.clone();
+		
+		this._knownVariables = new Hashtable<String, Symbol>();
+		Iterator<String> it = sac._knownVariables.keySet().iterator();
+		while (it.hasNext())
+		{
+			String key = it.next();
+			this._knownVariables.put(key, (Symbol) sac._knownVariables.get(key).clone());
+		}
+	}
+	
 	public void AddKnownVariables(String name, Symbol value)
 	{
 		this._knownVariables.put(name, value);
@@ -129,41 +144,11 @@ public class SACondition extends Condition{
 
 	@Override
 	public Object clone() {
-		SACondition sac = new SACondition();
-		sac._query = this._query;
-		sac._value = (Symbol) this._value.clone();
-		
-		sac._knownVariables = new Hashtable<String, Symbol>();
-		Iterator<String> it = this._knownVariables.keySet().iterator();
-		while (it.hasNext())
-		{
-			String key = it.next();
-			sac._knownVariables.put(key, (Symbol) this._knownVariables.get(key).clone());
-		}
-		
-		return sac;
-	}
-
-	public Object GenerateName(int id) {
-		SACondition sa = (SACondition) this.clone();
-		sa.ReplaceUnboundVariables(id);
-		return sa;
-	}
-
-	@Override
-	public Object Ground(ArrayList<Substitution> bindingConstraints) {
-		SACondition sa = (SACondition) this.clone();
-		sa.MakeGround(bindingConstraints);
-		return sa;
-	}
-
-	public Object Ground(Substitution subst) {
-		SACondition sa = (SACondition) this.clone();
-		sa.MakeGround(subst);
-		return sa;
+		return new SACondition(this);
 	}
 
 	public void MakeGround(ArrayList<Substitution> bindings) {
+		super.MakeGround(bindings);
 		this._value.MakeGround(bindings);
 		Iterator<Symbol> it = this._knownVariables.values().iterator();
 		while (it.hasNext())
@@ -174,6 +159,7 @@ public class SACondition extends Condition{
 
 	@Override
 	public void MakeGround(Substitution subst) {
+		super.MakeGround(subst);
 		this._value.MakeGround(subst);
 		Iterator<Symbol> it = this._knownVariables.values().iterator();
 		while (it.hasNext())
@@ -184,6 +170,7 @@ public class SACondition extends Condition{
 
 	@Override
 	public void ReplaceUnboundVariables(int variableID) {
+		super.ReplaceUnboundVariables(variableID);
 		this._value.ReplaceUnboundVariables(variableID);
 		Iterator<Symbol> it = this._knownVariables.values().iterator();
 		while (it.hasNext())
