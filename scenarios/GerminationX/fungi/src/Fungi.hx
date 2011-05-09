@@ -14,6 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import haxe.Log;
+import flash.external.ExternalInterface;
 
 import truffle.Truffle;
 import truffle.interfaces.Key;
@@ -839,6 +840,24 @@ class FungiWorld extends World
 
                 c.SortScene();
             });            
+
+            if (MyName==null)
+            {        
+                try 
+                {
+                    var data = flash.external.ExternalInterface.call("game.get_name");
+                    trace(data);
+                    if (data!="")
+                    {
+                        MyName=data;
+		                removeChild(MyTextEntry);
+                    }
+                }
+                catch (e:Dynamic)
+                {
+                    trace(e);
+                };
+            }
             
             TickTime=time+100;
         }
