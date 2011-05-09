@@ -841,9 +841,8 @@ class FungiWorld extends World
                 c.SortScene();
             });            
 
-            if (MyName==null)
+            if (MyName=="")
             {        
-                trace("hello");
                 try 
                 {
                     var data = flash.external.ExternalInterface.call("game.get_name");
