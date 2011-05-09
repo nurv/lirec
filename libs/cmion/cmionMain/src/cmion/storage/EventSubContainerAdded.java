@@ -29,6 +29,8 @@
 
 package cmion.storage;
 
+import java.util.HashMap;
+
 import cmion.architecture.CmionEvent;
 
 /** an event informing that a new subcontainer has been added to a CMION StorageContainer
@@ -41,12 +43,16 @@ private CmionStorageContainer subContainer;
 /** the parent container that has added the sub container*/
 private CmionStorageContainer parentContainer;
 
+/** the initial properties of the sub container */
+private HashMap<String,Object> initialProperties;
 
 /** create a new event sub container added */
-public EventSubContainerAdded(CmionStorageContainer parentContainer, CmionStorageContainer subContainer)
+public EventSubContainerAdded(CmionStorageContainer parentContainer, CmionStorageContainer subContainer, 
+							  HashMap<String,Object> initialProperties)
 {
 	this.parentContainer = parentContainer;
 	this.subContainer =  subContainer;
+	this.initialProperties = initialProperties;
 }
 
 /** returns the sub container that has been added */
@@ -59,6 +65,12 @@ public CmionStorageContainer getSubContainer()
 public CmionStorageContainer getParentContainer()
 {
 	return parentContainer;
+}
+
+/** returns the initial properties of the sub container that was added */
+public HashMap<String,Object> getInitialProperties()
+{
+	return initialProperties;
 }
 
 /** displays information about this event */

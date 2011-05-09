@@ -146,11 +146,10 @@ public class CompetencyExecutionPlanStep
 			// retrieve original value
 			String value = competencyParameters.get(parameterName);
 			
-			// check if this is a variable and if we have a mapping for it
-			if ((value.startsWith("$")) && (mappings.containsKey(value)))
+			// replace all occurrences of all mapping variables
+			for (String key: mappings.keySet())
 			{
-				// if yes, replace value, by mapping
-				value = mappings.get(value);
+				value = value.replace(key, mappings.get(key));
 			}
 			
 			// add parameter and value

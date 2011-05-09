@@ -94,7 +94,11 @@ public class TestCompetency7 extends Competency
 			}
 			catch (InterruptedException e) {}
 			
-			if (shouldCancel) throw new CompetencyCancelledException();
+			if (shouldCancel)
+			{	
+				System.out.println("TestCompetency7 cancelled");
+				throw new CompetencyCancelledException();
+			}
 		}
 				
 		// test competency 7 always succeeds if it is not cancelled

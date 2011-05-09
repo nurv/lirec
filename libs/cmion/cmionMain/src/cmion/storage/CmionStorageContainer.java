@@ -312,7 +312,7 @@ public class CmionStorageContainer extends CmionComponent {
 			}
 
 			// finally raise an event that we have added a new sub container			
-			this.raise(new EventSubContainerAdded(this, container));				
+			this.raise(new EventSubContainerAdded(this, container,initialProperties));				
 			
 			// and request setting the initial properties
 			if (initialProperties!=null)
