@@ -59,6 +59,11 @@ function game_world()
         }
     }
 
+    this.get_name = function()
+    {
+        return this.player_name;
+    }
+
     this.fb_refresh = function(name,data)
     {
         if (name=="me")
