@@ -210,7 +210,7 @@ public class CompetencyManager extends CmionComponent
 		NodeList ruleTags = doc.getElementsByTagName("Rule");		
 		for (int i=0; i<ruleTags.getLength(); i++)
 		{
-			rules.add(new CompetencyManagerRule(ruleTags.item(i)));
+			rules.add(new CompetencyManagerRule(ruleTags.item(i),architecture));
 		}						
 	}
 	

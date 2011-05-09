@@ -33,6 +33,7 @@ package cmion.level3;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import cmion.architecture.IArchitecture;
 import cmion.level2.CompetencyExecutionPlan;
 
 /** a competency manager rule maps a mind action and the state of available competencies 
@@ -50,10 +51,14 @@ public class CompetencyManagerRule
 	/** the specificity of this rule (see getSpecificity for more details) */
 	private int specificity;
 	
+	/** refernce to cmion architecture */
+	private IArchitecture architecture;
+	
 	/** create a new competency manager rule from a dom node (originating form the parsed 
 	 * competeny manager rules xml file). An exception is thrown when xml is malformed */
-	public CompetencyManagerRule(Node domNode) throws Exception
+	public CompetencyManagerRule(Node domNode, IArchitecture architecture) throws Exception
 	{
+		this.architecture = architecture;
 		mindAction = null;
 		executionPlan = null;
 		
@@ -69,7 +74,7 @@ public class CompetencyManagerRule
 			else if (children.item(i).getNodeName().equals("CompetencyExecutionPlan"))
 			{
 				if (executionPlan!=null) throw new Exception("More than one Execution Plan section in a competency manager rule.");
-				else executionPlan = new CompetencyExecutionPlan(children.item(i));
+				else executionPlan = new CompetencyExecutionPlan(children.item(i),architecture);
 			}
 		}
 		

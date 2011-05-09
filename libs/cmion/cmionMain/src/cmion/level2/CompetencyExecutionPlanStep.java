@@ -37,6 +37,9 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import cmion.architecture.IArchitecture;
+import cmion.storage.CmionStorageContainer;
+
 /** represents a step in a competency execution plan, can be instantiated or uninstantiated,
  *  see comments in class CompetencyExecutionPlan for more on this distinction. */
 public class CompetencyExecutionPlanStep 
@@ -61,17 +64,21 @@ public class CompetencyExecutionPlanStep
 	 *  alternate move competencies) */
 	private ArrayList<Competency> competenciesAlreadyTried;
 	
+	/** refernce to cmion architecture */
+	private IArchitecture architecture;
+	
 	/** private constructor only used from within this class */
-	private CompetencyExecutionPlanStep()
+	private CompetencyExecutionPlanStep(IArchitecture architecture)
 	{
+		this.architecture = architecture;
 		preconditions = new ArrayList<String>();
 		competencyParameters = new HashMap<String,String>();
 	}
 	
 	/** create a new plan step from a DOM node */
-	public CompetencyExecutionPlanStep(Node domNode) throws Exception
+	public CompetencyExecutionPlanStep(Node domNode,IArchitecture architecture) throws Exception
 	{
-		this();
+		this(architecture);
 
 		NamedNodeMap attribs = domNode.getAttributes();
 		
@@ -130,7 +137,7 @@ public class CompetencyExecutionPlanStep
 	 * a concrete value for that variable, if this value is provided by the mappings given */
 	public CompetencyExecutionPlanStep getInstantiatedCopy(HashMap<String, String> mappings) {
 		
-		CompetencyExecutionPlanStep returnStep = new CompetencyExecutionPlanStep();
+		CompetencyExecutionPlanStep returnStep = new CompetencyExecutionPlanStep(architecture);
 		
 		// copy basic fields
 		returnStep.ID = ID;
@@ -151,6 +158,53 @@ public class CompetencyExecutionPlanStep
 			{
 				value = value.replace(key, mappings.get(key));
 			}
+			
+			// after replacing all variables, check if there are any blackboard variables to replace
+			// this means search for $BB, variables look like this $BB(utterance) reads the value
+			// of the blackboard property utterance, $BB(messages.1) reads the value of the property 1
+			// in the sub container 1, etc.
+			while (value.contains("$BB"))
+			{
+				int idx = value.indexOf("$BB");
+				String substring = "";
+				for (int i=idx; value.charAt(idx)!=')'; i++)
+					substring += value.charAt(idx);
+				
+				// substring should now contain the $BB expression, excluding the closing bracket,
+				// next we split on the '.' and '(' characters
+				StringTokenizer st = new StringTokenizer(substring,".(");
+				ArrayList<String> tokens = new ArrayList<String>();
+				if (st.hasMoreTokens()) st.nextToken(); // discard the first token
+				while (st.hasMoreTokens()) tokens.add(st.nextToken()); // store the rest in the array list
+				
+				// if there isnt at least one token this variable is malformed, remove from string
+				if (tokens.size()<1) 
+					value = value.replace(substring, "");
+				else
+				{
+					// last token is the name of the property
+					String propName = tokens.remove(tokens.size()-1);
+					CmionStorageContainer csc = architecture.getBlackBoard();
+					while (tokens.size()>0)
+					{
+						String containerName = tokens.remove(tokens.size()-1);
+						if (csc!=null)
+							csc = csc.getSubContainer(containerName);
+					}
+					if (csc==null)
+						value = value.replace(substring, "");
+					else
+					{
+						Object propValue = csc.getPropertyValue(propName);
+						if (propValue==null)
+							value = value.replace(substring, "");
+						else
+							value = value.replace(substring, propValue.toString());
+					}
+				}
+			}
+			
+			
 			
 			// add parameter and value
 			returnStep.competencyParameters.put(parameterName, value);			

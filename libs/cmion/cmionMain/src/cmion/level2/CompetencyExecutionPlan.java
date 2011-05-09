@@ -36,6 +36,8 @@ import java.util.HashMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import cmion.architecture.IArchitecture;
+
 /** a plan of competencies that can be executed by the competency execution system,
  * this class is used to represent both instantiated and not instantiated execution plans.
  * Inside the competency manager rules uninstantiated execution plans are stored, while
@@ -60,24 +62,28 @@ public class CompetencyExecutionPlan {
 	/** for instantiated plans this stores whether they are currently executed or not*/
 	private boolean currentlyExecuting;
 	
+	/** refernce to cmion architecture */
+	private IArchitecture architecture;
+	
 	/** creates a new competencyExecutionPlan with no steps */
-	public CompetencyExecutionPlan()
+	public CompetencyExecutionPlan(IArchitecture architecture)
 	{
+		this.architecture = architecture;
 		planSteps = new HashMap<String,CompetencyExecutionPlanStep>();
 		instantiated = false;
 		currentlyExecuting = false;
 	}
 	
 	/** creates a new competencyExecutionPlan from a DOM node */
-	public CompetencyExecutionPlan(Node domNode) throws Exception
+	public CompetencyExecutionPlan(Node domNode, IArchitecture architecture) throws Exception
 	{
-		this();
+		this(architecture);
 		NodeList children = domNode.getChildNodes();
 		for (int i=0; i<children.getLength(); i++)
 		{
 			if (children.item(i).getNodeName().equals("Competency"))
 			{
-				CompetencyExecutionPlanStep step = new CompetencyExecutionPlanStep(children.item(i));
+				CompetencyExecutionPlanStep step = new CompetencyExecutionPlanStep(children.item(i),architecture);
 				if (!planSteps.containsKey(step.getID()))
 					planSteps.put(step.getID(), step);
 				else
@@ -105,7 +111,7 @@ public class CompetencyExecutionPlan {
 	 */
 	public CompetencyExecutionPlan getInstantiatedCopy(HashMap<String,String> mappings)
 	{
-		CompetencyExecutionPlan returnPlan = new CompetencyExecutionPlan();
+		CompetencyExecutionPlan returnPlan = new CompetencyExecutionPlan(architecture);
 		
 		// iterate over all current plan steps and add an instantiated copy to the new plan
 		for (String planStepID : planSteps.keySet())
