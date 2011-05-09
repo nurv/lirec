@@ -871,7 +871,7 @@ class Fungi extends App
 {
     public function new() 
 	{
-        Log.setColor(0xFFFFFF);
+        Log.setColor(0x000000);
         super(new FungiWorld(15,15));
     }
 	
