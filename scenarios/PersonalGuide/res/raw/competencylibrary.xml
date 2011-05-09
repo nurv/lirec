@@ -11,7 +11,7 @@ construction (assumed parameter type is String, parameters are seperated by comm
 -->
 
 <Competency ClassName="cmion.level2.competencies.AndroidMigration" 
-			ConstructorParameters="migrationconfig" />
+			ConstructorParameters="migrationconfigherts" />
 <Competency ClassName="cmion.personalguide.competencies.FaceAnimator" />
 <Competency ClassName="cmion.personalguide.competencies.TalkCompetency" />
 			

@@ -3,6 +3,8 @@ package cmion.personalguide.mind;
 
 import java.util.ArrayList;
 
+import lirec.personalguide.events.EventWakeUp;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -114,7 +116,7 @@ public class SimpleMind extends AgentMindConnector implements Migrating, Migrati
 			{
 				emotionalState = "joy";
 				executeAction(getEmotionAction(emotionalState));
-				executeAction(getTalkAction("When can you meet your student?"));
+				executeAction(getTalkAction("When can you meet with Michael?"));
 			}
 			else if (userChoice.toLowerCase().equals("no"))
 			{
@@ -125,6 +127,11 @@ public class SimpleMind extends AgentMindConnector implements Migrating, Migrati
 			}
 			else 
 			{ //this was an answer to the question of when to meet the student
+				if (userChoice.equals("I can't say now"))
+				{
+					emotionalState = "sadness";
+					executeAction(getEmotionAction(emotionalState));
+				}
 				replyToMigrate = userChoice;
 				executeAction(getTalkAction("Thank you, I will let him know."));				
 			}
@@ -147,6 +154,10 @@ public class SimpleMind extends AgentMindConnector implements Migrating, Migrati
 	{
 		// read emotion
 		emotionalState = message.getElementsByTagName("emotion").item(0).getChildNodes().item(0).getNodeValue();
+		
+		// wake up
+		this.raise(new EventWakeUp());
+		
 		// perform the emotion
 		executeAction(getEmotionAction(emotionalState));
 		executeAction(getTalkAction("Hello!"));
@@ -230,6 +241,12 @@ public class SimpleMind extends AgentMindConnector implements Migrating, Migrati
 			lockAction = actionToExecute;
 			newAction(actionToExecute);
 		}
+	}
+
+	@Override
+	protected void processActionCancellation(MindAction a) 
+	{
+		// this mind does not process any action cancellation	
 	}
 	
 }

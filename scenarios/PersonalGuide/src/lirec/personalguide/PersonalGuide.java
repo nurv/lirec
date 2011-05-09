@@ -12,6 +12,7 @@ import lirec.personalguide.FaceAnimation.AnimationIntent;
 import lirec.personalguide.events.EventChangeEmotion;
 import lirec.personalguide.events.EventTalk;
 import lirec.personalguide.events.EventUserSubmit;
+import lirec.personalguide.events.EventWakeUp;
 import lirec.personalguide.R;
 
 import org.kxml2.io.KXmlParser;
@@ -22,9 +23,12 @@ import cmion.architecture.AndroidArchitecture;
 import cmion.architecture.CmionEvent;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.PowerManager;
+import android.os.Vibrator;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -49,6 +53,9 @@ public class PersonalGuide extends Activity implements OnClickListener{
 	
 	/** user options to be displayed in the spinner */
 	private ArrayAdapter<String> userOptionsAdapter;
+	
+	/** a lock to ensure the screen doesnt switch off*/
+	private PowerManager.WakeLock wakeLock;
 	
 	public final Handler handler = new Handler();
 	FaceAnimation animator;
@@ -135,6 +142,9 @@ public class PersonalGuide extends Activity implements OnClickListener{
     	
     	timer.cancel();
     	timer = null;
+    	
+    	// unlock wake lock
+    	if (  wakeLock != null) wakeLock.release();  	
     }
     
     @Override
@@ -142,6 +152,11 @@ public class PersonalGuide extends Activity implements OnClickListener{
     	super.onResume();
     	
     	timer = new Timer("Update ", true);
+    	
+    	// set wake lock
+    	PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+    	wakeLock = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, "personalGuideWakeLock");
+    	wakeLock.acquire();   	
     }    	
     
     @Override
@@ -232,6 +247,18 @@ public class PersonalGuide extends Activity implements OnClickListener{
     	}
     	
     };
+ 
+private Handler wakeUpHandler = new Handler()
+{        
+	@Override
+	public void handleMessage(Message msg)
+	{
+		// vibrate 1000 ms on incoming migration
+		Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+		v.vibrate(1000);
+	}
+	
+};
     
     private class PersonalGuideIONElement extends Element
     {
@@ -239,6 +266,7 @@ public class PersonalGuide extends Activity implements OnClickListener{
     	{
     		Simulation.instance.getEventHandlers().add(new HandleEventTalk());
     		Simulation.instance.getEventHandlers().add(new HandleEventChangeEmotion());
+    		Simulation.instance.getEventHandlers().add(new HandleEventWakeUp());
     	}
     	
 		@Override
@@ -278,6 +306,20 @@ public class PersonalGuide extends Activity implements OnClickListener{
 		    	Message msg = emotionHandler.obtainMessage();
 		    	msg.obj = emotion;
 		    	emotionHandler.sendMessage(msg);
+		    }
+		}
+		
+		/** internal event wake up */
+		private class HandleEventWakeUp extends EventHandler {
+
+		    public HandleEventWakeUp() {
+		        super(EventWakeUp.class);
+		    }
+
+		    @Override
+		    public void invoke(IEvent evt) 
+		    {
+		    	wakeUpHandler.sendEmptyMessage(0);
 		    }
 		}
     	
