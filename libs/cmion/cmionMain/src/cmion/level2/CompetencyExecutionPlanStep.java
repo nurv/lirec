@@ -167,8 +167,8 @@ public class CompetencyExecutionPlanStep
 			{
 				int idx = value.indexOf("$BB");
 				String substring = "";
-				for (int i=idx; value.charAt(idx)!=')'; i++)
-					substring += value.charAt(idx);
+				for (int i=idx; value.charAt(i)!=')'; i++)
+					substring += value.charAt(i);
 				
 				// substring should now contain the $BB expression, excluding the closing bracket,
 				// next we split on the '.' and '(' characters
