@@ -17,6 +17,7 @@ function fb_interface(appid,refresh)
 {   
     if (appid!="") 
     {
+        debug("FB.init called");
         FB.init({appId: appid, status: true, cookie: true, xfbml: true});
     }
 
