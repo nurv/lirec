@@ -1,10 +1,24 @@
+
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"> 
 <html lang="en"> 
 <head> 
+<script language="javascript">
+  // add some html to the page
+  function helloJS()
+  { 
+  var div=document.createElement("div");   
+  div.id = "foo";
+  div.innerHTML = "werd";
+  document.getElementById("debug").appendChild(div);
+  return "from JS code";
+  }
+</script>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"> 
 <title>truffle test</title> 
 </head> 
 <body> 
+<form><input type="button" value="boo" name="button2" onClick="helloJS();"></form> 
+<div id="debug">waiting: </div>
 <object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000"
         width="50"
     height="50"

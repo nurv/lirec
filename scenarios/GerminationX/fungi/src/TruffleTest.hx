@@ -13,6 +13,8 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import flash.external.ExternalInterface;
+
 import truffle.Truffle;
 import truffle.interfaces.Key;
 
@@ -41,6 +43,19 @@ class TruffleWorld extends World
         TickTime=0;
 		Server=new ServerConnection();
         Sprites=new Array<Sprite>();
+
+        trace("hello there from flash");
+        trace(ExternalInterface.available);
+        try 
+        {
+            var data = flash.external.ExternalInterface.call("helloJS");
+            trace(data);
+        }
+        catch (e:Dynamic)
+        {
+            trace(e);
+        };
+        trace("done.");
 
         var num=10;
         var pos=new Array<Vec2>();
