@@ -846,7 +846,6 @@ class FungiWorld extends World
                 try 
                 {
                     var data = flash.external.ExternalInterface.call("game.get_name");
-                    trace(data);
                     if (data!="")
                     {
                         MyName=data;
