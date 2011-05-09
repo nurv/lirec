@@ -43,7 +43,7 @@ function game_world()
         {
             // the API key is stored in the untracked api-key.js
             // echo "var gx_api_key = '1234567890abcdef';" > api-key.js
-            this.fb = new fb_interface(gx_fb_key, this.fb_refresh);
+            this.fb = new fb_interface(gx_api_key, this.fb_refresh);
         }
     }
 
