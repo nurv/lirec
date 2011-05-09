@@ -5,6 +5,9 @@
 <title>germination x</title> 
 </head> 
 <body bgcolor="#ffffff">
+  <div id="facebook_status">
+    <input type="button" id="accept" value="Login on FB" onClick="game.fb.login();">
+  </div>
   <object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000"
           width="950"
           height="50"
@@ -29,9 +32,7 @@
            />
   </object>
   <div id="fb-root"></div>
-  <input type="button" id="accept" value="Login on FB" onClick="game.fb.login();">
-  <div id="debug">waiting... </div>
-  <div id="facebook_status">waiting... </div>
+  <div id="debug">debug:</div>
   <script type="text/javascript" src="jquery-1.4.2.min.js"></script>
   <script type="text/javascript" src="http://connect.facebook.net/en_US/all.js"></script>
   <script type="text/javascript" src="api-key.js"></script> 

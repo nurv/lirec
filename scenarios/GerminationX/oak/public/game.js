@@ -24,12 +24,24 @@ function print(dst,text)
     document.getElementById(dst).appendChild(div);
 }
 
+function clear(id)
+{
+    var element=document.getElementById(id);
+    while (element.firstChild) 
+    {
+        element.removeChild(element.firstChild);
+    }
+}
+
 function debug(text) { print("debug",text); }
-function facebook_status(text) { print("facebook_status",text); }
+
+function facebook_status(text) 
+{ 
+    clear("facebook_status");
+    print("facebook_status",text); 
+}
 
 //////////////////////////////////////////////////////////
-
-debug("hello");
 
 function game_world()
 {

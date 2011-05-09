@@ -69,7 +69,7 @@ function fb_interface(appid,refresh)
         var fb=this;
         FB.login(function(response) {
             if (response.session) {
-                facebook_status('I am now naked on Pluto. <input type="button" value="Logout" onClick="game.fb.logout();">');
+                facebook_status('You are now logged in. <input type="button" value="Logout" onClick="game.fb.logout();">');
                 fb.suck();
             } else {
                 facebook_status(":( the login didn't work! " + '<input type="button" value="Login to facebook" onClick="login();">');
