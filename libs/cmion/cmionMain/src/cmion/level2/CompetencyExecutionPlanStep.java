@@ -158,54 +158,18 @@ public class CompetencyExecutionPlanStep
 			{
 				value = value.replace(key, mappings.get(key));
 			}
-			
+	
 			// after replacing all variables, check if there are any blackboard variables to replace
 			// this means search for $BB, variables look like this $BB(utterance) reads the value
 			// of the blackboard property utterance, $BB(messages.1) reads the value of the property 1
 			// in the sub container 1, etc.
-			while (value.contains("$BB"))
-			{
-				int idx = value.indexOf("$BB");
-				String substring = "";
-				for (int i=idx; value.charAt(i)!=')'; i++)
-					substring += value.charAt(i);
-				
-				// substring should now contain the $BB expression, excluding the closing bracket,
-				// next we split on the '.' and '(' characters
-				StringTokenizer st = new StringTokenizer(substring,".(");
-				ArrayList<String> tokens = new ArrayList<String>();
-				if (st.hasMoreTokens()) st.nextToken(); // discard the first token
-				while (st.hasMoreTokens()) tokens.add(st.nextToken()); // store the rest in the array list
-				
-				// if there isnt at least one token this variable is malformed, remove from string
-				if (tokens.size()<1) 
-					value = value.replace(substring, "");
-				else
-				{
-					// last token is the name of the property
-					String propName = tokens.remove(tokens.size()-1);
-					CmionStorageContainer csc = architecture.getBlackBoard();
-					while (tokens.size()>0)
-					{
-						String containerName = tokens.remove(tokens.size()-1);
-						if (csc!=null)
-							csc = csc.getSubContainer(containerName);
-					}
-					if (csc==null)
-						value = value.replace(substring, "");
-					else
-					{
-						Object propValue = csc.getPropertyValue(propName);
-						if (propValue==null)
-							value = value.replace(substring, "");
-						else
-							value = value.replace(substring, propValue.toString());
-					}
-				}
-			}
+
+			value = replaceStorageContainerVars(value,"$BB",architecture.getBlackBoard());
 			
+			// do exactly the same for world model variables ($WM)
 			
-			
+			value = replaceStorageContainerVars(value,"$WM",architecture.getWorldModel());
+						
 			// add parameter and value
 			returnStep.competencyParameters.put(parameterName, value);			
 		}
@@ -214,6 +178,57 @@ public class CompetencyExecutionPlanStep
 		returnStep.competenciesAlreadyTried = new ArrayList<Competency>();
 		
 		return returnStep;
+	}
+
+	private String replaceStorageContainerVars(String input, String varIdentifier,
+			CmionStorageContainer topContainer) 
+	{
+		String value = input;
+		while (value.contains(varIdentifier))
+		{
+			int idx = value.indexOf(varIdentifier);
+			String substring = "";
+			for (int i=idx; value.charAt(i)!=')'; i++)
+				substring += value.charAt(i);
+			
+			// substring should now contain the $BB/WM expression, excluding the closing bracket,
+			// next we split on the '.' and '(' characters
+			StringTokenizer st = new StringTokenizer(substring,".(");
+			ArrayList<String> tokens = new ArrayList<String>();
+			if (st.hasMoreTokens()) st.nextToken(); // discard the first token
+			while (st.hasMoreTokens()) tokens.add(st.nextToken()); // store the rest in the array list
+			
+			// now add the closing bracket to the substring, so that when we replace it, it gets replaced completely
+			substring += ")";
+			
+			// if there isnt at least one token this variable is malformed, remove from string
+			if (tokens.size()<1) 
+				value = value.replace(substring, "");
+			else
+			{
+				// last token is the name of the property
+				String propName = tokens.remove(tokens.size()-1);
+				CmionStorageContainer csc = topContainer;
+				while (tokens.size()>0)
+				{
+					String containerName = tokens.remove(tokens.size()-1);
+					if (csc!=null)
+						csc = csc.getSubContainer(containerName);
+				}
+				if (csc==null)
+					value = value.replace(substring, "");
+				else
+				{
+					Object propValue = csc.getPropertyValue(propName);
+					if (propValue==null)
+						value = value.replace(substring, "");
+					else
+						value = value.replace(substring, propValue.toString());
+				}
+			}
+		}
+
+		return value;
 	}
 
 	/** returns the ID of this plan step */
