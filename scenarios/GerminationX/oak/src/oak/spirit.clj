@@ -23,15 +23,6 @@
   (:require
    clojure.contrib.math))
 
-(defrecord spirit
-  [tile
-   pos
-   name
-   emotions
-   emotionalloc
-   fatactions
-   fatemotions])
-
 (defn emotion-map []
   { "Love" 0
     "Hate" 0
@@ -58,13 +49,15 @@
 
 (defn make-spirit [remote-agent]
   (println (str "creating spirit for " (remote-agent-name remote-agent)))
-  (spirit.
-   (make-vec2 0 0)
-   (make-vec2 0 0)
-   (remote-agent-name remote-agent)
-   (emotion-map)
-   (make-vec2 0 0)
-   '() '()))
+  (hash-map
+   :version 0
+   :tile (make-vec2 0 0)
+   :pos (make-vec2 0 0)
+   :name (remote-agent-name remote-agent)
+   :emotions (emotion-map)
+   :emotionalloc (make-vec2 0 0)
+   :fatactions '()
+   :fatemotions '()))
 
 ; convert foofooname#999# to 999
 (defn fatima-name->id [name]

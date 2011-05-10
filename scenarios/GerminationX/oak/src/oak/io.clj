@@ -78,13 +78,20 @@
   (with-open [r (PushbackReader. (FileReader. filename))]
     (read r))))
 
-(defn serialise [o filename]
+(comment (defn serialise [o filename]
   (with-open [outp (-> (java.io.File. filename) java.io.FileOutputStream. java.io.ObjectOutputStream.)]
     (.writeObject outp o)))
 
 (defn deserialise [filename]
   (with-open [inp (-> (java.io.File. filename) java.io.FileInputStream. java.io.ObjectInputStream.)]
-    (.readObject inp)))
+    (.readObject inp))))
+
+(defn serialise [o filename]
+  (println "hello")
+  (spit filename o))
+
+(defn deserialise [filename]
+  (read-string (slurp filename)))
 
 (def buf (ByteBuffer/allocateDirect 409600))
 

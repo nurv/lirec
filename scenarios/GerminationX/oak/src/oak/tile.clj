@@ -18,29 +18,25 @@
    oak.plant
    oak.forms))
 
-(defrecord tile
-  [season
-   pos
-   entities])
-
-(defn tile-pos [tile] (:pos tile))
-(defn tile-entities [tile] (:entities tile))
-
 (defn make-tile [pos entity-list]
-  (tile. 'summer pos entity-list))
+  (hash-map
+   :version 0
+   :season 'summer
+   :pos pos
+   :entities entity-list))
 
 (defn tile-position-taken? [tile pos]
   (reduce
    (fn [r e]
-     (if (and (not r) (vec2-eq? pos (plant-pos e)))
+     (if (and (not r) (vec2-eq? pos (:pos e)))
        true
        r))
    false
-   (tile-entities tile)))
+   (:entities tile)))
 
 (defn tile-add-entity [tile entity]
-  (if (not (tile-position-taken? tile (plant-pos entity)))
-    (merge tile {:entities (cons entity (tile-entities tile))})
+  (if (not (tile-position-taken? tile (:pos entity)))
+    (merge tile {:entities (cons entity (:entities tile))})
     tile))
 
 (defn tile-find-entity [tile id]

@@ -82,7 +82,7 @@
    str
    (map
     (fn [v]
-      (str (first v) ":" (second v) " "))
+      (str (first v) ":" (if (map? (second v)) "map" (second v)) " "))
     m)))
 
 ; look through agents and objects and return the properties for the named thing
@@ -141,8 +141,8 @@
   (if (not (world-get-object world (get object "name")))
     (do
       (world-broadcast-all world (str "ENTITY-ADDED " (get object "name")))
-      (comment println (str "added " (get object "name") " " (get object "position") " "
-                    (count (world-objects world)) " objects stored"))
+      ;(println (str "added " (get object "name") " " (get object "position") " "
+      ;              (count (world-objects world)) " objects stored"))
       (merge world {:objects (cons object (world-objects world))}))
     world))
 

@@ -26,28 +26,6 @@
 (def min-neighbours 2)
 (def max-neighbours 5)
 
-(defrecord plant
-  [id
-   pos
-   type
-   layer
-   state
-   picked-by
-   owner
-   size
-   timer
-   tick
-   health
-   fruit])
-  
-(defn plant-pos [plant] (:pos plant))
-(defn plant-type [plant] (:type plant))
-(defn plant-layer [plant] (:layer plant))
-(defn plant-state [plant] (:state plant))
-(defn plant-picked-by [plant] (:picked-by plant))
-(defn plant-owner [plant] (:owner plant))
-(defn plant-size [plant] (:size plant))
-
 (defn plant-type->layer [type]
   (cond
    (= type "dandelion") "cover"
@@ -77,8 +55,20 @@
    :else "UnknownSpirit"))
 
 (defn make-plant [pos type owner size]
-  (plant. (generate-id) pos type (plant-type->layer type)
-          'grow-a '() owner size 0 (+ (/ season-length 50) (Math/floor (rand 10))) start-health false))
+  (hash-map
+   :version 0
+   :id (generate-id)
+   :pos pos
+   :type type
+   :layer (plant-type->layer type)
+   :state 'grow-a
+   :picked-by '()
+   :owner owner
+   :size size
+   :timer 0
+   :tick (+ (/ season-length 50) (Math/floor (rand 10)))
+   :health start-health
+   :fruit false))
 
 (defn make-random-plant []
   (let [type (rand-nth (list "aronia" "dandelion" "apple" "cherry" "clover"))]

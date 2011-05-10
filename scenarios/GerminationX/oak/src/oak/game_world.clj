@@ -26,15 +26,6 @@
   (:require
    clojure.contrib.math))
 
-(defrecord game-world
-  [players
-   tiles
-   spirits])
-
-(defn game-world-players [game-world] (:players game-world))
-(defn game-world-tiles [game-world] (:tiles game-world))
-(defn game-world-spirits [game-world] (:spirits game-world))
-
 (defn game-world-get-tile [game-world pos]
   (reduce
    (fn [r t]
@@ -45,7 +36,7 @@
    (:tiles game-world)))
 
 (defn game-world-add-tile [game-world tile]
-  (merge game-world {:tiles (cons tile (game-world-tiles game-world))}))
+  (merge game-world {:tiles (cons tile (:tiles game-world))}))
 
 (defn game-world-modify-tile [game-world pos f]
   (modify :tiles
@@ -102,13 +93,23 @@
        (Math/round (* (rand-gaussian) area))
        (Math/round (* (rand-gaussian) area)))
       plant))
-   (game-world. () {} ()) 
+   (hash-map
+    :version 0
+    :players ()
+    :tiles {}
+    :spirits ()) 
    (repeatedly num-plants (fn [] (make-random-plant)))))
 
+(defn game-world-save [game-world fn]
+  (spit fn game-world))
+
+(defn game-world-load [fn]
+  (read-string (slurp fn)))
+
 (defn game-world-print [game-world]
-  (doseq [tile (game-world-tiles game-world)]
-    (println (format "tile %d %d" (:x (tile-pos tile)) (:y (tile-pos tile))))
-    (doseq [plant (tile-entities tile)]
+  (doseq [tile (:tiles game-world)]
+    (println (format "tile %d %d" (:x (:pos tile)) (:y (:pos tile))))
+    (doseq [plant (:entities tile)]
       (println (format "plant %d %d state: %s health: %d"
                        (:x (:pos plant)) (:y (:pos plant))
                        (:state plant) (:health plant))))))
@@ -124,9 +125,9 @@
                        (merge r {(:owner plant) (+ 1 count)})
                        (merge r {(:owner plant) 1}))))
                  r
-                 (tile-entities tile)))
+                 (:entities tile)))
               '{}
-              (game-world-tiles game-world))]
+              (:tiles game-world))]
     ; sort by values so highest is first
     (into (sorted-map-by
            (fn [key1 key2]

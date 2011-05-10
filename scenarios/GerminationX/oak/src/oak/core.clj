@@ -19,12 +19,6 @@
   (:require [compojure.route :as route]
             [org.danlarkin.json :as json])) 
 
-(defn game-world-save [game-world fn]
-  (serialise game-world fn))
-
-(defn game-world-load [fn]
-  (deserialise fn))
-
 (def state-filename "state.txt")
 (def log-filename "public/log.txt")
 (def game-world-tick 1)
@@ -37,8 +31,9 @@
        "data/characters/minds/Actions.xml"
        (list))))
 
-;(def my-game-world (ref (game-world-load state-filename)))
-(def my-game-world (ref (make-game-world 300 1)))
+(def my-game-world (ref (game-world-load state-filename)))
+;(def my-game-world (ref (make-game-world 300 1)))
+;(game-world-save (deref my-game-world) state-filename)
 
 (append-spit log-filename (str (str (Date.)) " server started\n"))
 

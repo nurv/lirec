@@ -10,20 +10,20 @@
 ;; GNU Affero General Public License for more details.
 ;;
 ;; You should have received a copy of the GNU Affero General Public License
-;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+;; along with this program.  If not see <http://www.gnu.org/licenses/>.
 
 (ns oak.player)
 
-(defstruct player
-  :name
-  :password
-  :layer
-  :seeds
-  :messages)
+(defn make-player [id name]
+  (hash-map
+   :version 0
+   :id id 
+   :name name
+   :layer "none"
+   :seeds '()
+   :messages '()
+   :picked-by '()
+   :has-picked '()))
 
-(def player-name (accessor player :name))
-(def player-password (accessor player :password))
-(def player-layer (accessor player :layer))
-(def player-seeds (accessor player :seeds))
-(def player-messages (accessor player :messages))
+
 

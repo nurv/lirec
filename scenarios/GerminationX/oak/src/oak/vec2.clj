@@ -15,26 +15,24 @@
 (ns oak.vec2
   (:require clojure.contrib.math))
 
-(defrecord vec2 [x y])
-
 (defn make-vec2 [x y]
-  (vec2. x y))
+  (hash-map :x x :y y))
 
 (defn vec2-add [a b]
-  (vec2. (+ (:x a) (:x b))
-         (+ (:y a) (:y b))))
+  (make-vec2 (+ (:x a) (:x b))
+             (+ (:y a) (:y b))))
 
 (defn vec2-sub [a b]
-  (vec2. (- (:x a) (:x b))
-         (- (:y a) (:y b))))
+  (make-vec2 (- (:x a) (:x b))
+             (- (:y a) (:y b))))
 
 (defn vec2-mul [a b]
-  (vec2. (* (:x a) b)
-         (* (:y a) b)))
+  (make-vec2 (* (:x a) b)
+             (* (:y a) b)))
 
 (defn vec2-div [a b]
-  (vec2. (/ (:x a) b)
-         (/ (:y a) b)))
+  (make-vec2 (/ (:x a) b)
+             (/ (:y a) b)))
 
 (defn vec2-mag [v]
   (Math/sqrt (+ (* (:x v) (:x v))
