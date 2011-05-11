@@ -1,0 +1,22 @@
+<?xml version="1.0" ?>
+<!DOCTYPE CompetencyLibrary SYSTEM "CompetencyLibrary.dtd">
+
+<CompetencyLibrary>
+
+<!-- Competency library for the test scenario. Following all competencies
+have to be listed. You need to specify 
+a) the class name, 
+b) optional parameters that should be passed to the competency during 
+construction (assumed parameter type is String, parameters are seperated by comma).
+" -->
+
+<Competency ClassName="cmion.inTheWild.competencies.EmysAskBinaryQuestion" />
+<Competency ClassName="cmion.inTheWild.competencies.EmysEmotion" />
+<Competency ClassName="cmion.level2.competencies.Migration" ConstructorParameters="MigrationConfigVirtEmys.xml" />
+<Competency ClassName="cmion.inTheWild.competencies.SMSReceiver" ConstructorParameters="modem.com15,COM15,115200,WAVECOM MODEM,MULTIBAND 900E 1800"/> 
+<SamgarCompetency ClassName="cmion.inTheWild.competencies.Cereproc" Port="TTS"/>
+<SamgarCompetency ClassName="cmion.inTheWild.competencies.VirtualEmysConnector" Port="Emys"/>
+<SamgarCompetency ClassName="cmion.inTheWild.competencies.KinectTrackerConnector" Port="Kinect"/>
+
+
+</CompetencyLibrary>

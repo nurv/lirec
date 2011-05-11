@@ -156,6 +156,12 @@ public class InTheWildWoz extends AgentMindConnector {
 
 	@Override
 	public void sendMindToSleep() {}
+
+	@Override
+	protected void processActionCancellation(MindAction a) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 	
 	

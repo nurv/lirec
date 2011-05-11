@@ -1,0 +1,145 @@
+<?xml version="1.0" ?>
+<!DOCTYPE CompetencyManagerRules SYSTEM "CompetencyManagerRules.dtd">
+
+<CompetencyManagerRules>
+
+	
+	<Rule>
+		
+		<MindAction Name="askForID">
+				<Parameter No="1" Value="*" />				
+		</MindAction>		
+		
+		<CompetencyExecutionPlan>
+			<Competency ID="1" Type="TTS">
+			 <CompetencyParameter Name="text" Value="Hello my Name is Sarah. Who are you? I cannot tell. But you can send me an SMS to tell me." />
+			</Competency>
+		</CompetencyExecutionPlan>
+
+	</Rule>
+	
+	<Rule>
+	
+		<MindAction Name="welcomeUnknown">
+				<Parameter No="1" Value="*" />
+		</MindAction>			
+		<CompetencyExecutionPlan>
+			<Competency ID="1" Type="TTS">
+			 <CompetencyParameter Name="text" Value="Howdy $parameter1. I cannot talk with you. I'm busy. I'm waiting for someone and it's not you. Please go away now and leave me to my important task. " />
+			</Competency>
+		</CompetencyExecutionPlan>
+
+	</Rule>
+	
+	<Rule>
+
+		<MindAction Name="welcomeGuest">
+				<Parameter No="1" Value="*" />
+		</MindAction>			
+		<CompetencyExecutionPlan>
+			<Competency ID="1" Type="TTS">
+			 <CompetencyParameter Name="text" Value="Nice to meet you $parameter1. I was expecting you." />
+			</Competency>
+		</CompetencyExecutionPlan>
+
+	</Rule>
+	
+	<Rule>
+
+		<MindAction Name="offerDirections">
+				<Parameter No="1" Value="*" />
+		</MindAction>			
+		<CompetencyExecutionPlan>
+			<Competency ID="1" Type="TTS">
+			 <CompetencyParameter Name="text" Value="Do you want me to direct you to the lab?" />
+			</Competency>
+			<Competency ID="2" Type="EmysAskBinaryQuestion" Dependency="1">
+			 <CompetencyParameter Name="choice1" Value="yes" />
+			 <CompetencyParameter Name="choice2" Value="no" />
+			 <CompetencyParameter Name="question" Value="offerDirections" />
+			 <CompetencyParameter Name="person" Value="$parameter1" />			 
+			</Competency>
+		</CompetencyExecutionPlan>
+	</Rule>
+
+	<Rule>
+
+		<MindAction Name="giveDirections">
+				<Parameter No="1" Value="*" />
+		</MindAction>	
+		<CompetencyExecutionPlan>
+			<Competency ID="1" Type="TTS">
+			 <CompetencyParameter Name="text" Value="The lab number is 2 22. It is on the second corridor. Go up the stairs to the second floor, turn left, follow the corridor and turn left again at the next junction. The lab will be in the corridor to your left." />
+			</Competency>
+		</CompetencyExecutionPlan>
+
+	</Rule>
+	
+	<Rule>
+
+		<MindAction Name="giveNoDirections">
+				<Parameter No="1" Value="*" />
+		</MindAction>			
+		<CompetencyExecutionPlan>
+			<Competency ID="1" Type="TTS">
+			 <CompetencyParameter Name="text" Value="Very well, I guess you have been here before." />
+			</Competency>
+		</CompetencyExecutionPlan>
+
+	</Rule>
+	
+
+	
+	<Rule>
+
+		<MindAction Name="askMigrateToPhone">
+				<Parameter No="1" Value="*" />
+		</MindAction>			
+		<CompetencyExecutionPlan>
+			<Competency ID="1" Type="TTS">
+			 <CompetencyParameter Name="text" Value="Do you want me to migrate to your phone and show you the way?" />
+			</Competency>
+			<Competency ID="2" Type="EmysAskBinaryQuestion" Dependency="1">
+			 <CompetencyParameter Name="choice1" Value="yes" />
+			 <CompetencyParameter Name="choice2" Value="no" />
+			 <CompetencyParameter Name="question" Value="askMigrateToPhone" />
+			 <CompetencyParameter Name="person" Value="$parameter1" />			 
+			</Competency>
+		</CompetencyExecutionPlan>
+		
+	</Rule>
+
+	<Rule>
+
+		<MindAction Name="migrate">
+				<Parameter No="1" Value="Phone" />
+		</MindAction>			
+		<CompetencyExecutionPlan>
+			<Competency ID="1" Type="TTS">
+			 <CompetencyParameter Name="text" Value="Great. I'm transferring over to your device now. Watch This." />
+			</Competency>
+			<Competency ID="2" Type="Migration" Dependency="1">
+			 <CompetencyParameter Name="DeviceName" Value="Phone" />
+			</Competency>
+		</CompetencyExecutionPlan>
+	
+	</Rule>
+	
+	<Rule>
+		
+		<MindAction Name="migrate">
+			<Parameter No="1" Value="Robot" />
+		</MindAction>			
+		<CompetencyExecutionPlan>
+			<Competency ID="1" Type="TTS">
+			 <CompetencyParameter Name="text" Value="OK. I'm going home to my robot body in the lab. See you there in a minute." />
+			</Competency>
+			<Competency ID="2" Type="Migration" Dependency="1">
+			 <CompetencyParameter Name="DeviceName" Value="Robot" />
+			</Competency>
+		</CompetencyExecutionPlan>
+		
+	</Rule>
+
+	
+</CompetencyManagerRules>

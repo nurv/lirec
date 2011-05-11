@@ -127,4 +127,10 @@ public class SimpleAutonomousAgent extends AgentMindConnector{
 		newAction(mindAction);	
 	}
 
+	@Override
+	protected void processActionCancellation(MindAction a) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

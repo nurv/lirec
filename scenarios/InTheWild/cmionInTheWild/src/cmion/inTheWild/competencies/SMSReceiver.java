@@ -38,6 +38,7 @@ import org.smslib.TimeoutException;
 import org.smslib.Message.MessageTypes;
 
 import cmion.architecture.IArchitecture;
+import cmion.inTheWild.datastructures.LirecSMS;
 import cmion.inTheWild.services.SMSService;
 import cmion.level2.Competency;
 import cmion.level3.EventRemoteAction;
@@ -48,12 +49,16 @@ import cmion.level3.MindAction;
  * this runs as a background competency.*/
 public class SMSReceiver extends Competency implements IInboundMessageNotification {
 
+	public static final String BLACKBOARD_CONTAINER = "incoming_sms";
+	
 	// variables for GSM modem initialisation
 	private String id;
 	private String comPort;
 	private int baudRate;
 	private String manufacturer;
 	private String model;
+	
+	private int msgID;
 	
 	/** create a new SMS Receiver, parameters are responsible for GSM modem initialisation
 	 * @throws Exception if parameter baudRate can not be converted to a valid integer */
@@ -94,6 +99,10 @@ public class SMSReceiver extends Competency implements IInboundMessageNotificati
 	@Override
 	public void initialize() 
 	{
+		// request creation of a blackboard container for storing the incoming sms
+		architecture.getBlackBoard().requestAddSubContainer(BLACKBOARD_CONTAINER, BLACKBOARD_CONTAINER);
+		msgID = 0;
+		
 		// initialize sms service
 		SMSService.instance.initialize(id, comPort, baudRate, manufacturer, model);
 		
@@ -119,11 +128,33 @@ public class SMSReceiver extends Competency implements IInboundMessageNotificati
 	@Override
 	public void process(String gatewayId, MessageTypes msgType, InboundMessage msg) 
 	{
-		// raise an event remote action
-		ArrayList<String> actionParameters = new ArrayList<String>();
-		actionParameters.add(msg.getText());
-		MindAction ma = new MindAction(msg.getOriginator(),"sms",actionParameters);
-		this.raise(new EventRemoteAction(ma));		
+		// write the message on the blackboard and assign an id to it
+		msgID++;
+		if (architecture.getBlackBoard().hasSubContainer(BLACKBOARD_CONTAINER))
+		{
+			architecture.getBlackBoard().getSubContainer(BLACKBOARD_CONTAINER).requestSetProperty(
+  				     new Integer(msgID).toString(), new LirecSMS(msg.getText(), msg.getOriginator()));
+		}		
+		
+		// for the demo assume every incoming sms is in response to our identity question, thus create
+		// a container on the world model by the the name of the msg text (if not empty), representing the
+		// user who texted in
+		String userName = msg.getText().trim();
+		if (!userName.equals(""))
+		{
+			if (architecture.getWorldModel().hasAgent(userName))
+			{
+				architecture.getWorldModel().getAgent(userName).requestSetProperty("present", "True");
+				architecture.getWorldModel().getAgent(userName).requestSetProperty("phoneNo", msg.getOriginator());		
+			}
+			else
+			{
+				HashMap<String, Object> initialProperties = new HashMap<String,Object>();
+				initialProperties.put("present", "True");
+				initialProperties.put("phoneNo", msg.getOriginator());
+				architecture.getWorldModel().requestAddAgent(userName, initialProperties);
+			}
+		}	
 		
 		// delete the message from the sim
 		try {

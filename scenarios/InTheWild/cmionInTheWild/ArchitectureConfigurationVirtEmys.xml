@@ -1,0 +1,29 @@
+<?xml version="1.0" ?>
+<!DOCTYPE ArchitectureConfiguration SYSTEM "ArchitectureConfiguration.dtd">
+
+<!-- please edit the following file to change the configuration of the architecture,
+	 you can specify the xml file to read the competency manager rules from, the xml
+	 file to read the competency library configuration from (e.g. which competencies 
+	 to load) and the names of Architecture components to load (see comments below) -->
+
+<ArchitectureConfiguration 
+ CompetencyManagerRulesFile="CompManagerRulesVirtEmys.xml" 
+ CompetencyLibraryConfigurationFile="CompetencyLibraryVirtEmys.xml" 
+ WorldModelInitFile = "WorldModelInitVirtEmys.xml">
+
+ <!-- following a number of architecture components to load can be specified. by 
+      specifying their full java class name. Optionally parameters to pass to the
+      constructor of those components can be specified. Parameters are seperated by
+      commas and the assumed type for all parameters is String. The Competency manager,
+      library, execution, WorldModel and BlackBoard loading is hard-coded. 
+      The agent mind connector(s) have to be specified here however as well as additional 
+      components (for example for monitoring architecture state, remote controlling 
+      or additional storage containers, competency loading is specified in the competency
+      library xml file -->
+ 
+ <ArchitectureComponent ClassName="cmion.addOns.monitors.CmionEventMonitor" />
+ <ArchitectureComponent ClassName="cmion.level3.fatima.FAtiMAConnector" ConstructorParameters="modular-migrating" />
+ <ArchitectureComponent ClassName="cmion.fatima.FatimaLauncher" ConstructorParameters="LirecScenarios.xml,Year3Demo,Spirit" /> 
+ <ArchitectureComponent ClassName="cmion.addOns.manipulators.WorldModelManipulator" />
+ <ArchitectureComponent ClassName="cmion.addOns.samgar.SamgarConnector" />
+</ArchitectureConfiguration>

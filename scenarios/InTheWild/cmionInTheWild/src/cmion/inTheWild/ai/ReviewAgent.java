@@ -252,4 +252,10 @@ public class ReviewAgent extends AgentMindConnector implements Migrating, Migrat
 		
 	}
 
+	@Override
+	protected void processActionCancellation(MindAction a) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
