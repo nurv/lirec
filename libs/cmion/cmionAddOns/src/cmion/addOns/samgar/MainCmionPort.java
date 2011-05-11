@@ -21,8 +21,8 @@ public class MainCmionPort extends BufferedPortBottle
 	{
 		this.parent = parent;
 		useCallback(myBottleCallback); // set the callback for reading data on this port
-		while (Network.getNameServerName().toString().equals("/global"))
-		{}   // a loop to wait until the network is on the local and not global server
+		//while (Network.getNameServerName().toString().equals("/global"))
+		//{}   // a loop to wait until the network is on the local and not global server
 		open(SamgarConnector.MODULE_NAME);
 		this.addOutput("/CONTROL");
 		while(this.isWriting()){Thread.yield();} // you might want a line like this to know that the samgar gui 
