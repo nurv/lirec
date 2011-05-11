@@ -1,0 +1,38 @@
+<DomainActions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:noNamespaceSchemaLocation="./schemas/Actions.xsd">
+
+	<Action name="greet([target])">
+	</Action>
+
+	<Action name="messageReceived([recipient],[sender],[msgid])">
+	</Action>
+
+	<Action name="messageDelivery([recipient],[sender],[msgid])">
+	</Action>
+
+	<Action name="askForID([target])">
+	</Action>
+
+	<Action name="welcomeUnknown([target])">
+	</Action>
+	
+	<Action name="welcomeGuest([target])">
+	</Action>	
+
+	<Action name="offerDirections([target])">
+	</Action>	
+
+	<Action name="giveDirections([target])">
+	</Action>	
+	
+	<Action name="giveNoDirections([target])">
+	</Action>	
+	
+	<Action name="askMigrateToPhone([target])">
+	</Action>		
+
+	<Action name="migrate([target])">
+	</Action>
+
+
+</DomainActions>

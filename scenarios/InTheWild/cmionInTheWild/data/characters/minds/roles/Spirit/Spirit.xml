@@ -1,0 +1,60 @@
+<Character role="Spirit" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:noNamespaceSchemaLocation="../../schemas/Character.xsd">
+	<EmotionalThresholds>
+		<EmotionalThreshold emotion="Love" threshold="1" decay="3"/>
+		<EmotionalThreshold emotion="Hate" threshold="1" decay="3"/>
+		<EmotionalThreshold emotion="Hope" threshold="4" decay="3"/>
+		<EmotionalThreshold emotion="Fear" threshold="4" decay="3"/>
+		<EmotionalThreshold emotion="Satisfaction" threshold="4" decay="3"/>
+		<EmotionalThreshold emotion="Relief" threshold="4" decay="3"/>
+		<EmotionalThreshold emotion="Fears-Confirmed" threshold="4" decay="3"/>
+		<EmotionalThreshold emotion="Disappointment" threshold="4" decay="3"/>
+		<EmotionalThreshold emotion="Joy" threshold="1" decay="3"/>
+		<EmotionalThreshold emotion="Distress" threshold="1" decay="3"/>
+		<EmotionalThreshold emotion="Happy-For" threshold="2" decay="3"/>
+		<EmotionalThreshold emotion="Pitty" threshold="1" decay="3"/>
+		<EmotionalThreshold emotion="Resentment" threshold="1" decay="3"/>
+		<EmotionalThreshold emotion="Gloating" threshold="3" decay="3"/>
+		<EmotionalThreshold emotion="Pride" threshold="1" decay="3"/>
+		<EmotionalThreshold emotion="Shame" threshold="1" decay="3"/>
+		<EmotionalThreshold emotion="Gratification" threshold="1" decay="3"/>
+		<EmotionalThreshold emotion="Remorse" threshold="1" decay="3"/>
+		<EmotionalThreshold emotion="Admiration" threshold="1" decay="3"/>
+		<EmotionalThreshold emotion="Reproach" threshold="1" decay="3"/>
+		<EmotionalThreshold emotion="Gratitude" threshold="1" decay="3"/>
+		<EmotionalThreshold emotion="Anger" threshold="1" decay="3"/>
+	</EmotionalThresholds>
+	
+	<InterpersonalRelations>
+	</InterpersonalRelations>
+	
+	<MotivationalParameters>
+	</MotivationalParameters>
+
+	<Goals>
+		<Goal name="Greet([target])" importanceOfFailure="3" importanceOfSuccess="6"/>
+		<Goal name="MessageReceived([recipient],[sender],[msgid])" importanceOfFailure="3" importanceOfSuccess="6"/>
+		<Goal name="MessageDelivery([recipient],[sender],[msgid])" importanceOfFailure="3" importanceOfSuccess="8"/>
+		<Goal name="AskForID([target])" importanceOfFailure="3" importanceOfSuccess="6"/>
+		<Goal name="WelcomeGuest([target])" importanceOfFailure="3" importanceOfSuccess="6"/>
+		<Goal name="WelcomeUnknown([target])" importanceOfFailure="3" importanceOfSuccess="6"/>
+		<Goal name="OfferDirections([target])" importanceOfFailure="3" importanceOfSuccess="6"/>
+		<Goal name="GiveDirections([target])" importanceOfFailure="3" importanceOfSuccess="6"/>
+		<Goal name="GiveNoDirections([target])" importanceOfFailure="3" importanceOfSuccess="6"/>
+		<Goal name="AskMigrateToPhone([target])" importanceOfFailure="3" importanceOfSuccess="6"/>
+		<Goal name="MigrateToPhone()" importanceOfFailure="3" importanceOfSuccess="6"/>
+		<Goal name="MigrateHome1()" importanceOfFailure="3" importanceOfSuccess="6"/>
+		<Goal name="MigrateHome2()" importanceOfFailure="3" importanceOfSuccess="6"/>
+	</Goals>
+
+	<EventReactions>
+		<!--  we hate it when someone answers no, we love it when someone answers yes -->
+		<EmotionalReaction desirability="2" praiseworthiness="2">
+			<Event action="answer" parameters="yes"/>
+		</EmotionalReaction>
+		<EmotionalReaction desirability="-8" praiseworthiness="-8">
+			<Event action="answer" parameters="no"/>
+		</EmotionalReaction>
+	</EventReactions>
+	
+</Character>

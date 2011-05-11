@@ -1,0 +1,13 @@
+<Scenarios>
+	
+	<Scenario name="Year3Demo">
+		<Agent name="Spirit" displayName="Spirit" role="Spirit" platform="worldsim" host="localhost" 
+			   port="46874" displayMode="True" sex="F" actionsFile="SpiritActions" 
+			   goalsFile="SpiritGoals" cultureName="NoCultureTest">
+			<Properties>				
+			</Properties>	
+		</Agent>
+	</Scenario>
+	
+	
+</Scenarios>

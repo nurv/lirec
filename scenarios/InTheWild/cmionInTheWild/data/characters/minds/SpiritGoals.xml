@@ -1,0 +1,143 @@
+<GoalLibrary xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:noNamespaceSchemaLocation="./schemas/GoalLibrary.xsd">
+
+	<!-- Interest Goals -->
+	
+	<ActivePursuitGoal name="Greet([target])">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[target]" action="enterOffice" />
+			<RecentEvent occurred="False" subject="[SELF]" action="greet" target="[target]" />
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="greet" target="[target]" />
+		</SucessConditions>
+	</ActivePursuitGoal>
+	
+	<ActivePursuitGoal name="MessageReceived([recipient],[sender],[msgid])">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[sender]" action="leaveMessage" target="[recipient]" parameters="[msgid]" />
+			<RecentEvent occurred="False" subject="[SELF]" action="messageReceived" target="[recipient]" parameters="[sender],[msgid]" />
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="messageReceived" target="[recipient]" parameters="[sender],[msgid]" />
+		</SucessConditions>
+	</ActivePursuitGoal>
+
+	<ActivePursuitGoal name="MessageDelivery([recipient],[sender],[msgid])">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="messageReceived" target="[recipientname]" parameters="[sender],[msgid]" />
+			<Property name="[recipient](present)" operator="=" value="True" />								
+			<RecentEvent occurred="False" subject="[SELF]" action="messageDelivery" target="[recipient]" parameters="[sender],[msgid]" />
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="messageDelivery" target="[recipient]" parameters="[sender],[msgid]" />
+		</SucessConditions>
+	</ActivePursuitGoal>
+
+	<ActivePursuitGoal name="AskForID([target])">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[target]" action="enterScene" />
+			<RecentEvent occurred="False" subject="[SELF]" action="askForID" target="[target]" />
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="askForID" target="[target]" />
+		</SucessConditions>
+	</ActivePursuitGoal>
+
+	<ActivePursuitGoal name="WelcomeUnknown([target])">
+		<PreConditions>
+			<Property name="CurrentTask(task)" operator="=" value="WelcomeGuest" />
+			<Property name="[target](present)" operator="=" value="True" />
+			<Property name="[target](phoneNo)" operator="!=" value="CurrentTask(phoneNo)" />
+			<RecentEvent occurred="False" subject="[SELF]" action="welcomeUnknown" target="[target]" />
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="welcomeUnknown" target="[target]" />
+		</SucessConditions>
+	</ActivePursuitGoal>
+
+	
+	<ActivePursuitGoal name="WelcomeGuest([target])">
+		<PreConditions>
+			<Property name="CurrentTask(task)" operator="=" value="WelcomeGuest" />
+			<Property name="[target](present)" operator="=" value="True" />
+			<Property name="[target](phoneNo)" operator="=" value="CurrentTask(phoneNo)" />
+			<RecentEvent occurred="False" subject="[SELF]" action="welcomeGuest" target="[target]" />
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="welcomeGuest" target="[target]" />
+		</SucessConditions>
+	</ActivePursuitGoal>
+
+	<ActivePursuitGoal name="OfferDirections([target])">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="welcomeGuest" target="[target]" />
+			<RecentEvent occurred="False" subject="[SELF]" action="offerDirections" target="[target]" />
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="offerDirections" target="[target]" />
+		</SucessConditions>
+	</ActivePursuitGoal>
+
+	<ActivePursuitGoal name="GiveDirections([target])">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[target]" action="answer" target="offerDirections" parameters="yes" />
+			<RecentEvent occurred="False" subject="[SELF]" action="giveDirections" target="[target]" />
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="giveDirections" target="[target]" />
+		</SucessConditions>
+	</ActivePursuitGoal>
+
+	<ActivePursuitGoal name="GiveNoDirections([target])">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[target]" action="answer" target="offerDirections" parameters="no" />
+			<RecentEvent occurred="False" subject="[SELF]" action="giveNoDirections" target="[target]" />
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="giveNoDirections" target="[target]" />
+		</SucessConditions>
+	</ActivePursuitGoal>
+
+	<ActivePursuitGoal name="AskMigrateToPhone([target])">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="GiveDirections" target="[target]" />
+			<RecentEvent occurred="False" subject="[SELF]" action="askMigrateToPhone" target="[target]" />
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="askMigrateToPhone" target="[target]" />
+		</SucessConditions>
+	</ActivePursuitGoal>
+
+	<ActivePursuitGoal name="MigrateToPhone()">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[target]" action="answer" target="askMigrateToPhone" parameters="yes" />
+			<RecentEvent occurred="False" subject="[SELF]" action="migrate" target="Phone" />
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="migrate" target="Phone" />
+		</SucessConditions>
+	</ActivePursuitGoal>
+
+	<ActivePursuitGoal name="MigrateHome1()">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[target]" action="answer" target="askMigrateToPhone" parameters="no" />
+			<RecentEvent occurred="False" subject="[SELF]" action="migrate" target="Robot" />
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="migrate" target="Robot" />
+		</SucessConditions>
+	</ActivePursuitGoal>
+
+	<ActivePursuitGoal name="MigrateHome2()">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="giveNoDirections" target="[target]" />
+			<RecentEvent occurred="False" subject="[SELF]" action="migrate" target="Robot" />
+		</PreConditions>
+		<SucessConditions>
+			<RecentEvent occurred="True" subject="[SELF]" action="migrate" target="Robot" />
+		</SucessConditions>
+	</ActivePursuitGoal>
+
+	
+</GoalLibrary>
