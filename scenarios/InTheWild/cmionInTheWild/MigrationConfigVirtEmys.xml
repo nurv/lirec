@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<migrationconfig>
+	<configuration>
+		<listenport value="34871" />
+		<agent active="false" />
+	</configuration>
+	<devices>
+		<device name="Robot" host="localhost" port="34872" />
+		<device name="Phone" host="localhost" port="34873" />
+	</devices>
+</migrationconfig>
+
