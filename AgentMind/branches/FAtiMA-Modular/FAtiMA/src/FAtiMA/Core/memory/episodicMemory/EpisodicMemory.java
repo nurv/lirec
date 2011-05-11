@@ -168,7 +168,16 @@ public class EpisodicMemory implements Serializable {
 	
 	public boolean ContainsRecentEvent(ArrayList<SearchKey> searchKeys)
 	{
-		return _am.ContainsRecentEvent(searchKeys) || ContainsNewEvent(searchKeys);
+		boolean status = false;
+		
+		if (_am.ContainsRecentEvent(searchKeys)) {
+			status = true;
+		}
+		if (ContainsNewEvent(searchKeys)) {
+			status = true;
+		}
+		
+		return status;
 	}
 	
 	public boolean ContainsNewEvent(ArrayList<SearchKey> searchKeys)
