@@ -7,6 +7,7 @@ import cmion.addOns.samgar.SamgarCompetency;
 import cmion.architecture.IArchitecture;
 import cmion.inTheWild.datastructures.TrackingInfoCollection;
 import cmion.inTheWild.datastructures.TrackingInfo;
+import cmion.level3.EventRemoteAction;
 import cmion.level3.MindAction;
 
 /** background competency that connects to the kinect samgar module and reads user and hand
@@ -62,6 +63,7 @@ public class KinectTrackerConnector extends SamgarCompetency {
 						// this id was not present when we received our last bottle
 						userCounter++;
 						MindAction ma = new MindAction("Anonymous"+userCounter,"enterScene",null);
+						this.raise(new EventRemoteAction(ma));
 					}
 				}	
 				userIds = newIds;
