@@ -1,2 +1,3 @@
 readable true
+writable true
 type object

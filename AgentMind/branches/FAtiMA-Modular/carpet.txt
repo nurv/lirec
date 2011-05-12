@@ -1,0 +1,2 @@
+cleanable true
+type object

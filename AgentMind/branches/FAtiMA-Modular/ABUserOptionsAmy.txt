@@ -2,15 +2,27 @@ Amy read book
 Amy read newspaper
 Amy read magazine
 Amy read journal
-Amy read novel
-Amy read drama
 Amy read report
 Amy read letter
+Amy watch DVD
+Amy watch TV
+Amy listen CD
+Amy listen radio
+Amy clean carpet
+Amy clean shelf
+Amy write report
+Amy write letter
 John ask ABRobot Amy read book
 John ask ABRobot Amy read newspaper
 John ask ABRobot Amy read magazine
 John ask ABRobot Amy read journal
-John ask ABRobot Amy read novel
-John ask ABRobot Amy read drama
 John ask ABRobot Amy read report
 John ask ABRobot Amy read letter
+John ask ABRobot Amy watch DVD
+John ask ABRobot Amy watch TV
+John ask ABRobot Amy listen CD
+John ask ABRobot Amy listen radio
+John ask ABRobot Amy clean carpet
+John ask ABRobot Amy clean shelf
+John ask ABRobot Amy write report
+John ask ABRobot Amy write letter

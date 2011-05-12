@@ -49,7 +49,7 @@ xsi:noNamespaceSchemaLocation="../../schemas/Character.xsd">
 	-->
 	<EventReactions>
          <EmotionalReaction desirability="4" desirabilityForOther="0" praiseworthiness="0">
-            <Event subject="Amy" action="read" />
+            <Event subject="Amy" />
         </EmotionalReaction>
 	</EventReactions>
 	

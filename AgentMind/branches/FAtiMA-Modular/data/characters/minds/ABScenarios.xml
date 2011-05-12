@@ -1,6 +1,9 @@
 <Scenarios>
 	
+	
+	
 	<Scenario name="ABShortTerm">
+		
 		<WorldSimulator port="46874" scenery="AmyHouse" actionsFile="data/characters/minds/ABActions.xml" 
 						userOptionsFile="ABUserOptions">
 			<Objects>
@@ -9,24 +12,33 @@
 				<Object name="book"/>
 				<Object name="newspaper"/>
 				<Object name="magazine"/>
-				<Object name="journal"/>
-				<Object name="novel"/>
-				<Object name="drama"/>
-				<Object name="report"/>
 				<Object name="letter"/>
+				<Object name="report"/>
+				<Object name="journal"/>
+				<Object name="TV"/>
+				<Object name="DVD"/>
+				<Object name="CD"/>
+				<Object name="radio"/>
+				<Object name="carpet"/>
+				<Object name="shelf"/>
 			</Objects>
 		</WorldSimulator>
+		
 		<Agent name="ABRobot" displayName="ABRobot" role="ABRobot" platform="worldsim" host="localhost" 
 			   port="46874" displayMode="True" sex="M" actionsFile="ABActions" 
-			   goalsFile="ABGoalLibrary" cultureName="ABCulture" 
+			   goalsFile="ABGoalLibraryST" cultureName="ABCulture" 
 			   saveDirectory="data/characters/minds/state/" agentLoad="False" memoryLoad="False">
 			<Properties>
 				<Property name="location" value="LivingRoom"/>
 			</Properties>
 		</Agent>
+		
 	</Scenario>
 
+
+
 	<Scenario name="ABLongTerm">
+		
 		<WorldSimulator port="46874" scenery="AmyHouse" actionsFile="data/characters/minds/ABActions.xml" 
 						userOptionsFile="ABUserOptions">
 			<Objects>
@@ -35,13 +47,18 @@
 				<Object name="book"/>
 				<Object name="newspaper"/>
 				<Object name="magazine"/>
-				<Object name="journal"/>
-				<Object name="novel"/>
-				<Object name="drama"/>
-				<Object name="report"/>
 				<Object name="letter"/>
+				<Object name="report"/>
+				<Object name="journal"/>
+				<Object name="TV"/>
+				<Object name="DVD"/>
+				<Object name="CD"/>
+				<Object name="radio"/>
+				<Object name="carpet"/>
+				<Object name="shelf"/>
 			</Objects>
 		</WorldSimulator>
+		
 		<Agent name="ABRobot" displayName="ABRobot" role="ABRobot" platform="worldsim" host="localhost" 
 			   port="46874" displayMode="True" sex="M" actionsFile="ABActions" 
 			   goalsFile="ABGoalLibraryLT" cultureName="ABCulture" 
@@ -50,6 +67,9 @@
 				<Property name="location" value="LivingRoom"/>
 			</Properties>
 		</Agent>
+		
 	</Scenario>
+	
+	
 	
 </Scenarios>
