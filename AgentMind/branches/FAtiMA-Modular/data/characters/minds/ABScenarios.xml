@@ -1,7 +1,7 @@
 <Scenarios>
-	
-	
-	
+
+
+
 	<Scenario name="ABShortTerm">
 		
 		<WorldSimulator port="46874" scenery="AmyHouse" actionsFile="data/characters/minds/ABActions.xml" 
@@ -26,7 +26,7 @@
 		
 		<Agent name="ABRobot" displayName="ABRobot" role="ABRobot" platform="worldsim" host="localhost" 
 			   port="46874" displayMode="True" sex="M" actionsFile="ABActions" 
-			   goalsFile="ABGoalLibraryST" cultureName="ABCulture" 
+			   goalsFile="ABGoalLibrary" cultureName="ABCulture" 
 			   saveDirectory="data/characters/minds/state/" agentLoad="False" memoryLoad="False">
 			<Properties>
 				<Property name="location" value="LivingRoom"/>
@@ -34,8 +34,8 @@
 		</Agent>
 		
 	</Scenario>
-
-
+	
+	
 
 	<Scenario name="ABLongTerm">
 		
@@ -61,7 +61,7 @@
 		
 		<Agent name="ABRobot" displayName="ABRobot" role="ABRobot" platform="worldsim" host="localhost" 
 			   port="46874" displayMode="True" sex="M" actionsFile="ABActions" 
-			   goalsFile="ABGoalLibraryLT" cultureName="ABCulture" 
+			   goalsFile="ABGoalLibrary" cultureName="ABCulture" 
 			   saveDirectory="data/characters/minds/state/" agentLoad="False" memoryLoad="True">
 			<Properties>
 				<Property name="location" value="LivingRoom"/>

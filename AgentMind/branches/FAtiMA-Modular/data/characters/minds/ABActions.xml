@@ -4,6 +4,18 @@ xsi:noNamespaceSchemaLocation="./schemas/Actions.xsd">
 	<Action name="read([person],[item])">
 	</Action>
 
+	<Action name="watch([person],[item])">
+	</Action>
+
+	<Action name="listen([person],[item])">
+	</Action>
+
+	<Action name="clean([person],[item])">
+	</Action>
+
+	<Action name="write([person],[item])">
+	</Action>
+
 	<Action name="ask([target],[person],[task],[item])">
 	</Action>
 
