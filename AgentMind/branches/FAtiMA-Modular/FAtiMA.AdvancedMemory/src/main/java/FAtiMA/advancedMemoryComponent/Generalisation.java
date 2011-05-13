@@ -26,7 +26,7 @@
  * 
  * History: 
  * Meiyii Lim: 16/09/10 - File created
- * 
+ * Matthias Keysermann: 13/05/11 - workaround: remove duplicates from GERs
  * **/
 
 package FAtiMA.advancedMemoryComponent;
@@ -86,6 +86,60 @@ public class Generalisation implements Serializable {
 		
 		// Create GERs from the frequent item sets
 		this.createGER(this._itemSet);
+		
+		// Matthias:
+		// There seems to be a problem when combining items:
+		// When the same attributes occur in a different sequence
+		// the corresponding item sets are not detected as duplicates.
+		// This is a quick workaround which removes duplicate GERs.
+		for(int i = 0; i < _gers.size()-1; i++) {
+			for(int j = 1; j < _gers.size(); j++) {
+				
+				if(j > i) {
+					
+					GER gerI = _gers.get(i);
+					GER gerJ = _gers.get(j);
+		
+					boolean matching = true;
+					
+					if(!gerI.getSubject().equals(gerJ.getSubject())) {
+						matching = false;
+					}
+					if(!gerI.getAction().equals(gerJ.getAction())) {
+						matching = false;
+					}
+					if(!gerI.getIntention().equals(gerJ.getIntention())) {
+						matching = false;
+					}
+					if(!gerI.getTarget().equals(gerJ.getTarget())) {
+						matching = false;
+					}
+					if(!gerI.getObject().equals(gerJ.getObject())) {
+						matching = false;
+					}
+					if(!gerI.getDesirability().equals(gerJ.getDesirability())) {
+						matching = false;
+					}
+					if(!gerI.getPraiseworthiness().equals(gerJ.getPraiseworthiness())) {
+						matching = false;
+					}
+					if(!gerI.getLocation().equals(gerJ.getLocation())) {
+						matching = false;
+					}
+					if(!gerI.getTime().equals(gerJ.getTime())) {
+						matching = false;
+					}
+					
+					if(matching) {
+						_gers.remove(j);
+						j--;
+					}
+					
+				}
+				
+			}
+		}
+		
 	}
 	
 	
