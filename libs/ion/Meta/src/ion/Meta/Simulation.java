@@ -88,7 +88,7 @@ public final class Simulation extends Element{
         this.pendingRemovals.add(element);
     }
     
-    public void update(){
+    public synchronized void update(){
         // update time
         this.time.setPhase(SimulationTime.PhaseID.ProcessingRequests);
 

@@ -143,16 +143,20 @@ public abstract class Element {
         }
 
         if (this.simulation != null) {
-            // add time stamp
-            request.setScheduleTime(this.simulation.getTime());
+        	
+        	synchronized(this.simulation)
+        	{
+        		// add time stamp
+        		request.setScheduleTime(this.simulation.getTime());
 
-            if (request instanceof MetaRequest) {
-                this.metaRequests.add(request);
-            } else {
-                this.requests.add(request);
-            }
+            	if (request instanceof MetaRequest) {
+                	this.metaRequests.add(request);
+            	} 	else {
+            		this.requests.add(request);
+            	}
 
-            this.simulation.synchronizeProcessRequests(this);
+            	this.simulation.synchronizeProcessRequests(this);
+        	}
         } else {
             // process immediatly (not synchronized)
             this.process(request);
@@ -293,17 +297,21 @@ public abstract class Element {
 
         if (evt.getTrail().add(this)) {
             if (this.simulation != null) {
-                // add time stamp
-                evt.setRaiseTime(this.simulation.getTime());
+                
+            	synchronized(this.simulation)
+            	{
+            		// add time stamp
+            		evt.setRaiseTime(this.simulation.getTime());
 
-                // enqueue event
-                this.events.add(evt);
+                	// enqueue event
+                	this.events.add(evt);
 
-                // synchronize with the simulation
-                this.simulation.synchronizeProcessEvents(this);
+                	// synchronize with the simulation
+                	this.simulation.synchronizeProcessEvents(this);
 
-                // propagate to the simulation
-                this.simulation.raise(evt);
+                	// propagate to the simulation
+                	this.simulation.raise(evt);
+            	}
             } else {
                 // process event immediatly (not synchronized)
                 this.process(evt);
