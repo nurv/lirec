@@ -220,13 +220,13 @@ public class CmionStorageContainer extends CmionComponent {
 	}
 	
 	/** returns whether the container has a property with the specified name */
-	public boolean hasProperty(String name)
+	public synchronized boolean hasProperty(String name)
 	{
 		return properties.containsKey(name);
 	}
 	
 	/** returns whether the container has a property with the specified name and of the specified class*/
-	public <T> boolean hasProperty(String name, Class<T> propertyClass)
+	public synchronized <T> boolean hasProperty(String name, Class<T> propertyClass)
 	{
 		if (propertyClass == null) return false;
 		if  (properties.containsKey(name))
@@ -237,13 +237,13 @@ public class CmionStorageContainer extends CmionComponent {
 	}
 	
 	/** returns whether the container has a sub container with the specified name */
-	public boolean hasSubContainer(String name)
+	public synchronized boolean hasSubContainer(String name)
 	{
 		return subContainers.containsKey(name);
 	}
 
 	/** returns whether the container has a sub container with the specified name and of the specified type */
-	public boolean hasSubContainer(String name, String type)
+	public synchronized boolean hasSubContainer(String name, String type)
 	{
 		if  (subContainers.containsKey(name))
 		{
