@@ -56,7 +56,7 @@ public abstract class SamgarCompetency extends Competency {
 	 *  previously through a call of prepareBottle() to the connected Samgar module */
 	protected final void sendBottle()
 	{
-		port.write();
+		port.writeStrict();
 	}
 	
 	/** every samgar competency has to implement this function in which it will 
