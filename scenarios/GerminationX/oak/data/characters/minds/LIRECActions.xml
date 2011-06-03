@@ -1,0 +1,360 @@
+<DomainActions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:noNamespaceSchemaLocation="./schemas/Actions.xsd">
+	
+	<!-- Speech actions -->
+	<!-- Introducing self to the user -->
+	<Action name="SpeechAct([target],greeting)">
+		<PreConditions>
+			<Property name="[target]" operator="!=" value="[AGENT]" />
+			<Property name="[target](isPresent)" operator="=" value="True" />
+			<Property name="[target](isPerson)" operator="=" value="True" />
+		</PreConditions>
+		<Effects>	
+			<Effect probability="1.0">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],SpeechAct,[target],greeting)"/>
+			</Effect>
+		</Effects>
+		<EffectsOnDrives>
+			<Motivator drive="Affiliation" target="[AGENT]" value="+2"/>
+			<Motivator drive="Affiliation" target="[target]" value="+3"/>
+		</EffectsOnDrives>
+	</Action>
+	
+	<Action name="SpeechAct([target],welcome)">
+		<PreConditions>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+			<Property name="[target](isPresent)" operator="=" value="True" />
+			<Property name="[target](greetCorrectly,[AGENT])" operator="=" value="True"/>
+			<RecentEvent occurred="True" subject="[AGENT]" action="SpeechAct" target="[target]" parameters="greeting"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],SpeechAct,[target],welcome)"/>
+			</Effect>
+		</Effects>
+		<EffectsOnDrives>
+			<Motivator drive="Affiliation" target="[AGENT]" value="+2"/>
+			<Motivator drive="Affiliation" target="[target]" value="+2"/>
+		</EffectsOnDrives>
+	</Action>
+
+	<Action name="SpeechAct([target],apple)">
+		<PreConditions>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+			<Property name="apple(eatable)" operator="=" value="True" />
+			<Property name="apple(isFruit)" operator="=" value="True" />
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],SpeechAct,[target],apple)"/>
+			</Effect>
+		</Effects>
+		<EffectsOnDrives>
+			<Motivator drive="Affiliation" target="[AGENT]" value="+3"/>
+			<Motivator drive="Affiliation" target="[target]" value="+3"/>
+		</EffectsOnDrives>
+	</Action>
+	
+	<Action name="SpeechAct([target],orange)">
+		<PreConditions>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+			<Property name="orange(eatable)" operator="=" value="True" />
+			<Property name="orange(isFruit)" operator="=" value="True" />
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],SpeechAct,[target],orange)"/>
+			</Effect>
+		</Effects>
+		<EffectsOnDrives>
+			<Motivator drive="Affiliation" target="[AGENT]" value="+3"/>
+			<Motivator drive="Affiliation" target="[target]" value="+3"/>
+		</EffectsOnDrives>
+	</Action>
+	
+	<Action name="SpeechAct([target],banana)">
+		<PreConditions>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+			<Property name="banana(eatable)" operator="=" value="True" />
+			<Property name="banana(isFruit)" operator="=" value="True" />
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],SpeechAct,[target],banana)"/>
+			</Effect>
+		</Effects>
+		<EffectsOnDrives>
+			<Motivator drive="Affiliation" target="[AGENT]" value="+3"/>
+			<Motivator drive="Affiliation" target="[target]" value="+3"/>
+		</EffectsOnDrives>
+	</Action>
+	
+	<Action name="SpeechAct([target],cake)">
+		<PreConditions>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+			<Property name="cake(eatable)" operator="=" value="True" />
+			<Property name="cake(isCake)" operator="=" value="True" />
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],SpeechAct,[target],cake)"/>
+			</Effect>
+		</Effects>
+		<EffectsOnDrives>
+			<Motivator drive="Affiliation" target="[AGENT]" value="+3"/>
+			<Motivator drive="Affiliation" target="[target]" value="+3"/>
+		</EffectsOnDrives>
+	</Action>
+	
+	<Action name="SpeechAct([target],askPreference)">
+		<PreConditions>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],SpeechAct,[target],askPreference)"/>
+			</Effect>
+		</Effects>
+		<EffectsOnDrives>
+			<Motivator drive="Affiliation" target="[AGENT]" value="+3"/>
+			<Motivator drive="Affiliation" target="[target]" value="+3"/>
+		</EffectsOnDrives>
+	</Action>
+	
+	<Action name="SpeechAct([target],acknowledge)">
+		<PreConditions>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],SpeechAct,[target],acknowledge)"/>
+			</Effect>
+		</Effects>
+		<EffectsOnDrives>
+			<Motivator drive="Affiliation" target="[AGENT]" value="+2"/>
+			<Motivator drive="Affiliation" target="[target]" value="+2"/>
+		</EffectsOnDrives>
+	</Action>
+	
+	<Action name="SpeechAct([target],goodbye,[item])">
+		<PreConditions>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],SpeechAct,[target],goodbye,[item])"/>
+			</Effect>
+		</Effects>
+		<EffectsOnDrives>
+			<Motivator drive="Affiliation" target="[AGENT]" value="+3"/>
+			<Motivator drive="Affiliation" target="[target]" value="+3"/>
+		</EffectsOnDrives>
+	</Action>
+	
+	<!-- Scenario 2 -->	
+	<Action name="SpeechAct([target],swearSecrecy,[friend])">
+		<PreConditions>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+			<RecentEvent occurred="True" subject="[target]" action="TellSensitiveInfo" target="[AGENT]" parameters="*"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],SpeechAct,[target],swearSecrecy,[friend])"/>
+			</Effect>
+		</Effects>
+		<EffectsOnDrives>
+			<Motivator drive="Affiliation" target="[AGENT]" value="+4"/>
+			<Motivator drive="Affiliation" target="[target]" value="+4"/>
+		</EffectsOnDrives>
+	</Action>
+	
+	<Action name="SpeechAct([target],hideInfo)">
+		<PreConditions>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+			<RecentEvent occurred="True" subject="[target]" action="Ask" target="[AGENT]" parameters="*"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],SpeechAct,[target],hideInfo)"/>
+			</Effect>
+		</Effects>
+		<EffectsOnDrives>
+			<Motivator drive="Integrity" target="[AGENT]" value="+3"/>
+			<Motivator drive="Affiliation" target="[target]" value="+1"/>
+		</EffectsOnDrives>
+	</Action>
+	
+	<Action name="SpeechAct([target],dontTell)">
+		<PreConditions>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+			<RecentEvent occurred="True" subject="[target]" action="Ask" target="[AGENT]" parameters="*"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],SpeechAct,[target],dontTell)"/>
+			</Effect>
+		</Effects>
+		<EffectsOnDrives>
+			<Motivator drive="Integrity" target="[AGENT]" value="+3"/>
+			<Motivator drive="Affiliation" target="[target]" value="+1"/>
+		</EffectsOnDrives>
+	</Action>
+	
+	<Action name="SpeechAct([target],[info],[friend])">
+		<PreConditions>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+			<RecentEvent occurred="True" subject="[target]" action="Ask" target="[AGENT]" parameters="*"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1">
+				<Property name="SpeechContext()" operator="=" value="#EVENT([AGENT],SpeechAct,[target],[info],[friend])"/>
+			</Effect>
+		</Effects>
+		<EffectsOnDrives>
+			<Motivator drive="Affiliation" target="[AGENT]" value="+3"/>
+			<Motivator drive="Affiliation" target="[target]" value="+3"/>
+		</EffectsOnDrives>
+	</Action>
+	
+	<!-- User's actions -->
+	<!-- User greets correctly -->
+	<Action name="GreetBack([target])" probability="0.5">
+		<PreConditions>
+			<Property name="[target]" operator="!=" value="[AGENT]" />
+			<Property name="[target](isPerson)" operator="=" value="True" />
+			<RecentEvent occurred="True" subject="[target]" action="SpeechAct" target="[AGENT]" parameters="greeting"/>
+		</PreConditions>
+		<Effects>	
+			<Effect probability="1.0">
+				<Property name="[AGENT](greetCorrectly,[target])" operator="=" value="True"/>
+			</Effect>
+		</Effects>
+		<EffectsOnDrives>
+			<Motivator drive="Affiliation" target="[target]" value="+2"/>
+		</EffectsOnDrives>
+	</Action>
+	
+	<!-- Accepting offer (an item) from other agent -->
+	<Action name="Accept([target],[item])" probability="0.5">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[target]" action="SpeechAct" target="[AGENT]" parameters="[item]"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="[AGENT](has)" operator="=" value="[item]"/>
+				<!--Property name="Like([target][item])" operator="=" value="+0.5"/-->
+			</Effect>
+		</Effects>
+		<EffectsOnDrives>
+			<Motivator drive="Affiliation" target="[target]" value="+3"/>
+		</EffectsOnDrives>
+	</Action>
+	
+	<!-- Rejecting offer (an item) from other agent -->
+	<Action name="Reject([target],[item])" probability="0.5">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[target]" action="SpeechAct" target="[AGENT]" parameters="[item]"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+			</Effect>
+		</Effects>
+		<EffectsOnDrives>
+			<Motivator drive="Affiliation" target="[target]" value="-5"/>
+		</EffectsOnDrives>
+	</Action>
+	
+	<!-- Choose from an item from options provided -->
+	<Action name="Choose([target],[item])" probability="0.5">
+		<PreConditions>
+			<RecentEvent occurred="True" subject="[target]" action="SpeechAct" target="[AGENT]" parameters="askPreference"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+			</Effect>
+		</Effects>
+		<EffectsOnDrives>
+			<Motivator drive="Affiliation" target="[target]" value="+3"/>
+		</EffectsOnDrives>
+	</Action>
+	
+	<!-- Tell the agent sensitive information -->
+	<Action name="TellSensitiveInfo([target],[friend],[info])" probability="0.5">
+		<PreConditions>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+				<Property name="[AGENT]([info],isSensitive)" operator="=" value="[friend]"/>
+			</Effect>
+		</Effects>
+		<EffectsOnDrives>
+			<Motivator drive="Affiliation" target="[target]" value="+2"/>
+		</EffectsOnDrives>
+	</Action>
+	
+	<!-- Ask agent about information of others -->
+	<Action name="Ask([target],[friend],[info])" probability="0.5">
+		<PreConditions>
+		</PreConditions>
+		<Effects>
+			<Effect probability="1.0">
+			</Effect>
+		</Effects>
+		<EffectsOnDrives>
+			<Motivator drive="Affiliation" target="[target]" value="+1"/>
+		</EffectsOnDrives>
+	</Action>
+
+	<Action name="Give([object),[target])">
+		<PreConditions>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+			<Property name="[object](eatable)" operator="=" value="True" />
+			<Property name="has([AGENT],[object])" operator="=" value="True" />
+		</PreConditions>
+		<EffectsOnDrives>
+			<Motivator drive="Energy" target="[target]" value="+3"/>
+		</EffectsOnDrives>
+	</Action>
+	<Action name="Slap([target])">
+		<PreConditions>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+		</PreConditions>
+		<EffectsOnDrives>
+			<Motivator drive="Integrity" target="[target]" value="-2"/>
+			<Motivator drive="Affiliation" target="[target]" value="-3"/>
+		</EffectsOnDrives>
+	</Action>
+	<Action name="Insult([target])">
+		<PreConditions>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+		</PreConditions>
+		<EffectsOnDrives>
+			<Motivator drive="Affiliation" target="[target]" value="-2"/>
+		</EffectsOnDrives>
+	</Action>
+	<Action name="Hug([target])">
+		<PreConditions>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+		</PreConditions>
+		<EffectsOnDrives>
+			<Motivator drive="Affiliation" target="[target]" value="4"/>
+		</EffectsOnDrives>
+	</Action>
+	<Action name="Praise([target])">
+		<PreConditions>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+		</PreConditions>
+		<EffectsOnDrives>
+			<Motivator drive="Affiliation" target="[target]" value="2"/>
+		</EffectsOnDrives>
+	</Action>
+	<Action name="Massage([target])">
+		<PreConditions>
+			<Property name="[target]" operator="!=" value="[AGENT]"/>
+		</PreConditions>
+		<EffectsOnDrives>
+			<Motivator drive="Energy" target="[target]" value="4"/>
+		</EffectsOnDrives>
+	</Action>
+	
+</DomainActions>

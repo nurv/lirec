@@ -1,0 +1,32 @@
+<Scenarios>
+  <Scenario name="GardenScenario">
+	<WorldSimulator port="46874" scenery="Garden" actionsFile="data/characters/minds/LIRECActions.xml" 
+					agentLanguageFile="data/characters/minds/language/agent/en/language-set-1" 
+					userOptionsFile="LIRECOptions">		
+	  <Objects>
+	  </Objects>
+	</WorldSimulator>
+	
+	<Agent name="TreeSpirit" displayName="TreeSpirit" role="TreeSpirit" platform="worldsim" host="localhost" 
+		   port="46874" displayMode="False" sex="F" actionsFile="LIRECActions" 
+		   goalsFile="LIRECGoalLibrary" cultureName="NoCulture">
+	  <Properties>	
+	  </Properties>	
+	</Agent>
+
+	<Agent name="CoverSpirit" displayName="CoverSpirit" role="CoverSpirit" platform="worldsim" host="localhost" 
+		   port="46874" displayMode="False" sex="F" actionsFile="LIRECActions" 
+		   goalsFile="LIRECGoalLibrary" cultureName="NoCulture">
+	  <Properties>				
+	  </Properties>	
+	</Agent>
+
+	<Agent name="ShrubSpirit" displayName="ShrubSpirit" role="ShrubSpirit" platform="worldsim" host="localhost" 
+		   port="46874" displayMode="False" sex="F" actionsFile="LIRECActions" 
+		   goalsFile="LIRECGoalLibrary" cultureName="NoCulture">
+	  <Properties>				
+	  </Properties>	
+	</Agent>
+
+  </Scenario>
+</Scenarios>
