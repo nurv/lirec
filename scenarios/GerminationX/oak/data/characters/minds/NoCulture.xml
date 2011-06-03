@@ -1,0 +1,27 @@
+<Culture name="NoCulture">	
+	
+	<Praiseworthiness> 
+		<Action name="GreetBack" value="2"/>	
+		<Action name="Accept" value="2"/>	
+		<Action name="Reject" value="-5"/>	
+		<Action name="Choose" value="2"/>
+		<Action name="TellSensitiveInfo" value="3"/>		
+		<Action name="Ask" value="1"/>	
+		<Action name="SpeechAct" parameters="greeting" value="3"/>
+		<Action name="SpeechAct" parameters="introduction" value="2"/>
+		<Action name="SpeechAct" parameters="welcome" value="2"/>	
+		<Action name="SpeechAct" parameters="apple" value="3"/>
+		<Action name="SpeechAct" parameters="banana" value="3"/>
+		<Action name="SpeechAct" parameters="orange" value="3"/>
+		<Action name="SpeechAct" parameters="cake" value="3"/>	
+		<Action name="SpeechAct" parameters="acknowledge" value="1"/>	
+		<Action name="SpeechAct" parameters="askPreference" value="2"/>	
+		<Action name="SpeechAct" parameters="swearSecrecy" value="4"/>	
+		<Action name="SpeechAct" parameters="dontTell" value="4"/>	
+		<Action name="SpeechAct" parameters="hideInfo" value="4"/>	
+		<Action name="SpeechAct" parameters="party" value="4"/>		
+		<Action name="SpeechAct" parameters="newJob" value="4"/>
+		<Action name="SpeechAct" parameters="goodbye" value="2"/>										
+	</Praiseworthiness>	
+	
+</Culture>
