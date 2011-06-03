@@ -24,28 +24,28 @@
    clojure.contrib.math))
 
 (defn emotion-map []
-  { "Love" 0
-    "Hate" 0
-    "Hope" 0
-    "Fear" 0
-    "Satisfaction" 0
-    "Relief" 0
-    "Fears-Confirmed" 0
-    "Disappointment" 0
-    "Joy" 0
-    "Distress" 0
-	"Happy-For" 0
-	"Pitty" 0
-	"Resentment" 0
-	"Gloating" 0
-    "Pride" 0
-	"Shame" 0
-	"Gratification" 0
-	"Remorse" 0
-	"Admiration" 0
-	"Reproach" 0
-	"Gratitude" 0
-	"Anger" 0 })
+  { "LOVE" 0
+    "HATE" 0
+    "HOPE" 0
+    "FEAR" 0
+    "SATISFACTION" 0
+    "RELIEF" 0
+    "FEARS-CONFIRMED" 0
+    "DISAPPOINTMENT" 0
+    "JOY" 0
+    "DISTRESS" 0
+	"HAPPY-FOR" 0
+	"PITTY" 0
+	"RESENTMENT" 0
+	"GLOATING" 0
+    "PRIDE" 0
+	"SHAME" 0
+	"GRATIFICATION" 0
+	"REMORSE" 0
+	"ADMIRATION" 0
+	"REPROACH" 0
+	"GRATITUDE" 0
+	"ANGER" 0 })
 
 (defn make-spirit [remote-agent]
   (println (str "creating spirit for " (remote-agent-name remote-agent)))
@@ -64,7 +64,7 @@
   (if (.contains name "#")
     (parse-number (.substring name
                               (+ 1 (.indexOf name "#"))
-                              (.lastIndexOf name "#")))
+                              (- (.length name) 1)))
     false))
 
 (defn spirit-update [spirit remote-agent tile]
@@ -72,7 +72,7 @@
 ;  (println remote-agent)
 
   ; for the moment take a straight copy of actions and emotions
-  (comment let [spirit
+  (let [spirit
         (modify
          :emotionalloc ; get the object causing the highest emotion
          (fn [emotionalloc]
@@ -131,10 +131,8 @@
               (modify :pos (fn [pos] (:pos e)) spirit)
               spirit))
           spirit))
-      spirit))
-  
-  spirit)
-            
+      spirit)))
+          
           
 (comment println
          (map

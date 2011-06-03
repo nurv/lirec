@@ -194,18 +194,18 @@ class Spirit extends SkeletonEntity
         Hide(true);
         LastData=[];
         DesiredPos=new Vec2(LogicalPos.x,LogicalPos.y);
-        RawEmotions={Love:0,Hate:0,Hope:0,Fear:0,Satisfaction:0,
-                     Relief:0,/*Fears_Confirmed:0,*/Disappointment:0,
-                     Joy:0,Distress:0,/*Happy_For:0,*/Pitty:0,
-                     Resentment:0,Gloating:0,Pride:0,Shame:0,
-                     Gratification:0,Remorse:0,Admiration:0,
-                     Reproach:0,Gratitude:0,Anger:0};
-        Emotions={Love:0,Hate:0,Hope:0,Fear:0,Satisfaction:0,
-                  Relief:0,/*Fears_Confirmed:0,*/Disappointment:0,
-                  Joy:0,Distress:0,/*Happy_For:0,*/Pitty:0,
-                  Resentment:0,Gloating:0,Pride:0,Shame:0,
-                  Gratification:0,Remorse:0,Admiration:0,
-                  Reproach:0,Gratitude:0,Anger:0};
+        RawEmotions={LOVE:0,HATE:0,HOPE:0,FEAR:0,SATISFACTION:0,
+                     RELIEF:0,/*Fears_Confirmed:0,*/DISAPOINTMENT:0,
+                     JOY:0,DISTRESS:0,/*Happy_For:0,*/PITTY:0,
+                     RESENTMENT:0,GLOATING:0,PRIDE:0,SHAME:0,
+                     GRATIFICATION:0,REMORSE:0,ADMIRATION:0,
+                     REPROACH:0,GRATITUDE:0,ANGER:0};
+        Emotions={LOVE:0,HATE:0,HOPE:0,FEAR:0,SATISFACTION:0,
+                     RELIEF:0,/*Fears_Confirmed:0,*/DISAPOINTMENT:0,
+                     JOY:0,DISTRESS:0,/*Happy_For:0,*/PITTY:0,
+                     RESENTMENT:0,GLOATING:0,PRIDE:0,SHAME:0,
+                     GRATIFICATION:0,REMORSE:0,ADMIRATION:0,
+                     REPROACH:0,GRATITUDE:0,ANGER:0};
     }
 
 	public function BuildDebug(c)
@@ -348,19 +348,19 @@ class Spirit extends SkeletonEntity
         //Draw(cast(world,truffle.World));
         var c=this;
 
-        var excitement = c.Emotions.Love+c.Emotions.Admiration;
+        var excitement = c.Emotions.LOVE+c.Emotions.ADMIRATION;
         if (excitement>10) excitement=10;
-        var irritation = c.Emotions.Hate+c.Emotions.Distress;
+        var irritation = c.Emotions.HATE+c.Emotions.DISTRESS;
         if (irritation>5) irritation=5;
-        var bouncyness = c.Emotions.Gratitude*0.2;
+        var bouncyness = c.Emotions.GRATITUDE*0.2;
         if (bouncyness>5) bouncyness=5;
         var bounce=new Vec2(0,0);
 
         Root.Recurse(function(b:Bone,depth:Int) 
         {    
             b.SetRotate((excitement*5+1)*Math.sin(
-                             (((10-depth)+frame*0.04+c.Emotions.Gratitude*0.01)+
-                             c.Emotions.Joy*0.1)) +
+                             (((10-depth)+frame*0.04+c.Emotions.GRATITUDE*0.01)+
+                             c.Emotions.JOY*0.1)) +
             ((world.MyRndGen.RndFlt()-0.5)*10*irritation));
             bounce.y=bouncyness*5*Math.abs(Math.sin(frame*0.25));
             b.SetPos(b.BindPos.Add(bounce));
