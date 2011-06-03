@@ -25,7 +25,6 @@
 	</EmotionalThresholds>
 	
 	<Goals>
-		<Goal name="AvoidGettingHarmed" importanceOfSuccess="2" importanceOfFailure="10"/>
 	</Goals>
 	
 	<InterpersonalRelations>

@@ -22,9 +22,7 @@
    java.io.IOException
    java.util.Random
    java.io.BufferedReader
-   java.io.InputStreamReader
-   FAtiMA.util.parsers.SocketListener
-   FAtiMA.autobiographicalMemory.AutobiographicalMemory))
+   java.io.InputStreamReader))
 
 (defstruct remote-agent
   :properties

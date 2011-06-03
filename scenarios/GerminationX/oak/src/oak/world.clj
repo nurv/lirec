@@ -26,15 +26,11 @@
    java.io.File
    javax.xml.parsers.SAXParser
    javax.xml.parsers.SAXParserFactory
-   FAtiMA.autobiographicalMemory.AutobiographicalMemory
-   FAtiMA.deliberativeLayer.plan.Effect   
-   FAtiMA.deliberativeLayer.plan.Step
-   FAtiMA.sensorEffector.SpeechAct
-   FAtiMA.wellFormedNames.Name
-   FAtiMA.wellFormedNames.Substitution
-   FAtiMA.wellFormedNames.Symbol
-   FAtiMA.wellFormedNames.Unifier
-   FAtiMA.util.parsers.StripsOperatorsLoaderHandler
+   FAtiMA.Core.wellFormedNames.Name
+   FAtiMA.Core.wellFormedNames.Substitution
+   FAtiMA.Core.wellFormedNames.Symbol
+   FAtiMA.Core.wellFormedNames.Unifier
+   FAtiMA.Core.util.parsers.ActionsLoaderHandler
    Language.LanguageEngine))
   
 (defstruct world
@@ -58,17 +54,19 @@
   (merge world {:agents (cons agent (world-agents world))})) 
 
 (defn load-operators [xml self]
-		(let [op (new StripsOperatorsLoaderHandler self)
+		(let [op (new ActionsLoaderHandler self)
               parser (.newSAXParser (SAXParserFactory/newInstance))]
           (.parse parser (new File xml) op)
           op))
 
 (defn make-world [port agent-language-file actions-file objects]
+; operators removed in fatima modular 
+  (comment .getOperators (load-operators actions-file, "[SELF]"))
   (struct world
           (load-objects objects)
           []
           "garden"
-          (.getOperators (load-operators actions-file, "[SELF]"))
+          () ; <----
           (new LanguageEngine "name" "M" "Victim" (new File agent-language-file))
           (let [ssc (ServerSocketChannel/open)]
             (.configureBlocking ssc false)
@@ -204,30 +202,15 @@
                        (str "LOOK-AT " object-name " "
                             (hash-map-to-string
                              (world-get-properties world (nth toks 1)))))
+             (world-broadcast-all
+              world
+              (str "ACTION-FINISHED "
+                   (remote-agent-name agent) " " msg))
+
              (merge agent {:done (max-cons {:time (world-time world)
                                             :msg msg}
                                            (remote-agent-done agent) 4)}))
            agent)))
-     (= type "say")
-     (do (println "say")
-         (let [say (SpeechAct/ParseFromXml (.substring msg 3))]
-           (if say
-             (let [s (str
-                      (.getActionType say) "("
-                      (.getReceiver say) ","
-                      (.getMeaning say)
-                      (list->commas (.GetParameters say))
-                      ")")]
-               (update-action-effects world agent (Name/ParseName s))
-               (world-broadcast-all world (str "ACTION-FINISHED " (remote-agent-name agent)
-                                               " " msg))
-               (merge agent {:said (cons (str (world-time world)
-                                              ": "
-                                              (.getMeaning say) " to " (.getReceiver say))
-                                         (remote-agent-said agent))}))
-             agent)))
-    
-     (= type "UserSpeech") (do (println "user speech") agent)
      :else
      (do
        ;(println "action")

@@ -68,8 +68,11 @@
     false))
 
 (defn spirit-update [spirit remote-agent tile]
-; for the moment take a straight copy of actions and emotions
-  (let [spirit
+
+;  (println remote-agent)
+
+  ; for the moment take a straight copy of actions and emotions
+  (comment let [spirit
         (modify
          :emotionalloc ; get the object causing the highest emotion
          (fn [emotionalloc]
@@ -128,7 +131,9 @@
               (modify :pos (fn [pos] (:pos e)) spirit)
               spirit))
           spirit))
-      spirit)))
+      spirit))
+  
+  spirit)
             
           
 (comment println

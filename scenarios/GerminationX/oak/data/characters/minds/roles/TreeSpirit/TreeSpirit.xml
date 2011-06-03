@@ -1,4 +1,4 @@
-<Character role="TreeSpirit">
+<Character role="TreeSpirit" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../schemas/Character.xsd">
 	<EmotionalThresholds>
 		<EmotionalThreshold emotion="Love" threshold="3" decay="10"/>
 		<EmotionalThreshold emotion="Hate" threshold="2" decay="5"/>
@@ -23,9 +23,16 @@
 		<EmotionalThreshold emotion="Gratitude" threshold="1" decay="5"/>
 		<EmotionalThreshold emotion="Anger" threshold="1" decay="8"/>
 	</EmotionalThresholds>
+
+	<MotivationalParameters>
+		<MotivationalParameter motivator="Affiliation" decayFactor="2" weight="0.075" intensity="6"/>
+		<MotivationalParameter motivator="Integrity" decayFactor="1.5" weight="0.05" intensity="4"/>
+		<MotivationalParameter motivator="Energy" decayFactor="2" weight="0.055" intensity="5"/>
+		<MotivationalParameter motivator="Certainty" decayFactor="4" weight="0.065" intensity="4"/>
+		<MotivationalParameter motivator="Competence" decayFactor="3" weight="0.05" intensity="4"/>
+	</MotivationalParameters>
 	
 	<Goals>
-		<Goal name="AvoidGettingHarmed" importanceOfSuccess="2" importanceOfFailure="10"/>
 	</Goals>
 	
 	<InterpersonalRelations>

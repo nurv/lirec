@@ -56,7 +56,7 @@
                       time 1))))
   (recur))
 
-;(tick)
+(tick)
 
 (defroutes main-routes
   (GET "/get-tile/:tilex/:tiley" [tilex tiley]
