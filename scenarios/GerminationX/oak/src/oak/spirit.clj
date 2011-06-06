@@ -59,6 +59,11 @@
    :fatactions '()
    :fatemotions '()))
 
+(defn spirit-count [spirit]
+  (println (str "emotions: " (count (:emotions spirit))))
+  (println (str "fatemotions: " (count (:fatactions spirit))))
+  (println (str "fatactions: " (count (:fatemotions spirit)))))
+
 ; convert foofooname#999# to 999
 (defn fatima-name->id [name]
   (if (.contains name "#")

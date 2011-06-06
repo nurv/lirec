@@ -19,7 +19,7 @@
   (:require
    clojure.contrib.math))
 
-(def season-length (* 60 10))
+(def season-length (* 60 3))
 (def min-health 10)
 (def max-health 90)
 (def start-health 20)
@@ -69,6 +69,10 @@
    :tick (+ (/ season-length 50) (Math/floor (rand 10)))
    :health start-health
    :fruit false))
+
+(defn plant-count [plant]
+  (println (str "picked-by: " (count (:picked-by plant)))))
+
 
 (defn make-random-plant []
   (let [type (rand-nth (list "aronia" "dandelion" "apple" "cherry" "clover"))]

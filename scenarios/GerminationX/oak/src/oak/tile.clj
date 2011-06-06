@@ -25,6 +25,11 @@
    :pos pos
    :entities entity-list))
 
+(defn tile-count [tile]
+  (println (str "entities: " (count (:entities tile))))
+  (comment doseq [i (:entities tile)]
+    (plant-count i)))
+
 (defn tile-position-taken? [tile pos]
   (reduce
    (fn [r e]

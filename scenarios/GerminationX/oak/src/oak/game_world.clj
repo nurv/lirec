@@ -100,6 +100,17 @@
     :spirits ()) 
    (repeatedly num-plants (fn [] (make-random-plant)))))
 
+(defn game-world-count [game-world]
+  (println (str "players: " (count (:players game-world))))
+  ;(doseq [i (:players game-world)]
+  ;  (player-count i))
+  (println (str "tiles: " (count (:tiles game-world))))
+  (doseq [i (:tiles game-world)]
+    (tile-count i))
+  (println (str "spirits: " (count (:spirits game-world))))
+  (doseq [i (:spirits game-world)]
+    (spirit-count i)))
+    
 (defn game-world-save [game-world fn]
   (spit fn game-world))
 
@@ -135,6 +146,7 @@
           freq)))
     
 (defn game-world-update [game-world time delta]
+;  (game-world-count game-world)
   (let [rules (load-companion-rules "rules.txt")]
     (modify :tiles
             (fn [tiles]
