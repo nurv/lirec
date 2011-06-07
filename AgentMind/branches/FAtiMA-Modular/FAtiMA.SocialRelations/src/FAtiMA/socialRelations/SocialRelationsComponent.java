@@ -74,8 +74,15 @@ IProcessEmotionComponent {
 	public void appraisal(AgentModel am, Event e, AppraisalFrame as)
 	{
 		if (e.GetSubject().equals(Constants.SELF) && e.GetAction().equals("look-at")) 
-		{
-			int relationShip = Math.round(LikeRelation.getRelation(Constants.SELF, e.GetTarget()).getValue(am.getMemory()));
+		{					
+			// allow for appraisal of objects with id numbers
+			// embedded - eg book#23
+			String target = e.GetTarget();
+			if (target.contains("#")) 
+			{
+				target=target.substring(0,target.indexOf("#"));
+			}
+			int relationShip = Math.round(LikeRelation.getRelation(Constants.SELF, target).getValue(am.getMemory()));
 			if (relationShip != 0) {
 				as.SetAppraisalVariable(NAME, (short) 7,OCCAppraisalVariables.LIKE.name(), relationShip);
 			}
