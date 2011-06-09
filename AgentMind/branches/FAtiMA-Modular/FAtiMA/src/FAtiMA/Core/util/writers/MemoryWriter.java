@@ -279,6 +279,7 @@ public class MemoryWriter implements Serializable {
 			
 			// retrieval queue
 			_outputter.startTag("RetrievalQueue");
+			_outputter.attribute("numRetrievalsInTotal", Integer.toString(ad.getRetrievalQueue().getNumRetrievalsInTotal()));
 			for(Time retrievalTime : ad.getRetrievalQueue().getRetrievalTimes()) {
 				_outputter.startTag("RetrievalTime");
 				_outputter.attribute("narrativeTime", Long.toString(retrievalTime.getNarrativeTime()));

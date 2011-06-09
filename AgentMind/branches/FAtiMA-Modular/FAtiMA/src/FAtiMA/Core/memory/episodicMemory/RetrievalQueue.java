@@ -47,6 +47,7 @@ public class RetrievalQueue implements Serializable {
 	private int maxRetrievalTimes;
 	private LinkedList<Time> retrievalTimes;
 	private long minTimeInterval;
+	private int numRetrievalsInTotal;
 
 	public RetrievalQueue(int detailID) {
 		this(detailID, MAX_RETRIEVAL_TIMES_DEFAULT, MIN_TIME_INTERVAL_DEFAULT);
@@ -59,11 +60,20 @@ public class RetrievalQueue implements Serializable {
 		// a negative number means no limit
 		this.maxRetrievalTimes = maxRetrievalTimes;
 		this.retrievalTimes = new LinkedList<Time>();
+		this.numRetrievalsInTotal = 0;
 		this.minTimeInterval = minTimeInterval;
 	}
 
 	public int getDetailID() {
 		return detailID;
+	}
+
+	public int getNumRetrievalsInTotal() {
+		return numRetrievalsInTotal;
+	}
+
+	public void setNumRetrievalsInTotal(int numRetrievalsInTotal) {
+		this.numRetrievalsInTotal = numRetrievalsInTotal;
 	}
 
 	public void addRetrievalTime(Time time) {
@@ -73,18 +83,13 @@ public class RetrievalQueue implements Serializable {
 			long difference = time.getNarrativeTime()
 					- retrievalTimes.getLast().getNarrativeTime();
 			if (difference < minTimeInterval) {
-				// DEBUG
-				// System.out
-				// .println("RetrievalQueue.java: Minimum time interval deceeded!");
 				return;
 			}
 		}
 
 		// add retrieval time to end of queue
 		retrievalTimes.add(time);
-		// DEBUG
-		// System.out.println("RetrievalQueue.java: added retrieval time for id "
-		// + this.getDetailID());
+		numRetrievalsInTotal++;
 
 		// non-negative number means queue has a size limit
 		if (maxRetrievalTimes >= 0) {

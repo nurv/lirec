@@ -163,6 +163,8 @@ public class MemoryLoaderHandler extends ReflectXMLHandler {
 	
 	public void RetrievalQueue(Attributes attributes) {	    
 		_currentRetrievalQueue = new RetrievalQueue(_currentAD.getID());
+		Integer numRetrievalsInTotal = Integer.parseInt(attributes.getValue("numRetrievalsInTotal"));
+		_currentRetrievalQueue.setNumRetrievalsInTotal(numRetrievalsInTotal);		
 		_currentAD.setRetrievalQueue(_currentRetrievalQueue);
 		// DEBUG
 		//System.out.println("new queue created for id " + _currentAD.getID());
@@ -172,8 +174,10 @@ public class MemoryLoaderHandler extends ReflectXMLHandler {
 		Long narrativeTime = Long.parseLong(attributes.getValue("narrativeTime"));
 	    Long realTime = Long.parseLong(attributes.getValue("realTime"));
 	    long eventSequence = Long.parseLong(attributes.getValue("eventSequence"));
-	    Time retrievalTime = new Time(narrativeTime, realTime, eventSequence);	
+	    Time retrievalTime = new Time(narrativeTime, realTime, eventSequence);
+	    Integer numRetrievalsInTotal = _currentRetrievalQueue.getNumRetrievalsInTotal();
 	    _currentRetrievalQueue.addRetrievalTime(retrievalTime);
+	    _currentRetrievalQueue.setNumRetrievalsInTotal(numRetrievalsInTotal);
 	    // DEBUG
 		//System.out.println("added retrieval time");
 		//System.out.println(retrievalTime);
