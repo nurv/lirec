@@ -302,22 +302,37 @@ public class EpisodicMemory implements Serializable {
 			if(this._stm.GetCount() >= ShortTermEpisodicMemory.MAXRECORDS)
 			{
 				ActionDetail detail = _stm.GetOldestRecord();
-				//Meiyii 07/01/10
 				
-				/*if((detail.getAction().equals("activate") || 
-						detail.getAction().equals("succeed") ||
-						detail.getAction().equals("fail")) ||
-						((!detail.getAction().equals("activate") && 
-						!detail.getAction().equals("succeed") &&
-						!detail.getAction().equals("fail")) &&
-						(detail.getEmotion().GetType()) != EmotionType.NEUTRAL))*/
-				if((detail.getIntention() != null && (detail.getStatus().equals(GoalEvent.GetName(GoalEvent.ACTIVATION)) || 
-						detail.getStatus().equals(GoalEvent.GetName(GoalEvent.SUCCESS)) ||
-						detail.getStatus().equals(GoalEvent.GetName(GoalEvent.FAILURE)))) ||
-						(detail.getAction() != null && (detail.getEmotion().getType()) != NeutralEmotion.NAME))
-				{
-					_am.StoreAction(detail);					
+				// Meiyii 07/01/10				
+				
+				// Matthias 09/06/2011
+				// reformatted, added condition with retrievals
+				
+				boolean storeAction = false;
+				
+				// goal status
+				if(detail.getIntention() != null) {
+					if(detail.getStatus().equals(GoalEvent.GetName(GoalEvent.ACTIVATION))
+					|| detail.getStatus().equals(GoalEvent.GetName(GoalEvent.SUCCESS))
+					|| detail.getStatus().equals(GoalEvent.GetName(GoalEvent.FAILURE))) {
+						storeAction = true;
+					}
 				}
+				// emotion
+				if(detail.getAction() != null) {
+					if(detail.getEmotion().getType() != NeutralEmotion.NAME) {
+						storeAction = true;
+					}
+				}
+				// retrievals
+				if(detail.getRetrievalQueue().getNumRetrievalsInTotal() > 1) {
+					storeAction = true;
+				}
+				
+				if(storeAction) {
+					_am.StoreAction(detail);
+				}
+				
 				_stm.DeleteOldestRecord();
 			}
 			_stm.AddActionDetail(m, e, location);
@@ -326,12 +341,6 @@ public class EpisodicMemory implements Serializable {
 			
 			this._newData = true;
 		}
-		
-		// DEBUG Matthias
-		//if(_am.countMemoryDetails() % 20 == 10) {
-		//	this.calculateActivationValues();
-		//	this.activationBasedSelectionByCount(5);
-		//}
 		
 	}
 	
@@ -345,12 +354,33 @@ public class EpisodicMemory implements Serializable {
 			for (int i=0; i < _stm.GetCount(); i++)
 			{
 				ActionDetail detail = _stm.getDetails().get(i);
-				if((detail.getIntention() != null && (detail.getStatus().equals(GoalEvent.GetName(GoalEvent.ACTIVATION)) || 
-						detail.getStatus().equals(GoalEvent.GetName(GoalEvent.SUCCESS)) ||
-						detail.getStatus().equals(GoalEvent.GetName(GoalEvent.FAILURE)))) ||
-						(detail.getAction() != null && (detail.getEmotion().getType()) != NeutralEmotion.NAME))
-				{
-					_am.StoreAction(detail);					
+				
+				// Matthias 09/06/2011
+				// reformatted, added condition with retrievals
+				
+				boolean storeAction = false;
+				
+				// goal status
+				if(detail.getIntention() != null) {
+					if(detail.getStatus().equals(GoalEvent.GetName(GoalEvent.ACTIVATION))
+					|| detail.getStatus().equals(GoalEvent.GetName(GoalEvent.SUCCESS))
+					|| detail.getStatus().equals(GoalEvent.GetName(GoalEvent.FAILURE))) {
+						storeAction = true;
+					}
+				}
+				// emotion
+				if(detail.getAction() != null) {
+					if(detail.getEmotion().getType() != NeutralEmotion.NAME) {
+						storeAction = true;
+					}
+				}
+				// retrievals
+				if(detail.getRetrievalQueue().getNumRetrievalsInTotal() > 1) {
+					storeAction = true;
+				}
+				
+				if(storeAction) {
+					_am.StoreAction(detail);
 				}
 			}
 			_stm.getDetails().clear();
