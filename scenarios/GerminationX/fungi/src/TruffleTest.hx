@@ -35,17 +35,22 @@ class TruffleWorld extends World
 	public var Server:ServerConnection;
     var Sprites:Array<Sprite>;
     var TestBone:Bone;
+    var PSys:Particles;
 
 	public function new() 
 	{
+        trace("hello there from flash");
+
 		super();
 		Frame=0;
         TickTime=0;
 		Server=new ServerConnection();
         Sprites=new Array<Sprite>();
+        PSys=new Particles(new Vec2(100,100),100);
+        addChild(PSys);
 
         trace("hello there from flash");
-        trace(ExternalInterface.available);
+/*        trace(ExternalInterface.available);
         try 
         {
             var data = flash.external.ExternalInterface.call("helloJS");
@@ -55,7 +60,7 @@ class TruffleWorld extends World
         {
             trace(e);
         };
-        trace("done.");
+        trace("done.");*/
 
         var num=10;
         var pos=new Array<Vec2>();
@@ -92,6 +97,7 @@ TestBone.AddChild(this,ob2); */
                 yy++;
             }
             xx++;
+
         }
         
         g=g.MST(0);
@@ -149,6 +155,9 @@ TestBone.AddChild(this,ob2); */
     override function Update(time:Int)
     {
         super.Update(time);
+
+        PSys.Update(time);
+        
         //cast(Scene[0],SpriteEntity).Spr.SetRotate(time);
         //cast(Objs[1],SpriteEntity).Spr.SetRotate(time/2);
         //      TestBone.SetRotate(time*3);

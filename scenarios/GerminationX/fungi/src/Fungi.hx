@@ -184,15 +184,35 @@ class Spirit extends SkeletonEntity
     var DesiredPos:Vec2;
     public var LastData:Array<Dynamic>;
     var Action:Sprite;
+    var Emitter:Particles;
+    var EmotionalColours:Dynamic;
+    var Rnd:RndGen;
+    var HighestEmotion:String;
     
+    function ToCol(r:Int,g:Int,b:Int)
+    {
+        return new Vec3(r/255.0,g/255.0,b/255.0);
+    }
+
 	public function new(world:World, name:String, pos)
 	{
 		super(world,pos);
         Name = name;
+        HighestEmotion="Not calculated yet";
         Speed=0.1;
         UpdateFreq=2;
         Hide(true);
         LastData=[];
+        Rnd=new RndGen();
+        
+        EmotionalColours = {
+            JOY:[ToCol(255,224,1),ToCol(255,224,1),ToCol(255,126,2),ToCol(0,155,2)],
+            FEAR:[ToCol(128,128,128),ToCol(128,64,2),ToCol(97,0,98),ToCol(220,2,1)],
+            LOVE:[ToCol(225,224,1),ToCol(220,3,0),ToCol(225,117,225),ToCol(0,115,2)], // surprise
+            HATE:[ToCol(128,128,128),ToCol(128,64,2),ToCol(97,0,98),ToCol(220,2,1)], // fear
+            PRIDE:[ToCol(29,201,33)]
+        };
+
         DesiredPos=new Vec2(LogicalPos.x,LogicalPos.y);
         RawEmotions={LOVE:0,HATE:0,HOPE:0,FEAR:0,SATISFACTION:0,
                      RELIEF:0,/*Fears_Confirmed:0,*/DISAPOINTMENT:0,
@@ -206,13 +226,46 @@ class Spirit extends SkeletonEntity
                      RESENTMENT:0,GLOATING:0,PRIDE:0,SHAME:0,
                      GRATIFICATION:0,REMORSE:0,ADMIRATION:0,
                      REPROACH:0,GRATITUDE:0,ANGER:0};
+        Emitter = new Particles(new Vec2(Pos.x,Pos.y),50);
+        world.addChild(Emitter);
+    }
+
+    function UpdateEmitter()
+    {
+        // get highest emotion
+        HighestEmotion = "";
+        var HighestScore = 0;
+        for (f in Reflect.fields(Emotions))
+        {
+            var Score=Reflect.field(Emotions,f);
+            if (Score>HighestScore)
+            {
+                HighestScore=Score;
+                HighestEmotion=f;
+            }
+        }
+
+        var Colours:Array<Vec3>=Reflect.field(EmotionalColours,HighestEmotion);
+
+        if (HighestEmotion!="" && Colours!=null)
+        {
+            for (i in 0...Emitter.Colours.length)
+            {
+                Emitter.Colours[i]=Colours[Rnd.RndInt()%Colours.length];
+            }
+            Emitter.RecycleRate=80;
+        }
+        else
+        {  
+            Emitter.RecycleRate=0;
+        }
     }
 
 	public function BuildDebug(c)
     {
         var tf = new flash.text.TextField();
         tf.text = "nowt yet.";
-        tf.x=Pos.x-150;
+        tf.x=Pos.x-200;
         tf.y=Pos.y-25;
         tf.height=150;
         tf.width=140;
@@ -237,8 +290,11 @@ class Spirit extends SkeletonEntity
 
         c.addChild(tf);
         Debug=tf;
-        tf.visible=false;
-
+//        tf.visible=false;
+ 
+        tf.visible=true;
+        figures.visible=true;
+ /*
         Root.MouseDown(c,function(c)
         {
             tf.visible=true;
@@ -250,7 +306,7 @@ class Spirit extends SkeletonEntity
             tf.visible=false;
             figures.visible=false;
         });
-
+*/
         Action = new Sprite(new Vec2(0,0),Resources.Get(""));
         Action.Hide(true);
         c.AddSprite(Action);
@@ -264,7 +320,7 @@ class Spirit extends SkeletonEntity
 
         
         var dst = new Vec2(Std.parseInt(e.emotionalloc.x),
-                              Std.parseInt(e.emotionalloc.y));
+                           Std.parseInt(e.emotionalloc.y));
 
         if (dst.x!=DesiredPos.x || dst.y!=DesiredPos.y)
         {
@@ -282,8 +338,11 @@ class Spirit extends SkeletonEntity
         var ee = e.fatemotions.content;
         var mood=Std.parseFloat(ee[0].content[0]);
 
+        UpdateEmitter();
+
         var text=Name+"\nMood:"+ee[0].content[0]+"\n";
-        text+="Emotions:\n";
+        var text=Name+"\nHighest Emotion:"+HighestEmotion+"\n";
+        text+="Causes:\n";
         for (i in 1...ee.length)
         {
             text+=ee[i].attrs.type+" "+ee[i].attrs.direction+"\n";
@@ -320,7 +379,7 @@ class Spirit extends SkeletonEntity
         t.size = 8;                
         t.color= 0x000000;           
         Debug.setTextFormat(t);
-        Debug.x=Pos.x-150;
+        Debug.x=Pos.x-200;
         Debug.y=Pos.y-25;
 
         BG.clear();
@@ -366,6 +425,10 @@ class Spirit extends SkeletonEntity
             b.SetPos(b.BindPos.Add(bounce));
            
         });
+
+        Emitter.Pos.x=Pos.x;
+        Emitter.Pos.y=Pos.y;
+        Emitter.Update(frame);
 
         super.Update(frame,world);
     }
@@ -601,10 +664,10 @@ class FungiWorld extends World
 
         Update(0);
         SortScene();
-        var names = ["TreeSpirit","ShrubSpirit","CoverSpirit"];
+        var names = ["TreeSpirit"];//,"ShrubSpirit","CoverSpirit"];
         var positions = [new Vec3(0,5,4), new Vec3(7,0,4), new Vec3(2,10,4)];
  
-        for (i in 0...3)
+        for (i in 0...1)
         {
             Server.Request("spirit-sprites/"+names[i],
             this,

@@ -187,8 +187,14 @@
   (let [toks (.split msg " ")
         type (nth toks 0)]
     (cond
-     (.startsWith type "<EmotionalState") (merge agent {:emotions (parse-xml msg)})
-     (.startsWith type "<Relations") (merge agent {:relations (parse-xml msg)})
+     (.startsWith type "<EmotionalState")
+     (do
+;       (println (str "emotions now: " (count msg)))
+       (merge agent {:emotions (parse-xml msg)}))
+     (.startsWith type "<Relations")
+     (do 50392 27708
+ ;      (println (str "relations now: " (count msg)))
+       (merge agent {:relations (parse-xml msg)}))
      (.startsWith type "PROPERTY-CHANGED") agent
      (= type "look-at")
      (do

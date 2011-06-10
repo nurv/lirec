@@ -52,10 +52,10 @@
   (hash-map
    :version 0
    :tile (make-vec2 0 0)
-   :pos (make-vec2 0 0)
+   :pos (make-vec2 5 5)
    :name (remote-agent-name remote-agent)
    :emotions (emotion-map)
-   :emotionalloc (make-vec2 0 0)
+   :emotionalloc (make-vec2 5 5)
    :fatactions '()
    :fatemotions '()))
 
