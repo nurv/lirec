@@ -73,7 +73,7 @@
 ;(tick)
 
 (defroutes main-routes
-  (GET "/get-tile/:tilex/:tiley" [tilex tiley]
+  (GET "/get-tile/:tilex/:tiley/:iefix" [tilex tiley iefix]
        (let [tile (game-world-get-tile (deref my-game-world)
                                        (make-vec2 (parse-number tilex)
                                                   (parse-number tiley)))]
@@ -81,8 +81,8 @@
            (json/encode-to-str tile)
            (json/encode-to-str '()))))
 
-  (GET "/make-plant/:tilex/:tiley/:posx/:posy/:type/:owner/:size"
-       [tilex tiley posx posy type owner size]
+  (GET "/make-plant/:tilex/:tiley/:posx/:posy/:type/:owner/:size/:iefix"
+       [tilex tiley posx posy type owner size iefix]
        (append-spit
         log-filename
         (str
@@ -98,7 +98,7 @@
        ;(println (deref my-game-world))
        (json/encode-to-str '("ok")))
 
-  (GET "/pick/:tilex/:tiley/:plant-id" [tilex tiley plant-id]
+  (GET "/pick/:tilex/:tiley/:plant-id/:iefix" [tilex tiley plant-id iefix]
        (dosync
         (ref-set my-game-world
                  (game-world-modify-tile
@@ -113,27 +113,26 @@
                        (modify :fruit (fn [f] false) plant)))))))
        (json/encode-to-str '("ok")))
 
-  (GET "/hiscores" []
+  (GET "/hiscores/:iefix" [iefix]
        (json/encode-to-str
         (map
          (fn [s]
            (list (first s) (second s)))
          (game-world-hiscores (deref my-game-world)))))
   
-  (GET "/spirit-sprites/:name" [name]
+  (GET "/spirit-sprites/:name/:iefix" [name iefix]
        ;(update-islands (str "./" name) (str "./" name))
        (read-islands (str "./public/" name)))
 
-  (GET "/spirit-info" []
-       (println (json/encode-to-str (:spirits (deref my-game-world))))
+  (GET "/spirit-info/:iefix" [iefix]
        (json/encode-to-str (:spirits (deref my-game-world))))
 
-  (GET "/perceive" []
+  (GET "/perceive/:iefix" [iefix]
        (world-perceive-all (deref fatima-world))
        (json/encode-to-str '("ok")))
   
   (comment 
-  (GET "/add-object/:obj" [obj]
+  (GET "/add-object/:obj/:iefix" [obj iefix]
        (println (str "adding " obj))
        (dosync (ref-set myworld (world-add-object (deref myworld)
                                                   (load-object obj))))))

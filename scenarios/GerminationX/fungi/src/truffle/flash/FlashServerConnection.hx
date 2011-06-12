@@ -30,16 +30,19 @@ import hxjson2.JSON;
 
 import truffle.interfaces.ServerConnection;
 import truffle.interfaces.ServerRequest;
+import truffle.RndGen;
 
 class FlashServerConnection extends ServerConnection
 {
     var Loader:URLLoader;
     var LoadedCallback:Dynamic -> Dynamic -> Void;
     var LoadedContext:Dynamic;
-
+    var Rnd:RndGen;
+    
     public function new() 
 	{
         super();
+        Rnd = new RndGen();
         Loader = new URLLoader();
         Loader.dataFormat = URLLoaderDataFormat.TEXT;
         Loader.addEventListener(Event.COMPLETE, CompleteHandler);
@@ -55,7 +58,8 @@ class FlashServerConnection extends ServerConnection
         Ready=false;
         LoadedCallback = r.Callback;
         LoadedContext = r.Context;
-        //trace(URL);
+        r.URL+="/"+Std.string(Rnd.RndInt());
+        //trace(r.URL);
         var request:URLRequest = new URLRequest(r.URL);
         request.method = URLRequestMethod.POST;
         Loader.load(request);
