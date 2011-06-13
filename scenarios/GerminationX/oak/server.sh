@@ -28,14 +28,13 @@ start ()
         exit 1
     fi
 
-    #sudo -u dave ./run.sh > ${LOG_FILE} &
-    sudo -u dave java -classpath $( echo lib/*.jar . | sed 's/ /:/g'):src clojure.main src/oak/core.clj > ${LOG_FILE} 2>&1 &
+    sudo -u www-data java -classpath $( echo lib/*.jar . | sed 's/ /:/g'):src clojure.main src/oak/core.clj > ${LOG_FILE} 2>&1 &
 
     # < /dev/null > ${LOG_FILE} 2>&1 &
     echo $! > ${PID_FILE}
 
     # start the agents...
-    sudo -u dave ./run.sh &
+    sudo -u www-data ./run.sh &
 
     echo "[*] ${APP} Game Server on port ${SERVER_PORT} started."
     exit 0
