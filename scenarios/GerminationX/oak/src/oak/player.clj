@@ -12,18 +12,21 @@
 ;; You should have received a copy of the GNU Affero General Public License
 ;; along with this program.  If not see <http://www.gnu.org/licenses/>.
 
-(ns oak.player)
+(ns oak.player
+    (:use
+     oak.log))
 
 (defn make-player [id name]
   (hash-map
-   :version 0
+   :version 1
    :id id 
-   :name name
+   :name name ; only for login - do not use directly
    :layer "none"
    :seeds '()
    :messages '()
    :picked-by '()
-   :has-picked '()))
+   :has-picked '()
+   :log (make-log)))
 
 
 

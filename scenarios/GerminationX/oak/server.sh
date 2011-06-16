@@ -81,15 +81,16 @@ main ()
 {
 #    check_root
 
-    if [ "$2" = "" ]
+    if [ "$2" = "debug" ]
     then
-        SERVER_PORT="8001"
+        LOG_FILE="stdout"
     else
-        SERVER_PORT="$2"
+        LOG_FILE="/var/log/${APP}-${SERVER_PORT}.log"
     fi
    
+    SERVER_PORT="8001"
     PID_FILE="/var/run/${APP}-${SERVER_PORT}.pid"
-    LOG_FILE="/var/log/${APP}-${SERVER_PORT}.log"
+
  
     case "$1" in
         start)

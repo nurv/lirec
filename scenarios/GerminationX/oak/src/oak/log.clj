@@ -12,7 +12,27 @@
 ;; You should have received a copy of the GNU Affero General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-(ns oak.log)
+(ns oak.log
+  (:use
+   oak.forms))
 
+(def msg-picked 1)
+(def msg-ill 2)
 
+(defn make-msg [from to msg-id subjects]
+ (hash-map
+  :from from
+  :to to
+  :msg-id msg-id
+  :subjects subjects))
 
+(defn make-log []
+ (hash-map
+  :msgs ()))
+
+(defn log-add-message [log msg]
+  (modify
+   :msgs
+   (fn [msgs]
+     (max-cons msg :msgs 10))
+   log))

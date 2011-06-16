@@ -15,7 +15,8 @@
 (ns oak.plant
   (:use
    oak.vec2
-   oak.forms)
+   oak.forms
+   oak.log)
   (:require
    clojure.contrib.math))
 
@@ -54,10 +55,10 @@
    (= layer "shrub") "ShrubSpirit"
    :else "UnknownSpirit"))
 
-(defn make-plant [pos type owner size]
+(defn make-plant [id pos type owner size]
   (hash-map
-   :version 0
-   :id (generate-id)
+   :version 1
+   :id id
    :pos pos
    :type type
    :layer (plant-type->layer type)
@@ -68,15 +69,17 @@
    :timer 0
    :tick (+ (/ season-length 50) (Math/floor (rand 10)))
    :health start-health
-   :fruit false))
+   :fruit false
+   :log (make-log)))
 
 (defn plant-count [plant]
   (println (str "picked-by: " (count (:picked-by plant)))))
 
 
-(defn make-random-plant []
+(defn make-random-plant [id]
   (let [type (rand-nth (list "aronia" "dandelion" "apple" "cherry" "clover"))]
     (make-plant
+     id
      (make-vec2 (Math/floor (rand 15)) (Math/floor (rand 15)))
      type
      (layer->spirit-name (plant-type->layer type))

@@ -26,8 +26,6 @@
 (defn max-cons [o l m]
   (cons o (discard l m)))
 
-(defn gg []
-  (let [i (atom 0)]
+(defn make-id-generator [start]
+  (let [i (atom start)]
     (fn [] (swap! i inc))))
-
-(def generate-id (gg))

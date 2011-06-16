@@ -47,7 +47,7 @@
 
 (def my-game-world (ref (game-world-load state-filename)))
 ;(def my-game-world (ref (make-game-world 300 1)))
-;(game-world-save (deref my-game-world) state-filename)
+(game-world-save (deref my-game-world) "test.txt")
 
 (append-spit log-filename (str (str (Date.)) " server started\n"))
 
@@ -73,6 +73,22 @@
 ;(tick)
 
 (defroutes main-routes
+  (GET "/login/:name/:iefix" [name iefix]
+       (let [id (game-world-find-player-id
+                 (deref my-game-world) name)]
+         (cond
+          (not id)
+          (do
+            (dosync
+             (ref-set my-game-world
+                      (game-world-add-player
+                       (deref my-game-world) name)))
+            (json/encode-to-str
+             (game-world-find-player-id
+              (deref my-game-world) name)))
+          :else
+          (json/encode-to-str id))))
+
   (GET "/get-tile/:tilex/:tiley/:iefix" [tilex tiley iefix]
        (let [tile (game-world-get-tile (deref my-game-world)
                                        (make-vec2 (parse-number tilex)

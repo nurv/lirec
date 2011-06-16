@@ -22,7 +22,9 @@
    oak.rand
    oak.remote-agent
    oak.spirit
-   oak.world)
+   oak.world
+   oak.log
+   oak.player)
   (:require
    clojure.contrib.math))
 
@@ -85,20 +87,23 @@
      entity)))
 
 (defn make-game-world [num-plants area]
-  (reduce
-   (fn [world plant]
-     (game-world-add-entity
-      world
-      (make-vec2
-       (Math/round (* (rand-gaussian) area))
-       (Math/round (* (rand-gaussian) area)))
-      plant))
-   (hash-map
-    :version 0
-    :players ()
-    :tiles {}
-    :spirits ()) 
-   (repeatedly num-plants (fn [] (make-random-plant)))))
+  (let [id-gen (make-id-generator 10000)]
+    (reduce
+     (fn [world plant]
+       (game-world-add-entity
+        world
+        (make-vec2
+         (Math/round (* (rand-gaussian) area))
+         (Math/round (* (rand-gaussian) area)))
+        plant))
+     (hash-map
+      :version 1
+      :players ()
+      :tiles {}
+      :spirits ()
+      :log (make-log)
+      :id-gen id-gen)
+     (repeatedly num-plants (fn [] (make-random-plant (id-gen)))))))
 
 (defn game-world-count [game-world]
   (println (str "players: " (count (:players game-world))))
@@ -111,11 +116,52 @@
   (doseq [i (:spirits game-world)]
     (spirit-count i)))
     
-(defn game-world-save [game-world fn]
-  (spit fn game-world))
+(defn game-world-save [game-world filename]
+  (spit filename 
+        (modify :id-gen
+                (fn [id-gen]
+                  (- (id-gen) 1)) ; save the current id
+                game-world)))
 
-(defn game-world-load [fn]
-  (read-string (slurp fn)))
+; add logs to all the things that need them
+(defn game-world-fixup-add-logs [w]
+  (println "fixing world by adding logs")
+  (merge
+   (modify
+    :players
+    (fn [players]
+      (map
+       (fn [player]
+         (merge player {:log (make-log)}))
+       players))
+    (modify
+     :tiles
+     (fn [tiles]
+       (map
+        (fn [tile]
+          (modify
+           :entities
+           (fn [plants]
+             (map
+              (fn [plant]
+                (merge plant {:log (make-log)}))
+              plants))
+           tile))
+        tiles))
+     w))
+    {:log (make-log) :id-gen 10000}))
+
+(defn game-world-load [filename]
+  (let [w (read-string (slurp filename))
+        v (:version w)]
+    (println (str "loading world version " v))
+    (modify
+     :id-gen
+     (fn [id]
+       (make-id-generator id)) ; convert the id into the function
+     (cond
+      (< v 1) (game-world-fixup-add-logs w)
+      :else w))))
 
 (defn game-world-print [game-world]
   (doseq [tile (:tiles game-world)]
@@ -163,6 +209,39 @@
        spirit r))
    false
    (:spirits game-world)))
+
+(defn game-world-find-player-id [game-world name]
+  (reduce
+   (fn [r player]
+     (if (and (not r) (= name (:name player)))
+       (:id player) r))
+   false
+   (:players game-world)))
+
+(defn game-world-find-player [game-world id]
+  (reduce
+   (fn [r player]
+     (if (and (not r) (= id (:id player)))
+       player r))
+   false
+   (:players game-world)))
+
+(defn game-world-modify-player [game-world id f]
+  (modify :players
+          (fn [players]
+            (map
+             (fn [player]
+               (if (= id (:id player))
+                 (f player)
+                 player))
+             players))
+          game-world))
+
+(defn game-world-add-player [game-world name]
+  (modify :players
+          (fn [players]
+            (cons (make-player ((:id-gen game-world)) name) players))
+          game-world))
 
 (defn game-world-sync<-fatima [game-world fatima-world]
   (modify :spirits

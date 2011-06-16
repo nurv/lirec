@@ -715,6 +715,16 @@ class FungiWorld extends World
 	{
 		removeChild(MyTextEntry);
 		MyName=name;
+        Server.Request("login/"+name,
+                       this,
+                       function (c,data:Dynamic)
+                       {
+                           trace("logged in");
+                           trace(data);
+                           trace(data.id);
+                           //MyName=data.id;
+                       });
+
 		//WorldClient.GetPlants(cast(WorldPos.x,Int),cast(WorldPos.y,Int));
 	}
 	
