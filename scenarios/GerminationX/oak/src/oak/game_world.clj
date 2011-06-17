@@ -101,7 +101,7 @@
       :players ()
       :tiles {}
       :spirits ()
-      :log (make-log)
+      :log (make-log ())
       :id-gen id-gen)
      (repeatedly num-plants (fn [] (make-random-plant (id-gen)))))))
 
@@ -132,7 +132,7 @@
     (fn [players]
       (map
        (fn [player]
-         (merge player {:log (make-log)}))
+         (merge player {:log (make-log ())}))
        players))
     (modify
      :tiles
@@ -144,12 +144,12 @@
            (fn [plants]
              (map
               (fn [plant]
-                (merge plant {:log (make-log)}))
+                (merge plant {:log (make-log ())}))
               plants))
            tile))
         tiles))
      w))
-    {:log (make-log) :id-gen 10000}))
+    {:version 1 :log (make-log ()) :id-gen 10000}))
 
 (defn game-world-load [filename]
   (let [w (read-string (slurp filename))
@@ -190,8 +190,42 @@
            (fn [key1 key2]
              (compare (get freq key2) (get freq key1))))
           freq)))
-    
-(defn game-world-update [game-world time delta]
+
+(defn game-world-update-global-log [game-world]
+  (modify :log
+          (fn [log]
+            (modify
+             :msgs
+             (fn [msgs]
+               (doall (reduce
+                       (fn [r tile]
+                         (concat r (tile-get-log tile)))
+                       msgs
+                       (:tiles game-world))))
+             log))
+          game-world))
+
+(defn game-world-post-logs-to-players [game-world]
+  (modify
+   :players
+   (fn [players]
+     (map
+      (fn [player]
+        (modify
+         :log
+         (fn [log]
+           (reduce
+            (fn [log msg]
+              (if (= (:to msg) (:id player))
+                (log-add-msg log msg)  
+                log))
+            (make-log ())
+            (:msgs (:log game-world))))
+         player))
+      players))
+   game-world))
+ 
+(defn game-world-update-tiles [game-world time delta]
 ;  (game-world-count game-world)
   (let [rules (load-companion-rules "rules.txt")]
     (modify :tiles
@@ -201,7 +235,12 @@
                         (tile-update tile time delta rules))
                       tiles)))
             game-world)))
-  
+
+(defn game-world-update [game-world time delta]
+  (game-world-post-logs-to-players
+   (game-world-update-global-log
+    (game-world-update-tiles game-world time delta))))
+
 (defn game-world-find-spirit [game-world name]
   (reduce
    (fn [r spirit]
@@ -225,6 +264,9 @@
        player r))
    false
    (:players game-world)))
+
+(defn game-world-id->player-name [game-world id]
+  (:name (game-world-find-player game-world id)))
 
 (defn game-world-modify-player [game-world id f]
   (modify :players

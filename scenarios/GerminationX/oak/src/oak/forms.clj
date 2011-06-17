@@ -28,4 +28,4 @@
 
 (defn make-id-generator [start]
   (let [i (atom start)]
-    (fn [] (swap! i inc))))
+    (fn [] (println i) (swap! i inc))))

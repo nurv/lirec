@@ -94,3 +94,15 @@
                                 (not (= (:state e) 'decayed)))
                               entities)))))
             (modify :season (fn [s] season) tile))))
+
+(defn tile-get-log [tile]
+  ;(println "-------------")
+  (reduce
+   (fn [r e]
+     ;(when (> (count (:msgs (:log e))) 0)
+     ;  (println (count (:msgs (:log e)))))
+     (concat r (:msgs (:log e))))
+   ()
+   (:entities tile)))
+  
+  

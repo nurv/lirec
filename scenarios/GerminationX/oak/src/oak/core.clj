@@ -45,8 +45,8 @@
        "data/characters/minds/Actions.xml"
        (list))))
 
-(def my-game-world (ref (game-world-load state-filename)))
-;(def my-game-world (ref (make-game-world 300 1)))
+;(def my-game-world (ref (game-world-load state-filename)))
+(def my-game-world (ref (make-game-world 300 1)))
 (game-world-save (deref my-game-world) "test.txt")
 
 (append-spit log-filename (str (str (Date.)) " server started\n"))
@@ -97,19 +97,36 @@
            (json/encode-to-str tile)
            (json/encode-to-str '()))))
 
-  (GET "/make-plant/:tilex/:tiley/:posx/:posy/:type/:owner/:size/:iefix"
-       [tilex tiley posx posy type owner size iefix]
+  (GET "/get-msgs/:id/:iefix" [id iefix]
+       (let [id (parse-number id)]
+         (if (< id 1)
+           (json/encode-to-str (:msgs (:log (deref my-game-world))))
+           (do
+             (let [player (game-world-find-player
+                           (deref my-game-world) id)]
+               (println player)
+               (if player
+                 (json/encode-to-str (:msgs (:log player)))
+                 (json/encode-to-str {:error (str "no player " id " found")})))))))
+           
+  (GET "/make-plant/:tilex/:tiley/:posx/:posy/:type/:owner-id/:size/:iefix"
+       [tilex tiley posx posy type owner-id size iefix]
+       (println (str "owner = " owner-id))
        (append-spit
         log-filename
         (str
-         (str (Date.)) " " owner " has created a " type " at tile "
+         (str (Date.)) " " (game-world-id->player-name (deref my-game-world) owner-id) " has created a " type " at tile "
          tilex "," tiley " position " posx "," posy "\n"))
        (dosync
         (ref-set my-game-world
                  (game-world-add-entity
                   (deref my-game-world)
                   (make-vec2 (parse-number tilex) (parse-number tiley))
-                  (make-plant (make-vec2 (parse-number posx) (parse-number posy)) type owner size))))
+                  (make-plant
+                   ((:id-gen (deref my-game-world)))
+                   (make-vec2 (parse-number posx)
+                              (parse-number posy))
+                   type (parse-number owner-id) size))))
        (game-world-save (deref my-game-world) state-filename)
        ;(println (deref my-game-world))
        (json/encode-to-str '("ok")))

@@ -55,7 +55,7 @@
    (= layer "shrub") "ShrubSpirit"
    :else "UnknownSpirit"))
 
-(defn make-plant [id pos type owner size]
+(defn make-plant [id pos type owner-id size]
   (hash-map
    :version 1
    :id id
@@ -63,17 +63,18 @@
    :type type
    :layer (plant-type->layer type)
    :state 'grow-a
-   :picked-by '()
-   :owner owner
+   :picked-by-ids '()
+   :owner-id owner-id
    :size size
    :timer 0
    :tick (+ (/ season-length 50) (Math/floor (rand 10)))
    :health start-health
    :fruit false
-   :log (make-log)))
+   :log (make-log
+         (list (make-msg id owner-id 'i-have-been-created ())))))
 
 (defn plant-count [plant]
-  (println (str "picked-by: " (count (:picked-by plant)))))
+  (println (str "picked-by: " (count (:picked-by-ids plant)))))
 
 
 (defn make-random-plant [id]
@@ -82,7 +83,7 @@
      id
      (make-vec2 (Math/floor (rand 15)) (Math/floor (rand 15)))
      type
-     (layer->spirit-name (plant-type->layer type))
+     -1
      (Math/round (+ 1 (rand 10))))))
 
 ; the plant state machine, advance state, based on health
@@ -123,7 +124,42 @@
 (defn get-relationship [from to rules]
   (nth (nth rules (plant-type->id from))
        (plant-type->id to)))
-       
+
+(defn plant-add-to-log [plant log type]
+  (make-log
+   (list
+    (make-msg
+     (:id plant)
+     (:owner-id plant)
+     type
+     ()))))
+
+(defn plant-update-log [plant old-state]
+  (if (not (= (:state plant) old-state))
+    (modify
+     :log
+     (fn [log]
+       (cond
+        (and (not (= old-state 'ill-c))
+             (= (:state plant) 'ill-c))
+        (plant-add-to-log plant log 'i-am-ill)
+        
+        (and (= old-state 'decay-c)
+             (= (:state plant) 'grow-a))
+        (plant-add-to-log plant log 'i-am-regrowing)
+        
+        (and (= old-state 'ill-c)
+             (not (= (:state plant) 'ill-c)))
+        (plant-add-to-log plant log 'i-have-recovered)
+        
+        (and (not (= old-state 'fruit-a))
+             (= (:state plant) 'fruit-a))
+        (plant-add-to-log plant log 'i-have-fruited)
+
+        :else (make-log ())))
+     plant)
+    plant))
+
 (defn plant-update [plant time delta neighbours rules season]
 ;  (println (str season " " (:state plant) " " (:health plant) " " (:timer plant) " " (:tick plant)))
   (modify
@@ -147,15 +183,17 @@
      (fn [timer]
        (+ timer delta))
      (if (> (:timer plant) (:tick plant))
-       (modify
-        :state
-        (fn [state] (adv-state state
-                               (:health plant)
-                               season
-                               ; for the moment assume cover plants
-                               ; are annuals
-                               (= (:layer plant) "cover")))
-        (modify
-         :timer (fn [t] 0) plant))
-       plant)))))
+       (let [old-state (:state plant)]
+         (plant-update-log
+          (modify
+           :state
+           (fn [state] (adv-state state
+                                  (:health plant)
+                                  season
+                                 ; for the moment assume cover plants
+                                 ; are annuals
+                                  (= (:layer plant) "cover")))
+           (modify
+            :timer (fn [t] 0) plant)) old-state))
+         plant)))))
 

@@ -501,6 +501,7 @@ class FungiWorld extends World
 	public var Plants:Array<Plant>;
     public var TheCritters:Critters;
 	var MyName:String;
+    var MyID:Int;
     var Frame:Int;
     var TickTime:Int;
     var PerceiveTime:Int;
@@ -528,6 +529,7 @@ class FungiWorld extends World
 		MyRndGen = new RndGen();
         Server = new ServerConnection();
         MyName = "";
+        MyID = -1;
 
         var arrow1 = new SpriteEntity(this,new Vec3(7,-2,1), Resources.Get("arr3"));
         arrow1.Spr.MouseUp(this,function(c) { c.UpdateWorld(c.WorldPos.Add(new Vec3(0,-1,0))); });
@@ -713,16 +715,15 @@ class FungiWorld extends World
 	
 	public function NameCallback(name)
 	{
-		removeChild(MyTextEntry);
-		MyName=name;
         Server.Request("login/"+name,
                        this,
                        function (c,data:Dynamic)
                        {
                            trace("logged in");
                            trace(data);
-                           trace(data.id);
-                           //MyName=data.id;
+                           c.MyID=data;
+		                   c.MyName=name;
+		                   c.removeChild(c.MyTextEntry);
                        });
 
 		//WorldClient.GetPlants(cast(WorldPos.x,Int),cast(WorldPos.y,Int));
@@ -778,7 +779,7 @@ class FungiWorld extends World
                                          Std.string(cast(pos.x,Int))+"/"+
                                          Std.string(cast(pos.y,Int))+"/"+
                                          type+"/"+
-                                         MyName+"/"+
+                                         MyID+"/"+
                                          Math.round(size*100),
             this, function (c,data) {});       
         }

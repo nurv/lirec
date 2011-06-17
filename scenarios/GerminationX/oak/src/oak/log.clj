@@ -20,19 +20,20 @@
 (def msg-ill 2)
 
 (defn make-msg [from to msg-id subjects]
- (hash-map
-  :from from
-  :to to
-  :msg-id msg-id
-  :subjects subjects))
+  (hash-map
+   :time (.getTime (java.util.Date.))
+   :from from
+   :to to
+   :msg-id msg-id
+   :subjects subjects))
 
-(defn make-log []
- (hash-map
-  :msgs ()))
+(defn make-log [msgs]
+  (hash-map
+  :msgs msgs))
 
-(defn log-add-message [log msg]
+(defn log-add-msg [log msg]
   (modify
    :msgs
    (fn [msgs]
-     (max-cons msg :msgs 10))
+     (max-cons msg msgs 10))
    log))
