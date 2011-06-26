@@ -19,7 +19,8 @@
    oak.vec2
    oak.remote-agent
    oak.forms
-   oak.tile)
+   oak.tile
+   oak.log)
   (:require
    clojure.contrib.math))
 
@@ -57,7 +58,8 @@
    :emotions (emotion-map)
    :emotionalloc (make-vec2 5 5)
    :fatactions '()
-   :fatemotions '()))
+   :fatemotions '()
+   :log (make-log ())))
 
 (defn spirit-count [spirit]
   (println (str "emotions: " (count (:emotions spirit))))
@@ -72,72 +74,78 @@
                               (- (.length name) 1)))
     false))
 
+(defn spirit-update-emotionalloc [spirit remote-agent tile]
+  (modify
+   :emotionalloc ; get the object causing the highest emotion
+   (fn [emotionalloc]
+     (first
+      (reduce
+       (fn [r emotion]
+         (let [e (:attrs emotion)]
+           (if e
+             (let [intensity (parse-float (:intensity e))]
+               (if (> intensity (second r))
+                 (let [id (fatima-name->id (:direction e))]
+                   (if id
+                     (let [obj (tile-find-entity tile id)]
+                       (if obj
+                         (list (:pos obj) intensity)
+                         r))
+                     r))
+                 r))
+             r)))
+       (list emotionalloc 0)
+       (:content (remote-agent-emotions remote-agent)))))
+   spirit))
+
+(defn spirit-update-emotions [spirit remote-agent]
+  (modify
+   :emotions ; process emotions into a useable form
+   (fn [emotions]
+     (reduce
+      (fn [r emotion]
+        (let [e (:attrs emotion)]
+          (if e
+            (merge r {(:type e)
+                      (+ (parse-float (:intensity e))
+                         (get r (:type e)))})
+            r)))
+      (emotion-map)
+      (:content (remote-agent-emotions remote-agent))))
+   spirit))
+
+(defn spirit-update-fatdebug [spirit remote-agent]
+  (modify
+   :fatemotions ; copy the fatima stuff for debug output
+   (fn [emotions]
+     (remote-agent-emotions remote-agent))
+   (modify
+    :fatactions
+    (fn [actions]
+      (remote-agent-done remote-agent))
+    spirit)))
+
+(defn spirit-update-position [spirit tile]
+  ; if we have some actions
+  (if (not (empty? (:fatactions spirit)))
+    (let [latest-action (first (:fatactions spirit))
+          latest-subject (nth (.split (:msg latest-action) " ") 1)
+          id (fatima-name->id latest-subject)]
+      (if id
+        (let [e (tile-find-entity tile id)]
+          (if e
+            (modify :pos (fn [pos] (:pos e)) spirit)
+            spirit))
+        spirit))
+    spirit))
+
 (defn spirit-update [spirit remote-agent tile]
-
-;  (println remote-agent)
-
-  ; for the moment take a straight copy of actions and emotions
-  (let [spirit
-        (modify
-         :emotionalloc ; get the object causing the highest emotion
-         (fn [emotionalloc]
-           (first
-            (reduce
-             (fn [r emotion]
-               (let [e (:attrs emotion)]
-                 (if e
-                   (let [intensity (parse-float (:intensity e))]
-                     (if (> intensity (second r))
-                       (let [id (fatima-name->id (:direction e))]
-                         (if id
-                           (let [obj (tile-find-entity tile id)]
-                             (if obj
-                               (list (:pos obj) intensity)
-                               r))
-                           r))
-                       r))
-                   r)))
-             (list emotionalloc 0)
-             (:content (remote-agent-emotions remote-agent)))))
-         (modify
-          :emotions ; process emotions into a useable form
-          (fn [emotions]
-            (reduce
-             (fn [r emotion]
-               (let [e (:attrs emotion)]
-                 (if e
-                   (merge r {(:type e)
-                             (+ (parse-float (:intensity e))
-                                (get r (:type e)))})
-                   r)))
-             (emotion-map)
-             (:content (remote-agent-emotions remote-agent))))
-          (modify
-           :fatemotions ; copy the fatima stuff for debug output
-           (fn [emotions]
-             ;(println emotions)
-             (remote-agent-emotions remote-agent))
-           (modify
-            :fatactions
-            (fn [actions]
-              (remote-agent-done remote-agent))
-            spirit))))]
-    
-;    (println (:emotionalloc spirit))
-    
-    ; if we have some actions
-    (if (not (empty? (:fatactions spirit)))
-      (let [latest-action (first (:fatactions spirit))
-            latest-subject (nth (.split (:msg latest-action) " ") 1)
-            id (fatima-name->id latest-subject)]
-        (if id
-          (let [e (tile-find-entity tile id)]
-            (if e
-              (modify :pos (fn [pos] (:pos e)) spirit)
-              spirit))
-          spirit))
-      spirit)))
-          
+  (spirit-update-position
+   (spirit-update-emotionalloc
+    (spirit-update-emotions
+     (spirit-update-fatdebug spirit remote-agent)
+     remote-agent)
+    remote-agent tile) tile))
           
 (comment println
          (map

@@ -32,23 +32,14 @@
    FAtiMA.Core.wellFormedNames.Unifier
    FAtiMA.Core.util.parsers.ActionsLoaderHandler
    Language.LanguageEngine))
-  
-(defstruct world
-  :objects
-  :agents 
-  :scenery
-  :actions
-  :agent-language
-  :server-socket
-  :time)
 
-(def world-objects (accessor world :objects))
-(def world-agents (accessor world :agents))
-(def world-scenery (accessor world :scenery))
-(def world-actions (accessor world :actions))
-(def world-agent-language (accessor world :agent-language))
-(def world-ssc (accessor world :server-socket))
-(def world-time (accessor world :time))
+(defn world-objects [world] (:objects world))
+(defn world-agents [world] (:agents world))
+(defn world-scenery [world] (:scenery world))
+(defn world-actions [world] (:actions world))
+(defn world-agent-language [world] (:agent-language world))
+(defn world-ssc [world] (:server-socket world))
+(defn world-time [world] (:time world))
 
 (defn world-add-agent [world agent]
   (merge world {:agents (cons agent (world-agents world))})) 
@@ -62,17 +53,17 @@
 (defn make-world [port agent-language-file actions-file objects]
 ; operators removed in fatima modular 
   (comment .getOperators (load-operators actions-file, "[SELF]"))
-  (struct world
-          (load-objects objects)
-          []
-          "garden"
-          () ; <----
-          (new LanguageEngine "name" "M" "Victim" (new File agent-language-file))
-          (let [ssc (ServerSocketChannel/open)]
-            (.configureBlocking ssc false)
-            (.bind (.socket ssc) (new InetSocketAddress port))
-            ssc)
-          0))
+  (hash-map 
+   :objects (load-objects objects)
+   :agents []
+   :scenary "garden"
+   :actions () ; <----
+   :agent-language (new LanguageEngine "name" "M" "Victim" (new File agent-language-file))
+   :server-socket (let [ssc (ServerSocketChannel/open)]
+                    (.configureBlocking ssc false)
+                    (.bind (.socket ssc) (new InetSocketAddress port))
+                    ssc)
+   :time 0))
 
 ; return in the format needed by FAtiMA: token:value token:value ...
 (defn hash-map-to-string [m]
@@ -273,21 +264,20 @@
            (world-agents world))))
   (merge world
          {:agents
-          (doall (map
-                  (fn [agent]
-                    (world-update-agent world agent))
-                  (world-agents world)))}))
+          (map
+           (fn [agent]
+             (world-update-agent world agent))
+           (world-agents world))}))
 
 (def object-max-age 100)
 
 (defn world-remove-old-objects [world time]
   (merge world
          {:objects
-          (doall
-           (filter
-            (fn [obj]
-              (< (- time (get obj "time")) object-max-age))
-            (world-objects world)))}))
+          (filter
+           (fn [obj]
+             (< (- time (get obj "time")) object-max-age))
+           (world-objects world))}))
 
 (defn world-run [world time]
   (world-update-agents

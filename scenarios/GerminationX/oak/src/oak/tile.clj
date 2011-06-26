@@ -81,18 +81,18 @@
                 :else 'winter)]
     (modify :entities
             (fn [entities]
-              (doall (map
-                      (fn [e]
-                        ;; todo dispatch on entity type
-                        (plant-update
-                         e time delta
-                         (tile-get-neighbours tile (:pos e))
-                         rules
-                         season))
-                      (doall (filter
-                              (fn [e]
-                                (not (= (:state e) 'decayed)))
-                              entities)))))
+              (map
+               (fn [e]
+                 ;; todo dispatch on entity type
+                 (plant-update
+                  e time delta
+                  (tile-get-neighbours tile (:pos e))
+                  rules
+                  season))
+               (filter
+                (fn [e]
+                  (not (= (:state e) 'decayed)))
+                entities)))
             (modify :season (fn [s] season) tile))))
 
 (defn tile-get-log [tile]

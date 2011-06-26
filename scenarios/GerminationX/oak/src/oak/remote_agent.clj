@@ -24,32 +24,18 @@
    java.io.BufferedReader
    java.io.InputStreamReader))
 
-(defstruct remote-agent
-  :properties
-  :name
-  :role
-  :display-name
-  :socket
-  :relations
-  :emotions
-  :said
-  :done
-  :random
-  :reader
-  :tile)
-
-(def remote-agent-properties (accessor remote-agent :properties))
-(def remote-agent-name (accessor remote-agent :name))
-(def remote-agent-role (accessor remote-agent :role))
-(def remote-agent-display-name (accessor remote-agent :display-name))
-(def remote-agent-socket (accessor remote-agent :socket))
-(def remote-agent-relations (accessor remote-agent :relations))
-(def remote-agent-emotions (accessor remote-agent :emotions))
-(def remote-agent-said (accessor remote-agent :said))
-(def remote-agent-done (accessor remote-agent :done))
-(def remote-agent-random (accessor remote-agent :random))
-(def remote-agent-reader (accessor remote-agent :reader))
-(def remote-agent-tile (accessor remote-agent :tile))
+(defn remote-agent-properties [remote-agent] (:properties remote-agent))
+(defn remote-agent-name [remote-agent] (:name remote-agent))
+(defn remote-agent-role [remote-agent] (:role remote-agent))
+(defn remote-agent-display-name [remote-agent] (:display-name remote-agent))
+(defn remote-agent-socket [remote-agent] (:socket remote-agent))
+(defn remote-agent-relations [remote-agent] (:relations remote-agent))
+(defn remote-agent-emotions [remote-agent] (:emotions remote-agent))
+(defn remote-agent-said [remote-agent] (:said remote-agent))
+(defn remote-agent-done [remote-agent] (:done remote-agent))
+(defn remote-agent-random [remote-agent] (:random remote-agent))
+(defn remote-agent-reader [remote-agent] (:reader remote-agent))
+(defn remote-agent-tile [remote-agent] (:tile remote-agent))
 
 (defn remote-agent-add-property [agent property]
   (merge agent {:properties (cons property (remote-agent-properties agent))})) 
@@ -57,29 +43,28 @@
 (defn make-remote-agent [socket world]
   ;(.configureBlocking socket false)
   ;(. (AutobiographicalMemory/GetInstance) setSelf name)
+
   (let [reader (BufferedReader.
                 (InputStreamReader.
                  (.getInputStream (.socket socket))))
         toks (.split (read-msg socket) " ")]
     (send-msg socket "OK")
-    (struct
-     remote-agent
-     (reduce
-      (fn [r prop]
-        (let [tv (.split prop ":")]
-          (assoc r (first tv) (second tv))))
-      {}
-      (nthnext toks 3))
-     (nth toks 0)
-     (nth toks 1)
-     (nth toks 2)
-     socket
-     "none yet"
-     "none yet"
-     '()
-     '()
-     (new java.util.Random)
-     reader
-     (make-vec2 0 0)
-     )))
+    (hash-map
+     :properties (reduce
+                  (fn [r prop]
+                    (let [tv (.split prop ":")]
+                      (assoc r (first tv) (second tv))))
+                  {}
+                  (nthnext toks 3))
+     :name (nth toks 0)
+     :role (nth toks 1)
+     :display-name (nth toks 2)
+     :socket socket
+     :relations "none yet"
+     :emotions "none yet"
+     :said '()
+     :done '()
+     :random (new java.util.Random)
+     :reader reader
+     :tile (make-vec2 0 0))))
 

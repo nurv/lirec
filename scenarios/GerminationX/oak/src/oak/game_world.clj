@@ -197,11 +197,11 @@
             (modify
              :msgs
              (fn [msgs]
-               (doall (reduce
-                       (fn [r tile]
-                         (concat r (tile-get-log tile)))
-                       msgs
-                       (:tiles game-world))))
+               (reduce
+                (fn [r tile]
+                  (concat r (tile-get-log tile)))
+                msgs
+                (:tiles game-world)))
              log))
           game-world))
 
@@ -230,10 +230,10 @@
   (let [rules (load-companion-rules "rules.txt")]
     (modify :tiles
             (fn [tiles]
-              (doall (map
-                      (fn [tile]
-                        (tile-update tile time delta rules))
-                      tiles)))
+              (map
+               (fn [tile]
+                 (tile-update tile time delta rules))
+               tiles))
             game-world)))
 
 (defn game-world-update [game-world time delta]

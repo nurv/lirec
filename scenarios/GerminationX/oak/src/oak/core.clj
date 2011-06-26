@@ -57,17 +57,19 @@
   ;(game-world-print (deref my-game-world))
   (let [time (/ (.getTime (java.util.Date.)) 1000.0)]
     (dosync (ref-set fatima-world
-                     (world-run
-                      (game-world-sync->fatima
-                       (deref fatima-world)
-                       (deref my-game-world)
-                       time) time)))
+                     (doall-recur
+                      (world-run
+                       (game-world-sync->fatima
+                        (deref fatima-world)
+                        (deref my-game-world)
+                        time) time))))
     (dosync (ref-set my-game-world
-                     (game-world-update
-                      (game-world-sync<-fatima
-                       (deref my-game-world)
-                       (deref fatima-world))
-                      time 1))))
+                     (doall-recur
+                      (game-world-update
+                       (game-world-sync<-fatima
+                        (deref my-game-world)
+                        (deref fatima-world))
+                       time 1)))))
   (recur))
 
 ;(tick)
@@ -104,14 +106,12 @@
            (do
              (let [player (game-world-find-player
                            (deref my-game-world) id)]
-               (println player)
                (if player
                  (json/encode-to-str (:msgs (:log player)))
                  (json/encode-to-str {:error (str "no player " id " found")})))))))
            
   (GET "/make-plant/:tilex/:tiley/:posx/:posy/:type/:owner-id/:size/:iefix"
        [tilex tiley posx posy type owner-id size iefix]
-       (println (str "owner = " owner-id))
        (append-spit
         log-filename
         (str

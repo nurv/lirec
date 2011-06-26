@@ -28,4 +28,17 @@
 
 (defn make-id-generator [start]
   (let [i (atom start)]
-    (fn [] (println i) (swap! i inc))))
+    (fn [] (swap! i inc))))
+
+; force all sequences and maps to un-lazy
+(defn doall-recur [s]
+  (cond
+   (map? s) (reduce
+             (fn [r i]
+               (merge {(first i)
+                       (doall-recur (second i))} r))
+             {} s)
+   (seq? s) (doall
+             (map doall-recur
+                  s))
+   :else s))

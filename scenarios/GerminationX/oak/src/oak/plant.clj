@@ -46,6 +46,14 @@
    (= type "plant-001") 3 ; temp dandelion
    (= type "clover") 4))
 
+(defn plant-type-id->name [type]
+  (cond
+   (= type 0) "cherry"
+   (= type 1) "apple"
+   (= type 2) "aronia"
+   (= type 3) "dandelion"
+   (= type 4) "clover"))
+
 (defn layer->spirit-name [layer]
   (cond
    (= layer "canopy") "CanopySpirit"
@@ -62,7 +70,7 @@
    :pos pos
    :type type
    :layer (plant-type->layer type)
-   :state 'grow-a
+   :state 'planted
    :picked-by-ids '()
    :owner-id owner-id
    :size size
@@ -70,8 +78,7 @@
    :tick (+ (/ season-length 50) (Math/floor (rand 10)))
    :health start-health
    :fruit false
-   :log (make-log
-         (list (make-msg id owner-id 'i-have-been-created ())))))
+   :log (make-log ())))
 
 (defn plant-count [plant]
   (println (str "picked-by: " (count (:picked-by-ids plant)))))
@@ -89,6 +96,7 @@
 ; the plant state machine, advance state, based on health
 (defn adv-state [state health season annual]
   (cond
+   (= state 'planted) 'grow-a
    (= state 'grow-a) (cond (> health min-health) 'grow-b :else (rand-nth (list 'grow-a 'grow-b)))
    (= state 'grow-b) (cond (> health min-health) 'grow-c :else (rand-nth (list 'grow-b 'grow-c)))
    (= state 'grow-c) (cond (> health min-health) 'grown :else (rand-nth (list 'grow-c 'grown)))
@@ -140,6 +148,10 @@
      :log
      (fn [log]
        (cond
+        (and (= old-state 'planted)
+             (= (:state plant) 'grow-a))
+        (plant-add-to-log plant log 'i-have-been-planted)
+
         (and (not (= old-state 'ill-c))
              (= (:state plant) 'ill-c))
         (plant-add-to-log plant log 'i-am-ill)
@@ -158,10 +170,9 @@
 
         :else (make-log ())))
      plant)
-    plant))
+    (modify :log (fn [log] (make-log ())) plant)))
 
-(defn plant-update [plant time delta neighbours rules season]
-;  (println (str season " " (:state plant) " " (:health plant) " " (:timer plant) " " (:tick plant)))
+(defn plant-update-health [plant neighbours rules]
   (modify
    :health
    (fn [health]
@@ -173,27 +184,60 @@
                                     (:type plant) (:type n) rules)))
                             (if (empty? neighbours) -1 1)
                             neighbours)))))
-   (modify
-    :fruit
-    (fn [f]
-      (if (and (not f) (= (:state plant) 'fruit-c))
-        true f))
-    (modify
-     :timer
-     (fn [timer]
-       (+ timer delta))
-     (if (> (:timer plant) (:tick plant))
-       (let [old-state (:state plant)]
-         (plant-update-log
-          (modify
-           :state
-           (fn [state] (adv-state state
-                                  (:health plant)
-                                  season
-                                 ; for the moment assume cover plants
-                                 ; are annuals
-                                  (= (:layer plant) "cover")))
-           (modify
-            :timer (fn [t] 0) plant)) old-state))
-         plant)))))
+   plant))
 
+(defn plant-update-fruit [plant]
+  (modify
+   :fruit
+   (fn [f]
+     (if (and (not f) (= (:state plant) 'fruit-c))
+       true f))
+   plant))
+
+(defn plant-update-state [plant time delta season]
+  (modify
+   :timer
+   (fn [timer]
+     (+ timer delta))
+   (if (> (:timer plant) (:tick plant))
+     (modify
+      :state
+      (fn [state] (adv-state state
+                             (:health plant)
+                             season
+                             ; for the moment assume cover plants
+                             ; are annuals
+                             (= (:layer plant) "cover")))
+      (modify
+       :timer (fn [t] 0) plant))
+     plant)))
+
+(defn plant-update [plant time delta neighbours rules season]
+  ;(println (str season " " (:state plant) " " (:health plant) " " (:timer plant) " " (:tick plant)))
+  (let [old-state (:state plant)]
+    (plant-update-log
+     (plant-update-health
+      (plant-update-fruit
+       (plant-update-state plant time delta season))
+      neighbours rules)
+     old-state)))
+
+; returns a list containing:
+; { :needed_plants ( type-name1 type-name2 ... )
+;   :harmful_plants ( plant1 plant2 ... ) }
+(defn plant-diagnose [plant neighbours rules]
+  {
+   :harmful_plants
+   (filter
+    (fn [n]
+      (< (get-relationship (:type plant) (:type n) rules) 0))
+    neighbours)
+   :needed_plants
+   (map
+    plant-type-id->name
+    (filter
+     (fn [v]
+       (> v 0))
+     (nth rules (plant-type->id (:type plant)))))
+   })
+       
