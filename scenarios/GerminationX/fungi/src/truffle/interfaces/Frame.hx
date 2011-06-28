@@ -1,4 +1,4 @@
-// t r u f f l e Copyright (C) 2010 FoAM vzw   \_\ __     /\
+// GerminationX Copyright (C) 2010 FoAM vzw    \_\ __     /\
 //                                          /\    /_/    / /  
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -14,20 +14,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package truffle.interfaces;
+import truffle.Truffle;
 
-import truffle.Entity;
-import truffle.Vec2;
-
-interface World  
+interface Frame
 {
-    public function Add(e:Entity) : Void;
-    public function Remove(e:Entity) : Void;
-    public function Get(type:String, p:Vec2) : Dynamic;
-    public function AddSprite(s:Dynamic) : Void;
-    public function RemoveSprite(s:Dynamic) : Void;
-	public function MouseDown(c:Dynamic, f:Dynamic -> Void=null) : Void;
-    public function SortScene() : Void;
-    public function Update(time:Int) : Void;
-    public function Handle(event:Int) : Void;
-    public function SetCurrentTilePos(s:Vec2) : Void;
+    public function Hide(s:Bool) : Void;
+    public function UpdatePosition(x:Int,y:Int) : Void;
+    public function UpdateText(text:String) : Void;
 }

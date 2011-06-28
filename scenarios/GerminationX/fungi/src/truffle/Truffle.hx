@@ -25,6 +25,7 @@ import truffle.flash.FlashWorld;
 import truffle.flash.FlashServerConnection;
 import truffle.flash.FlashTextEntry;
 import truffle.flash.FlashParticles;
+import truffle.flash.FlashFrame;
 
 class SoundPlayer extends FlashSoundPlayer {}
 class TextureDesc extends FlashTextureDesc {}
@@ -34,6 +35,7 @@ class World extends FlashWorld {}
 class ServerConnection extends FlashServerConnection {}
 class TextEntry extends FlashTextEntry{}
 class Particles extends FlashParticles {}
+class Frame extends FlashFrame {}
 
 import truffle.interfaces.Key;
 import flash.ui.Keyboard;

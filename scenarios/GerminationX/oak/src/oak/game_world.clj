@@ -101,7 +101,7 @@
       :players ()
       :tiles {}
       :spirits ()
-      :log (make-log ())
+      :log (make-log 100)
       :id-gen id-gen)
      (repeatedly num-plants (fn [] (make-random-plant (id-gen)))))))
 
@@ -132,7 +132,7 @@
     (fn [players]
       (map
        (fn [player]
-         (merge player {:log (make-log ())}))
+         (merge player {:log (make-log 10)}))
        players))
     (modify
      :tiles
@@ -144,12 +144,12 @@
            (fn [plants]
              (map
               (fn [plant]
-                (merge plant {:log (make-log ())}))
+                (merge plant {:log (make-log 10)}))
               plants))
            tile))
         tiles))
      w))
-    {:version 1 :log (make-log ()) :id-gen 10000}))
+    {:version 1 :log (make-log 100) :id-gen 10000}))
 
 (defn game-world-load [filename]
   (let [w (read-string (slurp filename))
@@ -191,21 +191,14 @@
              (compare (get freq key2) (get freq key1))))
           freq)))
 
-(defn game-world-update-global-log [game-world]
-  (modify :log
-          (fn [log]
-            (modify
-             :msgs
-             (fn [msgs]
-               (reduce
-                (fn [r tile]
-                  (concat r (tile-get-log tile)))
-                msgs
-                (:tiles game-world)))
-             log))
-          game-world))
+(defn game-world-collect-all-msgs [game-world]
+  (reduce
+   (fn [r tile]
+     (concat r (tile-get-log tile)))
+   ()
+   (:tiles game-world)))
 
-(defn game-world-post-logs-to-players [game-world]
+(defn game-world-post-logs-to-players [game-world msgs]
   (modify
    :players
    (fn [players]
@@ -217,10 +210,10 @@
            (reduce
             (fn [log msg]
               (if (= (:to msg) (:id player))
-                (log-add-msg log msg)  
+                (log-add-msg log msg)
                 log))
-            (make-log ())
-            (:msgs (:log game-world))))
+            log
+            msgs))
          player))
       players))
    game-world))
@@ -237,9 +230,10 @@
             game-world)))
 
 (defn game-world-update [game-world time delta]
-  (game-world-post-logs-to-players
-   (game-world-update-global-log
-    (game-world-update-tiles game-world time delta))))
+  (let [updated (game-world-update-tiles game-world time delta)]
+    (game-world-post-logs-to-players
+     updated
+     (game-world-collect-all-msgs updated))))
 
 (defn game-world-find-spirit [game-world name]
   (reduce

@@ -96,6 +96,33 @@
                       <bitmap id="ActionDropLeavesTex" import="textures/action-drop-leaves.png"/>                     
                       <bitmap id="SpiralTex" import="textures/spiral.png"/>                     
 
+                      <bitmap id="GUIN001Tex" import="textures/gui-n-001.png"/>                     
+                      <bitmap id="GUIN002Tex" import="textures/gui-n-002.png"/>                     
+                      <bitmap id="GUIN003Tex" import="textures/gui-n-003.png"/>                     
+                      <bitmap id="GUINE001Tex" import="textures/gui-ne-001.png"/>                     
+                      <bitmap id="GUINE002Tex" import="textures/gui-ne-002.png"/>                     
+                      <bitmap id="GUIE001Tex" import="textures/gui-e-001.png"/>                     
+                      <bitmap id="GUIE002Tex" import="textures/gui-e-002.png"/>                     
+                      <bitmap id="GUIE003Tex" import="textures/gui-e-003.png"/>                     
+                      <bitmap id="GUIE004Tex" import="textures/gui-e-004.png"/>                     
+                      <bitmap id="GUISE001Tex" import="textures/gui-se-001.png"/>                     
+                      <bitmap id="GUISE002Tex" import="textures/gui-se-002.png"/>                     
+                      <bitmap id="GUISE003Tex" import="textures/gui-se-003.png"/>                     
+                      <bitmap id="GUIS001Tex" import="textures/gui-s-001.png"/>                     
+                      <bitmap id="GUIS002Tex" import="textures/gui-s-002.png"/>                     
+                      <bitmap id="GUIS003Tex" import="textures/gui-s-003.png"/>                     
+                      <bitmap id="GUIS004Tex" import="textures/gui-s-004.png"/>                     
+                      <bitmap id="GUISW001Tex" import="textures/gui-sw-001.png"/>                     
+                      <bitmap id="GUISW002Tex" import="textures/gui-sw-002.png"/>                     
+                      <bitmap id="GUISW003Tex" import="textures/gui-sw-003.png"/>                     
+                      <bitmap id="GUIW001Tex" import="textures/gui-w-001.png"/>                     
+                      <bitmap id="GUIW002Tex" import="textures/gui-w-001.png"/>                     
+                      <bitmap id="GUIW003Tex" import="textures/gui-w-001.png"/>                     
+                      <bitmap id="GUIW004Tex" import="textures/gui-w-001.png"/>                     
+                      <bitmap id="GUINW001Tex" import="textures/gui-nw-001.png"/>                     
+                      <bitmap id="GUINW002Tex" import="textures/gui-nw-002.png"/>                     
+                      <bitmap id="GUINW003Tex" import="textures/gui-nw-003.png"/>                     
+
                 </library>
         </frame>
 </movie>

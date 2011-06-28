@@ -59,7 +59,7 @@
    :emotionalloc (make-vec2 5 5)
    :fatactions '()
    :fatemotions '()
-   :log (make-log ())))
+   :log (make-log 10)))
 
 (defn spirit-count [spirit]
   (println (str "emotions: " (count (:emotions spirit))))

@@ -27,13 +27,14 @@
    :msg-id msg-id
    :subjects subjects))
 
-(defn make-log [msgs]
+(defn make-log [max]
   (hash-map
-  :msgs msgs))
+   :msgs ()
+   :max max))
 
 (defn log-add-msg [log msg]
   (modify
    :msgs
    (fn [msgs]
-     (max-cons msg msgs 10))
+     (max-cons msg msgs (:max log)))
    log))

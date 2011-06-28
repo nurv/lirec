@@ -23,8 +23,7 @@ import truffle.SpriteEntity;
 import truffle.Circle;
 
 // todo: remove this
-import flash.display.Graphics;
-import flash.display.Shape;
+import flash.external.ExternalInterface;
 
 class FungiWorld extends World 
 {
@@ -36,18 +35,20 @@ class FungiWorld extends World
 	public var MyTextEntry:TextEntry;
 	public var Plants:Array<Plant>;
     public var TheCritters:Critters;
-	var MyName:String;
+	public var MyName:String;
     var MyID:Int;
     var Frame:Int;
     var TickTime:Int;
     var PerceiveTime:Int;
     var Spirits:Array<Spirit>;
     public var Seeds:SeedStore;
-    var Server : ServerConnection;
-    var TileInfo: flash.text.TextField;
+    var Server:ServerConnection;
     var Spiral:Sprite;
     var SpiralScale:Float;
- 
+    var NewsFeed:Feed;
+    public var NumPlants:Int;
+    public var Season:String;
+
 	public function new(w:Int, h:Int) 
 	{
 		super();
@@ -66,6 +67,8 @@ class FungiWorld extends World
         Server = new ServerConnection();
         MyName = "";
         MyID = -1;
+        NumPlants = 0;
+        Season="no season";
 
         var arrow1 = new SpriteEntity(this,new Vec3(7,-2,1), Resources.Get("arr3"));
         arrow1.Spr.MouseUp(this,function(c) { c.UpdateWorld(c.WorldPos.Add(new Vec3(0,-1,0))); });
@@ -87,61 +90,17 @@ class FungiWorld extends World
         arrow4.Spr.MouseOver(this,function(c) { arrow4.Spr.SetScale(new Vec2(1.1,1.1)); arrow4.Spr.Update(0,null); });
         arrow4.Spr.MouseOut(this,function(c) { arrow4.Spr.SetScale(new Vec2(1,1)); arrow4.Spr.Update(0,null); });
 
-        // move this crap out you stupid copy/paste programmer...
-
-        // tile info
-        TileInfo = new flash.text.TextField();
-        TileInfo.text = "Loading...";
-        TileInfo.x=100;
-        TileInfo.y=20;
-        TileInfo.height=10;
-        TileInfo.width=120;
-        TileInfo.background = true;
-        TileInfo.autoSize = flash.text.TextFieldAutoSize.LEFT;
-        TileInfo.border = true;
-        TileInfo.wordWrap = true;
-        var t = new flash.text.TextFormat();
-        t.font = "Verdana"; 
-        t.size = 8;                
-        t.color= 0x000000;           
-        TileInfo.setTextFormat(t);
-        addChild(TileInfo);
-
         // hiscores table
-        var tf = new flash.text.TextField();
-        tf.text = "Loading...";
-        tf.x=100;
-        tf.y=100;
-        tf.height=500;
-        tf.width=250;
-        tf.background = false;
-        tf.autoSize = flash.text.TextFieldAutoSize.LEFT;
-        tf.border = true;
-        tf.wordWrap = true;
-        var t = new flash.text.TextFormat();
-        t.font = "Verdana"; 
-        t.size = 8;                
-        t.color= 0x000000;           
-        tf.setTextFormat(t);
+        var Hiscores = new Frame("Loading...",100,100,250,500);
+        addChild(Hiscores);
+        Hiscores.Hide(true);
 
-        var figures:Shape = new Shape();
-        var BG = figures.graphics;
-        BG.beginFill(0xffffff,0.5);
-        BG.drawRect(tf.x,tf.y,tf.width,tf.height);
-        BG.endFill();
-        figures.visible=false;
-        cast(this,truffle.flash.FlashWorld).addChild(figures);
-
-        addChild(tf);
-        tf.visible=false;
-
-        var hiscores = new Sprite(new Vec2(50,50), Resources.Get(""));
-        AddSprite(hiscores);
-        hiscores.MouseDown(this,function(c)
+        var HiscoresButton = new Sprite(new Vec2(50,50), Resources.Get(""));
+        AddSprite(HiscoresButton);
+        HiscoresButton.MouseDown(this,function(c)
         {
-            tf.visible=!tf.visible;
-            figures.visible=!figures.visible;
-            if (tf.visible)
+            Hiscores.Hide(!Hiscores.IsHidden());
+            if (!Hiscores.IsHidden())
             {
                 cast(c,FungiWorld).Server.Request("hiscores",
                                  c,
@@ -151,19 +110,9 @@ class FungiWorld extends World
                                      for (i in data)
                                      {
                                          text+=i[0]+": "+i[1]+"\n";
+                                         if (i[0]=c.MyName) c.NumPlants=Std.int(i[1]);
                                      }
-                                     tf.text=text;
-
-                                     var t = new flash.text.TextFormat();
-                                     t.font = "Verdana"; 
-                                     t.size = 12;                
-                                     t.color= 0x000000;           
-                                     tf.setTextFormat(t);
-
-                                     BG.clear();
-                                     BG.beginFill(0xffffff,0.5);
-                                     BG.drawRect(tf.x,tf.y,tf.width,tf.height);
-                                     BG.endFill();
+                                     Hiscores.UpdateText(text);
                                  });
                            
             }
@@ -192,7 +141,8 @@ class FungiWorld extends World
 
 		UpdateWorld(new Vec3(0,0,0));
 		
-		MyTextEntry=new TextEntry(300,10,310,30,NameCallback);
+        NewsFeed = new Feed(this);
+		MyTextEntry=new TextEntry(330,50,250,20,NameCallback);
 		addChild(MyTextEntry);	
 
         TheCritters = new Critters(this,3);
@@ -255,8 +205,6 @@ class FungiWorld extends World
                        this,
                        function (c,data:Dynamic)
                        {
-                           trace("logged in");
-                           trace(data);
                            c.MyID=data;
 		                   c.MyName=name;
 		                   c.removeChild(c.MyTextEntry);
@@ -372,6 +320,53 @@ class FungiWorld extends World
         }
     }
 
+    public function UpdateTile(d:Dynamic)
+    {
+        Season=d.season;
+
+        var data:Array<Dynamic>=cast(d.entities,Array<Dynamic>);
+        for (p in data)
+        {
+            var worldpos = new Vec2(p.pos.x,p.pos.y);
+            var e = Get("fungi.Plant",worldpos);
+            if (e==null)
+            {
+                var cube = Get("fungi.Cube",worldpos);
+                if (cube!=null)
+                {
+                    var pos = new Vec3(p.pos.x,p.pos.y,cube.LogicalPos.z+1);   
+                    var plant = new Plant(this,Std.parseInt(p.id),
+                                          p.owner,
+                                          pos,
+                                          p.type,
+                                          p.state,
+                                          p.fruit,
+                                          p.layer);
+                    Plants.push(plant);
+                }
+            }
+            else
+            {
+                //trace("updating plant");
+                //trace(e);
+                //trace(p.state);
+                cast(e,Plant).StateUpdate(p.state,p.fruit,this);
+            }
+        }
+
+        var temp=Plants;
+        for (plant in Plants)
+        {
+            if (plant.State=="decayed")
+            {
+                Remove(plant);
+                temp.remove(plant);
+            }
+        }
+        Plants=temp;
+        SortScene();
+    }
+
     override function Update(time:Int)
     {
         super.Update(time);
@@ -391,65 +386,14 @@ class FungiWorld extends World
         if (time>TickTime)
         {
             UpdateSpiritSprites();
-            
+
             Server.Request("spirit-info",this,UpdateGhosts);
-
             Server.Request("get-tile/"+Std.string(cast(WorldPos.x,Int))+"/"
-            +Std.string(cast(WorldPos.y,Int)),
-            this,
-            function (c:truffle.World,d)
-            {
-                c.TileInfo.text="Season: "+d.season;
-                var t = new flash.text.TextFormat();
-                t.font = "Verdana"; 
-                t.size = 12;                
-                t.color= 0x000000;           
-                c.TileInfo.setTextFormat(t);
-
-                var data:Array<Dynamic>=cast(d.entities,Array<Dynamic>);
-                for (p in data)
-                {
-                    var worldpos = new Vec2(p.pos.x,p.pos.y);
-                    var e = c.Get("Plant",worldpos);
-                    if (e==null)
-                    {
-                        //trace("making new plant");
-                        var cube = c.Get("Cube",worldpos);
-                        if (cube!=null)
-                        {
-                            var pos = new Vec3(p.pos.x,p.pos.y,cube.LogicalPos.z+1);   
-                            var plant = new Plant(c,Std.parseInt(p.id),
-                                                  p.owner,
-                                                  pos,
-                                                  p.type,
-                                                  p.state,
-                                                  p.fruit,
-                                                  p.layer);
-                            c.Plants.push(plant);
-                        }
-                    }
-                    else
-                    {
-                        //trace("updating plant");
-                        //trace(e);
-                        //trace(p.state);
-                        cast(e,Plant).StateUpdate(p.state,p.fruit,c);
-                    }
-                }
-
-                var temp=c.Plants;
-                for (plant in cast(c,FungiWorld).Plants)
-                {
-                    if (plant.State=="decayed")
-                    {
-                        c.Remove(plant);
-                        temp.remove(plant);
-                    }
-                }
-                c.Plants=temp;
-
-                c.SortScene();
-            });            
+                           +Std.string(cast(WorldPos.y,Int)),
+                           this,
+                           function(c,d){c.UpdateTile(d);});          
+            Server.Request("get-msgs/"+Std.string(MyID),this,
+                           function(c,d){c.NewsFeed.Update(cast(c,World),d);});
 
             if (MyName=="")
             {        

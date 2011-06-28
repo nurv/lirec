@@ -122,7 +122,7 @@ class Plant extends SpriteEntity
                                          Std.string(cast(world.WorldPos.y,Int))+"/"+
                                          Std.string(p.Id),
                                          p,
-                                         function (c) {});
+                                         function (c,d) {});
                 }
             }
         });

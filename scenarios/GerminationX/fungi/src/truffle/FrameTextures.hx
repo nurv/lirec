@@ -1,4 +1,4 @@
-// t r u f f l e Copyright (C) 2010 FoAM vzw   \_\ __     /\
+// GerminationX Copyright (C) 2010 FoAM vzw    \_\ __     /\
 //                                          /\    /_/    / /  
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -13,21 +13,30 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package truffle.interfaces;
+package truffle;
 
-import truffle.Entity;
-import truffle.Vec2;
+import truffle.interfaces.TextureDesc;
 
-interface World  
+class FrameTextures
 {
-    public function Add(e:Entity) : Void;
-    public function Remove(e:Entity) : Void;
-    public function Get(type:String, p:Vec2) : Dynamic;
-    public function AddSprite(s:Dynamic) : Void;
-    public function RemoveSprite(s:Dynamic) : Void;
-	public function MouseDown(c:Dynamic, f:Dynamic -> Void=null) : Void;
-    public function SortScene() : Void;
-    public function Update(time:Int) : Void;
-    public function Handle(event:Int) : Void;
-    public function SetCurrentTilePos(s:Vec2) : Void;
+    public var N: Array<TextureDesc>;
+    public var NE: Array<TextureDesc>;
+    public var E: Array<TextureDesc>;
+    public var SE: Array<TextureDesc>;
+    public var S: Array<TextureDesc>;
+    public var SW: Array<TextureDesc>;
+    public var W: Array<TextureDesc>;
+    public var NW: Array<TextureDesc>;
+
+    public function new()
+    {
+        N=[];
+        NE=[];
+        E=[];
+        SE=[];
+        S=[];
+        SW=[];
+        W=[];
+        NW=[];
+    }
 }

@@ -1,6 +1,7 @@
+-debug
 -swf fungi.swf
 -swf-version 9
 -swf-lib resources.swf
--main Fungi
+-main Main
 -cp src
 -swf-header 950:576:40:000000

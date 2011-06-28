@@ -26,7 +26,7 @@
    :messages '()
    :picked-by '()
    :has-picked '()
-   :log (make-log ())))
+   :log (make-log 10)))
 
 
 

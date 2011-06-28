@@ -22,16 +22,11 @@ import truffle.Vec3;
 import truffle.RndGen;
 import truffle.Bone;
 
-// todo: remove this
-import flash.display.Graphics;
-import flash.display.Shape;
-
 class Spirit extends SkeletonEntity 
 {
     public var Name:String;
 
-    var Debug:flash.text.TextField;
-	var BG:Graphics;
+    var Debug:Frame;
     var RawEmotions:Dynamic;
     var Emotions:Dynamic;
     var DesiredPos:Vec2;
@@ -116,54 +111,12 @@ class Spirit extends SkeletonEntity
 
 	public function BuildDebug(c)
     {
-        var tf = new flash.text.TextField();
-        tf.text = "nowt yet.";
-        tf.x=Pos.x-200;
-        tf.y=Pos.y-25;
-        tf.height=150;
-        tf.width=140;
-        tf.background = false;
-        tf.autoSize = flash.text.TextFieldAutoSize.LEFT;
-        //tf.backgroundColor = 0x8dd788;
-        tf.border = true;
-        tf.wordWrap = true;
-        var t = new flash.text.TextFormat();
-        t.font = "Verdana"; 
-        t.size = 8;                
-        t.color= 0x000000;           
-        tf.setTextFormat(t);
-
-        var figures:Shape = new Shape();
-        BG = figures.graphics;
-        BG.beginFill(0xffffff,0.5);
-        BG.drawRect(tf.x,tf.y,tf.width,tf.height);
-        BG.endFill();
-        figures.visible=false;
-        cast(c,truffle.flash.FlashWorld).addChild(figures);
-
-        c.addChild(tf);
-        Debug=tf;
-//        tf.visible=false;
- 
-        tf.visible=true;
-        figures.visible=true;
- /*
-        Root.MouseDown(c,function(c)
-        {
-            tf.visible=true;
-            figures.visible=true;
-        });
-
-        Root.MouseOut(c,function(c)
-        {
-            tf.visible=false;
-            figures.visible=false;
-        });
-*/
+        Debug = new Frame("nowt yet.",Pos.x-200,Pos.y-25,140,150);
+        Debug.Hide(true);
+        c.addChild(Debug);
         Action = new Sprite(new Vec2(0,0),Resources.Get(""));
         Action.Hide(true);
         c.AddSprite(Action);
-
 	}
 
     public function UpdateEmotions(e:Dynamic,world:World)
@@ -225,21 +178,8 @@ class Spirit extends SkeletonEntity
             }
         }
 
-        Debug.text=text;
-
-        var t = new flash.text.TextFormat();
-        t.font = "Verdana"; 
-        t.size = 8;                
-        t.color= 0x000000;           
-        Debug.setTextFormat(t);
-        Debug.x=Pos.x-200;
-        Debug.y=Pos.y-25;
-
-        BG.clear();
-        BG.beginFill(0xffffff,0.5);
-        BG.drawRect(Debug.x,Debug.y,Debug.width,Debug.height);
-        BG.endFill();
-
+        Debug.UpdateText(text);
+        Debug.UpdatePosition(Std.int(Pos.x-200),Std.int(Pos.y-25));
         //trace(text);
     }
 

@@ -63,14 +63,14 @@ class FlashWorld implements World, extends MovieClip
         return null;
     }
 
-    public function AddSprite(s:Sprite)
+    public function AddSprite(s:Dynamic)
     {
-        addChild(cast(s,FlashSprite));
+        addChild(s);
     }
 
-    public function RemoveSprite(s:Sprite)
+    public function RemoveSprite(s:Dynamic)
     {
-        removeChild(cast(s,FlashSprite));
+        removeChild(s);
     }
 
 	public function MouseDown(c:Dynamic, f:Dynamic -> Void=null)

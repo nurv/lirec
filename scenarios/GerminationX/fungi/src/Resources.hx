@@ -111,6 +111,33 @@ class ActionDropLeavesTex extends BitmapData { public function new() { super(0,0
 class ActionFlowerTex extends BitmapData { public function new() { super(0,0); } }
 class SpiralTex extends BitmapData { public function new() { super(0,0); } }
 
+class GUIN001Tex extends BitmapData { public function new() { super(0,0); } }
+class GUIN002Tex extends BitmapData { public function new() { super(0,0); } }
+class GUIN003Tex extends BitmapData { public function new() { super(0,0); } }
+class GUINE001Tex extends BitmapData { public function new() { super(0,0); } }
+class GUINE002Tex extends BitmapData { public function new() { super(0,0); } }
+class GUIE001Tex extends BitmapData { public function new() { super(0,0); } }
+class GUIE002Tex extends BitmapData { public function new() { super(0,0); } }
+class GUIE003Tex extends BitmapData { public function new() { super(0,0); } }
+class GUIE004Tex extends BitmapData { public function new() { super(0,0); } }
+class GUISE001Tex extends BitmapData { public function new() { super(0,0); } }
+class GUISE002Tex extends BitmapData { public function new() { super(0,0); } }
+class GUISE003Tex extends BitmapData { public function new() { super(0,0); } }
+class GUIS001Tex extends BitmapData { public function new() { super(0,0); } }
+class GUIS002Tex extends BitmapData { public function new() { super(0,0); } }
+class GUIS003Tex extends BitmapData { public function new() { super(0,0); } }
+class GUIS004Tex extends BitmapData { public function new() { super(0,0); } }
+class GUISW001Tex extends BitmapData { public function new() { super(0,0); } }
+class GUISW002Tex extends BitmapData { public function new() { super(0,0); } }
+class GUISW003Tex extends BitmapData { public function new() { super(0,0); } }
+class GUIW001Tex extends BitmapData { public function new() { super(0,0); } }
+class GUIW002Tex extends BitmapData { public function new() { super(0,0); } }
+class GUIW003Tex extends BitmapData { public function new() { super(0,0); } }
+class GUIW004Tex extends BitmapData { public function new() { super(0,0); } }
+class GUINW001Tex extends BitmapData { public function new() { super(0,0); } }
+class GUINW002Tex extends BitmapData { public function new() { super(0,0); } }
+class GUINW003Tex extends BitmapData { public function new() { super(0,0); } }
+
 
 class Resources
 {
@@ -211,6 +238,33 @@ class Resources
         case "action-flower": tex.data = new ActionFlowerTex();
         case "action-drop-leaves": tex.data = new ActionDropLeavesTex();
         case "spiral": tex.data = new SpiralTex();
+
+        case "gui-n-001": tex.data = new GUIN001Tex();
+        case "gui-n-002": tex.data = new GUIN002Tex();
+        case "gui-n-003": tex.data = new GUIN003Tex();
+        case "gui-ne-001": tex.data = new GUINE001Tex();
+        case "gui-ne-002": tex.data = new GUINE002Tex();
+        case "gui-e-001": tex.data = new GUIE001Tex();
+        case "gui-e-002": tex.data = new GUIE002Tex();
+        case "gui-e-003": tex.data = new GUIE003Tex();
+        case "gui-e-004": tex.data = new GUIE004Tex();
+        case "gui-se-001": tex.data = new GUISE001Tex();
+        case "gui-se-002": tex.data = new GUISE002Tex();
+        case "gui-se-003": tex.data = new GUISE003Tex();
+        case "gui-s-001": tex.data = new GUIS001Tex();
+        case "gui-s-002": tex.data = new GUIS002Tex();
+        case "gui-s-003": tex.data = new GUIS003Tex();
+        case "gui-s-004": tex.data = new GUIS004Tex();
+        case "gui-sw-001": tex.data = new GUISW001Tex();
+        case "gui-sw-002": tex.data = new GUISW002Tex();
+        case "gui-sw-003": tex.data = new GUISW003Tex();
+        case "gui-w-001": tex.data = new GUIW001Tex();
+        case "gui-w-002": tex.data = new GUIW002Tex();
+        case "gui-w-003": tex.data = new GUIW003Tex();
+        case "gui-w-004": tex.data = new GUIW004Tex();
+        case "gui-nw-001": tex.data = new GUINW001Tex();
+        case "gui-nw-002": tex.data = new GUINW002Tex();
+        case "gui-nw-003": tex.data = new GUINW003Tex();
         }
 
         return tex;

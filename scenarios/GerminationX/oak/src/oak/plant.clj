@@ -78,7 +78,7 @@
    :tick (+ (/ season-length 50) (Math/floor (rand 10)))
    :health start-health
    :fruit false
-   :log (make-log ())))
+   :log (make-log 10)))
 
 (defn plant-count [plant]
   (println (str "picked-by: " (count (:picked-by-ids plant)))))
@@ -134,13 +134,13 @@
        (plant-type->id to)))
 
 (defn plant-add-to-log [plant log type]
-  (make-log
-   (list
-    (make-msg
-     (:id plant)
-     (:owner-id plant)
-     type
-     ()))))
+  (log-add-msg 
+   (make-log 10)
+   (make-msg
+    (:id plant)
+    (:owner-id plant)
+    type
+    ())))
 
 (defn plant-update-log [plant old-state]
   (if (not (= (:state plant) old-state))
@@ -161,16 +161,20 @@
         (plant-add-to-log plant log 'i-am-regrowing)
         
         (and (= old-state 'ill-c)
+             (= (:state plant) 'decayed))
+        (plant-add-to-log plant log 'i-have-died)
+
+        (and (= old-state 'ill-c)
              (not (= (:state plant) 'ill-c)))
         (plant-add-to-log plant log 'i-have-recovered)
-        
+
         (and (not (= old-state 'fruit-a))
              (= (:state plant) 'fruit-a))
         (plant-add-to-log plant log 'i-have-fruited)
 
-        :else (make-log ())))
+        :else (make-log 10)))
      plant)
-    (modify :log (fn [log] (make-log ())) plant)))
+    (modify :log (fn [log] (make-log 10)) plant)))
 
 (defn plant-update-health [plant neighbours rules]
   (modify

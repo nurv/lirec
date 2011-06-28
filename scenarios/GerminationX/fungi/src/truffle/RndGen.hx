@@ -54,7 +54,7 @@ class RndGen
 		return RndInt()/Math.pow(2,32)*2;
 	}
 
-    public function Choose(arr:Array<Dynamic>)
+    public function Choose(arr:Array<Dynamic>) : Dynamic
     {
         return arr[RndInt()%arr.length];
     }

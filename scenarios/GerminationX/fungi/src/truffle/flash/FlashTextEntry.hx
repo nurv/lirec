@@ -47,7 +47,7 @@ class FlashTextEntry implements TextEntry, extends MovieClip
 
         var tf = new flash.text.TextFormat();
         tf.font = "Verdana"; 
-        tf.size = 20;                
+        tf.size = 10;                
         tf.color= 0x000000;           
         TextField.setTextFormat(tf);
 		addChild(TextField);	           
