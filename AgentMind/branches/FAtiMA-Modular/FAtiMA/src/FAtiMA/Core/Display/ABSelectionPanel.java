@@ -121,8 +121,7 @@ public class ABSelectionPanel extends AgentDisplayPanel {
 		}
 
 		@Override
-		public Component prepareRenderer(TableCellRenderer renderer, int row,
-				int column) {
+		public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
 			Component component = super.prepareRenderer(renderer, row, column);
 			int rowID = (Integer) table.getValueAt(row, 0);
 			if (selectedIDs.contains(rowID)) {
@@ -130,9 +129,7 @@ public class ABSelectionPanel extends AgentDisplayPanel {
 			} else {
 				double activationValue = (Double) table.getValueAt(row, 11);
 				double range = activationValueMax - activationValueMin;
-				int grey = (int) Math
-						.round((activationValue - activationValueMin) / range
-								* 155) + 100;
+				int grey = (int) Math.round((activationValue - activationValueMin) / range * 155) + 100;
 				if (grey < 0)
 					grey = 0;
 				if (grey > 255)
@@ -200,8 +197,7 @@ public class ABSelectionPanel extends AgentDisplayPanel {
 		pnDecayValue.add(spDecayValue);
 
 		JPanel pnCalculationButton = new JPanel();
-		pnCalculationButton.setLayout(new BoxLayout(pnCalculationButton,
-				BoxLayout.X_AXIS));
+		pnCalculationButton.setLayout(new BoxLayout(pnCalculationButton, BoxLayout.X_AXIS));
 		pnCalculation.add(pnCalculationButton);
 
 		JButton btABCalculation = new JButton("Calculate Activation Values");
@@ -213,16 +209,14 @@ public class ABSelectionPanel extends AgentDisplayPanel {
 		pnCalculationButton.add(cbConstantUpdate);
 
 		JPanel pnCalculationStatus = new JPanel();
-		pnCalculationStatus.setLayout(new BoxLayout(pnCalculationStatus,
-				BoxLayout.X_AXIS));
+		pnCalculationStatus.setLayout(new BoxLayout(pnCalculationStatus, BoxLayout.X_AXIS));
 		pnCalculation.add(pnCalculationStatus);
 
 		lbCalculationStatus = new JLabel("Calculated at narrative time -");
 		pnCalculationStatus.add(lbCalculationStatus);
 
 		JPanel pnSelectionMethod = new JPanel();
-		pnSelectionMethod.setLayout(new BoxLayout(pnSelectionMethod,
-				BoxLayout.Y_AXIS));
+		pnSelectionMethod.setLayout(new BoxLayout(pnSelectionMethod, BoxLayout.Y_AXIS));
 		pnSelection.add(pnSelectionMethod);
 
 		rbSelectionCount = new JRadioButton("Count");
@@ -239,8 +233,7 @@ public class ABSelectionPanel extends AgentDisplayPanel {
 		rbSelectionCount.setSelected(true);
 
 		JPanel pnSelectionParams = new JPanel();
-		pnSelectionParams.setLayout(new BoxLayout(pnSelectionParams,
-				BoxLayout.Y_AXIS));
+		pnSelectionParams.setLayout(new BoxLayout(pnSelectionParams, BoxLayout.Y_AXIS));
 		pnSelection.add(pnSelectionParams);
 
 		spSelectionCount = new JTextField();
@@ -262,8 +255,7 @@ public class ABSelectionPanel extends AgentDisplayPanel {
 		pnSelectionParams.add(tfSelectionThreshold);
 
 		JPanel pnSelectionButton = new JPanel();
-		pnSelectionButton.setLayout(new BoxLayout(pnSelectionButton,
-				BoxLayout.Y_AXIS));
+		pnSelectionButton.setLayout(new BoxLayout(pnSelectionButton, BoxLayout.Y_AXIS));
 		pnSelection.add(pnSelectionButton);
 
 		cbSimulateSelection = new JCheckBox("Simulate Selection");
@@ -310,133 +302,122 @@ public class ABSelectionPanel extends AgentDisplayPanel {
 
 	private void updateTable() {
 
-		// hold details to be shown in one list for iterating over
-		ArrayList<ActionDetail> actionDetails = new ArrayList<ActionDetail>();
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
 
-		if (SHOW_AM) {
-			// Autobiographic Memory
-			for (MemoryEpisode episode : episodicMemory.getAM()
-					.GetAllEpisodes()) {
-				actionDetails.addAll(episode.getDetails());
+				// hold details to be shown in one list for iterating over
+				ArrayList<ActionDetail> actionDetails = new ArrayList<ActionDetail>();
+
+				if (SHOW_AM) {
+					// Autobiographic Memory
+					for (MemoryEpisode episode : episodicMemory.getAM().GetAllEpisodes()) {
+						actionDetails.addAll(episode.getDetails());
+					}
+				}
+
+				if (SHOW_STEM) {
+					// Short-Term Memory
+					actionDetails.addAll(episodicMemory.getSTEM().getDetails());
+				}
+
+				// set initial minimum and maximum for cell colouring
+				if (actionDetails.size() > 0) {
+					activationValueMin = actionDetails.get(0).getActivationValue().getValue();
+				} else {
+					activationValueMin = 0;
+				}
+				activationValueMax = activationValueMin;
+
+				// clear table model
+				int rowCount = tableModel.getRowCount();
+				for (int i = 0; i < rowCount; i++) {
+					tableModel.removeRow(0);
+				}
+
+				// add action details to table model
+				for (ActionDetail actionDetail : actionDetails) {
+
+					Object[] rowData = new Object[tableModel.getColumnCount()];
+					int j = 0;
+
+					// work with copies of values in table
+
+					rowData[j++] = new Integer(actionDetail.getID());
+
+					if (actionDetail.getSubject() != null)
+						rowData[j++] = new String(actionDetail.getSubject());
+					else
+						rowData[j++] = NULL_STRING;
+
+					if (actionDetail.getAction() != null)
+						rowData[j++] = new String(actionDetail.getAction());
+					else
+						rowData[j++] = NULL_STRING;
+
+					if (actionDetail.getIntention() != null)
+						rowData[j++] = new String(actionDetail.getIntention());
+					else
+						rowData[j++] = NULL_STRING;
+
+					if (actionDetail.getTarget() != null)
+						rowData[j++] = new String(actionDetail.getTarget());
+					else
+						rowData[j++] = NULL_STRING;
+
+					if (actionDetail.getStatus() != null)
+						rowData[j++] = new String(actionDetail.getStatus());
+					else
+						rowData[j++] = NULL_STRING;
+
+					if (actionDetail.getSpeechActMeaning() != null)
+						rowData[j++] = new String(actionDetail.getSpeechActMeaning());
+					else
+						rowData[j++] = NULL_STRING;
+
+					if (actionDetail.getObject() != null)
+						rowData[j++] = new String(actionDetail.getObject());
+					else
+						rowData[j++] = NULL_STRING;
+
+					if (actionDetail.getEmotion() != null)
+						rowData[j++] = new String(actionDetail.getEmotion().getType() + "-" + actionDetail.getEmotion().GetPotential());
+					else
+						rowData[j++] = NULL_STRING;
+
+					if (actionDetail.getTime() != null)
+						rowData[j++] = new Long(actionDetail.getTime().getNarrativeTime());
+					else
+						rowData[j++] = NULL_STRING;
+
+					if (actionDetail.getLocation() != null)
+						rowData[j++] = new String(actionDetail.getLocation());
+					else
+						rowData[j++] = NULL_STRING;
+
+					if (actionDetail.getActivationValue() != null)
+						rowData[j++] = new Double(actionDetail.getActivationValue().getValue());
+					else
+						rowData[j++] = NULL_STRING;
+
+					if (actionDetail.getActivationValue() != null)
+						rowData[j++] = new Integer(actionDetail.getActivationValue().getNumRetrievals());
+					else
+						rowData[j++] = NULL_STRING;
+
+					// add row data
+					tableModel.addRow(rowData);
+
+					// save minimum and maximum for cell colouring
+					double activationValue = actionDetail.getActivationValue().getValue();
+					if (activationValue < activationValueMin)
+						activationValueMin = activationValue;
+					if (activationValue > activationValueMax)
+						activationValueMax = activationValue;
+
+				}
+
 			}
-		}
-
-		if (SHOW_STEM) {
-			// Short-Term Memory
-			actionDetails.addAll(episodicMemory.getSTEM().getDetails());
-		}
-
-		// set initial minimum and maximum for cell colouring
-		if (actionDetails.size() > 0) {
-			activationValueMin = actionDetails.get(0).getActivationValue()
-					.getValue();
-		} else {
-			activationValueMin = 0;
-		}
-		activationValueMax = activationValueMin;
-
-		// remove row sorter
-		table.setRowSorter(null);
-
-		// clear table model
-		int rowCount = tableModel.getRowCount();
-		for (int i = 0; i < rowCount; i++) {
-			tableModel.removeRow(0);
-		}
-
-		// add action details to table model
-		for (ActionDetail actionDetail : actionDetails) {
-
-			Object[] rowData = new Object[tableModel.getColumnCount()];
-			int j = 0;
-
-			// work with copies of values in table
-
-			rowData[j++] = new Integer(actionDetail.getID());
-
-			if (actionDetail.getSubject() != null)
-				rowData[j++] = new String(actionDetail.getSubject());
-			else
-				rowData[j++] = NULL_STRING;
-
-			if (actionDetail.getAction() != null)
-				rowData[j++] = new String(actionDetail.getAction());
-			else
-				rowData[j++] = NULL_STRING;
-
-			if (actionDetail.getIntention() != null)
-				rowData[j++] = new String(actionDetail.getIntention());
-			else
-				rowData[j++] = NULL_STRING;
-
-			if (actionDetail.getTarget() != null)
-				rowData[j++] = new String(actionDetail.getTarget());
-			else
-				rowData[j++] = NULL_STRING;
-
-			if (actionDetail.getStatus() != null)
-				rowData[j++] = new String(actionDetail.getStatus());
-			else
-				rowData[j++] = NULL_STRING;
-
-			if (actionDetail.getSpeechActMeaning() != null)
-				rowData[j++] = new String(actionDetail.getSpeechActMeaning());
-			else
-				rowData[j++] = NULL_STRING;
-
-			if (actionDetail.getObject() != null)
-				rowData[j++] = new String(actionDetail.getObject());
-			else
-				rowData[j++] = NULL_STRING;
-
-			if (actionDetail.getEmotion() != null)
-				rowData[j++] = new String(actionDetail.getEmotion().getType()
-						+ "-" + actionDetail.getEmotion().GetPotential());
-			else
-				rowData[j++] = NULL_STRING;
-
-			if (actionDetail.getTime() != null)
-				rowData[j++] = new Long(actionDetail.getTime()
-						.getNarrativeTime());
-			else
-				rowData[j++] = NULL_STRING;
-
-			if (actionDetail.getLocation() != null)
-				rowData[j++] = new String(actionDetail.getLocation());
-			else
-				rowData[j++] = NULL_STRING;
-
-			if (actionDetail.getActivationValue() != null)
-				rowData[j++] = new Double(actionDetail.getActivationValue()
-						.getValue());
-			else
-				rowData[j++] = NULL_STRING;
-
-			if (actionDetail.getActivationValue() != null)
-				rowData[j++] = new Integer(actionDetail.getActivationValue()
-						.getNumRetrievals());
-			else
-				rowData[j++] = NULL_STRING;
-
-			// add row data
-			tableModel.addRow(rowData);
-
-			// save minimum and maximum for cell colouring
-			double activationValue = actionDetail.getActivationValue()
-					.getValue();
-			if (activationValue < activationValueMin)
-				activationValueMin = activationValue;
-			if (activationValue > activationValueMax)
-				activationValueMax = activationValue;
-
-		}
-
-		// add row sorter with old sort keys
-		TableRowSorter<MyTableModel> tableRowSorterNew = new TableRowSorter<MyTableModel>(
-				tableModel);
-		tableRowSorterNew.setSortKeys(tableRowSorter.getSortKeys());
-		table.setRowSorter(tableRowSorterNew);
-		tableRowSorter = tableRowSorterNew;
+		});
 
 	}
 
@@ -446,8 +427,7 @@ public class ABSelectionPanel extends AgentDisplayPanel {
 		double decayValue = Double.valueOf(spDecayValue.getValue().toString());
 		episodicMemory.calculateActivationValues(timeCalculated, decayValue);
 
-		lbCalculationStatus.setText("Calculated at narrative time "
-				+ timeCalculated.getNarrativeTime());
+		lbCalculationStatus.setText("Calculated at narrative time " + timeCalculated.getNarrativeTime());
 
 	}
 
@@ -457,23 +437,19 @@ public class ABSelectionPanel extends AgentDisplayPanel {
 		ArrayList<ActionDetail> selected = new ArrayList<ActionDetail>();
 
 		if (rbSelectionCount.isSelected()) {
-			int countMax = Integer.valueOf(Integer.valueOf(spSelectionCount
-					.getText()));
+			int countMax = Integer.valueOf(Integer.valueOf(spSelectionCount.getText()));
 			selected = episodicMemory.activationBasedSelectionByCount(countMax);
 
 		} else if (rbSelectionRatio.isSelected()) {
-			double amount = Double.valueOf(spSelectionRatio.getValue()
-					.toString());
+			double amount = Double.valueOf(spSelectionRatio.getValue().toString());
 			selected = episodicMemory.activationBasedSelectionByAmount(amount);
 
 		} else if (rbSelectionThreshold.isSelected()) {
 			double threshold = Double.valueOf(tfSelectionThreshold.getText());
-			selected = episodicMemory
-					.activationBasedSelectionByThreshold(threshold);
+			selected = episodicMemory.activationBasedSelectionByThreshold(threshold);
 		}
 
-		lbSelectionStatus.setText("Selected at narrative time "
-				+ timeSelected.getNarrativeTime());
+		lbSelectionStatus.setText("Selected at narrative time " + timeSelected.getNarrativeTime());
 
 		ArrayList<Integer> selectedIDsTemp = new ArrayList<Integer>();
 		for (ActionDetail actionDetail : selected) {
@@ -497,7 +473,6 @@ public class ABSelectionPanel extends AgentDisplayPanel {
 			calculateValues();
 		}
 		updateTable();
-
 		return true;
 	}
 
@@ -509,7 +484,6 @@ public class ABSelectionPanel extends AgentDisplayPanel {
 			calculateValues();
 		}
 		updateTable();
-
 		return true;
 	}
 
