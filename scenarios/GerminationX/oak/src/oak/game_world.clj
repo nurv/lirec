@@ -195,7 +195,12 @@
   (reduce
    (fn [r tile]
      (concat r (tile-get-log tile)))
-   ()
+   (reduce
+    (fn [r spirit]
+      (println (:msgs (:log spirit)))
+      (concat r (:msgs (:log spirit))))
+    ()
+    (:spirits game-world))
    (:tiles game-world)))
 
 (defn game-world-post-logs-to-players [game-world msgs]

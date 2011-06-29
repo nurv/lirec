@@ -74,8 +74,8 @@ class Spirit extends SkeletonEntity
                      RESENTMENT:0,GLOATING:0,PRIDE:0,SHAME:0,
                      GRATIFICATION:0,REMORSE:0,ADMIRATION:0,
                      REPROACH:0,GRATITUDE:0,ANGER:0};
-        Emitter = new Particles(new Vec2(Pos.x,Pos.y),50);
-        world.addChild(Emitter);
+        //Emitter = new Particles(new Vec2(Pos.x,Pos.y),50);
+        //world.addChild(Emitter);
     }
 
     function UpdateEmitter()
@@ -144,7 +144,7 @@ class Spirit extends SkeletonEntity
         var ee = e.fatemotions.content;
         var mood=Std.parseFloat(ee[0].content[0]);
 
-        UpdateEmitter();
+        //UpdateEmitter();
 
         var text=Name+"\nMood:"+ee[0].content[0]+"\n";
         var text=Name+"\nHighest Emotion:"+HighestEmotion+"\n";
@@ -219,9 +219,9 @@ class Spirit extends SkeletonEntity
            
         });
 
-        Emitter.Pos.x=Pos.x;
-        Emitter.Pos.y=Pos.y;
-        Emitter.Update(frame);
+//        Emitter.Pos.x=Pos.x;
+//        Emitter.Pos.y=Pos.y;
+//        Emitter.Update(frame);
 
         super.Update(frame,world);
     }

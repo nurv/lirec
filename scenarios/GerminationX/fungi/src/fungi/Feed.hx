@@ -96,7 +96,17 @@ class Feed
             Rnd.Seed(Std.int(i.time));
             var f=new Frame("",690+32,pos,64*3,64*2);
             f.SetTextSize(12);
-            f.UpdateText(i.from+" sent "+Reflect.field(i,"msg-id")+" at "+Date.fromTime(i.time).toString());
+
+            var subjects="";
+            if (i.subjects.length>0)
+            {
+                subjects+=i.subjects[0]+" ";
+            }
+
+            f.UpdateText(i.from+" sent "+
+                         Reflect.field(i,"msg-id")+
+                         subjects+
+                         " at "+Date.fromTime(i.time).toString());
             f.R=0.8;
             f.G=0.9;
             f.B=0.7;

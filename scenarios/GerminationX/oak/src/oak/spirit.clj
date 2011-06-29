@@ -71,7 +71,7 @@
   (if (.contains name "#")
     (parse-number (.substring name
                               (+ 1 (.indexOf name "#"))
-                              (- (.length name) 1)))
+                              (.length name)))
     false))
 
 (defn spirit-update-emotionalloc [spirit remote-agent tile]
@@ -125,25 +125,61 @@
       (remote-agent-done remote-agent))
     spirit)))
 
-(defn spirit-update-position [spirit tile]
-  ; if we have some actions
-  (if (not (empty? (:fatactions spirit)))
-    (let [latest-action (first (:fatactions spirit))
-          latest-subject (nth (.split (:msg latest-action) " ") 1)
-          id (fatima-name->id latest-subject)]
-      (if id
-        (let [e (tile-find-entity tile id)]
-          (if e
-            (modify :pos (fn [pos] (:pos e)) spirit)
-            spirit))
-        spirit))
-    spirit))
+(defn spirit-diagnose [spirit tile plant]
+  (modify :log
+          (fn [log]
+            (log-add-msg
+             log
+             (make-msg
+              (:name spirit)
+              (:owner-id plant)
+              'diagnosing
+              (list (:id plant)))))
+          spirit))
+
+(defn spirit-looking-at [spirit tile plant]
+  (modify :log
+          (fn [log]
+            (log-add-msg
+             log
+             (make-msg
+              (:name spirit)
+              (:owner-id plant)
+              'looking-at
+              (list (:id plant)))))
+          spirit))
+              
+(defn spirit-update-from-actions [spirit tile]
+  (modify
+   :fatactions (fn [fatactions] '()) ; clear em out
+   (reduce
+    (fn [spirit action]
+      (let [type (nth (.split (:msg action) " ") 0)
+            subject (nth (.split (:msg action) " ") 1)
+            id (fatima-name->id subject)]
+        (if id
+          (let [e (tile-find-entity tile id)]
+            (if e
+              (modify :pos (fn [pos] (:pos e))
+                      (cond
+                       (= type "look-at") (spirit-looking-at spirit tile e)
+                       (= type "diagnose") (spirit-diagnose spirit tile e)
+                       :else spirit))
+              spirit))
+            spirit)))
+    spirit
+    (:fatactions spirit))))
 
 (defn spirit-update [spirit remote-agent tile]
-  (spirit-update-position
+  (spirit-update-from-actions
    (spirit-update-emotionalloc
     (spirit-update-emotions
-     (spirit-update-fatdebug spirit remote-agent)
+     (spirit-update-fatdebug
+      (modify :log
+              (fn [log]
+                (make-log 10))
+              spirit)
+      remote-agent)
      remote-agent)
     remote-agent tile) tile))
           

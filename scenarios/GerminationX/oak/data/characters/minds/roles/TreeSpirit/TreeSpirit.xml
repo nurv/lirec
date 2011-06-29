@@ -79,6 +79,14 @@
 				<CauseEvent/>
 			</ElicitingEmotion>
 		</ActionTendency>
+
+		<ActionTendency action="diagnose([Target])">
+			<Preconditions>
+            </Preconditions>
+			<ElicitingEmotion type="Hate" minIntensity="1">
+				<CauseEvent/>
+			</ElicitingEmotion>
+		</ActionTendency>
        
 	</ActionTendencies>
 </Character>

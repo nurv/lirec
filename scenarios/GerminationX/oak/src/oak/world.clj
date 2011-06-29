@@ -204,9 +204,9 @@
               (str "ACTION-FINISHED "
                    (remote-agent-name agent) " " msg))
 
-             (merge agent {:done (max-cons {:time (world-time world)
-                                            :msg msg}
-                                           (remote-agent-done agent) 4)}))
+             (merge agent {:done (cons {:time (world-time world)
+                                        :msg msg}
+                                       (remote-agent-done agent))}))
            agent)))
      :else
      (do
@@ -226,9 +226,9 @@
         world
         (apply str (concat "ACTION-FINISHED " (remote-agent-name agent) " "
                            (map (fn [s] (str s " ")) toks))))
-       (merge agent {:done (max-cons {:time (world-time world)
-                                      :msg msg}
-                                     (remote-agent-done agent) 4)})))))
+       (merge agent {:done (cons {:time (world-time world)
+                                  :msg msg}
+                                 (remote-agent-done agent))})))))
 
 (defn world-check-for-new-agents [world]
   (let [chan (.accept (world-ssc world))]
@@ -254,7 +254,7 @@
       (reduce
        (fn [agent msg]
          (world-process-agent world agent msg))
-       agent
+       (modify :done (fn [d] ()) agent) ; clear out actions done list
        (.split msgs "\n")))))
 
 (defn world-update-agents [world]

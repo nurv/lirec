@@ -20,4 +20,15 @@
 			</Effect>
 		</Effects>
 	</Action>
+
+	<Action name="diagnose([target])">
+		<PreConditions>
+			<Property name="[AGENT](pose)" operator="=" value="standing"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="0.8">
+		<!--		<Property name="[target](annoyed)" operator="=" value="True"/> -->
+			</Effect>
+		</Effects>
+	</Action>
 </DomainActions>
