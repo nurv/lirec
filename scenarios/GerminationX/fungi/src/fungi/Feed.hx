@@ -82,15 +82,13 @@ class Feed
             var SeedsLeft=Reflect.field(w.PlayerInfo,"seeds-left");
             var txt="Hello "+w.MyName+", it is "+w.Season+" and you have "+Std.string(w.NumPlants)+" plants currently alive. "+
                 "You have "+SeedsLeft+" seeds left.";
-            if (SeedsLeft=="0")
+            var time=Std.parseInt(Reflect.field(w.PlayerInfo,"next-refresh"));
+            
+            if (time!=0)
             {
-                var time=Reflect.field(w.PlayerInfo,"next-refresh");
-                // incorrect???
                 var now=Date.now().getTime();
-                var diff=Std.int(time)-now;
-                //txt+=" Next seeds in "+diff.getHours()+" hours, "+diff.getMinutes()+" minutes.";
-                txt+=" Next seeds at "+Date.fromTime(time).toString();
-                //txt+=" "+Std.string(diff);
+                var diff=Date.fromTime(time-now);
+                txt+=" More seeds in "+diff.getMinutes()+" minutes.";
             }
             Info.UpdateText(txt);
         }

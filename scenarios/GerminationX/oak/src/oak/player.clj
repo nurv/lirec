@@ -24,7 +24,7 @@
    :layer "none"
    :seeds '()
    :messages '()
-   :level 0
+   :seeds-capacity 3
    :seeds-left 3
    :next-refresh 0
    :picked-by '()

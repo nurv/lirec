@@ -388,7 +388,7 @@ class FungiWorld extends World
                            this,
                            function(c,d){c.UpdateTile(d);});          
             Server.Request("get-msgs/"+Std.string(MyID),this,
-                           function(c,d){c.NewsFeed.Update(cast(c,World),d);});
+                           function(c,d){ c.NewsFeed.Update(cast(c,World),d);});
             Server.Request("player/"+Std.string(MyID), this, 
                            function(c,d){c.PlayerInfo=d;});
             // todo: get-msgs or player - same info within

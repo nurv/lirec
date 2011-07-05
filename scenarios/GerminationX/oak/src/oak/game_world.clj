@@ -239,7 +239,7 @@
        (> (current-time) (:next-refresh player)))
     (modify
      :seeds-left
-     (fn [s] 3) ; todo: look at level
+     (fn [s] (:seeds-capacity player))
      (modify :next-refresh (fn [r] 0) player))
     player))
 
@@ -314,7 +314,9 @@
    (fn [player]
      (modify
       :seeds-left (fn [s] (- s 1))
-      (if (= 1 (:seeds-left player))
+      (if (and (= (:next-refresh player) 0)
+               (>= (:seeds-capacity player)
+                   (:seeds-left player)))
         (modify
          :next-refresh
          (fn [r] (+ (current-time) seeds-duration))
