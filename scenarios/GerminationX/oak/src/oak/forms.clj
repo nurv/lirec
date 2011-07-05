@@ -42,3 +42,6 @@
              (map doall-recur
                   s))
    :else s))
+
+(defn current-time []
+  (.getTime (java.util.Date.)))

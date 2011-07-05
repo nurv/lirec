@@ -197,7 +197,6 @@
      (concat r (tile-get-log tile)))
    (reduce
     (fn [r spirit]
-      (println (:msgs (:log spirit)))
       (concat r (:msgs (:log spirit))))
     ()
     (:spirits game-world))
@@ -234,11 +233,32 @@
                tiles))
             game-world)))
 
+(defn game-world-update-player-seeds [player]
+  (if (and
+       (not (= (:next-refresh player) 0))
+       (> (current-time) (:next-refresh player)))
+    (modify
+     :seeds-left
+     (fn [s] 3) ; todo: look at level
+     (modify :next-refresh (fn [r] 0) player))
+    player))
+
+(defn game-world-update-players [game-world]
+  (modify
+   :players
+   (fn [players]
+     (map
+      (fn [player]
+        (game-world-update-player-seeds player))
+      players))
+   game-world))
+
 (defn game-world-update [game-world time delta]
   (let [updated (game-world-update-tiles game-world time delta)]
-    (game-world-post-logs-to-players
-     updated
-     (game-world-collect-all-msgs updated))))
+    (game-world-update-players
+     (game-world-post-logs-to-players
+      updated
+      (game-world-collect-all-msgs updated)))))
 
 (defn game-world-find-spirit [game-world name]
   (reduce
@@ -283,6 +303,23 @@
           (fn [players]
             (cons (make-player ((:id-gen game-world)) name) players))
           game-world))
+
+(defn game-world-can-player-pick? [game-world player-id]
+  (> (:seeds-left (game-world-find-player game-world player-id)) 0))
+
+(defn game-world-player-pick [game-world player-id]
+  (game-world-modify-player
+   game-world
+   player-id
+   (fn [player]
+     (modify
+      :seeds-left (fn [s] (- s 1))
+      (if (= 1 (:seeds-left player))
+        (modify
+         :next-refresh
+         (fn [r] (+ (current-time) seeds-duration))
+         player)
+        player)))))
 
 (defn game-world-sync<-fatima [game-world fatima-world]
   (modify :spirits

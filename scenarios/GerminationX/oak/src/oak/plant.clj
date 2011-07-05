@@ -26,6 +26,7 @@
 (def start-health 20)
 (def min-neighbours 2)
 (def max-neighbours 5)
+(def seeds-duration (* 60 60 1000))
 
 (defn plant-type->layer [type]
   (cond

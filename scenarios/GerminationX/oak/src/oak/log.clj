@@ -21,7 +21,7 @@
 
 (defn make-msg [from to msg-id subjects]
   (hash-map
-   :time (.getTime (java.util.Date.))
+   :time (current-time)
    :from from
    :to to
    :msg-id msg-id

@@ -24,6 +24,9 @@
    :layer "none"
    :seeds '()
    :messages '()
+   :level 0
+   :seeds-left 3
+   :next-refresh 0
    :picked-by '()
    :has-picked '()
    :log (make-log 10)))

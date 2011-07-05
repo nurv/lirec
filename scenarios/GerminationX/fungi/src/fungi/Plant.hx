@@ -43,27 +43,6 @@ class Plant extends SpriteEntity
         Seeds=[];
         Layer=layer;
         Spr.Hide(false);
-        
-        var tf = new flash.text.TextField();
-        tf.text = "This plant belongs to the "+type+" species, part of the "+ 
-            Layer+" layer. "+Owner+" planted this.";
-        tf.x=Spr.Pos.x-50;
-        tf.y=Spr.Pos.y-30-Spr.Height*Spr.MyScale.y;
-        tf.height=40;
-        tf.background = true;
-        //tf.backgroundColor = 0x8dd788;
-        tf.border = true;
-        tf.wordWrap = true;
-        tf.autoSize = flash.text.TextFieldAutoSize.LEFT;
-        var t = new flash.text.TextFormat();
-        t.font = "Verdana"; 
-        t.size = 8;                
-        t.color= 0x000000;           
-        tf.setTextFormat(t);
-        Spr.parent.addChild(tf);
-        tf.visible=false;
-        Spr.MouseDown(this,function(c) { tf.visible=true; });
-        Spr.MouseOut(this,function(c) { tf.visible=false; });
 
         if (fruit) Fruit(world);
 	}
@@ -111,19 +90,27 @@ class Plant extends SpriteEntity
         {            
             if (world.MyName!="")
             {
-                var s=new Seed(p.PlantType);
-                if (world.Seeds.Add(world,s))
-                {
-                    p.Seeds.remove(f);
-                    world.ActivatePlants(false);
-                    world.RemoveSprite(f);
-                    world.Server.Request("pick/"+
-                                         Std.string(cast(world.WorldPos.x,Int))+"/"+
-                                         Std.string(cast(world.WorldPos.y,Int))+"/"+
-                                         Std.string(p.Id),
-                                         p,
-                                         function (c,d) {});
-                }
+                world.Server.Request(
+                    "pick/"+
+                        Std.string(cast(world.WorldPos.x,Int))+"/"+
+                        Std.string(cast(world.WorldPos.y,Int))+"/"+
+                        Std.string(p.Id)+"/"+
+                        Std.string(world.MyID),
+                    world,
+                    function (c,d) 
+                    {
+                        if (d.ok==true)
+                        {
+                            // remove the seed now for faster feedback
+                            // the server will maintain this state for 
+                            // other players
+                            p.Seeds.remove(f);
+                            c.RemoveSprite(f);
+                            // add to the current list
+                            var s=new Seed(p.PlantType);
+                            c.Seeds.Add(cast(c,World),s);
+                        }
+                    });
             }
         });
     }

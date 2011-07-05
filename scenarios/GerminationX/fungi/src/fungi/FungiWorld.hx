@@ -48,6 +48,7 @@ class FungiWorld extends World
     var NewsFeed:Feed;
     public var NumPlants:Int;
     public var Season:String;
+    public var PlayerInfo:Dynamic;
 
 	public function new(w:Int, h:Int) 
 	{
@@ -65,6 +66,7 @@ class FungiWorld extends World
 		WorldPos = new Vec3(0,0,0);
 		MyRndGen = new RndGen();
         Server = new ServerConnection();
+        PlayerInfo = {};
         MyName = "";
         MyID = -1;
         NumPlants = 0;
@@ -129,7 +131,6 @@ class FungiWorld extends World
                     var type=c.Seeds.Remove(cast(c,truffle.World));
                     if (type!="")
                     {
-                        c.ActivatePlants(true);
                         c.SpiralScale=1;
                         c.Spiral.SetPos(new Vec2(ob.Pos.x,ob.Pos.y-32));
                         c.AddServerPlant(ob.LogicalPos.Add(new Vec3(0,0,1)),type);
@@ -203,10 +204,12 @@ class FungiWorld extends World
 	{
         Server.Request("login/"+name,
                        this,
-                       function (c,data:Dynamic)
+                       function (c,d:Dynamic)
                        {
-                           c.MyID=data;
-		                   c.MyName=name;
+                           c.PlayerInfo=d;
+                           // todo: remove MyID, MyName
+                           c.MyID=c.PlayerInfo.id;
+		                   c.MyName=c.PlayerInfo.name;
 		                   c.removeChild(c.MyTextEntry);
                        });
 
@@ -266,14 +269,6 @@ class FungiWorld extends World
                                          MyID+"/"+
                                          Math.round(size*100),
             this, function (c,data) {});       
-        }
-	}
-
-    public function ActivatePlants(s:Bool) : Void
-    {
-        for (plant in Plants)
-        {
-            plant.Spr.EnableMouse(s);
         }
 	}
 
@@ -394,6 +389,9 @@ class FungiWorld extends World
                            function(c,d){c.UpdateTile(d);});          
             Server.Request("get-msgs/"+Std.string(MyID),this,
                            function(c,d){c.NewsFeed.Update(cast(c,World),d);});
+            Server.Request("player/"+Std.string(MyID), this, 
+                           function(c,d){c.PlayerInfo=d;});
+            // todo: get-msgs or player - same info within
 
             if (MyName=="")
             {        

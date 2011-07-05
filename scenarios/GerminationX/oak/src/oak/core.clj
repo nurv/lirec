@@ -45,8 +45,8 @@
        "data/characters/minds/Actions.xml"
        (list))))
 
-;(def my-game-world (ref (game-world-load state-filename)))
-(def my-game-world (ref (make-game-world 300 1)))
+(def my-game-world (ref (game-world-load state-filename)))
+;(def my-game-world (ref (make-game-world 300 1)))
 (game-world-save (deref my-game-world) "test.txt")
 
 (append-spit log-filename (str (str (Date.)) " server started\n"))
@@ -86,11 +86,21 @@
                       (game-world-add-player
                        (deref my-game-world) name)))
             (json/encode-to-str
-             (game-world-find-player-id
-              (deref my-game-world) name)))
+             (game-world-find-player
+              (deref my-game-world)
+              (game-world-find-player-id
+               (deref my-game-world) name))))
           :else
-          (json/encode-to-str id))))
+          (json/encode-to-str
+           (game-world-find-player
+            (deref my-game-world) id)))))
 
+  (GET "/player/:player-id/:iefix" [player-id iefix]
+       (json/encode-to-str
+        (game-world-find-player
+         (deref my-game-world)
+         (parse-number player-id))))
+  
   (GET "/get-tile/:tilex/:tiley/:iefix" [tilex tiley iefix]
        (let [tile (game-world-get-tile (deref my-game-world)
                                        (make-vec2 (parse-number tilex)
@@ -131,21 +141,28 @@
        ;(println (deref my-game-world))
        (json/encode-to-str '("ok")))
 
-  (GET "/pick/:tilex/:tiley/:plant-id/:iefix" [tilex tiley plant-id iefix]
-       (dosync
-        (ref-set my-game-world
-                 (game-world-modify-tile
-                  (deref my-game-world)
-                  (make-vec2 (parse-number tilex)
-                             (parse-number tiley))
-                  (fn [tile]
-                    (tile-modify-entity
-                     tile
-                     (parse-number plant-id)
-                     (fn [plant]
-                       (modify :fruit (fn [f] false) plant)))))))
-       (json/encode-to-str '("ok")))
-
+  (GET "/pick/:tilex/:tiley/:plant-id/:player-id/:iefix" [tilex tiley plant-id player-id iefix]
+       (if (game-world-can-player-pick?
+            (deref my-game-world)
+            (parse-number player-id))
+         (do
+           (dosync
+            (ref-set my-game-world
+                     (game-world-modify-tile
+                      (game-world-player-pick
+                       (deref my-game-world)
+                       (parse-number player-id))
+                      (make-vec2 (parse-number tilex)
+                                 (parse-number tiley))
+                      (fn [tile]
+                        (tile-modify-entity
+                         tile
+                         (parse-number plant-id)
+                         (fn [plant]
+                           (modify :fruit (fn [f] false) plant)))))))
+           (json/encode-to-str {:ok true})) 
+         (json/encode-to-str {:ok false})))
+       
   (GET "/hiscores/:iefix" [iefix]
        (json/encode-to-str
         (map
