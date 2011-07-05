@@ -57,6 +57,8 @@ public class GoalsPanel extends AgentDisplayPanel {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	private static boolean firstUpdate = true;
 
 	private DeliberativeComponent _deliberativeComponent;
 	private HashMap<Name,IntentionDisplay> _intentionDisplays;
@@ -105,16 +107,22 @@ public class GoalsPanel extends AgentDisplayPanel {
 		boolean update = false;
 		GoalDisplay gDisplay;
 
-		for(Goal g : _deliberativeComponent.getGoals()){
-			if(g instanceof ActivePursuitGoal){
-				for(Condition c : ((ActivePursuitGoal) g).GetPreconditions()){
-					if (c.hasChangedVerifiability()){
-						update = true;
-						break;
+		if(firstUpdate == true){
+			update = true;
+			firstUpdate = false;
+		}else{
+			for(Goal g : _deliberativeComponent.getGoals()){
+				if(g instanceof ActivePursuitGoal){
+					for(Condition c : ((ActivePursuitGoal) g).GetPreconditions()){
+						if (c.hasChangedVerifiability()){
+							update = true;
+							break;
+						}
 					}
 				}
 			}
 		}
+		
 		
 		if(update){
 			_goals.removeAll();
