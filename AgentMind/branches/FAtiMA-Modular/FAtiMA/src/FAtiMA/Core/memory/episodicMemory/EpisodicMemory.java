@@ -74,7 +74,7 @@ public class EpisodicMemory implements Serializable {
 	
 	// 03/05/11 - Matthias
 	// Activation-Based Forgetting in Short-Term Episodic Memory?
-	private static final boolean AB_FORGETTING_STEM = true;
+	private static final boolean AB_FORGETTING_STEM = false;
 	// Activation-Based Forgetting in Autobiographic Memory?
 	private static final boolean AB_FORGETTING_AM = true;
 	

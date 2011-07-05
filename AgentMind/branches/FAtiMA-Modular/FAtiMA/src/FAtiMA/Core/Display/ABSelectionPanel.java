@@ -56,7 +56,7 @@ public class ABSelectionPanel extends AgentDisplayPanel {
 	private static final String NULL_STRING = "";
 
 	// Show events from the Short-Term Episodic Memory?
-	private static final boolean SHOW_STEM = true;
+	private static final boolean SHOW_STEM = false;
 	// Show events from the Autobiographic Memory?
 	private static final boolean SHOW_AM = true;
 	// It is suggested to set these variables according to
