@@ -86,10 +86,14 @@ public class Time implements Serializable {
 	public String getStrRealTime()
 	{
 		String strRealTime = "";
-		if(this._realTime.get(Calendar.HOUR_OF_DAY) >= 0 && this._realTime.get(Calendar.HOUR_OF_DAY) < 12)
+		if(this._realTime.get(Calendar.HOUR_OF_DAY) >= 0 && this._realTime.get(Calendar.HOUR_OF_DAY) < 6)
+			strRealTime = "Night";
+		else if(this._realTime.get(Calendar.HOUR_OF_DAY) >= 6 && this._realTime.get(Calendar.HOUR_OF_DAY) < 12)
 			strRealTime = "Morning";
-		else
-			strRealTime = "Afternoon";		
+		else if(this._realTime.get(Calendar.HOUR_OF_DAY) >= 12 && this._realTime.get(Calendar.HOUR_OF_DAY) < 18)
+			strRealTime = "Afternoon";
+		else if(this._realTime.get(Calendar.HOUR_OF_DAY) >= 18 && this._realTime.get(Calendar.HOUR_OF_DAY) < 24)
+			strRealTime = "Evening";
 		return strRealTime;
 	}
 	
