@@ -154,9 +154,23 @@ public class ReactiveComponent implements Serializable, IComponent, IBehaviourCo
 			{
 				af.SetAppraisalVariable(NAME, OCCAppraisalVariables.DESIRABILITY.name(), selfEvaluation._desirability.intValue());
 			}
-			if(selfEvaluation._desirabilityForOther != null && selfEvaluation._other != null)
+			if(selfEvaluation._desirabilityForOther != null) 
 			{
-				af.SetAppraisalVariable(NAME,  OCCAppraisalVariables.DESFOROTHER.name() + selfEvaluation._other, selfEvaluation._desirabilityForOther.intValue());
+				String other;
+				if(selfEvaluation._other != null)
+				{
+					other = selfEvaluation._other.toString();
+				}
+				else if(event.GetTarget() != null)
+				{
+					other = event.GetTarget();
+				}
+				else
+				{
+					other = event.GetSubject();
+				}
+				
+				af.SetAppraisalVariable(NAME,  OCCAppraisalVariables.DESFOROTHER.name() + other, selfEvaluation._desirabilityForOther.intValue());
 			}
 			if(selfEvaluation._praiseworthiness != null)
 			{

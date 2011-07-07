@@ -179,8 +179,8 @@ public class Action implements IIntegrityTester, Serializable, IGroundable, Clon
 	}
 	
 	
-	public ValuedAction TriggerAction(AgentModel am, Iterator<ActiveEmotion> emotionsIterator) {
-		ActiveEmotion em;
+	public ValuedAction TriggerAction(AgentModel am, Iterable<ActiveEmotion> emotionsIterator) {
+
 		float maxValue = 0;
 		Name action;
 		ValuedAction va = null;
@@ -200,9 +200,8 @@ public class Action implements IIntegrityTester, Serializable, IGroundable, Clon
 		}
 		 
 		if(substitutionSets != null) {
-			for(Iterator<ActiveEmotion> it = emotionsIterator; it.hasNext();)
+			for(ActiveEmotion em : emotionsIterator)
 			{
-				em = (ActiveEmotion) it.next();
 				if(em.getType().equals(_elicitingEmotion.getType()) &&
 				   em.GetIntensity() >= _elicitingEmotion.GetPotential())
 				{
