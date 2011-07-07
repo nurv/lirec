@@ -31,7 +31,7 @@ public class EmpathicActions extends ActionTendencies {
 		}
 				
 		for(Action a : _actions){
-			va = a.TriggerAction(am, empathicEmotions.listIterator());
+			va = a.TriggerAction(am, empathicEmotions);
 			if (va != null && !isIgnored(va))
 				if(bestAction == null || va.getValue(emState) > bestAction.getValue(emState)) 
 				{
