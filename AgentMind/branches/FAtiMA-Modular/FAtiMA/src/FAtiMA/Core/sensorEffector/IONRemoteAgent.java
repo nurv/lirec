@@ -330,7 +330,7 @@ public class IONRemoteAgent extends RemoteAgent {
 		    e.printStackTrace();
 		}*/
 		
-		//System.out.println("Perceiving and storing event in Memory: " + event);
+		System.out.println("Perceiving event: " + event);
 		_agent.PerceiveEvent(event);
 		
 		//the agent last action suceeded!

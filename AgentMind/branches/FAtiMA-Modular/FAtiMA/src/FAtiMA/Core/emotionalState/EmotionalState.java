@@ -313,8 +313,8 @@ public class EmotionalState implements Serializable {
 	 * in the agent's emotional state
 	 * @return an emotion's iterator
 	 */
-	public Iterator<ActiveEmotion> GetEmotionsIterator() {
-		return _emotionPool.values().iterator();
+	public Iterable<ActiveEmotion> GetEmotionsIterator() {
+		return _emotionPool.values();
 	}
 
 	
@@ -411,77 +411,7 @@ public class EmotionalState implements Serializable {
 		}
 	}
 	
-	/*private void GenerateCompoundEmotions(BaseEmotion potEm, AgentModel am) {
-		ActiveEmotion emotion;
-		short n1;
-		short n2=-1;
-		short res1;
-		short res2=-1;
-		short type;
-		float potential;
-		Collection<ActiveEmotion> c;
-		Iterator<ActiveEmotion> i1;
-		Iterator<BaseEmotion> i2;
-		ArrayList<BaseEmotion> compoundEmotions = new ArrayList<BaseEmotion>();
-		ArrayList<String> appraisalVariables = new ArrayList<String>();
-		//for now we only allow one composed emotion for event
-		//this should be changed by adding the appraisal variables of all emotions that generated
-		//the composed emotion
-		appraisalVariables.add("Composed");
-		
-		//TODO move this code to the OCCComponent
-		type = potEm.GetType();
-		if(type == EmotionType.JOY) {
-			n1 = EmotionType.PRIDE;
-			res1 = EmotionType.GRATIFICATION;
-			n2 = EmotionType.ADMIRATION;
-			res2 = EmotionType.GRATITUDE;
-		}
-		else if (type == EmotionType.DISTRESS){
-			n1 = EmotionType.SHAME;
-			res1 = EmotionType.REGRET;
-			n2 = EmotionType.REPROACH;
-			res2 = EmotionType.ANGER;
-		}
-		else if (type == EmotionType.PRIDE){
-			n1 = EmotionType.JOY;
-			res1 = EmotionType.GRATIFICATION;
-		}
-		else if (type == EmotionType.ADMIRATION) {
-			n1 = EmotionType.JOY;
-			res1 = EmotionType.GRATITUDE;
-		}
-		else if (type == EmotionType.SHAME) {
-			n1 = EmotionType.DISTRESS;
-			res1 = EmotionType.REGRET;
-		}
-		else if (type == EmotionType.REPROACH) {
-			n1 = EmotionType.DISTRESS;
-			res1 = EmotionType.ANGER; 
-		}
-		else return;
-		
-		c = _emotionPool.values();
-		i1 = c.iterator();
-		
-		while (i1.hasNext()) {
-			emotion = i1.next();
-			if(emotion.GetType() == n1 && emotion.GetCause().equals(potEm.GetCause())) {
-				potential = (float) Math.log(Math.pow(potEm.GetPotential(), 2) + Math.pow(emotion.GetPotential(), 2));
-				compoundEmotions.add(new BaseEmotion(res1, potential, appraisalVariables, potEm.GetCause(), potEm.GetDirection()));
-			}
-			if(n2!=-1 && emotion.GetType() == n2 && emotion.GetCause().equals(potEm.GetCause())) {
-				potential = (float) Math.log(Math.pow(potEm.GetPotential(), 2) + Math.pow(emotion.GetPotential(), 2));
-				compoundEmotions.add(new BaseEmotion(res2, potential, appraisalVariables, potEm.GetCause(), potEm.GetDirection()));
-			}
-		}
-		
-		i2 = compoundEmotions.iterator();
-		
-		while(i2.hasNext()) {
-			AddEmotion(i2.next(), am);
-		}
-	}*/
+	
 	
 	public void AddEmotionDisposition(EmotionDisposition emotionDisposition)
 	{

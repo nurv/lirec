@@ -197,7 +197,7 @@ public class Step implements IPlanningOperator, Cloneable, Serializable {
 			prob = _baseprob;
 		}
 		
-		newprob = 0.6f * prob;
+		newprob = 0.8f * prob;
 		newbias = newprob - _baseprob;
 		
 		am.getMemory().getSemanticMemory().Tell(GetBiasName(),new Float(newbias));   
@@ -222,7 +222,7 @@ public class Step implements IPlanningOperator, Cloneable, Serializable {
 			prob = _baseprob;
 		}
 		
-		newprob = 0.6f * prob + 0.4f;
+		newprob = 0.8f * prob + 0.2f;
 		newbias = newprob - _baseprob;
 		am.getMemory().getSemanticMemory().Tell(GetBiasName(),new Float(newbias));   
 	}

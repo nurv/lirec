@@ -123,7 +123,7 @@ public class EmotionalStatePanel extends AgentDisplayPanel {
         _moodBar.setString(aux.toString());
         _moodBar.setValue(Math.round(es.GetMood()*10));
         
-        if(_emotionDisplays.keySet().equals(es.GetEmotionKeysSet())) {
+        /*if(_emotionDisplays.keySet().equals(es.GetEmotionKeysSet())) {
             //in this case, we just have to update the values for the intensity of emotions
             //since the emotions displayed in the previous update are the same emotions
             //in the current update
@@ -136,26 +136,27 @@ public class EmotionalStatePanel extends AgentDisplayPanel {
                  updated = true;
              }    
         }
-        else {
+        else {*/
             //in this case, there's a new emotion added to or removed from  the emotional
             //state, so we have to clear all emotions and start displaying them all again
             
             _emotionsPanel.removeAll(); //removes all displayed emotions from the panel
             _emotionDisplays.clear();
             
-            Iterator<ActiveEmotion> it = es.GetEmotionsIterator();
             EmotionDisplay emotionDisplay;
-            while(it.hasNext()) {
-                em = it.next();
-                emotionDisplay = new EmotionDisplay(em);
+            
+            for(ActiveEmotion aem : es.GetEmotionsIterator())
+            {
+            	emotionDisplay = new EmotionDisplay(aem);
                 
                 _emotionsPanel.add(emotionDisplay.GetEmotionPanel());
         
-                _emotionDisplays.put(em.GetHashKey(),emotionDisplay);      
-           }
+                _emotionDisplays.put(aem.GetHashKey(),emotionDisplay);
+            }
+            
            DisplayStrongestEmotion(es);
            updated = true;
-        }
+        //}
         
         return updated;
     }

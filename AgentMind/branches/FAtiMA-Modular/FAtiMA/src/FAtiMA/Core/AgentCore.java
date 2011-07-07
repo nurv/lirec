@@ -584,8 +584,6 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 
 		propertyName = Name.ParseName(newSubject + "(" + property + ")");
 
-		AgentLogger.GetInstance().logAndPrint("PropertyChanged: " + ToM + " " + propertyName + " " + value);
-
 		PerceivePropertyChanged(ToM,propertyName,value);
 	}
 

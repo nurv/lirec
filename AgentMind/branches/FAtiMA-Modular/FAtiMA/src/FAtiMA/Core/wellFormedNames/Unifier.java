@@ -115,6 +115,48 @@ public abstract class Unifier {
         }
         else return null;
     }
+	
+	/**
+     * @see Name
+     * @see Inequality
+     * 
+     * Inverse of the Unifying Method, receives two WellFormedNames and tries 
+     * to find a list of Substitutions that will make 
+     * both names syntatically different. 
+     * 
+     * @param n1 - The first Name
+     * @param n2 - The second Name
+     * @return A list of substitutions (Inequalities) if the names can be made different, otherwise returns null
+     */
+	public static boolean Disunify(Name n1, Name n2, ArrayList<Substitution> bindings)
+    {
+		Name aux1;
+		Name aux2;
+		ArrayList<Substitution> bindAux;
+
+		if (n1 == null || n2 == null)
+			return false;
+		//parto do principio que a lista de bindings está consistente
+		aux1 = (Name) n1.clone();
+		aux2 = (Name) n2.clone();
+		aux1.MakeGround(bindings);
+		aux2.MakeGround(bindings);
+		if (aux1.isGrounded() && aux2.isGrounded()) {
+			return !aux1.equals(aux2);
+		}
+		
+		bindAux = FindSubst(aux1, aux2);
+		
+		if(bindAux != null)
+		{
+			for(Substitution s : bindAux)
+			{
+				bindings.add(new Inequality(s));
+			}
+		}
+		
+		return true;
+    }
 
 	private static boolean FindSubst(Symbol l1, Symbol l2, ArrayList<Substitution> bindings) {
 		Symbol aux1 = (Symbol) l1.clone();

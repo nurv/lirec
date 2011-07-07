@@ -9,7 +9,7 @@ import FAtiMA.Core.wellFormedNames.Name;
 public class NewEventCondition extends RecentEventCondition {
 
 	private boolean _conditionAlreadyVerified;  
-	private int TIME_INTERVAL_MS = 5000; 
+	private int TIME_INTERVAL_MS = 1000; 
 	
 	
 	/**

@@ -109,6 +109,11 @@ public class Mood implements Serializable {
 	 {
 	 	float newMood;
 	 	
+	 	if(em.getType().equals("HOPE") || em.getType().equals("FEAR"))
+	 	{
+	 		return;
+	 	}
+	 	
 	 	if(em.getValence() == EmotionValence.POSITIVE) {
 		    newMood = _intensity + (em.GetIntensity() * EmotionalPameters.EmotionInfluenceOnMood);
 		    //mood is limited between -10 and 10

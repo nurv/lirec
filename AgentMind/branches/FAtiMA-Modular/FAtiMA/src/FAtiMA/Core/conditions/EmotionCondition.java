@@ -236,16 +236,14 @@ public class EmotionCondition extends PredicateCondition {
 	
 	private ArrayList<SubstitutionSet> SearchEmotion(AgentModel am)
 	{
-		ActiveEmotion aem;
 		ArrayList<Substitution> bindings;
 		ArrayList <SubstitutionSet>substitutionSets = new ArrayList<SubstitutionSet>();
 		AgentModel perspective = am.getModelToTest(getToM());
 		
 		EmotionalState es = perspective.getEmotionalState();
 		
-		for(Iterator<ActiveEmotion> it = es.GetEmotionsIterator();it.hasNext();)
+		for(ActiveEmotion aem : es.GetEmotionsIterator())
 		{
-			aem = (ActiveEmotion) it.next();
 			if(aem.getType().equalsIgnoreCase(this._emotionType))
 			{
 				if(this._intensity.isGrounded())

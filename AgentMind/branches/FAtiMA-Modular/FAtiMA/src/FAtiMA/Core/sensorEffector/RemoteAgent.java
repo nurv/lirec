@@ -333,11 +333,15 @@ public abstract class RemoteAgent extends SocketListener {
 				}
 			}
 			
-			while(_lookAtList.size() > 0)
+			if(_lookAtList.size() > 0)
 			{
-				//there are still some objects/agents that the character hasn't looked yet
-				AgentLogger.GetInstance().log("Sending Look-AT: " + _lookAtList.get(0));
-				Send("look-at " + _lookAtList.remove(0));
+				if(_canAct)
+				{
+					//there are still some objects/agents that the character hasn't looked yet
+					AgentLogger.GetInstance().log("Sending Look-AT: " + _lookAtList.get(0));
+					Send("look-at " + _lookAtList.remove(0));
+					_canAct = false;
+				}
 			}
 		}
 		catch(Exception e)
@@ -563,7 +567,7 @@ public abstract class RemoteAgent extends SocketListener {
 		_canAct = false;
 		SendAction(rAction);
 
-		System.out.println("Sent action for execution: " + rAction._actionType + rAction._target + rAction._parameters);
+		System.out.println("Sent action for execution: " + rAction._actionType + " "+ rAction._target + " " + rAction._parameters);
 		AgentLogger.GetInstance().logAndPrint("Cannot act now!");
 		
 	}
@@ -789,6 +793,8 @@ public abstract class RemoteAgent extends SocketListener {
 		//Signals a lookat event to the Agent
 		//Event event = new Event(_agent.name(), "look-at", subject);
 		//_agent.PerceiveEvent(event);
+		
+		this._canAct = true;
 	}
 	
 	protected void EntityAddedPerception(String perc)
