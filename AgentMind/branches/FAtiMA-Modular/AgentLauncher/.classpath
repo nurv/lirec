@@ -10,7 +10,5 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/FAtiMA.DeliberativeComponent"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/FAtiMA.ReactiveComponent"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/FAtiMA.OCCAffectDerivation"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/FAtiMA.AdvancedMemory"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/FAtiMA.EmotionalIntelligence"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
