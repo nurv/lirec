@@ -29,7 +29,8 @@ public class OCCAffectDerivationComponent implements Serializable, IAffectDeriva
 			ActiveEmotion hopeEmotion, ActiveEmotion fearEmotion, float goalConduciveness, Event e) {
 	
 		OCCEmotionType finalEmotion;
-		float potential = 0;
+		float potential = goalConduciveness;
+		finalEmotion = hopefullOutcome;
 		
 		if(hopeEmotion != null) {
 			if(fearEmotion != null && fearEmotion.GetIntensity() > hopeEmotion.GetIntensity()) {
@@ -45,7 +46,6 @@ public class OCCAffectDerivationComponent implements Serializable, IAffectDeriva
 			potential = fearEmotion.GetPotential();
 			finalEmotion = fearfullOutcome;
 		}
-		else return null;
 		
 		//Change, the goal importance now affects 66% of the final potential value for the emotion
 		potential = (potential +  2* goalConduciveness) / 3;
@@ -128,6 +128,45 @@ public class OCCAffectDerivationComponent implements Serializable, IAffectDeriva
 		return em;
 	}
 	
+	private static OCCBaseEmotion OCCAppraiseCompoundEmotions(Event event, float desirability, float praiseworthiness)
+	{
+		OCCBaseEmotion em = null;
+		float potential;
+		
+		if(desirability > 0)
+		{
+			if(praiseworthiness > 0)
+			{
+				potential = (desirability + praiseworthiness)/2;
+				if(event.GetSubject().equals(Constants.SELF))
+				{
+					em = new OCCBaseEmotion(OCCEmotionType.GRATIFICATION,potential, event, Name.ParseName(Constants.SELF));
+				}
+				else
+				{
+					em = new OCCBaseEmotion(OCCEmotionType.GRATITUDE,potential, event, Name.ParseName(event.GetSubject())); 
+				}
+			}
+		}
+		else if(desirability < 0)
+		{
+			if(praiseworthiness < 0)
+			{
+				potential = -(desirability + praiseworthiness)/2;
+				if(event.GetSubject().equals(Constants.SELF))
+				{
+					em = new OCCBaseEmotion(OCCEmotionType.REMORSE,potential, event, Name.ParseName(Constants.SELF));
+				}
+				else
+				{
+					em = new OCCBaseEmotion(OCCEmotionType.ANGER,potential, event, Name.ParseName(event.GetSubject())); 
+				}
+			}
+		}
+		
+		return em;
+	}
+	
 	/**
 	 * Appraises a Goal's Failure according to the emotions that the agent is experiencing
 	 * @param hopeEmotion - the emotion of Hope for achieving the goal that the character feels
@@ -193,6 +232,19 @@ public class OCCAffectDerivationComponent implements Serializable, IAffectDeriva
 		ActiveEmotion fear;
 		ActiveEmotion hope;
 		float status;
+		
+		if(af.containsAppraisalVariable(OCCAppraisalVariables.DESIRABILITY.name()) && af.containsAppraisalVariable(OCCAppraisalVariables.PRAISEWORTHINESS.name()))
+		{
+			float desirability = af.getAppraisalVariable(OCCAppraisalVariables.DESIRABILITY.name());
+			float praiseworthiness = af.getAppraisalVariable(OCCAppraisalVariables.PRAISEWORTHINESS.name());
+			
+			OCCBaseEmotion composedEmotion = OCCAppraiseCompoundEmotions(event, desirability, praiseworthiness);
+			if(composedEmotion != null)
+			{
+				emotions.add(composedEmotion);
+			}
+			
+		}
 		
 		if(af.containsAppraisalVariable(OCCAppraisalVariables.DESIRABILITY.name()))
 		{
@@ -260,16 +312,14 @@ public class OCCAffectDerivationComponent implements Serializable, IAffectDeriva
 					fear = am.getEmotionalState().GetEmotion(new OCCBaseEmotion(OCCEmotionType.FEAR, 0, event));		 
 					hope = am.getEmotionalState().GetEmotion(new OCCBaseEmotion(OCCEmotionType.HOPE,0, event));
 					
-					if(fear!= null || hope != null)
+					
+					if(status == GOALCONFIRMED)
 					{
-						if(status == GOALCONFIRMED)
-						{
-							emotions.add(AppraiseGoalSuccess(am, hope, fear, goalConduciveness,af.getEvent()));
-						}
-						else if (status == GOALDISCONFIRMED)
-						{
-							emotions.add(AppraiseGoalFailure(am, hope, fear, goalConduciveness,af.getEvent()));
-						}	
+						emotions.add(AppraiseGoalSuccess(am, hope, fear, goalConduciveness,af.getEvent()));
+					}
+					else if (status == GOALDISCONFIRMED)
+					{
+						emotions.add(AppraiseGoalFailure(am, hope, fear, goalConduciveness,af.getEvent()));
 					}	
 				}
 			}
@@ -278,6 +328,9 @@ public class OCCAffectDerivationComponent implements Serializable, IAffectDeriva
 		
 		return emotions;
 	}
+	
+	
+	
 	
 	@Override
 	public AgentDisplayPanel createDisplayPanel(AgentModel am) {

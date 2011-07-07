@@ -5,6 +5,7 @@ import FAtiMA.Core.util.enumerables.EmotionValence;
 public enum OCCEmotionType {
 	ADMIRATION (EmotionValence.POSITIVE){public String[] getAppraisalVariables(){return attribution;}},
 	ANGER (EmotionValence.POSITIVE) {public String[] getAppraisalVariables(){return composed;}},
+	GRATITUDE (EmotionValence.POSITIVE) {public String[] getAppraisalVariables(){return composed;}}, 
 	DISAPPOINTMENT (EmotionValence.NEGATIVE) {public String[] getAppraisalVariables(){return positiveProspect;}},
 	DISTRESS (EmotionValence.NEGATIVE) {public String[] getAppraisalVariables(){return wellBeing;}},
 	FEAR (EmotionValence.NEGATIVE) {public String[] getAppraisalVariables(){return negativeProspect;}},
