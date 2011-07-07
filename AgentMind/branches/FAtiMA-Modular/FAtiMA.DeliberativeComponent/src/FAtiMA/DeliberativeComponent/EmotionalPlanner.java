@@ -272,13 +272,17 @@ public class EmotionalPlanner implements Serializable {
 						{
 							condValue = cond.GetValue();
 							effectValue = effectCond.GetValue();
-							unifyResult = Unifier.Unify(condValue, effectValue, substs);
 							
 							if (cond instanceof PropertyNotEqual)
 							{
-								return;
-								//unifyResult = !unifyResult;
+								unifyResult = Unifier.Disunify(condValue, effectValue, substs);
+								
 							}
+							else
+							{
+								unifyResult = Unifier.Unify(condValue, effectValue, substs);
+							}
+							
 							if (unifyResult) 
 							{
 								newPlan = (Plan) p.clone();
@@ -396,8 +400,13 @@ public class EmotionalPlanner implements Serializable {
 		
 		//APPRAISAL/REAPPRAISAL - the plan brought into the agent's mind will generate/update
 		//hope and fear emotions according to the plan probability
-		af.SetAppraisalVariable(DeliberativeComponent.NAME, (short)7, OCCAppraisalVariables.SUCCESSPROBABILITY.name(), planProb);
-		af.SetAppraisalVariable(DeliberativeComponent.NAME, (short)7, OCCAppraisalVariables.FAILUREPROBABILITY.name(), 1-planProb);
+		//TODO Attention look at this latter
+		//af.SetAppraisalVariable(DeliberativeComponent.NAME, (short)7, OCCAppraisalVariables.SUCCESSPROBABILITY.name(), planProb);
+		//af.SetAppraisalVariable(DeliberativeComponent.NAME, (short)7, OCCAppraisalVariables.FAILUREPROBABILITY.name(), 1-planProb);
+		
+		af.SetAppraisalVariable(DeliberativeComponent.NAME, (short)7, OCCAppraisalVariables.SUCCESSPROBABILITY.name(), goalProb);
+		af.SetAppraisalVariable(DeliberativeComponent.NAME, (short)7, OCCAppraisalVariables.FAILUREPROBABILITY.name(), 1-goalProb);
+		
 		am.updateEmotions(af);
 		
 		fearEmotion = am.getEmotionalState().GetEmotion(new OCCBaseEmotion(OCCEmotionType.FEAR, 0, af.getEvent()));		 
@@ -530,7 +539,7 @@ public class EmotionalPlanner implements Serializable {
 		//  Causal conflicts: promotion, demotion or emotion focused coping (to ignore the conflict
 		flaw = p.NextFlaw();
 		if (flaw != null) {
-			AgentLogger.GetInstance().log("CausalConflict detected" + flaw);
+			//AgentLogger.GetInstance().log("CausalConflict detected" + flaw);
 			newPlans = true;
 			newPlan = (Plan) p.clone();
 			newPlan.AddOrderingConstraint(flaw.GetCausalLink().getDestination(), flaw.GetStep());

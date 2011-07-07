@@ -129,7 +129,7 @@ public class GoalsPanel extends AgentDisplayPanel {
 			_goalDisplays.clear();
 			for(Goal g : _deliberativeComponent.getGoals()){
 				if(g instanceof ActivePursuitGoal){	
-					gDisplay = new GoalDisplay(ag, g);
+					gDisplay = new GoalDisplay(_deliberativeComponent, ag, g);
 					_goals.add(gDisplay.getGoalPanel());
 					_goalDisplays.add(gDisplay);
 				}

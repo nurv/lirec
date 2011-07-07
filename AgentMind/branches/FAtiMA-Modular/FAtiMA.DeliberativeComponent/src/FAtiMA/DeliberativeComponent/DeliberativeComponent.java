@@ -187,7 +187,7 @@ public class DeliberativeComponent implements Serializable, IComponent,
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private static final long waitingTime = 2000;
+	private static final long waitingTime = 30000;
 	private static final float MINIMUMUTILITY = 0.5f;
 	private static final float SELECTIONTHRESHOLD = 1.2f;
 	public static final String NAME = "Deliberative";
@@ -494,12 +494,12 @@ public class DeliberativeComponent implements Serializable, IComponent,
 				_selectedPlan = _planner.ThinkAbout(am, this, i);
 			}
 
-			if (_selectedPlan == null && i.IsStrongCommitment()
+			/*if (_selectedPlan == null && i.IsStrongCommitment()
 					&& !i.getGoal().checkPreconditions(am)) {
 				i.ProcessIntentionCancel(am);
 				removeIntention(i);
 				return null;
-			}
+			}*/
 
 			// A plan does not have open preconditions nor any steps. This means
 			// that the plan was succesfully

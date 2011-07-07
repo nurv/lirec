@@ -41,6 +41,7 @@ import FAtiMA.Core.Display.ConditionsPanel;
 import FAtiMA.Core.goals.ActivePursuitGoal;
 import FAtiMA.Core.goals.Goal;
 import FAtiMA.Core.goals.InterestGoal;
+import FAtiMA.DeliberativeComponent.DeliberativeComponent;
 
 
 /**
@@ -53,19 +54,19 @@ public class GoalDisplay {
 
 	JPanel _panel;
 	JLabel _goalType;
-    JLabel _impOfSuccess;
-    JLabel _impOfFailure;
+    JLabel _expectedUtility;
+    //JLabel _impOfFailure;
     
 
-    public GoalDisplay(AgentModel am, Goal g) {
+    public GoalDisplay(DeliberativeComponent deliberative, AgentModel am, Goal g) {
     	_panel = new JPanel();
         _panel.setBorder(BorderFactory.createTitledBorder(g.getName().toString()));
         _panel.setLayout(new BoxLayout(_panel,BoxLayout.Y_AXIS));
-        _panel.setMaximumSize(new Dimension(500,300));
+        //_panel.setMaximumSize(new Dimension(500,300));
         _panel.setMinimumSize(new Dimension(500,300));
         
-        _impOfSuccess = new JLabel();
-        _impOfFailure = new JLabel();
+        _expectedUtility = new JLabel();
+        //_impOfFailure = new JLabel();
         _goalType = new JLabel();
         
         Dimension d1 = new Dimension(70,25);
@@ -75,19 +76,19 @@ public class GoalDisplay {
         pnl.setLayout(new BoxLayout(pnl,BoxLayout.X_AXIS));
         pnl.setMaximumSize(new Dimension(200,30));
         
-        JLabel lbl = new JLabel("I. Success:");
+        JLabel lbl = new JLabel("Expected Utility:");
         lbl.setMaximumSize(d1);
         lbl.setMinimumSize(d1);
         pnl.add(lbl);
         
-        _impOfSuccess.setMaximumSize(d2);
-        _impOfSuccess.setMinimumSize(d2);
-        pnl.add(_impOfSuccess);
-        lbl = new JLabel("I. Failure:");
-        lbl.setMaximumSize(d1);
-        lbl.setMinimumSize(d1);
-        pnl.add(lbl);
-        pnl.add(_impOfFailure);
+        _expectedUtility.setMaximumSize(d2);
+        _expectedUtility.setMinimumSize(d2);
+        pnl.add(_expectedUtility);
+        //lbl = new JLabel("I. Failure:");
+        //lbl.setMaximumSize(d1);
+        //lbl.setMinimumSize(d1);
+        //pnl.add(lbl);
+        //pnl.add(_impOfFailure);
         
         _panel.add(pnl);
         
@@ -113,32 +114,30 @@ public class GoalDisplay {
         
         _panel.add(pnl);
         
-        Float aux;
-        
-        aux = new Float(g.GetImportanceOfSuccess(am));
-        _impOfSuccess.setText(aux.toString());
-        
-        aux = new Float(g.GetImportanceOfFailure(am));
-        _impOfFailure.setText(aux.toString());
         
         if(g instanceof ActivePursuitGoal) {
-        	init((ActivePursuitGoal) g);
+        	init(deliberative, am, (ActivePursuitGoal) g);
         }
         else {
-        	init((InterestGoal) g);
+        	init(am, (InterestGoal) g);
         }
         
     }
     
-    private void init(InterestGoal g) {
+    private void init(AgentModel am, InterestGoal g) {
         _goalType.setText("Interest");
+        Float aux = new Float(g.GetImportanceOfSuccess(am));
+        _expectedUtility.setText(aux.toString());
         ConditionsPanel protectedConditions = new ConditionsPanel("Protected Constraints",
         		g.getProtectionConstraints());
         _panel.add(protectedConditions);
     }
     
-    private void init(ActivePursuitGoal g) {
+    private void init(DeliberativeComponent deliberative, AgentModel am, ActivePursuitGoal g) {
     	_goalType.setText("ActivePursuit");
+    	Float aux = new Float(deliberative.getExpectedUtility(am, g));
+    	_expectedUtility.setText(aux.toString());
+    	
     	ConditionsPanel preconditions = new ConditionsPanel("Preconditions",
         		g.GetPreconditions());
         _panel.add(preconditions);

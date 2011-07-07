@@ -423,6 +423,7 @@ public class Intention implements Serializable {
 	    	//getParentIntention().CheckLinks();
 	    }
 	    
+	     System.out.println("Goal Failure - " + getGoal().getName());
 	     AgentLogger.GetInstance().logAndPrint("Goal FAILED - " + _goal.getName().toString());	    
 	}
 	
@@ -434,6 +435,8 @@ public class Intention implements Serializable {
 	    {
 	    	getParentIntention().CheckLinks(am);
 	    }
+		
+		System.out.println("Goal Cancel - " + getGoal().getName());
 	}
 	
 	/**

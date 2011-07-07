@@ -8,12 +8,12 @@ public class DefaultExpectedUtility implements IExpectedUtilityStrategy
 {
 	public float getExpectedUtility(AgentModel am, ActivePursuitGoal g)
 	{
-		return g.GetImportanceOfSuccess(am) * g.getProbability(am);
+		return g.GetImportanceOfSuccess(am);// * g.getProbability(am);
 	}
 	
 	public float getExpectedUtility(AgentModel am, Intention i)
 	{
-		return i.getGoal().GetImportanceOfSuccess(am) * i.GetProbability(am);
+		return i.getGoal().GetImportanceOfSuccess(am);// * i.GetProbability(am);
 	}
 
 }
