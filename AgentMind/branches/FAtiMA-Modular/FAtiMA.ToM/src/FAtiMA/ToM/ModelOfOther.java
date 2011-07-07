@@ -108,16 +108,23 @@ public class ModelOfOther implements AgentModel, Serializable {
 	
 	public void emotionReading(Event e)
 	{
-		
+		ArrayList<BaseEmotion> emotions = new ArrayList<BaseEmotion>(); 
 		BaseEmotion perceivedEmotion;
-		ActiveEmotion predictedEmotion;
+		ActiveEmotion predictedEmotion = null;
 		AppraisalFrame af;
 		//if the perceived action corresponds to an emotion expression of other, we 
 		//should update its action tendencies accordingly
 		perceivedEmotion = _reactiveComponent.getActionTendencies().RecognizeEmotion(this, e.toStepName());
 		if(perceivedEmotion != null)
 		{
-			predictedEmotion = _es.GetEmotion(perceivedEmotion.GetHashKey());
+			for(ActiveEmotion em : _es.GetEmotionsIterator())
+			{
+				if(em.getType().equals(perceivedEmotion.getType()))
+				{
+					predictedEmotion = em;
+				}
+			}
+			
 			if(predictedEmotion == null)
 			{
 				//Agent model has to be null or the appraisal frame will generate emotions when we set the appraisal
@@ -129,8 +136,15 @@ public class ModelOfOther implements AgentModel, Serializable {
 					c.inverseAffectDerivation(this,perceivedEmotion,af);
 				}
 				
-				//updating other's emotional state
-				_es.AddEmotion(perceivedEmotion, this);
+				for(IAffectDerivationComponent c : _affectDerivationComponents)
+				{
+					emotions.addAll(c.affectDerivation(this, af));
+				}
+				
+				for(BaseEmotion emotion : emotions)
+				{
+					_es.AddEmotion(emotion, this);
+				}
 				
 				for(IAppraisalDerivationComponent c : _appraisalComponents)
 				{
@@ -198,7 +212,11 @@ public class ModelOfOther implements AgentModel, Serializable {
 
 	@Override
 	public AgentModel getModelToTest(Symbol ToM) {
-		return null;
+		if(ToM.equals(Constants.UNIVERSAL) || ToM.equals(Constants.SELF))
+		{
+			return this;
+		}
+		else return null;
 	}
 
 	@Override
