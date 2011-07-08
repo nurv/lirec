@@ -103,7 +103,7 @@ public class MemoryTable extends JTable {
 	
 	public void ClearRows()
 	{
-		for(int i = 0; i < this._model.getRowCount(); i++)
+		while(this._model.getRowCount() > 0)
 		{
 			this._model.removeRow(0);
 		}

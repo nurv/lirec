@@ -106,7 +106,6 @@ public class ShortTermMemoryPanel extends AgentDisplayPanel implements Runnable 
         
         
         _stmRecordDisplay.update(_agentModelTemp);
-     
         
         ListIterator<KnowledgeSlot> li = sm.GetFactList().listIterator();
         

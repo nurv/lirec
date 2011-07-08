@@ -126,7 +126,7 @@ public class KBTable extends JTable {
 	
 	public void Clear()
 	{
-		for(int i = 0; i < this._model.getRowCount(); i++)
+		while(this._model.getRowCount() > 0)
 		{
 			this._model.removeRow(0);
 		}

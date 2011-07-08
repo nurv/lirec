@@ -71,10 +71,10 @@ public class AgentDisplay {
 		_displayPane.addTab("Emotional State",null,panel,"displays the character's emotional state");
 		
 		panel = new KnowledgeBasePanel();
-		_displayPane.addTab("Knowledge Base",null,panel,"displays all information stored in the KB");
+		_displayPane.addTab("Long Term Knowledge Base",null,panel,"displays all information stored in the Long Term KB");
 		
 		panel = new EpisodicMemoryPanel();
-		_displayPane.addTab("Episodic Memory", null, panel, "displays all the records in the character's episodic memory");
+		_displayPane.addTab("Long Term Episodic Memory", null, panel, "displays all the records in the character's Long Term episodic memory");
 	
 		panel = new ShortTermMemoryPanel();
 		_displayPane.addTab("Short Term Memory", null, panel, "displays all the records in the character's short term memory");
