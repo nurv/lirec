@@ -192,7 +192,6 @@ public class EmotionalState implements Serializable {
 			am.getMemory().getEpisodicMemory().AssociateEmotionToAction(am.getMemory(), 
 					auxEmotion,
 					auxEmotion.GetCause());
-			//this.GenerateCompoundEmotions(potEm, am);
 		}
 		
 		

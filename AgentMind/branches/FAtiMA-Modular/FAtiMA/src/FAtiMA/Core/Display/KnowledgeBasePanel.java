@@ -30,12 +30,15 @@
 
 package FAtiMA.Core.Display;
 
+import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.table.DefaultTableModel;
 
 import FAtiMA.Core.AgentCore;
 import FAtiMA.Core.AgentModel;
@@ -50,23 +53,26 @@ public class KnowledgeBasePanel extends AgentDisplayPanel {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
-	private ArrayList<KnowledgeFactDisplay> _knowledgeFactList;
     
-    private JPanel _knowledgeFactsPanel;
+    private KBTable _table;
     
     public KnowledgeBasePanel() {
         super();
         this.setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
         
-        _knowledgeFactList = new ArrayList<KnowledgeFactDisplay>();
-        
-        _knowledgeFactsPanel = new JPanel();
-		_knowledgeFactsPanel.setLayout(new BoxLayout(_knowledgeFactsPanel,BoxLayout.Y_AXIS));
+        JPanel panel = new JPanel();
+        panel.setBorder(BorderFactory.createEtchedBorder());
+        panel.setLayout(new BoxLayout(panel,BoxLayout.Y_AXIS));
+        panel.setMaximumSize(new Dimension(400,600));
+        //panel.setMinimumSize(new Dimension(400,700));
+               
+        _table = new KBTable(new DefaultTableModel());
+        		
+		JScrollPane KBScroll = new JScrollPane(_table);
 		
-		JScrollPane emotionsScroll = new JScrollPane(_knowledgeFactsPanel);
+		panel.add(KBScroll);
 		
-		this.add(emotionsScroll);
+		this.add(panel);
 		
     }
     
@@ -80,7 +86,6 @@ public class KnowledgeBasePanel extends AgentDisplayPanel {
         ListIterator<KnowledgeSlot> li = am.getMemory().getSemanticMemory().GetKnowledgeBaseFacts().listIterator(); 
         
         KnowledgeSlot slot;
-        KnowledgeFactDisplay kDisplay;
         int index;
         
         boolean newFactAdded = false;
@@ -88,16 +93,14 @@ public class KnowledgeBasePanel extends AgentDisplayPanel {
         while (li.hasNext()) {
             index = li.nextIndex();
             slot = (KnowledgeSlot) li.next();
-            if(index >= _knowledgeFactList.size()) {
+            if(index >= _table.getRowCount())
+            {
+            //if(index >=  _knowledgeFactList.size()) {
                 newFactAdded = true;
-                kDisplay = new KnowledgeFactDisplay(slot.getName(),slot.getValue().toString());
-                _knowledgeFactList.add(kDisplay);
-                _knowledgeFactsPanel.add(kDisplay.GetPanel());
+                _table.AddKBFact(slot.getName(),slot.getValue());
             }
             else {
-                kDisplay = (KnowledgeFactDisplay) _knowledgeFactList.get(index);
-                kDisplay.SetName(slot.getName());
-                kDisplay.SetValue(slot.getValue().toString());
+                _table.SetRow(index, slot.getName(), slot.getValue());
             }
         }
         
