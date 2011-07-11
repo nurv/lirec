@@ -31,14 +31,15 @@ package cmion.level3.supersimplemind;
 
 import java.util.ArrayList;
 
+import cmion.level2.migration.InviteMigration;
 import cmion.level3.MindAction;
 
-/** an example mind for migration demonstration puposes */
-public class SuperSimpleMigratingMind
+/** an example mind for demonstrating and testing migration by invite*/
+public class SuperSimpleMigratingByInviteMind
 {
 
 /** a pointer to the connector object that connects this mind to the competency manager */	
-private SuperSimpleMigratingMindConnector connector;	
+private SuperSimpleMigratingByInviteMindConnector connector;	
 
 /** a boolean tracking whether this mind is executing an action at the moment (i.e. waiting for 
  *  results from that action) or not */
@@ -51,7 +52,7 @@ private boolean sleeping;
 private String agentName;
 
 /** creates a new super simple mind */
-public SuperSimpleMigratingMind(SuperSimpleMigratingMindConnector connector)
+public SuperSimpleMigratingByInviteMind(SuperSimpleMigratingByInviteMindConnector connector)
 {
 	this.connector = connector;
 	executing = false;
@@ -70,30 +71,19 @@ public String getAgentName()
 public synchronized void sendAwake() 
 {
 	System.out.println("Awaking");
-	if (sleeping)
-	{
-		// if we are not already executing something, execute a new random action
-		sleeping = false;
-		if (!executing) executeMigrationAction();
-	}
+	sleeping = false;
 }
 
 /** notify the mind of an action failure*/
 public synchronized  void sendFailure(MindAction a) {
 	// this super simple mind does not care what happens to the actions it sends
 	executing = false;
-	
-	// if we are not sleeping, execute new random action
-	//if (!sleeping) executeMigrationAction();
 }
 
 /** notify the mind of an action success*/
 public synchronized void sendSuccess(MindAction a) {
 	// this super simple mind does not care what happens to the actions it sends
 	executing = false;
-	
-	// if we are not sleeping, execute new random action
-	//if (!sleeping) executeMigrationAction();	
 }
 
 /** send the mind to sleep */
@@ -105,7 +95,12 @@ public synchronized void sendSleep()
 /** the mind processes remote actions (actions of other agents / users) in this function */
 public synchronized void sendRemoteAction(MindAction remoteAction) 
 {
-	//this super simple mind doesn't do anything with perceptions
+	// we act if we perceive the remote action of invitation and if we are not sleeping
+	if (!sleeping && remoteAction.getName().equals("MigrationInvitation")) 
+	{
+		// receiving an invitation causes us to migrate to the inviting device
+		executeMigrationAction(remoteAction.getSubject());
+	}
 }
 
 /** returns whether the mind is sleeping or not*/
@@ -115,32 +110,20 @@ public synchronized  boolean isSleeping()
 }
 
 /** creates a Migrating action to a specific device and attempts to execute it */
-private void executeMigrationAction()
+private void executeMigrationAction(String targetDevice)
 {
 	ArrayList<String> parameters = new ArrayList<String>();
-	parameters.add("B");
-	
-	// modify this for test purposes
-	MindAction ma = new MindAction(agentName,"Migration",parameters);
-	this.connector.newAction(ma);
-	executing = true;
-}
-
-/** creates a Migrating action to a specific device and attempts to execute it */
-public void executeMigrationBackAction()
-{
-	ArrayList<String> parameters = new ArrayList<String>();
-	parameters.add("A");
-	
-	// modify this for test purposes
+	parameters.add(targetDevice);
 	MindAction ma = new MindAction(agentName,"Migration",parameters);
 	this.connector.newAction(ma);
 	executing = true;
 }
 
 /** the mind processes added entities in this function */
-public void sendEntityAdded(String entityName) {
-	//this super simple mind doesn't do anything with perceptions
+public void sendEntityAdded(String entityName) 
+{
+	// if a new entity is added then invite an migration
+	connector.raise(new InviteMigration());
 }
 
 /** the mind processes removed entities in this function */

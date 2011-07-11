@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <migrationconfig>
 	<configuration>
-		<listenport value="34871" />
+		<devicename value="B" />
+		<listenport value="34873" />
+		<inviteport value="34874" />
 		<agent active="false" />
 	</configuration>
 	<devices>
-		<device name="A" host="localhost" port="34872" />
+		<device name="A" host="localhost" port="34871" inviteport="34872" />
 	</devices>
 </migrationconfig>
 

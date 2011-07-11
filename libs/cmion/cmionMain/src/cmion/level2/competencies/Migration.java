@@ -10,10 +10,14 @@ import ion.Meta.TypeSet;
 import ion.Meta.Events.IAdded;
 import ion.Meta.Events.IRemoved;
 
+import java.io.BufferedWriter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -34,7 +38,10 @@ import org.xml.sax.SAXException;
 import cmion.architecture.IArchitecture;
 import cmion.level2.Competency;
 import cmion.level2.migration.HaltMigration;
+import cmion.level2.migration.IncomingInvite;
 import cmion.level2.migration.IncomingMigration;
+import cmion.level2.migration.InviteListener;
+import cmion.level2.migration.InviteMigration;
 import cmion.level2.migration.MessageDelivered;
 import cmion.level2.migration.MessageReceived;
 import cmion.level2.migration.MigrationComplete;
@@ -48,6 +55,8 @@ import cmion.level2.migration.SynchronizationStart;
 import cmion.level2.migration.Synchronize;
 import cmion.level2.migration.Synchronizer;
 import cmion.level2.migration.SynchronizerImpl;
+import cmion.level3.EventRemoteAction;
+import cmion.level3.MindAction;
 
 
 public class Migration extends Competency {
@@ -56,7 +65,10 @@ public class Migration extends Competency {
 
 	private HashMap<String, Device> deviceList;
 	private Synchronizer sync;
+	private InviteListener inviteListener;
+	private String devicename;
 	private int listenPort;
+	private int listenInvitePort;
 	private List<Element> migrationElements;
 	private Document migrationDocument;
 	private Device destination;
@@ -67,6 +79,7 @@ public class Migration extends Competency {
 	private DocumentBuilder docBuilder; 
 	private Set<Object> lockingObjects;
 	private boolean migrationOnHalt;
+
 	
 	/* This class represents a Device to which the agent is able
 	 * to migrate to.
@@ -77,13 +90,21 @@ public class Migration extends Competency {
 		private String name;
 		private String host;
 		private int port;
+		private int inviteport;
 		private boolean isAvailable;
 		
 		public Device(String name, String host, int port){
 			this.name = name;
 			this.host = host;
 			this.port = port;
+			this.inviteport = -1;
 		}
+
+		public Device(String name, String host, int port, int inviteport){
+			this(name,host,port);
+			this.inviteport = inviteport;
+		}
+
 		
 		public boolean isAvailable(){
 			return isAvailable;
@@ -99,6 +120,10 @@ public class Migration extends Competency {
 
 		public int getPort() {
 			return port;
+		}
+		
+		public int getInvitePort() {
+			return inviteport;
 		}
 	}
 	
@@ -174,6 +199,10 @@ public class Migration extends Competency {
 			return;
 		}
 		
+		// set up the invite listener
+		this.inviteListener = new InviteListener(listenInvitePort);
+		inviteListener.start();
+	
 		available = true;
 	}
 	
@@ -198,6 +227,8 @@ public class Migration extends Competency {
 		// and add the Synchronizer if necessary.
 		if(getSimulation() != null){
 			getSimulation().getElements().add(sync);
+			getSimulation().getEventHandlers().add(new InviteMigrationHandler());
+			getSimulation().getEventHandlers().add(new IncomingInviteHandler());
 		}
 		
 		this.getRequestHandlers().add(new MigrationExecuter());
@@ -301,6 +332,23 @@ public class Migration extends Competency {
 		Element listenPort = (Element) config.getElementsByTagName("listenport").item(0);
 		this.listenPort = Integer.parseInt(listenPort.getAttribute("value"));
 		
+		// try to read inviteport
+		if (config.getElementsByTagName("inviteport").getLength()>0)
+		{
+			Element invitePort = (Element) config.getElementsByTagName("inviteport").item(0);
+			this.listenInvitePort = Integer.parseInt(invitePort.getAttribute("value"));
+		}
+		else listenInvitePort = -1;
+
+		// try to read devicename
+		if (config.getElementsByTagName("devicename").getLength()>0)
+		{
+			Element deviceName = (Element) config.getElementsByTagName("devicename").item(0);
+			this.devicename = deviceName.getAttribute("value");
+		}
+		else devicename = "";
+
+		
 		Element agent = (Element) config.getElementsByTagName("agent").item(0);
 		this.occupied = Boolean.parseBoolean(agent.getAttribute("active"));
 		
@@ -311,16 +359,17 @@ public class Migration extends Competency {
 		
 		for(int i=0 ; i < deviceList.getLength() ; i++){
 			Element device = (Element) deviceList.item(i);
-			
-			String name;
-			String host;
-			Integer port;
-			
-			name = device.getAttribute("name");
-			host = device.getAttribute("host");
-			port = new Integer(device.getAttribute("port"));
-			
-			this.deviceList.put(name, new Device(name, host, port));
+						
+			String name = device.getAttribute("name");
+			String host = device.getAttribute("host");
+			Integer port = new Integer(device.getAttribute("port"));
+			if (device.getAttribute("inviteport").equals(""))
+				this.deviceList.put(name, new Device(name, host, port));
+			else
+			{
+				Integer inviteport = new Integer(device.getAttribute("inviteport"));
+				this.deviceList.put(name, new Device(name, host, port, inviteport));				
+			}			
 		}
 	}
 	
@@ -481,7 +530,7 @@ public class Migration extends Competency {
 			schedule(new ExecuteMigration());
 		}
 	}
-	
+		
 	private class SimulationAddedHandler extends EventHandler  {
 		
 		public SimulationAddedHandler() {
@@ -516,4 +565,84 @@ public class Migration extends Competency {
 
 	private class ExecuteMigration extends Request{
 	}
+	
+	/** Event Handler for handling InviteMigration events, an event telling us we would like to invite an agent
+	 *  to migrate into this embodiment. In this class the concrete invitation issuing is handled */
+	private class InviteMigrationHandler extends EventHandler{
+		
+		public InviteMigrationHandler(){
+			super(InviteMigration.class);
+		}
+		
+		@Override
+		public void invoke(IEvent evt) 
+		{
+			// check if we are occupied already, if so, there's no point inviting someone
+			if (occupied) return;
+			
+			// check if we know our own device name, if not we cannot send an invitation
+			if (devicename.equals("")) 
+			{
+				System.out.println("Cannot send invite, don't know my own device name");
+				return;
+			}
+			
+			// send an invite to all known devices (because we don't know where an agent is) to migrate over here
+			for (Device d : deviceList.values())
+			{
+				try {
+					// the invite is sent to the inviteport of the device, check if one was specified, otherwise skip device
+					if (d.inviteport<0)	continue;
+					Socket s = new Socket(d.host,d.inviteport);
+					BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
+					// the invite simply consists of our device name followed by a new line, afterwards we can clos the socket 
+					bw.write(devicename);
+					bw.newLine();
+					bw.close();
+					s.close();
+					
+				} catch (UnknownHostException e) 
+				{
+					e.printStackTrace();
+				} catch (IOException e) 
+				{
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	/** Event Handler for handling IncomingInvite events, an event telling us some embodiment would like to invite the agent
+	 *  we are currently holding to migrate over. In this class the invitation is checked for validity and if it applies,
+	 *  a remote action is raised so that the agent mind can decide on whether to follow the invitation */	
+	private class IncomingInviteHandler extends EventHandler{
+		
+		public IncomingInviteHandler(){
+			super(IncomingInvite.class);
+		}
+		
+		@Override
+		public void invoke(IEvent evt) 
+		{
+			// ignore the invitation if there is no agent here, to be invited
+			if (!occupied) return;
+			
+			String inviter = ((IncomingInvite)evt).getInviter();
+			
+			// check if the inviter exists in our device list
+			if (!deviceList.containsKey(inviter))
+			{
+				System.out.println("We have been invited to migrate to "+inviter+". Error: No such device known!");
+				return;
+			}
+			System.out.println("We have been invited to migrate to "+inviter+".");
+
+			
+			// if we got this far, raise a remote action, telling the mind we've been invited
+			// if the mind is interested, it can then trigger a migration
+			MindAction ma = new MindAction(inviter,"MigrationInvitation",null);
+			Migration.this.raise(new EventRemoteAction(ma));
+		}
+	}
+		
 }

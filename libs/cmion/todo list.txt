@@ -3,6 +3,8 @@ TODO soon:
 
 - Extend Comp. Manager to allow competencies to be restarted with new parameters while running (if the competency permits and supports it)
 
+- Migration: specify how the embodiment behaves when the agent leaves it.
+
 
 Ideas for future:
 -----------------
