@@ -601,13 +601,9 @@ public class Migration extends Competency {
 					bw.close();
 					s.close();
 					
-				} catch (UnknownHostException e) 
-				{
-					e.printStackTrace();
-				} catch (IOException e) 
-				{
-					e.printStackTrace();
-				}
+				} 
+				catch (UnknownHostException e) {} 
+				catch (IOException e) {}
 			}
 		}
 	}
