@@ -254,11 +254,12 @@
    game-world))
 
 (defn game-world-update [game-world time delta]
-  (let [updated (game-world-update-tiles game-world time delta)]
-    (game-world-update-players
-     (game-world-post-logs-to-players
-      updated
-      (game-world-collect-all-msgs updated)))))
+  (game-world-update-players
+   (game-world-update-tiles
+    (game-world-post-logs-to-players
+     game-world
+     (game-world-collect-all-msgs game-world))
+    time delta)))
 
 (defn game-world-find-spirit [game-world name]
   (reduce

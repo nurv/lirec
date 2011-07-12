@@ -20,7 +20,7 @@
   (:require
    clojure.contrib.math))
 
-(def season-length (* 60 10))
+(def season-length (* 60 2))
 (def min-health 10)
 (def max-health 90)
 (def start-health 20)
@@ -136,12 +136,19 @@
 
 (defn plant-add-to-log [plant log type]
   (log-add-msg 
-   (make-log 10)
+   log
    (make-msg
     (:id plant)
     (:owner-id plant)
     type
     ())))
+
+(defn plant-clear-log [plant]
+  (modify
+   :log
+   (fn [log]
+     (make-log 10))
+   plant))
 
 (defn plant-update-log [plant old-state]
   (if (not (= (:state plant) old-state))
@@ -157,9 +164,9 @@
              (= (:state plant) 'ill-c))
         (plant-add-to-log plant log 'i-am-ill)
         
-        (and (= old-state 'decay-c)
-             (= (:state plant) 'grow-a))
-        (plant-add-to-log plant log 'i-am-regrowing)
+       ; (and (= old-state 'decay-c)
+       ;      (= (:state plant) 'grow-a))
+       ; (plant-add-to-log plant log 'i-am-regrowing)
         
         (and (= old-state 'ill-c)
              (= (:state plant) 'decayed))
@@ -169,13 +176,13 @@
              (not (= (:state plant) 'ill-c)))
         (plant-add-to-log plant log 'i-have-recovered)
 
-        (and (not (= old-state 'fruit-a))
-             (= (:state plant) 'fruit-a))
-        (plant-add-to-log plant log 'i-have-fruited)
+       ; (and (not (= old-state 'fruit-a))
+       ;      (= (:state plant) 'fruit-a))
+       ; (plant-add-to-log plant log 'i-have-fruited)
 
-        :else (make-log 10)))
+        :else log))
      plant)
-    (modify :log (fn [log] (make-log 10)) plant)))
+    plant))
 
 (defn plant-update-health [plant neighbours rules]
   (modify
@@ -223,7 +230,9 @@
     (plant-update-log
      (plant-update-health
       (plant-update-fruit
-       (plant-update-state plant time delta season))
+       (plant-update-state
+        (plant-clear-log plant)
+        time delta season))
       neighbours rules)
      old-state)))
 
@@ -245,4 +254,17 @@
        (> v 0))
      (nth rules (plant-type->id (:type plant)))))
    })
-       
+
+(defn plant-picked [plant player-id]
+  (println "hello from plant-picked")
+  (modify
+   :log
+   (fn [log]
+     (log-add-msg 
+      log
+      (make-msg
+       (:id plant)
+       (:owner-id plant)
+       'i-have-been-picked-by
+       (list player-id))))
+   (modify :fruit (fn [f] false) plant)))
