@@ -139,9 +139,12 @@
    log
    (make-msg
     (:id plant)
+    (:type plant)
     (:owner-id plant)
     type
-    ())))
+    ()
+    'plant
+    (:type plant))))
 
 (defn plant-clear-log [plant]
   (modify
@@ -255,8 +258,7 @@
      (nth rules (plant-type->id (:type plant)))))
    })
 
-(defn plant-picked [plant player-id]
-  (println "hello from plant-picked")
+(defn plant-picked [plant player]
   (modify
    :log
    (fn [log]
@@ -264,7 +266,10 @@
       log
       (make-msg
        (:id plant)
+       (:type plant)
        (:owner-id plant)
        'i-have-been-picked-by
-       (list player-id))))
+       (list (:name player))
+       'player
+       (:fbid player))))
    (modify :fruit (fn [f] false) plant)))

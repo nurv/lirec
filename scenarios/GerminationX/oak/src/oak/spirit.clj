@@ -48,12 +48,13 @@
 	"GRATITUDE" 0
 	"ANGER" 0 })
 
-(defn make-spirit [remote-agent]
+(defn make-spirit [id remote-agent]
   (println (str "creating spirit for " (remote-agent-name remote-agent)))
   (hash-map
    :version 0
    :tile (make-vec2 0 0)
    :pos (make-vec2 5 5)
+   :id id
    :name (remote-agent-name remote-agent)
    :emotions (emotion-map)
    :emotionalloc (make-vec2 5 5)
@@ -131,10 +132,13 @@
             (log-add-msg
              log
              (make-msg
+              (:id spirit)
               (:name spirit)
               (:owner-id plant)
               'diagnosing
-              (list (:id plant)))))
+              (list (:id plant))
+              'spirit
+              (:name spirit))))
           spirit))
 
 (defn spirit-looking-at [spirit tile plant]
@@ -143,10 +147,13 @@
             (log-add-msg
              log
              (make-msg
+              (:id spirit)
               (:name spirit)
               (:owner-id plant)
               'looking-at
-              (list (:id plant)))))
+              (list (:id plant))
+              'spirit
+              (:name spirit))))
           spirit))
               
 (defn spirit-update-from-actions [spirit tile]
@@ -162,7 +169,7 @@
             (if e
               (modify :pos (fn [pos] (:pos e))
                       (cond
-                       (= type "look-at") (spirit-looking-at spirit tile e)
+                       ;(= type "look-at") (spirit-looking-at spirit tile e)
                        (= type "diagnose") (spirit-diagnose spirit tile e)
                        :else spirit))
               spirit))

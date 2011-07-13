@@ -299,10 +299,10 @@
              players))
           game-world))
 
-(defn game-world-add-player [game-world name]
+(defn game-world-add-player [game-world name fbid]
   (modify :players
           (fn [players]
-            (cons (make-player ((:id-gen game-world)) name) players))
+            (cons (make-player ((:id-gen game-world)) name fbid) players))
           game-world))
 
 (defn game-world-can-player-pick? [game-world player-id]
@@ -338,7 +338,7 @@
                           (game-world-get-tile
                            game-world (:tile spirit)))
                          spirits)
-                   (cons (make-spirit agent) spirits))))
+                   (cons (make-spirit ((:id-gen game-world)) agent) spirits))))
              '()
              (world-agents fatima-world)))
           game-world))

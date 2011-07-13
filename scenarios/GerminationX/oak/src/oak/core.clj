@@ -75,7 +75,7 @@
 ;(tick)
 
 (defroutes main-routes
-  (GET "/login/:name/:iefix" [name iefix]
+  (GET "/login/:name/:fbid/:iefix" [name fbid iefix]
        (let [id (game-world-find-player-id
                  (deref my-game-world) name)]
          (cond
@@ -84,7 +84,7 @@
             (dosync
              (ref-set my-game-world
                       (game-world-add-player
-                       (deref my-game-world) name)))
+                       (deref my-game-world) name fbid)))
             (json/encode-to-str
              (game-world-find-player
               (deref my-game-world)
@@ -142,16 +142,15 @@
        (json/encode-to-str '("ok")))
 
   (GET "/pick/:tilex/:tiley/:plant-id/:player-id/:iefix" [tilex tiley plant-id player-id iefix]
-       (if (game-world-can-player-pick?
-            (deref my-game-world)
-            (parse-number player-id))
+       (let [player-id (parse-number player-id)]
+         (if (game-world-can-player-pick?
+              (deref my-game-world) player-id)
          (do
            (dosync
             (ref-set my-game-world
                      (game-world-modify-tile
                       (game-world-player-pick
-                       (deref my-game-world)
-                       (parse-number player-id))
+                       (deref my-game-world) player-id)
                       (make-vec2 (parse-number tilex)
                                  (parse-number tiley))
                       (fn [tile]
@@ -160,9 +159,12 @@
                          (parse-number plant-id)
                          (fn [plant]
                            (plant-picked
-                            plant (parse-number player-id))))))))
+                            plant
+                            (game-world-find-player
+                             (deref my-game-world)
+                             player-id))))))))
            (json/encode-to-str {:ok true})) 
-         (json/encode-to-str {:ok false})))
+         (json/encode-to-str {:ok false}))))
        
   (GET "/hiscores/:iefix" [iefix]
        (json/encode-to-str

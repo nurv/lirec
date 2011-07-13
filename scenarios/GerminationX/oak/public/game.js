@@ -59,9 +59,10 @@ function game_world()
         }
     }
 
-    this.get_name = function()
+    this.get = function()
     {
-        return this.player_name;
+        return {"name": this.player_name,
+                "id": this.player_id };
     }
 
     this.fb_refresh = function(name,data)

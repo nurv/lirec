@@ -19,13 +19,16 @@
 (def msg-picked 1)
 (def msg-ill 2)
 
-(defn make-msg [from to msg-id subjects]
+(defn make-msg [from display-from to msg-id subjects icon-type icon]
   (hash-map
    :time (current-time)
    :from from
+   :display-from display-from
    :to to
    :msg-id msg-id
-   :subjects subjects))
+   :subjects subjects
+   :icon-type icon-type
+   :icon icon))
 
 (defn make-log [max]
   (hash-map

@@ -16,10 +16,11 @@
     (:use
      oak.log))
 
-(defn make-player [id name]
+(defn make-player [id name fbid]
   (hash-map
    :version 1
-   :id id 
+   :id id
+   :fbid fbid
    :name name ; only for login - do not use directly
    :layer "none"
    :seeds '()
