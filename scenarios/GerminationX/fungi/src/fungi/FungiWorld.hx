@@ -400,12 +400,10 @@ class FungiWorld extends World
                     var data = flash.external.ExternalInterface.call("game.get");
                     if (data.name!="")
                     {
-                        trace(data.id);
                         Server.Request("login/"+data.name+"/"+data.id,
                                        this,
                                        function (c,d:Dynamic)
                                        {
-                                           trace(d);
                                            c.PlayerInfo=d;
                                            // todo: remove MyID, MyName
                                            c.MyID=c.PlayerInfo.id;

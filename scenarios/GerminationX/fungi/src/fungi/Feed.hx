@@ -84,9 +84,8 @@ class Feed
         }
         else if (Type=="player")
         {
-            trace(Icon);
             var s=new Sprite(Pos,Resources.Get(""));
-            s.LoadFromURL("http://graph.facebook.com/"+"100000480510823"+"/picture");
+            s.LoadFromURL("http://graph.facebook.com/"+Icon+"/picture");
             return s;
         }
         else return new Sprite(Pos,Resources.Get("test"));
@@ -152,12 +151,12 @@ class Feed
             Blocks.push(f);
             w.AddSprite(f);
 
-//            var Icon=MakeIcon(new Vec2(690+64,pos+110),
-//                              Reflect.field(i,"icon-type"),
-//                              Reflect.field(i,"icon"));
             var Icon=MakeIcon(new Vec2(690+64,pos+110),
-                              "player",
-                              w.MyFBID);
+                              Reflect.field(i,"icon-type"),
+                              Reflect.field(i,"icon"));
+//            var Icon=MakeIcon(new Vec2(690+64,pos+110),
+//                              "player",
+//                              w.MyFBID);
             w.AddSprite(Icon);
             Icons.push(Icon);
             pos+=64*3;
