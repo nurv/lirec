@@ -18,10 +18,12 @@ package fungi;
 import truffle.Truffle;
 import truffle.FrameTextures;
 import truffle.RndGen;
+import truffle.Vec2;
 
 class Feed
 {
     var Blocks:Array<Frame>;
+    var Icons:Array<Sprite>;
     var MaxStories:Int;
     var TheFrameTextures:FrameTextures;
     var Rnd:RndGen;
@@ -30,6 +32,7 @@ class Feed
     public function new(w:World)
     {
         Blocks = [];
+        Icons = [];
         MaxStories=5;
         Rnd=new RndGen();
 
@@ -71,6 +74,24 @@ class Feed
         w.AddSprite(Info);
     }
 
+    function MakeIcon(Pos:Vec2, Type:String, Icon:String)
+    {
+        if (Type=="plant" || Type=="spirit")
+        {
+            var s=new Sprite(Pos,Resources.Get(""));
+            s.LoadFromURL("images/icons/"+Icon+".png");
+            return s;
+        }
+        else if (Type=="player")
+        {
+            trace(Icon);
+            var s=new Sprite(Pos,Resources.Get(""));
+            s.LoadFromURL("http://graph.facebook.com/"+"100000480510823"+"/picture");
+            return s;
+        }
+        else return new Sprite(Pos,Resources.Get("test"));
+    }
+
     public function Update(w:World,d:Array<Dynamic>)
     {
         if (w.MyName=="")
@@ -100,6 +121,12 @@ class Feed
             w.RemoveSprite(b);
         }
         Blocks=[];
+
+        for (i in Icons)
+        {
+            w.RemoveSprite(i);
+        }
+        Icons=[];
         
         var pos=64;
         for (i in d)
@@ -114,7 +141,7 @@ class Feed
                 subjects+=i.subjects[0]+" ";
             }
 
-            f.UpdateText(i.from+" sent "+
+            f.UpdateText(Reflect.field(i,"display-from")+" sent "+
                          Reflect.field(i,"msg-id")+
                          subjects+
                          " at "+Date.fromTime(i.time).toString());
@@ -122,9 +149,19 @@ class Feed
             f.G=0.9;
             f.B=0.7;
             f.InitTextures(TheFrameTextures,Rnd);
-            pos+=64*3;
             Blocks.push(f);
             w.AddSprite(f);
+
+//            var Icon=MakeIcon(new Vec2(690+64,pos+110),
+//                              Reflect.field(i,"icon-type"),
+//                              Reflect.field(i,"icon"));
+            var Icon=MakeIcon(new Vec2(690+64,pos+110),
+                              "player",
+                              w.MyFBID);
+            w.AddSprite(Icon);
+            Icons.push(Icon);
+            pos+=64*3;
+
         }
     }
 }

@@ -202,7 +202,7 @@ class FungiWorld extends World
 	
 	public function NameCallback(name)
 	{
-        Server.Request("login/"+name,
+        Server.Request("login/"+name+"/0",
                        this,
                        function (c,d:Dynamic)
                        {
@@ -397,11 +397,19 @@ class FungiWorld extends World
             {        
                 try 
                 {
-                    var data = flash.external.ExternalInterface.call("game.get_name");
-                    if (data!="")
+                    var data = flash.external.ExternalInterface.call("game.get");
+                    if (data.name!="")
                     {
-                        MyName=data;
-		                removeChild(MyTextEntry);
+                        Server.Request("login/"+data.name+"/"+data.id,
+                                       this,
+                                       function (c,d:Dynamic)
+                                       {
+                                           c.PlayerInfo=d;
+                                           // todo: remove MyID, MyName
+                                           c.MyID=c.PlayerInfo.id;
+		                                   c.MyName=c.PlayerInfo.name;
+		                                   c.removeChild(c.MyTextEntry);
+                                       });
                     }
                 }
                 catch (e:Dynamic)
