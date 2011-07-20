@@ -97,7 +97,7 @@ import cmion.level3.MindAction;
 * THIS MACHINE, SO JIGLOO OR THIS CODE CANNOT BE USED
 * LEGALLY FOR ANY CORPORATE OR COMMERCIAL PURPOSE.
 */
-public class InTheWildWozFrame extends javax.swing.JFrame implements ActionListener, ListSelectionListener
+public class ITWEmysWozFrame extends javax.swing.JFrame implements ActionListener, ListSelectionListener
 {
 
 	/** a class to associate names to phone numbers */
@@ -213,8 +213,15 @@ public class InTheWildWozFrame extends javax.swing.JFrame implements ActionListe
 	private JComboBox comboBoxReceiver;
 	private JLabel jLabel8;
 	private JComboBox comboBoxPrewritten;
-	private JLabel jLabel13;
+	private JLabel lblLeft;
 	private JComboBox comboBoxGaze;
+	private JLabel jLabel14;
+	private JButton btnMigrate;
+	private JComboBox comboBoxMigrate;
+	private JLabel jLabel13;
+	private JLabel lblRight;
+	private JTextField txtFieldRight;
+	private JTextField txtFieldLeft;
 	private JTable jTable1;
 	private JScrollPane jScrollPane1;
 	private JMenuItem menuItemSave;
@@ -231,8 +238,7 @@ public class InTheWildWozFrame extends javax.swing.JFrame implements ActionListe
 	private JButton btnSendText;
 	private JButton btnTalk;
 	private JTextArea jTextAreaTalk;
-	private JButton btnGesture;
-	private JComboBox comboBoxGesture;
+	private JButton btnShowChoice;
 	private JComboBox comboBoxEmotion;
 	private JButton btnSetEmotion;
 	private JLabel jLabel3;
@@ -240,7 +246,7 @@ public class InTheWildWozFrame extends javax.swing.JFrame implements ActionListe
 	private JLabel jLabel1;
 
 	/** the cmion component that owns this window */
-	private InTheWildWoz parentMindConnector;
+	private ITWEmysWoz parentMindConnector;
 	
 	/** the table model that stores the table data */
 	private ChatLogTableModel tableModel;
@@ -248,8 +254,8 @@ public class InTheWildWozFrame extends javax.swing.JFrame implements ActionListe
 	/** all known persons indexed by their phone no */
 	private HashMap<String,Person> phonebook;
 	
-	/** the person representing greta */
-	private Person gretaPerson;
+	/** the person representing sarah */
+	private Person sarahPerson;
 	
 	/** file chooser for selecting files to save to and load from*/
 	final JFileChooser fc;	
@@ -260,21 +266,21 @@ public class InTheWildWozFrame extends javax.swing.JFrame implements ActionListe
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				InTheWildWozFrame inst = new InTheWildWozFrame(null);
+				ITWEmysWozFrame inst = new ITWEmysWozFrame(null);
 				inst.setLocationRelativeTo(null);
 				inst.setVisible(true);
 			}
 		});
 	}
 	
-	public InTheWildWozFrame(InTheWildWoz parentMindConnector) 
+	public ITWEmysWozFrame(ITWEmysWoz parentMindConnector) 
 	{
 		super();
 		this.parentMindConnector = parentMindConnector;
 		tableModel = new ChatLogTableModel();
 		phonebook = new HashMap<String,Person>();
-		gretaPerson = new Person("----");
-		gretaPerson.setName("Greta");
+		sarahPerson = new Person("----");
+		sarahPerson.setName("Sarah");
 		fc = new JFileChooser();
  		/*
 		FileFilter ff = new FileFilter() 
@@ -296,7 +302,6 @@ public class InTheWildWozFrame extends javax.swing.JFrame implements ActionListe
 		fc.setFileFilter(ff); */
 		
 		initGUI();
-		createGestures();
 		prepareTable();
 		updateReceiverList();
 	}
@@ -326,22 +331,6 @@ public class InTheWildWozFrame extends javax.swing.JFrame implements ActionListe
 			this.btnSendText.setEnabled(true);
 	}
 
-	private void createGestures() 
-	{
-		// define how many gestures we want to have
-		GretaGesture[] gestures = new GretaGesture[5];
-		// and specify them
-		gestures[0] = new GretaGesture("head_nod","head",GestureType.HEAD_GESTURE);
-		gestures[1] = new GretaGesture("head_shake","head",GestureType.HEAD_GESTURE);
-		gestures[2] = new GretaGesture("WARNING_HAND","adjectival",GestureType.BODY_GESTURE);
-		gestures[3] = new GretaGesture("UNCERTAIN","CERTAINTY",GestureType.BODY_GESTURE);
-		gestures[4] = new GretaGesture("GREET","PERFORMATIVE",GestureType.BODY_GESTURE);
-		
-		ComboBoxModel jComboBox1Model =	new DefaultComboBoxModel(gestures);
-		comboBoxGesture.setModel(jComboBox1Model);
-		
-	}
-
 	private void initGUI() {
 		try {
 			setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -355,7 +344,7 @@ public class InTheWildWozFrame extends javax.swing.JFrame implements ActionListe
 				{
 					jLabel1 = new JLabel();
 					jPanel1.add(jLabel1);
-					jLabel1.setText("chat log (txt messages + greta talk):");
+					jLabel1.setText("chat log (txt messages + Sarah talk):");
 					jLabel1.setBounds(10, 7, 226, 14);
 					jLabel1.setFont(new java.awt.Font("Tahoma",1,11));
 					jLabel1.setForeground(new java.awt.Color(255,255,255));
@@ -363,7 +352,7 @@ public class InTheWildWozFrame extends javax.swing.JFrame implements ActionListe
 				{
 					jLabel2 = new JLabel();
 					jPanel1.add(jLabel2);
-					jLabel2.setText("remote control greta:");
+					jLabel2.setText("remote control Sarah:");
 					jLabel2.setFont(new java.awt.Font("Tahoma",1,11));
 					jLabel2.setBounds(10, 249, 169, 14);
 					jLabel2.setForeground(new java.awt.Color(255,255,255));
@@ -385,83 +374,77 @@ public class InTheWildWozFrame extends javax.swing.JFrame implements ActionListe
 				{
 					jLabel4 = new JLabel();
 					jPanel1.add(jLabel4);
-					jLabel4.setText("gestures and facial expressions:");
-					jLabel4.setBounds(16, 301, 182, 14);
+					jLabel4.setText("display binary choice");
+					jLabel4.setBounds(16, 331, 182, 14);
 					jLabel4.setForeground(new java.awt.Color(255,255,255));
 				}
 				{
 					ComboBoxModel comboBoxEmotionModel = 
 						new DefaultComboBoxModel(
-								new String[] { "neutral", "tensed", "anger", "disgust", "joy",
-										"distress", "fear", "sadness", "surprise", "sleeping"});
+								new String[] { "neutral", "joy", "sadness", "anger", "surprise"});
 					comboBoxEmotion = new JComboBox();
 					jPanel1.add(comboBoxEmotion);
 					comboBoxEmotion.setModel(comboBoxEmotionModel);
 					comboBoxEmotion.setBounds(83, 267, 120, 23);
 				}
 				{
-					comboBoxGesture = new JComboBox();
-					jPanel1.add(comboBoxGesture);
-					comboBoxGesture.setBounds(198, 297, 120, 22);
-				}
-				{
-					btnGesture = new JButton();
-					jPanel1.add(btnGesture);
-					btnGesture.setText("perform");
-					btnGesture.setBounds(328, 297, 83, 22);
-					btnGesture.addActionListener(this);
+					btnShowChoice = new JButton();
+					jPanel1.add(btnShowChoice);
+					btnShowChoice.setText("display");
+					btnShowChoice.setBounds(418, 327, 83, 22);
+					btnShowChoice.addActionListener(this);
 				}
 				{
 					jLabel5 = new JLabel();
 					jPanel1.add(jLabel5);
 					jLabel5.setText("talk:");
-					jLabel5.setBounds(6, 351, 29, 14);
+					jLabel5.setBounds(6, 382, 29, 14);
 					jLabel5.setForeground(new java.awt.Color(255,255,255));
 				}
 				{
 					jTextAreaTalk = new JTextArea();
 					jPanel1.add(jTextAreaTalk);
-					jTextAreaTalk.setBounds(43, 325, 417, 68);
+					jTextAreaTalk.setBounds(43, 356, 417, 68);
 					jTextAreaTalk.setLineWrap(true);
 					jTextAreaTalk.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
 				}
 				{
 					btnTalk = new JButton();
 					jPanel1.add(btnTalk);
-					btnTalk.setText("talk as Greta");
-					btnTalk.setBounds(514, 309, 123, 23);
+					btnTalk.setText("talk as Sarah");
+					btnTalk.setBounds(514, 340, 123, 23);
 					btnTalk.addActionListener(this);
 				}
 				{
 					btnSendText = new JButton();
 					jPanel1.add(btnSendText);
 					btnSendText.setText("send as sms");
-					btnSendText.setBounds(514, 338, 121, 23);
+					btnSendText.setBounds(514, 369, 121, 23);
 					btnSendText.addActionListener(this);
 				}
 				{
 					comboBoxReceiver = new JComboBox();
 					jPanel1.add(comboBoxReceiver);
-					comboBoxReceiver.setBounds(514, 359, 120, 23);
+					comboBoxReceiver.setBounds(514, 390, 120, 23);
 				}
 				{
 					jLabel7 = new JLabel();
 					jPanel1.add(jLabel7);
 					jLabel7.setText("to");
-					jLabel7.setBounds(493, 363, 21, 14);
+					jLabel7.setBounds(493, 394, 21, 14);
 					jLabel7.setForeground(new java.awt.Color(255,255,255));
 				}
 				{
 					comboBoxPrewritten = new JComboBox();
 					jPanel1.add(comboBoxPrewritten);
-					comboBoxPrewritten.setBounds(6, 416, 628, 23);
+					comboBoxPrewritten.setBounds(6, 447, 628, 23);
 					comboBoxPrewritten.addActionListener(this);
 				}
 				{
 					jLabel8 = new JLabel();
 					jPanel1.add(jLabel8);
 					jLabel8.setText("type above or select a template below");
-					jLabel8.setBounds(43, 399, 277, 14);
+					jLabel8.setBounds(43, 430, 277, 14);
 					jLabel8.setForeground(new java.awt.Color(255,255,255));
 				}
 				{
@@ -509,7 +492,7 @@ public class InTheWildWozFrame extends javax.swing.JFrame implements ActionListe
 					jLabel6 = new JLabel();
 					jPanel1.add(jLabel6);
 					jLabel6.setText("or");
-					jLabel6.setBounds(493, 342, 21, 14);
+					jLabel6.setBounds(493, 373, 21, 14);
 					jLabel6.setForeground(new java.awt.Color(255,255,255));
 				}
 				{
@@ -517,14 +500,13 @@ public class InTheWildWozFrame extends javax.swing.JFrame implements ActionListe
 					jPanel1.add(jLabel12);
 					jLabel12.setText("or");
 					jLabel12.setForeground(new java.awt.Color(255,255,255));
-					jLabel12.setBounds(493, 393, 21, 14);
+					jLabel12.setBounds(493, 424, 21, 14);
 				}
 				{
 					btnNewTemplate = new JButton();
 					jPanel1.add(btnNewTemplate);
 					btnNewTemplate.setText("add template");
-					btnNewTemplate.setBounds(514, 389, 117, 24);
-					btnNewTemplate.setSize(120, 23);
+					btnNewTemplate.setBounds(514, 420, 117, 24);
 					btnNewTemplate.addActionListener(this);
 				}
 				{
@@ -542,21 +524,68 @@ public class InTheWildWozFrame extends javax.swing.JFrame implements ActionListe
 					}
 				}
 				{
-					ComboBoxModel jComboBox1Model = 
-						new DefaultComboBoxModel(
-								new String[] { "user", "D1", "D2", "D3", "D4", "D5", "D6" });
-					comboBoxGaze = new JComboBox();
-					jPanel1.add(comboBoxGaze);
-					comboBoxGaze.setModel(jComboBox1Model);
-					comboBoxGaze.setBounds(361, 265, 150, 25);
-					comboBoxGaze.addActionListener(this);
+					lblLeft = new JLabel();
+					jPanel1.add(lblLeft);
+					lblLeft.setText("left:");
+					lblLeft.setBounds(157, 330, 19, 16);
+					lblLeft.setForeground(new java.awt.Color(255,255,255));
+				}
+				{
+					txtFieldLeft = new JTextField();
+					jPanel1.add(txtFieldLeft);
+					txtFieldLeft.setBounds(180, 324, 91, 28);
+				}
+				{
+					txtFieldRight = new JTextField();
+					jPanel1.add(txtFieldRight);
+					txtFieldRight.setBounds(314, 324, 91, 28);
+				}
+				{
+					lblRight = new JLabel();
+					jPanel1.add(lblRight);
+					lblRight.setText("right:");
+					lblRight.setForeground(new java.awt.Color(255,255,255));
+					lblRight.setBounds(280, 330, 28, 16);
 				}
 				{
 					jLabel13 = new JLabel();
 					jPanel1.add(jLabel13);
-					jLabel13.setText("gaze at:");
+					jLabel13.setText("migrate to:");
 					jLabel13.setForeground(new java.awt.Color(255,255,255));
-					jLabel13.setBounds(300, 271, 55, 14);
+					jLabel13.setBounds(322, 267, 60, 25);
+				}
+				{
+					ComboBoxModel jComboBox1Model = 
+						new DefaultComboBoxModel(
+								new String[] { "Robot", "Phone" });
+					comboBoxMigrate = new JComboBox();
+					jPanel1.add(comboBoxMigrate);
+					comboBoxMigrate.setModel(jComboBox1Model);
+					comboBoxMigrate.setBounds(388, 267, 120, 23);
+				}
+				{
+					btnMigrate = new JButton();
+					jPanel1.add(btnMigrate);
+					btnMigrate.setText("migrate");
+					btnMigrate.setBounds(520, 267, 83, 22);
+					btnMigrate.addActionListener(this);
+				}
+				{
+					jLabel14 = new JLabel();
+					jPanel1.add(jLabel14);
+					jLabel14.setText("gaze at:");
+					jLabel14.setForeground(new java.awt.Color(255,255,255));
+					jLabel14.setBounds(34, 302, 55, 14);
+				}
+				{
+					ComboBoxModel comboBoxGazeModel = 
+						new DefaultComboBoxModel(
+								new String[] { "user", "D1", "D2", "D3", "D4", "D5", "D6" });
+					comboBoxGaze = new JComboBox();
+					jPanel1.add(comboBoxGaze);
+					comboBoxGaze.setModel(comboBoxGazeModel);
+					comboBoxGaze.setBounds(86, 297, 150, 25);
+					comboBoxGaze.addActionListener(this);
 				}
 			}
 			{
@@ -581,6 +610,7 @@ public class InTheWildWozFrame extends javax.swing.JFrame implements ActionListe
 				}
 			}
 			pack();
+			this.setSize(645, 528);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -596,7 +626,7 @@ public class InTheWildWozFrame extends javax.swing.JFrame implements ActionListe
     	Person person = null;
 	    
 	    if (sender.equals("Greta"))
-	    	person = gretaPerson;
+	    	person = sarahPerson;
     	else
 	    {
 	    	// user action in the log, check if user is already in the phonebook
@@ -622,36 +652,21 @@ public class InTheWildWozFrame extends javax.swing.JFrame implements ActionListe
 		{
 			// first parameter: text to speak
 			parameters.add(jTextAreaTalk.getText());
-			MindAction mindAction = new MindAction("Greta", "talk", parameters);
+			MindAction mindAction = new MindAction("Sarah", "wozTalk", parameters);
 			parentMindConnector.newAction(mindAction);			
 		}
-		else if (arg0.getSource() == btnGesture)
+		else if (arg0.getSource() == btnShowChoice)
 		{
-			if (comboBoxGesture.getSelectedItem() instanceof GretaGesture)
-			{
-				GretaGesture gesture = (GretaGesture) comboBoxGesture.getSelectedItem();
-				
-				// first parameter: gesture to perform
-				parameters.add(gesture.getGestureName());
-
-				// second parameter: gesture class
-				parameters.add(gesture.getGestureClass());
-				
-				// third parameter: gesture type
-				if (gesture.getGestureType()== GestureType.BODY_GESTURE)
-					parameters.add("gesture");
-				else
-					parameters.add("head");
-				
-				MindAction mindAction = new MindAction("Greta", "gesture", parameters);
-				parentMindConnector.newAction(mindAction);
-			}
+			parameters.add(txtFieldLeft.getText());
+			parameters.add(txtFieldRight.getText());			
+			MindAction mindAction = new MindAction("Sarah", "wozQuestion", parameters);
+			parentMindConnector.newAction(mindAction);
 		}		
 		else if (arg0.getSource() == btnSetEmotion)
 		{
 			// first parameter: emotion to display
 			parameters.add(comboBoxEmotion.getSelectedItem().toString());
-			MindAction mindAction = new MindAction("Greta", "emotion", parameters);
+			MindAction mindAction = new MindAction("Sarah", "wozEmotion", parameters);
 			parentMindConnector.newAction(mindAction);		
 		}	
 		else if (arg0.getSource() == btnSetAlias)
@@ -692,14 +707,27 @@ public class InTheWildWozFrame extends javax.swing.JFrame implements ActionListe
 				// second parameter: text to send
 				parameters.add(jTextAreaTalk.getText());
 			
-				MindAction mindAction = new MindAction("Greta", "sendSMS", parameters);
+				MindAction mindAction = new MindAction("Sarah", "wozSendSMS", parameters);
 				parentMindConnector.newAction(mindAction);		
 			}
-		} else if (arg0.getSource() == comboBoxGaze)
-		{
-				
 		}
-		
+		else if (arg0.getSource() == btnMigrate)
+		{
+			if (comboBoxMigrate.getSelectedItem() != null)
+			{
+				String target = comboBoxMigrate.getSelectedItem().toString();
+				parameters.add(target);
+				MindAction mindAction = new MindAction("Sarah", "migrate", parameters);
+				parentMindConnector.newAction(mindAction);		
+			}			
+		}
+		else if (arg0.getSource() == comboBoxGaze)
+		{
+			String gazeTarget = comboBoxGaze.getSelectedItem().toString();
+			parameters.add(gazeTarget);
+			MindAction mindAction = new MindAction("Sarah", "wozGaze", parameters);
+			parentMindConnector.newAction(mindAction);		
+		}
 	}
 
 	// load log, phone book, and sentence templates from a file	
@@ -753,7 +781,7 @@ public class InTheWildWozFrame extends javax.swing.JFrame implements ActionListe
 					String what = attribs.getNamedItem("what").getNodeValue();
 					String when = attribs.getNamedItem("when").getNodeValue();
 					Person p;
-					if (who.equals("----")) p = gretaPerson;
+					if (who.equals("----")) p = sarahPerson;
 					else if (phonebook.containsKey(who)) p = phonebook.get(who);
 					else
 					{
@@ -863,7 +891,7 @@ public class InTheWildWozFrame extends javax.swing.JFrame implements ActionListe
 			if (tableModel.getValueAt(row, 0) instanceof Person)
 			{
 				Person selectedPerson = (Person) tableModel.getValueAt(row, 0);
-				if (selectedPerson != gretaPerson)
+				if (selectedPerson != sarahPerson)
 				{
 					this.txtFieldPhoneBookName.setText(selectedPerson.getName());
 					this.txtFieldPhoneBookNo.setText(selectedPerson.getPhoneNo());

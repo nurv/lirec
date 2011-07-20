@@ -15,8 +15,7 @@ import cmion.architecture.IArchitecture;
 public class Cereproc extends SamgarCompetency {
 	
 	
-	private boolean finished;
-	int timeoutcounter = 0;
+	private volatile boolean finished;
 	
 	public Cereproc(IArchitecture architecture) {
 		super(architecture);
@@ -54,7 +53,7 @@ public class Cereproc extends SamgarCompetency {
 	protected boolean competencyCode(HashMap<String, String> parameters) 
 	{
 		finished = false;
-		timeoutcounter = 0;
+		int timeoutcounter = 0;
 
 		// text to synthesize can be passed to this competency either plain or 
 		// using xml markup (this allows for greater control, i.e. emphasize certain words),

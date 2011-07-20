@@ -12,8 +12,9 @@ construction (assumed parameter type is String, parameters are seperated by comm
 
 <Competency ClassName="cmion.inTheWild.competencies.EmysAskBinaryQuestion" />
 <Competency ClassName="cmion.inTheWild.competencies.EmysEmotion" />
+<Competency ClassName="cmion.inTheWild.competencies.EmysGaze" />
 <Competency ClassName="cmion.level2.competencies.Migration" ConstructorParameters="MigrationConfigVirtEmys.xml" />
-<Competency ClassName="cmion.inTheWild.competencies.SMSReceiver" ConstructorParameters="modem.com15,COM15,115200,WAVECOM MODEM,MULTIBAND 900E 1800"/> 
+<!-- Competency ClassName="cmion.inTheWild.competencies.SMSReceiver" ConstructorParameters="modem.com15,COM15,115200,WAVECOM MODEM,MULTIBAND 900E 1800"/ --> 
 <SamgarCompetency ClassName="cmion.inTheWild.competencies.Cereproc" Port="TTS"/>
 <SamgarCompetency ClassName="cmion.inTheWild.competencies.VirtualEmysConnector" Port="Emys"/>
 <SamgarCompetency ClassName="cmion.inTheWild.competencies.KinectTrackerConnector" Port="Kinect"/>

@@ -37,6 +37,7 @@ public class KinectTrackerConnector extends SamgarCompetency {
 	@Override
 	public void onRead(Bottle bottleIn) 
 	{
+		/*
 		if (bottleIn.size()>0)
 		{
 			if (bottleIn.get(0).asInt()==0) // user tracking information
@@ -93,6 +94,7 @@ public class KinectTrackerConnector extends SamgarCompetency {
 			}
 
 		}
+		*/
 	}
 		
 

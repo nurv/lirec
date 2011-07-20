@@ -22,8 +22,10 @@
       library xml file -->
  
  <ArchitectureComponent ClassName="cmion.addOns.monitors.CmionEventMonitor" />
- <ArchitectureComponent ClassName="cmion.level3.fatima.FAtiMAConnector" ConstructorParameters="modular-migrating" />
+ <ArchitectureComponent ClassName="cmion.inTheWild.woz.ITWEmysWoz" />
+ <!-- <ArchitectureComponent ClassName="cmion.level3.fatima.FAtiMAConnector" ConstructorParameters="modular-migrating" />
  <ArchitectureComponent ClassName="cmion.fatima.FatimaLauncher" ConstructorParameters="LirecScenarios.xml,Year3Demo,Spirit" /> 
+  -->
  <ArchitectureComponent ClassName="cmion.addOns.manipulators.WorldModelManipulator" />
  <ArchitectureComponent ClassName="cmion.addOns.samgar.SamgarConnector" />
 </ArchitectureConfiguration>

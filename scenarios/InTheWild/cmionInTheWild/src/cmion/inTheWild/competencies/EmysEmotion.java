@@ -5,24 +5,32 @@ import ion.Meta.IEvent;
 
 import java.util.HashMap;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+
 import cmion.architecture.IArchitecture;
 import cmion.level2.Competency;
 import cmion.level2.CompetencyCancelledException;
+import cmion.level2.migration.Migrating;
 import cmion.storage.EventPropertyChanged;
 
 /** competency that can be invoked to change the emotion of Emys,
  *  this competency only writes to the blackboard and requires
  * 	an emys connector to run and transmit the emotion */
-public class EmysEmotion extends Competency {
+public class EmysEmotion extends Competency implements Migrating {
 
 	public static final String EMOTION = "emysEmotion";
 	public static float JOY_THRESHOLD = 2.0f;
 	public static float SAD_THRESHOLD = -2.0f;
 	
+	private String currentEmotion;
+	
 	public EmysEmotion(IArchitecture architecture) {
 		super(architecture);
 		this.competencyName = "EmysEmotion";
 		this.competencyType = "EmysEmotion";
+		currentEmotion = "neutral";
 	}
 
 	@Override
@@ -76,6 +84,7 @@ public class EmysEmotion extends Competency {
 	
 	private void setEmotion(String emotion)
 	{
+		currentEmotion = emotion;
 		architecture.getBlackBoard().requestSetProperty(EMOTION, emotion);		
 	}
 	
@@ -84,7 +93,7 @@ public class EmysEmotion extends Competency {
 			throws CompetencyCancelledException 
 	{
 		// check if the emotion parameter was passed
-		if (parameters.containsKey(EMOTION)) return false;
+		if (!parameters.containsKey(EMOTION)) return false;
 		// write it to the blackboard to be picked up by the emys connector
 		setEmotion(parameters.get(EMOTION));
 		return true;
@@ -94,6 +103,28 @@ public class EmysEmotion extends Competency {
 	public void initialize() 
 	{
 		this.available = true;
+	}
+
+	@Override
+	public String getMessageTag() {
+		return "currentEmotion";
+	}
+
+	@Override
+	public void restoreState(Element message) {
+		setEmotion(message.getElementsByTagName("emotion").item(0).getChildNodes().item(0).getNodeValue());		
+	}
+
+	@Override
+	public Element saveState(Document doc) {
+		Element parent = doc.createElement(getMessageTag());
+		
+		Element emotion = doc.createElement("emotion");
+		Node emotionNode = doc.createTextNode(currentEmotion);
+		emotion.appendChild(emotionNode);
+		parent.appendChild(emotion);
+		
+		return parent;
 	}
 
 }

@@ -5,8 +5,8 @@
 		<agent active="false" />
 	</configuration>
 	<devices>
-		<device name="Robot" host="localhost" port="34872" />
-		<device name="Phone" host="localhost" port="34873" />
+		<device name="Robot" host="192.168.1.3" port="34872" />
+		<device name="Phone" host="192.168.1.28" port="34873" />
 	</devices>
 </migrationconfig>
 

@@ -116,7 +116,7 @@
 		</MindAction>			
 		<CompetencyExecutionPlan>
 			<Competency ID="1" Type="TTS">
-			 <CompetencyParameter Name="text" Value="Great. I'm transferring over to your device now. Watch This." />
+			 <CompetencyParameter Name="text" Value="I'm transferring over to your phone now. Watch This." />
 			</Competency>
 			<Competency ID="2" Type="Migration" Dependency="1">
 			 <CompetencyParameter Name="DeviceName" Value="Phone" />
@@ -132,7 +132,7 @@
 		</MindAction>			
 		<CompetencyExecutionPlan>
 			<Competency ID="1" Type="TTS">
-			 <CompetencyParameter Name="text" Value="OK. I'm going home to my robot body in the lab. See you there in a minute." />
+			 <CompetencyParameter Name="text" Value="OK. I'm going home to my robot body. See you there in a minute." />
 			</Competency>
 			<Competency ID="2" Type="Migration" Dependency="1">
 			 <CompetencyParameter Name="DeviceName" Value="Robot" />
@@ -141,5 +141,60 @@
 		
 	</Rule>
 
+	<Rule>
+		
+		<MindAction Name="wozTalk">
+			<Parameter No="1" Value="*" />
+		</MindAction>			
+		<CompetencyExecutionPlan>
+			<Competency ID="1" Type="TTS">
+			 <CompetencyParameter Name="text" Value="$parameter1" />
+			</Competency>
+		</CompetencyExecutionPlan>
+		
+	</Rule>
+
+	<Rule>
+		
+		<MindAction Name="wozEmotion">
+			<Parameter No="1" Value="*" />
+		</MindAction>			
+		<CompetencyExecutionPlan>
+			<Competency ID="1" Type="EmysEmotion">
+			 <CompetencyParameter Name="emysEmotion" Value="$parameter1" />
+			</Competency>
+		</CompetencyExecutionPlan>
+		
+	</Rule>
+
+	<Rule>
+		
+		<MindAction Name="wozQuestion">
+			<Parameter No="1" Value="*" />
+			<Parameter No="2" Value="*" />
+		</MindAction>			
+		<CompetencyExecutionPlan>
+			<Competency ID="1" Type="EmysAskBinaryQuestion">
+			 <CompetencyParameter Name="choice1" Value="$parameter1" />
+ 			 <CompetencyParameter Name="choice2" Value="$parameter2" />
+ 			 <CompetencyParameter Name="question" Value="question" />
+ 			 <CompetencyParameter Name="person" Value="wizard" /> 			 
+			</Competency>
+		</CompetencyExecutionPlan>
+		
+	</Rule>
+	
+	<Rule>
+		
+		<MindAction Name="wozGaze">
+			<Parameter No="1" Value="*" />
+		</MindAction>			
+		<CompetencyExecutionPlan>
+			<Competency ID="1" Type="EmysGaze">
+			 <CompetencyParameter Name="gazeTarget" Value="$parameter1" />
+			</Competency>
+		</CompetencyExecutionPlan>
+		
+	</Rule>
 	
 </CompetencyManagerRules>

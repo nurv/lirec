@@ -2,6 +2,8 @@ package cmion.inTheWild.competencies;
 
 import ion.Meta.EventHandler;
 import ion.Meta.IEvent;
+import ion.Meta.Simulation;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -12,6 +14,7 @@ import cmion.architecture.IArchitecture;
 import cmion.inTheWild.datastructures.TrackingInfo;
 import cmion.inTheWild.datastructures.TrackingInfoCollection;
 import cmion.level2.migration.MigrationAware;
+import cmion.level2.migration.MigrationUtils;
 import cmion.storage.CmionStorageContainer;
 import cmion.storage.EventPropertyChanged;
 import cmion.storage.EventSubContainerAdded;
@@ -66,6 +69,8 @@ public class VirtualEmysConnector extends SamgarCompetency implements MigrationA
 		// listen to sub containers being added to the black board
 		HandleBlackBoardAddSC scAddedHandler = new HandleBlackBoardAddSC();
 		architecture.getBlackBoard().getEventHandlers().add(scAddedHandler);
+		
+		MigrationUtils.registerMigrationAwareComponent(MigrationUtils.getMigration(Simulation.instance),this);
 	}
 		
 	/** internal event handler class for listening to blackboard sub containers being added */
@@ -118,6 +123,10 @@ public class VirtualEmysConnector extends SamgarCompetency implements MigrationA
 	    		else if (evt1.getPropertyName().equals(EmysEmotion.EMOTION))
 	    		{
 	    			sendEmotion(evt1.getPropertyValue().toString());			
+	    		}
+	    		else if (evt1.getPropertyName().equals(EmysGaze.GAZE_TARGET))
+	    		{
+	    			sendGaze(evt1.getPropertyValue().toString());			
 	    		}	    			    		
 	    	}
 	    }
@@ -321,6 +330,14 @@ public class VirtualEmysConnector extends SamgarCompetency implements MigrationA
 			b.addInt(1);
 		else
 			b.addInt(0);
+		sendBottle();		
+	}
+	
+	private void sendGaze(String target) 
+	{
+		Bottle b = prepareBottle();
+		b.addInt(7); // id 7 signifies gaze instruction 
+		b.addString(target);
 		sendBottle();		
 	}
 	
