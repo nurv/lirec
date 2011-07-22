@@ -87,7 +87,7 @@ class Feed
         else if (Type=="player")
         {
             var s=new Sprite(Pos,Resources.Get(""));
-            s.LoadFromURL("http://graph.facebook.com/"+Icon+"/picture");
+            //s.LoadFromURL("http://graph.facebook.com/"+Icon+"/picture");
             return s;
         }
         else return new Sprite(Pos,Resources.Get("test"));
