@@ -28,6 +28,7 @@ class Feed
     var TheFrameTextures:FrameTextures;
     var Rnd:RndGen;
     var Info:Frame;
+    var TopItem:Dynamic;
 
     public function new(w:World)
     {
@@ -35,6 +36,7 @@ class Feed
         Icons = [];
         MaxStories=5;
         Rnd=new RndGen();
+        TopItem={};
 
         TheFrameTextures = new FrameTextures();
         TheFrameTextures.N.push(Resources.Get("gui-n-001"));
@@ -91,6 +93,23 @@ class Feed
         else return new Sprite(Pos,Resources.Get("test"));
     }
 
+    function MessagesEq(a:Dynamic, b:Dynamic) : Bool
+    {
+        if (Reflect.fields(a).length==0) return false;
+
+        for (f in Reflect.fields(a))
+        {
+            var type=Type.getClassName(Type.getClass(Reflect.field(a,f)));
+            // numbers == null type???
+            if (("String"==type || type==null)
+                && Reflect.field(a,f)!=Reflect.field(b,f))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public function Update(w:World,d:Array<Dynamic>)
     {
         if (w.MyName=="")
@@ -112,55 +131,62 @@ class Feed
             }
             Info.UpdateText(txt);
         }
+
         Rnd.Seed(0);
         Info.InitTextures(TheFrameTextures,Rnd);
 
-        for (b in Blocks)
+        if (!MessagesEq(TopItem,d[0]))
         {
-            w.RemoveSprite(b);
-        }
-        Blocks=[];
-
-        for (i in Icons)
-        {
-            w.RemoveSprite(i);
-        }
-        Icons=[];
-        
-        var pos=64;
-        for (i in d)
-        {
-            Rnd.Seed(Std.int(i.time));
-            var f=new Frame("",690+32,pos,64*3,64*2);
-            f.SetTextSize(12);
-
-            var subjects="";
-            if (i.subjects.length>0)
+            TopItem=d[0];
+            
+            for (b in Blocks)
             {
-                subjects+=i.subjects[0]+" ";
+                w.RemoveSprite(b);
             }
-
-            f.UpdateText(Reflect.field(i,"display-from")+" sent "+
-                         Reflect.field(i,"msg-id")+
-                         subjects+
-                         " at "+Date.fromTime(i.time).toString());
-            f.R=0.8;
-            f.G=0.9;
-            f.B=0.7;
-            f.InitTextures(TheFrameTextures,Rnd);
-            Blocks.push(f);
-            w.AddSprite(f);
-
-            var Icon=MakeIcon(new Vec2(690+64,pos+110),
-                              Reflect.field(i,"icon-type"),
-                              Reflect.field(i,"icon"));
-//            var Icon=MakeIcon(new Vec2(690+64,pos+110),
-//                              "player",
-//                              w.MyFBID);
-            w.AddSprite(Icon);
-            Icons.push(Icon);
-            pos+=64*3;
-
+            Blocks=[];
+            
+            for (i in Icons)
+            {
+                w.RemoveSprite(i);
+            }
+            Icons=[];
+            
+            var pos=32;
+            var xpos=752;
+            for (i in d)
+            {
+                Rnd.Seed(Std.int(i.time));
+                var f=new Frame("",xpos,pos,64*3,64*1);
+                f.ExpandLeft=70;
+                f.SetTextSize(12);
+                
+                var subjects="";
+                if (i.subjects.length>0)
+                {
+                    subjects+=i.subjects[0]+" ";
+                }
+                
+                f.UpdateText(Reflect.field(i,"display-from")+" sent "+
+                             Reflect.field(i,"msg-id")+
+                             subjects+
+                             " at "+Date.fromTime(i.time).toString());
+                f.R=0.8;
+                f.G=0.9;
+                f.B=0.7;
+                f.InitTextures(TheFrameTextures,Rnd);
+                Blocks.push(f);
+                w.AddSprite(f);
+                
+                var Icon=MakeIcon(new Vec2(xpos-30,pos+32),
+                                  Reflect.field(i,"icon-type"),
+                                  Reflect.field(i,"icon"));
+                //            var Icon=MakeIcon(new Vec2(690+64,pos+110),
+                //                              "player",
+                //                              w.MyFBID);
+                w.AddSprite(Icon);
+                Icons.push(Icon);
+                pos+=90;
+            }
         }
     }
 }

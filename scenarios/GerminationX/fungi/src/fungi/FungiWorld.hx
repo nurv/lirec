@@ -221,6 +221,8 @@ class FungiWorld extends World
 		WorldPos=pos;
         SetCurrentTilePos(new Vec2(pos.x,pos.y));
 		
+        var TileSize=Width;
+
 		var circles = [];
         for (x in -1...2)
 		{
@@ -229,8 +231,8 @@ class FungiWorld extends World
 				MyRndGen.Seed(cast((WorldPos.x+x)+(WorldPos.y+y)*139,Int));
 				for (i in 0...5)
 				{
-					var pos = new Vec3(MyRndGen.RndFlt()*15+x*15,
-                                       MyRndGen.RndFlt()*15+y*15,
+					var pos = new Vec3(MyRndGen.RndFlt()*TileSize+x*TileSize,
+                                       MyRndGen.RndFlt()*TileSize+y*TileSize,
 									   0);		  
 					circles.push(new Circle(pos, MyRndGen.RndFlt()*4));
 				}

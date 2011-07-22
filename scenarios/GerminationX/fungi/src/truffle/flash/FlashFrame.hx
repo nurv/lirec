@@ -43,6 +43,7 @@ class FlashFrame implements Frame, extends MovieClip
     public var R:Float;
     public var G:Float;
     public var B:Float;
+    public var ExpandLeft:Int;
 
 	public function new(text,x,y,w,h)
 	{
@@ -50,6 +51,7 @@ class FlashFrame implements Frame, extends MovieClip
         Textures =  new FrameTextures();
         UsingTextures = false;
         TextSize=8;
+        ExpandLeft=0;
 
         TextField = new flash.text.TextField();
         TextField.text = text;
@@ -150,9 +152,9 @@ class FlashFrame implements Frame, extends MovieClip
         TextField.border = false;
 
         var TileSize=64;
-        var XPos=TextField.x-(TileSize/2)-10;
+        var XPos=TextField.x-(TileSize/2)-10-ExpandLeft;
         var YPos=TextField.y-(TileSize/2)-10;
-        var XCount=Std.int(TextField.width/TileSize)+1;
+        var XCount=Std.int((TextField.width+ExpandLeft)/TileSize)+1;
         var YCount=Std.int(TextField.height/TileSize)+1;
 
         BG.clear();

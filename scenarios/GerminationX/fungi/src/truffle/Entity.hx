@@ -48,8 +48,8 @@ class Entity
 	{
 		// do the nasty iso conversion
 		// this is actually an orthogonal projection matrix! (I think)
-		return new Vec3(400+(pos.x*36-pos.y*26),
-                        120+(pos.y*18+pos.x*9)-(pos.z*37),
+		return new Vec3(300+(pos.x*36-pos.y*26),
+                        220+(pos.y*18+pos.x*9)-(pos.z*37),
                         pos.x*0.51 + pos.y*0.71 + pos.z*0.47);             
 	}
 

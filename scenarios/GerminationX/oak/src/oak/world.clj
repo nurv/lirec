@@ -35,7 +35,7 @@
 
 (defn world-objects [world] (:objects world))
 (defn world-agents [world] (:agents world))
-(defn world-scenery [world] (:scenery world))
+(defn world-scenary [world] (:scenary world))
 (defn world-actions [world] (:actions world))
 (defn world-agent-language [world] (:agent-language world))
 (defn world-ssc [world] (:server-socket world))
@@ -58,7 +58,7 @@
    :agents []
    :scenary "garden"
    :actions () ; <----
-   :agent-language (new LanguageEngine "name" "M" "Victim" (new File agent-language-file))
+  ; :agent-language (new LanguageEngine "name" "M" "Victim" (new File agent-language-file))
    :server-socket (let [ssc (ServerSocketChannel/open)]
                     (.configureBlocking ssc false)
                     (.bind (.socket ssc) (new InetSocketAddress port))
@@ -237,7 +237,7 @@
         (let [agent (make-remote-agent chan world)
               w (world-add-agent world agent)
               name (remote-agent-name agent)]
-          (println name "enters the" (world-scenery w))
+          (println name "enters the" (:scenery w))
           (world-broadcast w agent (str "ENTITY-ADDED " name))
           (world-perceive w agent)
           w)

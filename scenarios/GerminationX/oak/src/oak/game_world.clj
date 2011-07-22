@@ -101,7 +101,7 @@
       :players ()
       :tiles {}
       :spirits ()
-      :log (make-log 100)
+      :log (make-log 10)
       :id-gen id-gen)
      (repeatedly num-plants (fn [] (make-random-plant (id-gen)))))))
 
@@ -254,12 +254,17 @@
    game-world))
 
 (defn game-world-update [game-world time delta]
-  (game-world-update-players
-   (game-world-update-tiles
-    (game-world-post-logs-to-players
-     game-world
-     (game-world-collect-all-msgs game-world))
-    time delta)))
+  (let [msgs (game-world-collect-all-msgs game-world)]
+    (modify :log (fn [log]
+                   (reduce
+                    (fn [log msg]
+                      (log-add-msg log msg))
+                    log
+                    msgs))
+            (game-world-update-players
+             (game-world-update-tiles
+              (game-world-post-logs-to-players
+               game-world msgs) time delta)))))
 
 (defn game-world-find-spirit [game-world name]
   (reduce

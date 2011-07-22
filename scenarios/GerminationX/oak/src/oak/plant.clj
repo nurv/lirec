@@ -20,6 +20,7 @@
   (:require
    clojure.contrib.math))
 
+(def tile-size 12)
 (def season-length (* 60 2))
 (def min-health 10)
 (def max-health 90)
@@ -89,7 +90,8 @@
   (let [type (rand-nth (list "aronia" "dandelion" "apple" "cherry" "clover"))]
     (make-plant
      id
-     (make-vec2 (Math/floor (rand 15)) (Math/floor (rand 15)))
+     (make-vec2 (Math/floor (rand tile-size))
+                (Math/floor (rand tile-size)))
      type
      -1
      (Math/round (+ 1 (rand 10))))))
