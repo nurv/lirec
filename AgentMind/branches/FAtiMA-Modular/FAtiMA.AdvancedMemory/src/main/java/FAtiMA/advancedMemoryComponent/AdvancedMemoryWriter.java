@@ -35,6 +35,11 @@ public class AdvancedMemoryWriter implements Serializable {
 		    _outputter.setLineBreak(LineBreak.DOS);
 			_outputter.setIndentation("   ");
 			
+			// Matthias: fix null pointer exception
+			if(_gers == null) {
+				_gers = new ArrayList<GER>();
+			}
+			
 			_outputter.startTag("GERS");	
 			for (GER ger: _gers)
 			{				
