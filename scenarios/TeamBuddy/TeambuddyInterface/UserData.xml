@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<UserData nextId="42">
+<Roles>
+<Role realname="Team Member" rolename="teammember"/>
+<Role realname="Lab Member" rolename="labmember"/>
+<Role realname="Guest" rolename="guest"/>
+</Roles>
+<InformationTypes>
+<InformationType realname="Profession" typename="profession">
+<AuthorisedRoleDefault>teammember</AuthorisedRoleDefault>
+<AuthorisedRoleDefault>labmember</AuthorisedRoleDefault>
+<AuthorisedRoleDefault>guest</AuthorisedRoleDefault>
+</InformationType>
+<InformationType realname="Responsibilities" typename="responsibilities">
+<AuthorisedRoleDefault>teammember</AuthorisedRoleDefault>
+</InformationType>
+<InformationType realname="Tasks and deadlines" typename="tasksanddeadlines">
+<AuthorisedRoleDefault>teammember</AuthorisedRoleDefault>
+</InformationType>
+<InformationType realname="Meeting dates" typename="meetingdates">
+<AuthorisedRoleDefault>teammember</AuthorisedRoleDefault>
+</InformationType>
+<InformationType realname="Absence from team" typename="absencefromteam">
+<AuthorisedRoleDefault>teammember</AuthorisedRoleDefault>
+</InformationType>
+<InformationType realname="Contact details of business partners" typename="contactdetailsofbusinesspartners"/>
+<InformationType realname="Findings from the internet" typename="findingsfromtheinternet">
+<AuthorisedRoleDefault>teammember</AuthorisedRoleDefault>
+</InformationType>
+<InformationType realname="Preferences for breaks" typename="preferencesforbreaks"/>
+<InformationType realname="Current location in building" typename="currentlocationinbuilding"/>
+<InformationType realname="Private contact details" typename="privatecontactdetails"/>
+<InformationType realname="Date of birth" typename="dateofbirth"/>
+<InformationType realname="Personal interests and hobbies" typename="personalinterestsandhobbies"/>
+</InformationTypes>
+<Users>
+<GuestUser password="Guest" realname="Guest" rolename="guest" timeLastLogin="1311591935137" timeLastLogout="1311591936762" username="Guest"/>
+<User password="Amol" realname="Amol Deshmukh" rolename="teammember" timeLastLogin="1311591927027" timeLastLogout="1311591930246" username="Amol"/>
+<User password="Iain" realname="Iain Wallace" rolename="teammember" timeLastLogin="1311591212231" timeLastLogout="1311591224434" username="Iain"/>
+<User password="Asad" realname="Asad Nasir" rolename="labmember" timeLastLogin="1311590320824" timeLastLogout="1311590323871" username="Asad"/>
+<User password="Christopher" realname="Christopher Ritter" rolename="labmember" timeLastLogin="1310743641446" timeLastLogout="1310743645713" username="Christopher"/>
+<User password="Michael" realname="Michael Kriegel" rolename="teammember" timeLastLogin="1311591173434" timeLastLogout="1311591192981" username="Michael"/>
+<User password="Matthias" realname="Matthias Keysermann" rolename="teammember" timeLastLogin="1311591101965" timeLastLogout="1311591102965" username="Matthias"/>
+</Users>
+</UserData>
