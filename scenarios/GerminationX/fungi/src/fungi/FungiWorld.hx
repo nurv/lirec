@@ -24,6 +24,7 @@ import truffle.Circle;
 
 // todo: remove this
 import flash.external.ExternalInterface;
+import flash.events.MouseEvent;
 
 class FungiWorld extends World 
 {
@@ -49,6 +50,7 @@ class FungiWorld extends World
     public var NumPlants:Int;
     public var Season:String;
     public var PlayerInfo:Dynamic;
+    var Dragging:Bool;
 
 	public function new(w:Int, h:Int) 
 	{
@@ -58,6 +60,7 @@ class FungiWorld extends World
         PerceiveTime=0;
 		Width=w;
 		Height=h;
+        Dragging=false;
 		Plants = [];
         Objs = [];
         Spirits = [];
@@ -143,7 +146,7 @@ class FungiWorld extends World
 		UpdateWorld(new Vec3(0,0,0));
 		
         NewsFeed = new Feed(this);
-		MyTextEntry=new TextEntry(330,50,250,20,NameCallback);
+		MyTextEntry=new TextEntry(150,50,250,20,NameCallback);
 		addChild(MyTextEntry);	
 
         TheCritters = new Critters(this,3);
@@ -171,7 +174,32 @@ class FungiWorld extends World
                 c.Spirits.push(sp);
             });
         }
+
+        var Pos=new Vec2(300,220);
+        var LastMouse=new Vec2(0,0);
+        var c=this;
+
+        MouseDown(this,function(e) { 
+            c.Dragging=true; 
+            LastMouse.x=e.stageX;
+            LastMouse.y=e.stageY;
+        });
+        MouseUp(this,function(c) { c.Dragging=false; });
+        MouseMove(this,function(e:MouseEvent) { 
+            if (c.Dragging)
+            {
+                Pos.x+=e.stageX-LastMouse.x; 
+                Pos.y+=e.stageY-LastMouse.y;
+                c.SetTranslate(Pos);
+                LastMouse.x=e.stageX;
+                LastMouse.y=e.stageY;
+            }
+        });
+
+
+
 	}
+
 
     function CompareLists(a:Array<Dynamic>,b:Array<Dynamic>): Bool
     {
@@ -362,10 +390,13 @@ class FungiWorld extends World
         }
         Plants=temp;
         SortScene();
+        SetScale(new Vec2(2,2));
     }
 
     override function Update(time:Int)
     {
+        if (Dragging) return;
+
         super.Update(time);
 
         Server.Update();

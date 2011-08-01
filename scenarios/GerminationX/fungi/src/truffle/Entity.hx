@@ -30,7 +30,7 @@ class Entity
 	public function new(w:World,pos:Vec3) 
 	{
         LogicalPos=pos;
-        Pos = Pos2PixelPos(LogicalPos);
+        Pos = w.ScreenTransform(LogicalPos);
         TilePos = null;
         Depth = Pos.z;
         Speed = 0;
@@ -44,15 +44,6 @@ class Entity
     {
     }
 
-	public function Pos2PixelPos(pos:Vec3) : Vec3
-	{
-		// do the nasty iso conversion
-		// this is actually an orthogonal projection matrix! (I think)
-		return new Vec3(300+(pos.x*36-pos.y*26),
-                        220+(pos.y*18+pos.x*9)-(pos.z*37),
-                        pos.x*0.51 + pos.y*0.71 + pos.z*0.47);             
-	}
-
     public function SetTilePos(s:Vec2) : Void
     {
         TilePos=s;
@@ -62,11 +53,11 @@ class Entity
 	{
         if (Speed==0)
         {
-            Pos = Pos2PixelPos(LogicalPos);
+            Pos = world.ScreenTransform(LogicalPos);
         }
         else
         {
-            var Dst = Pos2PixelPos(LogicalPos);
+            var Dst = world.ScreenTransform(LogicalPos);
             if (!Dst.Eq(Pos))
             {
                 Pos = Pos.Lerp(Dst,Speed);

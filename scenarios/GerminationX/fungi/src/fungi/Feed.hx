@@ -66,7 +66,7 @@ class Feed
         TheFrameTextures.NW.push(Resources.Get("gui-nw-002"));
         TheFrameTextures.NW.push(Resources.Get("gui-nw-003"));
 
-        Info=new Frame("",300,25,64*5,64);
+        Info=new Frame("",120,25,64*5,64);
         Info.SetTextSize(12);
         Info.UpdateText("Loading...");
         //Info.InitTextures(TheFrameTextures,Rnd);
@@ -152,11 +152,11 @@ class Feed
             Icons=[];
             
             var pos=32;
-            var xpos=752;
+            var xpos=600;
             for (i in d)
             {
                 Rnd.Seed(Std.int(i.time));
-                var f=new Frame("",xpos,pos,64*3,64*1);
+                var f=new Frame("",xpos,pos,64*2,64*1);
                 f.ExpandLeft=70;
                 f.SetTextSize(12);
                 

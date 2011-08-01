@@ -78,11 +78,15 @@ class Plant extends SpriteEntity
 	public override function Update(frame:Int, world:World)
 	{
 		super.Update(frame,world);
+        for (seed in Seeds)
+        {
+            seed.Update(frame,Spr.Transform);
+        }
 	}
 
     public function Fruit(world:World)
     {
-        var f=new Sprite(Spr.Pos.Add(new Vec2(0,-Spr.Height/2)),
+        var f=new Sprite(new Vec2(0,-Spr.Height/2),
                          Resources.Get("seed"));
         world.AddSprite(f);
         Seeds.push(f);

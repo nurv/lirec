@@ -39,7 +39,10 @@ class FlashSprite implements truffle.interfaces.Sprite, extends flash.display.Sp
     public var MyScale:Vec2;
     public var Hidden:Bool;
     public var Centre:Vec2;
-    var Transform:Matrix;
+    var PreTransformDirty:Bool;
+    public var PreTransform:Matrix;
+    public var Transform:Matrix;
+    var PostTransform:Matrix;
     var Depth:Int;
     var MouseDownFunc:Dynamic -> Void;
     var MouseDownContext:Dynamic;
@@ -59,7 +62,10 @@ class FlashSprite implements truffle.interfaces.Sprite, extends flash.display.Sp
         Angle=0;
         Depth=-1;
         MyScale = new Vec2(1,1);
+        PreTransformDirty=true;
+        PreTransform = new Matrix();
         Transform = new Matrix();
+        PostTransform = new Matrix();
         Width=64;
         Height=112;
         Centre=new Vec2(0,0);
@@ -212,9 +218,9 @@ class FlashSprite implements truffle.interfaces.Sprite, extends flash.display.Sp
         return new Vec3(p.x,p.y,0);
     }*/
 
-    public function SetPos(s:Vec2) { Pos=s; }
-	public function SetScale(s:Vec2) { MyScale=s; }
-	public function SetRotate(angle:Float) { Angle=angle; }
+    public function SetPos(s:Vec2) { Pos=s; PreTransformDirty=true; }
+	public function SetScale(s:Vec2) { MyScale=s; PreTransformDirty=true; }
+	public function SetRotate(angle:Float) { Angle=angle; PreTransformDirty=true; }
     public function GetTx() : Dynamic { return Transform; }
 
     public function TransformedPos() : Vec2
@@ -223,33 +229,28 @@ class FlashSprite implements truffle.interfaces.Sprite, extends flash.display.Sp
         p=Transform.transformPoint(p);
         return new Vec2(p.x,p.y);
     }
-    
+
 	public function Update(frame:Int, tx:Dynamic)
 	{
-        // we don't want to pass on the centering offset to the hierachy
-        Transform.identity();        
-        var tmp = new Matrix(Transform.a,Transform.b,Transform.c,Transform.d,
-           Transform.tx-Centre.x,Transform.ty-Centre.y);
+        if (PreTransformDirty==true)
+        {
+            PreTransform.identity();        
+		    PreTransform.rotate(Angle*(Math.PI/180));
+            PreTransform.scale(MyScale.x,MyScale.y);
+            PreTransform.translate(Pos.x,Pos.y);
+            PreTransformDirty=false;
+        }
 
-		Transform.rotate(Angle*(Math.PI/180));
-        Transform.scale(MyScale.x,MyScale.y);
-        Transform.translate(Pos.x,Pos.y);
+        Transform=PreTransform.clone();
         if (tx!=null)
 		{
             Transform.concat(tx);
         }
 
-		tmp.rotate(Angle*(Math.PI/180));
-        tmp.scale(MyScale.x,MyScale.y);
-        tmp.translate(Pos.x,Pos.y);
-        if (tx!=null)
-		{
-            tmp.concat(tx);
-        }
-        transform.matrix = tmp;
-
-        //transform.matrix = Transform;
-        //x=x-Centre.x;
-        //y=y-Centre.y;
+        PostTransform.identity();
+        // we don't want to pass on the centering offset to the hierachy
+        PostTransform.translate(-Centre.x, -Centre.y);
+        PostTransform.concat(Transform);
+        transform.matrix=PostTransform;
 	}
 }

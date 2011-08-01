@@ -17,6 +17,7 @@ package truffle.interfaces;
 
 import truffle.Entity;
 import truffle.Vec2;
+import truffle.Vec3;
 
 interface World  
 {
@@ -30,4 +31,5 @@ interface World
     public function Update(time:Int) : Void;
     public function Handle(event:Int) : Void;
     public function SetCurrentTilePos(s:Vec2) : Void;
+	public function ScreenTransform(pos:Vec3) : Vec3;
 }

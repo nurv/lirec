@@ -4,4 +4,4 @@
 -swf-lib resources.swf
 -main Main
 -cp src
--swf-header 950:576:40:000000
+-swf-header 720:576:40:000000
