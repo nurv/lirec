@@ -1,14 +1,18 @@
 package cmion.TeamBuddy.competencies;
 
-import java.util.HashMap;
 
-import sun.audio.*;
+import java.util.HashMap;
+import yarp.Bottle;
+import cmion.addOns.samgar.SamgarCompetency;
+import cmion.architecture.IArchitecture;
+import cmion.level3.EventRemoteAction;
+import cmion.level3.MindAction;
+import cmion.storage.CmionStorageContainer;
+import java.util.*;
 import java.io.*;
 
-import cmion.architecture.IArchitecture;
-import cmion.level2.Competency;
 
-public class Speak extends Competency{
+public class Speak extends SamgarCompetency {
 	
 	public Speak(IArchitecture architecture) {
 		super(architecture);
@@ -38,12 +42,6 @@ public class Speak extends Competency{
 
 	}
 	
-	@Override
-	public void initialize() {
-	
-		this.available = true;
-		
-	}
 	
 	@Override
 	public boolean runsInBackground() {
@@ -52,4 +50,12 @@ public class Speak extends Competency{
 	}
 
 
+	@Override
+	public void onRead(Bottle bottle_in) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
 }
+

@@ -22,48 +22,17 @@ public class MoveToUser extends Competency{
 	@Override
 	protected boolean competencyCode(HashMap<String, String> parameters) {
 		// TODO Auto-generated method stub
-		while(true)
-		{
-			Integer FaceDetected = (Integer) architecture.getBlackBoard().getRTPropertyValue("faceDetected");
-			Integer FaceProxemics = (Integer) architecture.getBlackBoard().getRTPropertyValue("faceProxemic");
-			Integer FacePosition = (Integer) architecture.getBlackBoard().getRTPropertyValue("facePosition");
-			//architecture.getBlackBoard().getR
-			//value 1 if true or 0 if false
-			
-			if(FaceDetected!=null && FaceDetected==1)
-			{
-				
-				if(FaceProxemics==0) //face found and far
-				{
-					architecture.getBlackBoard().setRTProperty("RobotSpeed", 100);
-					architecture.getBlackBoard().setRTProperty("RobotRotation", FacePosition);
-				}
-				else //face found and close, just rotate
-				{
-					architecture.getBlackBoard().setRTProperty("RobotSpeed", 0);
-					architecture.getBlackBoard().setRTProperty("RobotRotation", FacePosition);
-					if (Math.abs(FacePosition)<=25)
-					{
-						architecture.getBlackBoard().setRTProperty("RobotRotation", 0);
-						return true;
-					}	
-				}
-				
-			}	
-			else //no face, don't move
-			{
-				architecture.getBlackBoard().setRTProperty("RobotSpeed", 0);
-				architecture.getBlackBoard().setRTProperty("RobotRotation", 0);
-			} 
+		
+		System.out.println("moving to user " );
 			
 			try {
-				Thread.sleep(500);
+				Thread.sleep(3000);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
-		}
+		return true;
 	}
 
 	@Override
