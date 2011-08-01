@@ -41,6 +41,7 @@ import java.util.LinkedList;
 
 import javax.swing.BorderFactory;
 
+import javax.swing.AbstractAction;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -52,9 +53,12 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
+import javax.swing.SpinnerListModel;
 
 import javax.swing.WindowConstants;
 import javax.swing.border.BevelBorder;
@@ -78,8 +82,6 @@ import org.xml.sax.SAXException;
 import com.sun.org.apache.xerces.internal.dom.DocumentImpl;
 import com.sun.org.apache.xml.internal.serialize.*;
 
-import cmion.inTheWild.datastructures.GretaGesture;
-import cmion.inTheWild.datastructures.GretaGesture.GestureType;
 import cmion.level3.MindAction;
 
 
@@ -212,8 +214,19 @@ public class ITWEmysWozFrame extends javax.swing.JFrame implements ActionListene
 	private JLabel jLabel9;
 	private JComboBox comboBoxReceiver;
 	private JLabel jLabel8;
-	private JComboBox comboBoxPrewritten;
+	private JComboBox comboBoxCommon;
 	private JLabel lblLeft;
+	private JComboBox comboBoxTask;
+	private JLabel jLabel20;
+	private JComboBox comboBoxDontUnderstand;
+	private JLabel jLabel19;
+	private JComboBox comboBoxSmallTalk;
+	private JLabel jLabel18;
+	private JComboBox comboBoxLocations;
+	private JLabel jLabel17;
+	private JLabel jLabel16;
+	private JLabel jLabel15;
+	private JSpinner jSpinnerWhichTemplate;
 	private JComboBox comboBoxGaze;
 	private JLabel jLabel14;
 	private JButton btnMigrate;
@@ -256,6 +269,8 @@ public class ITWEmysWozFrame extends javax.swing.JFrame implements ActionListene
 	
 	/** the person representing sarah */
 	private Person sarahPerson;
+	
+	private HashMap<String, JComboBox> templateCategories;
 	
 	/** file chooser for selecting files to save to and load from*/
 	final JFileChooser fc;	
@@ -302,8 +317,27 @@ public class ITWEmysWozFrame extends javax.swing.JFrame implements ActionListene
 		fc.setFileFilter(ff); */
 		
 		initGUI();
+		
+		prepareTemplates();
 		prepareTable();
 		updateReceiverList();
+	}
+	
+	private void prepareTemplates()
+	{
+		// associate the combo boxes for categories with the category names
+		templateCategories = new HashMap<String,JComboBox>();
+		templateCategories.put("Common", comboBoxCommon);
+		templateCategories.put("Locations", comboBoxLocations);
+		templateCategories.put("SmallTalk", comboBoxSmallTalk);
+		templateCategories.put("DontUnderstand", comboBoxDontUnderstand);
+		templateCategories.put("Task", comboBoxTask);
+		
+		// put the category names in the spinner
+		SpinnerListModel jSpinnerWhichTemplateModel = 
+			new SpinnerListModel(templateCategories.keySet().toArray());
+		jSpinnerWhichTemplate.setModel(jSpinnerWhichTemplateModel);
+
 	}
 	
 	private void prepareTable() 
@@ -341,6 +375,7 @@ public class ITWEmysWozFrame extends javax.swing.JFrame implements ActionListene
 				jPanel1.setLayout(null);
 				jPanel1.setPreferredSize(new java.awt.Dimension(637, 445));
 				jPanel1.setBackground(new java.awt.Color(128,128,128));
+				jPanel1.setForeground(new java.awt.Color(0,0,0));
 				{
 					jLabel1 = new JLabel();
 					jPanel1.add(jLabel1);
@@ -354,28 +389,28 @@ public class ITWEmysWozFrame extends javax.swing.JFrame implements ActionListene
 					jPanel1.add(jLabel2);
 					jLabel2.setText("remote control Sarah:");
 					jLabel2.setFont(new java.awt.Font("Tahoma",1,11));
-					jLabel2.setBounds(10, 249, 169, 14);
+					jLabel2.setBounds(10, 143, 169, 14);
 					jLabel2.setForeground(new java.awt.Color(255,255,255));
 				}
 				{
 					jLabel3 = new JLabel();
 					jPanel1.add(jLabel3);
 					jLabel3.setText("emotion:");
-					jLabel3.setBounds(29, 272, 55, 14);
+					jLabel3.setBounds(29, 166, 55, 14);
 					jLabel3.setForeground(new java.awt.Color(255,255,255));
 				}
 				{
 					btnSetEmotion = new JButton();
 					jPanel1.add(btnSetEmotion);
 					btnSetEmotion.setText("set");
-					btnSetEmotion.setBounds(209, 266, 55, 23);
+					btnSetEmotion.setBounds(209, 160, 55, 23);
 					btnSetEmotion.addActionListener(this);
 				}
 				{
 					jLabel4 = new JLabel();
 					jPanel1.add(jLabel4);
 					jLabel4.setText("display binary choice");
-					jLabel4.setBounds(16, 331, 182, 14);
+					jLabel4.setBounds(16, 225, 182, 14);
 					jLabel4.setForeground(new java.awt.Color(255,255,255));
 				}
 				{
@@ -385,66 +420,67 @@ public class ITWEmysWozFrame extends javax.swing.JFrame implements ActionListene
 					comboBoxEmotion = new JComboBox();
 					jPanel1.add(comboBoxEmotion);
 					comboBoxEmotion.setModel(comboBoxEmotionModel);
-					comboBoxEmotion.setBounds(83, 267, 120, 23);
+					comboBoxEmotion.setBounds(83, 161, 120, 23);
 				}
 				{
 					btnShowChoice = new JButton();
 					jPanel1.add(btnShowChoice);
 					btnShowChoice.setText("display");
-					btnShowChoice.setBounds(418, 327, 83, 22);
+					btnShowChoice.setBounds(418, 221, 83, 22);
 					btnShowChoice.addActionListener(this);
 				}
 				{
 					jLabel5 = new JLabel();
 					jPanel1.add(jLabel5);
 					jLabel5.setText("talk:");
-					jLabel5.setBounds(6, 382, 29, 14);
+					jLabel5.setBounds(6, 276, 29, 14);
 					jLabel5.setForeground(new java.awt.Color(255,255,255));
 				}
 				{
 					jTextAreaTalk = new JTextArea();
 					jPanel1.add(jTextAreaTalk);
-					jTextAreaTalk.setBounds(43, 356, 417, 68);
+					jTextAreaTalk.setBounds(43, 250, 417, 68);
 					jTextAreaTalk.setLineWrap(true);
 					jTextAreaTalk.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
+					jTextAreaTalk.getActionMap().put(jTextAreaTalk.getInputMap().get(KeyStroke.getKeyStroke("ENTER")), new TextAreaPressEnterAction());
 				}
 				{
 					btnTalk = new JButton();
 					jPanel1.add(btnTalk);
 					btnTalk.setText("talk as Sarah");
-					btnTalk.setBounds(514, 340, 123, 23);
+					btnTalk.setBounds(514, 234, 123, 23);
 					btnTalk.addActionListener(this);
 				}
 				{
 					btnSendText = new JButton();
 					jPanel1.add(btnSendText);
 					btnSendText.setText("send as sms");
-					btnSendText.setBounds(514, 369, 121, 23);
+					btnSendText.setBounds(514, 263, 121, 23);
 					btnSendText.addActionListener(this);
 				}
 				{
 					comboBoxReceiver = new JComboBox();
 					jPanel1.add(comboBoxReceiver);
-					comboBoxReceiver.setBounds(514, 390, 120, 23);
+					comboBoxReceiver.setBounds(514, 287, 120, 23);
 				}
 				{
 					jLabel7 = new JLabel();
 					jPanel1.add(jLabel7);
 					jLabel7.setText("to");
-					jLabel7.setBounds(493, 394, 21, 14);
+					jLabel7.setBounds(493, 292, 21, 14);
 					jLabel7.setForeground(new java.awt.Color(255,255,255));
 				}
 				{
-					comboBoxPrewritten = new JComboBox();
-					jPanel1.add(comboBoxPrewritten);
-					comboBoxPrewritten.setBounds(6, 447, 628, 23);
-					comboBoxPrewritten.addActionListener(this);
+					comboBoxCommon = new JComboBox();
+					jPanel1.add(comboBoxCommon);
+					comboBoxCommon.setBounds(6, 374, 628, 23);
+					comboBoxCommon.addActionListener(this);
 				}
 				{
 					jLabel8 = new JLabel();
 					jPanel1.add(jLabel8);
 					jLabel8.setText("type above or select a template below");
-					jLabel8.setBounds(43, 430, 277, 14);
+					jLabel8.setBounds(43, 324, 277, 14);
 					jLabel8.setForeground(new java.awt.Color(255,255,255));
 				}
 				{
@@ -452,27 +488,27 @@ public class ITWEmysWozFrame extends javax.swing.JFrame implements ActionListene
 					jPanel1.add(jLabel9);
 					jLabel9.setText("phone book:");
 					jLabel9.setFont(new java.awt.Font("Tahoma",1,11));
-					jLabel9.setBounds(10, 195, 82, 14);
+					jLabel9.setBounds(10, 89, 82, 14);
 					jLabel9.setForeground(new java.awt.Color(255,255,255));
 				}
 				{
 					jLabel10 = new JLabel();
 					jPanel1.add(jLabel10);
 					jLabel10.setText("phone no:");
-					jLabel10.setBounds(54, 220, 58, 14);
+					jLabel10.setBounds(54, 114, 58, 14);
 					jLabel10.setForeground(new java.awt.Color(255,255,255));
 				}
 				{
 					jLabel11 = new JLabel();
 					jPanel1.add(jLabel11);
 					jLabel11.setText("person name:");
-					jLabel11.setBounds(296, 220, 80, 14);
+					jLabel11.setBounds(296, 114, 80, 14);
 					jLabel11.setForeground(new java.awt.Color(255,255,255));
 				}
 				{
 					txtFieldPhoneBookNo = new JTextField();
 					jPanel1.add(txtFieldPhoneBookNo);
-					txtFieldPhoneBookNo.setBounds(112, 215, 165, 23);
+					txtFieldPhoneBookNo.setBounds(112, 109, 165, 23);
 					txtFieldPhoneBookNo.setEditable(false);
 					txtFieldPhoneBookNo.setEnabled(false);
 				}
@@ -480,19 +516,19 @@ public class ITWEmysWozFrame extends javax.swing.JFrame implements ActionListene
 					btnSetAlias = new JButton();
 					jPanel1.add(btnSetAlias);
 					btnSetAlias.setText("set");
-					btnSetAlias.setBounds(564, 216, 52, 23);
+					btnSetAlias.setBounds(564, 110, 52, 23);
 					btnSetAlias.addActionListener(this);
 				}
 				{
 					txtFieldPhoneBookName = new JTextField();
 					jPanel1.add(txtFieldPhoneBookName);
-					txtFieldPhoneBookName.setBounds(382, 215, 176, 23);
+					txtFieldPhoneBookName.setBounds(382, 109, 176, 23);
 				}
 				{
 					jLabel6 = new JLabel();
 					jPanel1.add(jLabel6);
 					jLabel6.setText("or");
-					jLabel6.setBounds(493, 373, 21, 14);
+					jLabel6.setBounds(493, 267, 21, 14);
 					jLabel6.setForeground(new java.awt.Color(255,255,255));
 				}
 				{
@@ -500,19 +536,19 @@ public class ITWEmysWozFrame extends javax.swing.JFrame implements ActionListene
 					jPanel1.add(jLabel12);
 					jLabel12.setText("or");
 					jLabel12.setForeground(new java.awt.Color(255,255,255));
-					jLabel12.setBounds(493, 424, 21, 14);
+					jLabel12.setBounds(493, 318, 21, 14);
 				}
 				{
 					btnNewTemplate = new JButton();
 					jPanel1.add(btnNewTemplate);
 					btnNewTemplate.setText("add template");
-					btnNewTemplate.setBounds(514, 420, 117, 24);
+					btnNewTemplate.setBounds(514, 314, 117, 24);
 					btnNewTemplate.addActionListener(this);
 				}
 				{
 					jScrollPane1 = new JScrollPane();
 					jPanel1.add(jScrollPane1);
-					jScrollPane1.setBounds(10, 21, 605, 174);
+					jScrollPane1.setBounds(10, 21, 605, 63);
 					{
 						TableModel jTable1Model = 
 							new DefaultTableModel(
@@ -527,32 +563,32 @@ public class ITWEmysWozFrame extends javax.swing.JFrame implements ActionListene
 					lblLeft = new JLabel();
 					jPanel1.add(lblLeft);
 					lblLeft.setText("left:");
-					lblLeft.setBounds(157, 330, 19, 16);
+					lblLeft.setBounds(157, 224, 19, 16);
 					lblLeft.setForeground(new java.awt.Color(255,255,255));
 				}
 				{
 					txtFieldLeft = new JTextField();
 					jPanel1.add(txtFieldLeft);
-					txtFieldLeft.setBounds(180, 324, 91, 28);
+					txtFieldLeft.setBounds(180, 218, 91, 28);
 				}
 				{
 					txtFieldRight = new JTextField();
 					jPanel1.add(txtFieldRight);
-					txtFieldRight.setBounds(314, 324, 91, 28);
+					txtFieldRight.setBounds(314, 218, 91, 28);
 				}
 				{
 					lblRight = new JLabel();
 					jPanel1.add(lblRight);
 					lblRight.setText("right:");
 					lblRight.setForeground(new java.awt.Color(255,255,255));
-					lblRight.setBounds(280, 330, 28, 16);
+					lblRight.setBounds(280, 224, 28, 16);
 				}
 				{
 					jLabel13 = new JLabel();
 					jPanel1.add(jLabel13);
 					jLabel13.setText("migrate to:");
 					jLabel13.setForeground(new java.awt.Color(255,255,255));
-					jLabel13.setBounds(322, 267, 60, 25);
+					jLabel13.setBounds(322, 161, 60, 25);
 				}
 				{
 					ComboBoxModel jComboBox1Model = 
@@ -561,13 +597,13 @@ public class ITWEmysWozFrame extends javax.swing.JFrame implements ActionListene
 					comboBoxMigrate = new JComboBox();
 					jPanel1.add(comboBoxMigrate);
 					comboBoxMigrate.setModel(jComboBox1Model);
-					comboBoxMigrate.setBounds(388, 267, 120, 23);
+					comboBoxMigrate.setBounds(388, 161, 120, 23);
 				}
 				{
 					btnMigrate = new JButton();
 					jPanel1.add(btnMigrate);
 					btnMigrate.setText("migrate");
-					btnMigrate.setBounds(520, 267, 83, 22);
+					btnMigrate.setBounds(520, 161, 83, 22);
 					btnMigrate.addActionListener(this);
 				}
 				{
@@ -575,7 +611,7 @@ public class ITWEmysWozFrame extends javax.swing.JFrame implements ActionListene
 					jPanel1.add(jLabel14);
 					jLabel14.setText("gaze at:");
 					jLabel14.setForeground(new java.awt.Color(255,255,255));
-					jLabel14.setBounds(34, 302, 55, 14);
+					jLabel14.setBounds(34, 196, 55, 14);
 				}
 				{
 					ComboBoxModel comboBoxGazeModel = 
@@ -584,8 +620,84 @@ public class ITWEmysWozFrame extends javax.swing.JFrame implements ActionListene
 					comboBoxGaze = new JComboBox();
 					jPanel1.add(comboBoxGaze);
 					comboBoxGaze.setModel(comboBoxGazeModel);
-					comboBoxGaze.setBounds(86, 297, 150, 25);
+					comboBoxGaze.setBounds(86, 191, 150, 25);
 					comboBoxGaze.addActionListener(this);
+				}
+				{
+					jSpinnerWhichTemplate = new JSpinner();
+					jPanel1.add(jSpinnerWhichTemplate);
+					jSpinnerWhichTemplate.setBounds(465, 341, 167, 28);
+				}
+				{
+					jLabel15 = new JLabel();
+					jPanel1.add(jLabel15);
+					jLabel15.setText("to");
+					jLabel15.setForeground(new java.awt.Color(255,255,255));
+					jLabel15.setBounds(446, 349, 21, 14);
+				}
+				{
+					jLabel16 = new JLabel();
+					jPanel1.add(jLabel16);
+					jLabel16.setText("Common Utterances:");
+					jLabel16.setBounds(9, 354, 143, 16);
+					jLabel16.setFont(new java.awt.Font("SansSerif",1,12));
+					jLabel16.setForeground(new java.awt.Color(255,255,255));
+				}
+				{
+					jLabel17 = new JLabel();
+					jPanel1.add(jLabel17);
+					jLabel17.setText("Refering to Office Locations:");
+					jLabel17.setFont(new java.awt.Font("SansSerif",1,12));
+					jLabel17.setForeground(new java.awt.Color(255,255,255));
+					jLabel17.setBounds(11, 400, 175, 16);
+				}
+				{
+					comboBoxLocations = new JComboBox();
+					jPanel1.add(comboBoxLocations);
+					comboBoxLocations.setBounds(6, 421, 628, 23);
+					comboBoxLocations.addActionListener(this);
+				}
+				{
+					jLabel18 = new JLabel();
+					jPanel1.add(jLabel18);
+					jLabel18.setText("Small Talk:");
+					jLabel18.setFont(new java.awt.Font("SansSerif",1,12));
+					jLabel18.setForeground(new java.awt.Color(255,255,255));
+					jLabel18.setBounds(12, 450, 175, 16);
+				}
+				{
+					comboBoxSmallTalk = new JComboBox();
+					jPanel1.add(comboBoxSmallTalk);
+					comboBoxSmallTalk.setBounds(5, 472, 628, 23);
+					comboBoxSmallTalk.addActionListener(this);
+				}
+				{
+					jLabel19 = new JLabel();
+					jPanel1.add(jLabel19);
+					jLabel19.setText("I Don't Understand:");
+					jLabel19.setFont(new java.awt.Font("SansSerif",1,12));
+					jLabel19.setForeground(new java.awt.Color(255,255,255));
+					jLabel19.setBounds(11, 504, 175, 16);
+				}
+				{
+					comboBoxDontUnderstand = new JComboBox();
+					jPanel1.add(comboBoxDontUnderstand);
+					comboBoxDontUnderstand.setBounds(6, 525, 628, 23);
+					comboBoxDontUnderstand.addActionListener(this);
+				}
+				{
+					jLabel20 = new JLabel();
+					jPanel1.add(jLabel20);
+					jLabel20.setText("Task Related:");
+					jLabel20.setFont(new java.awt.Font("SansSerif",1,12));
+					jLabel20.setForeground(new java.awt.Color(255,255,255));
+					jLabel20.setBounds(11, 554, 175, 16);
+				}
+				{
+					comboBoxTask = new JComboBox();
+					jPanel1.add(comboBoxTask);
+					comboBoxTask.setBounds(7, 575, 628, 23);
+					comboBoxTask.addActionListener(this);
 				}
 			}
 			{
@@ -610,7 +722,7 @@ public class ITWEmysWozFrame extends javax.swing.JFrame implements ActionListene
 				}
 			}
 			pack();
-			this.setSize(645, 528);
+			this.setSize(645, 680);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -680,13 +792,27 @@ public class ITWEmysWozFrame extends javax.swing.JFrame implements ActionListene
 				tableModel.fireTableDataChanged();		
 			}
 		}
-		else if (arg0.getSource() == comboBoxPrewritten)
+		else if (templateCategories.values().contains(arg0.getSource()))
 		{
-			this.jTextAreaTalk.setText(comboBoxPrewritten.getSelectedItem().toString());
+			//quicker gui, directly talk
+			JComboBox selectedBox = (JComboBox) arg0.getSource();
+			String s = selectedBox.getSelectedItem().toString();
+			if (! s.trim().equals(""))
+			{
+				parameters.add(s);
+				MindAction mindAction = new MindAction("Sarah", "wozTalk", parameters);
+				parentMindConnector.newAction(mindAction);			
+			}
+			//this.jTextAreaTalk.setText(selectedBox.getSelectedItem().toString());
 		}
 		else if (arg0.getSource() == btnNewTemplate)
 		{
-			this.comboBoxPrewritten.addItem(jTextAreaTalk.getText());
+			// determine which combo box to add the template to, by looking at the spinner
+			JComboBox whichBox = null;
+			if (templateCategories.containsKey(jSpinnerWhichTemplate.getValue()))
+					whichBox = templateCategories.get(jSpinnerWhichTemplate.getValue());
+			if (whichBox!=null)
+				whichBox.addItem(jTextAreaTalk.getText());
 		}
 		else if (arg0.getSource() == menuItemSave)
 		{
@@ -762,14 +888,17 @@ public class ITWEmysWozFrame extends javax.swing.JFrame implements ActionListene
 				}
 				
 				// empty templates
-				this.comboBoxPrewritten.removeAllItems();
+				for (JComboBox comboBox : templateCategories.values())
+					comboBox.removeAllItems();
 				
 				// read templates
-				NodeList templatelist = doc.getElementsByTagName("template");		
+				NodeList templatelist = doc.getElementsByTagName("template");
 				for (int i=0; i<templatelist.getLength(); i++)
 				{
 					String template = templatelist.item(i).getTextContent();
-					this.comboBoxPrewritten.addItem(template);
+					String catName = templatelist.item(i).getAttributes().getNamedItem("category").getNodeValue();
+					JComboBox comboBox = templateCategories.get(catName);
+					comboBox.addItem(template);
 				}
 				
 				// read log lines
@@ -833,14 +962,19 @@ public class ITWEmysWozFrame extends javax.swing.JFrame implements ActionListene
 					root.appendChild(e);
 				}
 				
-				// write templates
-				for (int i=0; i<comboBoxPrewritten.getItemCount(); i++)
+				// write templates				
+				for (String catName : templateCategories.keySet())
 				{
-					String template = comboBoxPrewritten.getItemAt(i).toString();
-					Element e = xmldoc.createElement("template");
-					Text n = xmldoc.createTextNode(template);
-					e.appendChild(n);
-					root.appendChild(e);
+					JComboBox comboBox = templateCategories.get(catName);
+					for (int i=0; i<comboBox.getItemCount(); i++)
+					{
+						String template = comboBox.getItemAt(i).toString();
+						Element e = xmldoc.createElement("template");
+						Text n = xmldoc.createTextNode(template);
+						e.appendChild(n);
+						e.setAttribute("category", catName);
+						root.appendChild(e);
+					}
 				}
 									
 				// write log lines
@@ -901,4 +1035,23 @@ public class ITWEmysWozFrame extends javax.swing.JFrame implements ActionListene
 		
 	}
 
+	// Action for pressing enter in the text area
+	private class TextAreaPressEnterAction extends AbstractAction
+	{
+
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public void actionPerformed(ActionEvent e) 
+		{
+			ArrayList<String> parameters = new ArrayList<String>();			
+			parameters.add(jTextAreaTalk.getText());
+			MindAction mindAction = new MindAction("Sarah", "wozTalk", parameters);
+			parentMindConnector.newAction(mindAction);	
+			jTextAreaTalk.setText("");
+		}
+		
+		
+	}
+	
 }
