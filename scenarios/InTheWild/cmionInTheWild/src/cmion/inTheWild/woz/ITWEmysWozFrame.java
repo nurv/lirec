@@ -216,6 +216,7 @@ public class ITWEmysWozFrame extends javax.swing.JFrame implements ActionListene
 	private JLabel jLabel8;
 	private JComboBox comboBoxCommon;
 	private JLabel lblLeft;
+	private JButton btnSetGaze;
 	private JComboBox comboBoxTask;
 	private JLabel jLabel20;
 	private JComboBox comboBoxDontUnderstand;
@@ -402,8 +403,8 @@ public class ITWEmysWozFrame extends javax.swing.JFrame implements ActionListene
 				{
 					btnSetEmotion = new JButton();
 					jPanel1.add(btnSetEmotion);
-					btnSetEmotion.setText("set");
-					btnSetEmotion.setBounds(209, 160, 55, 23);
+					btnSetEmotion.setText("resend");
+					btnSetEmotion.setBounds(209, 160, 71, 23);
 					btnSetEmotion.addActionListener(this);
 				}
 				{
@@ -421,6 +422,7 @@ public class ITWEmysWozFrame extends javax.swing.JFrame implements ActionListene
 					jPanel1.add(comboBoxEmotion);
 					comboBoxEmotion.setModel(comboBoxEmotionModel);
 					comboBoxEmotion.setBounds(83, 161, 120, 23);
+					comboBoxEmotion.addActionListener(this);
 				}
 				{
 					btnShowChoice = new JButton();
@@ -699,6 +701,13 @@ public class ITWEmysWozFrame extends javax.swing.JFrame implements ActionListene
 					comboBoxTask.setBounds(7, 575, 628, 23);
 					comboBoxTask.addActionListener(this);
 				}
+				{
+					btnSetGaze = new JButton();
+					jPanel1.add(btnSetGaze);
+					btnSetGaze.setText("resend");
+					btnSetGaze.setBounds(247, 191, 71, 23);
+					btnSetGaze.addActionListener(this);
+				}
 			}
 			{
 				jMenuBar1 = new JMenuBar();
@@ -774,7 +783,7 @@ public class ITWEmysWozFrame extends javax.swing.JFrame implements ActionListene
 			MindAction mindAction = new MindAction("Sarah", "wozQuestion", parameters);
 			parentMindConnector.newAction(mindAction);
 		}		
-		else if (arg0.getSource() == btnSetEmotion)
+		else if ((arg0.getSource() == comboBoxEmotion) || (arg0.getSource() == btnSetEmotion))
 		{
 			// first parameter: emotion to display
 			parameters.add(comboBoxEmotion.getSelectedItem().toString());
@@ -847,7 +856,7 @@ public class ITWEmysWozFrame extends javax.swing.JFrame implements ActionListene
 				parentMindConnector.newAction(mindAction);		
 			}			
 		}
-		else if (arg0.getSource() == comboBoxGaze)
+		else if ((arg0.getSource() == comboBoxGaze) || arg0.getSource() == btnSetGaze)
 		{
 			String gazeTarget = comboBoxGaze.getSelectedItem().toString();
 			parameters.add(gazeTarget);

@@ -75,6 +75,8 @@ public class ITWEmysWoz extends AgentMindConnector {
 			newLogLine = "FAIL!!!!!" + a.getParameters().get(0);
 		else if (a.getName().equals("wozEmotion") && a.getSubject().equals("Sarah"))
 			newLogLine = "FAIL!!!!! emotion: " + a.getParameters().get(0);
+		else if (a.getName().equals("wozGaze") && a.getSubject().equals("Sarah"))
+			newLogLine = "FAIL!!!!! gaze: " + a.getParameters().get(0);
 		else if (a.getName().equals("wozQuestion") && a.getSubject().equals("Sarah"))
 			newLogLine = "FAIL!!!!! question: " + a.getParameters().get(0) + " " + a.getParameters().get(1);
 
@@ -101,6 +103,8 @@ public class ITWEmysWoz extends AgentMindConnector {
 			newLogLine = a.getParameters().get(0);
 		else if (a.getName().equals("wozEmotion") && a.getSubject().equals("Sarah"))
 			newLogLine = "***** emotion: " + a.getParameters().get(0);
+		else if (a.getName().equals("wozGaze") && a.getSubject().equals("Sarah"))
+			newLogLine = "***** gaze: " + a.getParameters().get(0);
 		else if (a.getName().equals("wozQuestion") && a.getSubject().equals("Sarah"))
 			newLogLine = "***** question: " + a.getParameters().get(0) + " " + a.getParameters().get(1);
 		else if (a.getName().equals("wozSendSMS") && a.getSubject().equals("Sarah"))
