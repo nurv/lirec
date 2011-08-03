@@ -1,0 +1,9 @@
+
+
+<needs>
+	<need name="cleanliness" value="50" />
+	<need name="energy" value="50" />
+	<need name="petting" value="50" />
+	<need name="skills" value="0" />
+	<need name="water" value="50" />
+</needs>

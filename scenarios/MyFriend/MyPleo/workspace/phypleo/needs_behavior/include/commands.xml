@@ -1,0 +1,11 @@
+<enum max="32767" min="12288" name="command" namesoff="true" short="cmd">
+  <e id="12288" name="graze" />
+  <e id="12289" name="wag" />
+  <e id="12290" name="whine" />
+  <e id="12291" name="snd_happy" />
+  <e id="12292" name="snd_wagging" />
+  <e id="12293" name="snd_honk" />
+  <e id="12294" name="snd_pant" />
+  <e id="12295" name="eat" />
+  <e id="12296" name="search_food" />
+</enum>

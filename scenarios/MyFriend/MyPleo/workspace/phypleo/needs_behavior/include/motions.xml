@@ -1,0 +1,20 @@
+<enum max="32767" min="8192" name="motion" namesoff="true" short="mot">
+  <e id=" 8192" name="hungry_search" />
+  <e id=" 8193" name="hungry_sniff_left" />
+  <e id=" 8194" name="hungry_sniff_right" />
+  <e id=" 8195" name="hungry_bite_straight" />
+  <e id=" 8196" name="hungry_bite_left" />
+  <e id=" 8197" name="hungry_bite_right" />
+  <e id=" 8198" name="wag_front_back" />
+  <e id=" 8199" name="emo_act_angry" />
+  <e id=" 8200" name="emo_act_angry_v1" />
+  <e id=" 8201" name="emo_act_angry_v2" />
+  <e id=" 8202" name="emo_act_bored_v1" />
+  <e id=" 8203" name="emo_act_bored_v2" />
+  <e id=" 8204" name="emo_act_sad_v1" />
+  <e id=" 8205" name="emo_act_sad_v2" />
+  <e id=" 8206" name="emo_act_happy_v1" />
+  <e id=" 8207" name="emo_act_happy_v2" />
+  <e id=" 8208" name="fat_sleep_lay" />
+  <e id=" 8209" name="hungry_bite_straight_high" />
+</enum>

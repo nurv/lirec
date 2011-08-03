@@ -1,0 +1,112 @@
+<ugobe_project name="needs_behavior">
+
+  <options>
+    <set name="top" value="C:/ProgramsWI/PleoDevelopmentKit" />
+    <include value="./include:${top}/include" />
+    <tools>
+     <pawn value="pawncc %i -V -O2 -S64 -v2 -C- %I TARGET=100 -o%o" />
+    </tools>
+    <directories>
+      <build value="build" />
+      <include value="include" />
+    </directories>
+    <umf value="3" />
+    <folders />
+  </options>
+
+  <set-default name="MEDIA" value="C:/ProgramsWI/PleoDevelopmentKit/media" />
+
+  <set name="SOUNDS" value="${MEDIA}/sounds" />
+  <set name="MOTIONS" value="${MEDIA}/motions" />
+  <set name="COMMANDS" value="${MEDIA}/commands" />
+  
+  <set name="MYSOUNDS" value="media/sounds" />
+  <set name="MYMOTIONS" value="media/motions" />
+  <set name="MYCOMMANDS" value="media/commands" />
+  <set name="MYSCRIPTS" value="behaviors" />
+
+  <resources>
+
+    <!-- Sounds -->
+    <sound path="${SOUNDS}/1p1_honk04.wav" />
+    <sound path="${SOUNDS}/ang_002.wav" />
+    <sound path="${SOUNDS}/bor_014.wav" />
+    <sound path="${SOUNDS}/chew_crunch1.wav" />
+    <sound path="${SOUNDS}/fat_039.wav" />
+	<sound path="${SOUNDS}/fat_053.wav" />
+    <sound path="${SOUNDS}/hap_001.wav" />
+    <sound path="${SOUNDS}/hap_002.wav" />
+    <sound path="${SOUNDS}/hap_003.wav" />
+    <sound path="${SOUNDS}/hap_008.wav" />
+    <sound path="${SOUNDS}/hun_019.wav" />
+    <sound path="${SOUNDS}/s3_prr02.wav" />
+    <sound path="${SOUNDS}/s3_sniff01.wav" />
+    <sound path="${SOUNDS}/sad_018.wav" />
+    <sound path="${SOUNDS}/sniff_object.wav" />
+    <sound path="${SOUNDS}/soc_021.wav" />
+    <sound path="${SOUNDS}/soc_023.wav" />
+    <sound path="${SOUNDS}/soc_030.wav" />
+    <sound path="${SOUNDS}/sq1_bark01.wav" />
+    <sound path="${SOUNDS}/sq1_excited01.wav" />
+    <sound path="${SOUNDS}/sq1_howl02.wav" />
+    <sound path="${SOUNDS}/sq1_pant01.wav" />
+    <sound path="${SOUNDS}/sq1_pant02.wav" />
+    <sound path="${SOUNDS}/sq1_pant03.wav" />
+    <sound path="${SOUNDS}/sq1_play01.wav" />
+    <sound path="${SOUNDS}/sq1_play04.wav" />
+    <sound path="${SOUNDS}/sq1_purr04.wav" />
+    <sound path="${SOUNDS}/sq1_sniff03.wav" />
+    <sound path="${SOUNDS}/sur_004.wav" />
+    <sound path="${MYSOUNDS}/hungry_bite_straight_high.wav" />
+
+    <!-- Motions -->
+    <motion path="${MOTIONS}/hungry_search.csv" />
+    <motion path="${MOTIONS}/hungry_sniff_left.csv" />
+    <motion path="${MOTIONS}/hungry_sniff_right.csv" />
+    <motion path="${MOTIONS}/hungry_bite_straight.csv" />
+    <motion path="${MOTIONS}/hungry_bite_left.csv" />
+    <motion path="${MOTIONS}/hungry_bite_right.csv" />
+    <motion path="${MOTIONS}/wag_front_back.csv" />
+    <motion path="${MOTIONS}/emo_act_angry.csv" />
+    <motion path="${MOTIONS}/emo_act_angry_v1.csv" />
+    <motion path="${MOTIONS}/emo_act_angry_v2.csv" />
+    <motion path="${MOTIONS}/emo_act_bored_v1.csv" />
+    <motion path="${MOTIONS}/emo_act_bored_v2.csv" />
+    <motion path="${MOTIONS}/emo_act_sad_v1.csv" />
+    <motion path="${MOTIONS}/emo_act_sad_v2.csv" />
+    <motion path="${MOTIONS}/emo_act_happy_v1.csv" />
+    <motion path="${MOTIONS}/emo_act_happy_v2.csv" />
+    <motion path="${MOTIONS}/fat_sleep_lay.csv" />
+    <motion path="${MYMOTIONS}/hungry_bite_straight_high.csv" />
+
+    <!-- Commands -->
+    <command path="${COMMANDS}/graze.csv" />
+    <command path="${COMMANDS}/wag.csv" />
+    <command path="${COMMANDS}/whine.csv" />
+    <command path="${COMMANDS}/snd_happy.csv" />
+    <command path="${COMMANDS}/snd_wagging.csv" />
+    <command path="${COMMANDS}/snd_honk.csv" />
+    <command path="${COMMANDS}/snd_pant.csv" />
+    <command path="${MYCOMMANDS}/eat.csv" />
+    <command path="${MYCOMMANDS}/search_food.csv" />
+
+    <!-- Scripts -->
+    <script path="sensors.p" />
+    <script path="main.p" />
+    <script path="${MYSCRIPTS}/eat.p" />
+    <script path="${MYSCRIPTS}/whine.p" />
+    <script path="${MYSCRIPTS}/wag.p" />
+    <script path="${MYSCRIPTS}/empty.p" />
+
+    <!-- User Properties -->
+    <user_property path="cleanliness" />
+    <!-- user_property path="energy" (Already exists)-->
+    <user_property path="petting" />
+    <user_property path="skills" />
+    <user_property path="water" />
+    <user_property path="mode" />
+    <user_property path="saw_leaf" />
+    <user_property path="eating" />
+
+  </resources>
+</ugobe_project>

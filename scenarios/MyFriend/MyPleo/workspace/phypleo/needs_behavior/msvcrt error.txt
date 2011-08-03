@@ -1,0 +1,3 @@
+The procedure entry point _except_handler4_common could not be located in the dynamic link library msvcrt.dll
+
+Solution: http://support.microsoft.com/kb/324762

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Pleo</string>
+    <string name="bluetooth_not_enabled">Bluetooth was not enabled. Exiting ViPleo.</string>
+<string name="disable_monitor_warning">Pleo is Dizzy.</string>
+<string name="connected_message">Connected</string>
+<string name="bluetooth_enabled">Bluetooth was enabled.</string>
+<string name="shutdown_warning">Pleo is Tired.</string>
+
+<string name="vi_start_migrate_button_label">Play Here\n(auto migrate)</string>
+<string name="phy_start_migrate_button_label">Play There\n(auto migrate)</string>
+<string name="vi_play">Play Here</string>
+<string name="phy_play">Play There</string>
+</resources>
