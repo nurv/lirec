@@ -29,6 +29,7 @@ class Feed
     var Rnd:RndGen;
     var Info:Frame;
     var TopItem:Dynamic;
+    var StrMkr:StringMaker;
 
     public function new(w:World)
     {
@@ -37,6 +38,7 @@ class Feed
         MaxStories=5;
         Rnd=new RndGen();
         TopItem={};
+        StrMkr=new StringMaker();
 
         TheFrameTextures = new FrameTextures();
         TheFrameTextures.N.push(Resources.Get("gui-n-001"));
@@ -166,10 +168,11 @@ class Feed
                     subjects+=i.subjects[0]+" ";
                 }
                 
-                f.UpdateText(Reflect.field(i,"display-from")+" sent "+
-                             Reflect.field(i,"msg-id")+
-                             subjects+
-                             " at "+Date.fromTime(i.time).toString());
+                //f.UpdateText(Reflect.field(i,"display-from")+" sent "+
+                //             Reflect.field(i,"msg-id")+
+                //             subjects+
+                //             " at "+Date.fromTime(i.time).toString());
+                f.UpdateText(StrMkr.MsgToString(i));
                 f.R=0.8;
                 f.G=0.9;
                 f.B=0.7;

@@ -33,10 +33,11 @@ class Plant extends SpriteEntity
 
 	public function new(world:World, id:Int, owner:String, pos, type:String, state:String, fruit:Bool, layer:String)
 	{
-		super(world,pos,Resources.Get(type+"-"+state),false);
+        State=state;
+        if (state=="planted") State="grow-a";
+		super(world,pos,Resources.Get(type+"-"+State),false);
         Id=id;
         PlantType=type;
-        State=state;
 		Owner=owner;
         PlantScale=0;
         //NeedsUpdate=true;
@@ -50,6 +51,7 @@ class Plant extends SpriteEntity
     public function StateUpdate(state,fruit,world:World)
     {
         State=state;
+        if (State=="planted") State="grow-a";
         if (State!="decayed")
         {
             Spr.ChangeBitmap(Resources.Get(PlantType+"-"+State));
@@ -83,6 +85,14 @@ class Plant extends SpriteEntity
             seed.Update(frame,Spr.Transform);
         }
 	}
+
+    override function OnSortScene(world:World, order:Int) : Void
+    {
+        for (seed in Seeds)
+        {
+            world.setChildIndex(seed,order+1);
+        }        
+    }
 
     public function Fruit(world:World)
     {

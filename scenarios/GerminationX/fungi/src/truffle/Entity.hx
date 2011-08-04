@@ -72,7 +72,7 @@ class Entity
         return null;
     }
 
-    public function OnSortScene(order:Int) : Void
+    public function OnSortScene(world:World, order:Int) : Void
     {
     }
 
