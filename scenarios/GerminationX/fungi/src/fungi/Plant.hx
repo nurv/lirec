@@ -31,10 +31,18 @@ class Plant extends SpriteEntity
     var Seeds:Array<Sprite>;
     var Layer:String;
 
+    // because not all states are represented by graphics
+    function FixState(state:String): String
+    {
+        if (state=="planted") return "grow-a";
+        if (state=="ill-a") return "ill-c";
+        if (state=="ill-b") return "ill-c";
+        return state;
+    }
+
 	public function new(world:World, id:Int, owner:String, pos, type:String, state:String, fruit:Bool, layer:String)
 	{
-        State=state;
-        if (state=="planted") State="grow-a";
+        State=FixState(state);
 		super(world,pos,Resources.Get(type+"-"+State),false);
         Id=id;
         PlantType=type;
@@ -50,8 +58,7 @@ class Plant extends SpriteEntity
 
     public function StateUpdate(state,fruit,world:World)
     {
-        State=state;
-        if (State=="planted") State="grow-a";
+        State=FixState(state);
         if (State!="decayed")
         {
             Spr.ChangeBitmap(Resources.Get(PlantType+"-"+State));

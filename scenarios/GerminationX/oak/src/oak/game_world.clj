@@ -102,7 +102,8 @@
       :tiles {}
       :spirits ()
       :log (make-log 10)
-      :id-gen id-gen)
+      :id-gen id-gen
+      :rules (load-companion-rules "rules.txt"))
      (repeatedly num-plants (fn [] (make-random-plant (id-gen)))))))
 
 (defn game-world-count [game-world]
@@ -224,14 +225,18 @@
  
 (defn game-world-update-tiles [game-world time delta]
 ;  (game-world-count game-world)
-  (let [rules (load-companion-rules "rules.txt")]
-    (modify :tiles
-            (fn [tiles]
-              (map
-               (fn [tile]
-                 (tile-update tile time delta rules))
-               tiles))
-            game-world)))
+  (modify
+   :rules ; load the rules each update so they can be changed
+   (fn [r] ; easily while running
+     (load-companion-rules "rules.txt"))
+   (modify
+    :tiles
+    (fn [tiles]
+      (map
+       (fn [tile]
+         (tile-update tile time delta (:rules game-world)))
+       tiles))
+    game-world)))
 
 (defn game-world-update-player-seeds [player]
   (if (and
@@ -341,7 +346,8 @@
                    (cons (spirit-update
                           spirit agent
                           (game-world-get-tile
-                           game-world (:tile spirit)))
+                           game-world (:tile spirit))
+                          (:rules game-world))
                          spirits)
                    (cons (make-spirit ((:id-gen game-world)) agent) spirits))))
              '()

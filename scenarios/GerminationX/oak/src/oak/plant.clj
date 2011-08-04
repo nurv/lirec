@@ -48,13 +48,10 @@
    (= type "plant-001") 3 ; temp dandelion
    (= type "clover") 4))
 
+(def plant-types '("cherry" "apple" "aronia" "dandelion" "clover"))
+
 (defn plant-type-id->name [type]
-  (cond
-   (= type 0) "cherry"
-   (= type 1) "apple"
-   (= type 2) "aronia"
-   (= type 3) "dandelion"
-   (= type 4) "clover"))
+  (nth plant-types type))
 
 (defn layer->spirit-name [layer]
   (cond
@@ -87,7 +84,7 @@
 
 
 (defn make-random-plant [id]
-  (let [type (rand-nth (list "aronia" "dandelion" "apple" "cherry" "clover"))]
+  (let [type (rand-nth plant-types)]
     (make-plant
      id
      (make-vec2 (Math/floor (rand tile-size))
@@ -123,9 +120,15 @@
                                  (> health min-health))
                             (if annual 'grow-a 'grown)
                             :else
-                            (if (< health min-health) 'ill-c 'decay-c))
-   (= state 'ill-c) (cond (< health min-health) 'decayed
+                            (if (< health min-health) 'ill-a 'decay-c))
+   (= state 'ill-a) (cond (< health min-health) 'ill-b
                 (> health max-health) 'grown
+                :else 'ill-a)
+   (= state 'ill-b) (cond (< health min-health) 'ill-c
+                (> health max-health) 'ill-a
+                :else 'ill-b)
+   (= state 'ill-c) (cond (< health min-health) 'decayed
+                (> health max-health) 'ill-b
                 :else 'ill-c)
    (= state 'decayed) 'decayed))
 
@@ -163,27 +166,27 @@
        (cond
         (and (= old-state 'planted)
              (= (:state plant) 'grow-a))
-        (plant-add-to-log plant log 'i-have-been-planted)
+        (plant-add-to-log plant log 'i_have_been_planted)
 
-        (and (not (= old-state 'ill-c))
-             (= (:state plant) 'ill-c))
-        (plant-add-to-log plant log 'i-am-ill)
+        (and (= old-state 'decay-c)
+             (= (:state plant) 'ill-a))
+        (plant-add-to-log plant log 'i_am_ill)
         
        ; (and (= old-state 'decay-c)
        ;      (= (:state plant) 'grow-a))
-       ; (plant-add-to-log plant log 'i-am-regrowing)
+       ; (plant-add-to-log plant log 'i_am_regrowing)
         
         (and (= old-state 'ill-c)
              (= (:state plant) 'decayed))
-        (plant-add-to-log plant log 'i-have-died)
+        (plant-add-to-log plant log 'i_have_died)
 
         (and (= old-state 'ill-c)
              (not (= (:state plant) 'ill-c)))
-        (plant-add-to-log plant log 'i-have-recovered)
+        (plant-add-to-log plant log 'i_have_recovered)
 
        ; (and (not (= old-state 'fruit-a))
        ;      (= (:state plant) 'fruit-a))
-       ; (plant-add-to-log plant log 'i-have-fruited)
+       ; (plant-add-to-log plant log 'i_have_fruited)
 
         :else log))
      plant)
@@ -252,12 +255,17 @@
       (< (get-relationship (:type plant) (:type n) rules) 0))
     neighbours)
    :needed_plants
-   (map
-    plant-type-id->name
-    (filter
-     (fn [v]
-       (> v 0))
-     (nth rules (plant-type->id (:type plant)))))
+   (reduce
+    (fn [r i]
+      (if (> (first i) 0)
+        (cons (second i) r)
+        r))
+    '()
+    (map
+     (fn [v t]
+       (list v t))
+     (nth rules (plant-type->id (:type plant)))
+     plant-types))
    })
 
 (defn plant-picked [plant player]
@@ -270,7 +278,7 @@
        (:id plant)
        (:type plant)
        (:owner-id plant)
-       'i-have-been-picked-by
+       'i_have_been_picked_by
        (list (:name player))
        'player
        (:fbid player))))
