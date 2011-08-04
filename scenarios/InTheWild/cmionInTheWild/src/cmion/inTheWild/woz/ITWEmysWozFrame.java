@@ -896,9 +896,12 @@ public class ITWEmysWozFrame extends javax.swing.JFrame implements ActionListene
 					phonebook.put(phoneNo, p);
 				}
 				
-				// empty templates
+				// remove all combo box listeners and empty templates
 				for (JComboBox comboBox : templateCategories.values())
-					comboBox.removeAllItems();
+				{
+					comboBox.removeActionListener(this);
+					comboBox.removeAllItems();					
+				}
 				
 				// read templates
 				NodeList templatelist = doc.getElementsByTagName("template");
@@ -909,6 +912,11 @@ public class ITWEmysWozFrame extends javax.swing.JFrame implements ActionListene
 					JComboBox comboBox = templateCategories.get(catName);
 					comboBox.addItem(template);
 				}
+
+				// add action listeners again
+				for (JComboBox comboBox : templateCategories.values())
+					comboBox.addActionListener(this);
+
 				
 				// read log lines
 				NodeList loglinelist = doc.getElementsByTagName("logline");		
