@@ -280,23 +280,13 @@
    (:spirits game-world)))
 
 (defn game-world-find-player-id [game-world name]
-  (reduce
-   (fn [r player]
-     (if (and (not r) (= name (:name player)))
-       (:id player) r))
-   false
-   (:players game-world)))
+  (player-list-find-player-id (:players game-world) name))
 
 (defn game-world-find-player [game-world id]
-  (reduce
-   (fn [r player]
-     (if (and (not r) (= id (:id player)))
-       player r))
-   false
-   (:players game-world)))
+  (player-list-find-player (:players game-world) id))
 
 (defn game-world-id->player-name [game-world id]
-  (:name (game-world-find-player game-world id)))
+  (player-list-id->player-name (:players game-world) id))
 
 (defn game-world-modify-player [game-world id f]
   (modify :players
@@ -347,7 +337,8 @@
                           spirit agent
                           (game-world-get-tile
                            game-world (:tile spirit))
-                          (:rules game-world))
+                          (:rules game-world)
+                          (:players game-world))
                          spirits)
                    (cons (make-spirit ((:id-gen game-world)) agent) spirits))))
              '()

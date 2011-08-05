@@ -32,5 +32,23 @@
    :has-picked '()
    :log (make-log 10)))
 
+(defn player-list-find-player-id [player-list name]
+  (reduce
+   (fn [r player]
+     (if (and (not r) (= name (:name player)))
+       (:id player) r))
+   false
+   player-list))
+
+(defn player-list-find-player [player-list id]
+  (reduce
+   (fn [r player]
+     (if (and (not r) (= id (:id player)))
+       player r))
+   false
+   player-list))
+
+(defn player-list-id->player-name [player-list id]
+  (:name (player-list-find-player player-list id)))
 
 

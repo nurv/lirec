@@ -21,7 +21,8 @@
    oak.forms
    oak.tile
    oak.log
-   oak.plant)
+   oak.plant
+   oak.player)
   (:require
    clojure.contrib.math))
 
@@ -127,45 +128,81 @@
       (remote-agent-done remote-agent))
     spirit)))
 
-(defn spirit-diagnose [spirit tile plant rules]
+(defn spirit-pick-helper-player [player-id players]
+  (let [selection
+        (filter
+         (fn [p]
+           (> (:seeds-left p) 0))
+         players)]
+    (if (> (count selection) 0)
+      (rand-nth selection)
+      false)))
+
+(defn spirit-ask-for-help [spirit plant diagnosis players]
+  (let [player (spirit-pick-helper-player (:owner-id plant) players)]
+    (if (and player (not (= (:id player) (:owner-id plant)))) 
+      (modify :log
+              (fn [log]
+                (log-add-msg
+                 log
+                 (make-msg
+                  (:id spirit)
+                  (:name spirit)
+                  (:id player)
+                  'needs_help
+                  (list
+                   (:name player)
+                   (player-list-id->player-name players (:owner-id plant))
+                   (:type plant)
+                   (rand-nth (:needed_plants diagnosis)))
+                  'spirit
+                  (:name spirit))))
+              spirit)
+      spirit)))
+             
+(defn spirit-send-diagnosis [spirit diagnosis tile plant rules]
+  (modify :log
+          (fn [log]
+            (log-add-msg
+             log
+             (if (and
+                  (> (count (:harmful_plants diagnosis)) 0)
+                  (< 5 (rand-int 10)))
+               (make-msg
+                (:id spirit)
+                (:name spirit)
+                (:owner-id plant)
+                'your_plant_doesnt_like
+                (list
+                 (:type plant)
+                 (:type (rand-nth (:harmful_plants diagnosis)))
+                 (:id plant))
+                'spirit
+                (:name spirit))
+               (make-msg
+                (:id spirit)
+                (:name spirit)
+                (:owner-id plant)
+                'your_plant_needs
+                (list (:type plant)
+                      (rand-nth (:needed_plants diagnosis))
+                      (:id plant))
+                'spirit
+                (:name spirit)))))
+          spirit))
+
+(defn spirit-diagnose [spirit tile plant rules players]
   (let [diagnosis
         (plant-diagnose
          plant
          (tile-get-neighbours tile (:pos plant))
          rules)]
-    (modify :log
-            (fn [log]
-              (log-add-msg
-               log
-               (let [msg
-                     (if (and
-                          (> (count (:harmful_plants diagnosis)) 0)
-                          (< 5 (rand-int 10)))
-                       (make-msg
-                        (:id spirit)
-                        (:name spirit)
-                        (:owner-id plant)
-                        'your_plant_doesnt_like
-                        (list
-                         (:type plant)
-                         (:type (rand-nth (:harmful_plants diagnosis)))
-                         (:id plant))
-                        'spirit
-                        (:name spirit))
-                       (make-msg
-                        (:id spirit)
-                        (:name spirit)
-                        (:owner-id plant)
-                        'your_plant_needs
-                        (list (:type plant)
-                              (rand-nth (:needed_plants diagnosis))
-                              (:id plant))
-                        'spirit
-                        (:name spirit)))]
-                 (println msg)
-                 msg)))
-            spirit)))
-
+    (if (not (= (:owner-id plant) -1))
+      (spirit-ask-for-help
+       (spirit-send-diagnosis spirit diagnosis tile plant rules)
+       plant diagnosis players)
+      spirit)))
+    
 (defn spirit-looking-at [spirit tile plant]
   (modify :log
           (fn [log]
@@ -181,7 +218,7 @@
               (:name spirit))))
           spirit))
               
-(defn spirit-update-from-actions [spirit tile rules]
+(defn spirit-update-from-actions [spirit tile rules players]
   (modify
    :fatactions (fn [fatactions] '()) ; clear em out
    (reduce
@@ -195,14 +232,14 @@
               (modify :pos (fn [pos] (:pos e))
                       (cond
                        ;(= type "look-at") (spirit-looking-at spirit tile e)
-                       (= type "diagnose") (spirit-diagnose spirit tile e rules)
+                       (= type "diagnose") (spirit-diagnose spirit tile e rules players)
                        :else spirit))
               spirit))
             spirit)))
     spirit
     (:fatactions spirit))))
 
-(defn spirit-update [spirit remote-agent tile rules]
+(defn spirit-update [spirit remote-agent tile rules players]
   (spirit-update-from-actions
    (spirit-update-emotionalloc
     (spirit-update-emotions
@@ -213,7 +250,7 @@
               spirit)
       remote-agent)
      remote-agent)
-    remote-agent tile) tile rules))
+    remote-agent tile) tile rules players))
           
 (comment println
          (map

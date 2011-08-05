@@ -52,6 +52,10 @@ class StringMaker
             your_plant_needs: function(from,subjects:Array<Dynamic>)
             {
                 return "This "+subjects[0]+" plant needs a "+subjects[1]+" plant nearby.";
+            },
+            needs_help: function(from,subjects:Array<Dynamic>)
+            {
+                return subjects[0]+", "+subjects[1]+"'s "+subjects[2]+" plant needs you to plant a "+subjects[3]+" near.";
             }
         };
     }
