@@ -1,0 +1,512 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+
+<meta name="robots" content="index, follow">
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+<script src="Shiva%203D%20Authoring%20Tool%20installation_files/ga.js" async="" type="text/javascript"></script><script language="javascript" src="Shiva%203D%20Authoring%20Tool%20installation_files/function.js"></script>
+<script language="javascript" src="Shiva%203D%20Authoring%20Tool%20installation_files/mootools.js"></script>	
+<script language="javascript" src="Shiva%203D%20Authoring%20Tool%20installation_files/mootree.js"></script>
+<link href="Shiva%203D%20Authoring%20Tool%20installation_files/style.css" rel="stylesheet" type="text/css">
+<link href="Shiva%203D%20Authoring%20Tool%20installation_files/tree.css" rel="stylesheet" type="text/css">
+<link rel="stylesheet" href="Shiva%203D%20Authoring%20Tool%20installation_files/mootree.css" type="text/css" media="screen">
+<script language="javascript" src="Shiva%203D%20Authoring%20Tool%20installation_files/highlight.js"></script>
+<link href="Shiva%203D%20Authoring%20Tool%20installation_files/search.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="Shiva%203D%20Authoring%20Tool%20installation_files/initfunction.js"></script>
+<script type="text/javascript" src="Shiva%203D%20Authoring%20Tool%20installation_files/function_002.js"></script>
+
+<link href="Shiva%203D%20Authoring%20Tool%20installation_files/style_002.css" rel="stylesheet" type="text/css">
+<link href="Shiva%203D%20Authoring%20Tool%20installation_files/api_template.css" rel="stylesheet" type="text/css">
+
+<link rel="stylesheet" href="Shiva%203D%20Authoring%20Tool%20installation_files/lua.css" type="text/css">
+<link href="Shiva%203D%20Authoring%20Tool%20installation_files/api_template.css" rel="stylesheet" type="text/css">
+<script type="text/javascript">
+	window.addEvent('domready',function() {
+		new SmoothScroll({ duration:700 }, window); 
+		
+		/* go to top after 300 pixels down */
+		var gototop = $('gototop');
+		gototop.set('opacity','0').setStyle('display','block');
+		window.addEvent('scroll',function(e) {
+			gototop.fade((window.getScroll().y > 300) ? 'in' : 'out')
+		});
+
+	});
+</script><title>Authoring Tool &gt; Installation | ShiVa3D Reference</title>
+<meta name="description" content="ShiVa3D Documentation : Script, Editor, Authoring Tool Reference">
+<meta name="keywords" content="Stonetrip,ShiVa,help,api,ShiVa3DScript,lua,scripting,how to, sfx, documentation, module,network,developer,reference">
+</head><body>
+<a name="top"></a>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-1149893-7']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script><div id="background_top">
+  <!--Begin Header-->
+  <div id="header">
+    <div id="center"> <img id="bg_glow" src="Shiva%203D%20Authoring%20Tool%20installation_files/bg_glow.png">
+      <div class="wrapper">
+        <div class="padding">
+          <!--Begin Logo-->
+          <div class="logo-module"> <a id="logo" href="http://www.stonetrip.com/developer/"></a> </div>
+          <!--End Logo-->
+          <!--Begin Search-->
+          <div align="right">
+            <div id="searchmod">
+              <div class="moduletable">
+                <div id="searchmod-surround">
+                  <form method="post" id="searchform" action="http://www.stonetrip.com/developer/doc/search" target="basefrm" class="blue">
+                    <div id="searchmenu">
+                      <input class="searchbg" value="Search documentation..." name="keyword" id="keyword" onclick="if(this.value=='Search documentation...')this.value=''; this.style.color='#eee'" onblur="if(this.value=='')this.value='Search documentation...';this.style.color='#555555'" type="text">
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!--End Search-->
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--End Header-->
+  <!--Begin Global Menu-->
+  <div class="horiz-globalmenu">
+    <div>
+      <table cellpadding="0" cellspacing="0">
+        <tbody><tr>
+          <td><a href="http://www.stonetrip.com/developer/" class="item">Home</a></td>
+          <td><a href="http://www.stonetrip.com/developer/category/tutorials" class="item">Tutorials</a></td>
+          <td><a href="http://www.stonetrip.com/developer/download" class="item">Download</a></td>
+          <td><a href="http://www.stonetrip.com/developer/forum" class="item">Forum</a></td>
+          <td id="active"><a href="http://www.stonetrip.com/developer/doc/" class="item_active">Documentation</a></td>
+          <td><a href="http://www.stonetrip.com/developer/wiki/" class="item">Wiki</a></td>
+          <td><a href="http://www.stonetrip.com/developer/category/blog" class="item">Blog</a></td>
+        </tr>
+      </tbody></table>
+    </div>
+  </div>
+  <!--End Global Menu-->
+</div><div id="wrapper">
+  <div id="header">
+    <div id="center">
+      <table border="0" cellpadding="0" cellspacing="5" width="620">
+        <tbody><tr>
+          <td><div align="left"><a href="http://www.stonetrip.com/developer/doc/bugreport"><span rel="translate">Report a bug in the documentation</span></a></div></td>
+        </tr>
+      </tbody></table>
+    </div>
+  </div>
+  <div class="centerdiv" id="centerdiv">
+    <div id="sidebar">
+      <table border="0" cellpadding="0" cellspacing="0" width="100%">
+        <tbody><tr>
+		  <td valign="top" width="230">
+            <div id="widgetswrap">
+              <div id="title"><a href="http://www.stonetrip.com/developer/doc/" style="color: rgb(136, 76, 160); text-decoration: none;"><img src="Shiva%203D%20Authoring%20Tool%20installation_files/logo.png" align="absmiddle">  Reference</a></div>
+              <div style="visibility: visible; opacity: 1;" class="menu" id="tree_container"> <div class="mif-tree-wrapper"><div class="mif-tree-children-root"><div class="mif-tree-node " id="mif-tree-2013"><span class="mif-tree-node-wrapper " uid="2013"><span class="mif-tree-gadjet mif-tree-gadjet-plus" uid="2013"></span><span class="mif-tree-icon folder-icon-close" uid="2013"></span><span class="mif-tree-name" uid="2013">Get Started</span></span><div class="mif-tree-children" style="display: none;"><div class="mif-tree-node " id="mif-tree-2040"><span class="mif-tree-node-wrapper " uid="2040"><span class="mif-tree-gadjet mif-tree-gadjet-none" uid="2040"></span><span class="mif-tree-icon page_white_text" uid="2040"></span><span class="mif-tree-name" uid="2040"><a href="http://www.stonetrip.com/developer/doc/editor/introduction">Editor</a></span></span><div class="mif-tree-children" style="display: none;"></div></div><div class="mif-tree-node " id="mif-tree-2039"><span class="mif-tree-node-wrapper " uid="2039"><span class="mif-tree-gadjet mif-tree-gadjet-none" uid="2039"></span><span class="mif-tree-icon page_white_text" uid="2039"></span><span class="mif-tree-name" uid="2039"><a href="http://www.stonetrip.com/developer/doc/api/introduction">Script</a></span></span><div class="mif-tree-children" style="display: none;"></div></div><div class="mif-tree-node " id="mif-tree-2038"><span class="mif-tree-node-wrapper  " uid="2038"><span class="mif-tree-gadjet mif-tree-gadjet-none" uid="2038"></span><span class="mif-tree-icon page_white_text" uid="2038"></span><span class="mif-tree-name" uid="2038"><a href="http://www.stonetrip.com/developer/doc/authoringtool/introduction">Authoring tool</a></span></span><div class="mif-tree-children" style="display: none;"></div></div><div class="mif-tree-node " id="mif-tree-2017"><span class="mif-tree-node-wrapper " uid="2017"><span class="mif-tree-gadjet mif-tree-gadjet-plus" uid="2017"></span><span class="mif-tree-icon folder-icon-close" uid="2017"></span><span class="mif-tree-name" uid="2017">Concepts</span></span><div class="mif-tree-children" style="display: none;"><div class="mif-tree-node " id="mif-tree-2029"><span class="mif-tree-node-wrapper " uid="2029"><span class="mif-tree-gadjet mif-tree-gadjet-plus" uid="2029"></span><span class="mif-tree-icon folder-icon-close" uid="2029"></span><span class="mif-tree-name" uid="2029">Attributes</span></span><div class="mif-tree-children" style="display: none;"></div></div><div class="mif-tree-node " id="mif-tree-2024"><span class="mif-tree-node-wrapper " uid="2024"><span class="mif-tree-gadjet mif-tree-gadjet-plus" uid="2024"></span><span class="mif-tree-icon folder-icon-close" uid="2024"></span><span class="mif-tree-name" uid="2024">Controllers</span></span><div class="mif-tree-children" style="display: none;"></div></div><div class="mif-tree-node " id="mif-tree-2023"><span class="mif-tree-node-wrapper " uid="2023"><span class="mif-tree-gadjet mif-tree-gadjet-none" uid="2023"></span><span class="mif-tree-icon page_white_text" uid="2023"></span><span class="mif-tree-name" uid="2023"><a href="http://www.stonetrip.com/developer/doc/concept/environment">Environment</a></span></span><div class="mif-tree-children" style="display: none;"></div></div><div class="mif-tree-node " id="mif-tree-2022"><span class="mif-tree-node-wrapper " uid="2022"><span class="mif-tree-gadjet mif-tree-gadjet-none" uid="2022"></span><span class="mif-tree-icon page_white_text" uid="2022"></span><span class="mif-tree-name" uid="2022"><a href="http://www.stonetrip.com/developer/doc/concept/game">Game</a></span></span><div class="mif-tree-children" style="display: none;"></div></div><div class="mif-tree-node " id="mif-tree-2021"><span class="mif-tree-node-wrapper " uid="2021"><span class="mif-tree-gadjet mif-tree-gadjet-none" uid="2021"></span><span class="mif-tree-icon page_white_text" uid="2021"></span><span class="mif-tree-name" uid="2021"><a href="http://www.stonetrip.com/developer/doc/concept/model">Model</a></span></span><div class="mif-tree-children" style="display: none;"></div></div><div class="mif-tree-node " id="mif-tree-2020"><span class="mif-tree-node-wrapper " uid="2020"><span class="mif-tree-gadjet mif-tree-gadjet-none" uid="2020"></span><span class="mif-tree-icon page_white_text" uid="2020"></span><span class="mif-tree-name" uid="2020"><a href="http://www.stonetrip.com/developer/doc/plugin/introduction">Plugin</a></span></span><div class="mif-tree-children" style="display: none;"></div></div><div class="mif-tree-node " id="mif-tree-2019"><span class="mif-tree-node-wrapper " uid="2019"><span class="mif-tree-gadjet mif-tree-gadjet-none" uid="2019"></span><span class="mif-tree-icon page_white_text" uid="2019"></span><span class="mif-tree-name" uid="2019"><a href="http://www.stonetrip.com/developer/doc/concept/resources">Resources</a></span></span><div class="mif-tree-children" style="display: none;"></div></div><div class="mif-tree-node mif-tree-node-last" id="mif-tree-2018"><span class="mif-tree-node-wrapper " uid="2018"><span class="mif-tree-gadjet mif-tree-gadjet-none" uid="2018"></span><span class="mif-tree-icon page_white_text" uid="2018"></span><span class="mif-tree-name" uid="2018"><a href="http://www.stonetrip.com/developer/doc/concept/scene">Scene</a></span></span><div class="mif-tree-children" style="display: none;"></div></div></div></div><div class="mif-tree-node mif-tree-node-last" id="mif-tree-2014"><span class="mif-tree-node-wrapper " uid="2014"><span class="mif-tree-gadjet mif-tree-gadjet-plus" uid="2014"></span><span class="mif-tree-icon folder-icon-close" uid="2014"></span><span class="mif-tree-name" uid="2014">Tutorials</span></span><div class="mif-tree-children" style="display: none;"><div class="mif-tree-node " id="mif-tree-2016"><span class="mif-tree-node-wrapper " uid="2016"><span class="mif-tree-gadjet mif-tree-gadjet-none" uid="2016"></span><span class="mif-tree-icon page_white_text" uid="2016"></span><span class="mif-tree-name" uid="2016"><a href="http://www.stonetrip.com/developer/162-first-application">First application</a></span></span><div class="mif-tree-children" style="display: none;"></div></div><div class="mif-tree-node mif-tree-node-last" id="mif-tree-2015"><span class="mif-tree-node-wrapper " uid="2015"><span class="mif-tree-gadjet mif-tree-gadjet-none" uid="2015"></span><span class="mif-tree-icon page_white_text" uid="2015"></span><span class="mif-tree-name" uid="2015"><a href="http://www.stonetrip.com/developer/category/tutorials/">More tutorials...</a></span></span><div class="mif-tree-children" style="display: none;"></div></div></div></div></div></div><div class="mif-tree-node " id="mif-tree-1984"><span class="mif-tree-node-wrapper " uid="1984"><span class="mif-tree-gadjet mif-tree-gadjet-plus" uid="1984"></span><span class="mif-tree-icon folder-icon-close" uid="1984"></span><span class="mif-tree-name" uid="1984">Editor</span></span><div class="mif-tree-children" style="display: none;"></div></div><div class="mif-tree-node " id="mif-tree-24"><span class="mif-tree-node-wrapper " uid="24"><span class="mif-tree-gadjet mif-tree-gadjet-plus" uid="24"></span><span class="mif-tree-icon folder-icon-close" uid="24"></span><span class="mif-tree-name" uid="24">Script</span></span><div class="mif-tree-children" style="display: none;"></div></div><div class="mif-tree-node " id="mif-tree-19"><span class="mif-tree-node-wrapper " uid="19"><span class="mif-tree-gadjet mif-tree-gadjet-plus" uid="19"></span><span class="mif-tree-icon folder-icon-close" uid="19"></span><span class="mif-tree-name" uid="19">Plug-in</span></span><div class="mif-tree-children" style="display: none;"></div></div><div class="mif-tree-node " id="mif-tree-5"><span class="mif-tree-node-wrapper " uid="5"><span class="mif-tree-gadjet mif-tree-gadjet-minus" uid="5"></span><span class="mif-tree-icon folder-icon-open" uid="5"></span><span class="mif-tree-name" uid="5">Authoring Tool</span></span><div class="mif-tree-children" style="display: block;"><div class="mif-tree-node " id="mif-tree-18"><span class="mif-tree-node-wrapper " uid="18"><span class="mif-tree-gadjet mif-tree-gadjet-none" uid="18"></span><span class="mif-tree-icon page_white_text" uid="18"></span><span class="mif-tree-name" uid="18"><a href="http://www.stonetrip.com/developer/doc/authoringtool/introduction">Introduction</a></span></span><div class="mif-tree-children" style="display: none;"></div></div><div class="mif-tree-node " id="mif-tree-17"><span class="mif-tree-node-wrapper mif-tree-node-selected" uid="17"><span class="mif-tree-gadjet mif-tree-gadjet-none" uid="17"></span><span class="mif-tree-icon page_white_text" uid="17"></span><span class="mif-tree-name" uid="17"><a href="http://www.stonetrip.com/developer/doc/authoringtool/installation">Installation Guide</a></span></span><div class="mif-tree-children" style="display: none;"></div></div><div class="mif-tree-node mif-tree-node-last" id="mif-tree-6"><span class="mif-tree-node-wrapper " uid="6"><span class="mif-tree-gadjet mif-tree-gadjet-plus" uid="6"></span><span class="mif-tree-icon folder-icon-close" uid="6"></span><span class="mif-tree-name" uid="6">Targets</span></span><div class="mif-tree-children" style="display: none;"></div></div></div></div><div class="mif-tree-node " id="mif-tree-2"><span class="mif-tree-node-wrapper " uid="2"><span class="mif-tree-gadjet mif-tree-gadjet-plus" uid="2"></span><span class="mif-tree-icon folder-icon-close" uid="2"></span><span class="mif-tree-name" uid="2">External Tools</span></span><div class="mif-tree-children" style="display: none;"></div></div><div class="mif-tree-node mif-tree-node-last" id="mif-tree-1"><span class="mif-tree-node-wrapper " uid="1"><span class="mif-tree-gadjet mif-tree-gadjet-none" uid="1"></span><span class="mif-tree-icon page_white_text" uid="1"></span><span class="mif-tree-name" uid="1"><a href="http://www.stonetrip.com/developer/doc/faq">FAQ</a></span></span><div class="mif-tree-children" style="display: none;"></div></div></div></div></div>
+            </div></td>
+          <td style="border-left: 1px solid rgb(221, 221, 221);" valign="top"><div class="include" id="include"><div class="reference">
+  <h1 id="internal-source-marker_0.707746734630415">Installation Guide</h1>
+  <div class="toc">
+    <h2>Table of contents</h2>
+    <p><a href="#System_requirements_for_installation">System requirements for installation</a></p>
+    <blockquote>
+      <p><a href="#Windows">Installing the ShiVa Authoring Tool under Windows</a></p>
+      <p><a href="#MacOS">Installing the ShiVa Authoring Tools under MacOS</a></p>
+    </blockquote>
+    <p><a href="#Required_third_party_tools">Required third party tools</a></p>
+    <blockquote>
+      <p><a href="#Windows_target">Windows target</a></p>
+      <p><a href="#Mac_target"> Mac target</a></p>
+      <p><a href="#Linux_target">Linux target</a></p>
+      <p><a href="#iPhone_iPad_target"> iOS target</a></p>
+      <p><a href="#Android_target">Android target</a></p>
+      <p><a href="#Palm_target"> Palm WebOS target</a></p>
+    </blockquote>
+    <p><a href="#Settings">Settings</a></p>
+    <p><a href="#Build_a_project">Build a project</a></p>
+  </div>
+  <p>The   ShiVa Authoring Tool is a powerful software that allows to 
+package your   Shiva applications for various target platforms. <br>
+    This is made possible   because the code developed on the Shiva 
+Editor is portable and can be   executed on various target platforms 
+without any changes.<br>
+    <br>
+  The supported target platforms are:</p>
+  <ul>
+    <li>Windows</li>
+    <li>Mac</li>
+    <li>Linux</li>
+    <li>iPhone</li>
+    <li>iPad</li>
+    <li>Android</li>
+    <li>Palm</li>
+  </ul>
+  <p>    According   to the target platform, some additional third party
+ tool need to be   installed to allow building the applications for the 
+given target   platform. The objective of this document is to explain 
+how to install   the Authoring Tool and the required third party tools.</p>
+  <p> Please note that the screenshots have been taken from Windows but the documentation also applies to Mac OS and Linux.  </p>
+<h2><a name="System_requirements_for_installation" id="System_requirements_for_installation"></a>System requirements for installation</h2>
+  <h3><a name="Windows" id="Windows"></a>Installing the ShiVa Authoring Tool under Windows</h3>
+  <p>Windows XP or higher is required.
+ </p>
+  <p> The ShiVa Authoring Tool for Windows is included in the ShiVa 
+Editor Installater. To install it,  check the option in ShiVa Editor 
+Installer as follows :<br>
+    <img src="Shiva%203D%20Authoring%20Tool%20installation_files/image0.png" alt="" width="696" height="522">
+  </p>
+  <table width="500">
+    <tbody>
+      <tr>
+        <td width="469">You can also download the ShiVa Authoring Tool as a separate file at: <br>
+          <a href="http://www.stonetrip.com/developer/download%20">http://www.stonetrip.com/developer/download</a></td>
+      </tr>
+    </tbody>
+  </table>
+  Once installed, the Authoring Tool is available in the Startup Menu under Stonetrip &gt; ShiVa Authoring Tool.<br>
+  By default, the files are installed in Program Files\Stonetrip\ShiVa Authoring Tool.<br>
+  <h3><a name="MacOS" id="MacOS"></a>Installing the ShiVa Authoring Tools under MacOS</h3>
+  <a href="http://www.apple.com/mac/">Mac OS X 10.5</a> or higher is required.<br>
+  <table>
+    <tbody>
+      <tr>
+        <td width="475">Download the Authoring Tool for MacOS on the developer website at: <br>
+          <a href="http://www.stonetrip.com/developer/download%20">http://www.stonetrip.com/developer/download</a></td>
+      </tr>
+    </tbody>
+  </table>
+  Double click on the dmg to mount the volume then follow the installation steps.<br>
+  <img src="Shiva%203D%20Authoring%20Tool%20installation_files/image4.png" alt="" width="622" height="442"><br>
+  Once   installed, the Authoring Tool is available in the Applications 
+  Place under Stonetrip &gt; Authoring Tool &gt; ShiVa Authoring Tool.<br>
+  <h2><a name="Required_third_party_tools" id="Required_third_party_tools"></a>Required third party tools</h2>
+  <p>The   ShiVa Authoring Tool has been designed to generate 
+applications for   various target platforms: Windows, MacOS, Linux, 
+iPhone, Android, Palm,   Wii, etc... </p>
+  <p> According   to the target platform, some third party tools (not 
+included in the   installation for legals reasons ) are required to 
+build the   applications.  </p>
+  <h3><a name="Windows_target" id="Windows_target"></a>Required third party tools for Windows target</h3>
+  <h4>Visual Studio C++ Express </h4>
+  Note that Visual Studio C++ 2010 Express  is free and only required to build a native Windows application.<br>
+  <table>
+    <tbody>
+      <tr>
+        <td width="506">Download the latest version at: <a href="http://www.microsoft.com/express/downloads/">http://www.microsoft.com/express/downloads/</a></td>
+      </tr>
+    </tbody>
+  </table>
+  Do a regular installation.<br>
+  <h4>Microsoft .NET Framework</h4>
+  <table>
+    <tbody>
+      <tr>
+        <td width="472">Download the latest version at: <a href="http://www.microsoft.com/downloads/details.aspx?displaylang=en&amp;FamilyID=0a391abd-25c1-4fc0-919f-b21f31ab88b7">http://www.microsoft.com/downloads/</a></td>
+      </tr>
+    </tbody>
+  </table>
+  Do a regular installation.<br>
+  <h3><a name="Mac_target" id="Mac_target"></a>Required third party tools for Mac target</h3>
+  <h4>Xcode</h4>
+  <table>
+    <tbody>
+      <tr>
+        <td width="509">Download the latest version at: <a href="http://developer.apple.com/technologies/xcode.html">http://developer.apple.com/technologies/xcode</a></td>
+      </tr>
+    </tbody>
+  </table>
+  Just follow the installer steps, there is no special option.
+  <h3><a name="Linux_target" id="Linux_target"></a>Required third party tools for Linux target</h3>
+  No additional third party tool is required.<br>
+  <h3><a name="iPhone_iPad_target" id="iPhone_iPad_target"></a>Required third party tools for iPhone/iPad  target</h3>
+  <h4>Xcode</h4>
+  <table>
+    <tbody>
+      <tr>
+        <td width="508">Download the latest version at: <a href="http://developer.apple.com/technologies/xcode.html">http://developer.apple.com/technologies/xcode</a></td>
+      </tr>
+    </tbody>
+  </table>
+  Just follow the installer steps, there is no special option.
+  <h4>iOS SDK</h4>
+  <table>
+    <tbody>
+      <tr>
+        <td width="465">Download the latest version at: <a href="https://developer.apple.com/iphone/index.action#downloads">https://developer.apple.com/iphone/</a></td>
+      </tr>
+    </tbody>
+  </table>
+  Just follow the installer steps, there is no special option.<br>
+  <h3><a name="Android_target" id="Android_target"></a>Required third party tools for Android target</h3>
+  <h4>Android SDK </h4>
+  <table>
+    <tbody>
+      <tr>
+        <td width="496">Download the lastest version at: <a href="http://developer.android.com/sdk/index.html">http://developer.android.com/sdk/index.html</a></td>
+      </tr>
+    </tbody>
+  </table>
+  <p>Install as follows:</p>
+  <ul>
+    <li>Unzip the file in a  place like &#8220;C:\Android\SDK&#8221; on Windows (in 
+  that case, installer is &#8220;C:\Android\SDK\SDK Setup.exe&#8221;) or   
+&#8220;Applications/Android/SDK&#8221; on OSX.
+      <br>
+    <strong>Important</strong> : The path must not contain space.</li>
+    <li> Launch the SDK Setup :
+      <ul>
+        <li>If &#8220;Failed to fetch UR...&#8221; message is displayed at the first
+ launch, go   to the settings and check &#8220;Force https://... sources to be
+ fetched   using http://&#8221;</li>
+        <li>Click on Available Packages on the left and select the 
+desired SDK   Platform version (at least the SDK Platform Android 2.0), 
+note that   you will be able to select the minimum platform version on 
+the Authoring   Tool.</li>
+        <li>On Windows, you can select the USB Driver package to be able to push the application directly on connected Android devices.<br>
+        <img src="Shiva%203D%20Authoring%20Tool%20installation_files/image3.png" alt="" width="625" height="433"></li>
+        <li>          Then click &#8220;Install Selected&#8221; <br>
+        </li>
+      </ul>
+    </li>
+  </ul>
+<h4>Android NDK</h4>
+  <table>
+    <tbody>
+      <tr>
+        <td width="507">Download the latest version at: <a href="http://developer.android.com/sdk/ndk/index.html">http://developer.android.com/sdk/ndk/index.html</a></td>
+      </tr>
+    </tbody>
+  </table>
+  <p>Like   for the SDK, unzip the file in a  place like 
+&#8220;C:\Android\NDK&#8221; on   Windows ( in that case, installer is 
+&#8220;C:\Android\NDK\ndk-build&#8221; ) or   &#8220;Applications\Android\NDK&#8221; on OSX.</p>
+  <p> <strong>Important</strong> : The path must not contain space.<br>
+  </p>
+  <h4>Cygwin ( Windows Only )</h4>
+  <table>
+    <tbody>
+      <tr>
+        <td width="414">Download the latest version at: <a href="http://www.cygwin.com/">http://www.cygwin.com/</a></td>
+      </tr>
+    </tbody>
+  </table>
+  <p>Install as follows:</p>
+<ul>
+    <li>Launch   the installer.</li>
+    <li>Select &#8220;Install from Internet&#8221;.</li>
+    <li>Click next until a   download site is asked, at this step, select any server.</li>
+    <li>When you are asked to select your package, expand the Devel category and select the binary make Package as follows:<br>
+    <img src="Shiva%203D%20Authoring%20Tool%20installation_files/image1.png" alt="" width="638" height="542"></li>
+    <li>Click Next and wait for the installation to complete.<br>
+    </li>
+  </ul>
+<h4>Apache Ant ( Windows Only )</h4>
+  <table>
+    <tbody>
+      <tr>
+        <td width="457">Download the latest version at: <a href="http://ant.apache.org/bindownload.cgi">http://ant.apache.org/bindownload.cgi</a></td>
+      </tr>
+    </tbody>
+  </table>
+  <p>Install as follows:</p>
+  <ul>
+    <li>Unzip the zip file in a  place like C:\Ant, to have C:\Ant\bin\ant.bat.</li>
+    <li> Add   a new environment system variable ( Advanced system 
+settings &gt;   Environment variables ) named ANT_HOME with the path 
+where you unzipped   Ant, as value.<br>
+      <br>
+    <img src="Shiva%203D%20Authoring%20Tool%20installation_files/image5.png" alt="" width="396" height="438"></li>
+   </ul>
+  <h3>Java SE Development Kit ( Windows Only )</h3>
+  <table>
+     <tbody>
+       <tr>
+         <td width="536">Download the latest JDK version at: <a href="http://java.sun.com/javase/downloads/index.jsp">http://java.sun.com/javase/downloads/index.jsp</a></td>
+       </tr>
+     </tbody>
+   </table>
+Install the JDK in the default directory (click Next until the end).<br>
+<br>
+Configure the JAVA_HOME environment variable to the Java jdk path ( ex :C:\Program Files\Java\jdk1.6.0_20 ).
+<h3>Eclipse</h3>
+<p>Eclipse environment is required to build android project</p>
+<table>
+  <tbody>
+    <tr>
+      <td width="536"><span id="internal-source-marker_0.992707486991157">Download the latest version : </span><a href="http://www.eclipse.org/downloads/">http://www.eclipse.org/</a></td>
+    </tr>
+  </tbody>
+</table>
+<br>
+<span id="internal-source-marker_0.">Select Eclipse Classic, Eclipse 3.5 or newer is required.<br>
+</span>
+<h4 id="internal-source-marker_0.4">ADT Plugin for Eclipse
+</h4>
+<p><span id="internal-source-marker_0.2">Use Update Manager feature of your Eclipse installation to install the latest revision of ADT on your development computer.</span></p>
+<ol>
+  <li>Start Eclipse, then select <strong>Help &gt; Install New Software</strong>....</li>
+  <li>Click <strong>Add</strong>, in the top-right corner.</li>
+  <li>In the Add Repository dialog that appears, enter "ADT Plugin" for the Name and the following URL for the Location:</li>
+  <li>https://dl-ssl.google.com/android/eclipse/</li>
+  <li>Note:   If you have trouble acquiring the plugin, try using "http"
+ in the   Location URL, instead of "https" (https is preferred for 
+security   reasons).</li>
+  <li>Click <strong>OK</strong>.</li>
+  <li>In the Available Software dialog, select the checkbox next to Developer Tools and click <strong>Next</strong>.</li>
+  <li>In the next window, you'll see a list of the tools to be downloaded. Click <strong>Next</strong>.</li>
+  <li>Read and accept the license agreements, then click <strong>Finish</strong>.</li>
+  <li>When the installation completes, restart Eclipse.</li>
+</ol>
+ Complete documentation for the ADT Plugin : <a href="http://developer.android.com/sdk/eclipse-adt.html" target="_blank">http://developer.android.com/sdk/eclipse-adt.html</a><br>
+<h3><a name="Palm_target" id="Palm_target"></a>Required third party tools for Palm WebOS target  </h3>
+For more information about the installation please visit : <a href="http://developer.palm.com/index.php?option=com_content&amp;view=article&amp;id=1970&amp;Itemid=331" target="_blank">http://developer.palm.com/</a>
+<h4>Cygwin ( Windows Only )</h4>
+  <p>Note that Cygwin is only mandatory if you want to build a native Palm application.<br>
+    To install, please refer to instructions above.</p>
+<h4>Palm SDK</h4>
+  <table>
+    <tbody>
+      <tr>
+        <td width="390">Download the latest version at: <a href="http://developer.palm.com/index.php?option=com_content&amp;view=article&amp;id=1788">http://developer.palm.com</a></td>
+      </tr>
+    </tbody>
+  </table>
+  Do a default installation (there is no special option).<br>
+  <h4>Sourcery G++</h4>
+  <table>
+    <tbody>
+      <tr>
+        <td width="661">Download the IA32 Windows Installer at: <a href="http://www.codesourcery.com/sgpp/lite/arm/portal/release858">http://www.codesourcery.com/sgpp/lite/arm/portal/release858</a></td>
+      </tr>
+    </tbody>
+  </table>
+  Launch the installer and choose the Typical install set, then select the Modify PATH for all users.<br>
+  <h2><a name="Settings" id="Settings"></a>Settings</h2>
+  Launch   the Authoring Tool and click on the Settings button ( at 
+bottom right   corner ), if you have followed the steps above, you 
+should be able to   fill all the required field :<br>
+  <br>
+  <img src="Shiva%203D%20Authoring%20Tool%20installation_files/image2.png" alt="" width="762" height="631"><br>
+  <h2><a name="Build_a_project" id="Build_a_project"></a>Build a project</h2>
+  <p>You are now ready to build applications for Windows, Mac, Linux, iPhone, iPad, Palm and Android. <br>
+If it is the first time you launch the ShiVa Authoring Tool, you may want to take a look at the <a href="http://www.stonetrip.com/developer/doc/authoringtool/introduction">Introduction</a> document and read the platform tutorials :</p>
+  <ul>
+    <li><a href="http://www.stonetrip.com/developer/doc/authoringtool/windows"> The Authoring Tool for Windows build</a></li>
+    <li><a href="http://www.stonetrip.com/developer/doc/authoringtool/mac">The Authoring Tool for MacOS build</a></li>
+    <li><a href="http://www.stonetrip.com/developer/doc/authoringtool/linux">The Authoring Tool for Linux build</a></li>
+    <li><a href="http://www.stonetrip.com/developer/doc/authoringtool/iphone">The Authoring Tool for iPhone build</a></li>
+    <li><a href="http://www.stonetrip.com/developer/doc/authoringtool/ipad">The Authoring Tool for iPad build</a></li>
+    <li><a href="http://www.stonetrip.com/developer/doc/authoringtool/android">The Authoring Tool for Android build</a></li>
+    <li><a href="http://www.stonetrip.com/developer/doc/authoringtool/palmwebos"> The Authoring Tool for Palm build</a></li>
+    <li><a href="http://www.stonetrip.com/developer/doc/authoringtool/wii">The Authoring Tool for Wii build</a></li>
+    <li><a href="http://www.stonetrip.com/developer/doc/authoringtool/internet">The Authoring Tool for Internet build</a></li>
+    <li><a href="http://www.stonetrip.com/developer/doc/authoringtool/airplay">The Authoring Tool for Airplay</a></li>
+  </ul>
+</div>
+</div></td>
+        </tr>
+      </tbody></table>
+    </div>
+  </div>
+</div><div id="footer_bg">&nbsp;</div>
+<div id="scroll">
+  <div id="center" align="right">
+    <div id="suggest"> </div>
+  </div>
+</div>
+<script language="javascript">
+// JavaScript Document
+window.addEvent('domready',function(){
+	Mif.Tree.Node.implement({
+	
+		switchSelect: function(state){
+			this.tree[state ? 'select' : 'unselect'](this);
+		}
+		
+	});
+	tree = new Mif.Tree({
+		container: $('tree_container'),
+		forest: true,
+		initialize: function(){
+			var storage=new Mif.Tree.CookieStorage(this);
+			var selectStorage=new Mif.Tree.CookieStorage(this, {event: 'selectChange', action: 'switchSelect'});
+			this.addEvent('load', function(){
+				storage.restore();
+				selectStorage.restore();tree.findNodeByUrl('authoringtool/installation');
+			$("tree_container").fade([0,1]);
+			}).addEvent('loadChildren', function(){
+				storage.restore();
+				selectStorage.restore();
+			});
+		},
+		types: {
+			api:{
+				openIcon: 'api-icon',
+				closeIcon: 'api-icon',
+				loadable: true
+			},
+			functions:{
+				openIcon: 'function-icon',
+				closeIcon: 'function-icon'
+			},
+			constants:{
+				openIcon: 'constant-icon',
+				closeIcon: 'constant-icon'
+			},
+			function_:{
+				openIcon: 'function-icon',
+				closeIcon: 'function-icon'
+			},
+			handler:{
+				openIcon: 'handler-icon',
+				closeIcon: 'handler-icon'
+			},
+			constant:{
+				openIcon: 'constant-icon',
+				closeIcon: 'constant-icon'
+			},
+			functions_group:{
+				openIcon: 'folder-icon-open',
+				closeIcon: 'folder-icon-close'
+			},
+			constants_group:{
+				openIcon: 'folder-icon-open',
+				closeIcon: 'folder-icon-close'
+			},
+			folder:{
+				openIcon: 'folder-icon-open',
+				closeIcon: 'folder-icon-close'
+			},
+			file:{
+				openIcon: 'page_white_text',
+				closeIcon: 'page_white_text'
+			}
+
+		}
+	});
+
+	tree.load({
+		url: 'http://www.stonetrip.com/developer/doc/html/menu/menu.json'
+
+	});
+	
+	 $('widgetswrap').addEvent('click', function(e){
+        newW = $('widgetswrap').getSize();
+		sidebarW = 970;
+		
+	 	$each($$('.include img'), function(el){
+			el.set('styles', {'max-width': sidebarW-newW.x-40+'px'});
+		 });
+	 });
+});
+</script>
+<a style="visibility: hidden; opacity: 0; display: block;" href="#top" id="gototop" class="no-click no-print">Top of Page</a></body></html>

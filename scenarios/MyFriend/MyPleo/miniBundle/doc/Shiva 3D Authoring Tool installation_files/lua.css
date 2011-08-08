@@ -1,0 +1,34 @@
+@charset "utf-8";
+.lua .de1, .lua .de2 {font: normal normal 1em/1.2em monospace; margin:0; padding:0; background:none; vertical-align:top;}
+.lua  { color: #000066; }
+.lua .imp {font-weight: bold; color: red;}
+.lua li, .lua .li1 {font-weight: normal; vertical-align:top;}
+.lua .ln {width:1px;text-align:right;margin:0;padding:0 2px;vertical-align:top;}
+.lua .li2 {font-weight: bold; vertical-align:top;}
+.lua .kw0 {color: #0000ff;}
+.lua .kw1 {color: #000088;}
+.lua .kw2 {color: #ff00ff;}
+.lua .kw3 {color: #c088c0;}
+.lua .co1 {color: #008000; font-style: italic;}
+.lua .coMULTI {color: #808080; font-style: italic;}
+.lua .es0 {color: #000099; font-weight: bold;}
+.lua .br0 {color: #66cc66;}
+.lua .sy0 {color: #66cc66;}
+.lua .st0 {color: #b99900;}
+.lua .nu0 {color: #aa0000;}
+.lua .me0 {color: #b1b100;}
+.lua span.xtra { display:block; }
+.lua ol{
+ background-color:#f8f8f8;
+ color:#999;
+}
+
+.lua li{
+ color:#222;
+ background-color:#fff;
+ padding:2px;
+ padding-left:5px;
+ border-bottom:1px solid #f8f8f8;
+}
+
+
