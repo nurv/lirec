@@ -1,6 +1,20 @@
 TODO soon:
 ----------
 
+- This bug was reported, occasional crash with the message:
+
+null
+java.util.ConcurrentModificationException
+ at java.util.HashMap$HashIterator.nextEntry(Unknown Source)
+ at java.util.HashMap$KeyIterator.next(Unknown Source)
+ at java.util.AbstractCollection.toArray(Unknown Source)
+ at java.util.LinkedList.addAll(Unknown Source)
+ at java.util.LinkedList.addAll(Unknown Source)
+ at ion.Meta.Simulation.simulationProcessEvents(Simulation.java:142)
+ at ion.Meta.Simulation.update(Simulation.java:108)
+ at cmion.architecture.Architecture.runSimulation(Architecture.java:258)
+ at cmion.architecture.Architecture.main(Architecture.java:324)
+
 - Extend Comp. Manager to allow competencies to be restarted with new parameters while running (if the competency permits and supports it)
 
 - Migration: specify how the embodiment behaves when the agent leaves it.
