@@ -28,6 +28,7 @@
  * Matthias Keysermann: 02/05/11 - table uses copies of corresponding objects
  * Matthias Keysermann: 02/05/11 - remove and recreate row sorter in order to minimise java.awt exceptions
  * Matthias Keysermann: 03/05/11 - added functionality to show/hide STEM events/AM events
+ * Matthias Keysermann: 23/08/11 - table is no longer updated constantly (to avoid slowing down the program)
  * **/
 
 package FAtiMA.Core.Display;
@@ -200,7 +201,7 @@ public class ABSelectionPanel extends AgentDisplayPanel {
 		pnCalculationButton.setLayout(new BoxLayout(pnCalculationButton, BoxLayout.X_AXIS));
 		pnCalculation.add(pnCalculationButton);
 
-		JButton btABCalculation = new JButton("Calculate Activation Values");
+		JButton btABCalculation = new JButton("Update Table");
 		btABCalculation.addActionListener(new AlABCalculation());
 		pnCalculationButton.add(btABCalculation);
 
@@ -212,7 +213,7 @@ public class ABSelectionPanel extends AgentDisplayPanel {
 		pnCalculationStatus.setLayout(new BoxLayout(pnCalculationStatus, BoxLayout.X_AXIS));
 		pnCalculation.add(pnCalculationStatus);
 
-		lbCalculationStatus = new JLabel("Calculated at narrative time -");
+		lbCalculationStatus = new JLabel("Updated at narrative time -");
 		pnCalculationStatus.add(lbCalculationStatus);
 
 		JPanel pnSelectionMethod = new JPanel();
@@ -471,8 +472,8 @@ public class ABSelectionPanel extends AgentDisplayPanel {
 
 		if (cbConstantUpdate.isSelected()) {
 			calculateValues();
+			updateTable();
 		}
-		updateTable();
 		return true;
 	}
 
@@ -482,8 +483,8 @@ public class ABSelectionPanel extends AgentDisplayPanel {
 
 		if (cbConstantUpdate.isSelected()) {
 			calculateValues();
+			updateTable();
 		}
-		updateTable();
 		return true;
 	}
 
