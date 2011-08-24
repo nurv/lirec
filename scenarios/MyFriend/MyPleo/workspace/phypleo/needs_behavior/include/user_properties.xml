@@ -1,9 +1,0 @@
-<enum max="32767" min="20480" name="user_property" namesoff="true" short="property">
-  <e id="20480" name="cleanliness" />
-  <e id="20481" name="petting" />
-  <e id="20482" name="skills" />
-  <e id="20483" name="water" />
-  <e id="20484" name="mode" />
-  <e id="20485" name="saw_leaf" />
-  <e id="20486" name="eating" />
-</enum>

@@ -1,8 +1,0 @@
-<enum max="32767" min="16384" name="script" namesoff="true" short="scr">
-  <e id="16384" name="sensors" />
-  <e id="16385" name="main" />
-  <e id="16386" name="eat" />
-  <e id="16387" name="whine" />
-  <e id="16388" name="wag" />
-  <e id="16389" name="empty" />
-</enum>
