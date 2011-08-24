@@ -45,3 +45,9 @@
 
 (defn current-time []
   (.getTime (java.util.Date.)))
+
+(defn count-items [l i]
+  (cond
+   (empty? l) 0
+   (= (first l) i) (+ 1 (count-items (rest l) i))
+   :else (count-items (rest l) i)))

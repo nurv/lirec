@@ -121,7 +121,8 @@ class Feed
         else
         {
             var SeedsLeft=Reflect.field(w.PlayerInfo,"seeds-left");
-            var txt="Hello "+w.MyName+", it is "+w.Season+" and you have "+Std.string(w.NumPlants)+" plants currently alive. "+
+            var PlantCount=Reflect.field(w.PlayerInfo,"plant-count");
+            var txt="Hello "+w.MyName+", it is "+w.Season+" and you have "+PlantCount+" plants currently alive. "+
                 "You have "+SeedsLeft+" seeds left.";
             var time=Std.parseInt(Reflect.field(w.PlayerInfo,"next-refresh"));
             

@@ -16,51 +16,10 @@
   (:use
    oak.vec2
    oak.forms
-   oak.log)
+   oak.log
+   oak.defs)
   (:require
    clojure.contrib.math))
-
-(def tile-size 12)
-(def season-length (* 60 10))
-(def min-health 10)
-(def max-health 90)
-(def start-health 20)
-(def min-neighbours 2)
-(def max-neighbours 5)
-(def seeds-duration (* 60 60 1000))
-
-(defn plant-type->layer [type]
-  (cond
-   (= type "dandelion") "cover"
-   (= type "clover") "cover"
-   (= type "aronia") "shrub"
-   (= type "apple") "tree"
-   (= type "cherry") "tree"))
-
-(defn plant-type->id [type]
-  (cond
-   (= type "cherry") 0
-   (= type "apple") 1
-   (= type "plant-002") 1 ; temp apple tree
-   (= type "aronia") 2
-   (= type "plant-003") 2 ; temp aronia
-   (= type "dandelion") 3
-   (= type "plant-001") 3 ; temp dandelion
-   (= type "clover") 4))
-
-(def plant-types '("cherry" "apple" "aronia" "dandelion" "clover"))
-
-(defn plant-type-id->name [type]
-  (nth plant-types type))
-
-(defn layer->spirit-name [layer]
-  (cond
-   (= layer "canopy") "CanopySpirit"
-   (= layer "vertical") "VerticalSpirit"
-   (= layer "cover") "CoverSpirit"
-   (= layer "tree") "TreeSpirit"
-   (= layer "shrub") "ShrubSpirit"
-   :else "UnknownSpirit"))
 
 (defn make-plant [id pos type owner-id size]
   (hash-map

@@ -16,13 +16,13 @@
 package fungi;
 
 import truffle.Truffle;
-import truffle.SkeletonEntity;
+import truffle.ClusterEntity;
 import truffle.Vec2;
 import truffle.Vec3;
 import truffle.RndGen;
 import truffle.Bone;
 
-class Spirit extends SkeletonEntity 
+class Spirit extends ClusterEntity 
 {
     public var Name:String;
 
@@ -180,7 +180,6 @@ class Spirit extends SkeletonEntity
 
         Debug.UpdateText(text);
         Debug.UpdatePosition(Std.int(Pos.x-200),Std.int(Pos.y-25));
-        //trace(text);
     }
 
     override function Update(frame:Int, world:World)
@@ -190,7 +189,6 @@ class Spirit extends SkeletonEntity
             // do a linear blend to smooth out changes in emotions
             Reflect.setField(Emotions,f,
             Reflect.field(Emotions,f)*0.95+Reflect.field(RawEmotions,f)*0.05);
-            //trace(f);
         }
 
         Action.Pos.x=Root.Pos.x-50;
@@ -214,8 +212,8 @@ class Spirit extends SkeletonEntity
                              (((10-depth)+frame*0.04+c.Emotions.GRATITUDE*0.01)+
                              c.Emotions.JOY*0.1)) +
             ((world.MyRndGen.RndFlt()-0.5)*10*irritation));
-            bounce.y=bouncyness*5*Math.abs(Math.sin(frame*0.25));
-            b.SetPos(b.BindPos.Add(bounce));
+//            bounce.y=bouncyness*5*Math.abs(Math.sin(frame*0.25));
+//            b.SetPos(b.BindPos.Add(bounce));
            
         });
 

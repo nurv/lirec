@@ -24,7 +24,8 @@
    oak.spirit
    oak.world
    oak.log
-   oak.player)
+   oak.player
+   oak.defs)
   (:require
    clojure.contrib.math))
 
@@ -118,6 +119,7 @@
     (spirit-count i)))
     
 (defn game-world-save [game-world filename]
+  (println (:players game-world))
   (spit filename 
         (modify :id-gen
                 (fn [id-gen]
@@ -222,7 +224,32 @@
          player))
       players))
    game-world))
- 
+
+(defn game-world-get-decayed-owners [game-world]
+  (reduce
+   (fn [r tile]
+     (concat r (tile-get-decayed-owners tile)))
+   ()
+   (:tiles game-world)))
+
+; need to do this before tile update, when decayed plants
+; are removed from the game
+(defn game-world-update-player-plant-counts [game-world]
+  (let [decayed (game-world-get-decayed-owners game-world)]
+    (println decayed)
+    (modify
+     :players
+     (fn [players]
+       (map
+        (fn [player]
+          (modify
+           :plant-count
+           (fn [c]
+             (- c (count-items decayed (:id player))))
+           player))
+        players))
+     game-world)))
+
 (defn game-world-update-tiles [game-world time delta]
 ;  (game-world-count game-world)
   (modify
@@ -269,7 +296,8 @@
             (game-world-update-players
              (game-world-update-tiles
               (game-world-post-logs-to-players
-               game-world msgs) time delta)))))
+               (game-world-update-player-plant-counts
+                game-world) msgs) time delta)))))
 
 (defn game-world-find-spirit [game-world name]
   (reduce

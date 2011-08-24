@@ -14,7 +14,9 @@
 
 (ns oak.player
     (:use
-     oak.log))
+     oak.log
+     oak.defs
+     oak.forms))
 
 (defn make-player [id name fbid]
   (hash-map
@@ -22,7 +24,7 @@
    :id id
    :fbid fbid
    :name name ; only for login - do not use directly
-   :layer "none"
+   :layer 0
    :seeds '()
    :messages '()
    :seeds-capacity 3
@@ -30,7 +32,15 @@
    :next-refresh 0
    :picked-by '()
    :has-picked '()
+   :plant-count 0
    :log (make-log 10)))
+
+(defn player-inc-plant-count [player]
+  (modify
+   :plant-count
+   (fn [c]
+     (+ c 1))
+   player))
 
 (defn player-list-find-player-id [player-list name]
   (reduce

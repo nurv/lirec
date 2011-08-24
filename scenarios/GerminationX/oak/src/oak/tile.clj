@@ -16,7 +16,8 @@
   (:use
    oak.vec2
    oak.plant
-   oak.forms))
+   oak.forms
+   oak.defs))
 
 (defn make-tile [pos entity-list]
   (hash-map
@@ -70,6 +71,14 @@
               (not (vec2-eq? pos (:pos e))))
        (cons e l) l))
    '()
+   (:entities tile)))
+
+(defn tile-get-decayed-owners [tile]
+  (reduce
+   (fn [r e]
+     (if (= (:state e) 'decayed)
+       (cons (:owner-id e) r) r))
+   ()
    (:entities tile)))
 
 (defn tile-update [tile time delta rules]

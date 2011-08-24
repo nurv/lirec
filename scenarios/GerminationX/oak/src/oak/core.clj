@@ -26,7 +26,8 @@
    oak.vec2
    oak.plant
    oak.tile
-   oak.forms)
+   oak.forms
+   oak.player)
   (:import
    java.util.concurrent.Executors
    java.util.Date)
@@ -45,8 +46,8 @@
        "data/characters/minds/Actions.xml"
        (list))))
 
-;(def my-game-world (ref (game-world-load state-filename)))
-(def my-game-world (ref (make-game-world 300 1)))
+(def my-game-world (ref (game-world-load state-filename)))
+;(def my-game-world (ref (make-game-world 300 1)))
 (game-world-save (deref my-game-world) "test.txt")
 
 (append-spit log-filename (str (str (Date.)) " server started\n"))
@@ -125,20 +126,25 @@
        (append-spit
         log-filename
         (str
-         (str (Date.)) " " (game-world-id->player-name (deref my-game-world) owner-id) " has created a " type " at tile "
+         (str (Date.)) " " (game-world-id->player-name
+                            (deref my-game-world)
+                            (parse-number owner-id)) " has created a " type " at tile "
          tilex "," tiley " position " posx "," posy "\n"))
        (dosync
         (ref-set my-game-world
-                 (game-world-add-entity
-                  (deref my-game-world)
-                  (make-vec2 (parse-number tilex) (parse-number tiley))
-                  (make-plant
-                   ((:id-gen (deref my-game-world)))
-                   (make-vec2 (parse-number posx)
-                              (parse-number posy))
-                   type (parse-number owner-id) size))))
+                 (game-world-modify-player
+                  (game-world-add-entity
+                   (deref my-game-world)
+                   (make-vec2 (parse-number tilex) (parse-number tiley))
+                   (make-plant
+                    ((:id-gen (deref my-game-world)))
+                    (make-vec2 (parse-number posx)
+                               (parse-number posy))
+                    type (parse-number owner-id) size))
+                  (parse-number owner-id)
+                  (fn [player]
+                    (player-inc-plant-count player)))))
        (game-world-save (deref my-game-world) state-filename)
-       ;(println (deref my-game-world))
        (json/encode-to-str '("ok")))
 
   (GET "/pick/:tilex/:tiley/:plant-id/:player-id/:iefix" [tilex tiley plant-id player-id iefix]
@@ -193,11 +199,12 @@
   (route/not-found "<h1>Page not found</h1>"))
   
 (let [pool (Executors/newFixedThreadPool 2)
-      tasks (list (fn []
-                    (tick))
-                  (fn []
-                    (run-jetty (wrap-file main-routes "public") {:port 8001}))
-                  )]
+      tasks (list
+             (fn []
+               (run-jetty (wrap-file main-routes "public") {:port 8001}))
+             (fn []
+               (tick))
+             )]
   (doseq [future (.invokeAll pool tasks)]
     (.get future))
   (.shutdown pool))

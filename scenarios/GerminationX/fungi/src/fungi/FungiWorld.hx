@@ -390,7 +390,7 @@ class FungiWorld extends World
         }
         Plants=temp;
         SortScene();
-        SetScale(new Vec2(2,2));
+        //SetScale(new Vec2(2,2));
     }
 
     override function Update(time:Int)

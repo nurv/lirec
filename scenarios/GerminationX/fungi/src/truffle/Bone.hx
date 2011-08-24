@@ -21,12 +21,14 @@ class Bone extends Sprite
     public var Parent:Bone;
     public var Children:List<Bone>;
     public var BindPos:Vec2;
+    public var InheritTransform:Bool;
 
 	public function new(pos:Vec2, t:TextureDesc) 
     {
         Children = new List<Bone>();
         super(pos,t);
         BindPos=pos;
+        InheritTransform=true;
     }
 
     public function AddChild(world:World,c:Bone)
@@ -34,7 +36,7 @@ class Bone extends Sprite
         Children.add(c);
         c.Parent=this;
         world.AddSprite(c);
-     }
+    }
 
     public function GetGlobalPos() : Vec2
     {
@@ -44,9 +46,19 @@ class Bone extends Sprite
 	override function Update(frame:Int, tx:Dynamic)
     {
         super.Update(frame,tx);
-        var tx=GetTx();
+
+        var tx=null;
+        if (InheritTransform)
+        {
+            tx=GetTx();
+        }
+
         for (c in Children)
         {
+            if (!InheritTransform)
+            {
+                c.SetPos(c.Pos.Lerp(Pos,0.1));
+            }
             c.Update(frame,tx);
         }
     }
