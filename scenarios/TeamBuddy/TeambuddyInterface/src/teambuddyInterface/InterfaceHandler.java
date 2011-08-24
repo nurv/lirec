@@ -24,9 +24,13 @@ public class InterfaceHandler extends AbstractHandler {
 
 	private InterfaceCompetency interfaceCompetency;
 
-	public static final String MSG_BLACKBOARD_CONTAINER = "messagesToDeliver";
+	public static final String BB_NEEDED_INFORMATION = "neededInformation";
 
-	private static int msgID = 0;
+	private static int neededInformationID = 0;
+
+	public static final String BB_MESSAGES_TO_DELIVER = "messagesToDeliver";
+
+	private static int messageID = 0;
 
 	public static final String INTERFACE_UTTERANCE = "INTERFACE_UTTERANCE";
 
@@ -53,6 +57,8 @@ public class InterfaceHandler extends AbstractHandler {
 	private final static boolean ENABLE_QUICK_TALK = false;
 
 	private final static boolean LOGIN_USERNAME_SELECT = true;
+
+	private final static String USERNAME_UNKNOWN = "Unknown";
 
 	public InterfaceHandler(InterfaceCompetency interfaceCompetency) {
 		this.interfaceCompetency = interfaceCompetency;
@@ -93,11 +99,14 @@ public class InterfaceHandler extends AbstractHandler {
 			String loginUsername = request.getParameter("loginUsername");
 			String loginPassword = request.getParameter("loginPassword");
 			if (userData.getGuestUser().getUsername().equals(loginUsername)) {
+
 				// guest login
 				if (userData.getGuestUser().getPassword().equals(loginPassword)) {
 					loginUser = userData.getGuestUser();
 				}
+
 			} else {
+
 				// user login
 				for (User user : userData.getUsers()) {
 					if (user.getUsername().equals(loginUsername)) {
@@ -106,26 +115,50 @@ public class InterfaceHandler extends AbstractHandler {
 						}
 					}
 				}
+
 			}
+
 			if (loginUser != null) {
-				loginUser.setTimeLastLogin(Calendar.getInstance().getTimeInMillis());
-				xmlAccess.saveXML(userData, XML_FILENAME);
+				// a user is logged in
+
+				// raise remote action
 				ArrayList<String> parameters = new ArrayList<String>();
 				parameters.add("SELF");
 				raiseMindAction(loginUser.getUsername(), "login", parameters);
+
+				loginUser.setTimeLastLogin(Calendar.getInstance().getTimeInMillis());
+
+				xmlAccess.saveXML(userData, XML_FILENAME);
 			}
 
 		} else if (action.equals("logout")) {
 			// logout
 
-			// force wait to stop
-			setBBProperty(INTERFACE_REQUEST_TIME, 0);
-			loginUser.setTimeLastLogout(Calendar.getInstance().getTimeInMillis());
-			xmlAccess.saveXML(userData, XML_FILENAME);
+			// raise remote action
 			ArrayList<String> parameters = new ArrayList<String>();
 			parameters.add("SELF");
 			raiseMindAction(loginUser.getUsername(), "logout", parameters);
+
+			// force wait to stop
+			setBBProperty(INTERFACE_REQUEST_TIME, 0);
+
+			loginUser.setTimeLastLogout(Calendar.getInstance().getTimeInMillis());
+
+			xmlAccess.saveXML(userData, XML_FILENAME);
+
 			loginUser = null;
+
+		} else if (action.equals("sendHome")) {
+			// send Teambuddy back to home position
+
+			// raise remote action
+			String sendHomeUsername = USERNAME_UNKNOWN;
+			if (loginUser != null) {
+				sendHomeUsername = loginUser.getUsername();
+			}
+			ArrayList<String> parameters = new ArrayList<String>();
+			parameters.add("SELF");
+			raiseMindAction(sendHomeUsername, "sendHome", parameters);
 
 		} else if (action.equals("talk")) {
 			// talk to Teambuddy
@@ -150,9 +183,9 @@ public class InterfaceHandler extends AbstractHandler {
 				if (messageFromUsername.equals(userData.getGuestUser().getUsername())) {
 					// problem with FAtiMA event when name contains spaces
 					//msgReceived(messageFromRealname, messageToUsername, messageText);
-					msgReceived(messageFromUsername, messageToUsername, messageText);
+					messageReceived(messageFromUsername, messageToUsername, messageText);
 				} else {
-					msgReceived(messageFromUsername, messageToUsername, messageText);
+					messageReceived(messageFromUsername, messageToUsername, messageText);
 				}
 			}
 
@@ -161,30 +194,55 @@ public class InterfaceHandler extends AbstractHandler {
 
 			String infoUsername = request.getParameter("infoUsername");
 			String infoTypename = request.getParameter("infoTypename");
-			LinkedList<InformationItem> informationItems = userData.requestInformationItems(infoUsername, infoTypename, loginUser.getUsername());
+
 			String utterance = "";
+
+			// check if information exists
+			LinkedList<InformationItem> informationItems = userData.getInformationItems(infoUsername, infoTypename);
 			if (informationItems.size() > 0) {
-				utterance = "'" + userData.getTypeRealname(infoTypename) + "' for '" + userData.getUserRealname(infoUsername) + "': ";
-				for (InformationItem informationItem : informationItems) {
-					if (informationItem != informationItems.get(0)) {
-						utterance += ". ";
+				// information exists
+
+				// check if authorised information exists
+				LinkedList<InformationItem> informationItemsAuthorised = userData.requestAuthorisedInformationItems(infoUsername, infoTypename, loginUser.getUsername());
+				if (informationItemsAuthorised.size() > 0) {
+					// authorised information exists
+
+					utterance = "'" + userData.getTypeRealname(infoTypename) + "' for '" + userData.getUserRealname(infoUsername) + "':";
+					for (InformationItem informationItemAuthorised : informationItemsAuthorised) {
+						utterance += " " + informationItemAuthorised.getContent() + ".";
 					}
-					utterance += informationItem.getContent();
+
+				} else {
+					// no authorised information exists
+					utterance = "I am not authorised to give this information.";
+
 				}
+
 			} else {
+				// no information exists
+
 				if (infoUsername.equals(loginUser.getUsername())) {
 					utterance = "I have not remembered any information of type '" + userData.getTypeRealname(infoTypename) + "' for you.";
+
 				} else {
-					utterance = "I am not authorised to give this information.";
+					utterance = "I cannot give this information.";
+
+					// register as needed information
+					// attention: gatherInformation can disrupt current iPad interaction when activated to early
+					needInformation(loginUser.getUsername(), infoUsername, userData.getTypeRealname(infoTypename));
 				}
+
 			}
+
 			// write utterance to blackboard
 			setBBProperty(INTERFACE_UTTERANCE, utterance);
+
 			// raise remote action
 			ArrayList<String> parameters = new ArrayList<String>();
 			parameters.add("SELF");
 			parameters.add(infoUsername);
 			raiseMindAction(loginUser.getUsername(), "requestInformation", parameters);
+
 			xmlAccess.saveXML(userData, XML_FILENAME);
 
 		} else if (action.equals("provideInfo")) {
@@ -196,10 +254,14 @@ public class InterfaceHandler extends AbstractHandler {
 			String[] infoAuthorisedRoles = request.getParameterValues("infoAuthorisedRoles");
 			String[] infoAuthorisedUsers = request.getParameterValues("infoAuthorisedUsers");
 			String utterance = "";
+
 			// check if content is empty
 			if (infoContent == null || infoContent.trim().equals("")) {
+
 				utterance = "This information did not contain any content.";
+
 			} else {
+
 				// try to add the information item
 				boolean added = userData.provideInformationItem(infoUsername, infoTypename, infoContent, infoAuthorisedRoles, infoAuthorisedUsers);
 				if (added) {
@@ -208,9 +270,12 @@ public class InterfaceHandler extends AbstractHandler {
 				} else {
 					utterance = "I could not remember this information.";
 				}
+
 			}
+
 			// write utterance to blackboard
 			setBBProperty(INTERFACE_UTTERANCE, utterance);
+
 			// raise remote action
 			ArrayList<String> parameters = new ArrayList<String>();
 			parameters.add("SELF");
@@ -224,23 +289,27 @@ public class InterfaceHandler extends AbstractHandler {
 			String infoTypename = request.getParameter("infoTypename");
 			String[] infoIds = request.getParameterValues("infoId");
 			String utterance = "";
+
 			if (infoIds != null) {
 				LinkedList<Long> deleteIds = new LinkedList<Long>();
 				for (String infoId : infoIds) {
 					deleteIds.add(Long.valueOf(infoId));
 				}
-				int deletedCount = userData.deleteInformationItems(loginUser.getUsername(), infoUsername, deleteIds);
+				int deletedCount = userData.deleteInformationItems(infoUsername, deleteIds);
 				if (deletedCount > 0) {
 					utterance = "I have forgotten " + deletedCount + " items of type '" + userData.getTypeRealname(infoTypename) + "'.";
 					xmlAccess.saveXML(userData, XML_FILENAME);
 				} else {
 					utterance = "I have not forgotten any information.";
 				}
+
 			} else {
 				utterance = "I have not forgotten any information.";
 			}
+
 			// write utterance to blackboard
 			setBBProperty(INTERFACE_UTTERANCE, utterance);
+
 			// raise remote action
 			ArrayList<String> parameters = new ArrayList<String>();
 			parameters.add("SELF");
@@ -256,17 +325,94 @@ public class InterfaceHandler extends AbstractHandler {
 			} else if (chargingStatus.equals("false")) {
 				setWMObjectProperty(CURRENT_PLATFORM, CHARGING, "False");
 			}
+
 			// wait for property to be changed
 			try {
 				Thread.sleep(500);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+
 			// raise remote action
 			ArrayList<String> parameters = new ArrayList<String>();
 			parameters.add("SELF");
 			parameters.add(chargingStatus);
 			raiseMindAction(loginUser.getUsername(), "setCharging", parameters);
+
+		} else if (action.equals("history")) {
+			// view history of requests
+
+			// raise remote action
+			ArrayList<String> parameters = new ArrayList<String>();
+			parameters.add("SELF");
+			parameters.add(loginUser.getUsername());
+			raiseMindAction(loginUser.getUsername(), "viewRequestHistory", parameters);
+
+		} else if (action.equals("report")) {
+			// view report
+
+			// raise remote action
+			ArrayList<String> parameters = new ArrayList<String>();
+			parameters.add("SELF");
+			parameters.add(loginUser.getUsername());
+			raiseMindAction(loginUser.getUsername(), "viewUpdateReport", parameters);
+
+		} else if (action.equals("reportInfo")) {
+			// request information item from report			
+
+			String infoUsername = request.getParameter("infoUsername");
+			String infoTypename = request.getParameter("infoTypename");
+			String infoId = request.getParameter("infoId");
+			long id = Long.valueOf(infoId);
+
+			// the following checks are normally not required here
+			// normally only an information item (via id) should be passed
+			// which exists and which the logged in user is authorised to receive
+
+			String utterance = "";
+
+			// check if information exists
+			InformationItem informationItem = userData.getInformationItem(infoUsername, id);
+			if (informationItem != null) {
+				// information exists
+
+				// check if authorised information exists
+				InformationItem informationItemAuthorised = userData.requestAuthorisedInformationItem(loginUser.getUsername(), infoUsername, id);
+				if (informationItemAuthorised != null) {
+					// authorised information exists
+
+					utterance = "New information item of type '" + userData.getTypeRealname(infoTypename) + "' for '" + userData.getUserRealname(infoUsername) + "':";
+					utterance += " " + informationItemAuthorised.getContent() + ".";
+
+				} else {
+					// no authorised information exists
+					utterance = "I am not authorised to give this information.";
+
+				}
+
+			} else {
+				// no information exists
+
+				if (infoUsername.equals(loginUser.getUsername())) {
+					utterance = "I have not remembered this information for you.";
+
+				} else {
+					utterance = "I cannot give this information.";
+
+				}
+
+			}
+
+			// write utterance to blackboard
+			setBBProperty(INTERFACE_UTTERANCE, utterance);
+
+			// raise remote action
+			ArrayList<String> parameters = new ArrayList<String>();
+			parameters.add("SELF");
+			parameters.add(infoUsername);
+			raiseMindAction(loginUser.getUsername(), "requestInformation", parameters);
+
+			xmlAccess.saveXML(userData, XML_FILENAME);
 		}
 
 		// start html response
@@ -334,6 +480,14 @@ public class InterfaceHandler extends AbstractHandler {
 				out.println(getHistoryInfoPage(infoUsername, infoTypename));
 			} else if (page.equals("charging")) {
 				out.println(getChargingPage());
+			} else if (page.equals("report")) {
+				out.println(getReportPage());
+			} else if (page.equals("reportInfo")) {
+				String infoUsername = request.getParameter("infoUsername");
+				String infoTypename = request.getParameter("infoTypename");
+				String infoTimeProvided = request.getParameter("infoTimeProvided");
+				long timeProvided = Long.valueOf(infoTimeProvided);
+				out.println(getReportInfoPage(infoUsername, infoTypename, timeProvided));
 			}
 		}
 
@@ -346,6 +500,9 @@ public class InterfaceHandler extends AbstractHandler {
 		html += "<html>\n";
 		html += "  <head>\n";
 		html += "    <title>Teambuddy Information Sharing Interface</title>\n";
+		// disable caching
+		//html += "    <meta http-equiv=\"Pragma\" content=\"no-cache\">";
+		//html += "    <meta http-equiv=\"Expires\" content=\"-1\">";
 		// web app works fine but scaling is incorrect
 		//html += "    <meta name=\"apple-mobile-web-app-capable\" content=\"yes\" />\n";
 		//html += "    <meta name=\"apple-mobile-web-app-status-bar-style\" content=\"black\" />\n";
@@ -456,6 +613,15 @@ public class InterfaceHandler extends AbstractHandler {
 			html += "</table>\n";
 		}
 
+		html += "<p>\n";
+		html += "  <form action=\"\" method=\"POST\">\n";
+		html += "    For sending the Teambuddy back to its home position, please click here: \n";
+		html += "    <input name=\"submit\" type=\"submit\" value=\"Send Home\" />\n";
+		html += "    <input name=\"action\" type=\"hidden\" value=\"sendHome\" />\n";
+		html += "    <input name=\"page\" type=\"hidden\" value=\"start\" />\n";
+		html += "  </form>\n";
+		html += "</p>\n";
+
 		return html;
 	}
 
@@ -491,11 +657,6 @@ public class InterfaceHandler extends AbstractHandler {
 			html += "    <td valign=\"top\">\n";
 
 			html += "      <form action=\"\" method=\"POST\">\n";
-			html += "        <input name=\"submit\" type=\"submit\" value=\"View history of requests\" />\n";
-			html += "        <input name=\"page\" type=\"hidden\" value=\"history\" />\n";
-			html += "      </form>\n";
-
-			html += "      <form action=\"\" method=\"POST\">\n";
 			html += "        <input name=\"submit\" type=\"submit\" value=\"Provide information\" />\n";
 			html += "        <input name=\"page\" type=\"hidden\" value=\"provide\" />\n";
 			html += "      </form>\n";
@@ -503,6 +664,18 @@ public class InterfaceHandler extends AbstractHandler {
 			html += "      <form action=\"\" method=\"POST\">\n";
 			html += "        <input name=\"submit\" type=\"submit\" value=\"Delete information\" />\n";
 			html += "        <input name=\"page\" type=\"hidden\" value=\"delete\" />\n";
+			html += "      </form>\n";
+
+			html += "      <form action=\"\" method=\"POST\">\n";
+			html += "        <input name=\"submit\" type=\"submit\" value=\"View history of requests\" />\n";
+			html += "        <input name=\"action\" type=\"hidden\" value=\"history\" />\n";
+			html += "        <input name=\"page\" type=\"hidden\" value=\"history\" />\n";
+			html += "      </form>\n";
+
+			html += "      <form action=\"\" method=\"POST\">\n";
+			html += "        <input name=\"submit\" type=\"submit\" value=\"View report of updates\" />\n";
+			html += "        <input name=\"action\" type=\"hidden\" value=\"report\" />\n";
+			html += "        <input name=\"page\" type=\"hidden\" value=\"report\" />\n";
 			html += "      </form>\n";
 
 			html += "      <form action=\"\" method=\"POST\">\n";
@@ -567,18 +740,22 @@ public class InterfaceHandler extends AbstractHandler {
 
 	private String getTalkedPage(String talkText) {
 		String html = "";
+
 		html += "<p>You told the Teambuddy:</p>\n";
 		//html += "<p>" + talkText + "</p>\n";
 		html += "<p>" + talkText.replaceAll("\n", "<br/>") + "</p>\n";
+
 		html += "<form action=\"\" method=\"POST\">\n";
 		html += "  <input name=\"submit\" type=\"submit\" value=\"Back\" />\n";
 		html += "  <input name=\"page\" type=\"hidden\" value=\"talk\" />\n";
 		html += "</form>\n";
+
 		return html;
 	}
 
 	private String getMessagePage() {
 		String html = "";
+
 		html += "<form action=\"\" method=\"POST\">\n";
 		html += "<table>\n";
 		html += "  <tr>\n";
@@ -623,11 +800,13 @@ public class InterfaceHandler extends AbstractHandler {
 		html += "  </tr>\n";
 		html += "</table>\n";
 		html += "</form>\n";
+
 		return html;
 	}
 
 	private String getMessageLeftPage(String messageFromRealname, String messageToRealname, String messageText) {
 		String html = "";
+
 		html += "<p>Message from <i>" + messageFromRealname + "</i> to <i>" + messageToRealname + "</i>:</p>\n";
 		//html += "<p>" + messageText + "</p>\n";
 		html += "<p>" + messageText.replaceAll("\n", "<br/>") + "</p>\n";
@@ -635,6 +814,7 @@ public class InterfaceHandler extends AbstractHandler {
 		html += "  <input name=\"submit\" type=\"submit\" value=\"Back\" />\n";
 		html += "  <input name=\"page\" type=\"hidden\" value=\"message\" />\n";
 		html += "</form>\n";
+
 		return html;
 	}
 
@@ -704,12 +884,14 @@ public class InterfaceHandler extends AbstractHandler {
 
 	private String getRequestInfoPage(String username, String typename) {
 		String html = "";
+
 		html += "<p>Requesting <i>" + userData.getTypeRealname(typename) + "</i> for <i>" + userData.getUserRealname(username) + "</i>...</p>\n";
 		html += "<form action=\"\" method=\"POST\">\n";
 		html += "  <input name=\"submit\" type=\"submit\" value=\"Back\" />\n";
 		html += "  <input name=\"page\" type=\"hidden\" value=\"requestType\" />\n";
 		html += "  <input name=\"infoUsername\" type=\"hidden\" value=\"" + username + "\" />\n";
 		html += "</form>\n";
+
 		return html;
 	}
 
@@ -748,7 +930,7 @@ public class InterfaceHandler extends AbstractHandler {
 	private String getProvideInfoPage(String username, String typename) {
 		String html = "";
 
-		html += "<p>Which information do you want to provide?</p>\n";
+		html += "<p>Which information of type '" + userData.getTypeRealname(typename) + "' do you want to provide?</p>\n";
 
 		html += "<form action=\"\" method=\"POST\">\n";
 		html += "  <textarea name=\"infoContent\" rows=\"2\" cols=\"40\"></textarea><br/>\n";
@@ -802,11 +984,13 @@ public class InterfaceHandler extends AbstractHandler {
 
 	private String getProvidedInfoPage(String username, String typename) {
 		String html = "";
+
 		html += "<p>Provided information of type <i>" + userData.getTypeRealname(typename) + "</i> for <i>" + userData.getUserRealname(username) + "</i>.</p>\n";
 		html += "<form action=\"\" method=\"POST\">\n";
 		html += "  <input name=\"submit\" type=\"submit\" value=\"Back\" />\n";
 		html += "  <input name=\"page\" type=\"hidden\" value=\"provide\" />\n";
 		html += "</form>\n";
+
 		return html;
 	}
 
@@ -844,10 +1028,13 @@ public class InterfaceHandler extends AbstractHandler {
 
 	private String getDeleteInfoPage(String username, String typename) {
 		String html = "";
-		LinkedList<InformationItem> informationItems = userData.getInformationItems(username, typename, loginUser.getUsername());
+
+		LinkedList<InformationItem> informationItems = userData.getInformationItems(username, typename);
 		if (informationItems.size() > 0) {
-			html += "<p>Which information do you want to delete?</p>\n";
+
+			html += "<p>Which information of type '" + userData.getTypeRealname(typename) + "' do you want to delete?</p>\n";
 			html += "<form action=\"\" method=\"POST\">\n";
+
 			html += "<table>\n";
 			for (InformationItem informationItem : informationItems) {
 				html += "  <tr>\n";
@@ -859,6 +1046,7 @@ public class InterfaceHandler extends AbstractHandler {
 				html += "  </tr>\n";
 			}
 			html += "</table>\n";
+
 			html += "<table>\n";
 			html += "  <tr>\n";
 			html += "    <td valign=\"top\">\n";
@@ -868,6 +1056,7 @@ public class InterfaceHandler extends AbstractHandler {
 			html += "  <input name=\"infoUsername\" type=\"hidden\" value=\"" + username + "\" />\n";
 			html += "  <input name=\"infoTypename\" type=\"hidden\" value=\"" + typename + "\" />\n";
 			html += "</form>\n";
+
 			html += "    </td>\n";
 			html += "    <td valign=\"top\">\n";
 			html += "      <form action=\"\" method=\"POST\">\n";
@@ -879,6 +1068,7 @@ public class InterfaceHandler extends AbstractHandler {
 			html += "</table>\n";
 
 		} else {
+
 			html += "<p>No corresponding information exists.</p>\n";
 			html += "<form action=\"\" method=\"POST\">\n";
 			html += "  <input name=\"submit\" type=\"submit\" value=\"Back\" />\n";
@@ -891,11 +1081,13 @@ public class InterfaceHandler extends AbstractHandler {
 
 	private String getDeletedInfoPage(String username, String typename) {
 		String html = "";
+
 		html += "<p>Deleted information of type <i>" + userData.getTypeRealname(typename) + "</i> for <i>" + userData.getUserRealname(username) + "</i>.</p>\n";
 		html += "<form action=\"\" method=\"POST\">\n";
 		html += "  <input name=\"submit\" type=\"submit\" value=\"Back\" />\n";
 		html += "  <input name=\"page\" type=\"hidden\" value=\"delete\" />\n";
 		html += "</form>\n";
+
 		return html;
 	}
 
@@ -934,7 +1126,7 @@ public class InterfaceHandler extends AbstractHandler {
 	private String getHistoryInfoPage(String username, String typename) {
 		String html = "";
 		html += "<p>History of requests for information of type <i>" + userData.getTypeRealname(typename) + "</i>:</p>\n";
-		LinkedList<InformationItem> informationItems = userData.getInformationItems(username, typename, loginUser.getUsername());
+		LinkedList<InformationItem> informationItems = userData.getInformationItems(username, typename);
 		if (informationItems.size() > 0) {
 			for (InformationItem informationItem : informationItems) {
 				html += "<p>\n";
@@ -942,39 +1134,46 @@ public class InterfaceHandler extends AbstractHandler {
 				html += informationItem.getContent().replaceAll("\n", "<br/>") + "<br/>\n";
 				Calendar calendar = Calendar.getInstance();
 				calendar.setTimeInMillis(informationItem.getTimeProvided());
-				html += "<a class=\"small\">\n";
-				html += "  Provided at: " + SIMPLE_DATE_FORMAT.format(calendar.getTime()) + "<br/>\n";
-				html += "  Authorised roles: ";
-				for (String authorisedRole : informationItem.getAuthorisedRoles()) {
-					if (authorisedRole != informationItem.getAuthorisedRoles().get(0)) {
-						html += ", ";
+				html += "  <a class=\"small\">\n";
+				html += "    Provided at: " + SIMPLE_DATE_FORMAT.format(calendar.getTime()) + "<br/>\n";
+				html += "    Authorised roles: ";
+				if (informationItem.getAuthorisedRoles().size() > 0) {
+					for (String authorisedRole : informationItem.getAuthorisedRoles()) {
+						if (authorisedRole != informationItem.getAuthorisedRoles().get(0)) {
+							html += ", ";
+						}
+						html += userData.getRoleRealname(authorisedRole);
 					}
-					html += userData.getRoleRealname(authorisedRole);
+				} else {
+					html += "-";
 				}
 				html += "<br/>\n";
-				html += "  Authorised users: ";
-				for (String authorisedUser : informationItem.getAuthorisedUsers()) {
-					if (authorisedUser != informationItem.getAuthorisedUsers().get(0)) {
-						html += ", ";
+				html += "    Authorised users: ";
+				if (informationItem.getAuthorisedUsers().size() > 0) {
+					for (String authorisedUser : informationItem.getAuthorisedUsers()) {
+						if (authorisedUser != informationItem.getAuthorisedUsers().get(0)) {
+							html += ", ";
+						}
+						html += userData.getUserRealname(authorisedUser);
 					}
-					html += userData.getUserRealname(authorisedUser);
+				} else {
+					html += "-";
 				}
 				html += "<br/>\n";
-				html += "  Requests:\n";
-				html += "</a>\n";
-				html += "<table>\n";
-				for (teambuddyInterface.Request request : informationItem.getRequests()) {
-					html += "  <tr>\n";
-					calendar.setTimeInMillis(request.getTime());
-					html += "    <td class=\"small\">&raquo; " + SIMPLE_DATE_FORMAT.format(calendar.getTime()) + "</td>\n";
-					html += "    <td class=\"small\">" + userData.getUserRealname(request.getUsername());
-					if (!request.isAuthorised()) {
-						html += "<i class=\"small\"> (not authorised)</i>";
+				if (informationItem.getRequests().size() > 0) {
+					for (teambuddyInterface.Request request : informationItem.getRequests()) {
+						calendar.setTimeInMillis(request.getTime());
+						String strTimeRequested = SIMPLE_DATE_FORMAT.format(calendar.getTime());
+						html += "    &raquo; requested " + strTimeRequested + " by " + userData.getUserRealname(request.getUsername());
+						if (!request.isAuthorised()) {
+							html += " <i class=\"small\">(not authorised)</i>";
+						}
+						html += "<br/>\n";
 					}
-					html += "</td>\n";
-					html += "  </tr>\n";
+				} else {
+					html += "    <i class=\"small\">No requests</i>\n";
 				}
-				html += "</table>\n";
+				html += "  </a>\n";
 				html += "</p>\n";
 			}
 		} else {
@@ -989,6 +1188,7 @@ public class InterfaceHandler extends AbstractHandler {
 
 	private String getChargingPage() {
 		String html = "";
+
 		Object chargingObject = getWMObjectProperty(CURRENT_PLATFORM, CHARGING);
 		if (chargingObject != null && chargingObject instanceof String) {
 			String charging = (String) chargingObject;
@@ -1000,10 +1200,12 @@ public class InterfaceHandler extends AbstractHandler {
 		} else {
 			html += "<p>The current status could not be determined.</p>\n";
 		}
+
 		html += "<form action=\"\" method=\"POST\">\n";
 		html += "  <input name=\"submit\" type=\"submit\" value=\"Check again\" />\n";
 		html += "  <input name=\"page\" type=\"hidden\" value=\"charging\" />\n";
 		html += "</form>\n";
+
 		html += "<p>Please select the correct charging status:</p>\n";
 		html += "<table>\n";
 		html += "  <tr>\n";
@@ -1029,27 +1231,177 @@ public class InterfaceHandler extends AbstractHandler {
 		html += "  For charging please first select <i class=\"small\">Charging</i> and then plug the cable.<br/>\n";
 		html += "  For releasing please first unplug the cable and then select <i class=\"small\">Not charging</i>.<br/>\n";
 		html += "</p>\n";
+
 		html += "<form action=\"\" method=\"POST\">\n";
 		html += "  <input name=\"submit\" type=\"submit\" value=\"Back\" />\n";
 		html += "  <input name=\"page\" type=\"hidden\" value=\"start\" />\n";
 		html += "</form>\n";
+
 		return html;
 	}
 
-	private void msgReceived(String fromUsername, String toUsername, String messageText) {
+	private String getReportPage() {
+		String html = "";
+
+		// calculate time difference since last logout
+		Calendar calendar = Calendar.getInstance();
+		long timeNow = calendar.getTimeInMillis();
+		long timeLastLogout = loginUser.getTimeLastLogout();
+		long hoursDiff = Math.round((double) (timeNow - timeLastLogout) / 1000 / 60 / 60);
+
+		// build difference string
+		String strDiff = null;
+		if (hoursDiff < 24) {
+			strDiff = hoursDiff + " hour";
+			if (hoursDiff != 1) {
+				strDiff += "s";
+			}
+		} else {
+			long daysDiff = Math.round((double) hoursDiff / 24);
+			strDiff = daysDiff + " day";
+			if (daysDiff != 1) {
+				strDiff += "s";
+			}
+		}
+
+		// format last logout time
+		calendar.setTimeInMillis(timeLastLogout);
+		String strTimeLastLogout = SIMPLE_DATE_FORMAT.format(calendar.getTime());
+
+		// get information items and requests since last logout
+		String loginUsername = loginUser.getUsername();
+		LinkedList<InformationItem> newInformationItems = userData.getAuthorisedInformationItemsProvidedSince(loginUsername, timeLastLogout);
+		LinkedList<InformationItem> informationItemsNewRequests = userData.getInformationItemsRequestedSince(loginUsername, timeLastLogout);
+
+		html += "<p>Your last session ended <b>" + strTimeLastLogout + " (about " + strDiff + " ago)</b>.</p>\n";
+
+		html += "<hr/>\n";
+
+		html += "<p>\n";
+		html += "Since then <b>" + newInformationItems.size() + " information items</b> were provided.<br/>\n";
+		html += "<a class=\"small\">This excludes information you are not authorised to receive.</a>\n";
+		html += "</p>\n";
+
+		html += "<p>Since then <b>" + userData.countRequestsSince(informationItemsNewRequests, timeLastLogout) + " requests</b> happened on information provided by you.</p>\n";
+
+		html += "<hr/>\n";
+		html += "<b>New information:</b>\n";
+
+		for (InformationItem newInformationItem : newInformationItems) {
+			User userProvided = userData.getUserProvided(newInformationItem);
+			html += "<form action=\"\" method=\"POST\">\n";
+			html += "<p>\n";
+			calendar.setTimeInMillis(newInformationItem.getTimeProvided());
+			html += "  Information of type '" + userData.getTypeRealname(newInformationItem.getTypename()) + "'<br/>\n";
+			html += "  <a class=\"small\">";
+			String strTimeProvided = SIMPLE_DATE_FORMAT.format(calendar.getTime());
+			html += "    &raquo; provided " + strTimeProvided + " by " + userProvided.getRealname();
+			html += "  </a>\n";
+			html += "  <br/>\n";
+			html += "  <input name=\"submit\" type=\"submit\" value=\"Request this information\" />\n";
+			html += "  <input name=\"action\" type=\"hidden\" value=\"reportInfo\" />\n";
+			html += "  <input name=\"page\" type=\"hidden\" value=\"reportInfo\" />\n";
+			html += "  <input name=\"infoUsername\" type=\"hidden\" value=\"" + userProvided.getUsername() + "\" />\n";
+			html += "  <input name=\"infoTypename\" type=\"hidden\" value=\"" + newInformationItem.getTypename() + "\" />\n";
+			html += "  <input name=\"infoId\" type=\"hidden\" value=\"" + newInformationItem.getId() + "\" />\n";
+			html += "  <input name=\"infoTimeProvided\" type=\"hidden\" value=\"" + newInformationItem.getTimeProvided() + "\" />\n";
+			html += "</p>\n";
+			html += "</form>\n";
+		}
+
+		html += "<hr/>\n";
+		html += "<b>New requests:</b>\n";
+
+		for (InformationItem informationItemNewRequests : informationItemsNewRequests) {
+			html += "<p>\n";
+			html += "  <a class=\"small\">" + userData.getTypeRealname(informationItemNewRequests.getTypename()) + "</a><br/>\n";
+			//html += informationItemNewRequests.getContent() + "<br/>\n";
+			html += informationItemNewRequests.getContent().replaceAll("\n", "<br/>") + "<br/>\n";
+			html += "  <a class=\"small\">\n";
+			for (teambuddyInterface.Request newRequest : userData.getRequestsSince(informationItemNewRequests, timeLastLogout)) {
+				calendar.setTimeInMillis(newRequest.getTime());
+				String strTimeRequested = SIMPLE_DATE_FORMAT.format(calendar.getTime());
+				html += "    &raquo; requested " + strTimeRequested + " by " + userData.getUserRealname(newRequest.getUsername());
+				if (!newRequest.isAuthorised()) {
+					html += " <i class=\"small\">(not authorised)</i>";
+				}
+				html += "<br/>\n";
+			}
+			html += "  </a>\n";
+			html += "</p>\n";
+		}
+
+		html += "<hr/>\n";
+
+		html += "<form action=\"\" method=\"POST\">\n";
+		html += "  <input name=\"submit\" type=\"submit\" value=\"Back\" />\n";
+		html += "  <input name=\"page\" type=\"hidden\" value=\"start\" />\n";
+		html += "</form>\n";
+
+		return html;
+	}
+
+	private String getReportInfoPage(String username, String typename, long timeProvided) {
+		String html = "";
+
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTimeInMillis(timeProvided);
+		String strTimeProvided = SIMPLE_DATE_FORMAT.format(calendar.getTime());
+
+		html += "<p>\n";
+		html += "  Requesting new information item of type <i>" + userData.getTypeRealname(typename) + "</i>...<br/>\n";
+		html += "  <a class=\"small\">\n";
+		html += "  &raquo; provided " + strTimeProvided + " by " + userData.getUserRealname(username) + "</p>\n";
+		html += "  </a>\n";
+		html += "</p>\n";
+		html += "<form action=\"\" method=\"POST\">\n";
+		html += "  <input name=\"submit\" type=\"submit\" value=\"Back\" />\n";
+		html += "  <input name=\"page\" type=\"hidden\" value=\"report\" />\n";
+		html += "</form>\n";
+
+		return html;
+	}
+
+	private void needInformation(String loginUsername, String username, String typeRealname) {
 		if (interfaceCompetency != null) {
+
+			// obtain an id for the needed information		
+			neededInformationID++;
+			String id = new Integer(neededInformationID).toString();
+
+			// write needed information to blackboard
+			BlackBoard bb = interfaceCompetency.getArchitecture().getBlackBoard();
+			if (bb.hasSubContainer(BB_NEEDED_INFORMATION))
+				bb.getSubContainer(BB_NEEDED_INFORMATION).requestSetProperty(id, typeRealname);
+			else {
+				HashMap<String, Object> properties = new HashMap<String, Object>();
+				properties.put(id, typeRealname);
+				bb.requestAddSubContainer(BB_NEEDED_INFORMATION, BB_NEEDED_INFORMATION, properties);
+			}
+
+			// raise remote action
+			ArrayList<String> parameters = new ArrayList<String>();
+			parameters.add(username);
+			parameters.add(id);
+			raiseMindAction(loginUsername, "needInformation", parameters);
+		}
+	}
+
+	private void messageReceived(String fromUsername, String toUsername, String messageText) {
+		if (interfaceCompetency != null) {
+
 			// obtain an id for the message
-			msgID++;
-			String id = new Integer(msgID).toString();
+			messageID++;
+			String id = new Integer(messageID).toString();
 
 			// write msg to blackboard
 			BlackBoard bb = interfaceCompetency.getArchitecture().getBlackBoard();
-			if (bb.hasSubContainer(MSG_BLACKBOARD_CONTAINER))
-				bb.getSubContainer(MSG_BLACKBOARD_CONTAINER).requestSetProperty(id, messageText);
+			if (bb.hasSubContainer(BB_MESSAGES_TO_DELIVER))
+				bb.getSubContainer(BB_MESSAGES_TO_DELIVER).requestSetProperty(id, messageText);
 			else {
 				HashMap<String, Object> properties = new HashMap<String, Object>();
 				properties.put(id, messageText);
-				bb.requestAddSubContainer(MSG_BLACKBOARD_CONTAINER, MSG_BLACKBOARD_CONTAINER, properties);
+				bb.requestAddSubContainer(BB_MESSAGES_TO_DELIVER, BB_MESSAGES_TO_DELIVER, properties);
 			}
 
 			// raise remote action
@@ -1062,7 +1414,7 @@ public class InterfaceHandler extends AbstractHandler {
 
 	private void talkReceived(String talkText, String talkSymbol) {
 		if (interfaceCompetency != null) {
-			String talkUsername = null;
+			String talkUsername = USERNAME_UNKNOWN;
 			if (loginUser != null) {
 				talkUsername = loginUser.getUsername();
 			}
