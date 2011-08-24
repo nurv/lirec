@@ -93,12 +93,14 @@ class Plant extends SpriteEntity
         }
 	}
 
-    override function OnSortScene(world:World, order:Int) : Void
+    override function OnSortScene(world:World, order:Int) : Int
     {
+        Spr.SetDepth(order++);
         for (seed in Seeds)
         {
-            world.setChildIndex(seed,order+1);
+            world.setChildIndex(seed,order++);
         }        
+        return order;
     }
 
     public function Fruit(world:World)
@@ -107,6 +109,7 @@ class Plant extends SpriteEntity
                          Resources.Get("seed"));
         world.AddSprite(f);
         Seeds.push(f);
+        Update(0,world);
         f.MouseDown(this,function(p) 
         {            
             if (world.MyName!="")

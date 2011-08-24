@@ -75,13 +75,13 @@ class ClusterEntity extends truffle.Entity
         world.AddSprite(Root);
     }
 
-    override function OnSortScene(world:World, order:Int) : Void
+    override function OnSortScene(world:World, order:Int) : Int
     {
-        Root.SetDepth(order+10);
-        Root.Recurse(function(b:Bone,depth:Int) 
+        for (i in 0...Sprites.length)
         {
-            b.SetDepth(order+1);
-        }); 
+            Sprites[Sprites.length-i-1].SetDepth(order++);
+        }
+        return order;
     }
 
 	override public function Update(frame:Int, world:World)

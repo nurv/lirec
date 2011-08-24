@@ -138,9 +138,7 @@ class FlashWorld implements World, extends MovieClip
         var i=0;
         for (e in Scene)
         {
-            setChildIndex(e.GetRoot(),i);
-            e.OnSortScene(cast(this,truffle.World),i);
-            i++;
+            i=e.OnSortScene(cast(this,truffle.World),i);
         }
     }
 

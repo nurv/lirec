@@ -36,6 +36,7 @@ class Spirit extends ClusterEntity
     var EmotionalColours:Dynamic;
     var Rnd:RndGen;
     var HighestEmotion:String;
+    var TotalEmotion:Float;
     
     function ToCol(r:Int,g:Int,b:Int)
     {
@@ -52,6 +53,7 @@ class Spirit extends ClusterEntity
         Hide(true);
         LastData=[];
         Rnd=new RndGen();
+        TotalEmotion=0;
         
         EmotionalColours = {
             JOY:[ToCol(255,224,1),ToCol(255,224,1),ToCol(255,126,2),ToCol(0,155,2)],
@@ -141,6 +143,13 @@ class Spirit extends ClusterEntity
 
         RawEmotions = e.emotions;
 
+        // get total amount of emotion
+        TotalEmotion=0;
+        for (f in Reflect.fields(RawEmotions))
+        {
+            TotalEmotion+=Reflect.field(RawEmotions,f);
+        }
+
         var ee = e.fatemotions.content;
         var mood=Std.parseFloat(ee[0].content[0]);
 
@@ -148,6 +157,7 @@ class Spirit extends ClusterEntity
 
         var text=Name+"\nMood:"+ee[0].content[0]+"\n";
         var text=Name+"\nHighest Emotion:"+HighestEmotion+"\n";
+        var text=Name+"\nTotal Emotions:"+TotalEmotion+"\n";
         text+="Causes:\n";
         for (i in 1...ee.length)
         {
@@ -205,6 +215,26 @@ class Spirit extends ClusterEntity
         var bouncyness = c.Emotions.GRATITUDE*0.2;
         if (bouncyness>5) bouncyness=5;
         var bounce=new Vec2(0,0);
+
+        for (i in 1...Sprites.length)
+        {
+            Sprites[i].Hide(true);
+        }
+
+        if (TotalEmotion>0.5)
+        {
+            Sprites[1].Hide(false);
+            Sprites[2].Hide(true);
+            if (TotalEmotion>5)
+            {
+                Sprites[2].Hide(false);
+                Sprites[3].Hide(true);
+                if (TotalEmotion>10)
+                {               
+                    Sprites[3].Hide(false);
+                }
+            }
+        }
 
         Root.Recurse(function(b:Bone,depth:Int) 
         {    

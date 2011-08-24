@@ -72,8 +72,10 @@ class Entity
         return null;
     }
 
-    public function OnSortScene(world:World, order:Int) : Void
+    public function OnSortScene(world:World, order:Int) : Int
     {
+        GetRoot().SetDepth(order++);
+        return order;
     }
 
     public function Hide(s:Bool) : Void

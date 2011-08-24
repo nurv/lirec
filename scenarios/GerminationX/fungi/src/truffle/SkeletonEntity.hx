@@ -127,13 +127,14 @@ class SkeletonEntity extends truffle.Entity
         }
     }
 
-    override function OnSortScene(world:World, order:Int) : Void
+    override function OnSortScene(world:World, order:Int) : Int
     {
-        Root.SetDepth(order+10);
         Root.Recurse(function(b:Bone,depth:Int) 
         {
-            b.SetDepth(order+1);
-        });        
+            b.SetDepth(++order);
+        });
+        Root.SetDepth(++order);
+        return order;
     }
 
 	override public function Update(frame:Int, world:World)
