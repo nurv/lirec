@@ -116,7 +116,7 @@ class Feed
     {
         if (w.MyName=="")
         {
-            Info.UpdateText("Welcome to Germination X");
+            Info.UpdateText("Welcome to Germination X, where it is now "+w.Season+".");
         }
         else
         {
