@@ -82,6 +82,9 @@
          (cond
           (not id)
           (do
+            (append-spit
+             log-filename
+             (str "new player " name " has registered"))
             (dosync
              (ref-set my-game-world
                       (game-world-add-player
@@ -92,9 +95,13 @@
               (game-world-find-player-id
                (deref my-game-world) name))))
           :else
-          (json/encode-to-str
-           (game-world-find-player
-            (deref my-game-world) id)))))
+          (do
+            (append-spit
+             log-filename
+             (str name " is logging in"))
+            (json/encode-to-str
+             (game-world-find-player
+              (deref my-game-world) id))))))
 
   (GET "/player/:player-id/:iefix" [player-id iefix]
        (json/encode-to-str
@@ -148,6 +155,12 @@
        (json/encode-to-str '("ok")))
 
   (GET "/pick/:tilex/:tiley/:plant-id/:player-id/:iefix" [tilex tiley plant-id player-id iefix]
+       (append-spit
+        log-filename
+        (str (game-world-id->player-name
+              (deref my-game-world)
+              (parse-number player-id))
+             " has picked a seed"))
        (let [player-id (parse-number player-id)]
          (if (game-world-can-player-pick?
               (deref my-game-world) player-id)

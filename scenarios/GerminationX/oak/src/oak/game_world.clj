@@ -119,7 +119,6 @@
     (spirit-count i)))
     
 (defn game-world-save [game-world filename]
-  (println (:players game-world))
   (spit filename 
         (modify :id-gen
                 (fn [id-gen]
@@ -236,7 +235,6 @@
 ; are removed from the game
 (defn game-world-update-player-plant-counts [game-world]
   (let [decayed (game-world-get-decayed-owners game-world)]
-    (println decayed)
     (modify
      :players
      (fn [players]
