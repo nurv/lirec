@@ -46,8 +46,8 @@
        "data/characters/minds/Actions.xml"
        (list))))
 
-(def my-game-world (ref (game-world-load state-filename)))
-;(def my-game-world (ref (make-game-world 300 1)))
+;(def my-game-world (ref (game-world-load state-filename)))
+(def my-game-world (ref (make-game-world 300 1)))
 (game-world-save (deref my-game-world) "test.txt")
 
 (append-spit log-filename (str (str (Date.)) " server started\n"))
