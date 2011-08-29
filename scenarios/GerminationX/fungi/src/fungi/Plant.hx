@@ -106,7 +106,7 @@ class Plant extends SpriteEntity
     public function Fruit(world:World)
     {
         var f=new Sprite(new Vec2(0,-Spr.Height/2),
-                         Resources.Get("seed"));
+                         Resources.Get(PlantType+"-fruit"));
         world.AddSprite(f);
         Seeds.push(f);
         Update(0,world);

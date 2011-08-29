@@ -49,6 +49,7 @@ class Plant001IllCTex extends BitmapData { public function new() { super(0,0); }
 class Plant001FruitATex extends BitmapData { public function new() { super(0,0); } }
 class Plant001FruitBTex extends BitmapData { public function new() { super(0,0); } }
 class Plant001FruitCTex extends BitmapData { public function new() { super(0,0); } }
+class Plant001FruitTex extends BitmapData { public function new() { super(0,0); } }
 
 class AroniaGrowATex extends BitmapData { public function new() { super(0,0); } }
 class AroniaGrowBTex extends BitmapData { public function new() { super(0,0); } }
@@ -63,6 +64,7 @@ class AroniaIllCTex extends BitmapData { public function new() { super(0,0); } }
 class AroniaFruitATex extends BitmapData { public function new() { super(0,0); } }
 class AroniaFruitBTex extends BitmapData { public function new() { super(0,0); } }
 class AroniaFruitCTex extends BitmapData { public function new() { super(0,0); } }
+class AroniaFruitTex extends BitmapData { public function new() { super(0,0); } }
 
 class CloverGrowATex extends BitmapData { public function new() { super(0,0); } }
 class CloverGrowBTex extends BitmapData { public function new() { super(0,0); } }
@@ -77,6 +79,7 @@ class CloverIllCTex extends BitmapData { public function new() { super(0,0); } }
 class CloverFruitATex extends BitmapData { public function new() { super(0,0); } }
 class CloverFruitBTex extends BitmapData { public function new() { super(0,0); } }
 class CloverFruitCTex extends BitmapData { public function new() { super(0,0); } }
+class CloverFruitTex extends BitmapData { public function new() { super(0,0); } }
 
 class CherryGrowATex extends BitmapData { public function new() { super(0,0); } }
 class CherryGrowBTex extends BitmapData { public function new() { super(0,0); } }
@@ -91,6 +94,7 @@ class CherryIllCTex extends BitmapData { public function new() { super(0,0); } }
 class CherryFruitATex extends BitmapData { public function new() { super(0,0); } }
 class CherryFruitBTex extends BitmapData { public function new() { super(0,0); } }
 class CherryFruitCTex extends BitmapData { public function new() { super(0,0); } }
+class CherryFruitTex extends BitmapData { public function new() { super(0,0); } }
 
 class AppleGrowATex extends BitmapData { public function new() { super(0,0); } }
 class AppleGrowBTex extends BitmapData { public function new() { super(0,0); } }
@@ -105,6 +109,7 @@ class AppleIllCTex extends BitmapData { public function new() { super(0,0); } }
 class AppleFruitATex extends BitmapData { public function new() { super(0,0); } }
 class AppleFruitBTex extends BitmapData { public function new() { super(0,0); } }
 class AppleFruitCTex extends BitmapData { public function new() { super(0,0); } }
+class AppleFruitTex extends BitmapData { public function new() { super(0,0); } }
 
 class WingTex extends BitmapData { public function new() { super(0,0); } }
 class ActionDropLeavesTex extends BitmapData { public function new() { super(0,0); } }
@@ -177,6 +182,7 @@ class Resources
         case "dandelion-fruit-a": tex.data = new Plant001FruitATex();
         case "dandelion-fruit-b": tex.data = new Plant001FruitBTex();
         case "dandelion-fruit-c": tex.data = new Plant001FruitCTex();
+        case "dandelion-fruit": tex.data = new Plant001FruitTex();
 
         case "aronia-grow-a": tex.data = new AroniaGrowATex();
         case "aronia-grow-b": tex.data = new AroniaGrowBTex();
@@ -191,6 +197,7 @@ class Resources
         case "aronia-fruit-a": tex.data = new AroniaFruitATex();
         case "aronia-fruit-b": tex.data = new AroniaFruitBTex();
         case "aronia-fruit-c": tex.data = new AroniaFruitCTex();
+        case "aronia-fruit": tex.data = new AroniaFruitTex();
 
         case "clover-grow-a": tex.data = new CloverGrowATex();
         case "clover-grow-b": tex.data = new CloverGrowBTex();
@@ -205,6 +212,7 @@ class Resources
         case "clover-fruit-a": tex.data = new CloverFruitATex();
         case "clover-fruit-b": tex.data = new CloverFruitBTex();
         case "clover-fruit-c": tex.data = new CloverFruitCTex();
+        case "clover-fruit": tex.data = new CloverFruitTex();
 
         case "cherry-grow-a": tex.data = new CherryGrowATex();
         case "cherry-grow-b": tex.data = new CherryGrowBTex();
@@ -219,6 +227,7 @@ class Resources
         case "cherry-fruit-a": tex.data = new CherryFruitATex();
         case "cherry-fruit-b": tex.data = new CherryFruitBTex();
         case "cherry-fruit-c": tex.data = new CherryFruitCTex();
+        case "cherry-fruit": tex.data = new CherryFruitTex();
  
         case "apple-grow-a": tex.data = new AppleGrowATex();
         case "apple-grow-b": tex.data = new AppleGrowBTex();
@@ -233,6 +242,7 @@ class Resources
         case "apple-fruit-a": tex.data = new AppleFruitATex();
         case "apple-fruit-b": tex.data = new AppleFruitBTex();
         case "apple-fruit-c": tex.data = new AppleFruitCTex();
+        case "apple-fruit": tex.data = new AppleFruitTex();
 
         case "wing": tex.data = new WingTex();
         case "action-flower": tex.data = new ActionFlowerTex();

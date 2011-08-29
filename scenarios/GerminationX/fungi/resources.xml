@@ -33,6 +33,7 @@
                       <bitmap id="AroniaFruitATex" import="textures/aronia-fruit-a.png"/>                     
                       <bitmap id="AroniaFruitBTex" import="textures/aronia-fruit-b.png"/>                     
                       <bitmap id="AroniaFruitCTex" import="textures/aronia-fruit-c.png"/>                     
+                      <bitmap id="AroniaFruitTex" import="textures/aronia-fruit.png"/>                     
 
                       <bitmap id="CloverGrowATex" import="textures/clover-grow-a.png"/>                     
                       <bitmap id="CloverGrowBTex" import="textures/clover-grow-b.png"/>                     
@@ -47,6 +48,7 @@
                       <bitmap id="CloverFruitATex" import="textures/clover-fruit-a.png"/>                     
                       <bitmap id="CloverFruitBTex" import="textures/clover-fruit-b.png"/>                     
                       <bitmap id="CloverFruitCTex" import="textures/clover-fruit-c.png"/>                     
+                      <bitmap id="CloverFruitTex" import="textures/clover-fruit.png"/>                     
 
                       <bitmap id="Plant001GrowATex" import="textures/plant-001-grow-a.png"/>                     
                       <bitmap id="Plant001GrowBTex" import="textures/plant-001-grow-b.png"/>                     
@@ -60,7 +62,8 @@
                       <bitmap id="Plant001IllCTex" import="textures/plant-001-ill-c.png"/>                     
                       <bitmap id="Plant001FruitATex" import="textures/plant-001-fruit-a.png"/>                     
                       <bitmap id="Plant001FruitBTex" import="textures/plant-001-fruit-b.png"/>                     
-                      <bitmap id="Plant001FruitCTex" import="textures/plant-001-fruit-c.png"/>                     
+                      <bitmap id="Plant001FruitCTex" import="textures/plant-001-fruit-c.png"/>                    
+                      <bitmap id="Plant001FruitTex" import="textures/plant-001-fruit.png"/>                     
 
                       <bitmap id="CherryGrowATex" import="textures/cherry-grow-a.png"/>                     
                       <bitmap id="CherryGrowBTex" import="textures/cherry-grow-b.png"/>                     
@@ -75,6 +78,7 @@
                       <bitmap id="CherryFruitATex" import="textures/cherry-fruit-a.png"/>                     
                       <bitmap id="CherryFruitBTex" import="textures/cherry-fruit-b.png"/>                     
                       <bitmap id="CherryFruitCTex" import="textures/cherry-fruit-c.png"/>                     
+                      <bitmap id="CherryFruitTex" import="textures/cherry-fruit.png"/>                     
 
                       <bitmap id="AppleGrowATex" import="textures/apple-grow-a.png"/>                     
                       <bitmap id="AppleGrowBTex" import="textures/apple-grow-b.png"/>                     
@@ -89,6 +93,7 @@
                       <bitmap id="AppleFruitATex" import="textures/apple-fruit-a.png"/>                     
                       <bitmap id="AppleFruitBTex" import="textures/apple-fruit-b.png"/>                     
                       <bitmap id="AppleFruitCTex" import="textures/apple-fruit-c.png"/>                     
+                      <bitmap id="AppleFruitTex" import="textures/apple-fruit.png"/>                     
 
                       <bitmap id="WingTex" import="textures/wing.png"/>                     
 
