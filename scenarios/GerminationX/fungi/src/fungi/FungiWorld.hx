@@ -51,6 +51,8 @@ class FungiWorld extends World
     public var Season:String;
     public var PlayerInfo:Dynamic;
     var Dragging:Bool;
+    var CameraPos:Vec2;
+    var LogicalCameraPos:Vec2;
 
 	public function new(w:Int, h:Int) 
 	{
@@ -74,54 +76,8 @@ class FungiWorld extends World
         MyID = -1;
         NumPlants = 0;
         Season="no season";
-
-        var arrow1 = new SpriteEntity(this,new Vec3(7,-2,1), Resources.Get("arr3"));
-        arrow1.Spr.MouseUp(this,function(c) { c.UpdateWorld(c.WorldPos.Add(new Vec3(0,-1,0))); });
-        arrow1.Spr.MouseOver(this,function(c) { arrow1.Spr.SetScale(new Vec2(1.1,1.1)); arrow1.Spr.Update(0,null); });
-        arrow1.Spr.MouseOut(this,function(c) { arrow1.Spr.SetScale(new Vec2(1,1)); arrow1.Spr.Update(0,null); });
- 
-        var arrow2=new SpriteEntity(this,new Vec3(10,21,1), Resources.Get("arr4"));
-        arrow2.Spr.MouseUp(this,function(c) { c.UpdateWorld(c.WorldPos.Add(new Vec3(0,1,0))); });
-        arrow2.Spr.MouseOver(this,function(c) { arrow2.Spr.SetScale(new Vec2(1.1,1.1)); arrow2.Spr.Update(0,null); });
-        arrow2.Spr.MouseOut(this,function(c) { arrow2.Spr.SetScale(new Vec2(1,1)); arrow2.Spr.Update(0,null); });
- 
-        var arrow3=new SpriteEntity(this,new Vec3(-2,7,1), Resources.Get("arr2"));
-        arrow3.Spr.MouseUp(this,function(c) { c.UpdateWorld(c.WorldPos.Add(new Vec3(-1,0,0))); });
-        arrow3.Spr.MouseOver(this,function(c) { arrow3.Spr.SetScale(new Vec2(1.1,1.1)); arrow3.Spr.Update(0,null); });
-        arrow3.Spr.MouseOut(this,function(c) { arrow3.Spr.SetScale(new Vec2(1,1)); arrow3.Spr.Update(0,null); });
-
-        var arrow4=new SpriteEntity(this,new Vec3(20,10,1), Resources.Get("arr1"));
-        arrow4.Spr.MouseUp(this,function(c) { c.UpdateWorld(c.WorldPos.Add(new Vec3(1,0,0))); });
-        arrow4.Spr.MouseOver(this,function(c) { arrow4.Spr.SetScale(new Vec2(1.1,1.1)); arrow4.Spr.Update(0,null); });
-        arrow4.Spr.MouseOut(this,function(c) { arrow4.Spr.SetScale(new Vec2(1,1)); arrow4.Spr.Update(0,null); });
-
-        // hiscores table
-        var Hiscores = new Frame("Loading...",100,100,250,500);
-        addChild(Hiscores);
-        Hiscores.Hide(true);
-
-        var HiscoresButton = new Sprite(new Vec2(50,50), Resources.Get(""));
-        AddSprite(HiscoresButton);
-        HiscoresButton.MouseDown(this,function(c)
-        {
-            Hiscores.Hide(!Hiscores.IsHidden());
-            if (!Hiscores.IsHidden())
-            {
-                cast(c,FungiWorld).Server.Request("hiscores",
-                                 c,
-                                 function(c,data:Array<Dynamic>)
-                                 {
-                                     var text="Hi Scores Table\n Number of plants currently alive, by player.\n\n";
-                                     for (i in data)
-                                     {
-                                         text+=i[0]+": "+i[1]+"\n";
-                                         if (i[0]=c.MyName) c.NumPlants=Std.int(i[1]);
-                                     }
-                                     Hiscores.UpdateText(text);
-                                 });
-                           
-            }
-        });
+        CameraPos=new Vec2(300,220);
+        LogicalCameraPos=new Vec2(0,0);
 
 		for (y in 0...h)
 		{
@@ -196,10 +152,70 @@ class FungiWorld extends World
             }
         });
 
+        var arrow1 = new Sprite(new Vec2(500,40), Resources.Get("arr3"));
+        arrow1.SetScale(new Vec2(0.5,0.5));
+        arrow1.MouseUp(this,function(c) { c.MoveWorld(new Vec3(0,-1,0)); });
+        arrow1.MouseOver(this,function(c) { arrow1.SetScale(new Vec2(1.1,1.1)); arrow1.Update(0,null); });
+        arrow1.MouseOut(this,function(c) { arrow1.SetScale(new Vec2(1,1)); arrow1.Update(0,null); });
+        addChild(arrow1);
+
+        var arrow2=new Sprite(new Vec2(50,540), Resources.Get("arr4"));
+        arrow2.SetScale(new Vec2(0.5,0.5));
+        arrow2.MouseUp(this,function(c) { c.MoveWorld(new Vec3(0,1,0)); });
+        arrow2.MouseOver(this,function(c) { arrow2.SetScale(new Vec2(0.6,0.6)); arrow2.Update(0,null); });
+        arrow2.MouseOut(this,function(c) { arrow2.SetScale(new Vec2(0.5,0.5)); arrow2.Update(0,null); });
+        addChild(arrow2);
+
+        var arrow3=new Sprite(new Vec2(40,40), Resources.Get("arr2"));
+        arrow3.SetScale(new Vec2(0.5,0.5));
+        arrow3.MouseUp(this,function(c) { c.MoveWorld(new Vec3(-1,0,0)); });
+        arrow3.MouseOver(this,function(c) { arrow3.SetScale(new Vec2(1.1,1.1)); arrow3.Update(0,null); });
+        arrow3.MouseOut(this,function(c) { arrow3.SetScale(new Vec2(1,1)); arrow3.Update(0,null); });
+        addChild(arrow3);
+
+        var arrow4=new Sprite(new Vec2(450,540), Resources.Get("arr1"));
+        arrow4.SetScale(new Vec2(0.5,0.5));
+        arrow4.MouseUp(this,function(c) { c.MoveWorld(new Vec3(1,0,0)); });
+        arrow4.MouseOver(this,function(c) { arrow4.SetScale(new Vec2(1.1,1.1)); arrow4.Update(0,null); });
+        arrow4.MouseOut(this,function(c) { arrow4.SetScale(new Vec2(1,1)); arrow4.Update(0,null); });
+        addChild(arrow4);
 
 
 	}
 
+    function MoveWorld(dir)
+    {
+        LogicalCameraPos.x+=dir.x;
+        LogicalCameraPos.y+=dir.y;
+
+        if (LogicalCameraPos.x>5)
+        {
+            UpdateWorld(new Vec3(1,0,0));
+            LogicalCameraPos.x=0;
+        }
+        if (LogicalCameraPos.y>5)
+        {
+            UpdateWorld(new Vec3(0,1,0));
+            LogicalCameraPos.y=0;
+        }
+        if (LogicalCameraPos.x<-5)
+        {
+            UpdateWorld(new Vec3(-1,0,0));
+            LogicalCameraPos.x=0;
+        }
+        if (LogicalCameraPos.y<-5)
+        {
+            UpdateWorld(new Vec3(0,-1,0));
+            LogicalCameraPos.y=0;
+        }
+
+        var t=ScreenSpaceTransform(new Vec3(-LogicalCameraPos.x,
+                                            -LogicalCameraPos.y,0));
+
+        CameraPos.x=300+t.x;
+        CameraPos.y=220+t.y;
+        SetTranslate(CameraPos);
+    }
 
     function CompareLists(a:Array<Dynamic>,b:Array<Dynamic>): Bool
     {
@@ -244,24 +260,24 @@ class FungiWorld extends World
 		//WorldClient.GetPlants(cast(WorldPos.x,Int),cast(WorldPos.y,Int));
 	}
 	
-	public function UpdateWorld(pos:Vec3)
+	public function UpdateWorld(dir:Vec3)
 	{
-		WorldPos=pos;
-        SetCurrentTilePos(new Vec2(pos.x,pos.y));
+		WorldPos=WorldPos.Add(dir);
+        SetCurrentTilePos(new Vec2(WorldPos.x,WorldPos.y));
 		
-        var TileSize=Width;
+        var TileSize=5;
 
 		var circles = [];
-        for (x in -1...2)
+        for (x in -2...3)
 		{
-			for (y in -1...2)
+			for (y in -2...3)
 			{
 				MyRndGen.Seed(cast((WorldPos.x+x)+(WorldPos.y+y)*139,Int));
-				for (i in 0...5)
+				for (i in 0...2)
 				{
-					var pos = new Vec3(MyRndGen.RndFlt()*TileSize+x*TileSize,
-                                       MyRndGen.RndFlt()*TileSize+y*TileSize,
-									   0);		  
+					var pos = new Vec3((MyRndGen.RndFlt()*TileSize+x*TileSize)+5,
+                                       (MyRndGen.RndFlt()*TileSize+y*TileSize)+5,
+									   0);
 					circles.push(new Circle(pos, MyRndGen.RndFlt()*4));
 				}
 			}
@@ -271,19 +287,20 @@ class FungiWorld extends World
 		for (i in 0...Objs.length)
 		{
 			var pos=new Vec3(i%Width,Math.floor(i/Width),-1);
-			MyRndGen.Seed(cast(WorldPos.x+pos.x+WorldPos.y+pos.y*139,Int));
-			var inside:Bool=false;
 			for (c in circles)
 			{
 				if (c.Inside(pos)) pos.z=0;
 			}
 
+            // seed the rng for this position
+			MyRndGen.Seed(cast(pos.x+pos.y*139,Int));			
 			Objs[i].LogicalPos=pos;
 			Objs[i].UpdateTex(MyRndGen);
             Objs[i].Update(0,this);
 		}
 
-        ClearPlants();		
+        MovePlants(new Vec2(dir.x*5,dir.y*5));		
+        SortScene();
 	}
 
 	public function AddServerPlant(pos:Vec3,type)
@@ -291,10 +308,18 @@ class FungiWorld extends World
         if (MyName!=null && SpaceClear(pos))
         {
             var size=MyRndGen.RndFlt()+0.5;
-            Server.Request("make-plant/"+Std.string(cast(WorldPos.x,Int))+"/"+
-                                         Std.string(cast(WorldPos.y,Int))+"/"+
-                                         Std.string(cast(pos.x,Int))+"/"+
-                                         Std.string(cast(pos.y,Int))+"/"+
+            // find the server tile and relative position
+            // from the client tile position
+            var ServerTileWidth:Int=5;
+            var PlantPosX:Int = cast(pos.x,Int)%ServerTileWidth;
+            var PlantPosY:Int = cast(pos.y,Int)%ServerTileWidth;
+            var TilePosX:Int = Math.floor(pos.x/ServerTileWidth);
+            var TilePosY:Int = Math.floor(pos.y/ServerTileWidth);
+
+            Server.Request("make-plant/"+Std.string(TilePosX)+"/"+
+                                         Std.string(TilePosY)+"/"+
+                                         Std.string(PlantPosX)+"/"+
+                                         Std.string(PlantPosY)+"/"+
                                          type+"/"+
                                          MyID+"/"+
                                          Math.round(size*100),
@@ -309,6 +334,27 @@ class FungiWorld extends World
             Remove(plant);
         }
         Plants = [];
+	}
+
+    public function MovePlants(dir:Vec2) : Void
+    {
+        var NewPlants=[];
+        for (plant in Plants)
+        {
+            plant.LogicalPos.x+=-dir.x;
+            plant.LogicalPos.y+=-dir.y;
+            if (plant.LogicalPos.x<0 || plant.LogicalPos.y<0 ||
+                plant.LogicalPos.x>Width || plant.LogicalPos.y>Width)
+            {
+                Remove(plant);
+            }
+            else
+            {
+                plant.Update(0,this);
+                NewPlants.push(plant);
+            }
+        }
+        Plants=NewPlants;
 	}
 	
 	public function GetCube(pos:Vec3) : Cube
@@ -347,35 +393,52 @@ class FungiWorld extends World
 
     public function UpdateTile(d:Dynamic)
     {
-        Season=d.season;
+        // we get a list of tiles
+        var tiles:Array<Dynamic>=cast(d,Array<Dynamic>);
 
-        var data:Array<Dynamic>=cast(d.entities,Array<Dynamic>);
-        for (p in data)
+        // a client tile is composed of 9 server tiles:
+        //  ###
+        //  ### <- central tile is the current one
+        //  ###
+
+        for (tile in tiles)
         {
-            var worldpos = new Vec2(p.pos.x,p.pos.y);
-            var e = Get("fungi.Plant",worldpos);
-            if (e==null)
+            
+            Season=d.season;
+            // find the relative tile position
+            var TilePos=new Vec2(((tile.pos.x-WorldPos.x)+1)*5,
+                                 ((tile.pos.y-WorldPos.y)+1)*5);
+           
+            var data:Array<Dynamic>=cast(tile.entities,Array<Dynamic>);
+            for (p in data)
             {
-                var cube = Get("fungi.Cube",worldpos);
-                if (cube!=null)
+                // offset the plant to find the client tile position
+                var WorldPos = new Vec2(p.pos.x+TilePos.x,
+                                        p.pos.y+TilePos.y);
+                var e = Get("fungi.Plant",WorldPos);
+                if (e==null)
                 {
-                    var pos = new Vec3(p.pos.x,p.pos.y,cube.LogicalPos.z+1);   
-                    var plant = new Plant(this,Std.parseInt(p.id),
-                                          p.owner,
-                                          pos,
-                                          p.type,
-                                          p.state,
-                                          p.fruit,
-                                          p.layer);
-                    Plants.push(plant);
+                    var cube = Get("fungi.Cube",WorldPos);
+                    if (cube!=null)
+                    {
+                        var pos = new Vec3(WorldPos.x,WorldPos.y,cube.LogicalPos.z+1);   
+                        var plant = new Plant(this,Std.parseInt(p.id),
+                                              p.owner,
+                                              pos,
+                                              p.type,
+                                              p.state,
+                                              p.fruit,
+                                              p.layer);
+                        Plants.push(plant);
+                    }
                 }
-            }
-            else
-            {
-                //trace("updating plant");
-                //trace(e);
-                //trace(p.state);
-                cast(e,Plant).StateUpdate(p.state,p.fruit,this);
+                else
+                {
+                    //trace("updating plant");
+                    //trace(e);
+                    //trace(p.state);
+                    cast(e,Plant).StateUpdate(p.state,p.fruit,this);
+                }
             }
         }
 

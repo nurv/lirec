@@ -110,12 +110,12 @@
          (parse-number player-id))))
   
   (GET "/get-tile/:tilex/:tiley/:iefix" [tilex tiley iefix]
-       (let [tile (game-world-get-tile (deref my-game-world)
-                                       (make-vec2 (parse-number tilex)
-                                                  (parse-number tiley)))]
-         (if tile
-           (json/encode-to-str tile)
-           (json/encode-to-str '()))))
+       (let [tiles (game-world-get-tile-with-neighbours
+                     (deref my-game-world)
+                     (make-vec2 (parse-number tilex)
+                                (parse-number tiley)))]
+         
+         (json/encode-to-str tiles)))
 
   (GET "/get-msgs/:id/:iefix" [id iefix]
        (let [id (parse-number id)]

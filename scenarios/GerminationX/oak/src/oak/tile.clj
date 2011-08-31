@@ -64,14 +64,18 @@
       entities))
    tile))
 
-(defn tile-get-neighbours [tile pos]
+(defn tile-get-neighbours [tiles pos]
   (reduce
-   (fn [l e]
-     (if (and (< (vec2-dist (:pos e) pos) 3)
-              (not (vec2-eq? pos (:pos e))))
-       (cons e l) l))
-   '()
-   (:entities tile)))
+   (fn [r tile]
+     (reduce
+      (fn [l e]
+        (if (and (< (vec2-dist (:pos e) pos) 3)
+                 (not (vec2-eq? pos (:pos e))))
+          (cons e l) l))
+      r
+      (:entities tile)))
+   ()
+   tiles))
 
 (defn tile-get-decayed-owners [tile]
   (reduce
@@ -81,7 +85,7 @@
    ()
    (:entities tile)))
 
-(defn tile-update [tile time delta rules]
+(defn tile-update [tile time delta rules neighbouring-tiles]
   (let [st (/ (mod time season-length) season-length)
         season (cond
                 (< st 0.25) 'spring
@@ -95,7 +99,8 @@
                  ;; todo dispatch on entity type
                  (plant-update
                   e time delta
-                  (tile-get-neighbours tile (:pos e))
+                  (tile-get-neighbours
+                   neighbouring-tiles (:pos e))
                   rules
                   season))
                (filter

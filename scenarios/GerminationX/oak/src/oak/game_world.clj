@@ -38,6 +38,23 @@
    false
    (:tiles game-world)))
 
+(defn game-world-get-tile-with-neighbours [game-world pos]
+  (reduce
+   (fn [r t]
+     (if (or (vec2-eq? (vec2-add (make-vec2 -1 1) pos) (:pos t))
+             (vec2-eq? (vec2-add (make-vec2 0 1) pos) (:pos t))
+             (vec2-eq? (vec2-add (make-vec2 1 1) pos) (:pos t))
+             (vec2-eq? (vec2-add (make-vec2 -1 0) pos) (:pos t))
+             (vec2-eq? (vec2-add (make-vec2 0 0) pos) (:pos t))
+             (vec2-eq? (vec2-add (make-vec2 1 0) pos) (:pos t))
+             (vec2-eq? (vec2-add (make-vec2 -1 -1) pos) (:pos t))
+             (vec2-eq? (vec2-add (make-vec2 0 -1) pos) (:pos t))
+             (vec2-eq? (vec2-add (make-vec2 1 -1) pos) (:pos t)))
+       (cons t r)
+       r))
+   ()
+   (:tiles game-world)))
+
 (defn game-world-add-tile [game-world tile]
   (merge game-world {:tiles (cons tile (:tiles game-world))}))
 
@@ -259,7 +276,9 @@
     (fn [tiles]
       (map
        (fn [tile]
-         (tile-update tile time delta (:rules game-world)))
+         (tile-update tile time delta (:rules game-world)
+                      (game-world-get-tile-with-neighbours
+                        game-world (:pos tile))))
        tiles))
     game-world)))
 

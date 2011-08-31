@@ -47,6 +47,15 @@ class FlashWorld implements World, extends MovieClip
         ScreenOffset=new Vec2(300,220);
     }
 
+    public function ScreenSpaceTransform(pos:Vec3) : Vec3
+	{
+		// do the nasty iso conversion
+		// this is actually an orthogonal projection matrix! (I think)
+		return new Vec3(pos.x*36-pos.y*26,
+                        (pos.y*18+pos.x*9)-(pos.z*37),
+                        pos.x*0.51 + pos.y*0.71 + pos.z*0.47);             
+	}
+
 	public function ScreenTransform(pos:Vec3) : Vec3
 	{
 		// do the nasty iso conversion

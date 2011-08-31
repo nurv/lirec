@@ -22,7 +22,7 @@ class Main extends App
     public function new() 
 	{
         Log.setColor(0x000000);
-        super(new FungiWorld(12,12));
+        super(new FungiWorld(15,15));
     }
 	
     static function main() 

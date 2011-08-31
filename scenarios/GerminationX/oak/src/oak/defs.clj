@@ -16,7 +16,7 @@
   (:require
    clojure.contrib.math))
 
-(def tile-size 12)
+(def tile-size 5)
 (def season-length (* 60 3))
 (def min-health 10)
 (def max-health 90)
