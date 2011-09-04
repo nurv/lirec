@@ -67,23 +67,33 @@ class StringMaker
             },
             i_am_detrimental_to: function(from,subjects:Array<Dynamic>)
             {
-                return "Your "+from+" plant is harming this "+subjects[0]+" plant.";
+                return "This "+from+" plant is harming this "+subjects[0]+" plant.";
             },
             i_am_benefitting_from: function(from,subjects:Array<Dynamic>)
             {
-                return "Your "+from+" plant is being helped by a new "+subjects[0]+" plant.";
+                return "This "+from+" plant is being helped by a new "+subjects[0]+" plant.";
             },
             i_am_beneficial_to: function(from,subjects:Array<Dynamic>)
             {
-                return "Your "+from+" plant is helping this "+subjects[0]+" plant.";
+                return "This "+from+" plant is helping this "+subjects[0]+" plant.";
             }
         };
     }
 
     public function MsgToString(msg:Dynamic) : String
     {
-        return MsgMap[Reflect.field(msg,"msg-id")]
-        (Reflect.field(msg,"display-from"),
-         Reflect.field(msg,"subjects"));
+        if (!Reflect.hasField(MsgMap,
+                              Reflect.field(msg,"msg-id")))
+        {
+            trace("can't find string for message " +
+                  Reflect.field(msg,"msg-id"));
+            return "oops";
+        }
+        else
+        {
+            return MsgMap[Reflect.field(msg,"msg-id")]
+            (Reflect.field(msg,"display-from"),
+             Reflect.field(msg,"subjects"));
+        }
     }
 }

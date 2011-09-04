@@ -20,7 +20,7 @@
 (def season-length (* 60 3))
 (def min-health 10)
 (def max-health 90)
-(def start-health 20)
+(def start-health 100)
 (def min-neighbours 2)
 (def max-neighbours 5)
 (def seeds-duration (* 60 60 1000))

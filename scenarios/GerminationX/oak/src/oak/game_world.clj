@@ -406,17 +406,21 @@
     (reduce
      (fn [fw entity]
        (cond
-        ; check for a special event
-        (:event-occurred entity)
-        (do
-          (println (str "detected event :" (:event-occurred entity) " on " (:id entity)))
+
+      ; check for a special event
+        (> (count (:event-occurred entity)) 0)
+        (reduce
+         (fn [fw event]
+          (println (str "detected event :" event " on " (:id entity)))
           (world-add-object fw
-                            {"name" (str (:layer entity) "-" (:event-occurred entity) "#" (:id entity))
+                            {"name" (str (:layer entity) "-" event "#" (:id entity))
                              "owner" (:layer entity)
                              "position" (str (:x (:pos entity)) "," (:y (:pos entity)))
                              "tile" (:pos tile)
                              "type" "object"
                              "time" time}))
+         fw
+         (:event-occurred entity))
        
         ; check for a normal state notification
         (or

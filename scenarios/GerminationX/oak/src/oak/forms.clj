@@ -32,6 +32,7 @@
 
 ; force all sequences and maps to un-lazy
 (defn doall-recur [s]
+;  (println s)
   (cond
    (map? s) (reduce
              (fn [r i]

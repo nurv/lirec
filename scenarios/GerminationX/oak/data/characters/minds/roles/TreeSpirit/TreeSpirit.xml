@@ -51,7 +51,8 @@
         <Relation target="tree-recovery-to-b" like="10" respect="1"/>
         <Relation target="tree-recovery-to-a" like="7" respect="1"/>
         <Relation target="tree-finished-recovery" like="10" respect="1"/>
-        <Relation target="tree-is-helped" like="16" respect="10"/>
+        <Relation target="tree-benefit" like="16" respect="10"/>
+        <Relation target="tree-detriment" like="-16" respect="10"/>
 	</InterpersonalRelations>
 	
 	<EventReactions>

@@ -172,7 +172,14 @@
         (let [gstep (.clone s)]
           (.MakeGround s bindings)
           (properties-changed world agent (.getEffects gstep)))))))
-    
+
+(defn in-location? [a b]
+  (vec2-eq? a b)
+;  (let [d (vec2-sub a b)]
+;    (and (< (:x d) 2)
+;         (< (:y d) 2)))
+  )
+
 (defn world-process-agent [world agent msg]
   ;(println (str "world-process-agent for " (remote-agent-name agent) " got " msg))
   (let [toks (.split msg " ")
@@ -192,8 +199,8 @@
        (let [object-name (nth toks 1)]
          ;(println (remote-agent-tile agent))
          ; is the agent on the same tile as the object?
-         (if (vec2-eq? (remote-agent-tile agent)
-                       (get (world-get-object world object-name) "tile"))
+         (if (in-location? (remote-agent-tile agent)
+                           (get (world-get-object world object-name) "tile"))
            (do
              (send-msg (remote-agent-socket agent)
                        (str "LOOK-AT " object-name " "
