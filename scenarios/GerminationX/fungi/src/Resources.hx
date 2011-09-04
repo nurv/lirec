@@ -20,6 +20,7 @@ import flash.display.BitmapData;
 import truffle.Truffle;
 
 class BlueCubeTex extends BitmapData { public function new() { super(0,0); } }
+class WireCubeTex extends BitmapData { public function new() { super(0,0); } }
 class Test extends BitmapData { public function new() { super(0,0); } }
 
 class SeedTex extends BitmapData { public function new() { super(0,0); } }
@@ -36,20 +37,26 @@ class RockCube04Tex extends BitmapData { public function new() { super(0,0); } }
 class RockCube05Tex extends BitmapData { public function new() { super(0,0); } }
 class RockCube06Tex extends BitmapData { public function new() { super(0,0); } }
 
-class Plant001GrowATex extends BitmapData { public function new() { super(0,0); } }
-class Plant001GrowBTex extends BitmapData { public function new() { super(0,0); } }
-class Plant001GrowCTex extends BitmapData { public function new() { super(0,0); } }
-class Plant001GrownTex extends BitmapData { public function new() { super(0,0); } }
-class Plant001DecayATex extends BitmapData { public function new() { super(0,0); } }
-class Plant001DecayBTex extends BitmapData { public function new() { super(0,0); } }
-class Plant001DecayCTex extends BitmapData { public function new() { super(0,0); } }
-class Plant001IllATex extends BitmapData { public function new() { super(0,0); } }
-class Plant001IllBTex extends BitmapData { public function new() { super(0,0); } }
-class Plant001IllCTex extends BitmapData { public function new() { super(0,0); } }
-class Plant001FruitATex extends BitmapData { public function new() { super(0,0); } }
-class Plant001FruitBTex extends BitmapData { public function new() { super(0,0); } }
-class Plant001FruitCTex extends BitmapData { public function new() { super(0,0); } }
-class Plant001FruitTex extends BitmapData { public function new() { super(0,0); } }
+class GroundCubeA1Tex extends BitmapData { public function new() { super(0,0); } }
+class GroundCubeA2Tex extends BitmapData { public function new() { super(0,0); } }
+class GroundCubeA3Tex extends BitmapData { public function new() { super(0,0); } }
+class GroundCubeA4Tex extends BitmapData { public function new() { super(0,0); } }
+class GroundCubeA5Tex extends BitmapData { public function new() { super(0,0); } }
+
+class DandelionGrowATex extends BitmapData { public function new() { super(0,0); } }
+class DandelionGrowBTex extends BitmapData { public function new() { super(0,0); } }
+class DandelionGrowCTex extends BitmapData { public function new() { super(0,0); } }
+class DandelionGrownTex extends BitmapData { public function new() { super(0,0); } }
+class DandelionDecayATex extends BitmapData { public function new() { super(0,0); } }
+class DandelionDecayBTex extends BitmapData { public function new() { super(0,0); } }
+class DandelionDecayCTex extends BitmapData { public function new() { super(0,0); } }
+class DandelionIllATex extends BitmapData { public function new() { super(0,0); } }
+class DandelionIllBTex extends BitmapData { public function new() { super(0,0); } }
+class DandelionIllCTex extends BitmapData { public function new() { super(0,0); } }
+class DandelionFruitATex extends BitmapData { public function new() { super(0,0); } }
+class DandelionFruitBTex extends BitmapData { public function new() { super(0,0); } }
+class DandelionFruitCTex extends BitmapData { public function new() { super(0,0); } }
+class DandelionFruitTex extends BitmapData { public function new() { super(0,0); } }
 
 class AroniaGrowATex extends BitmapData { public function new() { super(0,0); } }
 class AroniaGrowBTex extends BitmapData { public function new() { super(0,0); } }
@@ -154,6 +161,7 @@ class Resources
         switch(name)
         {
         case "blue-cube": tex.data = new BlueCubeTex();
+        case "wire-cube": tex.data = new WireCubeTex();
         case "test": tex.data = new Test();
         case "seed": tex.data = new SeedTex();
 
@@ -169,20 +177,26 @@ class Resources
         case "rock-cube-05": tex.data = new RockCube05Tex();
         case "rock-cube-06": tex.data = new RockCube06Tex();
 
-        case "dandelion-grow-a": tex.data = new Plant001GrowATex();
-        case "dandelion-grow-b": tex.data = new Plant001GrowBTex();
-        case "dandelion-grow-c": tex.data = new Plant001GrowCTex();
-        case "dandelion-grown": tex.data = new Plant001GrownTex();
-        case "dandelion-ill-a": tex.data = new Plant001IllATex();
-        case "dandelion-ill-b": tex.data = new Plant001IllBTex();
-        case "dandelion-ill-c": tex.data = new Plant001IllCTex();
-        case "dandelion-decay-a": tex.data = new Plant001DecayATex();
-        case "dandelion-decay-b": tex.data = new Plant001DecayBTex();
-        case "dandelion-decay-c": tex.data = new Plant001DecayCTex();
-        case "dandelion-fruit-a": tex.data = new Plant001FruitATex();
-        case "dandelion-fruit-b": tex.data = new Plant001FruitBTex();
-        case "dandelion-fruit-c": tex.data = new Plant001FruitCTex();
-        case "dandelion-fruit": tex.data = new Plant001FruitTex();
+        case "ground-cube-a-1": tex.data = new GroundCubeA1Tex();
+        case "ground-cube-a-2": tex.data = new GroundCubeA2Tex();
+        case "ground-cube-a-3": tex.data = new GroundCubeA3Tex();
+        case "ground-cube-a-4": tex.data = new GroundCubeA4Tex();
+        case "ground-cube-a-5": tex.data = new GroundCubeA5Tex();
+
+        case "dandelion-grow-a": tex.data = new DandelionGrowATex();
+        case "dandelion-grow-b": tex.data = new DandelionGrowBTex();
+        case "dandelion-grow-c": tex.data = new DandelionGrowCTex();
+        case "dandelion-grown": tex.data = new DandelionGrownTex();
+        case "dandelion-ill-a": tex.data = new DandelionIllATex();
+        case "dandelion-ill-b": tex.data = new DandelionIllBTex();
+        case "dandelion-ill-c": tex.data = new DandelionIllCTex();
+        case "dandelion-decay-a": tex.data = new DandelionDecayATex();
+        case "dandelion-decay-b": tex.data = new DandelionDecayBTex();
+        case "dandelion-decay-c": tex.data = new DandelionDecayCTex();
+        case "dandelion-fruit-a": tex.data = new DandelionFruitATex();
+        case "dandelion-fruit-b": tex.data = new DandelionFruitBTex();
+        case "dandelion-fruit-c": tex.data = new DandelionFruitCTex();
+        case "dandelion-fruit": tex.data = new DandelionFruitTex();
 
         case "aronia-grow-a": tex.data = new AroniaGrowATex();
         case "aronia-grow-b": tex.data = new AroniaGrowBTex();

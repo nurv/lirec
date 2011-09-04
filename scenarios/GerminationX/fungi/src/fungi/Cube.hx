@@ -18,17 +18,27 @@ package fungi;
 import truffle.Truffle;
 import truffle.SpriteEntity;
 import truffle.Vec3;
+import truffle.Vec2;
 import truffle.RndGen;
 
 class Cube extends SpriteEntity 
 {	
 	public function new(world:World, pos:Vec3) 
 	{
-		super(world, pos, Resources.Get("blue-cube"));
+		super(world, pos, Resources.Get("wire-cube"));
+//        Spr.SetScale(new Vec2(2,2));
 	}
 	
 	public function UpdateTex(rnd:RndGen)
 	{
+        Spr.ChangeBitmap(Resources.Get(
+            rnd.Choose(["ground-cube-a-1",
+                        "ground-cube-a-2",
+                        "ground-cube-a-3",
+                        "ground-cube-a-4",
+                        "ground-cube-a-5"])));
+
+/*
 		if (LogicalPos.z%2==0)
         {
             Spr.ChangeBitmap(Resources.Get(
@@ -39,6 +49,7 @@ class Cube extends SpriteEntity
             Spr.ChangeBitmap(Resources.Get(
                 rnd.Choose(["rock-cube-04","rock-cube-05","rock-cube-06"])));
         }
+*/
 	}
 }
 

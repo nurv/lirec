@@ -36,11 +36,11 @@
    :tick (+ (/ season-length 50) (Math/floor (rand 10)))
    :health start-health
    :fruit false
+   :event-occurred false
    :log (make-log 10)))
 
 (defn plant-count [plant]
   (println (str "picked-by: " (count (:picked-by-ids plant)))))
-
 
 (defn make-random-plant [id]
   (let [type (rand-nth plant-types)]
@@ -52,8 +52,9 @@
      -1
      (Math/round (+ 1 (rand 10))))))
 
-; the plant state machine, advance state, based on health
-(defn adv-state [state health season annual]
+(defn adv-state
+  "the plant state machine, advance state, based on health and season"
+  [state health season annual]
   (cond
    (= state 'planted) 'grow-a
    (= state 'grow-a) (cond (> health min-health) 'grow-b :else (rand-nth (list 'grow-a 'grow-b)))
@@ -69,7 +70,7 @@
                      'decay-a
                      :else 'grown)
    (= state 'fruit-a) (if (< health min-health) 'decay-a 'fruit-b)
-   (= state 'fruit-b) (if (< health min-health) 'decay-a'fruit-c)
+   (= state 'fruit-b) (if (< health min-health) 'decay-a 'fruit-c)
    (= state 'fruit-c) (if (or (= season 'autumn) (= season 'winter)
                               (< health min-health))
                         'decay-a 'grown)
@@ -98,7 +99,9 @@
   (nth (nth rules (plant-type->id from))
        (plant-type->id to)))
 
-(defn plant-add-to-log [plant log type]
+(defn plant-add-to-log
+  "helper to add a message to a plant's log"
+  [plant log type]
   (log-add-msg 
    log
    (make-msg
@@ -110,23 +113,115 @@
     'plant
     (:type plant))))
 
-(defn plant-clear-log [plant]
+(defn plant-clear
+  "clear the things needed before an update"
+  [plant]
   (modify
    :log
    (fn [log]
      (make-log 10))
-   plant))
+   (modify
+    :event-occurred
+    (fn [ev] false)
+    plant)))
 
-(defn plant-update-log [plant old-state]
-  (if (not (= (:state plant) old-state))
+(defn neighbours-benefitted
+  "look for ill neighbours and see if we will help
+   them recover - return list of helped plants"
+  [plant neighbours rules]
+  (filter
+   (fn [other]
+     (and
+      (or
+       (= (:state other) 'ill-a)
+       (= (:state other) 'ill-b)
+       (= (:state other) 'ill-c))
+      (> (get-relationship (:type plant) (:type other) rules) 0)))
+   neighbours))
+
+(defn neighbours-detrimented
+  "look for ill neighbours and see if we will help
+   them recover - return list of helped plants"
+  [plant neighbours rules]
+  (filter
+   (fn [other]
+     (and
+      (or
+       (= (:state other) 'ill-a)
+       (= (:state other) 'ill-b)
+       (= (:state other) 'ill-c))
+      (< (get-relationship (:type plant) (:type other) rules) 0)))
+   neighbours))
+
+(defn log-beneficial [log plant benefitting-plants]
+  (reduce
+   (fn [log other]
+     (log-add-msg 
+      (log-add-msg 
+       log
+       (make-msg
+        (:id other)
+        (:type other)
+        (:owner-id other)
+        type
+        ((:type plant) (:id plant))
+        'i-am-benefitting-from
+        (:type plant)))
+      (make-msg
+       (:id plant)
+       (:type plant)
+       (:owner-id plant)
+       type
+       ((:id other))
+       'i-am-benefiticial-to
+       (:type plant))))
+   log
+   benefitting-plants))
+
+(defn log-detrimental [log plant detrimental-plants]
+  (reduce
+   (fn [log other]
+     (log-add-msg 
+      (log-add-msg 
+       log
+       (make-msg
+        (:id other)
+        (:type other)
+        (:owner-id other)
+        type
+        ((:type plant) (:id plant))
+        'i-am-detrimented-by
+        (:type plant)))
+      (make-msg
+       (:id plant)
+       (:type plant)
+       (:owner-id plant)
+       type
+       ((:id other))
+       'i-am-detrimental-to
+       (:type plant))))
+   log
+   detrimental-plants))
+
+(defn plant-update-log
+  "adds messages to the log depending on changing state"
+  [plant old-state neighbours rules]    
     (modify
      :log
      (fn [log]
        (cond
         (and (= old-state 'planted)
              (= (:state plant) 'grow-a))
-        (plant-add-to-log plant log 'i_have_been_planted)
-
+        (plant-add-to-log
+         plant
+         (log-detrimental
+          (log-beneficitial
+           log plant
+           (neighbours-benefitted plant neighbours rules))
+          plant
+          (neighbours-detrimented plant neighbours rules))
+         'i_have_been_planted)
+         
         (and (= old-state 'decay-c)
              (= (:state plant) 'ill-a))
         (plant-add-to-log plant log 'i_am_ill)
@@ -139,17 +234,58 @@
              (= (:state plant) 'decayed))
         (plant-add-to-log plant log 'i_have_died)
 
-        (and (= old-state 'ill-c)
-             (not (= (:state plant) 'ill-c)))
+        (and (= old-state 'ill-a)
+             (not (= (:state plant) 'grown)))
         (plant-add-to-log plant log 'i_have_recovered)
 
+        (or
+         (and
+          (= old-state 'ill-c)
+          (= (:state plant) 'ill-b))
+         (and
+          (= old-state 'ill-b)
+          (= (:state plant) 'ill-a)))
+        (plant-add-to-log plant log 'i_am_recovering)
+        
        ; (and (not (= old-state 'fruit-a))
        ;      (= (:state plant) 'fruit-a))
        ; (plant-add-to-log plant log 'i_have_fruited)
+        :else log))))
 
-        :else log))
-     plant)
-    plant))
+(define update-events [plants old-state neighbours rules]    
+  "add any special events that we need FAtiMA to be aware of"
+  (modify
+   :event-occurred
+   (fn [ev]
+     (cond
+      (and
+       (= old-state 'ill-c)
+       (= (:state plant) 'ill-b))
+      'recovery-to-b
+      
+      (and
+       (= old-state 'ill-b)
+       (= (:state plant) 'ill-a))
+      'recovery-to-a
+      
+      (and (= old-state 'ill-a)
+           (not (= (:state plant) 'grown)))
+      'finished-recovery
+      
+      :else false))
+   plant))
+
+(defn plant-update-from-changes
+  "update the log and event-occurred from the
+   current state and the last"
+  [plant old-state neighbours rules]
+  ; only if the state has acually changed
+  (if (not (= (:state plant) old-state))
+    ; update the log
+    (plant-update-log
+     (plant-update-events
+      plant old-state neighbours rules)
+     old-state neighbours rules)))
 
 (defn plant-update-health [plant neighbours rules]
   (modify
@@ -194,14 +330,14 @@
 (defn plant-update [plant time delta neighbours rules season]
   ;(println (str season " " (:state plant) " " (:health plant) " " (:timer plant) " " (:tick plant)))
   (let [old-state (:state plant)]
-    (plant-update-log
+    (plant-update-from-changes
      (plant-update-health
       (plant-update-fruit
        (plant-update-state
-        (plant-clear-log plant)
+        (plant-clear plant)
         time delta season))
       neighbours rules)
-     old-state)))
+     old-state neighbours rules)))
 
 ; returns a list containing:
 ; { :needed_plants ( type-name1 type-name2 ... )

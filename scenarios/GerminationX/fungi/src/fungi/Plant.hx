@@ -28,15 +28,16 @@ class Plant extends SpriteEntity
     var Scale:Float;
     var PlantType:String;
     public var State:String;
-    var Seeds:Array<Sprite>;
+    var Seeds:Array<Seed>;
     var Layer:String;
 
     // because not all states are represented by graphics
     function FixState(state:String): String
     {
         if (state=="planted") return "grow-a";
-        if (state=="ill-a") return "ill-c";
-        if (state=="ill-b") return "ill-c";
+        if (state=="fruit-a") return "grown";
+        if (state=="fruit-b") return "grown";
+        if (state=="fruit-c") return "grown";
         return state;
     }
 
@@ -52,7 +53,6 @@ class Plant extends SpriteEntity
         Seeds=[];
         Layer=layer;
         Spr.Hide(false);
-
         if (fruit) Fruit(world);
 	}
 
@@ -73,6 +73,16 @@ class Plant extends SpriteEntity
             world.RemoveSprite(Seeds[0]);
             Seeds=[];        
         }
+
+        if (state=="fruit-a" ||
+            state=="fruit-b" ||
+            state=="fruit-c")
+        {
+            for (s in Seeds)
+            {
+                s.ChangeState(state);
+            }
+        };
     }
 
     override function Destroy(world:World)
@@ -80,7 +90,7 @@ class Plant extends SpriteEntity
         super.Destroy(world);
         for (seed in Seeds)
         {
-            world.RemoveSprite(seed);
+            world.RemoveSprite(seed.Spr);
         }
     }
 	
@@ -89,7 +99,7 @@ class Plant extends SpriteEntity
 		super.Update(frame,world);
         for (seed in Seeds)
         {
-            seed.Update(frame,Spr.Transform);
+            seed.Spr.Update(frame,Spr.Transform);
         }
 	}
 
@@ -98,21 +108,20 @@ class Plant extends SpriteEntity
         Spr.SetDepth(order++);
         for (seed in Seeds)
         {
-            world.setChildIndex(seed,order++);
+            world.setChildIndex(seed.Spr,order++);
         }        
         return order;
     }
 
     public function Fruit(world:World)
     {
-        var f=new Sprite(new Vec2(0,-Spr.Height/2),
-                         Resources.Get(PlantType+"-fruit"));
-        world.AddSprite(f);
+        var f=new Seed(new Vec2(0,-Spr.Height/2),PlantType);
+        world.AddSprite(f.Spr);
         Seeds.push(f);
         Update(0,world);
-        f.MouseDown(this,function(p) 
+        f.Spr.MouseDown(this,function(p) 
         {            
-            if (world.MyName!="")
+            if (world.MyName!="" && f.State=="fruit-c")
             {
                 world.Server.Request(
                     "pick/"+
@@ -129,10 +138,9 @@ class Plant extends SpriteEntity
                             // the server will maintain this state for 
                             // other players
                             p.Seeds.remove(f);
-                            c.RemoveSprite(f);
+                            c.RemoveSprite(f.Spr);
                             // add to the current list
-                            var s=new Seed(p.PlantType);
-                            c.Seeds.Add(cast(c,World),s);
+                            c.Seeds.Add(cast(c,World),f);
                         }
                     });
             }

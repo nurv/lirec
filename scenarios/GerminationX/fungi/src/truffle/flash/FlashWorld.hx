@@ -37,6 +37,13 @@ class FlashWorld implements World, extends MovieClip
     var CurrentTilePos:Vec2;
     var ScreenScale:Vec2;
     var ScreenOffset:Vec2;
+    var Theta:Float;
+    var Alpha:Float;
+    var CosTheta:Float;
+    var CosAlpha:Float;
+    var SinTheta:Float;
+    var SinAlpha:Float;
+    var ScreenCentre:Vec2;
 
     function new()
     {
@@ -44,25 +51,69 @@ class FlashWorld implements World, extends MovieClip
         Scene = [];
         CurrentTilePos=new Vec2(0,0); // perhaps
         ScreenScale=new Vec2(1,1);
-        ScreenOffset=new Vec2(300,220);
+        ScreenCentre=new Vec2(-500,500);
+        ScreenOffset=new Vec2(ScreenCentre.x,
+                              ScreenCentre.y);
+        
+        Theta = -66*Math.PI/180;
+        Alpha = 59*Math.PI/180;
+        CosTheta = Math.cos(Theta);
+        SinTheta = Math.sin(Theta);
+        CosAlpha = Math.cos(Alpha);
+        SinAlpha = Math.sin(Alpha);
     }
 
     public function ScreenSpaceTransform(pos:Vec3) : Vec3
 	{
+        var ox=pos.x*103;
+        var oy=pos.y*84;
+        var oz=pos.z*80;
+
+        var zp=oz;
+        var xp=ox*CosAlpha+oy*SinAlpha;
+        var yp=oy*CosAlpha-ox*SinAlpha;
+
+        var r= new Vec3(xp,
+                        yp*CosTheta+zp*SinTheta,
+                        zp*CosTheta-yp*SinTheta
+                        );
+        return r; 
+/*        
 		// do the nasty iso conversion
 		// this is actually an orthogonal projection matrix! (I think)
-		return new Vec3(pos.x*36-pos.y*26,
-                        (pos.y*18+pos.x*9)-(pos.z*37),
-                        pos.x*0.51 + pos.y*0.71 + pos.z*0.47);             
+		return new Vec3((pos.x*36-pos.y*26)*2,
+                        ((pos.y*18+pos.x*9)-(pos.z*37))*2,
+                        pos.x*0.51 + pos.y*0.71 + pos.z*0.47);            */ 
 	}
 
 	public function ScreenTransform(pos:Vec3) : Vec3
 	{
+/*        var zp=pos.z*80;
+        var xp=(pos.x*CosAlpha+pos.y*SinAlpha)*103;
+        var yp=(pos.y*CosAlpha-pos.x*SinAlpha)*84;
+*/
+        var ox=pos.x*103;
+        var oy=pos.y*84;
+        var oz=pos.z*80;
+
+        var zp=oz;
+        var xp=ox*CosAlpha+oy*SinAlpha;
+        var yp=oy*CosAlpha-ox*SinAlpha;
+
+        var r= new Vec3(xp,
+                        yp*CosTheta+zp*SinTheta,
+                        zp*CosTheta-yp*SinTheta
+                        );
+        r.x+=ScreenOffset.x;
+        r.y+=ScreenOffset.y;
+        return r;
+/*
 		// do the nasty iso conversion
 		// this is actually an orthogonal projection matrix! (I think)
-		return new Vec3(ScreenOffset.x+(pos.x*36-pos.y*26)*ScreenScale.x,
-                        ScreenOffset.y+((pos.y*18+pos.x*9)-(pos.z*37))*ScreenScale.y,
+		return new Vec3(ScreenOffset.x+(pos.x*36-pos.y*26)*ScreenScale.x*2,
+                        ScreenOffset.y+((pos.y*18+pos.x*9)-(pos.z*37))*ScreenScale.y*2,
                         pos.x*0.51 + pos.y*0.71 + pos.z*0.47);             
+*/
 	}
 
     public function Add(e:Entity)
@@ -143,7 +194,6 @@ class FlashWorld implements World, extends MovieClip
                        if (a.Depth<b.Depth) return -1;
                        else return 1;
                    });
-
         var i=0;
         for (e in Scene)
         {
@@ -181,7 +231,10 @@ class FlashWorld implements World, extends MovieClip
         {
             if (e.TilePos!=null)
             {
-                e.Hide(!e.TilePos.Eq(CurrentTilePos));
+                // the current tile pos is surrounded by 8 other
+                // visible ones, so see if we are in one of those
+                var diff=e.TilePos.Sub(CurrentTilePos);
+                e.Hide(Math.abs(diff.x)>1 || Math.abs(diff.y)>1);
             }
 
             if (e.NeedsUpdate && !e.Hidden &&

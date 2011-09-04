@@ -21,11 +21,19 @@ import truffle.Vec2;
 class Seed
 {
     public var Type:String;
+    public var State:String;
     public var Spr:Sprite;
 
-    public function new(t:String)
+    public function new(pos:Vec2,t:String)
     {
         Type=t;
-        Spr=new Sprite(new Vec2(0,0),Resources.Get("seed"));
+        State="fruit-a";
+        Spr=new Sprite(pos,Resources.Get(Type+"-"+State));
+    }
+
+    public function ChangeState(s:String)
+    {
+        State=s;
+        Spr.ChangeBitmap(Resources.Get(Type+"-"+State));
     }
 }

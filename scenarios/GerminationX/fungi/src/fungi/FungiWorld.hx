@@ -50,8 +50,6 @@ class FungiWorld extends World
     public var NumPlants:Int;
     public var Season:String;
     public var PlayerInfo:Dynamic;
-    var Dragging:Bool;
-    var CameraPos:Vec2;
     var LogicalCameraPos:Vec2;
 
 	public function new(w:Int, h:Int) 
@@ -62,7 +60,6 @@ class FungiWorld extends World
         PerceiveTime=0;
 		Width=w;
 		Height=h;
-        Dragging=false;
 		Plants = [];
         Objs = [];
         Spirits = [];
@@ -76,7 +73,6 @@ class FungiWorld extends World
         MyID = -1;
         NumPlants = 0;
         Season="no season";
-        CameraPos=new Vec2(300,220);
         LogicalCameraPos=new Vec2(0,0);
 
 		for (y in 0...h)
@@ -131,51 +127,30 @@ class FungiWorld extends World
             });
         }
 
-        var Pos=new Vec2(300,220);
-        var LastMouse=new Vec2(0,0);
-        var c=this;
-
-        MouseDown(this,function(e) { 
-            c.Dragging=true; 
-            LastMouse.x=e.stageX;
-            LastMouse.y=e.stageY;
-        });
-        MouseUp(this,function(c) { c.Dragging=false; });
-        MouseMove(this,function(e:MouseEvent) { 
-            if (c.Dragging)
-            {
-                Pos.x+=e.stageX-LastMouse.x; 
-                Pos.y+=e.stageY-LastMouse.y;
-                c.SetTranslate(Pos);
-                LastMouse.x=e.stageX;
-                LastMouse.y=e.stageY;
-            }
-        });
-
         var arrow1 = new Sprite(new Vec2(500,40), Resources.Get("arr3"));
         arrow1.SetScale(new Vec2(0.5,0.5));
-        arrow1.MouseUp(this,function(c) { c.MoveWorld(new Vec3(0,-1,0)); });
+        arrow1.MouseUp(this,function(c) { c.MoveWorld(new Vec3(1,0,0)); });
         arrow1.MouseOver(this,function(c) { arrow1.SetScale(new Vec2(1.1,1.1)); arrow1.Update(0,null); });
         arrow1.MouseOut(this,function(c) { arrow1.SetScale(new Vec2(1,1)); arrow1.Update(0,null); });
         addChild(arrow1);
 
         var arrow2=new Sprite(new Vec2(50,540), Resources.Get("arr4"));
         arrow2.SetScale(new Vec2(0.5,0.5));
-        arrow2.MouseUp(this,function(c) { c.MoveWorld(new Vec3(0,1,0)); });
+        arrow2.MouseUp(this,function(c) { c.MoveWorld(new Vec3(-1,0,0)); });
         arrow2.MouseOver(this,function(c) { arrow2.SetScale(new Vec2(0.6,0.6)); arrow2.Update(0,null); });
         arrow2.MouseOut(this,function(c) { arrow2.SetScale(new Vec2(0.5,0.5)); arrow2.Update(0,null); });
         addChild(arrow2);
 
         var arrow3=new Sprite(new Vec2(40,40), Resources.Get("arr2"));
         arrow3.SetScale(new Vec2(0.5,0.5));
-        arrow3.MouseUp(this,function(c) { c.MoveWorld(new Vec3(-1,0,0)); });
+        arrow3.MouseUp(this,function(c) { c.MoveWorld(new Vec3(0,-1,0)); });
         arrow3.MouseOver(this,function(c) { arrow3.SetScale(new Vec2(1.1,1.1)); arrow3.Update(0,null); });
         arrow3.MouseOut(this,function(c) { arrow3.SetScale(new Vec2(1,1)); arrow3.Update(0,null); });
         addChild(arrow3);
 
         var arrow4=new Sprite(new Vec2(450,540), Resources.Get("arr1"));
         arrow4.SetScale(new Vec2(0.5,0.5));
-        arrow4.MouseUp(this,function(c) { c.MoveWorld(new Vec3(1,0,0)); });
+        arrow4.MouseUp(this,function(c) { c.MoveWorld(new Vec3(0,1,0)); });
         arrow4.MouseOver(this,function(c) { arrow4.SetScale(new Vec2(1.1,1.1)); arrow4.Update(0,null); });
         arrow4.MouseOut(this,function(c) { arrow4.SetScale(new Vec2(1,1)); arrow4.Update(0,null); });
         addChild(arrow4);
@@ -212,9 +187,8 @@ class FungiWorld extends World
         var t=ScreenSpaceTransform(new Vec3(-LogicalCameraPos.x,
                                             -LogicalCameraPos.y,0));
 
-        CameraPos.x=300+t.x;
-        CameraPos.y=220+t.y;
-        SetTranslate(CameraPos);
+        SetTranslate(new Vec2(ScreenCentre.x+t.x,
+                              ScreenCentre.y+t.y));
     }
 
     function CompareLists(a:Array<Dynamic>,b:Array<Dynamic>): Bool
@@ -293,7 +267,7 @@ class FungiWorld extends World
 			}
 
             // seed the rng for this position
-			MyRndGen.Seed(cast(pos.x+pos.y*139,Int));			
+			MyRndGen.Seed(cast((pos.x%5)*236+(pos.y%5)*139,Int));			
 			Objs[i].LogicalPos=pos;
 			Objs[i].UpdateTex(MyRndGen);
             Objs[i].Update(0,this);
@@ -313,8 +287,8 @@ class FungiWorld extends World
             var ServerTileWidth:Int=5;
             var PlantPosX:Int = cast(pos.x,Int)%ServerTileWidth;
             var PlantPosY:Int = cast(pos.y,Int)%ServerTileWidth;
-            var TilePosX:Int = Math.floor(pos.x/ServerTileWidth);
-            var TilePosY:Int = Math.floor(pos.y/ServerTileWidth);
+            var TilePosX:Int = cast(WorldPos.x,Int)+Math.floor(pos.x/ServerTileWidth)-1;
+            var TilePosY:Int = cast(WorldPos.y,Int)+Math.floor(pos.y/ServerTileWidth)-1;
 
             Server.Request("make-plant/"+Std.string(TilePosX)+"/"+
                                          Std.string(TilePosY)+"/"+
@@ -391,6 +365,13 @@ class FungiWorld extends World
         }
     }
 
+    public function ServerPosToPos(Tile,Pos) : Vec2
+    {
+        var TilePos=new Vec2(((Tile.x-WorldPos.x)+1)*5,
+                             ((Tile.y-WorldPos.y)+1)*5);
+        return TilePos.Add(Pos);
+    }
+        
     public function UpdateTile(d:Dynamic)
     {
         // we get a list of tiles
@@ -404,7 +385,7 @@ class FungiWorld extends World
         for (tile in tiles)
         {
             
-            Season=d.season;
+            Season=tile.season;
             // find the relative tile position
             var TilePos=new Vec2(((tile.pos.x-WorldPos.x)+1)*5,
                                  ((tile.pos.y-WorldPos.y)+1)*5);
@@ -458,8 +439,6 @@ class FungiWorld extends World
 
     override function Update(time:Int)
     {
-        if (Dragging) return;
-
         super.Update(time);
 
         Server.Update();

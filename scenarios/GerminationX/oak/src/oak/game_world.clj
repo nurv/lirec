@@ -29,7 +29,9 @@
   (:require
    clojure.contrib.math))
 
-(defn game-world-get-tile [game-world pos]
+(defn game-world-get-tile
+  "get a single tile from the game world"
+  [game-world pos]
   (reduce
    (fn [r t]
      (if (and (not r) (vec2-eq? pos (:pos t)))
@@ -38,7 +40,9 @@
    false
    (:tiles game-world)))
 
-(defn game-world-get-tile-with-neighbours [game-world pos]
+(defn game-world-get-tile-with-neighbours
+  "get a tile and it's immediate neighbours"
+  [game-world pos]
   (reduce
    (fn [r t]
      (if (or (vec2-eq? (vec2-add (make-vec2 -1 1) pos) (:pos t))
@@ -55,10 +59,16 @@
    ()
    (:tiles game-world)))
 
-(defn game-world-add-tile [game-world tile]
+(defn game-world-add-tile
+  "add a tile to the game (this is done gradually as people plant)
+   leaving a sparse list"
+  [game-world tile]
   (merge game-world {:tiles (cons tile (:tiles game-world))}))
 
-(defn game-world-modify-tile [game-world pos f]
+(defn game-world-modify-tile
+  "run function f on the tile at position pos,
+   giving the tile as the only argument"
+  [game-world pos f]
   (modify :tiles
           (fn [tiles]
             (map
@@ -396,6 +406,19 @@
     (reduce
      (fn [fw entity]
        (cond
+        ; check for a special event
+        (:event-occurred entity)
+        (do
+          (println (str "detected event :" (:event-occurred entity) " on " (:id entity)))
+          (world-add-object fw
+                            {"name" (str (:layer entity) "-" (:event-occurred entity) "#" (:id entity))
+                             "owner" (:layer entity)
+                             "position" (str (:x (:pos entity)) "," (:y (:pos entity)))
+                             "tile" (:pos tile)
+                             "type" "object"
+                             "time" time}))
+       
+        ; check for a normal state notification
         (or
          (= (:state entity) 'grow-a)
          (= (:state entity) 'fruit-a)
@@ -405,6 +428,7 @@
          (= (:state entity) 'ill-b)
          (= (:state entity) 'ill-c))
         (do
+          ; stops duplicates for us
           (world-add-object fw
                             {"name" (str (:layer entity) "-" (:state entity) "#" (:id entity))
                              "owner" (:layer entity)

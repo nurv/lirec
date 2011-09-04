@@ -114,7 +114,7 @@ class Spirit extends ClusterEntity
 	public function BuildDebug(c)
     {
         Debug = new Frame("nowt yet.",Pos.x-200,Pos.y-25,140,150);
-        Debug.Hide(true);
+        Debug.Hide(false);
         c.addChild(Debug);
         Action = new Sprite(new Vec2(0,0),Resources.Get(""));
         Action.Hide(true);
@@ -123,12 +123,13 @@ class Spirit extends ClusterEntity
 
     public function UpdateEmotions(e:Dynamic,world:World)
     {
-        SetTilePos(new Vec2(Std.parseInt(e.tile.x),
-                            Std.parseInt(e.tile.y)));
+        var TilePos=new Vec2(Std.parseInt(e.tile.x),
+                             Std.parseInt(e.tile.y));
+        SetTilePos(TilePos);
 
-        
-        var dst = new Vec2(Std.parseInt(e.emotionalloc.x),
-                           Std.parseInt(e.emotionalloc.y));
+        var dst:Vec2 = world.ServerPosToPos(TilePos,
+                                       new Vec2(Std.parseInt(e.emotionalloc.x),
+                                                Std.parseInt(e.emotionalloc.y)));
 
         if (dst.x!=DesiredPos.x || dst.y!=DesiredPos.y)
         {

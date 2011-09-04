@@ -45,6 +45,13 @@
         <Relation target="tree-ill-a" like="-4" respect="1"/>
         <Relation target="tree-ill-b" like="-6" respect="1"/>
         <Relation target="tree-ill-c" like="-8" respect="1"/>
+        <Relation target="tree-decay-a" like="-1" respect="1"/>
+        <Relation target="tree-decay-b" like="-2" respect="1"/>
+        <Relation target="tree-decay-c" like="-3" respect="1"/>
+        <Relation target="tree-recovery-to-b" like="10" respect="1"/>
+        <Relation target="tree-recovery-to-a" like="7" respect="1"/>
+        <Relation target="tree-finished-recovery" like="10" respect="1"/>
+        <Relation target="tree-is-helped" like="16" respect="10"/>
 	</InterpersonalRelations>
 	
 	<EventReactions>

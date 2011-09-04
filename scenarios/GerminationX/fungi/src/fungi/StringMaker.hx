@@ -39,7 +39,7 @@ class StringMaker
             },
             i_have_recovered: function(from,subjects:Array<Dynamic>)
             {
-                return "This "+from+" plant is recovering.";
+                return "This "+from+" plant has recovered.";
             },
             i_have_been_picked_by: function(from,subjects:Array<Dynamic>)
             {
@@ -56,6 +56,26 @@ class StringMaker
             needs_help: function(from,subjects:Array<Dynamic>)
             {
                 return subjects[0]+", "+subjects[1]+"'s "+subjects[2]+" plant needs you to plant a "+subjects[3]+" near.";
+            },
+            i_am_recovering: function(from,subjects:Array<Dynamic>)
+            {
+                return "This "+from+" plant is recovering.";
+            },
+            i_am_detrimented_by: function(from,subjects:Array<Dynamic>)
+            {
+                return "This "+from+" plant is being harmed by a new "+subjects[0]+" plant.";
+            },
+            i_am_detrimental_to: function(from,subjects:Array<Dynamic>)
+            {
+                return "Your "+from+" plant is harming this "+subjects[0]+" plant.";
+            },
+            i_am_benefitting_from: function(from,subjects:Array<Dynamic>)
+            {
+                return "Your "+from+" plant is being helped by a new "+subjects[0]+" plant.";
+            },
+            i_am_beneficial_to: function(from,subjects:Array<Dynamic>)
+            {
+                return "Your "+from+" plant is helping this "+subjects[0]+" plant.";
             }
         };
     }
