@@ -33,7 +33,7 @@ import cmion.architecture.CmionEvent;
 
 /** this type of event is raised by the competency execution system when a competency execution plan has failed 
 *  the competency manager listens for those events */
-public class EventCompetencyExecutionPlanFailed extends CmionEvent 
+public class EventCompetencyExecutionPlanFailed extends CompetencyExecutionPlanEvent
 {
 
 	/** creates a new event */

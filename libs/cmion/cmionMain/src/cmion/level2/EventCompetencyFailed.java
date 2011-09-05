@@ -34,7 +34,7 @@ import java.util.HashMap;
 import cmion.architecture.CmionEvent;
 
 /** this event signifies that the execution of a competency has failed */
-public class EventCompetencyFailed extends CmionEvent 
+public class EventCompetencyFailed extends CompetencyEvent 
 {
 
 	/** a reference to the competency that has failed  */

@@ -33,7 +33,7 @@ import cmion.architecture.CmionEvent;
 
 /** this type of event is raised by the competency execution system when a competency execution plan is 
  * starting to be carried out */
-public class EventCompetencyExecutionPlanStarted extends CmionEvent 
+public class EventCompetencyExecutionPlanStarted extends CompetencyExecutionPlanEvent
 {
 
 	/** creates a new event */

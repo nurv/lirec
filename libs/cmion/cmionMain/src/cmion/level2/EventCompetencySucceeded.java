@@ -35,7 +35,7 @@ import java.util.HashMap;
 import cmion.architecture.CmionEvent;
 
 /** this event signifies that the execution of a competency has suceeded */
-public class EventCompetencySucceeded extends CmionEvent {
+public class EventCompetencySucceeded extends CompetencyEvent  {
 
 	/** a reference to the competency that has succeeded */
 	private Competency competency;

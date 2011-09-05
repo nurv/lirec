@@ -34,7 +34,7 @@ import java.util.HashMap;
 import cmion.architecture.CmionEvent;
 
 /** this event signifies that the execution of a competency was cancelled */
-public class EventCompetencyCancelled extends CmionEvent 
+public class EventCompetencyCancelled extends CompetencyEvent 
 {
 
 	/** a reference to the competency that was cancelled  */
