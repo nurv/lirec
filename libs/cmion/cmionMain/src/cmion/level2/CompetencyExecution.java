@@ -72,6 +72,9 @@ public class CompetencyExecution extends CmionComponent {
 		// check if the plan is instantiated and not already being executed
 		if (cep.isInstantiated() && !cep.isCurrentlyExecuting())
 		{
+			// raise an event that the plan is being executed
+			this.raise(new EventCompetencyExecutionPlanStarted(cep));
+			
 			// set the plan to currently executing 
 			cep.startExecution();
 			
@@ -194,7 +197,7 @@ public class CompetencyExecution extends CmionComponent {
 				runningCompetencies.put(competency,cep);
 				
 				// request the competency to start
-				competency.requestStartCompetency(step.getCompetencyParameters());
+				competency.requestStartCompetency(step.getCompetencyParameters(),cep);
 				
 				break;
 			}

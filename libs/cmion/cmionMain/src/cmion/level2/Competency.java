@@ -60,6 +60,9 @@ public abstract class Competency extends CmionComponent implements Runnable
 	/** this boolean indicates whether the competency is available or not */
 	protected boolean available;
 	
+	/** the competency execution plan as part of which this competency was started */
+	protected CompetencyExecutionPlan plan;
+	
 	/** create a competency object */
 	public Competency(IArchitecture architecture)
 	{
@@ -113,6 +116,9 @@ public abstract class Competency extends CmionComponent implements Runnable
 	@Override
 	public final void run()
 	{
+		// raise event that we are starting this competency
+		this.raise(new EventCompetencyStarted(this, parameters, plan));
+		
 		// start competency code and when finished store the return value
 		boolean succeeded = false;
 		boolean cancelled = false;
@@ -130,11 +136,11 @@ public abstract class Competency extends CmionComponent implements Runnable
 		synchronized(this)
 		{			
 			if (cancelled)
-				this.raise(new EventCompetencyCancelled(this, parameters));
+				this.raise(new EventCompetencyCancelled(this, parameters, plan));
 			else if (succeeded) 
-				this.raise(new EventCompetencySucceeded(this, parameters));
+				this.raise(new EventCompetencySucceeded(this, parameters, plan));
 			else 
-				this.raise(new EventCompetencyFailed(this, parameters));
+				this.raise(new EventCompetencyFailed(this, parameters, plan));
 			
 			this.running = false;
 			// note: although it is conceptually wrong to set running false 
@@ -155,14 +161,17 @@ public abstract class Competency extends CmionComponent implements Runnable
 	/** convenience method to schedule a request for starting this competency
 	 * @param parameters a map including the parameters that this competence 
 	 * should work with
+	 * @param cep the competency execution plan, as part of which this competency was started, 
+	 * 		  or null if the competency was not started by the execution system
 	 */
-	public void requestStartCompetency(HashMap<String,String> parameters)
+	public void requestStartCompetency(HashMap<String,String> parameters, CompetencyExecutionPlan cep)
 	{
-		this.schedule(new RequestStartCompetency(parameters));
+		this.schedule(new RequestStartCompetency(parameters,cep));
 	}
 	
-	/** internal method for starting the competence */
-	private synchronized void startCompetence(HashMap<String,String> parameters)
+	/** internal method for starting the competence 
+	 * @param competencyExecutionPlan */
+	private synchronized void startCompetence(HashMap<String,String> parameters, CompetencyExecutionPlan plan)
 	{
 		// check if the competence is available and not already running
 		if (!isRunning() && isAvailable())
@@ -172,6 +181,9 @@ public abstract class Competency extends CmionComponent implements Runnable
 			
 			// copy parameters
 			this.parameters = parameters;
+			
+			// copy current plan
+			this.plan = plan;
 			
 			// run competency in a new thread			
 			new Thread(this,getCompetencyName()).start();
@@ -206,7 +218,7 @@ public abstract class Competency extends CmionComponent implements Runnable
 	    	for (RequestStartCompetency request : requests.get(RequestStartCompetency.class))
 	    	{
 	    		// if there are more than one request, only the first one will normally succeed
-	    		startCompetence(request.getParameters());
+	    		startCompetence(request.getParameters(), request.getPlan());
 	    	}	
 	    }
 	}

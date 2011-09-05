@@ -29,40 +29,35 @@
 
 package cmion.level2;
 
-import ion.Meta.Request;
+import cmion.architecture.CmionEvent;
 
-import java.util.HashMap;
+/** this type of event is raised by the competency execution system when a competency execution plan is 
+ * starting to be carried out */
+public class EventCompetencyExecutionPlanStarted extends CmionEvent 
+{
 
-/** this request can be scheduled with competencies to request it to run*/
-public class RequestStartCompetency extends Request {
-
-	/** the parameters for running the competence*/
-	private HashMap<String, String> parameters;
-
-	/** the competency execution plan, as part of which this competency was started*/
-	private CompetencyExecutionPlan cep;
-	
-	
-	/** create a new request to start a competency
-	 * 
-	 * @param parameters the parameters for starting the competency
-	 * @param cep the competency execution plan, as part of which this competency was started
-	 */
-	public RequestStartCompetency(HashMap<String, String> parameters, CompetencyExecutionPlan cep) {
-		this.parameters = parameters;
-		this.cep = cep;
-	}
-
-	/** returns the parameters */
-	public HashMap<String,String> getParameters()
+	/** creates a new event */
+	public EventCompetencyExecutionPlanStarted(CompetencyExecutionPlan executionPlan)
 	{
-		return parameters;
+		super();
+		this.executionPlan = executionPlan;
 	}
-	
-	/** returns the competency execution plan, as part of which this competency was started*/
-	public CompetencyExecutionPlan getPlan()
+	/** the competency execution plan that this event refers to */
+	private CompetencyExecutionPlan executionPlan;
+
+	/** returns the competency execution plan that this event refers to */
+	public CompetencyExecutionPlan getCompetencyExecutionPlan()
 	{
-		return cep;
+		return executionPlan;
 	}
 	
+	/** displays information about this event */
+	@Override
+	public String toString()
+	{
+		// not sure how to display more concise short information about this
+		String evtString =  "Competency Execution plan started";
+		return evtString;
+	}
+
 }

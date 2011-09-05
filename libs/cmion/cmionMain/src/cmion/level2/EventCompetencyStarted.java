@@ -29,42 +29,42 @@
 
 package cmion.level2;
 
+
 import java.util.HashMap;
 
 import cmion.architecture.CmionEvent;
 
-/** this event signifies that the execution of a competency has failed */
-public class EventCompetencyFailed extends CmionEvent 
-{
+/** this event signifies that the execution of a competency has started */
+public class EventCompetencyStarted extends CmionEvent {
 
-	/** a reference to the competency that has failed  */
+	/** a reference to the competency that has started */
 	private Competency competency;
 	
-	/** the parameters the competency was running with, when failing */
+	/** the parameters the competency was running with, when started */
 	private HashMap<String, String> parameters;
 	
 	/** the competency execution plan as part of which this competency was started */
-	protected CompetencyExecutionPlan plan;		
+	protected CompetencyExecutionPlan plan;	
 	
-	public EventCompetencyFailed(Competency competency,
+	public EventCompetencyStarted(Competency competency,
 			HashMap<String, String> parameters, CompetencyExecutionPlan plan) 
 	{
 		this.competency = competency;
 		this.parameters = parameters;
-		this.plan = plan;			
+		this.plan = plan;		
 	}
 
-	/** returns a reference to the competency that has failed */	
+	/** returns a reference to the competency that has started */	
 	public Competency getCompetency()
 	{
 		return competency;
 	}
 	
-	/** returns the parameters the competency was running with, when failed */
+	/** returns the parameters the competency was running with when started*/
 	public HashMap<String, String> getParameters()
 	{
 		return parameters;
-	}	
+	}
 	
 	/** returns the competency execution plan as part of which this competency 
 	 *  was started or null if the competency was not started through the competency
@@ -72,18 +72,18 @@ public class EventCompetencyFailed extends CmionEvent
 	public CompetencyExecutionPlan getPlan()
 	{
 		return plan;
-	}	
-	
+	}
+
 	/** displays information about this event */
 	@Override
 	public String toString()
 	{
-		String evtString =  "Competency failed: " + competency.getCompetencyName();
+		String evtString =  "Competency started: " + competency.getCompetencyName();
 		evtString += ", parameters:";
 		if (parameters.size()==0) evtString += " none";
 		else for (String parameterName : parameters.keySet())
 			evtString += " " + parameterName +"="+parameters.get(parameterName);
 		return evtString;		
 	}
-
+	
 }

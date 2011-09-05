@@ -100,7 +100,7 @@ public class CompetencyManager extends CmionComponent
 			rulesAlreadyTried.put(a, rulesForThisAction);
 		
 			//get an instantiated copy of the plan associated with the rule
-			CompetencyExecutionPlan plan = rule.getExecutionPlan().getInstantiatedCopy(a.getMappings());
+			CompetencyExecutionPlan plan = rule.getExecutionPlan().getInstantiatedCopy(a.getMappings(),a);
 			
 			//and also remember that this execution plan belongs to this action
 			plansCurrentlyExecuted.put(plan,a);
@@ -262,7 +262,7 @@ public class CompetencyManager extends CmionComponent
 				rulesAlreadyTried.get(ma).add(rule);
 		
 				//get an instantiated copy of the plan associated with the rule
-				CompetencyExecutionPlan newPlan = rule.getExecutionPlan().getInstantiatedCopy(ma.getMappings());
+				CompetencyExecutionPlan newPlan = rule.getExecutionPlan().getInstantiatedCopy(ma.getMappings(),ma);
 			
 				//and also remember that this execution plan belongs to this action
 				plansCurrentlyExecuted.put(newPlan,ma);

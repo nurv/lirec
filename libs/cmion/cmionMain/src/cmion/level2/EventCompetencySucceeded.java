@@ -43,12 +43,15 @@ public class EventCompetencySucceeded extends CmionEvent {
 	/** the parameters the competency was running with, when suceeding */
 	private HashMap<String, String> parameters;
 	
+	/** the competency execution plan as part of which this competency was started */
+	protected CompetencyExecutionPlan plan;	
 	
 	public EventCompetencySucceeded(Competency competency,
-			HashMap<String, String> parameters) 
+			HashMap<String, String> parameters, CompetencyExecutionPlan plan) 
 	{
 		this.competency = competency;
 		this.parameters = parameters;
+		this.plan = plan;		
 	}
 
 	/** returns a reference to the competency that has succeeded */	
@@ -61,6 +64,14 @@ public class EventCompetencySucceeded extends CmionEvent {
 	public HashMap<String, String> getParameters()
 	{
 		return parameters;
+	}
+	
+	/** returns the competency execution plan as part of which this competency 
+	 *  was started or null if the competency was not started through the competency
+	 *  execution system (e.g. it was started as a background competency) */	
+	public CompetencyExecutionPlan getPlan()
+	{
+		return plan;
 	}
 
 	/** displays information about this event */

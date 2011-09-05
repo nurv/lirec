@@ -37,6 +37,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import cmion.architecture.IArchitecture;
+import cmion.level3.MindAction;
 
 /** a plan of competencies that can be executed by the competency execution system,
  * this class is used to represent both instantiated and not instantiated execution plans.
@@ -62,6 +63,9 @@ public class CompetencyExecutionPlan {
 	/** for instantiated plans this stores whether they are currently executed or not*/
 	private boolean currentlyExecuting;
 	
+	/** the mind action which this plan is executing */
+	private MindAction mindAction;
+	
 	/** refernce to cmion architecture */
 	private IArchitecture architecture;
 	
@@ -72,6 +76,7 @@ public class CompetencyExecutionPlan {
 		planSteps = new HashMap<String,CompetencyExecutionPlanStep>();
 		instantiated = false;
 		currentlyExecuting = false;
+		mindAction = null;
 	}
 	
 	/** creates a new competencyExecutionPlan from a DOM node */
@@ -106,12 +111,15 @@ public class CompetencyExecutionPlan {
 	/** returns an instantiated copy of this competency execution plan
 	 * 
 	 * @param mappings the mappings for variables to use for instantiation
+	 * @param mindAction the mind action which this plan is executing
 	 * @return a new competency execution plan which is an instantiated copy of the 
 	 * calling object
 	 */
-	public CompetencyExecutionPlan getInstantiatedCopy(HashMap<String,String> mappings)
+	public CompetencyExecutionPlan getInstantiatedCopy(HashMap<String,String> mappings, MindAction mindAction)
 	{
 		CompetencyExecutionPlan returnPlan = new CompetencyExecutionPlan(architecture);
+		
+		returnPlan.mindAction = mindAction;
 		
 		// iterate over all current plan steps and add an instantiated copy to the new plan
 		for (String planStepID : planSteps.keySet())
@@ -193,6 +201,12 @@ public class CompetencyExecutionPlan {
 	public synchronized void stopExecution()
 	{
 		currentlyExecuting = false; 		
+	}
+	
+	/** returns the mind action that this plan is executing */
+	public MindAction getMindAction()
+	{
+		return mindAction;
 	}
 
 }
