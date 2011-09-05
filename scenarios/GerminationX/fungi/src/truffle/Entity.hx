@@ -26,14 +26,20 @@ class Entity
     public var Hidden:Bool;
     public var Speed:Float;
     public var UpdateFreq:Int;
+    public var MoveTime:Float;
+    public var LastPos:Vec3;
+    public var DestPos:Vec3;
 	
 	public function new(w:World,pos:Vec3) 
 	{
-        LogicalPos=pos;
+        LogicalPos = pos;
         Pos = w.ScreenTransform(LogicalPos);
+        LastPos = w.ScreenTransform(LogicalPos);
+        DestPos = w.ScreenTransform(LogicalPos);
         TilePos = null;
         Depth = Pos.z;
         Speed = 0;
+        MoveTime = 0;
         UpdateFreq=0;
         NeedsUpdate=false;
         w.Add(this);
@@ -49,6 +55,14 @@ class Entity
         TilePos=s;
     }
 
+    public function SetLogicalPos(world:World, p:Vec3) : Void
+    {
+        LastPos = Pos;
+        MoveTime = 0;
+        LogicalPos = p;
+        DestPos = world.ScreenTransform(LogicalPos);
+    }
+
 	public function Update(frame:Int, world:World)
 	{
         if (Speed==0)
@@ -57,10 +71,10 @@ class Entity
         }
         else
         {
-            var Dst = world.ScreenTransform(LogicalPos);
-            if (!Dst.Eq(Pos))
+            if (MoveTime<1.0)
             {
-                Pos = Pos.Lerp(Dst,Speed);
+                Pos = LastPos.Lerp(DestPos,MoveTime);
+                MoveTime += Speed;
             }
         }
 

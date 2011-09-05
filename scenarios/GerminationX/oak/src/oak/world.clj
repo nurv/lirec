@@ -17,7 +17,8 @@
    oak.forms
    oak.remote-agent
    oak.io
-   oak.vec2)
+   oak.vec2
+   clojure.contrib.math)
   (:import
    java.util.ArrayList
    java.net.InetSocketAddress
@@ -44,7 +45,9 @@
 (defn world-add-agent [world agent]
   (merge world {:agents (cons agent (world-agents world))})) 
 
-(defn load-operators [xml self]
+(defn load-operators
+  "not used any more with fatima modular"
+  [xml self]
 		(let [op (new ActionsLoaderHandler self)
               parser (.newSAXParser (SAXParserFactory/newInstance))]
           (.parse parser (new File xml) op)
@@ -65,8 +68,10 @@
                     ssc)
    :time 0))
 
-; return in the format needed by FAtiMA: token:value token:value ...
-(defn hash-map-to-string [m]
+(defn hash-map-to-string
+  "return in the format needed by FAtiMA:
+   token:value token:value ..."
+  [m]
   (apply
    str
    (map
@@ -74,8 +79,10 @@
       (str (first v) ":" (if (map? (second v)) "map" (second v)) " "))
     m)))
 
-; look through agents and objects and return the properties for the named thing
-(defn world-get-properties [world name]
+(defn world-get-properties
+  "look through agents and objects and return
+   the properties for the named thing"
+  [world name]
   (reduce
    (fn [r agent]
      (if (and (not r) (= (remote-agent-name agent) name))
@@ -90,20 +97,41 @@
     (world-objects world))
    (world-agents world)))
 
-; send a message to all agents 
-(defn world-broadcast-all [world msg]
+(defn world-get-location
+  "look through agents and objects and return
+   the tile location of the named thing"
+  [world name]
+  (reduce
+   (fn [r agent]
+     (if (and (not r) (= (remote-agent-name agent) name))
+       (:tile agent)
+       r))
+   (reduce
+    (fn [r object]
+      (if (and (not r) (= (get object "name") name))
+        (get object "tile")
+        r))
+    false
+    (world-objects world))
+   (world-agents world)))
+
+(defn world-broadcast-all
+  "send a message to all agents"
+  [world msg]
   (doseq [agent (world-agents world)]
     (send-msg (remote-agent-socket agent) msg)))
 
-; send a message to all agents except caller
-(defn world-broadcast [world caller msg]
+(defn world-broadcast
+  "send a message to all agents except caller"
+  [world caller msg]
   (doseq [agent (world-agents world)]
     (when (not (= (remote-agent-name agent)
                   (remote-agent-name caller)))
       (send-msg (remote-agent-socket agent) msg))))
 
-; send a list of all agents and objects to this agent
-(defn world-perceive [world agent]
+(defn world-perceive
+  "send a list of all agents and objects to this agent"
+  [world agent]
   (send-msg (remote-agent-socket agent)
                (apply str 
                       (concat
@@ -174,11 +202,9 @@
           (properties-changed world agent (.getEffects gstep)))))))
 
 (defn in-location? [a b]
-  (vec2-eq? a b)
-;  (let [d (vec2-sub a b)]
-;    (and (< (:x d) 2)
-;         (< (:y d) 2)))
-  )
+  (let [d (vec2-sub a b)]
+    (and (<= (abs (:x d)) 1)
+         (<= (abs (:y d)) 1))))
 
 (defn world-process-agent [world agent msg]
   ;(println (str "world-process-agent for " (remote-agent-name agent) " got " msg))
@@ -196,12 +222,13 @@
      (.startsWith type "PROPERTY-CHANGED") agent
      (= type "look-at")
      (do
-       (let [object-name (nth toks 1)]
+       (let [object-name (nth toks 1)
+             object-tile (world-get-location world object-name)]
          ;(println (remote-agent-tile agent))
          ; is the agent on the same tile as the object?
-         (if (in-location? (remote-agent-tile agent)
-                           (get (world-get-object world object-name) "tile"))
+         (if (in-location? (:tile agent) object-tile)
            (do
+             ;(println "looking at" object-name "at" object-tile "from" (:tile agent))
              (send-msg (remote-agent-socket agent)
                        (str "LOOK-AT " object-name " "
                             (hash-map-to-string
@@ -210,8 +237,9 @@
               world
               (str "ACTION-FINISHED "
                    (remote-agent-name agent) " " msg))
-
-             (merge agent {:done (cons {:time (world-time world)
+             
+             (merge agent {:tile object-tile ; move to tile we are looking at
+                           :done (cons {:time (world-time world)
                                         :msg msg}
                                        (remote-agent-done agent))}))
            agent)))
@@ -237,6 +265,19 @@
                                   :msg msg}
                                  (remote-agent-done agent))})))))
 
+(defn world-summon-agent
+  "call a spirit to a new tile"
+  [world agent-name tile-pos]
+  (merge world
+         {:agents
+          (map
+           (fn [agent]
+             (println (:name agent) agent-name)
+             (if (= (:name agent) agent-name)
+               (merge agent {:tile tile-pos})
+               agent))
+           (world-agents world))}))
+  
 (defn world-check-for-new-agents [world]
   (let [chan (.accept (world-ssc world))]
     (if chan
@@ -244,7 +285,7 @@
         (let [agent (make-remote-agent chan world)
               w (world-add-agent world agent)
               name (remote-agent-name agent)]
-          (println name "enters the" (:scenery w))
+          (println name "enters the world")
           (world-broadcast w agent (str "ENTITY-ADDED " name))
           (world-perceive w agent)
           w)

@@ -75,6 +75,18 @@ class ClusterEntity extends truffle.Entity
         world.AddSprite(Root);
     }
 
+    override function Hide(s:Bool) : Void
+    {
+        if (Hidden!=s)
+        {
+            Hidden=s;
+            for (Spr in Sprites)
+            {
+                Spr.Hide(s);
+            }
+        }
+    }
+
     override function OnSortScene(world:World, order:Int) : Int
     {
         for (i in 0...Sprites.length)

@@ -365,13 +365,6 @@ class FungiWorld extends World
         }
     }
 
-    public function ServerPosToPos(Tile,Pos) : Vec2
-    {
-        var TilePos=new Vec2(((Tile.x-WorldPos.x)+1)*5,
-                             ((Tile.y-WorldPos.y)+1)*5);
-        return TilePos.Add(Pos);
-    }
-        
     public function UpdateTile(d:Dynamic)
     {
         // we get a list of tiles

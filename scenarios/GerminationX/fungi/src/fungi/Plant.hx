@@ -121,7 +121,7 @@ class Plant extends SpriteEntity
         Update(0,world);
         f.Spr.MouseDown(this,function(p) 
         {            
-            if (world.MyName!="" && f.State=="fruit-c")
+            if (world.MyName!="")// && f.State=="fruit-c")
             {
                 world.Server.Request(
                     "pick/"+

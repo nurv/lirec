@@ -59,7 +59,7 @@
    :id id
    :name (remote-agent-name remote-agent)
    :emotions (emotion-map)
-   :emotionalloc (make-vec2 5 5)
+   :emotionalloc (make-vec2 0 0)
    :fatactions '()
    :fatemotions '()
    :log (make-log 10)))
@@ -77,7 +77,7 @@
                               (.length name)))
     false))
 
-(defn spirit-update-emotionalloc [spirit remote-agent tile]
+(defn spirit-update-emotionalloc [spirit remote-agent tiles]
   (modify
    :emotionalloc ; get the object causing the highest emotion
    (fn [emotionalloc]
@@ -90,9 +90,10 @@
                (if (> intensity (second r))
                  (let [id (fatima-name->id (:direction e))]
                    (if id
-                     (let [obj (tile-find-entity tile id)]
-                       (if obj
-                         (list (:pos obj) intensity)
+                     (let [f (tiles-find-entity-with-tile tiles id)]
+                       (if f
+                         (list {:tile (:pos (first f))
+                                :pos (:pos (second f))} intensity)
                          r))
                      r))
                  r))
@@ -132,7 +133,8 @@
   (let [selection
         (filter
          (fn [p]
-           (> (:seeds-left p) 0))
+           (and (not (= player-id (:id p)))
+                (> (:seeds-left p) 0)))
          players)]
     (if (> (count selection) 0)
       (rand-nth selection)
@@ -140,27 +142,28 @@
 
 (defn spirit-ask-for-help [spirit plant diagnosis players]
   (let [player (spirit-pick-helper-player (:owner-id plant) players)]
-    (if (and player (not (= (:id player) (:owner-id plant)))) 
-      (modify :log
-              (fn [log]
-                (log-add-msg
-                 log
-                 (make-msg
-                  (:id spirit)
-                  (:name spirit)
-                  (:id player)
-                  'needs_help
-                  (list
-                   (:name player)
-                   (player-list-id->player-name players (:owner-id plant))
-                   (:type plant)
-                   (rand-nth (:needed_plants diagnosis)))
-                  'spirit
-                  (:name spirit))))
-              spirit)
-      spirit)))
+    (if player
+      (do
+        (modify :log
+                (fn [log]
+                  (log-add-msg
+                   log
+                   (make-msg
+                    (:id spirit)
+                    (:name spirit)
+                    (:id player)
+                    'needs_help
+                    (list
+                     (:name player)
+                     (player-list-id->player-name players (:owner-id plant))
+                     (:type plant)
+                     (rand-nth (:needed_plants diagnosis)))
+                    'spirit
+                    (:name spirit))))
+                spirit))
+        spirit)))
              
-(defn spirit-send-diagnosis [spirit diagnosis tile plant rules]
+(defn spirit-send-diagnosis [spirit diagnosis plant rules]
   (modify :log
           (fn [log]
             (log-add-msg
@@ -191,17 +194,15 @@
                 (:name spirit)))))
           spirit))
 
-(defn spirit-diagnose [spirit tile plant rules players]
+(defn spirit-diagnose [spirit plant rules players tiles]
   (let [diagnosis
         (plant-diagnose
          plant
-         (tile-get-neighbours tile (:pos plant))
+         (tile-get-neighbours (:tile spirit) (:id plant) (:pos plant) tiles)
          rules)]
-    (if (not (= (:owner-id plant) -1))
-      (spirit-ask-for-help
-       (spirit-send-diagnosis spirit diagnosis tile plant rules)
-       plant diagnosis players)
-      spirit)))
+    (spirit-ask-for-help
+     (spirit-send-diagnosis spirit diagnosis plant rules)
+     plant diagnosis players)))
     
 (defn spirit-looking-at [spirit tile plant]
   (modify :log
@@ -218,7 +219,7 @@
               (:name spirit))))
           spirit))
               
-(defn spirit-update-from-actions [spirit tile rules players]
+(defn spirit-update-from-actions [spirit tiles rules players]
   (modify
    :fatactions (fn [fatactions] '()) ; clear em out
    (reduce
@@ -227,19 +228,23 @@
             subject (nth (.split (:msg action) " ") 1)
             id (fatima-name->id subject)]
         (if id
-          (let [e (tile-find-entity tile id)]
+          (let [e (tiles-find-entity tiles id)]
             (if e
               (modify :pos (fn [pos] (:pos e))
                       (cond
                        ;(= type "look-at") (spirit-looking-at spirit tile e)
-                       (= type "diagnose") (spirit-diagnose spirit tile e rules players)
+                       (= type "diagnose") (spirit-diagnose spirit e rules players tiles)
                        :else spirit))
-              spirit))
-            spirit)))
+              (do
+                (println "could not find entity " subject " for action" type)
+                spirit)))
+          (do
+            (println "could not find id from fatima name" subject)
+            spirit))))
     spirit
     (:fatactions spirit))))
 
-(defn spirit-update [spirit remote-agent tile rules players]
+(defn spirit-update [spirit remote-agent tiles rules players]
   (spirit-update-from-actions
    (spirit-update-emotionalloc
     (spirit-update-emotions
@@ -247,10 +252,10 @@
       (modify :log
               (fn [log]
                 (make-log 10))
-              spirit)
+              (modify :tile (fn [t] (:tile remote-agent)) spirit))
       remote-agent)
      remote-agent)
-    remote-agent tile) tile rules players))
+    remote-agent tiles) tiles rules players))
           
 (comment println
          (map

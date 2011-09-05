@@ -48,9 +48,8 @@ class Spirit extends ClusterEntity
 		super(world,pos);
         Name = name;
         HighestEmotion="Not calculated yet";
-        Speed=0.1;
+        Speed=0.02;
         UpdateFreq=2;
-        Hide(true);
         LastData=[];
         Rnd=new RndGen();
         TotalEmotion=0;
@@ -123,23 +122,26 @@ class Spirit extends ClusterEntity
 
     public function UpdateEmotions(e:Dynamic,world:World)
     {
-        var TilePos=new Vec2(Std.parseInt(e.tile.x),
-                             Std.parseInt(e.tile.y));
+        var TilePos=new Vec2(Std.parseInt(e.emotionalloc.tile.x),
+                             Std.parseInt(e.emotionalloc.tile.y));
         SetTilePos(TilePos);
 
-        var dst:Vec2 = world.ServerPosToPos(TilePos,
-                                       new Vec2(Std.parseInt(e.emotionalloc.x),
-                                                Std.parseInt(e.emotionalloc.y)));
+        var LocalPos = new Vec2(Std.parseInt(e.emotionalloc.pos.x),
+                                Std.parseInt(e.emotionalloc.pos.y));
 
+        // account for tiles complication
+        var dst=new Vec2(((TilePos.x-world.WorldPos.x)+1)*5,
+                         ((TilePos.y-world.WorldPos.y)+1)*5);        
+        dst=dst.Add(LocalPos);
+        
         if (dst.x!=DesiredPos.x || dst.y!=DesiredPos.y)
         {
-            DesiredPos = dst;
             while (world.Get("Spirit",dst)!=null)
             {
                 dst = dst.Add(new Vec2(world.MyRndGen.Choose([-2,0,2]),
                                        world.MyRndGen.Choose([-2,0,2])));
             }
-            LogicalPos = new Vec3(dst.x,dst.y,4);
+            SetLogicalPos(world,new Vec3(dst.x,dst.y,4));
         }
 
         RawEmotions = e.emotions;
@@ -193,6 +195,12 @@ class Spirit extends ClusterEntity
         Debug.UpdatePosition(Std.int(Pos.x-200),Std.int(Pos.y-25));
     }
 
+    override function Hide(s:Bool) : Void
+    {
+        super.Hide(s);
+        Debug.Hide(s);        
+    }
+
     override function Update(frame:Int, world:World)
     {
         for (f in Reflect.fields(Emotions))
@@ -217,6 +225,7 @@ class Spirit extends ClusterEntity
         if (bouncyness>5) bouncyness=5;
         var bounce=new Vec2(0,0);
 
+/*
         for (i in 1...Sprites.length)
         {
             Sprites[i].Hide(true);
@@ -236,7 +245,7 @@ class Spirit extends ClusterEntity
                 }
             }
         }
-
+*/
         Root.Recurse(function(b:Bone,depth:Int) 
         {    
             b.SetRotate((excitement*5+1)*Math.sin(

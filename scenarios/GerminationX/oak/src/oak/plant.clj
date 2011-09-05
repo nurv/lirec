@@ -49,7 +49,7 @@
      (make-vec2 (Math/floor (rand tile-size))
                 (Math/floor (rand tile-size)))
      type
-     -1
+     99
      (Math/round (+ 1 (rand 10))))))
 
 (defn adv-state
@@ -61,12 +61,12 @@
    (= state 'grow-b) (cond (> health min-health) 'grow-c :else (rand-nth (list 'grow-b 'grow-c)))
    (= state 'grow-c) (cond (> health min-health) 'grown :else (rand-nth (list 'grow-c 'grown)))
    (= state 'grown) (cond
+                     (< health min-health) 'ill-a 
                      (and (> health max-health)
                           (or (= season 'spring)
                               (= season 'summer)))
                      'fruit-a
-                     (or (= season 'autumn) (= season 'winter)
-                         (< health min-health))
+                     (or (= season 'autumn) (= season 'winter))
                      'decay-a
                      :else 'grown)
    (= state 'fruit-a) (if (< health min-health) 'decay-a 'fruit-b)
@@ -74,8 +74,8 @@
    (= state 'fruit-c) (if (or (= season 'autumn) (= season 'winter)
                               (< health min-health))
                         'decay-a 'grown)
-   (= state 'decay-a) 'decay-b
-   (= state 'decay-b) 'decay-c
+   (= state 'decay-a) (if (< health min-health) 'ill-a 'decay-b)
+   (= state 'decay-b) (if (< health min-health) 'ill-a 'decay-c)
    (= state 'decay-c) (cond (and (or (= season 'spring) (= season 'summer))
                                  (> health min-health))
                             (if annual 'grow-a 'grown)
@@ -132,10 +132,10 @@
   (filter
    (fn [other]
      (and
-   ;   (or
-   ;    (= (:state other) 'ill-a)
-   ;    (= (:state other) 'ill-b)
-   ;    (= (:state other) 'ill-c))
+      (or
+       (= (:state other) 'ill-a)
+       (= (:state other) 'ill-b)
+       (= (:state other) 'ill-c))
       (comp (get-relationship (:type plant) (:type other) rules) 0)))
    neighbours))
 

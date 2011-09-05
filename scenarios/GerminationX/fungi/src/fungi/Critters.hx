@@ -60,8 +60,8 @@ class Butterfly extends SkeletonEntity
         RightWing.SetRotate(Rot*2);
 
         // random walk
-        LogicalPos = LogicalPos.Add(new Vec3(Rnd.RndRange(-1,2),
-                                             Rnd.RndRange(-1,2),0));
+        SetLogicalPos(world, LogicalPos.Add(new Vec3(Rnd.RndRange(-1,2),
+                                                     Rnd.RndRange(-1,2),0)));
 
         if (LogicalPos.x < 0 ||
             LogicalPos.y < 0 ||

@@ -85,24 +85,28 @@
    false
    (:spirits world)))
 
-(defn game-world-summon-spirit [world tile-pos entity]
+; now controlled by fatima
+(defn game-world-summon-spirit
+  "move the spirit corresponding to this entities
+  layer to a new tile, not guaranteed to work, as
+  a random summons is honored"
+  [world tile-pos entity]
   (let [spirit-name (layer->spirit-name (:layer entity))]
-    (modify :spirits
-            (fn [spirits]
-              (map
-               (fn [spirit]
-                 (if (= spirit-name (:name spirit))
-                   (modify :tile
-                           (fn [tile]
-                             (println (str "summonning " spirit-name " to " tile-pos))
-                             tile-pos)
-                           spirit)
-                   spirit))
-               spirits))
-            world)))
+    (println "summoning" spirit-name)
+    (modify
+     :summons
+     (fn [s]       
+       (merge s {spirit-name
+                 (if (contains? s spirit-name)
+                   (cons tile-pos (get s spirit-name))
+                   (list tile-pos))}))
+     world)))
 
-(defn game-world-add-entity [game-world tile-pos entity]
-  (let [tile (game-world-get-tile game-world tile-pos)]
+(defn game-world-add-entity
+  "add a new entity into the world, and summon the right
+   spirit to come and look at it"
+  [game-world tile-pos entity]
+   (let [tile (game-world-get-tile game-world tile-pos)]
     (game-world-summon-spirit
      (if (not tile)
        (game-world-add-tile game-world (make-tile tile-pos (list entity)))
@@ -126,11 +130,12 @@
         plant))
      (hash-map
       :version 1
-      :players ()
+      :players (list (make-player 99 "Gaia" -1))
       :tiles {}
       :spirits ()
       :log (make-log 10)
       :id-gen id-gen
+      :summons {}
       :rules (load-companion-rules "rules.txt"))
      (repeatedly num-plants (fn [] (make-random-plant (id-gen)))))))
 
@@ -312,6 +317,11 @@
       players))
    game-world))
 
+(defn game-world-clear
+  "clear out the incremental stuff"
+  [game-world]
+  (modify :summons (fn [s] {}) game-world))
+
 (defn game-world-update [game-world time delta]
   (let [msgs (game-world-collect-all-msgs game-world)]
     (modify :log (fn [log]
@@ -324,7 +334,7 @@
              (game-world-update-tiles
               (game-world-post-logs-to-players
                (game-world-update-player-plant-counts
-                game-world) msgs) time delta)))))
+                (game-world-clear game-world)) msgs) time delta)))))
 
 (defn game-world-find-spirit [game-world name]
   (reduce
@@ -390,8 +400,8 @@
                  (if spirit
                    (cons (spirit-update
                           spirit agent
-                          (game-world-get-tile
-                           game-world (:tile spirit))
+                          (game-world-get-tile-with-neighbours
+                           game-world (:tile agent))
                           (:rules game-world)
                           (:players game-world))
                          spirits)
@@ -422,15 +432,7 @@
          fw
          (:event-occurred entity))
        
-        ; check for a normal state notification
-        (or
-         (= (:state entity) 'grow-a)
-         (= (:state entity) 'fruit-a)
-         (= (:state entity) 'fruit-b)
-         (= (:state entity) 'fruit-c)
-         (= (:state entity) 'ill-a)
-         (= (:state entity) 'ill-b)
-         (= (:state entity) 'ill-c))
+        :else
         (do
           ; stops duplicates for us
           (world-add-object fw
@@ -439,20 +441,17 @@
                              "position" (str (:x (:pos entity)) "," (:y (:pos entity)))
                              "tile" (:pos tile)
                              "type" "object"
-                             "time" time}))
-        :else fw))
+                             "time" time}))))
      fw
      (:entities tile)))
-   ; update the agent's tile position
-   (merge fatima-world
-          {:agents
-           (map
-            (fn [agent]
-              (merge agent
-                     {:tile
-                      (:tile
-                       (find-spirit game-world (remote-agent-name agent)))}))
-            (world-agents fatima-world))})
+   ; pick a random summons for each spirit
+   (reduce
+    (fn [fw summons]
+      (world-summon-agent
+       fw (first summons)
+       (rand-nth (second summons)))) 
+    fatima-world
+    (:summons game-world))
    (:tiles game-world)))
 
 

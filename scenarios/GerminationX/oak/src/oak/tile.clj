@@ -19,6 +19,10 @@
    oak.forms
    oak.defs))
 
+; tiles are containers for all entities, their size is defined
+; by tile-size in defs.clj. chunked together in 3X3 units for
+; sending to the client
+
 (defn make-tile [pos entity-list]
   (hash-map
    :version 0
@@ -26,12 +30,22 @@
    :pos pos
    :entities entity-list))
 
-(defn tile-count [tile]
+(defn tile-distance
+  "calculate distance over different tiles"
+  [tilea posa tileb posb]
+  (let [diff (vec2-mul (vec2-sub tileb tilea) tile-size)]
+    (vec2-dist posa (vec2-add diff posb))))
+
+(defn tile-count
+  "searchin' fer memleaks"
+  [tile]
   (println (str "entities: " (count (:entities tile))))
   (comment doseq [i (:entities tile)]
     (plant-count i)))
 
-(defn tile-position-taken? [tile pos]
+(defn tile-position-taken?
+  "is there a plant at this position?"
+  [tile pos]
   (reduce
    (fn [r e]
      (if (and (not r) (vec2-eq? pos (:pos e)))
@@ -40,12 +54,17 @@
    false
    (:entities tile)))
 
-(defn tile-add-entity [tile entity]
+(defn tile-add-entity
+  "add entity to the tile, using it's position,
+  does nothing if position is already taken"
+  [tile entity]
   (if (not (tile-position-taken? tile (:pos entity)))
     (merge tile {:entities (cons entity (:entities tile))})
     tile))
 
-(defn tile-find-entity [tile id]
+(defn tile-find-entity
+  "search for entity using id"
+  [tile id]
   (reduce
    (fn [r e]
      (if (and (not r) (= id (:id e)))
@@ -53,7 +72,9 @@
    false
    (:entities tile)))
 
-(defn tile-modify-entity [tile id f]
+(defn tile-modify-entity
+  "run proc f on entity id, giving entity as sole argument"
+  [tile id f]
   (modify
    :entities
    (fn [entities]
@@ -64,20 +85,58 @@
       entities))
    tile))
 
-(defn tile-get-neighbours [tiles pos]
+(defn tile-get-neighbours
+  "get all neighbouring entities within range
+   across neihbouring tile boundaries"
+  [centre-tile-pos id pos neighbours]
   (reduce
-   (fn [r tile]
+   (fn [r tile] ; for each neighbours (includes current tile)
      (reduce
-      (fn [l e]
-        (if (and (< (vec2-dist (:pos e) pos) 3)
-                 (not (vec2-eq? pos (:pos e))))
-          (cons e l) l))
+      (fn [r other] ; for each entity
+        (if (and (< (tile-distance
+                     centre-tile-pos pos
+                     (:pos tile) (:pos other))
+                    plant-influence-distance)
+                 (not (= id (:id other)))) ; don't return ourselves
+          (cons other r) r))
       r
       (:entities tile)))
    ()
+   neighbours))
+
+(defn tiles-find-entity
+  "search multiple tiles for entity using id"
+  [tiles id]
+  (reduce
+   (fn [r tile]
+     (reduce
+      (fn [r e]
+        (if (and (not r) (= id (:id e)))
+          e r))
+      r
+      (:entities tile)))
+   false
    tiles))
 
-(defn tile-get-decayed-owners [tile]
+(defn tiles-find-entity-with-tile
+  "search multiple tiles for entity using id
+   return list containing tile and entity"
+  [tiles id]
+  (reduce
+   (fn [r tile]
+     (reduce
+      (fn [r e]
+        (if (and (not r) (= id (:id e)))
+          (list tile e)  r))
+      r
+      (:entities tile)))
+   false
+   tiles))
+
+
+(defn tile-get-decayed-owners
+  "returns all the entities who have decayed, for removal"
+  [tile]
   (reduce
    (fn [r e]
      (if (= (:state e) 'decayed)
@@ -85,7 +144,9 @@
    ()
    (:entities tile)))
 
-(defn tile-update [tile time delta rules neighbouring-tiles]
+(defn tile-update
+  "update all the entities and calculate season change for this tile"
+  [tile time delta rules neighbouring-tiles]
   (let [st (/ (mod time season-length) season-length)
         season (cond
                 (< st 0.25) 'spring
@@ -100,7 +161,7 @@
                  (plant-update
                   e time delta
                   (tile-get-neighbours
-                   neighbouring-tiles (:pos e))
+                   (:pos tile) (:id e) (:pos e) neighbouring-tiles)
                   rules
                   season))
                (filter
@@ -109,12 +170,11 @@
                 entities)))
             (modify :season (fn [s] season) tile))))
 
-(defn tile-get-log [tile]
-  ;(println "-------------")
+(defn tile-get-log
+  "gets the message logs for all the entities"
+  [tile]
   (reduce
    (fn [r e]
-     ;(when (> (count (:msgs (:log e))) 0)
-     ;  (println (count (:msgs (:log e)))))
      (concat r (:msgs (:log e))))
    ()
    (:entities tile)))
