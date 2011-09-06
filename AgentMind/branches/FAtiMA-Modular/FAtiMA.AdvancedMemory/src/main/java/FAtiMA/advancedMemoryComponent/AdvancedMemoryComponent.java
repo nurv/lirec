@@ -146,7 +146,10 @@ public class AdvancedMemoryComponent implements Serializable, IAppraisalDerivati
 	
 	@Override
 	public void appraisal(AgentModel am, Event e, AppraisalFrame af) {
-		
+		// Matthias 06/09/11
+		// this method slows down FAtiMA when the memory contains many events
+		// TODO: find better solution
+		/*
 		//appraisal from memory
 		ActionDetail ad = new ActionDetail(0,e.GetSubject(),
 					e.GetAction(), 
@@ -165,6 +168,7 @@ public class AdvancedMemoryComponent implements Serializable, IAppraisalDerivati
 				af.SetAppraisalVariable(AdvancedMemoryComponent.NAME, (short)3, OCCAppraisalVariables.DESIRABILITY.name(), desirability);
 			}	
 		}
+		*/
 	}
 	
 	@Override
