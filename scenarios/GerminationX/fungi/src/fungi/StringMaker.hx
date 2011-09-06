@@ -76,6 +76,10 @@ class StringMaker
             i_am_beneficial_to: function(from,subjects:Array<Dynamic>)
             {
                 return "This "+from+" plant is helping this "+subjects[0]+" plant.";
+            },
+            thanks_for_helping: function(from,subjects:Array<Dynamic>)
+            {
+                return from+" plant thanks "+subjects[0]+" plant for helping.";
             }
         };
     }

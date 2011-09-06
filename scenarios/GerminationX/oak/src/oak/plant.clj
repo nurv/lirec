@@ -126,6 +126,16 @@
     plant)))
 
 (defn neighbours-relationship
+  "look for neighbours and see if we will help or hinder
+   them from recovering - return list of plants based on comp fn"
+  [plant neighbours rules comp]
+  (filter
+   (fn [other]
+     (comp (get-relationship (:type plant) (:type other) rules) 0))
+   neighbours))
+
+
+(defn ill-neighbours-relationship
   "look for ill neighbours and see if we will help or hinder
    them from recovering - return list of plants based on comp fn"
   [plant neighbours rules comp]
@@ -154,7 +164,7 @@
         to-other
         (list (:type plant) (:id plant))
         'plant
-        (:type other))) 
+        (:type plant))) 
       (make-msg ; to us
        (:id plant)
        (:type plant)
@@ -162,9 +172,28 @@
        to-me
        (list (:type other) (:id other))
        'plant
-       (:type plant))))
+       (:type other))))
    log
    plants))
+
+(defn log-thank-owners
+  "send message to owners of all plants
+   thanking them for recovery"
+  [log plant helpful-neighbours]
+  (reduce
+   (fn [log other]
+     (log-add-msg 
+      log
+      (make-msg 
+       (:id other)
+       (:type other)
+       (:owner-id other)
+       'thanks_for_helping
+       (list (:type plant) (:id plant))
+       'plant
+       (:type plant))))
+   log
+   helpful-neighbours))
 
 (defn plant-update-log
   "adds messages to the log depending on changing state"
@@ -183,11 +212,11 @@
          (log-relationship
           (log-relationship
            log plant
-           (neighbours-relationship plant neighbours rules >)
+           (ill-neighbours-relationship plant neighbours rules >)
            'i_am_beneficial_to
            'i_am_benefitting_from)
           plant
-          (neighbours-relationship plant neighbours rules <)
+          (ill-neighbours-relationship plant neighbours rules <)
           'i_am_detrimental_to
           'i_am_detrimented_by)
          'i_have_been_planted) 
@@ -206,7 +235,10 @@
 
         (and (= old-state 'ill-a)
              (= (:state plant) 'grown))
-        (plant-add-to-log plant log 'i_have_recovered)
+        (log-thank-owners
+         (plant-add-to-log plant log 'i_have_recovered)
+         plant
+         (neighbours-relationship plant neighbours rules >))
 
         (or
          (and
@@ -228,7 +260,7 @@
   [events-list plant type plants]
   (reduce
    (fn [r other]
-     (cons (str (:layer other) "-" type) r))
+     (cons (str (:layer other) "-" type "#" (:id plant)) r))
    events-list
    plants))
 
@@ -252,16 +284,16 @@
       (and
        (= old-state 'ill-c)
        (= (:state plant) 'ill-b))
-      (cons 'recovery-to-b ev)
+      (cons (str (:layer plant) "-recovery-to-b#" (:id plant)) ev)
       
       (and
        (= old-state 'ill-b)
        (= (:state plant) 'ill-a))
-      (cons 'recovery-to-a ev)
+      (cons (str (:layer plant) "-recovery-to-a#" (:id plant)) ev)
       
       (and (= old-state 'ill-a)
            (= (:state plant) 'grown))
-      (cons 'finished-recovery ev)
+      (cons (str (:layer plant) "-finished-recovery#" (:id plant)) ev)
       
       :else ev))
    plant))

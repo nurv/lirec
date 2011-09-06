@@ -7,6 +7,8 @@
                       <bitmap id="WireCubeTex" import="textures/wire-cube.png"/>                     
                       <bitmap id="Test" import="textures/test.png"/>                     
 
+                      <bitmap id="EmotionMapTex" import="textures/emotion-map.png"/>                     
+
                       <bitmap id="Arr1Tex" import="textures/arr1.png"/>                     
                       <bitmap id="Arr2Tex" import="textures/arr2.png"/>                     
                       <bitmap id="Arr3Tex" import="textures/arr3.png"/>                     

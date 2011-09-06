@@ -59,7 +59,8 @@
    :id id
    :name (remote-agent-name remote-agent)
    :emotions (emotion-map)
-   :emotionalloc (make-vec2 0 0)
+   :emotionalloc {:tile (make-vec2 0 0)
+                  :pos (make-vec2 0 0) }
    :fatactions '()
    :fatemotions '()
    :log (make-log 10)))
@@ -235,9 +236,7 @@
                        ;(= type "look-at") (spirit-looking-at spirit tile e)
                        (= type "diagnose") (spirit-diagnose spirit e rules players tiles)
                        :else spirit))
-              (do
-                (println "could not find entity " subject " for action" type)
-                spirit)))
+              spirit)) ; can happen if we have moved away from the tile
           (do
             (println "could not find id from fatima name" subject)
             spirit))))

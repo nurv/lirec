@@ -108,10 +108,10 @@ class FungiWorld extends World
 
         Update(0);
         SortScene();
-        var names = ["TreeSpirit"];//,"ShrubSpirit","CoverSpirit"];
+        var names = ["TreeSpirit","ShrubSpirit","CoverSpirit"];
         var positions = [new Vec3(0,5,4), new Vec3(7,0,4), new Vec3(2,10,4)];
  
-        for (i in 0...1)
+        for (i in 0...names.length)
         {
             Server.Request("spirit-sprites/"+names[i],
             this,

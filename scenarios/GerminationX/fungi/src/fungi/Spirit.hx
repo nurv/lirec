@@ -37,6 +37,9 @@ class Spirit extends ClusterEntity
     var Rnd:RndGen;
     var HighestEmotion:String;
     var TotalEmotion:Float;
+    var EmotionColour:Float;
+    var EmotionIndices:Dynamic;
+    var HighestScore:Float;
     
     function ToCol(r:Int,g:Int,b:Int)
     {
@@ -49,10 +52,12 @@ class Spirit extends ClusterEntity
         Name = name;
         HighestEmotion="Not calculated yet";
         Speed=0.02;
-        UpdateFreq=2;
+        UpdateFreq=0;
         LastData=[];
         Rnd=new RndGen();
         TotalEmotion=0;
+        EmotionColour=0;
+        HighestScore=0;
         
         EmotionalColours = {
             JOY:[ToCol(255,224,1),ToCol(255,224,1),ToCol(255,126,2),ToCol(0,155,2)],
@@ -63,15 +68,23 @@ class Spirit extends ClusterEntity
         };
 
         DesiredPos=new Vec2(LogicalPos.x,LogicalPos.y);
+
+        EmotionIndices={LOVE:0,HATE:1,HOPE:2,FEAR:3,SATISFACTION:4,
+                        RELIEF:5,FEARS_CONFIRMED:6,DISAPOINTMENT:7,
+                        JOY:8,DISTRESS:9,HAPPY_FOR:10,PITTY:11,
+                        RESENTMENT:12,GLOATING:13,PRIDE:14,SHAME:15,
+                        GRATIFICATION:16,REMORSE:17,ADMIRATION:18,
+                        REPROACH:19,GRATITUDE:20,ANGER:21};
+
         RawEmotions={LOVE:0,HATE:0,HOPE:0,FEAR:0,SATISFACTION:0,
-                     RELIEF:0,/*Fears_Confirmed:0,*/DISAPOINTMENT:0,
-                     JOY:0,DISTRESS:0,/*Happy_For:0,*/PITTY:0,
+                     RELIEF:0,FEARS_CONFIRMED:0,DISAPOINTMENT:0,
+                     JOY:0,DISTRESS:0,HAPPY_FOR:0,PITTY:0,
                      RESENTMENT:0,GLOATING:0,PRIDE:0,SHAME:0,
                      GRATIFICATION:0,REMORSE:0,ADMIRATION:0,
                      REPROACH:0,GRATITUDE:0,ANGER:0};
         Emotions={LOVE:0,HATE:0,HOPE:0,FEAR:0,SATISFACTION:0,
-                     RELIEF:0,/*Fears_Confirmed:0,*/DISAPOINTMENT:0,
-                     JOY:0,DISTRESS:0,/*Happy_For:0,*/PITTY:0,
+                     RELIEF:0,FEARS_CONFIRMED:0,DISAPOINTMENT:0,
+                     JOY:0,DISTRESS:0,HAPPY_FOR:0,PITTY:0,
                      RESENTMENT:0,GLOATING:0,PRIDE:0,SHAME:0,
                      GRATIFICATION:0,REMORSE:0,ADMIRATION:0,
                      REPROACH:0,GRATITUDE:0,ANGER:0};
@@ -81,19 +94,6 @@ class Spirit extends ClusterEntity
 
     function UpdateEmitter()
     {
-        // get highest emotion
-        HighestEmotion = "";
-        var HighestScore = 0;
-        for (f in Reflect.fields(Emotions))
-        {
-            var Score=Reflect.field(Emotions,f);
-            if (Score>HighestScore)
-            {
-                HighestScore=Score;
-                HighestEmotion=f;
-            }
-        }
-
         var Colours:Array<Vec3>=Reflect.field(EmotionalColours,HighestEmotion);
 
         if (HighestEmotion!="" && Colours!=null)
@@ -113,12 +113,64 @@ class Spirit extends ClusterEntity
 	public function BuildDebug(c)
     {
         Debug = new Frame("nowt yet.",Pos.x-200,Pos.y-25,140,150);
-        Debug.Hide(false);
+        Debug.Hide(true);
         c.addChild(Debug);
         Action = new Sprite(new Vec2(0,0),Resources.Get(""));
         Action.Hide(true);
         c.AddSprite(Action);
+
+        Sprites[0].MouseDown(this,function(c) { c.Debug.Hide(false); });
 	}
+
+    static function IntToColourTriple(col:Int) : Vec3
+    {
+        return new Vec3((col >> 16 & 0xFF)/255.0,
+		                (col >> 8 & 0xFF)/255.0,
+		                (col & 0xFF)/255.0);
+    }
+
+    function UpdateDebug(e:Dynamic)
+    {
+        var ee = e.fatemotions.content;
+        var mood=Std.parseFloat(ee[0].content[0]);
+
+        var text=Name+"\nMood:"+ee[0].content[0]+"\n";
+        text+="Highest Emotion:"+HighestEmotion+"="+HighestScore+"\n";
+        text+="Total Emotions:"+TotalEmotion+"\n";
+        text+="Causes:\n";
+        for (i in 1...ee.length)
+        {
+            text+=ee[i].attrs.type+" "+ee[i].attrs.direction+"\n";
+            //text+=ee[i].attrs.cause+"\n";
+        }
+
+        text+="Actions:\n";
+        var acs = cast(e.fatactions,Array<Dynamic>);
+        for (i in 0...acs.length)
+        {
+            text+=acs[i].msg+"\n";
+        }
+        
+        // what to do with actions?
+        Action.Hide(true);
+        if (acs.length>0 && !Hidden)
+        {
+            if (StringTools.startsWith(acs[0].msg,"flower"))
+            {
+                Action.ChangeBitmap(Resources.Get("action-flower"));
+                Action.Hide(false);
+            }
+            
+            if (StringTools.startsWith(acs[0].msg,"drop-leaves"))
+            {
+                Action.ChangeBitmap(Resources.Get("action-drop-leaves"));
+                Action.Hide(false);
+            }
+        }
+
+        Debug.UpdateText(text);
+        Debug.UpdatePosition(Std.int(Pos.x-200),Std.int(Pos.y-25));
+    }
 
     public function UpdateEmotions(e:Dynamic,world:World)
     {
@@ -145,6 +197,7 @@ class Spirit extends ClusterEntity
         }
 
         RawEmotions = e.emotions;
+        Emotions = RawEmotions;
 
         // get total amount of emotion
         TotalEmotion=0;
@@ -153,77 +206,41 @@ class Spirit extends ClusterEntity
             TotalEmotion+=Reflect.field(RawEmotions,f);
         }
 
-        var ee = e.fatemotions.content;
-        var mood=Std.parseFloat(ee[0].content[0]);
-
-        //UpdateEmitter();
-
-        var text=Name+"\nMood:"+ee[0].content[0]+"\n";
-        var text=Name+"\nHighest Emotion:"+HighestEmotion+"\n";
-        var text=Name+"\nTotal Emotions:"+TotalEmotion+"\n";
-        text+="Causes:\n";
-        for (i in 1...ee.length)
+        // get highest emotion
+        HighestEmotion = "";
+        HighestScore = 0;
+        for (f in Reflect.fields(Emotions))
         {
-            text+=ee[i].attrs.type+" "+ee[i].attrs.direction+"\n";
-            //text+=ee[i].attrs.cause+"\n";
-        }
-
-        text+="Actions:\n";
-        var acs = cast(e.fatactions,Array<Dynamic>);
-        for (i in 0...acs.length)
-        {
-            text+=acs[i].msg+"\n";
-        }
-        
-        Action.Hide(true);
-        if (acs.length>0 && !Hidden)
-        {
-            if (StringTools.startsWith(acs[0].msg,"flower"))
+            var Score=Reflect.field(Emotions,f);
+            if (Score>HighestScore)
             {
-                Action.ChangeBitmap(Resources.Get("action-flower"));
-                Action.Hide(false);
-            }
-            
-            if (StringTools.startsWith(acs[0].msg,"drop-leaves"))
-            {
-                Action.ChangeBitmap(Resources.Get("action-drop-leaves"));
-                Action.Hide(false);
+                HighestScore=Score;
+                HighestEmotion=f;
             }
         }
 
-        Debug.UpdateText(text);
-        Debug.UpdatePosition(Std.int(Pos.x-200),Std.int(Pos.y-25));
+        if (!Debug.Hidden) UpdateDebug(e);
     }
 
     override function Hide(s:Bool) : Void
     {
         super.Hide(s);
-        Debug.Hide(s);        
+        if (s) Debug.Hide(s);        
     }
 
     override function Update(frame:Int, world:World)
     {
-        for (f in Reflect.fields(Emotions))
+/*        for (f in Reflect.fields(Emotions))
         {
             // do a linear blend to smooth out changes in emotions
             Reflect.setField(Emotions,f,
             Reflect.field(Emotions,f)*0.95+Reflect.field(RawEmotions,f)*0.05);
-        }
+        }*/
 
         Action.Pos.x=Root.Pos.x-50;
         Action.Pos.y=Root.Pos.y-50;
         Action.Update(0,null);
 
-        //Draw(cast(world,truffle.World));
-        var c=this;
-
-        var excitement = c.Emotions.LOVE+c.Emotions.ADMIRATION;
-        if (excitement>10) excitement=10;
-        var irritation = c.Emotions.HATE+c.Emotions.DISTRESS;
-        if (irritation>5) irritation=5;
-        var bouncyness = c.Emotions.GRATITUDE*0.2;
-        if (bouncyness>5) bouncyness=5;
-        var bounce=new Vec2(0,0);
 
 /*
         for (i in 1...Sprites.length)
@@ -246,20 +263,36 @@ class Spirit extends ClusterEntity
             }
         }
 */
+        // get the index of the highest emotion for the emotion map
+        var EmotionIndex = Reflect.field(EmotionIndices,HighestEmotion);
+        // set the speed by the amount of the highest emotion
+        EmotionColour+=HighestScore/50;
+
+        // calculate the animation parameters
+        var c=this;
+        var excitement = Emotions.LOVE+Emotions.ADMIRATION;
+        if (excitement>10) excitement=10;
+        var irritation = Emotions.HATE+Emotions.DISTRESS;
+        if (irritation>5) irritation=5;
+
+        // get the emotion map
+        var EmotionMap = Resources.Get("emotion-map").data;
+
         Root.Recurse(function(b:Bone,depth:Int) 
         {    
+            // pull the colour from the emotion map
+            b.Colour=IntToColourTriple(
+                EmotionMap.getPixel(
+                    EmotionIndex,
+                    (depth+Math.floor(c.EmotionColour))%8));
+
+            // change speed of movement by gratitude and joy with
+            // this insane formula which needs rewriting
             b.SetRotate((excitement*5+1)*Math.sin(
                              (((10-depth)+frame*0.04+c.Emotions.GRATITUDE*0.01)+
                              c.Emotions.JOY*0.1)) +
             ((world.MyRndGen.RndFlt()-0.5)*10*irritation));
-//            bounce.y=bouncyness*5*Math.abs(Math.sin(frame*0.25));
-//            b.SetPos(b.BindPos.Add(bounce));
-           
         });
-
-//        Emitter.Pos.x=Pos.x;
-//        Emitter.Pos.y=Pos.y;
-//        Emitter.Update(frame);
 
         super.Update(frame,world);
     }

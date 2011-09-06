@@ -1,27 +1,27 @@
 <Character role="TreeSpirit" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../schemas/Character.xsd">
 	<EmotionalThresholds>
-		<EmotionalThreshold emotion="Love" threshold="3" decay="10"/>
-		<EmotionalThreshold emotion="Hate" threshold="2" decay="5"/>
-		<EmotionalThreshold emotion="Hope" threshold="3" decay="2"/>
-		<EmotionalThreshold emotion="Fear" threshold="4" decay="8"/>
-		<EmotionalThreshold emotion="Satisfaction" threshold="2" decay="5"/>
-		<EmotionalThreshold emotion="Relief" threshold="3" decay="5"/>
-		<EmotionalThreshold emotion="Fears-Confirmed" threshold="2" decay="8"/>
-		<EmotionalThreshold emotion="Disappointment" threshold="2" decay="2"/>
-		<EmotionalThreshold emotion="Joy" threshold="3" decay="2"/>
-		<EmotionalThreshold emotion="Distress" threshold="1" decay="2"/>
-		<EmotionalThreshold emotion="Happy-For" threshold="2" decay="8"/>
-		<EmotionalThreshold emotion="Pitty" threshold="2" decay="8"/>
-		<EmotionalThreshold emotion="Resentment" threshold="2" decay="2"/>
-		<EmotionalThreshold emotion="Gloating" threshold="2" decay="8"/>
-		<EmotionalThreshold emotion="Pride" threshold="2" decay="8"/>
-		<EmotionalThreshold emotion="Shame" threshold="1" decay="2"/>
-		<EmotionalThreshold emotion="Gratification" threshold="1" decay="5"/>
-		<EmotionalThreshold emotion="Remorse" threshold="2" decay="8"/>
-		<EmotionalThreshold emotion="Admiration" threshold="1" decay="8"/>
-		<EmotionalThreshold emotion="Reproach" threshold="2" decay="8"/>
-		<EmotionalThreshold emotion="Gratitude" threshold="1" decay="5"/>
-		<EmotionalThreshold emotion="Anger" threshold="1" decay="8"/>
+		<EmotionalThreshold emotion="Love" threshold="1" decay="1"/>
+		<EmotionalThreshold emotion="Hate" threshold="1" decay="1"/>
+		<EmotionalThreshold emotion="Hope" threshold="1" decay="1"/>
+		<EmotionalThreshold emotion="Fear" threshold="1" decay="1"/>
+		<EmotionalThreshold emotion="Satisfaction" threshold="1" decay="1"/>
+		<EmotionalThreshold emotion="Relief" threshold="1" decay="1"/>
+		<EmotionalThreshold emotion="Fears-Confirmed" threshold="1" decay="1"/>
+		<EmotionalThreshold emotion="Disappointment" threshold="1" decay="1"/>
+		<EmotionalThreshold emotion="Joy" threshold="1" decay="1"/>
+		<EmotionalThreshold emotion="Distress" threshold="1" decay="1"/>
+		<EmotionalThreshold emotion="Happy-For" threshold="1" decay="1"/>
+		<EmotionalThreshold emotion="Pitty" threshold="1" decay="1"/>
+		<EmotionalThreshold emotion="Resentment" threshold="1" decay="1"/>
+		<EmotionalThreshold emotion="Gloating" threshold="1" decay="1"/>
+		<EmotionalThreshold emotion="Pride" threshold="1" decay="1"/>
+		<EmotionalThreshold emotion="Shame" threshold="1" decay="1"/>
+		<EmotionalThreshold emotion="Gratification" threshold="1" decay="1"/>
+		<EmotionalThreshold emotion="Remorse" threshold="1" decay="1"/>
+		<EmotionalThreshold emotion="Admiration" threshold="1" decay="1"/>
+		<EmotionalThreshold emotion="Reproach" threshold="1" decay="1"/>
+		<EmotionalThreshold emotion="Gratitude" threshold="1" decay="1"/>
+		<EmotionalThreshold emotion="Anger" threshold="1" decay="1"/>
 	</EmotionalThresholds>
 
 	<MotivationalParameters>
@@ -39,20 +39,20 @@
 		<Relation target="ShrubSpirit" like="3" respect="10"/>
 		<Relation target="CoverSpirit" like="2" respect="1"/>
         <Relation target="tree-grow-a" like="6" respect="1"/>
-        <Relation target="tree-fruit-a" like="2" respect="1"/>
-        <Relation target="tree-fruit-b" like="4" respect="1"/>
-        <Relation target="tree-fruit-c" like="6" respect="1"/>
+        <Relation target="tree-fruit-a" like="1" respect="1"/>
+        <Relation target="tree-fruit-b" like="2" respect="1"/>
+        <Relation target="tree-fruit-c" like="3" respect="1"/>
         <Relation target="tree-ill-a" like="-4" respect="1"/>
         <Relation target="tree-ill-b" like="-6" respect="1"/>
         <Relation target="tree-ill-c" like="-8" respect="1"/>
-        <Relation target="tree-decay-a" like="-1" respect="1"/>
+ <!--       <Relation target="tree-decay-a" like="-1" respect="1"/>
         <Relation target="tree-decay-b" like="-2" respect="1"/>
         <Relation target="tree-decay-c" like="-3" respect="1"/>
-        <Relation target="tree-recovery-to-b" like="10" respect="1"/>
-        <Relation target="tree-recovery-to-a" like="7" respect="1"/>
-        <Relation target="tree-finished-recovery" like="10" respect="1"/>
-        <Relation target="tree-benefit" like="16" respect="10"/>
-        <Relation target="tree-detriment" like="-16" respect="10"/>
+  -->   <Relation target="tree-recovery-to-b" like="10" respect="1"/>
+        <Relation target="tree-recovery-to-a" like="10" respect="1"/>
+        <Relation target="tree-finished-recovery" like="20" respect="1"/>
+        <Relation target="tree-benefit" like="16" respect="20"/>
+        <Relation target="tree-detriment" like="-16" respect="-20"/>
 	</InterpersonalRelations>
 	
 	<EventReactions>

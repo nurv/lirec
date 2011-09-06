@@ -25,7 +25,9 @@ import flash.geom.Matrix;
 import flash.geom.Point;
 import flash.net.URLRequest;
 import flash.display.Loader;
+import flash.geom.ColorTransform;
 import truffle.Vec2;
+import truffle.Vec3;
 import truffle.interfaces.Sprite;
 import truffle.interfaces.World;
 import truffle.interfaces.TextureDesc;
@@ -42,6 +44,7 @@ class FlashSprite implements truffle.interfaces.Sprite, extends flash.display.Sp
     var PreTransformDirty:Bool;
     public var PreTransform:Matrix;
     public var Transform:Matrix;
+    public var Colour:Vec3;
     var PostTransform:Matrix;
     var Depth:Int;
     var MouseDownFunc:Dynamic -> Void;
@@ -72,6 +75,7 @@ class FlashSprite implements truffle.interfaces.Sprite, extends flash.display.Sp
         DoCentreMiddleBottom=midbot;
         ChangeBitmap(t);
         EnableMouse(false);
+        Colour=null;
         Update(0,null); // <-- calls inherited class update???
 	}
 
@@ -252,5 +256,10 @@ class FlashSprite implements truffle.interfaces.Sprite, extends flash.display.Sp
         PostTransform.translate(-Centre.x, -Centre.y);
         PostTransform.concat(Transform);
         transform.matrix=PostTransform;
-	}
+
+        if (Colour!=null)
+        {
+            transform.colorTransform = new ColorTransform(Colour.x,Colour.y,Colour.z,1,0,0,0,0);
+	    }
+    }
 }

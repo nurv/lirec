@@ -23,6 +23,8 @@ class BlueCubeTex extends BitmapData { public function new() { super(0,0); } }
 class WireCubeTex extends BitmapData { public function new() { super(0,0); } }
 class Test extends BitmapData { public function new() { super(0,0); } }
 
+class EmotionMapTex extends BitmapData { public function new() { super(0,0); } }
+
 class SeedTex extends BitmapData { public function new() { super(0,0); } }
 
 class Arr1Tex extends BitmapData { public function new() { super(0,0); } }
@@ -163,6 +165,7 @@ class Resources
         case "blue-cube": tex.data = new BlueCubeTex();
         case "wire-cube": tex.data = new WireCubeTex();
         case "test": tex.data = new Test();
+        case "emotion-map": tex.data = new EmotionMapTex();
         case "seed": tex.data = new SeedTex();
 
         case "arr1": tex.data = new Arr1Tex();

@@ -410,6 +410,8 @@
              (world-agents fatima-world)))
           game-world))
 
+
+
 (defn game-world-sync->fatima [fatima-world game-world time]
   (reduce
    (fn [fw tile]
@@ -421,27 +423,35 @@
         (> (count (:event-occurred entity)) 0)
         (reduce
          (fn [fw event]
-          (println (str "detected event :" event " on " (:id entity)))
-          (world-add-object fw
-                            {"name" (str (:layer entity) "-" event "#" (:id entity))
-                             "owner" (:layer entity)
-                             "position" (str (:x (:pos entity)) "," (:y (:pos entity)))
-                             "tile" (:pos tile)
-                             "type" "object"
-                             "time" time}))
+;          (println (str "detected event :" event " on " (:id entity)))
+          (world-add-object
+           fw
+           {"name" event 
+            "owner" (:layer entity)
+            "position" (str (:x (:pos entity)) "," (:y (:pos entity)))
+            "tile" (:pos tile)
+            "type" "object"
+            "time" time}))
          fw
          (:event-occurred entity))
        
         :else
         (do
-          ; stops duplicates for us
-          (world-add-object fw
-                            {"name" (str (:layer entity) "-" (:state entity) "#" (:id entity))
-                             "owner" (:layer entity)
-                             "position" (str (:x (:pos entity)) "," (:y (:pos entity)))
-                             "tile" (:pos tile)
-                             "type" "object"
-                             "time" time}))))
+          (if (or ; filter out most states
+               (= (:state entity) 'grow-a)
+               (= (:state entity) 'fruit-c)
+               (= (:state entity) 'ill-a)
+               (= (:state entity) 'ill-b)
+               (= (:state entity) 'ill-c))
+            ; stops duplicates for us
+            (world-add-object fw
+                              {"name" (str (:layer entity) "-" (:state entity) "#" (:id entity))
+                               "owner" (:layer entity)
+                               "position" (str (:x (:pos entity)) "," (:y (:pos entity)))
+                               "tile" (:pos tile)
+                               "type" "object"
+                               "time" time})
+            fw))))
      fw
      (:entities tile)))
    ; pick a random summons for each spirit

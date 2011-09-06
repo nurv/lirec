@@ -1,48 +1,64 @@
-<Character role="CoverSpirit">
+<Character role="CoverSpirit" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../schemas/Character.xsd">
 	<EmotionalThresholds>
-		<EmotionalThreshold emotion="Love" threshold="2" decay="5"/>
-		<EmotionalThreshold emotion="Hate" threshold="3" decay="5"/>
-		<EmotionalThreshold emotion="Hope" threshold="1" decay="2"/>
-		<EmotionalThreshold emotion="Fear" threshold="5" decay="8"/>
-		<EmotionalThreshold emotion="Satisfaction" threshold="3" decay="5"/>
-		<EmotionalThreshold emotion="Relief" threshold="2" decay="5"/>
-		<EmotionalThreshold emotion="Fears-Confirmed" threshold="5" decay="8"/>
-		<EmotionalThreshold emotion="Disappointment" threshold="2" decay="2"/>
-		<EmotionalThreshold emotion="Joy" threshold="1" decay="2"/>
-		<EmotionalThreshold emotion="Distress" threshold="3" decay="2"/>
-		<EmotionalThreshold emotion="Happy-For" threshold="1" decay="8"/>
-		<EmotionalThreshold emotion="Pitty" threshold="1" decay="8"/>
-		<EmotionalThreshold emotion="Resentment" threshold="2" decay="2"/>
-		<EmotionalThreshold emotion="Gloating" threshold="1" decay="8"/>
-		<EmotionalThreshold emotion="Pride" threshold="1" decay="8"/>
-		<EmotionalThreshold emotion="Shame" threshold="5" decay="2"/>
-		<EmotionalThreshold emotion="Gratification" threshold="1" decay="5"/>
-		<EmotionalThreshold emotion="Remorse" threshold="5" decay="8"/>
-		<EmotionalThreshold emotion="Admiration" threshold="5" decay="8"/>
-		<EmotionalThreshold emotion="Reproach" threshold="1" decay="8"/>
-		<EmotionalThreshold emotion="Gratitude" threshold="3" decay="5"/>
-		<EmotionalThreshold emotion="Anger" threshold="3" decay="8"/>
+		<EmotionalThreshold emotion="Love" threshold="1" decay="1"/>
+		<EmotionalThreshold emotion="Hate" threshold="1" decay="1"/>
+		<EmotionalThreshold emotion="Hope" threshold="1" decay="1"/>
+		<EmotionalThreshold emotion="Fear" threshold="1" decay="1"/>
+		<EmotionalThreshold emotion="Satisfaction" threshold="1" decay="1"/>
+		<EmotionalThreshold emotion="Relief" threshold="1" decay="1"/>
+		<EmotionalThreshold emotion="Fears-Confirmed" threshold="1" decay="1"/>
+		<EmotionalThreshold emotion="Disappointment" threshold="1" decay="1"/>
+		<EmotionalThreshold emotion="Joy" threshold="1" decay="1"/>
+		<EmotionalThreshold emotion="Distress" threshold="1" decay="1"/>
+		<EmotionalThreshold emotion="Happy-For" threshold="1" decay="1"/>
+		<EmotionalThreshold emotion="Pitty" threshold="1" decay="1"/>
+		<EmotionalThreshold emotion="Resentment" threshold="1" decay="1"/>
+		<EmotionalThreshold emotion="Gloating" threshold="1" decay="1"/>
+		<EmotionalThreshold emotion="Pride" threshold="1" decay="1"/>
+		<EmotionalThreshold emotion="Shame" threshold="1" decay="1"/>
+		<EmotionalThreshold emotion="Gratification" threshold="1" decay="1"/>
+		<EmotionalThreshold emotion="Remorse" threshold="1" decay="1"/>
+		<EmotionalThreshold emotion="Admiration" threshold="1" decay="1"/>
+		<EmotionalThreshold emotion="Reproach" threshold="1" decay="1"/>
+		<EmotionalThreshold emotion="Gratitude" threshold="1" decay="1"/>
+		<EmotionalThreshold emotion="Anger" threshold="1" decay="1"/>
 	</EmotionalThresholds>
+
+	<MotivationalParameters>
+		<MotivationalParameter motivator="Affiliation" decayFactor="2" weight="0.075" intensity="6"/>
+		<MotivationalParameter motivator="Integrity" decayFactor="1.5" weight="0.05" intensity="4"/>
+		<MotivationalParameter motivator="Energy" decayFactor="2" weight="0.055" intensity="5"/>
+		<MotivationalParameter motivator="Certainty" decayFactor="4" weight="0.065" intensity="4"/>
+		<MotivationalParameter motivator="Competence" decayFactor="3" weight="0.05" intensity="4"/>
+	</MotivationalParameters>
 	
 	<Goals>
-		<!-- General goals used in more than one episode -->
 	</Goals>
 	
 	<InterpersonalRelations>
-		<Relation target="VerticalSpirit" like="3" respect="1"/>
-		<Relation target="CanopySpirit" like="-5" respect="-3"/>
+		<Relation target="ShrubSpirit" like="3" respect="5"/>
+		<Relation target="TreeSpirit" like="-3" respect="10"/>
         <Relation target="cover-grow-a" like="6" respect="1"/>
-        <Relation target="cover-fruit-a" like="2" respect="1"/>
-        <Relation target="cover-fruit-b" like="3" respect="1"/>
-        <Relation target="cover-fruit-c" like="6" respect="1"/>
+        <Relation target="cover-fruit-a" like="1" respect="1"/>
+        <Relation target="cover-fruit-b" like="2" respect="1"/>
+        <Relation target="cover-fruit-c" like="3" respect="1"/>
         <Relation target="cover-ill-a" like="-4" respect="1"/>
-        <Relation target="cover-ill-b" like="-8" respect="1"/>
-        <Relation target="cover-ill-c" like="-16" respect="1"/>
+        <Relation target="cover-ill-b" like="-6" respect="1"/>
+        <Relation target="cover-ill-c" like="-8" respect="1"/>
+ <!--       <Relation target="cover-decay-a" like="-1" respect="1"/>
+        <Relation target="cover-decay-b" like="-2" respect="1"/>
+        <Relation target="cover-decay-c" like="-3" respect="1"/>
+  -->   <Relation target="cover-recovery-to-b" like="10" respect="1"/>
+        <Relation target="cover-recovery-to-a" like="10" respect="1"/>
+        <Relation target="cover-finished-recovery" like="20" respect="1"/>
+        <Relation target="cover-benefit" like="16" respect="20"/>
+        <Relation target="cover-detriment" like="-16" respect="-20"/>
 	</InterpersonalRelations>
 	
 	<EventReactions>
 
 		<!-- General emotional reactions used in more than one episode -->
+	
 		<EmotionalReaction desirability="3" desirabilityForOther="1" praiseworthiness="5"> 
 			<Event subject="*" action="flower"/>
 		</EmotionalReaction>
@@ -50,11 +66,12 @@
 		<EmotionalReaction desirability="-3" desirabilityForOther="-1" praiseworthiness="-2"> 
 			<Event subject="*" action="drop-leaves"/>
 		</EmotionalReaction>
-	
+		
 	</EventReactions>
 	
 	<ActionTendencies>
-
+		
+		<!-- Generic action tendencies -->
 		<ActionTendency action="flower([Target])">
 			<Preconditions>
             </Preconditions>
@@ -66,10 +83,18 @@
 		<ActionTendency action="drop-leaves([Target])">
 			<Preconditions>
             </Preconditions>
-			<ElicitingEmotion type="Hate" minIntensity="3">
+			<ElicitingEmotion type="Hate" minIntensity="4">
 				<CauseEvent/>
 			</ElicitingEmotion>
 		</ActionTendency>
 
+		<ActionTendency action="diagnose([Target])">
+			<Preconditions>
+            </Preconditions>
+			<ElicitingEmotion type="Hate" minIntensity="1">
+				<CauseEvent/>
+			</ElicitingEmotion>
+		</ActionTendency>
+       
 	</ActionTendencies>
 </Character>

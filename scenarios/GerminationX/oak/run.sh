@@ -2,8 +2,8 @@ java -classpath $( echo lib/*.jar . | sed 's/ /:/g'):src clojure.main src/oak/co
 sleep 20
 echo starting agents...
 java -cp lib/FAtiMA.jar:lib/xmlenc-0.52.jar AgentLauncher GXScenario.xml GardenScenario TreeSpirit &
-#sleep 1
-#java -cp lib/FAtiMA.jar:lib/xmlenc-0.52.jar AgentLauncher GXScenario.xml GardenScenario CoverSpirit &
-#sleep 1
-#java -cp lib/FAtiMA.jar:lib/xmlenc-0.52.jar AgentLauncher GXScenario.xml GardenScenario ShrubSpirit &
-#sleep 1
+sleep 1
+java -cp lib/FAtiMA.jar:lib/xmlenc-0.52.jar AgentLauncher GXScenario.xml GardenScenario CoverSpirit &
+sleep 1
+java -cp lib/FAtiMA.jar:lib/xmlenc-0.52.jar AgentLauncher GXScenario.xml GardenScenario ShrubSpirit &
+sleep 1

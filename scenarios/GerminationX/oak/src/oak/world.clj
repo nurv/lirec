@@ -158,8 +158,8 @@
   (if (not (world-get-object world (get object "name")))
     (do
       (world-broadcast-all world (str "ENTITY-ADDED " (get object "name")))
-      ;(println (str "added " (get object "name") " " (get object "position") " "
-      ;              (count (world-objects world)) " objects stored"))
+      (println (str "added " (get object "name") " " (get object "position") " "
+                    (count (world-objects world)) " objects stored"))
       (merge world {:objects (cons object (world-objects world))}))
     world))
 
@@ -228,7 +228,7 @@
          ; is the agent on the same tile as the object?
          (if (in-location? (:tile agent) object-tile)
            (do
-             ;(println "looking at" object-name "at" object-tile "from" (:tile agent))
+             (println "looking at" object-name "at" object-tile "from" (:tile agent))
              (send-msg (remote-agent-socket agent)
                        (str "LOOK-AT " object-name " "
                             (hash-map-to-string
@@ -238,7 +238,7 @@
               (str "ACTION-FINISHED "
                    (remote-agent-name agent) " " msg))
              
-             (merge agent {:tile object-tile ; move to tile we are looking at
+             (merge agent {;:tile object-tile ; move to tile we are looking at
                            :done (cons {:time (world-time world)
                                         :msg msg}
                                        (remote-agent-done agent))}))
