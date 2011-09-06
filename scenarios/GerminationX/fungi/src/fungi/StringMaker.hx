@@ -25,79 +25,83 @@ class StringMaker
     {
         Rnd = new RndGen();
         MsgMap={
-            i_have_been_planted: function(from,subjects:Array<Dynamic>)
+            i_have_been_planted: function(from,to,owner,extra:Array<Dynamic>)
             {
-                return "This "+from+" plant has just germinated!";
+                return owner+"'s "+from+" plant has just germinated!";
             },
-            i_am_ill: function(from,subjects:Array<Dynamic>)
+            i_am_ill: function(from,to,owner,extra:Array<Dynamic>)
             {
-                return "This "+from+" plant is feeling ill.";
+                return owner+"'s "+from+" plant is feeling ill.";
             },
-            i_have_died: function(from,subjects:Array<Dynamic>)
+            i_have_died: function(from,to,owner,extra:Array<Dynamic>)
             {
-                return "This "+from+" plant has died.";
+                return owner+"'s "+from+" plant has died.";
             },
-            i_have_recovered: function(from,subjects:Array<Dynamic>)
+            i_have_recovered: function(from,to,owner,extra:Array<Dynamic>)
             {
-                return "This "+from+" plant has recovered.";
+                return owner+"'s "+from+" plant has recovered.";
             },
-            i_have_been_picked_by: function(from,subjects:Array<Dynamic>)
+            i_have_been_picked_by: function(from,to,owner,extra:Array<Dynamic>)
             {
-                return "This "+from+" plant has been picked by "+subjects[0];
+                return owner+"'s "+from+" plant has been picked by "+extra[0];
             },
-            your_plant_doesnt_like: function(from,subjects:Array<Dynamic>)
+            your_plant_doesnt_like: function(from,to,owner,extra:Array<Dynamic>)
             {
-                return "This "+subjects[0]+" plant doesn't like "+subjects[1]+" growing nearby.";
+                return extra[0]+"'s "+extra[2]+" plant doesn't like "+to+"'s "+extra[1]+" plant nearby.";
             },
-            your_plant_needs: function(from,subjects:Array<Dynamic>)
+            your_plant_needs: function(from,to,owner,extra:Array<Dynamic>)
             {
-                return "This "+subjects[0]+" plant needs a "+subjects[1]+" plant nearby.";
+                return to+"'s "+extra[0]+" plant needs a "+extra[1]+" plant nearby.";
             },
-            needs_help: function(from,subjects:Array<Dynamic>)
+            needs_help: function(from,to,owner,extra:Array<Dynamic>)
             {
-                return subjects[0]+", "+subjects[1]+"'s "+subjects[2]+" plant needs you to plant a "+subjects[3]+" near.";
+                return to+", "+extra[0]+"'s "+extra[1]+" plant needs a "+extra[2]+" near.";
             },
-            i_am_recovering: function(from,subjects:Array<Dynamic>)
+            i_am_recovering: function(from,to,owner,extra:Array<Dynamic>)
             {
-                return "This "+from+" plant is recovering.";
+                return owner+"'s "+from+" plant is recovering.";
             },
-            i_am_detrimented_by: function(from,subjects:Array<Dynamic>)
+            i_am_detrimented_by: function(from,to,owner,extra:Array<Dynamic>)
             {
-                return "This "+from+" plant is being harmed by a new "+subjects[0]+" plant.";
+                return owner+"'s "+from+" plant is being harmed by "+extra[0]+"'s "+extra[1]+" plant.";
             },
-            i_am_detrimental_to: function(from,subjects:Array<Dynamic>)
+            i_am_detrimental_to: function(from,to,owner,extra:Array<Dynamic>)
             {
-                return "This "+from+" plant is harming this "+subjects[0]+" plant.";
+                return owner+"'s "+from+" plant is harming "+extra[0]+"'s "+extra[1]+" plant.";
             },
-            i_am_benefitting_from: function(from,subjects:Array<Dynamic>)
+            i_am_benefitting_from: function(from,to,owner,extra:Array<Dynamic>)
             {
-                return "This "+from+" plant is being helped by a new "+subjects[0]+" plant.";
+                return owner+"'s "+from+" plant is being helped by "+extra[0]+"'s "+extra[1]+" plant.";
             },
-            i_am_beneficial_to: function(from,subjects:Array<Dynamic>)
+            i_am_beneficial_to: function(from,to,owner,extra:Array<Dynamic>)
             {
-                return "This "+from+" plant is helping this "+subjects[0]+" plant.";
+                return owner+"'s "+from+" plant is helping "+extra[0]+"'s "+extra[1]+" plant.";
             },
-            thanks_for_helping: function(from,subjects:Array<Dynamic>)
+            thanks_for_helping: function(from,to,owner,extra:Array<Dynamic>)
             {
-                return from+" plant thanks "+subjects[0]+" plant for helping.";
+                return owner+"'s "+from+" plant thanks "+to+"'s "+extra[0]+" plant for helping.";
             }
         };
     }
 
     public function MsgToString(msg:Dynamic) : String
     {
-        if (!Reflect.hasField(MsgMap,
-                              Reflect.field(msg,"msg-id")))
+        if (!Reflect.hasField(MsgMap,msg.code))
         {
-            trace("can't find string for message " +
-                  Reflect.field(msg,"msg-id"));
+            trace("can't find string for message "+msg.code);
             return "oops";
         }
         else
         {
-            return MsgMap[Reflect.field(msg,"msg-id")]
-            (Reflect.field(msg,"display-from"),
-             Reflect.field(msg,"subjects"));
+            var owner = msg.owner;
+            if (msg.type=="spirit") owner=msg.from;
+            return MsgMap[msg.code]
+            (  
+                msg.from,
+                msg.display, 
+                owner,
+                msg.extra
+            );
         }
     }
 }

@@ -124,9 +124,7 @@
      (fn [world plant]
        (game-world-add-entity
         world
-        (make-vec2
-         (Math/round (* (rand-gaussian) area))
-         (Math/round (* (rand-gaussian) area)))
+        (:tile plant)
         plant))
      (hash-map
       :version 1
@@ -137,7 +135,13 @@
       :id-gen id-gen
       :summons {}
       :rules (load-companion-rules "rules.txt"))
-     (repeatedly num-plants (fn [] (make-random-plant (id-gen)))))))
+     (repeatedly
+      num-plants
+      (fn [] (make-random-plant
+              (id-gen)
+              (make-vec2
+               (Math/round (* (rand-gaussian) area))
+               (Math/round (* (rand-gaussian) area)))))))))
 
 (defn game-world-count [game-world]
   (println (str "players: " (count (:players game-world))))
@@ -225,16 +229,68 @@
              (compare (get freq key2) (get freq key1))))
           freq)))
 
-(defn game-world-collect-all-msgs [game-world]
-  (reduce
-   (fn [r tile]
-     (concat r (tile-get-log tile)))
+(defn game-world-find-player-id [game-world name]
+  (player-list-find-player-id (:players game-world) name))
+
+(defn game-world-find-player [game-world id]
+  (player-list-find-player (:players game-world) id))
+
+(defn game-world-id->player-name [game-world id]
+  (player-list-id->player-name (:players game-world) id))
+
+(defn game-world-process-msg
+  "replace id numbers with strings for
+   the client to make sense of"
+  [game-world msg]
+  (let [extra (if (or
+                   ; in these messages, we want to replace the id
+                   ; of the other player in the extra field with
+                   ; their name 
+                   (= (:code msg) 'your_plant_doesnt_like)
+                   (= (:code msg) 'i_am_detrimented_by)
+                   (= (:code msg) 'i_am_detrimental_to)
+                   (= (:code msg) 'i_am_benefitting_from)
+                   (= (:code msg) 'i_am_beneficial_to)
+                   (= (:code msg) 'thanks_for_helping))
+                 (cons
+                  (game-world-id->player-name
+                   game-world (first (:extra msg)))
+                  (rest (:extra msg)))
+                 (:extra msg))]    
+    (cond
+     (= (:type msg) 'plant)
+     (merge
+      msg
+      {:display (game-world-id->player-name
+                 game-world (:player msg))
+       :owner (game-world-id->player-name
+               game-world (:owner msg))
+       :extra extra})
+     
+     (= (:type msg) 'spirit)
+     (merge
+      msg
+      {:display (game-world-id->player-name
+                 game-world (:player msg))
+       :extra extra})
+     
+     :else msg)))
+
+(defn game-world-collect-all-msgs
+  "get messages from all the tiles/plants and spirits"
+  [game-world]
+  (map
+   (fn [msg]
+     (game-world-process-msg game-world msg))
    (reduce
-    (fn [r spirit]
-      (concat r (:msgs (:log spirit))))
-    ()
-    (:spirits game-world))
-   (:tiles game-world)))
+    (fn [r tile]
+      (concat r (tile-get-log tile)))
+    (reduce
+     (fn [r spirit]
+       (concat r (:msgs (:log spirit))))
+     ()
+     (:spirits game-world))
+    (:tiles game-world))))
 
 (defn game-world-post-logs-to-players [game-world msgs]
   (modify
@@ -247,7 +303,7 @@
          (fn [log]
            (reduce
             (fn [log msg]
-              (if (= (:to msg) (:id player))
+              (if (= (:player msg) (:id player))
                 (log-add-msg log msg)
                 log))
             log
@@ -343,15 +399,6 @@
        spirit r))
    false
    (:spirits game-world)))
-
-(defn game-world-find-player-id [game-world name]
-  (player-list-find-player-id (:players game-world) name))
-
-(defn game-world-find-player [game-world id]
-  (player-list-find-player (:players game-world) id))
-
-(defn game-world-id->player-name [game-world id]
-  (player-list-id->player-name (:players game-world) id))
 
 (defn game-world-modify-player [game-world id f]
   (modify :players

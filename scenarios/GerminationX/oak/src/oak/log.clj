@@ -19,16 +19,35 @@
 (def msg-picked 1)
 (def msg-ill 2)
 
-(defn make-msg [from display-from to msg-id subjects icon-type icon]
+(defn make-plant-msg [code plant for-player-id extra]
   (hash-map
-   :time (current-time)
-   :from from
-   :display-from display-from
-   :to to
-   :msg-id msg-id
-   :subjects subjects
-   :icon-type icon-type
-   :icon icon))
+   :type 'plant                      ; it's from a plant         
+   :time (current-time)              ; when the message was sent (not used)
+   :player for-player-id             ; for getting to right player
+   :display 'none                    ; *** will be replaced by name
+   :owner (:owner-id plant)          ; *** will be replaced by name
+   :from (:type plant)               ; which plant to display
+   :emotion 'its-a-plant             ; not used here
+   :tile (:tile plant)               ; where the plant is
+   :pos (:pos plant)                 ; where the plant is
+   :extra extra                      ; random info for text (depending on context)
+   :code code                        ; which message is this
+   ))
+
+(defn make-spirit-msg [code spirit for-player-id tile pos extra]
+  (hash-map
+   :type 'spirit                     ; it's from a spirit         
+   :time (current-time)              ; when the message was sent (not used)
+   :player for-player-id             ; for getting to right player
+   :display 'none                    ; *** will be replaced by name
+   :owner 'none                      ; not used
+   :from (:name spirit)              ; which spirit to display
+   :emotion (:highest-emotion spirit); how it's said!
+   :tile tile                        ; subject location
+   :pos pos                          ; subject location
+   :extra extra                      ; random info for text (depending on context)
+   :code code                        ; which message is this
+   ))
 
 (defn make-log [max]
   (hash-map

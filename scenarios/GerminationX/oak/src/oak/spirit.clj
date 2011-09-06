@@ -63,8 +63,19 @@
                   :pos (make-vec2 0 0) }
    :fatactions '()
    :fatemotions '()
+   :highest-emotion 'NONE
    :log (make-log 10)))
 
+(defn spirit-highest-emotion [spirit]
+  (first
+   (reduce
+    (fn [r emotion]
+      (if (> (second emotion)
+             (second r))
+        emotion r))
+    ['NONE 0]
+    (:emotions spirit))))
+          
 (defn spirit-count [spirit]
   (println (str "emotions: " (count (:emotions spirit))))
   (println (str "fatemotions: " (count (:fatactions spirit))))
@@ -149,50 +160,51 @@
                 (fn [log]
                   (log-add-msg
                    log
-                   (make-msg
-                    (:id spirit)
-                    (:name spirit)
-                    (:id player)
+                   (make-spirit-msg
                     'needs_help
+                    spirit
+                    (:id player)
+                    (:tile spirit)
+                    (:pos plant)
                     (list
-                     (:name player)
                      (player-list-id->player-name players (:owner-id plant))
                      (:type plant)
-                     (rand-nth (:needed_plants diagnosis)))
-                    'spirit
-                    (:name spirit))))
+                     (rand-nth (:needed_plants diagnosis))))))
                 spirit))
         spirit)))
              
 (defn spirit-send-diagnosis [spirit diagnosis plant rules]
   (modify :log
           (fn [log]
-            (log-add-msg
-             log
-             (if (and
-                  (> (count (:harmful_plants diagnosis)) 0)
-                  (< 5 (rand-int 10)))
-               (make-msg
-                (:id spirit)
-                (:name spirit)
-                (:owner-id plant)
-                'your_plant_doesnt_like
-                (list
-                 (:type plant)
-                 (:type (rand-nth (:harmful_plants diagnosis)))
-                 (:id plant))
-                'spirit
-                (:name spirit))
-               (make-msg
-                (:id spirit)
-                (:name spirit)
-                (:owner-id plant)
-                'your_plant_needs
-                (list (:type plant)
-                      (rand-nth (:needed_plants diagnosis))
-                      (:id plant))
-                'spirit
-                (:name spirit)))))
+            (if (and
+                 (> (count (:harmful_plants diagnosis)) 0)
+                 (< 5 (rand-int 10)))
+              (let [harmful (rand-nth (:harmful_plants diagnosis))]
+                (log-add-msg
+                 log
+                 (make-spirit-msg
+                  'your_plant_doesnt_like
+                  spirit
+                  (:owner-id plant)
+                  (:tile spirit)
+                  (:pos plant)
+                  (list
+                   (:owner-id harmful)
+                   (:type plant)
+                   (:type harmful)))))
+              (if (> (count (:needed_plants diagnosis)) 0)
+                (log-add-msg
+                 log
+                 (make-spirit-msg
+                  'your_plant_needs
+                  spirit
+                  (:owner-id plant)
+                  (:tile spirit)
+                  (:pos plant)
+                  (list
+                   (:type plant)
+                   (rand-nth (:needed_plants diagnosis)))))
+                log)))
           spirit))
 
 (defn spirit-diagnose [spirit plant rules players tiles]
@@ -204,21 +216,6 @@
     (spirit-ask-for-help
      (spirit-send-diagnosis spirit diagnosis plant rules)
      plant diagnosis players)))
-    
-(defn spirit-looking-at [spirit tile plant]
-  (modify :log
-          (fn [log]
-            (log-add-msg
-             log
-             (make-msg
-              (:id spirit)
-              (:name spirit)
-              (:owner-id plant)
-              'looking-at
-              (list (:id plant))
-              'spirit
-              (:name spirit))))
-          spirit))
               
 (defn spirit-update-from-actions [spirit tiles rules players]
   (modify
@@ -243,18 +240,26 @@
     spirit
     (:fatactions spirit))))
 
+(defn spirit-update-highest-emotion [spirit]
+  (modify
+   :highest-emotion
+   (fn [e]
+     (spirit-highest-emotion spirit))
+   spirit))
+
 (defn spirit-update [spirit remote-agent tiles rules players]
-  (spirit-update-from-actions
-   (spirit-update-emotionalloc
-    (spirit-update-emotions
-     (spirit-update-fatdebug
-      (modify :log
-              (fn [log]
-                (make-log 10))
-              (modify :tile (fn [t] (:tile remote-agent)) spirit))
+  (spirit-update-highest-emotion
+   (spirit-update-from-actions
+    (spirit-update-emotionalloc
+     (spirit-update-emotions
+      (spirit-update-fatdebug
+       (modify :log
+               (fn [log]
+                 (make-log 10))
+               (modify :tile (fn [t] (:tile remote-agent)) spirit))
+       remote-agent)
       remote-agent)
-     remote-agent)
-    remote-agent tiles) tiles rules players))
+     remote-agent tiles) tiles rules players)))
           
 (comment println
          (map

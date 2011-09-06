@@ -19,6 +19,7 @@ import truffle.Truffle;
 import truffle.FrameTextures;
 import truffle.RndGen;
 import truffle.Vec2;
+import truffle.Vec3;
 
 class Feed
 {
@@ -30,6 +31,7 @@ class Feed
     var Info:Frame;
     var TopItem:Dynamic;
     var StrMkr:StringMaker;
+    var EmotionIndices:Dynamic;
 
     public function new(w:World)
     {
@@ -39,6 +41,14 @@ class Feed
         Rnd=new RndGen();
         TopItem={};
         StrMkr=new StringMaker();
+
+        EmotionIndices={LOVE:0,HATE:1,HOPE:2,FEAR:3,SATISFACTION:4,
+                        RELIEF:5,FEARS_CONFIRMED:6,DISAPOINTMENT:7,
+                        JOY:8,DISTRESS:9,HAPPY_FOR:10,PITTY:11,
+                        RESENTMENT:12,GLOATING:13,PRIDE:14,SHAME:15,
+                        GRATIFICATION:16,REMORSE:17,ADMIRATION:18,
+                        REPROACH:19,GRATITUDE:20,ANGER:21};
+
 
         TheFrameTextures = new FrameTextures();
         TheFrameTextures.N.push(Resources.Get("gui-n-001"));
@@ -78,12 +88,29 @@ class Feed
         w.AddSprite(Info);
     }
 
-    function MakeIcon(Pos:Vec2, Type:String, Icon:String)
+    static function IntToColourTriple(col:Int) : Vec3
+    {
+        return new Vec3((col >> 16 & 0xFF)/255.0,
+		                (col >> 8 & 0xFF)/255.0,
+		                (col & 0xFF)/255.0);
+    }
+
+    function MakeIcon(Pos:Vec2, Type:String, Icon:String, Emotion:String)
     {
         if (Type=="plant" || Type=="spirit")
         {
             var s=new Sprite(Pos,Resources.Get(""));
             s.LoadFromURL("images/icons/"+Icon+".png");
+
+            if (Type=="spirit")
+            {
+                // pull the colour from the emotion map
+                var EmotionMap = Resources.Get("emotion-map").data;
+                var EmotionIndex = Reflect.field(EmotionIndices,Emotion);
+                s.Colour=IntToColourTriple(EmotionMap.getPixel(EmotionIndex,Rnd.RndInt()%8));              
+                s.Update(0,null);
+            }
+
             return s;
         }
         else if (Type=="player")
@@ -103,7 +130,7 @@ class Feed
         {
             var type=Type.getClassName(Type.getClass(Reflect.field(a,f)));
             // numbers == null type???
-            if (("String"==type || type==null)
+            if (("String"==type)
                 && Reflect.field(a,f)!=Reflect.field(b,f))
             {
                 return false;
@@ -161,18 +188,8 @@ class Feed
                 Rnd.Seed(Std.int(i.time));
                 var f=new Frame("",xpos,pos,64*2,64*1);
                 f.ExpandLeft=70;
-                f.SetTextSize(12);
+                f.SetTextSize(10);
                 
-                var subjects="";
-                if (i.subjects.length>0)
-                {
-                    subjects+=i.subjects[0]+" ";
-                }
-                
-                //f.UpdateText(Reflect.field(i,"display-from")+" sent "+
-                //             Reflect.field(i,"msg-id")+
-                //             subjects+
-                //             " at "+Date.fromTime(i.time).toString());
                 f.UpdateText(StrMkr.MsgToString(i));
                 f.R=0.8;
                 f.G=0.9;
@@ -182,11 +199,7 @@ class Feed
                 w.AddSprite(f);
                 
                 var Icon=MakeIcon(new Vec2(xpos-30,pos+32),
-                                  Reflect.field(i,"icon-type"),
-                                  Reflect.field(i,"icon"));
-                //            var Icon=MakeIcon(new Vec2(690+64,pos+110),
-                //                              "player",
-                //                              w.MyFBID);
+                                  i.type, i.from, i.emotion);
                 w.AddSprite(Icon);
                 Icons.push(Icon);
                 pos+=90;

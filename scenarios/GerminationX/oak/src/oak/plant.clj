@@ -21,10 +21,11 @@
   (:require
    clojure.contrib.math))
 
-(defn make-plant [id pos type owner-id size]
+(defn make-plant [id tile pos type owner-id size]
   (hash-map
    :version 1
    :id id
+   :tile tile
    :pos pos
    :type type
    :layer (plant-type->layer type)
@@ -42,10 +43,11 @@
 (defn plant-count [plant]
   (println (str "picked-by: " (count (:picked-by-ids plant)))))
 
-(defn make-random-plant [id]
+(defn make-random-plant [id tile]
   (let [type (rand-nth plant-types)]
     (make-plant
      id
+     tile
      (make-vec2 (Math/floor (rand tile-size))
                 (Math/floor (rand tile-size)))
      type
@@ -104,14 +106,7 @@
   [plant log type]
   (log-add-msg 
    log
-   (make-msg
-    (:id plant)
-    (:type plant)
-    (:owner-id plant)
-    type
-    ()
-    'plant
-    (:type plant))))
+   (make-plant-msg type plant (:owner-id plant) ())))
 
 (defn plant-clear
   "clear the things needed before an update"
@@ -157,22 +152,12 @@
      (log-add-msg 
       (log-add-msg 
        log
-       (make-msg ; to them 
-        (:id other)
-        (:type other)
-        (:owner-id other)
-        to-other
-        (list (:type plant) (:id plant))
-        'plant
-        (:type plant))) 
-      (make-msg ; to us
-       (:id plant)
-       (:type plant)
-       (:owner-id plant)
-       to-me
-       (list (:type other) (:id other))
-       'plant
-       (:type other))))
+       (make-plant-msg ; to them
+        to-other other (:owner-id other)
+        (list (:owner-id plant) (:type plant))))
+      (make-plant-msg ; to us
+       to-me plant (:owner-id plant)
+       (list (:owner-id other) (:type other)))))
    log
    plants))
 
@@ -184,14 +169,10 @@
    (fn [log other]
      (log-add-msg 
       log
-      (make-msg 
-       (:id other)
-       (:type other)
-       (:owner-id other)
+      (make-plant-msg
        'thanks_for_helping
-       (list (:type plant) (:id plant))
-       'plant
-       (:type plant))))
+       plant (:owner-id other)
+       (list (:owner-id plant)))))
    log
    helpful-neighbours))
 
@@ -396,12 +377,8 @@
    (fn [log]
      (log-add-msg 
       log
-      (make-msg
-       (:id plant)
-       (:type plant)
-       (:owner-id plant)
+      (make-plant-msg
        'i_have_been_picked_by
-       (list (:name player))
-       'player
-       (:fbid player))))
+       plant (:owner-id plant)
+       (list (:name player)))))
    (modify :fruit (fn [f] false) plant)))

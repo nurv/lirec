@@ -145,6 +145,7 @@
                    (make-vec2 (parse-number tilex) (parse-number tiley))
                    (make-plant
                     ((:id-gen (deref my-game-world)))
+                    (make-vec2 (parse-number tilex) (parse-number tiley))
                     (make-vec2 (parse-number posx)
                                (parse-number posy))
                     type (parse-number owner-id) size))
@@ -214,9 +215,9 @@
 (let [pool (Executors/newFixedThreadPool 2)
       tasks (list
              (fn []
-               (run-jetty (wrap-file main-routes "public") {:port 8001}))
-             (fn []
                (tick))
+             (fn []
+               (run-jetty (wrap-file main-routes "public") {:port 8001}))
              )]
   (doseq [future (.invokeAll pool tasks)]
     (.get future))
