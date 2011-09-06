@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Timer;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -24,25 +25,23 @@ public class InterfaceHandler extends AbstractHandler {
 
 	private InterfaceCompetency interfaceCompetency;
 
-	public static final String BB_NEEDED_INFORMATION = "neededInformation";
+	private static final String BB_NEEDED_INFORMATION = "neededInformation";
 
 	private static int neededInformationID = 0;
 
-	public static final String BB_MESSAGES_TO_DELIVER = "messagesToDeliver";
+	private static final String BB_MESSAGES_TO_DELIVER = "messagesToDeliver";
 
 	private static int messageID = 0;
 
-	public static final String INTERFACE_UTTERANCE = "INTERFACE_UTTERANCE";
+	private static final String BB_INTERFACE_UTTERANCE = "interfaceUtterance";
 
-	private static String CURRENT_PLATFORM = "CurrentPlatform";
+	private static final String WM_CURRENT_PLATFORM = "CurrentPlatform";
 
-	private static String CHARGING = "charging";
+	private static final String WM_CHARGING = "charging";
 
-	private static String INTERFACE_REQUEST_TIME = "INTERFACE_REQUEST_TIME";
+	private static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
-	private final static SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-
-	private final static String XML_FILENAME = "UserData.xml";
+	private static final String XML_FILENAME = "UserData.xml";
 
 	private XMLAccess xmlAccess;
 
@@ -54,14 +53,25 @@ public class InterfaceHandler extends AbstractHandler {
 
 	private ArrayList<String> talkPresetSymbols;
 
-	private final static boolean ENABLE_QUICK_TALK = false;
+	private static final boolean ENABLE_QUICK_TALK = false;
 
-	private final static boolean LOGIN_USERNAME_SELECT = true;
+	private static final boolean ENABLE_SEND_HOME = false;
 
-	private final static String USERNAME_UNKNOWN = "Unknown";
+	private static final boolean LOGIN_USERNAME_SELECT = true;
+
+	private static final String USERNAME_UNKNOWN = "Unknown";
+
+	private Timer timer;
+
+	private static final long INTERACTION_TIMEOUT = 60000;
+
+	private static final String WM_INTERFACE_INTERACTION = "interfaceInteraction";
 
 	public InterfaceHandler(InterfaceCompetency interfaceCompetency) {
 		this.interfaceCompetency = interfaceCompetency;
+
+		setWMObjectProperty(WM_CURRENT_PLATFORM, WM_INTERFACE_INTERACTION, "False");
+		timer = new Timer();
 
 		xmlAccess = new XMLAccess();
 		userData = xmlAccess.loadXML(XML_FILENAME);
@@ -84,8 +94,12 @@ public class InterfaceHandler extends AbstractHandler {
 
 	public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
-		// write current time to blackboard
-		setBBProperty(INTERFACE_REQUEST_TIME, Calendar.getInstance().getTimeInMillis());
+		// schedule timeout task
+		timer.cancel();
+		timer.purge();
+		timer = new Timer();
+		timer.schedule(new TimeoutTask(interfaceCompetency, WM_CURRENT_PLATFORM, WM_INTERFACE_INTERACTION), INTERACTION_TIMEOUT);
+		setWMObjectProperty(WM_CURRENT_PLATFORM, WM_INTERFACE_INTERACTION, "True");
 
 		// process action
 		String action = request.getParameter("action");
@@ -138,9 +152,6 @@ public class InterfaceHandler extends AbstractHandler {
 			ArrayList<String> parameters = new ArrayList<String>();
 			parameters.add("SELF");
 			raiseMindAction(loginUser.getUsername(), "logout", parameters);
-
-			// force wait to stop
-			setBBProperty(INTERFACE_REQUEST_TIME, 0);
 
 			loginUser.setTimeLastLogout(Calendar.getInstance().getTimeInMillis());
 
@@ -235,7 +246,7 @@ public class InterfaceHandler extends AbstractHandler {
 			}
 
 			// write utterance to blackboard
-			setBBProperty(INTERFACE_UTTERANCE, utterance);
+			setBBProperty(BB_INTERFACE_UTTERANCE, utterance);
 
 			// raise remote action
 			ArrayList<String> parameters = new ArrayList<String>();
@@ -274,7 +285,7 @@ public class InterfaceHandler extends AbstractHandler {
 			}
 
 			// write utterance to blackboard
-			setBBProperty(INTERFACE_UTTERANCE, utterance);
+			setBBProperty(BB_INTERFACE_UTTERANCE, utterance);
 
 			// raise remote action
 			ArrayList<String> parameters = new ArrayList<String>();
@@ -308,7 +319,7 @@ public class InterfaceHandler extends AbstractHandler {
 			}
 
 			// write utterance to blackboard
-			setBBProperty(INTERFACE_UTTERANCE, utterance);
+			setBBProperty(BB_INTERFACE_UTTERANCE, utterance);
 
 			// raise remote action
 			ArrayList<String> parameters = new ArrayList<String>();
@@ -321,9 +332,9 @@ public class InterfaceHandler extends AbstractHandler {
 
 			String chargingStatus = request.getParameter("chargingStatus");
 			if (chargingStatus.equals("true")) {
-				setWMObjectProperty(CURRENT_PLATFORM, CHARGING, "True");
+				setWMObjectProperty(WM_CURRENT_PLATFORM, WM_CHARGING, "True");
 			} else if (chargingStatus.equals("false")) {
-				setWMObjectProperty(CURRENT_PLATFORM, CHARGING, "False");
+				setWMObjectProperty(WM_CURRENT_PLATFORM, WM_CHARGING, "False");
 			}
 
 			// wait for property to be changed
@@ -404,7 +415,7 @@ public class InterfaceHandler extends AbstractHandler {
 			}
 
 			// write utterance to blackboard
-			setBBProperty(INTERFACE_UTTERANCE, utterance);
+			setBBProperty(BB_INTERFACE_UTTERANCE, utterance);
 
 			// raise remote action
 			ArrayList<String> parameters = new ArrayList<String>();
@@ -613,14 +624,16 @@ public class InterfaceHandler extends AbstractHandler {
 			html += "</table>\n";
 		}
 
-		html += "<p>\n";
-		html += "  <form action=\"\" method=\"POST\">\n";
-		html += "    For sending the Teambuddy back to its home position, please click here: \n";
-		html += "    <input name=\"submit\" type=\"submit\" value=\"Send Home\" />\n";
-		html += "    <input name=\"action\" type=\"hidden\" value=\"sendHome\" />\n";
-		html += "    <input name=\"page\" type=\"hidden\" value=\"start\" />\n";
-		html += "  </form>\n";
-		html += "</p>\n";
+		if (ENABLE_SEND_HOME) {
+			html += "<p>\n";
+			html += "  <form action=\"\" method=\"POST\">\n";
+			html += "    For sending the Teambuddy back, please click here: \n";
+			html += "    <input name=\"submit\" type=\"submit\" value=\"Send Home\" />\n";
+			html += "    <input name=\"action\" type=\"hidden\" value=\"sendHome\" />\n";
+			html += "    <input name=\"page\" type=\"hidden\" value=\"start\" />\n";
+			html += "  </form>\n";
+			html += "</p>\n";
+		}
 
 		return html;
 	}
@@ -1189,7 +1202,7 @@ public class InterfaceHandler extends AbstractHandler {
 	private String getChargingPage() {
 		String html = "";
 
-		Object chargingObject = getWMObjectProperty(CURRENT_PLATFORM, CHARGING);
+		Object chargingObject = getWMObjectProperty(WM_CURRENT_PLATFORM, WM_CHARGING);
 		if (chargingObject != null && chargingObject instanceof String) {
 			String charging = (String) chargingObject;
 			if (charging.equals("True")) {
