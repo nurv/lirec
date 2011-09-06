@@ -3,6 +3,7 @@ package FAtiMA.Core.conditions;
 import java.util.ArrayList;
 
 import FAtiMA.Core.AgentModel;
+import FAtiMA.Core.memory.episodicMemory.ActionDetail;
 import FAtiMA.Core.memory.episodicMemory.SearchKey;
 import FAtiMA.Core.wellFormedNames.Name;
 
@@ -56,6 +57,10 @@ public class NewEventCondition extends RecentEventCondition {
 		return conditionVerified;
 	}
 	
+	protected ArrayList<ActionDetail> GetPossibleBindings(AgentModel am)
+	{
+		return am.getMemory().getEpisodicMemory().SearchForNewEvents(GetSearchKeys());
+	}
 	
 	protected ArrayList<SearchKey> GetSearchKeys()
 	{
