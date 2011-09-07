@@ -99,6 +99,8 @@ class FlashFrame implements Frame, extends MovieClip
             figures.visible=false;
         });
 */
+
+        cacheAsBitmap=true; // optimisation!!! - turn off if rotating
     }
 
     public function Hide(s:Bool) : Void

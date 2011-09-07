@@ -77,6 +77,8 @@ class FlashSprite implements truffle.interfaces.Sprite, extends flash.display.Sp
         EnableMouse(false);
         Colour=null;
         Update(0,null); // <-- calls inherited class update???
+
+        cacheAsBitmap=true; // optimisation!!! - turn off if rotating
 	}
 
     public function Hide(s:Bool) : Void

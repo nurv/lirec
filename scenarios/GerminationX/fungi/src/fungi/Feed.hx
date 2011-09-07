@@ -16,7 +16,6 @@
 package fungi;
 
 import truffle.Truffle;
-import truffle.FrameTextures;
 import truffle.RndGen;
 import truffle.Vec2;
 import truffle.Vec3;
@@ -26,7 +25,6 @@ class Feed
     var Blocks:Array<Frame>;
     var Icons:Array<Sprite>;
     var MaxStories:Int;
-    var TheFrameTextures:FrameTextures;
     var Rnd:RndGen;
     var Info:Frame;
     var TopItem:Dynamic;
@@ -50,38 +48,11 @@ class Feed
                         REPROACH:19,GRATITUDE:20,ANGER:21};
 
 
-        TheFrameTextures = new FrameTextures();
-        TheFrameTextures.N.push(Resources.Get("gui-n-001"));
-        TheFrameTextures.N.push(Resources.Get("gui-n-002"));
-        TheFrameTextures.N.push(Resources.Get("gui-n-003"));
-        TheFrameTextures.NE.push(Resources.Get("gui-ne-001"));
-        TheFrameTextures.NE.push(Resources.Get("gui-ne-002"));
-        TheFrameTextures.E.push(Resources.Get("gui-e-001"));
-        TheFrameTextures.E.push(Resources.Get("gui-e-002"));
-        TheFrameTextures.E.push(Resources.Get("gui-e-003"));
-        TheFrameTextures.E.push(Resources.Get("gui-e-004"));
-        TheFrameTextures.SE.push(Resources.Get("gui-se-001"));
-//        TheFrameTextures.SE.push(Resources.Get("gui-se-002"));
-        TheFrameTextures.SE.push(Resources.Get("gui-se-003"));
-        TheFrameTextures.S.push(Resources.Get("gui-s-001"));
-        TheFrameTextures.S.push(Resources.Get("gui-s-002"));
-//        TheFrameTextures.S.push(Resources.Get("gui-s-003"));
-        TheFrameTextures.S.push(Resources.Get("gui-s-004"));
-        TheFrameTextures.SW.push(Resources.Get("gui-sw-001"));
-//        TheFrameTextures.SW.push(Resources.Get("gui-sw-002"));
-        TheFrameTextures.SW.push(Resources.Get("gui-sw-003"));
-        TheFrameTextures.W.push(Resources.Get("gui-w-001"));
-        TheFrameTextures.W.push(Resources.Get("gui-w-002"));
-        TheFrameTextures.W.push(Resources.Get("gui-w-003"));
-        TheFrameTextures.W.push(Resources.Get("gui-w-004"));
-        TheFrameTextures.NW.push(Resources.Get("gui-nw-001"));
-        TheFrameTextures.NW.push(Resources.Get("gui-nw-002"));
-        TheFrameTextures.NW.push(Resources.Get("gui-nw-003"));
 
         Info=new Frame("",120,25,64*5,64);
         Info.SetTextSize(12);
         Info.UpdateText("Loading...");
-        //Info.InitTextures(TheFrameTextures,Rnd);
+        Info.InitTextures(GUIFrameTextures.Get(),Rnd);
         Info.R=1;
         Info.G=1;
         Info.B=0.8;
@@ -95,7 +66,7 @@ class Feed
 		                (col & 0xFF)/255.0);
     }
 
-    function MakeIcon(Pos:Vec2, Type:String, Icon:String, Emotion:String)
+    function MakeIcon(Pos:Vec2, Type:String, Icon:String, Colour:Vec3)
     {
         if (Type=="plant" || Type=="spirit")
         {
@@ -104,10 +75,7 @@ class Feed
 
             if (Type=="spirit")
             {
-                // pull the colour from the emotion map
-                var EmotionMap = Resources.Get("emotion-map").data;
-                var EmotionIndex = Reflect.field(EmotionIndices,Emotion);
-                s.Colour=IntToColourTriple(EmotionMap.getPixel(EmotionIndex,Rnd.RndInt()%8));              
+                s.Colour=new Vec3(Colour.x,Colour.y,Colour.z);
                 s.Update(0,null);
             }
 
@@ -163,11 +131,16 @@ class Feed
         }
 
         Rnd.Seed(0);
-        Info.InitTextures(TheFrameTextures,Rnd);
+        Info.InitTextures(GUIFrameTextures.Get(),Rnd);
 
-        if (!MessagesEq(TopItem,d[0]))
+        if (d.length>0 && !MessagesEq(TopItem,d[0]))
         {
             TopItem=d[0];
+
+            if (TopItem.type=="spirit")
+            {
+                w.AddSpiritMsg(TopItem,StrMkr.MsgToString(TopItem));
+            }
             
             for (b in Blocks)
             {
@@ -191,15 +164,20 @@ class Feed
                 f.SetTextSize(10);
                 
                 f.UpdateText(StrMkr.MsgToString(i));
-                f.R=0.8;
-                f.G=0.9;
-                f.B=0.7;
-                f.InitTextures(TheFrameTextures,Rnd);
+
+                var Colour = new Vec3(0.8,0.9,0.7);
+                if (i.type=="spirit") Colour=Spirit.GetEmotionColour(i.emotion);
+
+                f.R=Colour.x;
+                f.G=Colour.y;
+                f.B=Colour.z;
+
+                f.InitTextures(GUIFrameTextures.Get(),Rnd);
                 Blocks.push(f);
                 w.AddSprite(f);
                 
                 var Icon=MakeIcon(new Vec2(xpos-30,pos+32),
-                                  i.type, i.from, i.emotion);
+                                  i.type, i.from, Colour);
                 w.AddSprite(Icon);
                 Icons.push(Icon);
                 pos+=90;

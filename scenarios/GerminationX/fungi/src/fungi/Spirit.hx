@@ -1,4 +1,4 @@
-// GerminationX Copyright (C) 2010 FoAM vzw    \_\ __     /\
+// GerminationX Copyright (C) 2011 FoAM vzw    \_\ __     /\
 //                                          /\    /_/    / /  
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as
@@ -31,16 +31,17 @@ class Spirit extends ClusterEntity
     var Emotions:Dynamic;
     var DesiredPos:Vec2;
     public var LastData:Array<Dynamic>;
-    var Action:Sprite;
+    var Message:Frame;
     var Emitter:Particles;
     var EmotionalColours:Dynamic;
     var Rnd:RndGen;
     var HighestEmotion:String;
     var TotalEmotion:Float;
     var EmotionColour:Float;
-    var EmotionIndices:Dynamic;
+    static var EmotionIndices:Dynamic;
     var HighestScore:Float;
-    
+    var MessageTime:Float;
+
     function ToCol(r:Int,g:Int,b:Int)
     {
         return new Vec3(r/255.0,g/255.0,b/255.0);
@@ -52,12 +53,22 @@ class Spirit extends ClusterEntity
         Name = name;
         HighestEmotion="Not calculated yet";
         Speed=0.02;
-        UpdateFreq=0;
+        UpdateFreq=2;
         LastData=[];
         Rnd=new RndGen();
         TotalEmotion=0;
         EmotionColour=0;
         HighestScore=0;
+        MessageTime=-1;
+        
+        Message = new Frame("",0,0,64*2,64);
+        Message.SetTextSize(10);
+        Message.InitTextures(GUIFrameTextures.Get(),Rnd);
+        Message.R=1;
+        Message.G=1;
+        Message.B=0.8;
+        world.AddSprite(Message);
+        Message.Hide(true);
         
         EmotionalColours = {
             JOY:[ToCol(255,224,1),ToCol(255,224,1),ToCol(255,126,2),ToCol(0,155,2)],
@@ -92,6 +103,17 @@ class Spirit extends ClusterEntity
         //world.addChild(Emitter);
     }
 
+    static public function GetEmotionColour(Emotion)
+    {
+        var EmotionMap = Resources.Get("emotion-map").data;
+        var EmotionIndex = Reflect.field(EmotionIndices,Emotion);
+        var Colour=IntToColourTriple(EmotionMap.getPixel(EmotionIndex,0));              
+        Colour.x+=0.6;
+        Colour.y+=0.6;
+        Colour.z+=0.6;
+        return Colour;
+    }
+
     function UpdateEmitter()
     {
         var Colours:Array<Vec3>=Reflect.field(EmotionalColours,HighestEmotion);
@@ -115,12 +137,20 @@ class Spirit extends ClusterEntity
         Debug = new Frame("nowt yet.",Pos.x-200,Pos.y-25,140,150);
         Debug.Hide(true);
         c.addChild(Debug);
-        Action = new Sprite(new Vec2(0,0),Resources.Get(""));
-        Action.Hide(true);
-        c.AddSprite(Action);
-
+        
         Sprites[0].MouseDown(this,function(c) { c.Debug.Hide(false); });
 	}
+
+    public function AddMsg(msg,text)
+    {
+        Message.UpdateText(text);
+        Message.Hide(false);    
+        var Col=GetEmotionColour(msg.emotion);
+        Message.R=Col.x;
+        Message.G=Col.y;
+        Message.B=Col.z;
+        MessageTime=Date.now().getSeconds()+10;
+    }
 
     static function IntToColourTriple(col:Int) : Vec3
     {
@@ -132,6 +162,7 @@ class Spirit extends ClusterEntity
     function UpdateDebug(e:Dynamic)
     {
         var ee = e.fatemotions.content;
+        if (ee==null) return;
         var mood=Std.parseFloat(ee[0].content[0]);
 
         var text=Name+"\nMood:"+ee[0].content[0]+"\n";
@@ -144,30 +175,13 @@ class Spirit extends ClusterEntity
             //text+=ee[i].attrs.cause+"\n";
         }
 
-        text+="Actions:\n";
+        text+="Messages:\n";
         var acs = cast(e.fatactions,Array<Dynamic>);
         for (i in 0...acs.length)
         {
             text+=acs[i].msg+"\n";
         }
         
-        // what to do with actions?
-        Action.Hide(true);
-        if (acs.length>0 && !Hidden)
-        {
-            if (StringTools.startsWith(acs[0].msg,"flower"))
-            {
-                Action.ChangeBitmap(Resources.Get("action-flower"));
-                Action.Hide(false);
-            }
-            
-            if (StringTools.startsWith(acs[0].msg,"drop-leaves"))
-            {
-                Action.ChangeBitmap(Resources.Get("action-drop-leaves"));
-                Action.Hide(false);
-            }
-        }
-
         Debug.UpdateText(text);
         Debug.UpdatePosition(Std.int(Pos.x-200),Std.int(Pos.y-25));
     }
@@ -225,48 +239,30 @@ class Spirit extends ClusterEntity
     override function Hide(s:Bool) : Void
     {
         super.Hide(s);
-        if (s) Debug.Hide(s);        
+        if (s) 
+        { 
+            Debug.Hide(s);
+            Message.Hide(s);
+        }
     }
 
     override function Update(frame:Int, world:World)
     {
-/*        for (f in Reflect.fields(Emotions))
+
+        if (!Message.Hidden)
         {
-            // do a linear blend to smooth out changes in emotions
-            Reflect.setField(Emotions,f,
-            Reflect.field(Emotions,f)*0.95+Reflect.field(RawEmotions,f)*0.05);
-        }*/
-
-        Action.Pos.x=Root.Pos.x-50;
-        Action.Pos.y=Root.Pos.y-50;
-        Action.Update(0,null);
-
-
-/*
-        for (i in 1...Sprites.length)
-        {
-            Sprites[i].Hide(true);
+            Rnd.Seed(0);
+            var x = Math.floor(Root.Pos.x-(128+64));
+            if (Root.Pos.x<320) x=Math.floor(Root.Pos.x+64);
+            Message.UpdatePosition(x,Math.floor(Root.Pos.y-20));
+            Message.InitTextures(GUIFrameTextures.Get(),Rnd);
+            if (Date.now().getSeconds()>MessageTime) Message.Hide(true);
         }
 
-        if (TotalEmotion>0.5)
-        {
-            Sprites[1].Hide(false);
-            Sprites[2].Hide(true);
-            if (TotalEmotion>5)
-            {
-                Sprites[2].Hide(false);
-                Sprites[3].Hide(true);
-                if (TotalEmotion>10)
-                {               
-                    Sprites[3].Hide(false);
-                }
-            }
-        }
-*/
         // get the index of the highest emotion for the emotion map
         var EmotionIndex = Reflect.field(EmotionIndices,HighestEmotion);
         // set the speed by the amount of the highest emotion
-        EmotionColour+=HighestScore/50;
+        EmotionColour+=HighestScore/100;
 
         // calculate the animation parameters
         var c=this;
@@ -278,20 +274,28 @@ class Spirit extends ClusterEntity
         // get the emotion map
         var EmotionMap = Resources.Get("emotion-map").data;
 
+        var IE=Math.floor(c.EmotionColour);
+
         Root.Recurse(function(b:Bone,depth:Int) 
         {    
             // pull the colour from the emotion map
-            b.Colour=IntToColourTriple(
-                EmotionMap.getPixel(
-                    EmotionIndex,
-                    (depth+Math.floor(c.EmotionColour))%8));
-
+            b.Colour=
+                IntToColourTriple(
+                    EmotionMap.getPixel(
+                        EmotionIndex,
+                        (depth+IE)%8))
+                .Lerp(IntToColourTriple(
+                    EmotionMap.getPixel(
+                        EmotionIndex,
+                        (depth+1+IE)%8)),
+                      c.EmotionColour-IE);
+            
             // change speed of movement by gratitude and joy with
             // this insane formula which needs rewriting
             b.SetRotate((excitement*5+1)*Math.sin(
                              (((10-depth)+frame*0.04+c.Emotions.GRATITUDE*0.01)+
                              c.Emotions.JOY*0.1)) +
-            ((world.MyRndGen.RndFlt()-0.5)*10*irritation));
+            ((world.MyRndGen.RndFlt()-0.5)*1*irritation));
         });
 
         super.Update(frame,world);

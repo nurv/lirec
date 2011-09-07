@@ -27,6 +27,7 @@ class Bone extends Sprite
     {
         Children = new List<Bone>();
         super(pos,t);
+        cacheAsBitmap=false;
         BindPos=pos;
         InheritTransform=true;
     }

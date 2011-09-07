@@ -18,12 +18,11 @@ import truffle.RndGen;
 
 class StringMaker
 {
-    var Rnd:RndGen;
     var MsgMap:Dynamic;
 
     public function new()
     {
-        Rnd = new RndGen();
+        var Rnd = new RndGen();
         MsgMap={
             i_have_been_planted: function(from,to,owner,extra:Array<Dynamic>)
             {
@@ -32,6 +31,10 @@ class StringMaker
             i_am_ill: function(from,to,owner,extra:Array<Dynamic>)
             {
                 return owner+"'s "+from+" plant is feeling ill.";
+            },
+            i_have_fruited: function(from,to,owner,extra:Array<Dynamic>)
+            {
+                return owner+"'s "+from+" plant has fruited.";
             },
             i_have_died: function(from,to,owner,extra:Array<Dynamic>)
             {
@@ -47,11 +50,11 @@ class StringMaker
             },
             your_plant_doesnt_like: function(from,to,owner,extra:Array<Dynamic>)
             {
-                return extra[0]+"'s "+extra[2]+" plant doesn't like "+to+"'s "+extra[1]+" plant nearby.";
+                return extra[0]+", your "+extra[2]+" plant doesn't like "+to+"'s "+extra[1]+" plant nearby.";
             },
             your_plant_needs: function(from,to,owner,extra:Array<Dynamic>)
             {
-                return to+"'s "+extra[0]+" plant needs a "+extra[1]+" plant nearby.";
+                return to+", your "+extra[0]+" plant needs a "+extra[1]+" plant nearby.";
             },
             needs_help: function(from,to,owner,extra:Array<Dynamic>)
             {
@@ -80,6 +83,20 @@ class StringMaker
             thanks_for_helping: function(from,to,owner,extra:Array<Dynamic>)
             {
                 return owner+"'s "+from+" plant thanks "+to+"'s "+extra[0]+" plant for helping.";
+            },
+            spirit_general_praise: function(from,to,owner,extra:Array<Dynamic>)
+            {
+                return "I think "+to+" is "+Rnd.Choose(["wonderful","superb","kind"])+
+                    " for planting a this "+extra[0]+" plant.";
+            },
+            ive_asked_x_for_help: function(from,to,owner,extra:Array<Dynamic>)
+            {
+                var msg=to+", I've asked "+extra[0]+" to help with your "+extra[1]+" plant";
+                if (extra[2]=="ill-a") msg+=", which is a little ill.";
+                else if (extra[2]=="ill-b") msg+=", which is a quite ill.";
+                else if (extra[2]=="ill-c") msg+=", which is a very ill.";
+                else msg+=".";
+                return msg;
             }
         };
     }

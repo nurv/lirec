@@ -75,6 +75,8 @@ class FungiWorld extends World
         Season="no season";
         LogicalCameraPos=new Vec2(0,0);
 
+        GUIFrameTextures.Init();
+        
 		for (y in 0...h)
 		{
 			for (x in 0...w)
@@ -430,6 +432,17 @@ class FungiWorld extends World
         //SetScale(new Vec2(2,2));
     }
 
+    public function AddSpiritMsg(msg,text)
+    {
+        for (s in Spirits)
+        {
+            if (s.Name==msg.from)
+            {
+                s.AddMsg(msg,text);
+            }
+        }
+    }
+
     override function Update(time:Int)
     {
         super.Update(time);
@@ -454,11 +467,18 @@ class FungiWorld extends World
             Server.Request("get-tile/"+Std.string(cast(WorldPos.x,Int))+"/"
                            +Std.string(cast(WorldPos.y,Int)),
                            this,
-                           function(c,d){c.UpdateTile(d);});          
-            Server.Request("get-msgs/"+Std.string(MyID),this,
-                           function(c,d){ c.NewsFeed.Update(cast(c,World),d);});
-            Server.Request("player/"+Std.string(MyID), this, 
-                           function(c,d){c.PlayerInfo=d;});
+                           function(c,d){c.UpdateTile(d);});
+            if (MyName=="")
+            {
+                Server.Request("get-msgs/"+Std.string(MyID),this,
+                               function(c,d){ c.NewsFeed.Update(cast(c,World),d);});
+            }
+            else
+            {
+                Server.Request("player/"+Std.string(MyID), this, 
+                               function(c,d){c.PlayerInfo=d;
+                                             c.NewsFeed.Update(cast(c,World),d.log.msgs);});
+            }
             // todo: get-msgs or player - same info within
 
             if (MyName=="")

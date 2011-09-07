@@ -17,6 +17,7 @@ package fungi;
 
 import truffle.Truffle;
 import truffle.Vec2;
+import truffle.Vec3;
 import truffle.SpriteEntity;
 
 class Plant extends SpriteEntity 
@@ -53,6 +54,12 @@ class Plant extends SpriteEntity
         Seeds=[];
         Layer=layer;
         Spr.Hide(false);
+
+        if (Owner==world.MyName)
+        {
+            Spr.Colour=new Vec3(1,0,0);
+        }
+
         if (fruit) Fruit(world);
 	}
 
