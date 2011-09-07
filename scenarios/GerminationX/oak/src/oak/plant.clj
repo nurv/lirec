@@ -51,7 +51,7 @@
      (make-vec2 (Math/floor (rand tile-size))
                 (Math/floor (rand tile-size)))
      type
-     99
+     (rand-nth (list 97 98 99))
      (Math/round (+ 1 (rand 10))))))
 
 (defn adv-state
@@ -172,7 +172,7 @@
       (make-plant-msg
        'thanks_for_helping
        plant (:owner-id other)
-       (list (:owner-id plant)))))
+       (list (:type other)))))
    log
    helpful-neighbours))
 
@@ -202,8 +202,10 @@
           'i_am_detrimented_by)
          'i_have_been_planted) 
          
-        (and (= old-state 'decay-c)
-             (= (:state plant) 'ill-a))
+        (and
+         (not (= old-state 'ill-a))
+         (not (= old-state 'ill-b))
+         (= (:state plant) 'ill-a))
         (plant-add-to-log plant log 'i_am_ill)
         
        ; (and (= old-state 'decay-c)
@@ -230,9 +232,10 @@
           (= (:state plant) 'ill-a)))
         (plant-add-to-log plant log 'i_am_recovering)
         
-       ; (and (not (= old-state 'fruit-a))
-       ;      (= (:state plant) 'fruit-a))
-       ; (plant-add-to-log plant log 'i_have_fruited)
+;        (and (not (= old-state 'fruit-a))
+;             (= (:state plant) 'fruit-a))
+;        (plant-add-to-log plant log 'i_have_fruited)
+      
         :else log))
      plant))
 

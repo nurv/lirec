@@ -16,6 +16,7 @@
   (:use
    compojure.core
    clojure.contrib.duck-streams
+   clojure.contrib.trace
    ring.adapter.jetty
    ring.middleware.file
    oak.world
@@ -52,10 +53,7 @@
 
 (append-spit log-filename (str (str (Date.)) " server started\n"))
 
-(defn tick []
-  (Thread/sleep 1000)
-  ;(println ".")
-  ;(game-world-print (deref my-game-world))
+(defn run []
   (let [time (/ (.getTime (java.util.Date.)) 1000.0)]
     (dosync (ref-set fatima-world
                      (doall-recur
@@ -70,7 +68,21 @@
                        (game-world-sync<-fatima
                         (deref my-game-world)
                         (deref fatima-world))
-                       time 1)))))
+                       time 1))))))
+
+(defn tick []
+  (Thread/sleep 1000)
+  (println ".")
+  ;(game-world-print (deref my-game-world))
+
+  (try
+    (run)
+    ;(throw (Exception. "Testing error catching"))
+    (catch Exception e
+      (println "Oops ... an error ocurred.")
+      (.printStackTrace e))
+    (finally
+     ))
   (recur))
 
 ;(tick)

@@ -60,7 +60,7 @@
 		<!-- General emotional reactions used in more than one episode -->
 	
 		<EmotionalReaction desirability="3" desirabilityForOther="1" praiseworthiness="5"> 
-			<Event subject="*" action="flower"/>
+			<Event subject="*" action="praise"/>
 		</EmotionalReaction>
 
 		<EmotionalReaction desirability="-3" desirabilityForOther="-1" praiseworthiness="-2"> 
@@ -72,7 +72,7 @@
 	<ActionTendencies>
 		
 		<!-- Generic action tendencies -->
-		<ActionTendency action="flower([Target])">
+		<ActionTendency action="praise([Target])">
 			<Preconditions>
             </Preconditions>
 			<ElicitingEmotion type="Love" minIntensity="4">

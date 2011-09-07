@@ -128,7 +128,9 @@
         plant))
      (hash-map
       :version 1
-      :players (list (make-player 99 "Gaia" -1))
+      :players (list (make-player 97 "Charlie" -1)
+                     (make-player 98 "Percy" -1)
+                     (make-player 99 "Alan" -1))
       :tiles {}
       :spirits ()
       :log (make-log 10)
@@ -251,7 +253,8 @@
                    (= (:code msg) 'i_am_detrimental_to)
                    (= (:code msg) 'i_am_benefitting_from)
                    (= (:code msg) 'i_am_beneficial_to)
-                   (= (:code msg) 'thanks_for_helping))
+                   ;(= (:code msg) 'thanks_for_helping)
+                   )
                  (cons
                   (game-world-id->player-name
                    game-world (first (:extra msg)))

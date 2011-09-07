@@ -159,17 +159,29 @@
         (modify :log
                 (fn [log]
                   (log-add-msg
-                   log
+                   (log-add-msg
+                    log
+                    (make-spirit-msg ; ask for help
+                     'needs_help
+                     spirit
+                     (:id player)
+                     (:tile spirit)
+                     (:pos plant)
+                     (list
+                      (player-list-id->player-name players (:owner-id plant))
+                      (:type plant)
+                      (rand-nth (:needed_plants diagnosis)))))
+                   ; tell owner we are asking
                    (make-spirit-msg
-                    'needs_help
+                    'ive_asked_x_for_help
                     spirit
-                    (:id player)
-                    (:tile spirit)
+                    (:owner-id plant)
+                    (:tile plant)
                     (:pos plant)
                     (list
-                     (player-list-id->player-name players (:owner-id plant))
+                     (player-list-id->player-name players (:id player))
                      (:type plant)
-                     (rand-nth (:needed_plants diagnosis))))))
+                     (:state plant)))))
                 spirit))
         spirit)))
              
@@ -213,10 +225,26 @@
          plant
          (tile-get-neighbours (:tile spirit) (:id plant) (:pos plant) tiles)
          rules)]
-    (spirit-ask-for-help
-     (spirit-send-diagnosis spirit diagnosis plant rules)
-     plant diagnosis players)))
-              
+    (spirit-send-diagnosis
+     (if (< 5 (rand-int 10)) ; sometimes ask for help
+       (spirit-ask-for-help spirit plant diagnosis players)
+       spirit)
+     diagnosis plant rules)))
+
+(defn spirit-praise [spirit plant]
+  (modify :log
+          (fn [log]
+            (log-add-msg
+             log
+             (make-spirit-msg
+              'spirit_general_praise
+              spirit
+              (:owner-id plant)
+              (:tile plant)
+              (:pos plant)
+              (list (:type plant)))))
+          spirit))
+
 (defn spirit-update-from-actions [spirit tiles rules players]
   (modify
    :fatactions (fn [fatactions] '()) ; clear em out
@@ -232,6 +260,7 @@
                       (cond
                        ;(= type "look-at") (spirit-looking-at spirit tile e)
                        (= type "diagnose") (spirit-diagnose spirit e rules players tiles)
+                       (= type "praise") (spirit-praise spirit e)
                        :else spirit))
               spirit)) ; can happen if we have moved away from the tile
           (do
