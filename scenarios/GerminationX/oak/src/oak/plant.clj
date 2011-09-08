@@ -36,7 +36,7 @@
    :timer 0
    :tick (+ (/ season-length 50) (Math/floor (rand 10)))
    :health start-health
-   :fruit false
+   :fruit 0
    :event-occurred ()
    :log (make-log 10)))
 
@@ -313,8 +313,8 @@
   (modify
    :fruit
    (fn [f]
-     (if (and (not f) (= (:state plant) 'fruit-c))
-       true f))
+     (if (= (:state plant) 'fruit-c)
+       (min max-fruit (+ f 1)) f))
    plant))
 
 (defn plant-update-state [plant time delta season]
@@ -384,4 +384,4 @@
        'i_have_been_picked_by
        plant (:owner-id plant)
        (list (:name player)))))
-   (modify :fruit (fn [f] false) plant)))
+   (modify :fruit (fn [f] (- f 1)) plant)))

@@ -22,6 +22,7 @@ class SeedStore
 {
     var Seeds:Array<Seed>;
     var Size:Int;
+    var test:Sprite;
 
     public function new(size:Int)
     {
@@ -34,13 +35,27 @@ class SeedStore
         if (Seeds.length<Size)
         {
             Seeds.push(s);
-            s.Spr.SetPos(new Vec2(20+Seeds.length*10,30));
-            //cast(world,truffle.flash.FlashWorld).addSprite(s.Spr);
-            //trace("did it...");
-            s.Spr.Update(0,null);
+            s.Spr.SetClickThrough();
             return true;
         }
         return false;
+    }
+
+    public function Update(mx,my)
+    {
+        if (Seeds.length>0)
+        {
+            Seeds[0].Spr.SetPos(new Vec2(mx,my));
+            Seeds[0].Spr.Update(0,null);
+        }
+    }
+
+    public function SortScene(Depth:Int)
+    {
+        if (Seeds.length>0)
+        {
+            Seeds[0].Spr.SetDepth(Depth);
+        }
     }
 
     public function Remove(world:World) : String
@@ -48,7 +63,7 @@ class SeedStore
         if (Seeds.length>0)
         {
             var s = Seeds.pop();
-//            world.RemoveSprite(s.Spr);
+            world.RemoveSprite(s.Spr);
             return s.Type;
         }
         else

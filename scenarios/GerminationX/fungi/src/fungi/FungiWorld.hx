@@ -85,12 +85,22 @@ class FungiWorld extends World
              
                 ob.Spr.MouseDown(this,function(c)
                 {
-                    var type=c.Seeds.Remove(cast(c,truffle.World));
-                    if (type!="")
+                    // look for a plant here already
+                    // - done on the server, but need to do it
+                    // here too
+                    var e = c.Get("fungi.Plant",
+                                  new Vec2(ob.LogicalPos.x,
+                                           ob.LogicalPos.y));
+                    
+                    if (e==null)
                     {
-                        c.SpiralScale=1;
-                        c.Spiral.SetPos(new Vec2(ob.Pos.x,ob.Pos.y-32));
-                        c.AddServerPlant(ob.LogicalPos.Add(new Vec3(0,0,1)),type);
+                        var type=c.Seeds.Remove(cast(c,truffle.World));
+                        if (type!="")
+                        {
+                            c.SpiralScale=1;
+                            c.Spiral.SetPos(new Vec2(ob.Pos.x,ob.Pos.y-128));
+                            c.AddServerPlant(ob.LogicalPos.Add(new Vec3(0,0,1)),type);
+                        }
                     }
                 });
 				Objs.push(ob);
@@ -157,6 +167,8 @@ class FungiWorld extends World
         arrow4.MouseOut(this,function(c) { arrow4.SetScale(new Vec2(1,1)); arrow4.Update(0,null); });
         addChild(arrow4);
 
+        var c=this;
+        MouseMove(this, function(e) { c.Seeds.Update(e.stageX,e.stageY); });
 
 	}
 
@@ -303,6 +315,11 @@ class FungiWorld extends World
         }
 	}
 
+    override public function PostSortScene(depth:Int)
+    {
+        Seeds.SortScene(depth);
+    }
+
     public function ClearPlants() : Void
     {
         for (plant in Plants)
@@ -399,7 +416,7 @@ class FungiWorld extends World
                     {
                         var pos = new Vec3(WorldPos.x,WorldPos.y,cube.LogicalPos.z+1);   
                         var plant = new Plant(this,Std.parseInt(p.id),
-                                              p.owner,
+                                              Std.parseInt(Reflect.field(p,"owner-id")),
                                               pos,
                                               p.type,
                                               p.state,
@@ -413,7 +430,7 @@ class FungiWorld extends World
                     //trace("updating plant");
                     //trace(e);
                     //trace(p.state);
-                    cast(e,Plant).StateUpdate(p.state,p.fruit,this);
+                    cast(e,Plant).StateUpdate(p.state,Std.parseInt(p.fruit),this);
                 }
             }
         }
@@ -453,7 +470,7 @@ class FungiWorld extends World
         if (SpiralScale>0.1)
         {
             Spiral.Hide(false);
-            SpiralScale-=0.05;
+            SpiralScale-=0.01;
             Spiral.SetRotate(time*12);
             Spiral.SetScale(new Vec2(SpiralScale,SpiralScale));
             Spiral.Update(time,null);

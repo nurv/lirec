@@ -22,7 +22,8 @@
    oak.tile
    oak.log
    oak.plant
-   oak.player)
+   oak.player
+   oak.defs)
   (:require
    clojure.contrib.math))
 
@@ -231,18 +232,41 @@
        spirit)
      diagnosis plant rules)))
 
+(defn make-praise-msg [type spirit plant]
+  (make-spirit-msg
+   type
+   spirit
+   (:owner-id plant)
+   (:tile plant)
+   (:pos plant)
+   (list (:type plant))))
+
 (defn spirit-praise [spirit plant]
   (modify :log
           (fn [log]
             (log-add-msg
              log
-             (make-spirit-msg
-              'spirit_general_praise
-              spirit
-              (:owner-id plant)
-              (:tile plant)
-              (:pos plant)
-              (list (:type plant)))))
+             ; we can't exactly be sure why the fatima agent
+             ; has triggered the praise action, but we can make
+             ; an educated guess by looking at the plant
+             
+             ; if it's not the same type as the spirit
+             (if (not (= (:name spirit)
+                         (layer->spirit-name (:layer plant))))
+               (make-praise-msg 'spirit_helper_praise spirit plant)
+               ; it's the same type
+               (cond
+                (= (:state plant) 'grow-a)
+                (make-praise-msg 'spirit_growing_praise spirit plant)
+
+                (= (:state plant) 'fruit-a)
+                (make-praise-msg 'spirit_flowering_praise spirit plant)
+                
+                (= (:state plant) 'fruit-c)
+                (make-praise-msg 'spirit_fruiting_praise spirit plant)
+
+                ; i give up!
+                :else (make-praise-msg 'spirit_general_praise spirit plant)))))
           spirit))
 
 (defn spirit-update-from-actions [spirit tiles rules players]

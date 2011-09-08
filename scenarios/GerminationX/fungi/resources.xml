@@ -8,6 +8,7 @@
                       <bitmap id="Test" import="textures/test.png"/>                     
 
                       <bitmap id="EmotionMapTex" import="textures/emotion-map.png"/>                     
+                      <bitmap id="StarTex" import="textures/star.png"/>                     
 
                       <bitmap id="Arr1Tex" import="textures/arr1.png"/>                     
                       <bitmap id="Arr2Tex" import="textures/arr2.png"/>                     

@@ -20,6 +20,15 @@ class StringMaker
 {
     var MsgMap:Dynamic;
 
+    static var Reasons =
+        {{
+            clover: "nutrients",
+            dandelion: "nutrients",
+            aronia: "pest control",
+            apple: "protection",
+            cherry: "protection"
+        }};
+
     public function new()
     {
         var Rnd = new RndGen();
@@ -54,7 +63,7 @@ class StringMaker
             },
             your_plant_needs: function(from,to,owner,extra:Array<Dynamic>)
             {
-                return to+", your "+extra[0]+" plant needs a "+extra[1]+" plant nearby.";
+                return to+", your "+extra[0]+" plant needs a "+extra[1]+" plant nearby for "+Reflect.field(Reasons,extra[1])+".";
             },
             needs_help: function(from,to,owner,extra:Array<Dynamic>)
             {
@@ -84,10 +93,27 @@ class StringMaker
             {
                 return owner+"'s "+from+" plant thanks "+to+"'s "+extra[0]+" plant for helping.";
             },
+            spirit_helper_praise: function(from,to,owner,extra:Array<Dynamic>)
+            {
+                return "I'm happy "+to+"'s "+extra[0]+" plant is providing my plants with "+
+                    Reflect.field(Reasons,extra[0])+".";
+            },
+            spirit_growing_praise: function(from,to,owner,extra:Array<Dynamic>)
+            {
+                return "I'm happy "+to+"'s "+extra[0]+" plant is growing well.";
+            },
+            spirit_flowering_praise: function(from,to,owner,extra:Array<Dynamic>)
+            {
+                return "It makes me joyful to see "+to+"'s "+extra[0]+" is flowering!";
+            },
+            spirit_fruiting_praise: function(from,to,owner,extra:Array<Dynamic>)
+            {
+                return "This "+extra[0]+" plant, sewn by "+to+" I'm glad to announce, has fruited";
+            },
             spirit_general_praise: function(from,to,owner,extra:Array<Dynamic>)
             {
-                return "I think "+to+" is "+Rnd.Choose(["wonderful","superb","kind"])+
-                    " for planting a this "+extra[0]+" plant.";
+                return to+"'s "+Rnd.Choose(["wonderful","lush","beautiful"])+" "+extra[0]+
+                    " plant is one of my favorite kinds of plant.";
             },
             ive_asked_x_for_help: function(from,to,owner,extra:Array<Dynamic>)
             {

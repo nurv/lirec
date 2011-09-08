@@ -19,18 +19,18 @@ class RndGen
 {
 	var State:Int;
 	
-	public function new()
+	public inline function new()
 	{
 		State=0;
 	}
 	
-	public function Seed(s:Int)
+	public inline function Seed(s:Int)
 	{
 		State=s;
         WarmUp();
 	}
 	
-    public function WarmUp()
+    public inline function WarmUp()
     {
         for (i in 0...10)
         {
@@ -38,25 +38,51 @@ class RndGen
         }
     }
 
-	public function RndInt() : Int
+	public inline function RndInt() : Int
 	{
 		State=cast(State*214013+2531011,Int);
 		return cast(Math.abs(State),Int);
 	}
 
-    public function RndRange(lo:Int, hi:Int) : Int
+    public inline function RndRange(lo:Int, hi:Int) : Int
     {
         return lo+RndInt()%(hi-lo);
     }
 	
-	public function RndFlt() : Float
+	public inline function RndFlt() : Float
 	{
 		return RndInt()/Math.pow(2,32)*2;
 	}
 
-    public function Choose(arr:Array<Dynamic>) : Dynamic
+    public inline function RndCentredFlt() : Float
+    {
+        return (RndFlt()-0.5)*2;
+    }
+
+    public inline function Choose(arr:Array<Dynamic>) : Dynamic
     {
         return arr[RndInt()%arr.length];
     }
 	
+    public inline function RndVec2() : Vec2
+    {
+        return new Vec2(RndFlt(),RndFlt());
+    }
+
+    public inline function RndCentredVec2() : Vec2
+    {
+        return new Vec2(RndCentredFlt(),
+                        RndCentredFlt());
+    }
+
+    public inline function RndCircleVec2() : Vec2
+    {
+        var v:Vec2=RndCentredVec2();
+        while (v.Mag()>1)
+        {
+            v=RndCentredVec2();
+        }
+        return v;
+    }
+
 }

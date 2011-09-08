@@ -28,7 +28,7 @@
    :seeds '()
    :messages '()
    :seeds-capacity 3
-   :seeds-left 3
+   :seeds-left 10
    :next-refresh 0
    :picked-by '()
    :has-picked '()

@@ -187,6 +187,11 @@ class FlashWorld implements World, extends MovieClip
         MouseMoveFunc(e);
     }
 
+    // override for things on top
+    public function PostSortScene(depth:Int)
+    {
+    }
+
     public function SortScene()
     {        
         Scene.sort(function(a:Entity, b:Entity)
@@ -199,6 +204,8 @@ class FlashWorld implements World, extends MovieClip
         {
             i=e.OnSortScene(cast(this,truffle.World),i);
         }
+
+        PostSortScene(i);
     }
 
     public function SetCurrentTilePos(s:Vec2) : Void

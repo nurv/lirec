@@ -19,11 +19,12 @@ import truffle.Truffle;
 import truffle.Vec2;
 import truffle.Vec3;
 import truffle.SpriteEntity;
+import truffle.RndGen;
 
 class Plant extends SpriteEntity 
 {
     public var Id:Int;
-	public var Owner:String;
+	public var Owner:Int;
 	var PlantScale:Float;
 	public var Age:Int;
     var Scale:Float;
@@ -31,6 +32,18 @@ class Plant extends SpriteEntity
     public var State:String;
     var Seeds:Array<Seed>;
     var Layer:String;
+    var Star:Sprite;
+    var Owned:Bool;
+    var Rnd:RndGen;
+
+    static var CentrePositions = {
+        { 
+            clover: new Vec2(0,-50),
+            dandelion: new Vec2(0,-200),
+            aronia: new Vec2(0,-120),
+            apple: new Vec2(0,-140),
+            cherry: new Vec2(0,-210)
+        }};
 
     // because not all states are represented by graphics
     function FixState(state:String): String
@@ -42,7 +55,7 @@ class Plant extends SpriteEntity
         return state;
     }
 
-	public function new(world:World, id:Int, owner:String, pos, type:String, state:String, fruit:Bool, layer:String)
+	public function new(world:World, id:Int, owner:Int, pos, type:String, state:String, fruit:Int, layer:String)
 	{
         State=FixState(state);
 		super(world,pos,Resources.Get(type+"-"+State),false);
@@ -53,14 +66,15 @@ class Plant extends SpriteEntity
         //NeedsUpdate=true;
         Seeds=[];
         Layer=layer;
+        Owned=false;
         Spr.Hide(false);
+        Rnd=new RndGen();
+        Rnd.Seed(Id);
 
-        if (Owner==world.MyName)
+        for (i in 0...fruit) 
         {
-            Spr.Colour=new Vec3(1,0,0);
+            Fruit(world);
         }
-
-        if (fruit) Fruit(world);
 	}
 
     public function StateUpdate(state,fruit,world:World)
@@ -70,15 +84,19 @@ class Plant extends SpriteEntity
         {
             Spr.ChangeBitmap(Resources.Get(PlantType+"-"+State));
         }
-        if (fruit && Seeds.length==0)
+
+        // see if any seeds have been picked or arrived
+        var FruitDiff = fruit-Seeds.length;
+        if (FruitDiff!=0)
         {
-            Fruit(world);
-        }
-        if (!fruit && Seeds.length!=0)
-        {
-            // assume only one seed...
-            world.RemoveSprite(Seeds[0]);
-            Seeds=[];        
+            if (FruitDiff>0)
+            {
+                for (i in 0...FruitDiff) Fruit(world);
+            }
+            else
+            {
+                for (i in 0...-FruitDiff) Unfruit(world);
+            }
         }
 
         if (state=="fruit-a" ||
@@ -90,6 +108,16 @@ class Plant extends SpriteEntity
                 s.ChangeState(state);
             }
         };
+
+        if (!Owned && Owner==world.MyID)
+        {
+            Star = new Sprite(Reflect.field(CentrePositions,PlantType),
+                              Resources.Get("star"));
+            world.AddSprite(Star);
+            Owned=true;
+            Star.Update(0,Spr.Transform);
+        }
+
     }
 
     override function Destroy(world:World)
@@ -99,6 +127,7 @@ class Plant extends SpriteEntity
         {
             world.RemoveSprite(seed.Spr);
         }
+        if (Owned) world.RemoveSprite(Star);
     }
 	
 	public override function Update(frame:Int, world:World)
@@ -108,6 +137,8 @@ class Plant extends SpriteEntity
         {
             seed.Spr.Update(frame,Spr.Transform);
         }
+        
+        if (Owned) Star.Update(frame,Spr.Transform);
 	}
 
     override function OnSortScene(world:World, order:Int) : Int
@@ -117,19 +148,27 @@ class Plant extends SpriteEntity
         {
             world.setChildIndex(seed.Spr,order++);
         }        
+        if (Owned) Star.SetDepth(order++);
         return order;
     }
 
     public function Fruit(world:World)
     {
-        var f=new Seed(new Vec2(0,-Spr.Height/2),PlantType);
-        world.AddSprite(f.Spr);
-        Seeds.push(f);
+        var Pos:Vec2=Reflect.field(CentrePositions,PlantType)
+            .Add(Rnd.RndCircleVec2().Mul(32));
+        var Fruit=new Seed(Pos,PlantType);
+        world.AddSprite(Fruit.Spr);
+        Seeds.push(Fruit);
         Update(0,world);
-        f.Spr.MouseDown(this,function(p) 
+        Fruit.Spr.MouseDown(this,function(p) 
         {            
             if (world.MyName!="")// && f.State=="fruit-c")
             {
+                // arsing around with the sprites to get
+                // better feedback for the player
+                p.Seeds.remove(Fruit);
+                world.RemoveSprite(Fruit.Spr);
+
                 world.Server.Request(
                     "pick/"+
                         Std.string(cast(world.WorldPos.x,Int))+"/"+
@@ -141,16 +180,25 @@ class Plant extends SpriteEntity
                     {
                         if (d.ok==true)
                         {
-                            // remove the seed now for faster feedback
-                            // the server will maintain this state for 
-                            // other players
-                            p.Seeds.remove(f);
-                            c.RemoveSprite(f.Spr);
-                            // add to the current list
-                            c.Seeds.Add(cast(c,World),f);
+                            // make a brand new one
+                            var ns = new Seed(Fruit.Spr.Pos,Fruit.Type);
+                            ns.ChangeState("fruit-c");
+                            c.Seeds.Add(cast(c,World),ns);
+                            c.AddSprite(ns.Spr);
+                            c.SortScene();
                         }
                     });
             }
         });
+    }
+
+    function Unfruit(world:World)
+    {
+        if (Seeds.length>0)
+        {
+            var seed:Seed=Rnd.Choose(Seeds);
+            world.RemoveSprite(seed.Spr);
+            Seeds.remove(seed);        
+        }
     }
 }
