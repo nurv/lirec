@@ -28,7 +28,8 @@
    oak.plant
    oak.tile
    oak.forms
-   oak.player)
+   oak.player
+   oak.logging)
   (:import
    java.util.concurrent.Executors
    java.util.Date)
@@ -52,6 +53,8 @@
 (game-world-save (deref my-game-world) "test.txt")
 
 (append-spit log-filename (str (str (Date.)) " server started\n"))
+
+(mail "dave@fo.am" "friendly message from gx" "I have started!")
 
 (defn run []
   (let [time (/ (.getTime (java.util.Date.)) 1000.0)]
@@ -80,7 +83,11 @@
     ;(throw (Exception. "Testing error catching"))
     (catch Exception e
       (println "Oops ... an error ocurred.")
-      (.printStackTrace e))
+      (.printStackTrace e)
+      (mail "dave@fo.am"
+            "friendly message from gx"
+            (.getStackTrace e))
+      )
     (finally
      ))
   (recur))
@@ -97,6 +104,7 @@
             (append-spit
              log-filename
              (str (Date.) " new player " name " has registered\n"))
+            (mail "dave@fo.am" (str "gx: new player" name) "")
             (dosync
              (ref-set my-game-world
                       (game-world-add-player
