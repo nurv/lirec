@@ -70,7 +70,7 @@ class Feed
     {
         if (Type=="plant" || Type=="spirit")
         {
-            var s=new Sprite(Pos,Resources.Get(""));
+            var s=new Sprite(Pos,Resources.Get("test.png"));
             s.LoadFromURL("images/icons/"+Icon+".png");
 
             if (Type=="spirit")
