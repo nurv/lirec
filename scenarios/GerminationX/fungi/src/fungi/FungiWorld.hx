@@ -139,32 +139,28 @@ class FungiWorld extends World
             });
         }
 
-        var arrow1 = new Sprite(new Vec2(500,40), Resources.Get("arr3"));
-        arrow1.SetScale(new Vec2(0.5,0.5));
+        var arrow1 = new Sprite(new Vec2(470,40), Resources.Get("arr3"));
         arrow1.MouseUp(this,function(c) { c.MoveWorld(new Vec3(1,0,0)); });
-        arrow1.MouseOver(this,function(c) { arrow1.SetScale(new Vec2(1.1,1.1)); arrow1.Update(0,null); });
-        arrow1.MouseOut(this,function(c) { arrow1.SetScale(new Vec2(1,1)); arrow1.Update(0,null); });
+        arrow1.MouseOver(this,function(c) { arrow1.Colour=new Vec3(0.8,1,0.7); arrow1.Update(0,null); });
+        arrow1.MouseOut(this,function(c) { arrow1.Colour=new Vec3(1,1,1); arrow1.Update(0,null); });
         addChild(arrow1);
 
         var arrow2=new Sprite(new Vec2(50,540), Resources.Get("arr4"));
-        arrow2.SetScale(new Vec2(0.5,0.5));
         arrow2.MouseUp(this,function(c) { c.MoveWorld(new Vec3(-1,0,0)); });
-        arrow2.MouseOver(this,function(c) { arrow2.SetScale(new Vec2(0.6,0.6)); arrow2.Update(0,null); });
-        arrow2.MouseOut(this,function(c) { arrow2.SetScale(new Vec2(0.5,0.5)); arrow2.Update(0,null); });
+        arrow2.MouseOver(this,function(c) { arrow2.Colour=new Vec3(0.8,1,0.7); arrow2.Update(0,null); });
+        arrow2.MouseOut(this,function(c) { arrow2.Colour=new Vec3(1,1,1); arrow2.Update(0,null); });
         addChild(arrow2);
 
         var arrow3=new Sprite(new Vec2(40,40), Resources.Get("arr2"));
-        arrow3.SetScale(new Vec2(0.5,0.5));
         arrow3.MouseUp(this,function(c) { c.MoveWorld(new Vec3(0,-1,0)); });
-        arrow3.MouseOver(this,function(c) { arrow3.SetScale(new Vec2(1.1,1.1)); arrow3.Update(0,null); });
-        arrow3.MouseOut(this,function(c) { arrow3.SetScale(new Vec2(1,1)); arrow3.Update(0,null); });
+        arrow3.MouseOver(this,function(c) { arrow3.Colour=new Vec3(0.8,1,0.7); arrow3.Update(0,null); });
+        arrow3.MouseOut(this,function(c) { arrow3.Colour=new Vec3(1,1,1); arrow3.Update(0,null); });
         addChild(arrow3);
 
-        var arrow4=new Sprite(new Vec2(450,540), Resources.Get("arr1"));
-        arrow4.SetScale(new Vec2(0.5,0.5));
+        var arrow4=new Sprite(new Vec2(470,540), Resources.Get("arr1"));
         arrow4.MouseUp(this,function(c) { c.MoveWorld(new Vec3(0,1,0)); });
-        arrow4.MouseOver(this,function(c) { arrow4.SetScale(new Vec2(1.1,1.1)); arrow4.Update(0,null); });
-        arrow4.MouseOut(this,function(c) { arrow4.SetScale(new Vec2(1,1)); arrow4.Update(0,null); });
+        arrow4.MouseOver(this,function(c) { arrow4.Colour=new Vec3(0.8,1,0.7); arrow4.Update(0,null); });
+        arrow4.MouseOut(this,function(c) { arrow4.Colour=new Vec3(1,1,1); arrow4.Update(0,null); });
         addChild(arrow4);
 
         var c=this;

@@ -155,7 +155,7 @@ class Feed
             Icons=[];
             
             var pos=32;
-            var xpos=600;
+            var xpos=595;
             for (i in d)
             {
                 Rnd.Seed(Std.int(i.time));
@@ -176,7 +176,7 @@ class Feed
                 Blocks.push(f);
                 w.AddSprite(f);
                 
-                var Icon=MakeIcon(new Vec2(xpos-30,pos+32),
+                var Icon=MakeIcon(new Vec2(xpos-20,pos+32),
                                   i.type, i.from, Colour);
                 w.AddSprite(Icon);
                 Icons.push(Icon);

@@ -159,6 +159,9 @@ class FlashFrame implements Frame, extends MovieClip
         var XCount=Std.int((TextField.width+ExpandLeft)/TileSize)+1;
         var YCount=Std.int(TextField.height/TileSize)+1;
 
+        // dirty dirty hack
+        if (ExpandLeft>0) XPos+=10;
+
         BG.clear();
 
         for (y in 0...YCount)
@@ -186,7 +189,7 @@ class FlashFrame implements Frame, extends MovieClip
                     var mtx:Matrix = new Matrix();
                     mtx.translate(XPos,YPos);
 		            BG.beginBitmapFill(cast(tx,FlashTextureDesc).data,mtx);
-                    BG.drawRect(XPos+x*TileSize,
+                    BG.drawRect(XPos+x*TileSize, 
                                 YPos+y*TileSize,
                                 TileSize,TileSize);
                     BG.endFill();
