@@ -159,7 +159,7 @@ class Resources
     public static function Get(name:String) : TextureDesc
     {
         var tex = new TextureDesc();
-        tex.data = new BlueCubeTex();
+        tex.data = new Test();
 
         switch(name)
         {
