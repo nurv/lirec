@@ -25,15 +25,23 @@ public class InterfaceHandler extends AbstractHandler {
 
 	private InterfaceCompetency interfaceCompetency;
 
-	private static final String BB_NEEDED_INFORMATION = "neededInformation";
+	private static final String BB_INFORMATION_NEEDS = "InformationNeeds";
 
-	private static int neededInformationID = 0;
+	private static final String WM_INFORMATION_REQUESTERS = "InformationRequesters";
 
-	private static final String BB_MESSAGES_TO_DELIVER = "messagesToDeliver";
+	private static final String WM_INFORMATION_PROVIDERS = "InformationProviders";
 
-	private static int messageID = 0;
+	private static int informationNeedId = 0;
 
-	private static final String BB_INTERFACE_UTTERANCE = "interfaceUtterance";
+	private static final String BB_MESSAGE_TEXTS = "MessageTexts";
+
+	private static final String WM_MESSAGE_SENDERS = "MessageSenders";
+
+	private static final String WM_MESSAGE_RECIPIENTS = "MessageRecipients";
+
+	private static int messageId = 0;
+
+	private static final String BB_INTERFACE_UTTERANCE = "InterfaceUtterance";
 
 	private static final String WM_CURRENT_PLATFORM = "CurrentPlatform";
 
@@ -188,15 +196,15 @@ public class InterfaceHandler extends AbstractHandler {
 			String messageText = request.getParameter("messageText");
 			if (messageText == null || messageText.trim().equals("")) {
 				ArrayList<String> parameters = new ArrayList<String>();
-				parameters.add(messageToUsername);
+				parameters.add("SELF");
 				raiseMindAction(messageFromUsername, "leaveEmptyMessage", parameters);
 			} else {
 				if (messageFromUsername.equals(userData.getGuestUser().getUsername())) {
 					// problem with FAtiMA event when name contains spaces
 					//msgReceived(messageFromRealname, messageToUsername, messageText);
-					messageReceived(messageFromUsername, messageToUsername, messageText);
+					leaveMessage(messageFromUsername, messageToUsername, messageText);
 				} else {
-					messageReceived(messageFromUsername, messageToUsername, messageText);
+					leaveMessage(messageFromUsername, messageToUsername, messageText);
 				}
 			}
 
@@ -1379,18 +1387,17 @@ public class InterfaceHandler extends AbstractHandler {
 		if (interfaceCompetency != null) {
 
 			// obtain an id for the needed information		
-			neededInformationID++;
-			String id = new Integer(neededInformationID).toString();
+			informationNeedId++;
+			String id = new Integer(informationNeedId).toString();
 
 			// write needed information to blackboard
-			BlackBoard bb = interfaceCompetency.getArchitecture().getBlackBoard();
-			if (bb.hasSubContainer(BB_NEEDED_INFORMATION))
-				bb.getSubContainer(BB_NEEDED_INFORMATION).requestSetProperty(id, typeRealname);
-			else {
-				HashMap<String, Object> properties = new HashMap<String, Object>();
-				properties.put(id, typeRealname);
-				bb.requestAddSubContainer(BB_NEEDED_INFORMATION, BB_NEEDED_INFORMATION, properties);
-			}
+			setBBObjectProperty(BB_INFORMATION_NEEDS, id, typeRealname);
+
+			// write requester to WorldModel
+			setWMObjectProperty(WM_INFORMATION_REQUESTERS, id, loginUsername);
+
+			// write provider to WorldModel
+			setWMObjectProperty(WM_INFORMATION_PROVIDERS, id, username);
 
 			// raise remote action
 			ArrayList<String> parameters = new ArrayList<String>();
@@ -1400,25 +1407,25 @@ public class InterfaceHandler extends AbstractHandler {
 		}
 	}
 
-	private void messageReceived(String fromUsername, String toUsername, String messageText) {
+	private void leaveMessage(String fromUsername, String toUsername, String messageText) {
 		if (interfaceCompetency != null) {
 
 			// obtain an id for the message
-			messageID++;
-			String id = new Integer(messageID).toString();
+			messageId++;
+			String id = new Integer(messageId).toString();
 
-			// write msg to blackboard
-			BlackBoard bb = interfaceCompetency.getArchitecture().getBlackBoard();
-			if (bb.hasSubContainer(BB_MESSAGES_TO_DELIVER))
-				bb.getSubContainer(BB_MESSAGES_TO_DELIVER).requestSetProperty(id, messageText);
-			else {
-				HashMap<String, Object> properties = new HashMap<String, Object>();
-				properties.put(id, messageText);
-				bb.requestAddSubContainer(BB_MESSAGES_TO_DELIVER, BB_MESSAGES_TO_DELIVER, properties);
-			}
+			// write message to BlackBoard
+			setBBObjectProperty(BB_MESSAGE_TEXTS, id, messageText);
+
+			// write sender to WorldModel
+			setWMObjectProperty(WM_MESSAGE_SENDERS, id, fromUsername);
+
+			// write recipient to WorldModel
+			setWMObjectProperty(WM_MESSAGE_RECIPIENTS, id, toUsername);
 
 			// raise remote action
 			ArrayList<String> parameters = new ArrayList<String>();
+			parameters.add("SELF");
 			parameters.add(toUsername);
 			parameters.add(id);
 			raiseMindAction(fromUsername, "leaveMessage", parameters);
@@ -1449,6 +1456,17 @@ public class InterfaceHandler extends AbstractHandler {
 	private void setBBProperty(String propertyName, Object propertyValue) {
 		if (interfaceCompetency != null) {
 			interfaceCompetency.getArchitecture().getBlackBoard().requestSetProperty(propertyName, propertyValue);
+		}
+	}
+
+	private void setBBObjectProperty(String objectName, String propertyName, Object propertyValue) {
+		BlackBoard bb = interfaceCompetency.getArchitecture().getBlackBoard();
+		if (bb.hasSubContainer(objectName))
+			bb.getSubContainer(objectName).requestSetProperty(propertyName, propertyValue);
+		else {
+			HashMap<String, Object> properties = new HashMap<String, Object>();
+			properties.put(propertyName, propertyValue);
+			bb.requestAddSubContainer(objectName, objectName, properties);
 		}
 	}
 
