@@ -24,7 +24,7 @@ class StringMaker
         {{
             clover: "nutrients",
             dandelion: "nutrients",
-            aronia: "pest control",
+            aronia: "erosion control",
             apple: "protection",
             cherry: "protection"
         }};
