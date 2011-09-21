@@ -38,7 +38,12 @@ import cmion.level2.migration.MigrationAware;
 import cmion.level3.AgentMindConnector;
 import cmion.level3.MindAction;
 
-/** in this class we pretend to be a fatima for the purpose of retaining the fatima state in a migration scenario*/
+/** in this class we pretend to be a fatima for the purpose of retaining the fatima 
+  state in a migration scenario.
+  
+  Specify it in your architecture configuration like so:
+  <ArchitectureComponent ClassName="cmion.level3.fatima.FAtiMARetainer"/>
+  */
 public class FAtiMARetainer extends AgentMindConnector implements Migrating, MigrationAware {
 
 	private String state;
@@ -52,20 +57,18 @@ public class FAtiMARetainer extends AgentMindConnector implements Migrating, Mig
 	}
 
 
-    /** report the failure of an action to FAtiMA */
+    /** Most of the methods do nothing, as there is no mind as-such present here*/
 	@Override
 	protected void processActionFailure(MindAction a) 
 	{
 	}
 
-    /** report the success of an action to FAtiMA */	
+
 	@Override
 	protected void processActionSuccess(MindAction a) {
 
 	}
-	
-	/** FAtiMA is currently not receiving any cancellation feedback messages,
-	 *  so we don't need to do anything in here */
+
 	@Override
 	protected void processActionCancellation(MindAction a) {}
 	
@@ -74,7 +77,6 @@ public class FAtiMARetainer extends AgentMindConnector implements Migrating, Mig
 
 	}
 
-	/** send a message to FAtiMA telling the mind to pause */
 	@Override
 	public void sendMindToSleep() {
 
@@ -103,6 +105,10 @@ public class FAtiMARetainer extends AgentMindConnector implements Migrating, Mig
 		
 	}
 
+	
+	/* 
+	 * Reports itself as a fatimaconnector, as it's designed as a drop-in replacement.
+	 */
 	@Override
 	public String getMessageTag() 
 	{
@@ -129,6 +135,9 @@ public class FAtiMARetainer extends AgentMindConnector implements Migrating, Mig
 		System.out.println("MIND-Migration Success.");
 	}
 
+	/*
+	 * All this need do is read the stored state and send it.
+	 */
 	@Override
 	public void restoreState(Element message) 
 	{
@@ -144,7 +153,9 @@ public class FAtiMARetainer extends AgentMindConnector implements Migrating, Mig
 		} 
 	}
 	
-	
+	/*
+	 * This just needs to save the state to the member fields, ready to send on.
+	 */
 	@Override
 	public Element saveState(Document doc) 
 	{
