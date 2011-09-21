@@ -16,7 +16,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
+import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -599,13 +601,18 @@ public class Migration extends Competency {
 				try {
 					// the invite is sent to the inviteport of the device, check if one was specified, otherwise skip device
 					if (d.inviteport<0)	continue;
-					Socket s = new Socket(d.host,d.inviteport);
+					System.out.println("Migration:Invite:Invoke: opening socket");
+					//Socket s =  new Socket(d.host,d.inviteport);
+					Socket s = new Socket();
+					s.connect(new InetSocketAddress(d.host, d.inviteport), 100);
 					BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
 					// the invite simply consists of our device name followed by a new line, afterwards we can clos the socket 
 					bw.write(devicename);
 					bw.newLine();
+					bw.flush();
 					bw.close();
 					s.close();
+					System.out.println("Migration:Invite:Invoke: Closed socket");
 					
 				} 
 				catch (UnknownHostException e) {} 
