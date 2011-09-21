@@ -159,6 +159,9 @@ public class FAtiMARetainer extends AgentMindConnector implements Migrating, Mig
 	@Override
 	public Element saveState(Document doc) 
 	{
+		if (state == null)
+			return doc.createElement(getMessageTag());
+		
 		System.out.println("MIND-Saving state.");
 		Element parent = doc.createElement(getMessageTag());
 
