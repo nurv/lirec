@@ -110,6 +110,8 @@ public class Migration extends Competency {
 			return isAvailable;
 		}
 
+		
+		
 		public String getName() {
 			return name;
 		}
@@ -371,6 +373,10 @@ public class Migration extends Competency {
 				this.deviceList.put(name, new Device(name, host, port, inviteport));				
 			}			
 		}
+	}
+	
+	public boolean isOccupied() {
+		return occupied;
 	}
 	
 	private class ReceiveMessages extends EventHandler{
