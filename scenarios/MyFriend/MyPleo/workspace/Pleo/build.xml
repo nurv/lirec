@@ -1,4 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
+<!-- The following commented text will prevent the 'android' tool from overwriting this file.
+
+     (until sdk r12)
+     classname="com.android.ant.SetupTask"
+
+     (since sdk r13 FIXME)
+     version-tag:custom
+-->
+
 <project name="MyPleo" default="Build debug apk">
 	<path id="basedir.path">
 	    <pathelement path="${basedir}" />
@@ -40,11 +50,11 @@ APP_MODULES      := S3DClient
 APP_PROJECT_PATH := ${basedir.app}
 APP_PROJECT_LIBPATH := ${basedir.lib}
 		</echo>
-		<exec executable="C:/ProgramsNS/cygwin/bin/bash.exe">
+		<exec executable="${cygwin.dir}/bin/bash.exe">
 					<arg value="--login"/>
 					<arg value="-i"/>
 					<arg value="-c"/>
-					<arg value="cd &quot;${basedir.app}&quot; &amp;&amp; /cygdrive/C/ProgramsWI/android-ndk-r6/ndk-build &amp;&amp; cp obj/local/armeabi/libopenal.so libs/armeabi/libopenal.so"/>
+					<arg value="cd &quot;${basedir.app}&quot; &amp;&amp; /cygdrive/${ndk.dir}/ndk-build &amp;&amp; cp obj/local/armeabi/libopenal.so libs/armeabi/libopenal.so"/>
 				</exec>
 		<antcall target="compile"/>
 		<antcall target="debug"/>
@@ -55,11 +65,11 @@ APP_MODULES      := S3DClient
 APP_PROJECT_PATH := ${basedir.app}
 APP_PROJECT_LIBPATH := ${basedir.lib}
 		</echo>
-		<exec executable="C:/ProgramsNS/cygwin/bin/bash.exe">
+		<exec executable="${cygwin.dir}/bin/bash.exe">
 					<arg value="--login"/>
 					<arg value="-i"/>
 					<arg value="-c"/>
-					<arg value="cd &quot;${basedir.app}&quot; &amp;&amp; /cygdrive/C/ProgramsWI/android-ndk-r6/ndk-build  &amp;&amp; cp obj/local/armeabi/libopenal.so libs/armeabi/libopenal.so"/>
+					<arg value="cd &quot;${basedir.app}&quot; &amp;&amp; /cygdrive/${ndk.dir}/ndk-build  &amp;&amp; cp obj/local/armeabi/libopenal.so libs/armeabi/libopenal.so"/>
 				</exec>
 		<antcall target="compile"/>
 		<antcall target="release"/>
