@@ -1,3 +1,0 @@
-INDEX VERSION 1.126+C:\Pleo\workspace\.metadata\.plugins\org.eclipse.jdt.core
-1954941722.index
-2505609904.index
