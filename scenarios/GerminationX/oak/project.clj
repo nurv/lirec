@@ -6,6 +6,9 @@
                  [ring/ring-core "0.2.5"]
                  [ring/ring-devel "0.2.5"]
                  [ring/ring-jetty-adapter "0.2.5"]
-                 [org.danlarkin/clojure-json "1.1"]]
+                 [org.danlarkin/clojure-json "1.1"]
+                 [congomongo "0.1.4-SNAPSHOT"]
+                 ;[org.clojars.the-kenny/clojure-couchdb "0.1.1"]
+                 [org.mongodb/mongo-java-driver "2.6.5"]]
   :dev-dependencies
   [[lein-run "1.0.0-SNAPSHOT"]])

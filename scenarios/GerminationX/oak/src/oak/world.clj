@@ -216,7 +216,7 @@
 ;       (println (str "emotions now: " (count msg)))
        (merge agent {:emotions (parse-xml msg)}))
      (.startsWith type "<Relations")
-     (do 50392 27708
+     (do 
  ;      (println (str "relations now: " (count msg)))
        (merge agent {:relations (parse-xml msg)}))
      (.startsWith type "PROPERTY-CHANGED") agent
@@ -224,7 +224,6 @@
      (do
        (let [object-name (nth toks 1)
              object-tile (world-get-location world object-name)]
-         ;(println (remote-agent-tile agent))
          ; is the agent on the same tile as the object?
          (if (in-location? (:tile agent) object-tile)
            (do
@@ -272,7 +271,6 @@
          {:agents
           (map
            (fn [agent]
-             (println (:name agent) agent-name)
              (if (= (:name agent) agent-name)
                (merge agent {:tile tile-pos})
                agent))
@@ -320,12 +318,13 @@
 (def object-max-age 100)
 
 (defn world-remove-old-objects [world time]
-  (merge world
+  (comment merge world
          {:objects
           (filter
            (fn [obj]
              (< (- time (get obj "time")) object-max-age))
-           (world-objects world))}))
+           (world-objects world))})
+  world)
 
 (defn world-run [world time]
   (world-update-agents

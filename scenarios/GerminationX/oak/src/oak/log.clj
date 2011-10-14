@@ -21,13 +21,13 @@
 
 (defn make-plant-msg [code plant for-player-id extra]
   (hash-map
-   :type 'plant                      ; it's from a plant         
+   :type "plant"                     ; it:s from a plant         
    :time (current-time)              ; when the message was sent (not used)
    :player for-player-id             ; for getting to right player
-   :display 'none                    ; *** will be replaced by name
+   :display "none"                   ; *** will be replaced by name
    :owner (:owner-id plant)          ; *** will be replaced by name
    :from (:type plant)               ; which plant to display
-   :emotion 'its-a-plant             ; not used here
+   :emotion :its-a-plant             ; not used here
    :tile (:tile plant)               ; where the plant is
    :pos (:pos plant)                 ; where the plant is
    :extra extra                      ; random info for text (depending on context)
@@ -36,11 +36,11 @@
 
 (defn make-spirit-msg [code spirit for-player-id tile pos extra]
   (hash-map
-   :type 'spirit                     ; it's from a spirit         
+   :type "spirit"                     ; it:s from a spirit         
    :time (current-time)              ; when the message was sent (not used)
    :player for-player-id             ; for getting to right player
-   :display 'none                    ; *** will be replaced by name
-   :owner 'none                      ; not used
+   :display "none"                   ; *** will be replaced by name
+   :owner "none"                     ; not used
    :from (:name spirit)              ; which spirit to display
    :emotion (:highest-emotion spirit); how it's said!
    :tile tile                        ; subject location

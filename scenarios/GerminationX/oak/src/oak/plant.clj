@@ -29,12 +29,12 @@
    :pos pos
    :type type
    :layer (plant-type->layer type)
-   :state 'planted
-   :picked-by-ids '()
+   :state "planted"
+   :picked-by-ids ()
    :owner-id owner-id
    :size size
    :timer 0
-   :tick (+ (/ season-length 50) (Math/floor (rand 10)))
+   :tick (+ 2 (Math/floor (rand 3)))
    :health start-health
    :fruit 0
    :event-occurred ()
@@ -58,41 +58,41 @@
   "the plant state machine, advance state, based on health and season"
   [state health season annual]
   (cond
-   (= state 'planted) 'grow-a
-   (= state 'grow-a) (cond (> health min-health) 'grow-b :else (rand-nth (list 'grow-a 'grow-b)))
-   (= state 'grow-b) (cond (> health min-health) 'grow-c :else (rand-nth (list 'grow-b 'grow-c)))
-   (= state 'grow-c) (cond (> health min-health) 'grown :else (rand-nth (list 'grow-c 'grown)))
-   (= state 'grown) (cond
-                     (< health min-health) 'ill-a 
-                     (and (> health max-health)
-                          (or (= season 'spring)
-                              (= season 'summer)))
-                     'fruit-a
-                     (or (= season 'autumn) (= season 'winter))
-                     'decay-a
-                     :else 'grown)
-   (= state 'fruit-a) (if (< health min-health) 'decay-a 'fruit-b)
-   (= state 'fruit-b) (if (< health min-health) 'decay-a 'fruit-c)
-   (= state 'fruit-c) (if (or (= season 'autumn) (= season 'winter)
+   (= state "planted") "grow-a"
+   (= state "grow-a") (cond (> health min-health) "grow-b" :else (rand-nth (list "grow-a" "grow-b")))
+   (= state "grow-b") (cond (> health min-health) "grow-c" :else (rand-nth (list "grow-b" "grow-c")))
+   (= state "grow-c") (cond (> health min-health) "grown" :else (rand-nth (list "grow-c" "grown")))
+   (= state "grown") (cond
+                      (< health min-health) "ill-a" 
+                      (and (> health max-health)
+                           (or (= season "spring")
+                               (= season "summer")))
+                      "fruit-a"
+                      (or (= season "autumn") (= season "winter"))
+                      "decay-a"
+                      :else "grown")
+   (= state "fruit-a") (if (< health min-health) "decay-a" "fruit-b")
+   (= state "fruit-b") (if (< health min-health) "decay-a" "fruit-c")
+   (= state "fruit-c") (if (or (= season "autumn") (= season "winter")
                               (< health min-health))
-                        'decay-a 'grown)
-   (= state 'decay-a) (if (< health min-health) 'ill-a 'decay-b)
-   (= state 'decay-b) (if (< health min-health) 'ill-a 'decay-c)
-   (= state 'decay-c) (cond (and (or (= season 'spring) (= season 'summer))
+                        "decay-a" "grown")
+   (= state "decay-a") (if (< health min-health) "ill-a" "decay-b")
+   (= state "decay-b") (if (< health min-health) "ill-a" "decay-c")
+   (= state "decay-c") (cond (and (or (= season "spring") (= season "summer"))
                                  (> health min-health))
-                            (if annual 'grow-a 'grown)
+                            (if annual "grow-a" "grown")
                             :else
-                            (if (< health min-health) 'ill-a 'decay-c))
-   (= state 'ill-a) (cond (< health min-health) 'ill-b
-                (> health max-health) 'grown
-                :else 'ill-a)
-   (= state 'ill-b) (cond (< health min-health) 'ill-b ; hack away death
-                (> health max-health) 'ill-a
-                :else 'ill-b)
-   (= state 'ill-c) (cond (< health min-health) 'decayed
-                (> health max-health) 'ill-b
-                :else 'ill-c)
-   (= state 'decayed) 'decayed))
+                            (if (< health min-health) "ill-a" "decay-c"))
+   (= state "ill-a") (cond (< health min-health) "ill-b"
+                (> health max-health) "grown"
+                :else "ill-a")
+   (= state "ill-b") (cond (< health min-health) "ill-c" 
+                (> health max-health) "ill-a"
+                :else "ill-b")
+   (= state "ill-c") (cond (< health min-health) "decayed"
+                (> health max-health) "ill-b"
+                :else "ill-c")
+   (= state "decayed") "decayed"))
 
 (defn load-companion-rules [filename]
   (read-string (slurp filename)))
@@ -102,23 +102,28 @@
        (plant-type->id to)))
 
 (defn plant-add-to-log
-  "helper to add a message to a plant's log"
+  "helper to add a message to a plant:s log"
   [plant log type]
   (log-add-msg 
    log
    (make-plant-msg type plant (:owner-id plant) ())))
 
-(defn plant-clear
+(defn plant-clear-log
   "clear the things needed before an update"
   [plant]
   (modify
    :log
    (fn [log]
      (make-log 10))
-   (modify
-    :event-occurred
-    (fn [ev] ())
-    plant)))
+   plant))
+
+(defn plant-clear-events
+  "clear the things needed before an update"
+  [plant]
+  (modify
+   :event-occurred
+   (fn [ev] ())
+   plant))
 
 (defn neighbours-relationship
   "look for neighbours and see if we will help or hinder
@@ -138,9 +143,9 @@
    (fn [other]
      (and
       (or
-       (= (:state other) 'ill-a)
-       (= (:state other) 'ill-b)
-       (= (:state other) 'ill-c))
+       (= (:state other) "ill-a")
+       (= (:state other) "ill-b")
+       (= (:state other) "ill-c"))
       (comp (get-relationship (:type plant) (:type other) rules) 0)))
    neighbours))
 
@@ -170,7 +175,7 @@
      (log-add-msg 
       log
       (make-plant-msg
-       'thanks_for_helping
+       :thanks_for_helping
        plant (:owner-id other)
        (list (:type other)))))
    log
@@ -186,55 +191,55 @@
         
         ; when first planted, need to inform owners of plants
         ; around us about our relationship with them
-        (and (= old-state 'planted)
-             (= (:state plant) 'grow-a))
+        (and (= old-state "planted")
+             (= (:state plant) "grow-a"))
         (plant-add-to-log
          plant
          (log-relationship
           (log-relationship
            log plant
            (ill-neighbours-relationship plant neighbours rules >)
-           'i_am_beneficial_to
-           'i_am_benefitting_from)
+           :i_am_beneficial_to
+           :i_am_benefitting_from)
           plant
           (ill-neighbours-relationship plant neighbours rules <)
-          'i_am_detrimental_to
-          'i_am_detrimented_by)
-         'i_have_been_planted) 
+          :i_am_detrimental_to
+          :i_am_detrimented_by)
+         :i_have_been_planted) 
          
         (and
-         (not (= old-state 'ill-a))
-         (not (= old-state 'ill-b))
-         (= (:state plant) 'ill-a))
-        (plant-add-to-log plant log 'i_am_ill)
+         (not (= old-state "ill-a"))
+         (not (= old-state "ill-b"))
+         (= (:state plant) "ill-a"))
+        (plant-add-to-log plant log :i_am_ill)
         
-       ; (and (= old-state 'decay-c)
-       ;      (= (:state plant) 'grow-a))
-       ; (plant-add-to-log plant log 'i_am_regrowing)
+       ; (and (= old-state "decay-c")
+       ;      (= (:state plant) "grow-a"))
+       ; (plant-add-to-log plant log :i_am_regrowing)
         
-        (and (= old-state 'ill-c)
-             (= (:state plant) 'decayed))
-        (plant-add-to-log plant log 'i_have_died)
+        (and (= old-state "ill-c")
+             (= (:state plant) "decayed"))
+        (plant-add-to-log plant log :i_have_died)
 
-        (and (= old-state 'ill-a)
-             (= (:state plant) 'grown))
+        (and (= old-state "ill-a")
+             (= (:state plant) "grown"))
         (log-thank-owners
-         (plant-add-to-log plant log 'i_have_recovered)
+         (plant-add-to-log plant log :i_have_recovered)
          plant
          (neighbours-relationship plant neighbours rules >))
 
         (or
          (and
-          (= old-state 'ill-c)
-          (= (:state plant) 'ill-b))
+          (= old-state "ill-c")
+          (= (:state plant) "ill-b"))
          (and
-          (= old-state 'ill-b)
-          (= (:state plant) 'ill-a)))
-        (plant-add-to-log plant log 'i_am_recovering)
+          (= old-state "ill-b")
+          (= (:state plant) "ill-a")))
+        (plant-add-to-log plant log :i_am_recovering)
         
-;        (and (not (= old-state 'fruit-a))
-;             (= (:state plant) 'fruit-a))
-;        (plant-add-to-log plant log 'i_have_fruited)
+;        (and (not (= old-state :fruit-a))
+;             (= (:state plant) :fruit-a))
+;        (plant-add-to-log plant log :i_have_fruited)
       
         :else log))
      plant))
@@ -256,8 +261,8 @@
      (cond
       ; when first planted, need to tell fatima about
       ; our relationships with the plants around us
-      (and (= old-state 'planted)
-           (= (:state plant) 'grow-a))
+      (and (= old-state "planted")
+           (= (:state plant) "grow-a"))
       (events-from-relationship
        (events-from-relationship
         ev plant "benefit"
@@ -266,17 +271,17 @@
        (neighbours-relationship plant neighbours rules <))
       
       (and
-       (= old-state 'ill-c)
-       (= (:state plant) 'ill-b))
+       (= old-state "ill-c")
+       (= (:state plant) "ill-b"))
       (cons (str (:layer plant) "-recovery-to-b#" (:id plant)) ev)
       
       (and
-       (= old-state 'ill-b)
-       (= (:state plant) 'ill-a))
+       (= old-state "ill-b")
+       (= (:state plant) "ill-a"))
       (cons (str (:layer plant) "-recovery-to-a#" (:id plant)) ev)
       
-      (and (= old-state 'ill-a)
-           (= (:state plant) 'grown))
+      (and (= old-state "ill-a")
+           (= (:state plant) "grown"))
       (cons (str (:layer plant) "-finished-recovery#" (:id plant)) ev)
       
       :else ev))
@@ -313,7 +318,7 @@
   (modify
    :fruit
    (fn [f]
-     (if (= (:state plant) 'fruit-c)
+     (if (= (:state plant) "fruit-c")
        (min max-fruit (+ f 1)) f))
    plant))
 
@@ -325,12 +330,13 @@
    (if (> (:timer plant) (:tick plant))
      (modify
       :state
-      (fn [state] (adv-state state
-                             (:health plant)
-                             season
-                             ; for the moment assume cover plants
-                             ; are annuals
-                             (= (:layer plant) "cover")))
+      (fn [state]
+        (adv-state state
+                   (:health plant)
+                   season
+                   ; for the moment assume cover plants
+                   ; are annuals
+                   (= (:layer plant) "cover")))
       (modify
        :timer (fn [t] 0) plant))
      plant)))
@@ -342,7 +348,7 @@
      (plant-update-health
       (plant-update-fruit
        (plant-update-state
-        (plant-clear plant)
+        plant
         time delta season))
       neighbours rules)
      old-state neighbours rules)))
@@ -381,7 +387,7 @@
      (log-add-msg 
       log
       (make-plant-msg
-       'i_have_been_picked_by
+       :i_have_been_picked_by
        plant (:owner-id plant)
        (list (:name player)))))
    (modify :fruit (fn [f] (- f 1)) plant)))

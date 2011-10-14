@@ -29,12 +29,14 @@
    oak.tile
    oak.forms
    oak.player
-   oak.logging)
+   oak.logging
+   oak.db
+   oak.profile)
   (:import
    java.util.concurrent.Executors
    java.util.Date)
   (:require [compojure.route :as route]
-            [org.danlarkin.json :as json])) 
+            [org.danlarkin.json :as dojson])) 
 
 (def state-filename "state.txt")
 (def log-filename "public/log.txt")
@@ -48,9 +50,12 @@
        "data/characters/minds/Actions.xml"
        (list))))
 
-;(def my-game-world (ref (game-world-load state-filename)))
-(def my-game-world (ref (make-game-world 30 1)))
-(game-world-save (deref my-game-world) "test.txt")
+(def my-game-world (ref (game-world-load state-filename)))
+;(def my-game-world (ref (make-game-world 100 1)))
+(db-build! (sym-replace2 (deref my-game-world)))
+;(game-world-save (deref my-game-world) "test.txt")
+
+(def my-game-world (ref (make-empty-game-world)))
 
 (append-spit log-filename (str (str (Date.)) " server started\n"))
 
@@ -75,11 +80,11 @@
 
 (defn tick []
   (Thread/sleep 1000)
-  (println ".")
+  ;(println ".")
   ;(game-world-print (deref my-game-world))
 
   (try
-    (run)
+    (profile (run))
     ;(throw (Exception. "Testing error catching"))
     (catch Exception e
       (println "Oops ... an error ocurred.")
@@ -93,6 +98,9 @@
   (recur))
 
 ;(tick)
+
+(defn json [thing]
+  (dojson/encode-to-str (remove-ids thing)))
 
 (defroutes main-routes
   (GET "/login/:name/:fbid/:iefix" [name fbid iefix]
@@ -109,7 +117,7 @@
              (ref-set my-game-world
                       (game-world-add-player
                        (deref my-game-world) name fbid)))
-            (json/encode-to-str
+            (json
              (game-world-find-player
               (deref my-game-world)
               (game-world-find-player-id
@@ -119,12 +127,12 @@
             (append-spit
              log-filename
              (str (Date.) " " name " is logging in\n"))
-            (json/encode-to-str
+            (json
              (game-world-find-player
               (deref my-game-world) id))))))
 
   (GET "/player/:player-id/:iefix" [player-id iefix]
-       (json/encode-to-str
+       (json
         (game-world-find-player
          (deref my-game-world)
          (parse-number player-id))))
@@ -135,18 +143,18 @@
                      (make-vec2 (parse-number tilex)
                                 (parse-number tiley)))]
          
-         (json/encode-to-str tiles)))
+         (json tiles)))
 
   (GET "/get-msgs/:id/:iefix" [id iefix]
        (let [id (parse-number id)]
          (if (< id 1)
-           (json/encode-to-str (:msgs (:log (deref my-game-world))))
+           (json (:msgs (:log (deref my-game-world))))
            (do
              (let [player (game-world-find-player
                            (deref my-game-world) id)]
                (if player
-                 (json/encode-to-str (:msgs (:log player)))
-                 (json/encode-to-str {:error (str "no player " id " found")})))))))
+                 (json (:msgs (:log player)))
+                 (json {:error (str "no player " id " found")})))))))
            
   (GET "/make-plant/:tilex/:tiley/:posx/:posy/:type/:owner-id/:size/:iefix"
        [tilex tiley posx posy type owner-id size iefix]
@@ -172,8 +180,8 @@
                   (parse-number owner-id)
                   (fn [player]
                     (player-inc-plant-count player)))))
-       (game-world-save (deref my-game-world) state-filename)
-       (json/encode-to-str '("ok")))
+       ;(game-world-save (deref my-game-world) state-filename)
+       (json '("ok")))
 
   (GET "/pick/:tilex/:tiley/:plant-id/:player-id/:iefix" [tilex tiley plant-id player-id iefix]
        (append-spit
@@ -203,26 +211,19 @@
                             (game-world-find-player
                              (deref my-game-world)
                              player-id))))))))
-           (json/encode-to-str {:ok true})) 
-         (json/encode-to-str {:ok false}))))
-       
-  (GET "/hiscores/:iefix" [iefix]
-       (json/encode-to-str
-        (map
-         (fn [s]
-           (list (first s) (second s)))
-         (game-world-hiscores (deref my-game-world)))))
-  
+           (json {:ok true})) 
+         (json {:ok false}))))
+         
   (GET "/spirit-sprites/:name/:iefix" [name iefix]
        ;(update-islands (str "./" name) (str "./" name))
        (read-islands (str "./public/" name)))
 
   (GET "/spirit-info/:iefix" [iefix]
-       (json/encode-to-str (:spirits (deref my-game-world))))
+       (json (:spirits (deref my-game-world))))
 
   (GET "/perceive/:iefix" [iefix]
        (world-perceive-all (deref fatima-world))
-       (json/encode-to-str '("ok")))
+       (json '("ok")))
   
   (comment 
   (GET "/add-object/:obj/:iefix" [obj iefix]

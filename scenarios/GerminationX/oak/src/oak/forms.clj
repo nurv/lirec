@@ -44,6 +44,66 @@
                   s))
    :else s))
 
+(defn remove-ids
+  "used before sending mongo object to json"
+  [s]
+  (cond
+   (map? s) (reduce
+             (fn [r i]
+               (if (not (= (first i) :_id))
+                 (merge {(first i)
+                         (remove-ids (second i))} r)
+                 r))
+             {} s)
+   (seq? s) (map remove-ids s)
+   :else s))
+
+(defn sym-replace2
+  "used before serialising to mongo"
+  [s]
+  (cond
+   (symbol? s) (keyword s)
+   (map? s) (reduce
+             (fn [r i]
+               (merge {(first i)
+                       (sym-replace2 (second i))} r))
+             {} s)
+   (seq? s) (map sym-replace2 s)
+   :else s))
+
+(defn sym-replace
+  "used before serialising to mongo"
+  [s]
+  (cond
+   (symbol? s) (keyword (str "SYM-" s))
+   (map? s) (reduce
+             (fn [r i]
+               (merge {(first i)
+                       (sym-replace (second i))} r))
+             {} s)
+   (seq? s) (map sym-replace s)
+   :else s))
+
+
+(defn sym-unreplace
+  "used after serialising in from mongo"
+  [s]
+  (cond
+   (keyword? s) 
+   (if (.startsWith (str s) ":SYM-")
+     (symbol (.substring (str s) 5))
+     s)
+   
+   (map? s)
+   (reduce
+    (fn [r i]
+      (merge {(first i)
+              (sym-unreplace (second i))} r))
+    {} s)
+   
+   (seq? s) (map sym-unreplace s)
+   :else s))
+
 (defn current-time []
   (.getTime (java.util.Date.)))
 
@@ -52,3 +112,13 @@
    (empty? l) 0
    (= (first l) i) (+ 1 (count-items (rest l) i))
    :else (count-items (rest l) i)))
+
+(defn rand-sublist [l n]
+  (if (empty? l) ()
+      (loop [n n
+             o ()]
+        (cond
+         (zero? n) o
+         :else 
+         (recur (- n 1) (cons (rand-nth l) o))))))
+   

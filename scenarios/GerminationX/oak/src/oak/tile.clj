@@ -26,8 +26,9 @@
 (defn make-tile [pos entity-list]
   (hash-map
    :version 0
-   :season 'summer
+   :season "summer"
    :pos pos
+   :index (str (:x pos) "," (:y pos))
    :entities entity-list))
 
 (defn tile-distance
@@ -37,7 +38,7 @@
     (vec2-dist posa (vec2-add diff posb))))
 
 (defn tile-count
-  "searchin' fer memleaks"
+  "searchin: fer memleaks"
   [tile]
   (println (str "entities: " (count (:entities tile))))
   (comment doseq [i (:entities tile)]
@@ -55,7 +56,7 @@
    (:entities tile)))
 
 (defn tile-add-entity
-  "add entity to the tile, using it's position,
+  "add entity to the tile, using it:s position,
   does nothing if position is already taken"
   [tile entity]
   (if (not (tile-position-taken? tile (:pos entity)))
@@ -97,7 +98,7 @@
                      centre-tile-pos pos
                      (:pos tile) (:pos other))
                     plant-influence-distance)
-                 (not (= id (:id other)))) ; don't return ourselves
+                 (not (= id (:id other)))) ; don:t return ourselves
           (cons other r) r))
       r
       (:entities tile)))
@@ -139,7 +140,7 @@
   [tile]
   (reduce
    (fn [r e]
-     (if (= (:state e) 'decayed)
+     (if (= (:state e) "decayed")
        (cons (:owner-id e) r) r))
    ()
    (:entities tile)))
@@ -149,10 +150,10 @@
   [tile time delta rules neighbouring-tiles]
   (let [st (/ (mod time season-length) season-length)
         season (cond
-                (< st 0.25) 'spring
-                (< st 0.50) 'summer
-                (< st 0.75) 'autumn
-                :else 'winter)]
+                (< st 0.25) "spring"
+                (< st 0.50) "summer"
+                (< st 0.75) "autumn"
+                :else "winter")]
     (modify :entities
             (fn [entities]
               (map
@@ -166,9 +167,33 @@
                   season))
                (filter
                 (fn [e]
-                  (not (= (:state e) 'decayed)))
+                  (not (= (:state e) "decayed")))
                 entities)))
             (modify :season (fn [s] season) tile))))
+
+(defn tile-clear-log
+  "clears logs for everything"
+  [tile]
+  (modify
+   :entities
+   (fn [entities]
+     (map
+      (fn [e]
+        (plant-clear-log e))
+      entities))
+   tile))
+
+(defn tile-clear-events
+  "clears events from everything"
+  [tile]
+  (modify
+   :entities
+   (fn [entities]
+     (map
+      (fn [e]
+        (plant-clear-events e))
+      entities))
+   tile))
 
 (defn tile-get-log
   "gets the message logs for all the entities"

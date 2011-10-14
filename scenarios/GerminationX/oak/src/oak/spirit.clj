@@ -12,7 +12,6 @@
 ;; You should have received a copy of the GNU Affero General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
 (ns oak.spirit
   (:use
    oak.io
@@ -23,33 +22,11 @@
    oak.log
    oak.plant
    oak.player
-   oak.defs)
+   oak.defs
+   oak.db
+   oak.fatima-names)
   (:require
    clojure.contrib.math))
-
-(defn emotion-map []
-  { "LOVE" 0
-    "HATE" 0
-    "HOPE" 0
-    "FEAR" 0
-    "SATISFACTION" 0
-    "RELIEF" 0
-    "FEARS-CONFIRMED" 0
-    "DISAPPOINTMENT" 0
-    "JOY" 0
-    "DISTRESS" 0
-	"HAPPY-FOR" 0
-	"PITTY" 0
-	"RESENTMENT" 0
-	"GLOATING" 0
-    "PRIDE" 0
-	"SHAME" 0
-	"GRATIFICATION" 0
-	"REMORSE" 0
-	"ADMIRATION" 0
-	"REPROACH" 0
-	"GRATITUDE" 0
-	"ANGER" 0 })
 
 (defn make-spirit [id remote-agent]
   (println (str "creating spirit for " (remote-agent-name remote-agent)))
@@ -62,9 +39,9 @@
    :emotions (emotion-map)
    :emotionalloc {:tile (make-vec2 0 0)
                   :pos (make-vec2 0 0) }
-   :fatactions '()
-   :fatemotions '()
-   :highest-emotion 'NONE
+   :fatactions ()
+   :fatemotions ()
+   :highest-emotion "NONE"
    :log (make-log 10)))
 
 (defn spirit-highest-emotion [spirit]
@@ -74,21 +51,13 @@
       (if (> (second emotion)
              (second r))
         emotion r))
-    ['NONE 0]
+    [:NONE 0]
     (:emotions spirit))))
           
 (defn spirit-count [spirit]
   (println (str "emotions: " (count (:emotions spirit))))
   (println (str "fatemotions: " (count (:fatactions spirit))))
   (println (str "fatactions: " (count (:fatemotions spirit)))))
-
-; convert foofooname#999# to 999
-(defn fatima-name->id [name]
-  (if (.contains name "#")
-    (parse-number (.substring name
-                              (+ 1 (.indexOf name "#"))
-                              (.length name)))
-    false))
 
 (defn spirit-update-emotionalloc [spirit remote-agent tiles]
   (modify
@@ -142,20 +111,17 @@
       (remote-agent-done remote-agent))
     spirit)))
 
-(defn spirit-pick-helper-player [player-id players]
-  (let [selection
-        (filter
-         (fn [p]
-           (and (not (= player-id (:id p)))
-                (> (:seeds-left p) 0)))
-         players)]
-    (if (> (count selection) 0)
-      (rand-nth selection)
-      false)))
+(defn spirit-pick-helper-player [player-id]
+  ; pick any player - should be based on needed layer
+  (let [found (db-get-random-one :players {:id {:$ne player-id}})]
+    (if (empty? found)
+      false
+      (first found))))
 
-(defn spirit-ask-for-help [spirit plant diagnosis players]
-  (let [player (spirit-pick-helper-player (:owner-id plant) players)]
-    (if player
+(defn spirit-ask-for-help [spirit plant diagnosis]
+  (let [player (spirit-pick-helper-player (:owner-id plant))]
+    (if (and player
+             (> (count (:needed_plants diagnosis)) 0))
       (do
         (modify :log
                 (fn [log]
@@ -163,24 +129,24 @@
                    (log-add-msg
                     log
                     (make-spirit-msg ; ask for help
-                     'needs_help
+                     :needs_help
                      spirit
                      (:id player)
                      (:tile spirit)
                      (:pos plant)
                      (list
-                      (player-list-id->player-name players (:owner-id plant))
+                      (:owner-id plant)
                       (:type plant)
                       (rand-nth (:needed_plants diagnosis)))))
                    ; tell owner we are asking
                    (make-spirit-msg
-                    'ive_asked_x_for_help
+                    :ive_asked_x_for_help
                     spirit
                     (:owner-id plant)
                     (:tile plant)
                     (:pos plant)
                     (list
-                     (player-list-id->player-name players (:id player))
+                     (:id player)
                      (:type plant)
                      (:state plant)))))
                 spirit))
@@ -193,10 +159,11 @@
                  (> (count (:harmful_plants diagnosis)) 0)
                  (< 5 (rand-int 10)))
               (let [harmful (rand-nth (:harmful_plants diagnosis))]
+                (println "in send diag.. " harmful (:owner-id harmful))
                 (log-add-msg
                  log
                  (make-spirit-msg
-                  'your_plant_doesnt_like
+                  :your_plant_doesnt_like
                   spirit
                   (:owner-id plant)
                   (:tile spirit)
@@ -209,7 +176,7 @@
                 (log-add-msg
                  log
                  (make-spirit-msg
-                  'your_plant_needs
+                  :your_plant_needs
                   spirit
                   (:owner-id plant)
                   (:tile spirit)
@@ -217,10 +184,12 @@
                   (list
                    (:type plant)
                    (rand-nth (:needed_plants diagnosis)))))
-                log)))
+                (do
+                  (println (:type plant) " doesn't need any other plants?")
+                  log))))
           spirit))
 
-(defn spirit-diagnose [spirit plant rules players tiles]
+(defn spirit-diagnose [spirit plant rules tiles]
   (let [diagnosis
         (plant-diagnose
          plant
@@ -228,7 +197,7 @@
          rules)]
     (spirit-send-diagnosis
      (if (< 5 (rand-int 10)) ; sometimes ask for help
-       (spirit-ask-for-help spirit plant diagnosis players)
+       (spirit-ask-for-help spirit plant diagnosis)
        spirit)
      diagnosis plant rules)))
 
@@ -246,49 +215,56 @@
           (fn [log]
             (log-add-msg
              log
-             ; we can't exactly be sure why the fatima agent
+             ; we can:t exactly be sure why the fatima agent
              ; has triggered the praise action, but we can make
              ; an educated guess by looking at the plant
              
-             ; if it's not the same type as the spirit
+             ; if it:s not the same type as the spirit
              (if (not (= (:name spirit)
                          (layer->spirit-name (:layer plant))))
-               (make-praise-msg 'spirit_helper_praise spirit plant)
-               ; it's the same type
+               (make-praise-msg :spirit_helper_praise spirit plant)
+               ; it:s the same type
                (cond
-                (= (:state plant) 'grow-a)
-                (make-praise-msg 'spirit_growing_praise spirit plant)
+                (= (:state plant) "grow-a")
+                (make-praise-msg :spirit_growing_praise spirit plant)
 
-                (= (:state plant) 'fruit-a)
-                (make-praise-msg 'spirit_flowering_praise spirit plant)
+                (= (:state plant) "fruit-a")
+                (make-praise-msg :spirit_flowering_praise spirit plant)
                 
-                (= (:state plant) 'fruit-c)
-                (make-praise-msg 'spirit_fruiting_praise spirit plant)
+                (= (:state plant) "fruit-c")
+                (make-praise-msg :spirit_fruiting_praise spirit plant)
 
                 ; i give up!
-                :else (make-praise-msg 'spirit_general_praise spirit plant)))))
+                :else (make-praise-msg :spirit_general_praise spirit plant)))))
           spirit))
 
-(defn spirit-update-from-actions [spirit tiles rules players]
+(defn spirit-update-from-actions [spirit tiles rules]
   (modify
-   :fatactions (fn [fatactions] '()) ; clear em out
+   :fatactions (fn [fatactions] ()) ; clear em out
    (reduce
     (fn [spirit action]
-      (let [type (nth (.split (:msg action) " ") 0)
-            subject (nth (.split (:msg action) " ") 1)
-            id (fatima-name->id subject)]
+      (let [toks (.split (:msg action) " ")
+            type (nth toks 0)
+            fullname (nth toks 1)
+            id (fatima-name->id fullname)
+            subject (fatima-name-remove-id fullname)
+            reason (fatima-subject->reason subject)]
         (if id
           (let [e (tiles-find-entity tiles id)]
             (if e
               (modify :pos (fn [pos] (:pos e))
                       (cond
                        ;(= type "look-at") (spirit-looking-at spirit tile e)
-                       (= type "diagnose") (spirit-diagnose spirit e rules players tiles)
+                       (and
+                        (= type "diagnose")
+                        (not (= reason "detriment")))
+                       ; don't want to diagnose plants that are detriments to our plants
+                       (spirit-diagnose spirit e rules tiles)
                        (= type "praise") (spirit-praise spirit e)
                        :else spirit))
               spirit)) ; can happen if we have moved away from the tile
           (do
-            (println "could not find id from fatima name" subject)
+            (println "could not find id from fatima name" fullname)
             spirit))))
     spirit
     (:fatactions spirit))))
@@ -300,7 +276,7 @@
      (spirit-highest-emotion spirit))
    spirit))
 
-(defn spirit-update [spirit remote-agent tiles rules players]
+(defn spirit-update [spirit remote-agent tiles rules]
   (spirit-update-highest-emotion
    (spirit-update-from-actions
     (spirit-update-emotionalloc
@@ -312,16 +288,7 @@
                (modify :tile (fn [t] (:tile remote-agent)) spirit))
        remote-agent)
       remote-agent)
-     remote-agent tiles) tiles rules players)))
+     remote-agent tiles) tiles rules)))
           
-(comment println
-         (map
-          (fn [relation]
-            (list (:tag relation)
-                  (map
-                   (fn [chunk]
-                     (list (:tag chunk) (:content chunk)))
-                   (:content relation))))
-          (:content (remote-agent-relations remote-agent))))
 
   

@@ -17,7 +17,7 @@
    clojure.contrib.math))
 
 (def tile-size 5)
-(def season-length (* 60 3))
+(def season-length (* 60 15))
 (def min-health 10)
 (def max-health 90)
 (def start-health 20)
@@ -61,3 +61,27 @@
    (= layer "tree") "TreeSpirit"
    (= layer "shrub") "ShrubSpirit"
    :else "UnknownSpirit"))
+
+(defn emotion-map []
+  { "LOVE" 0
+    "HATE" 0
+    "HOPE" 0
+    "FEAR" 0
+    "SATISFACTION" 0
+    "RELIEF" 0
+    "FEARS-CONFIRMED" 0
+    "DISAPPOINTMENT" 0
+    "JOY" 0
+    "DISTRESS" 0
+	"HAPPY-FOR" 0
+	"PITTY" 0
+	"RESENTMENT" 0
+	"GLOATING" 0
+    "PRIDE" 0
+	"SHAME" 0
+	"GRATIFICATION" 0
+	"REMORSE" 0
+	"ADMIRATION" 0
+	"REPROACH" 0
+	"GRATITUDE" 0
+	"ANGER" 0 })
