@@ -1,0 +1,1 @@
+COPY ..\viPleoShivaModuleOutput\MyPleo.stk .\assets\S3DMain.stk
