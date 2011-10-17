@@ -1,0 +1,50 @@
+<project name="FAtiMA.EmotionalIntelligence" basedir="." default="jar">
+
+    <property name="src.dir"     value="src"/>
+
+    <property name="build.dir"   value="build"/>
+    <property name="classes.dir" value="${build.dir}/classes"/>
+    <property name="jar.dir"     value="${build.dir}/jar"/>
+
+    <property name="FAtiMA.lib.dir"     value="${FAtiMA.dir}/build/jar"/>
+    <property name="FAtiMA.OCCAffectDerivation.lib.dir"     value="${FAtiMA.OCCAffectDerivation.dir}/build/jar"/>
+    <property name="FAtiMA.ReactiveComponent.lib.dir"     value="${FAtiMA.ReactiveComponent.dir}/build/jar"/>
+    <property name="FAtiMA.DeliberativeComponent.lib.dir"     value="${FAtiMA.DeliberativeComponent.dir}/build/jar"/>
+    <property name="FAtiMA.AdvancedMemory.lib.dir"     value="${FAtiMA.AdvancedMemory.dir}/build/jar"/>
+    <property name="FAtiMA.ToM.lib.dir"     value="${FAtiMA.ToM.dir}/build/jar"/>
+    <property name="FAtiMA.culture.lib.dir"     value="${FAtiMA.culture.dir}/build/jar"/>
+    <property name="FAtiMA.MotivationalSystem.lib.dir"     value="${FAtiMA.MotivationalSystem.dir}/build/jar"/>
+    <property name="FAtiMA.SocialRelations.lib.dir"     value="${FAtiMA.SocialRelations.dir}/build/jar"/>
+
+    <path id="classpath">
+        <fileset dir="" includes="**/*.jar"/>
+        <fileset dir="${FAtiMA.dir}" includes="**/*.jar"/>
+        <fileset dir="${FAtiMA.lib.dir}" includes="**/*.jar"/>
+        <fileset dir="${FAtiMA.OCCAffectDerivation.lib.dir}" includes="**/*.jar"/>
+	<fileset dir="${FAtiMA.ReactiveComponent.lib.dir}" includes="**/*.jar"/>
+	<fileset dir="${FAtiMA.AdvancedMemory.lib.dir}" includes="**/*.jar"/>
+	<fileset dir="${FAtiMA.DeliberativeComponent.lib.dir}" includes="**/*.jar"/>
+	<fileset dir="${FAtiMA.ReactiveComponent.lib.dir}" includes="**/*.jar"/>
+	<fileset dir="${FAtiMA.ToM.lib.dir}" includes="**/*.jar"/>
+	<fileset dir="${FAtiMA.culture.lib.dir}" includes="**/*.jar"/>
+	<fileset dir="${FAtiMA.MotivationalSystem.lib.dir}" includes="**/*.jar"/>
+	<fileset dir="${FAtiMA.SocialRelations.lib.dir}" includes="**/*.jar"/>
+    </path>
+
+
+    <target name="clean">
+        <delete dir="${build.dir}"/>
+    </target>
+
+    <target name="compile">
+        <mkdir dir="${classes.dir}"/>
+        <javac srcdir="${src.dir}" destdir="${classes.dir}" classpathref="classpath"/>
+    </target>
+
+    <target name="jar" depends="compile">
+        <mkdir dir="${jar.dir}"/>
+        <jar destfile="${jar.dir}/${ant.project.name}.jar" basedir="${classes.dir}"/>
+    </target>
+
+</project>
+

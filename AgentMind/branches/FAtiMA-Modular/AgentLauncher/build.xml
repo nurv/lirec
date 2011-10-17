@@ -1,0 +1,66 @@
+<project name="AgentLauncher" basedir="." default="main">
+
+    <property name="src.dir"     value="src"/>
+
+    <property name="build.dir"   value="build"/>
+    <property name="classes.dir" value="${build.dir}/classes"/>
+    <property name="jar.dir"     value="${build.dir}/jar"/>
+
+    <property name="main-class"  value="FAtiMA.AgentLauncher"/>
+
+    <property name="FAtiMA.lib.dir"     value="${FAtiMA.dir}/build/jar"/>
+    <property name="FAtiMA.OCCAffectDerivation.lib.dir"     value="${FAtiMA.OCCAffectDerivation.dir}/build/jar"/>
+    <property name="FAtiMA.DeliberativeComponent.lib.dir"     value="${FAtiMA.DeliberativeComponent.dir}/build/jar"/>
+    <property name="FAtiMA.ReactiveComponent.lib.dir"     value="${FAtiMA.ReactiveComponent.dir}/build/jar"/>
+    <property name="FAtiMA.ToM.lib.dir"     value="${FAtiMA.ToM.dir}/build/jar"/>
+    <property name="FAtiMA.culture.lib.dir"     value="${FAtiMA.culture.dir}/build/jar"/>
+    <property name="FAtiMA.MotivationalSystem.lib.dir"     value="${FAtiMA.MotivationalSystem.dir}/build/jar"/>
+    <property name="FAtiMA.SocialRelations.lib.dir"     value="${FAtiMA.SocialRelations.dir}/build/jar"/>
+    <property name="FAtiMA.Empathy.lib.dir"     value="${FAtiMA.Empathy.dir}/build/jar"/>
+    <property name="FAtiMA.AdvancedMemory.lib.dir"     value="${FAtiMA.AdvancedMemory.dir}/build/jar"/>
+
+    <path id="classpath">
+        <fileset dir="${FAtiMA.dir}" includes="**/*.jar"/>
+        <fileset dir="${FAtiMA.lib.dir}" includes="**/*.jar"/>
+	<fileset dir="${FAtiMA.OCCAffectDerivation.lib.dir}" includes="**/*.jar"/>
+	<fileset dir="${FAtiMA.DeliberativeComponent.lib.dir}" includes="**/*.jar"/>
+	<fileset dir="${FAtiMA.ReactiveComponent.lib.dir}" includes="**/*.jar"/>
+	<fileset dir="${FAtiMA.ToM.lib.dir}" includes="**/*.jar"/>
+	<fileset dir="${FAtiMA.culture.lib.dir}" includes="**/*.jar"/>
+	<fileset dir="${FAtiMA.MotivationalSystem.lib.dir}" includes="**/*.jar"/>
+	<fileset dir="${FAtiMA.SocialRelations.lib.dir}" includes="**/*.jar"/>
+	<fileset dir="${FAtiMA.Empathy.lib.dir}" includes="**/*.jar"/>
+	<fileset dir="${FAtiMA.AdvancedMemory.lib.dir}" includes="**/*.jar"/>
+	<fileset dir="${FAtiMA.AdvancedMemory.dir}/drools-runtime" includes="**/*.jar"/>
+	<fileset dir="${FAtiMA.AdvancedMemory.dir}/drools-runtime/lib" includes="**/*.jar"/>
+    </path>
+
+
+    <target name="clean">
+        <delete dir="${build.dir}"/>
+    </target>
+
+    <target name="compile">
+        <mkdir dir="${classes.dir}"/>
+        <javac srcdir="${src.dir}" destdir="${classes.dir}" classpathref="classpath"/>
+    </target>
+
+    <target name="run" depends="compile">
+        <java classname="${main-class}" fork="true" dir="../">
+            <classpath>
+                <path refid="classpath"/>
+		<pathelement path="${java.class.path}"/>
+		<pathelement location="${FAtiMA.lib.dir}/FAtiMA.jar"/>
+		<pathelement path="${classes.dir}"/>
+		<pathelement path="${FAtiMA.AdvancedMemory.dir}/src/main/rules/"/>
+            </classpath>
+            <arg value="LIRECScenarios.xml"/> <!-- Scenario config file -->
+	    <arg value="ArchitectureTest"/> <!-- Scenario name -->
+	    <arg value="SpiritOfTheBuilding"/> <!-- agent name -->
+	</java>
+    </target>
+
+    <target name="main" depends="run"/>
+
+</project>
+

@@ -1,0 +1,88 @@
+<project name="FAtiMALauncher" basedir="." default="run">
+
+    <property name="FAtiMA.dir"  value="${basedir}/FAtiMA"/>
+    <property name="FAtiMA.AdvancedMemory.dir"  value="${basedir}/FAtiMA.AdvancedMemory"/>
+    <property name="FAtiMA.culture.dir"  value="${basedir}/FAtiMA.culture"/>
+    <property name="FAtiMA.DeliberativeComponent.dir"  value="${basedir}/FAtiMA.DeliberativeComponent"/>
+    <property name="FAtiMA.EmotionalIntelligence.dir"  value="${basedir}/FAtiMA.EmotionalIntelligence"/>
+    <property name="FAtiMA.Emotivector.dir"  value="${basedir}/FAtiMA.Emotivector"/>
+    <property name="FAtiMA.Empathy.dir"  value="${basedir}/FAtiMA.Empathy"/>
+    <property name="FAtiMA.MotivationalSystem.dir"  value="${basedir}/FAtiMA.MotivationalSystem"/>
+    <property name="FAtiMA.OCCAffectDerivation.dir"  value="${basedir}/FAtiMA.OCCAffectDerivation"/>
+    <property name="FAtiMA.ReactiveComponent.dir"  value="${basedir}/FAtiMA.ReactiveComponent"/>
+    <property name="FAtiMA.SocialRelations.dir"  value="${basedir}/FAtiMA.SocialRelations"/>
+    <property name="FAtiMA.ToM.dir"  value="${basedir}/FAtiMA.ToM"/>
+    <property name="AgentLauncher.dir" value="${basedir}/AgentLauncher"/>
+
+    <target name="clean">
+	<ant antfile="build.xml" dir="${AgentLauncher.dir}" target="clean"/>
+	<ant antfile="build.xml" dir="${FAtiMA.dir}" target="clean"/>
+        <ant antfile="build.xml" dir="${FAtiMA.OCCAffectDerivation.dir}" target="clean"/>
+        <ant antfile="build.xml" dir="${FAtiMA.AdvancedMemory.dir}" target="clean"/>
+	<ant antfile="build.xml" dir="${FAtiMA.ReactiveComponent.dir}" target="clean"/>
+	<ant antfile="build.xml" dir="${FAtiMA.DeliberativeComponent.dir}" target="clean"/>
+	<ant antfile="build.xml" dir="${FAtiMA.ToM.dir}" target="clean"/>
+	<ant antfile="build.xml" dir="${FAtiMA.culture.dir}" target="clean"/>
+	<ant antfile="build.xml" dir="${FAtiMA.MotivationalSystem.dir}" target="clean"/>
+	<ant antfile="build.xml" dir="${FAtiMA.SocialRelations.dir}" target="clean"/>
+	<ant antfile="build.xml" dir="${FAtiMA.EmotionalIntelligence.dir}" target="clean"/>
+	<ant antfile="build.xml" dir="${FAtiMA.Emotivector.dir}" target="clean"/>
+	<ant antfile="build.xml" dir="${FAtiMA.Empathy.dir}" target="clean"/>
+    </target>
+
+    <target name="FAtiMA">
+        <ant antfile="build.xml" dir="${FAtiMA.dir}"/>
+    </target>
+
+    <target name="FAtiMA.OCCAffectDerivation" depends="FAtiMA">
+        <ant antfile="build.xml" dir="${FAtiMA.OCCAffectDerivation.dir}"/>
+    </target>
+
+    <target name="FAtiMA.ReactiveComponent" depends="FAtiMA.OCCAffectDerivation">
+        <ant antfile="build.xml" dir="${FAtiMA.ReactiveComponent.dir}"/>
+    </target>
+
+    <target name="FAtiMA.AdvancedMemory" depends="FAtiMA.OCCAffectDerivation">
+        <ant antfile="build.xml" dir="${FAtiMA.AdvancedMemory.dir}"/>
+    </target>
+
+    <target name="FAtiMA.DeliberativeComponent" depends="FAtiMA.OCCAffectDerivation">
+        <ant antfile="build.xml" dir="${FAtiMA.DeliberativeComponent.dir}"/>
+    </target>
+
+    <target name="FAtiMA.ToM" depends="FAtiMA.DeliberativeComponent,FAtiMA.ReactiveComponent">
+        <ant antfile="build.xml" dir="${FAtiMA.ToM.dir}"/>
+    </target>
+
+    <target name="FAtiMA.MotivationalSystem" depends="FAtiMA.DeliberativeComponent">
+        <ant antfile="build.xml" dir="${FAtiMA.MotivationalSystem.dir}"/>
+    </target>
+
+    <target name="FAtiMA.culture" depends="FAtiMA.ToM,FAtiMA.MotivationalSystem">
+        <ant antfile="build.xml" dir="${FAtiMA.culture.dir}"/>
+    </target>
+
+    <target name="FAtiMA.SocialRelations" depends="FAtiMA.OCCAffectDerivation">
+        <ant antfile="build.xml" dir="${FAtiMA.SocialRelations.dir}"/>
+    </target>
+
+    <target name="FAtiMA.EmotionalIntelligence" depends="FAtiMA.SocialRelations,FAtiMA.ToM,FAtiMA.MotivationalSystem,FAtiMA.AdvancedMemory">
+        <ant antfile="build.xml" dir="${FAtiMA.EmotionalIntelligence.dir}"/>
+    </target>
+
+    <target name="FAtiMA.Emotivector" depends="FAtiMA">
+        <ant antfile="build.xml" dir="${FAtiMA.Emotivector.dir}"/>
+    </target>
+
+    <target name="FAtiMA.Empathy" depends="FAtiMA.SocialRelations,FAtiMA.ReactiveComponent">
+        <ant antfile="build.xml" dir="${FAtiMA.Empathy.dir}"/>
+    </target>
+
+    <target name="AgentLauncher" depends="FAtiMA.AdvancedMemory,FAtiMA.ReactiveComponent,FAtiMA.DeliberativeComponent,FAtiMA.ToM,FAtiMA.culture,FAtiMA.MotivationalSystem,FAtiMA.SocialRelations,FAtiMA.EmotionalIntelligence,FAtiMA.Emotivector,FAtiMA.Empathy,FAtiMA.AdvancedMemory">
+        <ant antfile="build.xml" dir="${AgentLauncher.dir}"/>
+    </target>
+
+    <target name="run" depends="AgentLauncher"/>
+
+</project>
+
