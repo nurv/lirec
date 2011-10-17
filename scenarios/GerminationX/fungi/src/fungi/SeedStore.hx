@@ -63,17 +63,17 @@ class SeedStore
         }
     }
 
-    public function Remove(world:World) : String
+    public function Remove(world:World) : Seed
     {
         if (Seeds.length>0)
         {
             var s = Seeds.pop();
             world.RemoveSprite(s.Spr);
-            return s.Type;
+            return s;
         }
         else
         {
-            return "";
+            return null;
         }
     }
 }

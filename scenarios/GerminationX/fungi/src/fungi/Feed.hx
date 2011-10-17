@@ -51,8 +51,6 @@ class Feed
                         GRATIFICATION:16,REMORSE:17,ADMIRATION:18,
                         REPROACH:19,GRATITUDE:20,ANGER:21};
 
-
-
         Info=new Frame("",120,25,64*5,64);
         Info.SetTextSize(12);
         Info.UpdateText("Loading...");
@@ -121,7 +119,7 @@ class Feed
         return true;
     }
 
-    public function Update(w:World,d:Array<Dynamic>)
+    function UpdateTopBox(w:World) 
     {
         if (w.MyName=="")
         {
@@ -129,29 +127,8 @@ class Feed
         }
         else
         {
-/*            var SeedsLeft=Reflect.field(w.PlayerInfo,"seeds-left");
-            var PlantCount=Reflect.field(w.PlayerInfo,"plant-count");
-            var txt="Hello "+w.MyName+", it is "+w.Season+" and you have "+PlantCount+" plants currently alive. "+
-                "You have "+SeedsLeft+" seeds left.";
-            var time=Std.parseInt(Reflect.field(w.PlayerInfo,"next-refresh"));
-            
-            if (time!=0)
-            {
-                var now=Date.now().getTime();
-                var diff=Date.fromTime(time-now);
-                txt+=" More seeds in "+diff.getMinutes()+" minutes.";
-            }
-
-            var fruit:Array<Dynamic>=w.PlayerInfo.seeds;
-            for (f in fruit)
-            {
-                txt+=f.type+" "+f.id+" ";
-            }
-
-            Info.UpdateText(txt);*/
-
             Info.UpdateText("");
-
+            
             var fruit:Array<Dynamic>=w.PlayerInfo.seeds;
             fruit.reverse();
             if (!FruitEq(Fruit,fruit))
@@ -183,59 +160,105 @@ class Feed
                 }
             }
         }
+    }
 
-        Rnd.Seed(0);
-        Info.InitTextures(GUIFrameTextures.Get(),Rnd);
+    function BuildMessage(w:World, i:Dynamic, pos:Vec2)
+    {
+        Rnd.Seed(Std.int(i.time));
+        var f=new Frame("",pos.x,pos.y,64*2,64*1);
+        f.ExpandLeft=70;
+        f.SetTextSize(10);
+        
+        f.UpdateText(StrMkr.MsgToString(i));
+        
+        var Colour = new Vec3(0.8,0.9,0.7);
+        if (i.type=="spirit") Colour=Spirit.GetEmotionColour(i.emotion);
+        
+        f.R=Colour.x;
+        f.G=Colour.y;
+        f.B=Colour.z;
+        
+        f.InitTextures(GUIFrameTextures.Get(),Rnd);
+        Blocks.push(f);
+        w.AddSprite(f);
+        
+        var Icon=MakeIcon(new Vec2(pos.x-20,pos.y+32),
+                          i.type, i.from, Colour);
+        w.AddSprite(Icon);
+        Icons.push(Icon);
+        
+        if (i.type=="spirit")
+        {
+            f.MouseUp(this,function(c){
+                if (w.Seeds.Carrying())
+                {
+                    var Fruit=w.Seeds.Remove(w);
+                    if (i.code == "your_plant_doesnt_like" ||
+                        i.code == "i_am_detrimented_by" ||
+                        i.code == "i_am_detrimental_to" ||
+                        i.code == "i_am_benefitted_by" ||
+                        i.code == "i_am_beneficial_to" ||
+                        i.code == "needs_help" ||
+                        i.code == "ive_asked_x_for_help")
+                    {
+                        w.Server.Request("gift/"+
+                                         w.MyID+"/"+
+                                         Fruit.ID+"/"+
+                                         i.extra[1],
+                                         c,function (c,data) {});
+                        
+                    }
+                    else
+                    {
+                        w.Server.Request("offering/"+
+                                         w.MyID+"/"+
+                                         Fruit.ID+"/"+
+                                         i.from,
+                                         c,function (c,data) {});
+                    }
+                }
+            });
+        }
+    }
 
+    function Clear(w:World)
+    {
+        for (b in Blocks) w.RemoveSprite(b);
+        Blocks=[];
+        for (i in Icons) w.RemoveSprite(i);
+        Icons=[];
+    }
+
+    function UpdateMessages(w:World, d:Array<Dynamic>)
+    {
         if (d.length>0 && !MessagesEq(TopItem,d[0]))
         {
-            TopItem=d[0];
-
+            TopItem=d[0]; 
             if (TopItem.type=="spirit")
             {
                 w.AddSpiritMsg(TopItem,StrMkr.MsgToString(TopItem));
             }
-            
-            for (b in Blocks)
-            {
-                w.RemoveSprite(b);
-            }
-            Blocks=[];
-            
-            for (i in Icons)
-            {
-                w.RemoveSprite(i);
-            }
-            Icons=[];
-            
-            var pos=32;
-            var xpos=595;
-            for (i in d)
-            {
-                Rnd.Seed(Std.int(i.time));
-                var f=new Frame("",xpos,pos,64*2,64*1);
-                f.ExpandLeft=70;
-                f.SetTextSize(10);
-                
-                f.UpdateText(StrMkr.MsgToString(i));
 
-                var Colour = new Vec3(0.8,0.9,0.7);
-                if (i.type=="spirit") Colour=Spirit.GetEmotionColour(i.emotion);
-
-                f.R=Colour.x;
-                f.G=Colour.y;
-                f.B=Colour.z;
-
-                f.InitTextures(GUIFrameTextures.Get(),Rnd);
-                Blocks.push(f);
-                w.AddSprite(f);
-                
-                var Icon=MakeIcon(new Vec2(xpos-20,pos+32),
-                                  i.type, i.from, Colour);
-                w.AddSprite(Icon);
-                Icons.push(Icon);
-                pos+=90;
+            Clear(w);
+            
+            var pos=new Vec2(595,32);
+            for (i in d) 
+            {
+                BuildMessage(w,i,pos);
+                pos.y+=90;
             }
         }
+    }
+
+
+    // todo - break up
+    public function Update(w:World,d:Array<Dynamic>)
+    {
+        UpdateTopBox(w);
+
+        Rnd.Seed(0);
+        Info.InitTextures(GUIFrameTextures.Get(),Rnd);
+
+        UpdateMessages(w,d);
     }
 }

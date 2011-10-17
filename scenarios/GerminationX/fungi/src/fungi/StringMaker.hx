@@ -59,7 +59,7 @@ class StringMaker
             },
             your_plant_doesnt_like: function(from,to,owner,extra:Array<Dynamic>)
             {
-                return extra[0]+", your "+extra[2]+" plant doesn't like "+to+"'s "+extra[1]+" plant nearby.";
+                return extra[0]+", your "+extra[3]+" plant doesn't like "+to+"'s "+extra[2]+" plant nearby.";
             },
             your_plant_needs: function(from,to,owner,extra:Array<Dynamic>)
             {
@@ -67,7 +67,7 @@ class StringMaker
             },
             needs_help: function(from,to,owner,extra:Array<Dynamic>)
             {
-                return to+", "+extra[0]+"'s "+extra[1]+" plant needs a "+extra[2]+" near.";
+                return to+", "+extra[0]+"'s "+extra[2]+" plant needs a "+extra[3]+" near.";
             },
             i_am_recovering: function(from,to,owner,extra:Array<Dynamic>)
             {
@@ -75,19 +75,19 @@ class StringMaker
             },
             i_am_detrimented_by: function(from,to,owner,extra:Array<Dynamic>)
             {
-                return owner+"'s "+from+" plant is being harmed by "+extra[0]+"'s "+extra[1]+" plant.";
+                return owner+"'s "+from+" plant is being harmed by "+extra[0]+"'s "+extra[2]+" plant.";
             },
             i_am_detrimental_to: function(from,to,owner,extra:Array<Dynamic>)
             {
-                return owner+"'s "+from+" plant is harming "+extra[0]+"'s "+extra[1]+" plant.";
+                return owner+"'s "+from+" plant is harming "+extra[0]+"'s "+extra[2]+" plant.";
             },
             i_am_benefitting_from: function(from,to,owner,extra:Array<Dynamic>)
             {
-                return owner+"'s "+from+" plant is being helped by "+extra[0]+"'s "+extra[1]+" plant.";
+                return owner+"'s "+from+" plant is being helped by "+extra[0]+"'s "+extra[2]+" plant.";
             },
             i_am_beneficial_to: function(from,to,owner,extra:Array<Dynamic>)
             {
-                return owner+"'s "+from+" plant is helping "+extra[0]+"'s "+extra[1]+" plant.";
+                return owner+"'s "+from+" plant is helping "+extra[0]+"'s "+extra[2]+" plant.";
             },
             thanks_for_helping: function(from,to,owner,extra:Array<Dynamic>)
             {
@@ -117,10 +117,10 @@ class StringMaker
             },
             ive_asked_x_for_help: function(from,to,owner,extra:Array<Dynamic>)
             {
-                var msg=to+", I've asked "+extra[0]+" to help with your "+extra[1]+" plant";
-                if (extra[2]=="ill-a") msg+=", which is a little ill.";
-                else if (extra[2]=="ill-b") msg+=", which is a quite ill.";
-                else if (extra[2]=="ill-c") msg+=", which is a very ill.";
+                var msg=to+", I've asked "+extra[0]+" to help with your "+extra[2]+" plant";
+                if (extra[3]=="ill-a") msg+=", which is a little ill.";
+                else if (extra[3]=="ill-b") msg+=", which is a quite ill.";
+                else if (extra[3]=="ill-c") msg+=", which is a very ill.";
                 else msg+=".";
                 return msg;
             }

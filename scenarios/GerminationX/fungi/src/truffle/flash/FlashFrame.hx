@@ -44,6 +44,14 @@ class FlashFrame implements Frame, extends MovieClip
     public var G:Float;
     public var B:Float;
     public var ExpandLeft:Int;
+    var MouseDownFunc:Dynamic -> Void;
+    var MouseDownContext:Dynamic;
+    var MouseUpFunc:Dynamic -> Void;
+    var MouseUpContext:Dynamic;
+    var MouseOverFunc:Dynamic -> Void;
+    var MouseOverContext:Dynamic;
+    var MouseOutFunc:Dynamic -> Void;
+    var MouseOutContext:Dynamic;
 
 	public function new(text,x,y,w,h)
 	{
@@ -52,6 +60,7 @@ class FlashFrame implements Frame, extends MovieClip
         UsingTextures = false;
         TextSize=8;
         ExpandLeft=0;
+        EnableMouse(false);
 
         TextField = new flash.text.TextField();
         TextField.text = text;
@@ -207,5 +216,63 @@ class FlashFrame implements Frame, extends MovieClip
 
         transform.colorTransform = new ColorTransform(R, G, B, 1, 0, 0, 0, 0);
 
+    }
+
+    public function EnableMouse(s:Bool)
+    {
+        mouseEnabled=s;
+        mouseChildren=s;
+    }
+
+	public function MouseDown(c:Dynamic, f:Dynamic -> Void=null)
+	{
+        EnableMouse(true);
+        MouseDownFunc=f;
+        MouseDownContext=c;
+		addEventListener(MouseEvent.MOUSE_DOWN, MouseDownCB);
+	}
+
+    public function MouseDownCB(e)
+    {
+        MouseDownFunc(MouseDownContext);
+    }
+
+	public function MouseUp(c:Dynamic, f:Dynamic -> Void=null)
+	{
+        EnableMouse(true);
+        MouseUpFunc=f;
+        MouseUpContext=c;
+		addEventListener(MouseEvent.MOUSE_UP, MouseUpCB);
+	}
+
+    public function MouseUpCB(e)
+    {
+        MouseUpFunc(MouseUpContext);
+    }
+
+	public function MouseOver(c:Dynamic, f:Dynamic -> Void=null)
+	{
+        EnableMouse(true);
+        MouseOverFunc=f;
+        MouseOverContext=c;
+		addEventListener(MouseEvent.MOUSE_OVER, MouseOverCB);
+	}
+
+    public function MouseOverCB(e)
+    {
+        MouseOverFunc(MouseOverContext);
+    }
+
+	public function MouseOut(c:Dynamic, f:Dynamic -> Void=null)
+	{
+        EnableMouse(true);
+        MouseOutFunc=f;
+        MouseOutContext=c;
+		addEventListener(MouseEvent.MOUSE_OUT, MouseOutCB);
+	}
+
+    public function MouseOutCB(e)
+    {
+        MouseOutFunc(MouseOutContext);
     }
 }

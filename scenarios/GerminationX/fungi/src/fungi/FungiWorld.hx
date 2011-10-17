@@ -96,14 +96,13 @@ class FungiWorld extends World
                         
                         if (e==null)
                         {
-                            var type=c.Seeds.Seeds[0].Type;
-                            var id=c.Seeds.Seeds[0].ID;
-                            c.Seeds.Remove(cast(c,truffle.World));
-                            if (type!="")
+                            var Seed=c.Seeds.Remove(cast(c,truffle.World));
+                            if (Seed!=null)
                             {
                                 c.SpiralScale=1;
                                 c.Spiral.SetPos(new Vec2(ob.Pos.x,ob.Pos.y-128));
-                                c.AddServerPlant(ob.LogicalPos.Add(new Vec3(0,0,1)),type,id);
+                                c.AddServerPlant(ob.LogicalPos.Add(new Vec3(0,0,1)),
+                                                 Seed.Type,Seed.ID);
                             }
                         }
                     }
@@ -125,7 +124,7 @@ class FungiWorld extends World
 
         Update(0);
         SortScene();
-        var names = ["TreeSpirit",/*"ShrubSpirit",*/"CoverSpirit"];
+        var names = ["TreeSpirit","ShrubSpirit","CoverSpirit"];
         var positions = [new Vec3(0,5,4), new Vec3(7,0,4), new Vec3(2,10,4)];
  
         for (i in 0...names.length)
@@ -372,7 +371,7 @@ class FungiWorld extends World
         Update(0);
 	}
 
-    public function UpdateGhosts(c,t:Dynamic)
+    public function UpdateGhosts(t:Dynamic)
     {
         for(i in 0...t.length)
         {
@@ -386,19 +385,15 @@ class FungiWorld extends World
         }
     }
 
-    public function UpdateTile(d:Dynamic)
+    public function UpdateTile(tiles:Array<Dynamic>)
     {
-        // we get a list of tiles
-        var tiles:Array<Dynamic>=cast(d,Array<Dynamic>);
-
         // a client tile is composed of 9 server tiles:
         //  ###
         //  ### <- central tile is the current one
         //  ###
 
         for (tile in tiles)
-        {
-            
+        {            
             Season=tile.season;
             // find the relative tile position
             var TilePos=new Vec2(((tile.pos.x-WorldPos.x)+1)*5,
@@ -410,7 +405,7 @@ class FungiWorld extends World
                 // offset the plant to find the client tile position
                 var WorldPos = new Vec2(plant.pos.x+TilePos.x,
                                         plant.pos.y+TilePos.y);
-                // check for plant already there (shouldn't happen, but...)
+                // check for plant already there, if not make a new one
                 var e = Get("fungi.Plant",WorldPos);
                 if (e==null)
                 {
@@ -473,27 +468,30 @@ class FungiWorld extends World
         
         if (time>TickTime)
         {
-            UpdateSpiritSprites();
+//            UpdateSpiritSprites();
 
-            Server.Request("spirit-info",this,UpdateGhosts);
-            Server.Request("get-tile/"+Std.string(cast(WorldPos.x,Int))+"/"
-                           +Std.string(cast(WorldPos.y,Int)),
+            Server.Request("pull/"+
+                           Std.string(MyID)+"/"+
+                           Std.string(cast(WorldPos.x,Int))+"/"+
+                           Std.string(cast(WorldPos.y,Int)),
                            this,
-                           function(c,d){c.UpdateTile(d);});
+                           function(c,d){
+                               c.UpdateTile(d.tiles);
+                               if (c.MyName!="") 
+                               {
+                                   c.PlayerInfo=d.player;
+                                   c.NewsFeed.Update(cast(c,World),d.player.log.msgs);
+                               }
+                               c.UpdateGhosts(d.spirits);
+                           });
+
             if (MyName=="")
             {
                 Server.Request("get-msgs/"+Std.string(MyID),this,
-                               function(c,d){ c.NewsFeed.Update(cast(c,World),d);});
+                               function(c,d){c.NewsFeed.Update(cast(c,World),d);});
             }
-            else
-            {
-                Server.Request("player/"+Std.string(MyID), this, 
-                               function(c,d){c.PlayerInfo=d;
-                                             c.NewsFeed.Update(cast(c,World),d.log.msgs);});
-            }
-            // todo: get-msgs or player - same info within
 
-            if (MyName=="")
+/*            if (MyName=="")
             {        
                 try 
                 {
@@ -516,9 +514,9 @@ class FungiWorld extends World
                 {
                     trace(e);
                 };
-            }
+            }*/
             
-            TickTime=time+100;
+            TickTime=time+200;
         }
     }
 
