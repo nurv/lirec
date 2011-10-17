@@ -30,6 +30,11 @@ class SeedStore
         Size = size;
     }
 
+    public function Carrying(): Bool
+    {
+        return Seeds.length!=0;
+    }
+
     public function Add(world:World,s:Seed) : Bool
     {
         if (Seeds.length<Size)

@@ -44,6 +44,7 @@ class FlashWorld implements World, extends MovieClip
     var SinTheta:Float;
     var SinAlpha:Float;
     var ScreenCentre:Vec2;
+    var Scale:Vec3;
 
     function new()
     {
@@ -61,13 +62,14 @@ class FlashWorld implements World, extends MovieClip
         SinTheta = Math.sin(Theta);
         CosAlpha = Math.cos(Alpha);
         SinAlpha = Math.sin(Alpha);
+        Scale = new Vec3(103,84,80);
     }
 
     public function ScreenSpaceTransform(pos:Vec3) : Vec3
 	{
-        var ox=pos.x*103;
-        var oy=pos.y*84;
-        var oz=pos.z*80;
+        var ox=pos.x*Scale.x;
+        var oy=pos.y*Scale.y;
+        var oz=pos.z*Scale.z;
 
         var zp=oz;
         var xp=ox*CosAlpha+oy*SinAlpha;
@@ -78,12 +80,6 @@ class FlashWorld implements World, extends MovieClip
                         zp*CosTheta-yp*SinTheta
                         );
         return r; 
-/*        
-		// do the nasty iso conversion
-		// this is actually an orthogonal projection matrix! (I think)
-		return new Vec3((pos.x*36-pos.y*26)*2,
-                        ((pos.y*18+pos.x*9)-(pos.z*37))*2,
-                        pos.x*0.51 + pos.y*0.71 + pos.z*0.47);            */ 
 	}
 
 	public function ScreenTransform(pos:Vec3) : Vec3
@@ -92,9 +88,9 @@ class FlashWorld implements World, extends MovieClip
         var xp=(pos.x*CosAlpha+pos.y*SinAlpha)*103;
         var yp=(pos.y*CosAlpha-pos.x*SinAlpha)*84;
 */
-        var ox=pos.x*103;
-        var oy=pos.y*84;
-        var oz=pos.z*80;
+        var ox=pos.x*Scale.x;
+        var oy=pos.y*Scale.y;
+        var oz=pos.z*Scale.z;
 
         var zp=oz;
         var xp=ox*CosAlpha+oy*SinAlpha;
@@ -107,13 +103,6 @@ class FlashWorld implements World, extends MovieClip
         r.x+=ScreenOffset.x;
         r.y+=ScreenOffset.y;
         return r;
-/*
-		// do the nasty iso conversion
-		// this is actually an orthogonal projection matrix! (I think)
-		return new Vec3(ScreenOffset.x+(pos.x*36-pos.y*26)*ScreenScale.x*2,
-                        ScreenOffset.y+((pos.y*18+pos.x*9)-(pos.z*37))*ScreenScale.y*2,
-                        pos.x*0.51 + pos.y*0.71 + pos.z*0.47);             
-*/
 	}
 
     public function Add(e:Entity)

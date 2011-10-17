@@ -30,6 +30,8 @@ class Feed
     var TopItem:Dynamic;
     var StrMkr:StringMaker;
     var EmotionIndices:Dynamic;
+    var Fruit:Array<Dynamic>;
+    var FruitSprites:Array<Sprite>;
 
     public function new(w:World)
     {
@@ -39,6 +41,8 @@ class Feed
         Rnd=new RndGen();
         TopItem={};
         StrMkr=new StringMaker();
+        Fruit=[];
+        FruitSprites=[];
 
         EmotionIndices={LOVE:0,HATE:1,HOPE:2,FEAR:3,SATISFACTION:4,
                         RELIEF:5,FEARS_CONFIRMED:6,DISAPOINTMENT:7,
@@ -107,6 +111,16 @@ class Feed
         return true;
     }
 
+    function FruitEq(a:Array<Dynamic>, b:Array<Dynamic>) : Bool
+    {
+        if (a.length!=b.length) return false;
+        for (i in 0...a.length)
+        {
+            if (a[i].id!=b[i].id) return false;
+        }
+        return true;
+    }
+
     public function Update(w:World,d:Array<Dynamic>)
     {
         if (w.MyName=="")
@@ -115,7 +129,7 @@ class Feed
         }
         else
         {
-            var SeedsLeft=Reflect.field(w.PlayerInfo,"seeds-left");
+/*            var SeedsLeft=Reflect.field(w.PlayerInfo,"seeds-left");
             var PlantCount=Reflect.field(w.PlayerInfo,"plant-count");
             var txt="Hello "+w.MyName+", it is "+w.Season+" and you have "+PlantCount+" plants currently alive. "+
                 "You have "+SeedsLeft+" seeds left.";
@@ -127,7 +141,47 @@ class Feed
                 var diff=Date.fromTime(time-now);
                 txt+=" More seeds in "+diff.getMinutes()+" minutes.";
             }
-            Info.UpdateText(txt);
+
+            var fruit:Array<Dynamic>=w.PlayerInfo.seeds;
+            for (f in fruit)
+            {
+                txt+=f.type+" "+f.id+" ";
+            }
+
+            Info.UpdateText(txt);*/
+
+            Info.UpdateText("");
+
+            var fruit:Array<Dynamic>=w.PlayerInfo.seeds;
+            fruit.reverse();
+            if (!FruitEq(Fruit,fruit))
+            {
+                Fruit=fruit;
+                for (s in FruitSprites) w.RemoveSprite(s);
+                FruitSprites=[];
+                
+                var Pos=new Vec2(140,50);
+                for (f in Fruit)
+                {
+                    var feed=this;
+                    var s=new Sprite(Pos,Resources.Get(f.type+"-fruit-c"));
+                    var ppx=Pos.x; // things you need to do when
+                    var ppy=Pos.y; // closure captures refs :(
+                    s.MouseDown(w,function(c)
+                                {
+                                    var ns = new Seed(new Vec2(ppx,ppy),f.type,f.id);
+                                    ns.ChangeState("fruit-c");
+                                    c.RemoveSprite(s);
+                                    feed.FruitSprites.remove(s);
+                                    c.Seeds.Add(cast(c,World),ns);
+                                    c.AddSprite(ns.Spr);
+                                    c.SortScene();
+                                });
+                    Pos.x+=30;
+                    FruitSprites.push(s);
+                    w.AddSprite(s);
+                }
+            }
         }
 
         Rnd.Seed(0);

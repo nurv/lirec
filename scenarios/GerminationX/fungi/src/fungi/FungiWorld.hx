@@ -83,23 +83,28 @@ class FungiWorld extends World
 			{
 				var ob:Cube = new Cube(this,new Vec3(0,0,0));
              
-                ob.Spr.MouseDown(this,function(c)
+                ob.Spr.MouseUp(this,function(c)
                 {
-                    // look for a plant here already
-                    // - done on the server, but need to do it
-                    // here too
-                    var e = c.Get("fungi.Plant",
-                                  new Vec2(ob.LogicalPos.x,
-                                           ob.LogicalPos.y));
-                    
-                    if (e==null)
+                    if (c.Seeds.Carrying())
                     {
-                        var type=c.Seeds.Remove(cast(c,truffle.World));
-                        if (type!="")
+                        // look for a plant here already
+                        // - done on the server, but need to do it
+                        // here too
+                        var e = c.Get("fungi.Plant",
+                                      new Vec2(ob.LogicalPos.x,
+                                               ob.LogicalPos.y));
+                        
+                        if (e==null)
                         {
-                            c.SpiralScale=1;
-                            c.Spiral.SetPos(new Vec2(ob.Pos.x,ob.Pos.y-128));
-                            c.AddServerPlant(ob.LogicalPos.Add(new Vec3(0,0,1)),type);
+                            var type=c.Seeds.Seeds[0].Type;
+                            var id=c.Seeds.Seeds[0].ID;
+                            c.Seeds.Remove(cast(c,truffle.World));
+                            if (type!="")
+                            {
+                                c.SpiralScale=1;
+                                c.Spiral.SetPos(new Vec2(ob.Pos.x,ob.Pos.y-128));
+                                c.AddServerPlant(ob.LogicalPos.Add(new Vec3(0,0,1)),type,id);
+                            }
                         }
                     }
                 });
@@ -113,10 +118,10 @@ class FungiWorld extends World
 		MyTextEntry=new TextEntry(150,50,250,20,NameCallback);
 		addChild(MyTextEntry);	
 
-        TheCritters = new Critters(this,3);
-
         Spiral = new Sprite(new Vec2(0,0), Resources.Get("spiral"), true);
         AddSprite(Spiral);
+
+        TheCritters = new Critters(this,10);
 
         Update(0);
         SortScene();
@@ -165,7 +170,6 @@ class FungiWorld extends World
 
         var c=this;
         MouseMove(this, function(e) { c.Seeds.Update(e.stageX,e.stageY); });
-
 	}
 
     function MoveWorld(dir)
@@ -287,7 +291,7 @@ class FungiWorld extends World
         SortScene();
 	}
 
-	public function AddServerPlant(pos:Vec3,type)
+	public function AddServerPlant(pos:Vec3,type,FruitID)
 	{        
         if (MyName!=null && SpaceClear(pos))
         {
@@ -300,13 +304,15 @@ class FungiWorld extends World
             var TilePosX:Int = cast(WorldPos.x,Int)+Math.floor(pos.x/ServerTileWidth)-1;
             var TilePosY:Int = cast(WorldPos.y,Int)+Math.floor(pos.y/ServerTileWidth)-1;
 
-            Server.Request("make-plant/"+Std.string(TilePosX)+"/"+
-                                         Std.string(TilePosY)+"/"+
-                                         Std.string(PlantPosX)+"/"+
-                                         Std.string(PlantPosY)+"/"+
-                                         type+"/"+
-                                         MyID+"/"+
-                                         Math.round(size*100),
+            Server.Request("make-plant/"+
+                           Std.string(TilePosX)+"/"+
+                           Std.string(TilePosY)+"/"+
+                           Std.string(PlantPosX)+"/"+
+                           Std.string(PlantPosY)+"/"+
+                           type+"/"+
+                           MyID+"/"+
+                           Math.round(size*100)+"/"+
+                           Std.string(FruitID),
             this, function (c,data) {});       
         }
 	}
@@ -398,35 +404,28 @@ class FungiWorld extends World
             var TilePos=new Vec2(((tile.pos.x-WorldPos.x)+1)*5,
                                  ((tile.pos.y-WorldPos.y)+1)*5);
            
-            var data:Array<Dynamic>=cast(tile.entities,Array<Dynamic>);
-            for (p in data)
+            var plants:Array<Dynamic>=cast(tile.entities,Array<Dynamic>);
+            for (plant in plants)
             {
                 // offset the plant to find the client tile position
-                var WorldPos = new Vec2(p.pos.x+TilePos.x,
-                                        p.pos.y+TilePos.y);
+                var WorldPos = new Vec2(plant.pos.x+TilePos.x,
+                                        plant.pos.y+TilePos.y);
+                // check for plant already there (shouldn't happen, but...)
                 var e = Get("fungi.Plant",WorldPos);
                 if (e==null)
                 {
+                    // check there is a ground cube there
                     var cube = Get("fungi.Cube",WorldPos);
                     if (cube!=null)
                     {
                         var pos = new Vec3(WorldPos.x,WorldPos.y,cube.LogicalPos.z+1);   
-                        var plant = new Plant(this,Std.parseInt(p.id),
-                                              Std.parseInt(Reflect.field(p,"owner-id")),
-                                              pos,
-                                              p.type,
-                                              p.state,
-                                              p.fruit,
-                                              p.layer);
-                        Plants.push(plant);
+                        Plants.push(new Plant(this,plant,pos,tile.pos));
                     }
                 }
                 else
                 {
-                    //trace("updating plant");
-                    //trace(e);
-                    //trace(p.state);
-                    cast(e,Plant).StateUpdate(p.state,Std.parseInt(p.fruit),this);
+                    // update the existing plant
+                    cast(e,Plant).StateUpdate(this,plant);
                 }
             }
         }

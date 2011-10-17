@@ -131,9 +131,9 @@ class SkeletonEntity extends truffle.Entity
     {
         Root.Recurse(function(b:Bone,depth:Int) 
         {
-            b.SetDepth(++order);
+            b.SetDepth(order++);
         });
-        Root.SetDepth(++order);
+//        Root.SetDepth(order++);
         return order;
     }
 

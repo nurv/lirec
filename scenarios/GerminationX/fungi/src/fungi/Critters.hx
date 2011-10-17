@@ -36,8 +36,8 @@ class Butterfly extends SkeletonEntity
 	    super(world,pos);
         Hide(true);
         NeedsUpdate=true;
-        UpdateFreq=5;
-        Speed=0.1;
+        UpdateFreq=3;
+        Speed=0.02;
 
         LeftWing = new Bone(new Vec2(0,0), Resources.Get("wing"));
         Root = LeftWing;
@@ -59,9 +59,12 @@ class Butterfly extends SkeletonEntity
         LeftWing.SetRotate(Rot+Rnd.RndRange(-10,10));
         RightWing.SetRotate(Rot*2);
 
-        // random walk
-        SetLogicalPos(world, LogicalPos.Add(new Vec3(Rnd.RndRange(-1,2),
-                                                     Rnd.RndRange(-1,2),0)));
+        if (Rnd.RndInt()%30==0)
+        {
+            // random walk
+            SetLogicalPos(world, LogicalPos.Add(new Vec3(Rnd.RndRange(-1,2),
+                                                         Rnd.RndRange(-1,2),0)));
+        }
 
         if (LogicalPos.x < 0 ||
             LogicalPos.y < 0 ||
@@ -96,6 +99,7 @@ class Bug extends SpriteEntity
             // random walk
             LogicalPos = LogicalPos.Add(new Vec3(Rnd.RndRange(-1,2),
                                                  Rnd.RndRange(-1,2),0));
+
 
             var cube = world.Get("Cube",new Vec2(LogicalPos.x,LogicalPos.y));
             if (cube!=null)
@@ -132,8 +136,8 @@ class Critters
         {
             var critter = new Butterfly(world,new Vec3(0,0,4));
             CritterList.push(critter);
-            /*var critter2 = new Bug(world,new Vec3(0,0,4));
-            CritterList.push(critter2);*/
+            //var critter2 = new Bug(world,new Vec3(0,0,4));
+            //CritterList.push(critter2);
         }
     }
 

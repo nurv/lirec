@@ -23,11 +23,13 @@ class Seed
     public var Type:String;
     public var State:String;
     public var Spr:Sprite;
+    public var ID:Int;
 
-    public function new(pos:Vec2,t:String)
+    public function new(pos:Vec2,t:String,id:Int)
     {
         Type=t;
         State="fruit-a";
+        ID=id;
         Spr=new Sprite(pos,Resources.Get(Type+"-"+State));
     }
 
