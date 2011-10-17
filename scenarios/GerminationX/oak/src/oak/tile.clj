@@ -31,6 +31,15 @@
    :index (str (:x pos) "," (:y pos))
    :entities entity-list))
 
+(defn tile-strip
+  "remove crud for download"
+  [tile]
+  (modify
+   :entities
+   (fn [entities]
+     (map plant-strip entities))
+   tile))
+  
 (defn tile-distance
   "calculate distance over different tiles"
   [tilea posa tileb posb]

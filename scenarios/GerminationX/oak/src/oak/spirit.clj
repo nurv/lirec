@@ -277,10 +277,14 @@
    spirit))
 
 (defn spirit-clear
-  "clear stuff that needs clearing"
+  "clear stuff that need"
   [spirit]
   (modify :log (fn [log] (make-log 10))
-   (modify :offerings (fn [offerings] ()) spirit)))
+          spirit
+          ;(modify :offerings (fn [offerings]
+          ;                     (println "clearing offering")
+          ;                     ()) spirit)
+          ))
 
 (defn spirit-update-location
   "read the location from the fatima agent"

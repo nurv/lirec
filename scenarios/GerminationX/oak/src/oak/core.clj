@@ -134,19 +134,21 @@
              (game-world-find-player
               (deref my-game-world) id))))))
 
-  (GET "/player/:player-id/:iefix" [player-id iefix]
-       (json
-        (game-world-find-player
-         (deref my-game-world)
-         (parse-number player-id))))
-  
-  (GET "/get-tile/:tilex/:tiley/:iefix" [tilex tiley iefix]
+  (GET "/pull/:player-id/:tilex/:tiley/:iefix"
+       [player-id tilex tiley iefix]
        (let [tiles (game-world-get-tile-with-neighbours
                      (deref my-game-world)
                      (make-vec2 (parse-number tilex)
                                 (parse-number tiley)))]
-         
-         (json tiles)))
+         (json
+          {:player
+           (game-world-find-player
+            (deref my-game-world)
+            (parse-number player-id))
+           :tiles
+           (map tile-strip tiles)
+           :spirits
+           (:spirits (deref my-game-world))})))
 
   (GET "/get-msgs/:id/:iefix" [id iefix]
        (let [id (parse-number id)]
@@ -221,7 +223,6 @@
                           (tile-modify-entity
                            tile plant-id
                            (fn [plant]
-                             (println "picked!!!")
                              (plant-picked
                               plant
                               (game-world-find-player
@@ -233,9 +234,6 @@
   (GET "/spirit-sprites/:name/:iefix" [name iefix]
        ;(update-islands (str "./" name) (str "./" name))
        (read-islands (str "./public/" name)))
-
-  (GET "/spirit-info/:iefix" [iefix]
-       (json (:spirits (deref my-game-world))))
 
   (GET "/perceive/:iefix" [iefix]
        (world-perceive-all (deref fatima-world))
@@ -252,7 +250,7 @@
                             (deref my-game-world) player-id)
                " is giving a fruit to "
                (game-world-id->player-name
-                (deref my-game-world) receiver-id)))
+                (deref my-game-world) receiver-id) "\n"))
          (dosync
           (let [fruit (player-get-fruit
                        (game-world-find-player
@@ -261,6 +259,7 @@
                        fruit-id)]
             (if fruit
               (do
+                (println receiver-id)
                 (ref-set my-game-world
                          (game-world-modify-player
                           (game-world-modify-player
@@ -285,7 +284,7 @@
           log-filename
           (str (Date.) " " (game-world-id->player-name
                             (deref my-game-world) player-id)
-               " is giving a fruit to " spirit)
+               " is offering a fruit to " spirit "\n"))
          (dosync
           (let [fruit (player-get-fruit
                        (game-world-find-player
@@ -302,14 +301,14 @@
                              (modify
                               :offerings
                               (fn [offerings]
-                                (cons fruit offerings))
+                                (max-cons fruit offerings 5))
                               spirit)))
                           player-id
                           (fn [player]
                             (player-remove-fruit player fruit-id))))
                 (json '("ok")))
-              (json '("fail"))))))))
-
+              (json '("fail")))))))
+  
   (route/not-found "<h1>Page not found</h1>"))
   
 (let [pool (Executors/newFixedThreadPool 2)

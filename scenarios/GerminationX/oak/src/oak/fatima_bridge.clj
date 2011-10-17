@@ -104,7 +104,7 @@
      (reduce
       (fn [fw offering]
         (world-add-object fw
-                          {"name" (str "offering-" (:layer offering))
+                          {"name" (str (:layer offering) "-offering")
                            "owner" (:name spirit)
                            "position" "nowhere"
                            "tile" "none" ; will be seen by everyone

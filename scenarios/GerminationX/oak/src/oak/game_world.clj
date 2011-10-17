@@ -200,10 +200,10 @@
                    (= (:code msg) :ive_asked_x_for_help)
                    ;(= (:code msg) :thanks_for_helping)
                    )
-                (cons
+                (cons ; add the id to the start of the list
                  (game-world-id->player-name
                   game-world (first (:extra msg)))
-                 (rest (:extra msg)))
+                 (:extra msg))
                 (:extra msg))]    
     (cond
      (= (:type msg) "plant")
@@ -366,12 +366,16 @@
 
 (defn game-world-modify-spirit
   "modify a spirit from it's name"
-  [world name f]
-  (map
-   (fn [spirit]
-     (if (= name (:name spirit))
-       (f spirit) spirit))
-   (:spirits world)))
+  [game-world name f]
+  (modify
+   :spirits
+   (fn [spirits]
+     (map
+      (fn [spirit]
+        (if (= name (:name spirit))
+          (f spirit) spirit))
+      spirits))
+   game-world))
 
 (defn game-world-modify-player
   "replace the specified player with the result of f"

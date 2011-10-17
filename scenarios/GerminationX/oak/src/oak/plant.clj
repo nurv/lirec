@@ -40,6 +40,13 @@
    :event-occurred ()
    :log (make-log 10)))
 
+(defn plant-strip
+  "remove crud that the client doesn't need - temporary measure"
+  [plant]
+  (select-keys
+   plant
+   [:id :state :type :layer :pos :fruit :owner-id]))
+
 (defn plant-count [plant]
   (println (str "picked-by: " (count (:picked-by-ids plant)))))
 

@@ -53,6 +53,7 @@
         <Relation target="cover-finished-recovery" like="20" respect="1"/>
         <Relation target="cover-benefit" like="16" respect="20"/>
         <Relation target="cover-detriment" like="-16" respect="-20"/>
+        <Relation target="cover-offering" like="20" respect="20"/>
 	</InterpersonalRelations>
 	
 	<EventReactions>
