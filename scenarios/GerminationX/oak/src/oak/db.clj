@@ -24,7 +24,8 @@
 (mongo! :db "oak")
 
 ;-------------------------------------------------------
-; general purpose bits
+; thin interface to congomongo to allow us to try other
+; databases in the future
 
 (defn db-build-collection!
   "build an entire collection from a list"
@@ -75,7 +76,7 @@
 
 
 (defn db-reduce
-  "run f on each item in the collection"
+  "run f on each item in the collection, in chunks"
   [f ret coll]
   (loop [skip 0 ret ret]
     (let [limit db-limit ; so we can store more than RAM
@@ -94,7 +95,9 @@
       (prof :db-reduce-work (reduce f ret items))
       ret)))
 
-(defn db-find-update! [f coll where]
+(defn db-find-update!
+  "search for and update with result of f"
+  [f coll where]
   (prof
    :db-search-update
    (let [item (fetch-one coll :where where)]
@@ -103,28 +106,17 @@
          (when (not (= item new))
            (update! coll item new)))))))
 
-(defn db-update! [coll old new]
+(defn db-update!
+  "directly update a document"
+  [coll old new]
   (when (not (= old new))
     (prof
      :db-update
      (update! coll old new))))
 
-;-------------------------------------------------------
-; oak specific bits
+(defn db-add-index! [coll index]
+  "add the index"
+  (add-index! coll index))
 
-(defn db-build! [game-world]
-  (println (:players game-world))
-
-  (db-build-collection! :players (:players game-world))
-  (add-index! :players [:id])
-  (db-build-collection! :tiles
-                        (map
-                         (fn [tile]
-                           (merge
-                            tile
-                            {:index (str (:x (:pos tile)) ","
-                                         (:y (:pos tile)))}))
-                         (:tiles game-world)))
-  (add-index! :tiles [:index]))
 
 

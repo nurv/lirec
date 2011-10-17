@@ -20,9 +20,8 @@
    oak.plant
    oak.tile
    oak.rand
-   oak.remote-agent
    oak.spirit
-   oak.world
+   oak.fruit
    oak.log
    oak.player
    oak.defs
@@ -96,7 +95,10 @@
      tile-pos
      entity)))
 
-(defn make-game-world [num-plants area]
+(defn make-game-world
+  "make a world in the old-fashioned way for building a new
+   database with"
+  [num-plants area]
   (let [id-gen (make-id-generator 10000)]
     (reduce
      (fn [world plant]
@@ -122,7 +124,25 @@
                (Math/round (* (rand-gaussian) area))
                (Math/round (* (rand-gaussian) area)))))))))
 
-(defn make-empty-game-world []
+(defn gamw-world-db-build!
+  "build a database from the world"
+  [game-world]
+  (db-build-collection! :players (:players game-world))
+  (db-add-index! :players [:id])
+  
+  (db-build-collection! :tiles
+                        (map
+                         (fn [tile]
+                           (merge
+                            tile
+                            {:index (str (:x (:pos tile)) ","
+                                         (:y (:pos tile)))}))
+                         (:tiles game-world)))
+  (db-add-index! :tiles [:index]))
+
+(defn make-empty-game-world
+  "make a world for use with the database"
+  []
   (let [id-gen (make-id-generator 10000)]
      (hash-map
       :version 1
@@ -149,18 +169,23 @@
        (make-id-generator id)) ; convert the id into the function
      w)))
 
-(defn game-world-find-player-id [game-world name]
+(defn game-world-find-player-id
+  "get the player id from the name (should only be used when logging in)"
+  [game-world name]
   (:id (first (db-get :players {:name name}))))
 
-(defn game-world-find-player [game-world id]
+(defn game-world-find-player
+  "find player by id"
+  [game-world id]
   (first (db-get :players {:id id})))
 
 (defn game-world-id->player-name [game-world id]
+  "helper to get the name from a player id"
   (:name (game-world-find-player game-world id)))
 
 (defn game-world-process-msg
   "replace id numbers with strings for
-   the client to make sense of"
+   the client to make sense of - add information"
   [game-world msg]
   (let [extra (if (or
                    ; in these messages, we want to replace the id
@@ -221,7 +246,9 @@
      time
      4))))
 
-(defn game-world-post-logs-to-players [game-world msgs]
+(defn game-world-post-logs-to-players
+  "dispatch messages to the players"
+  [game-world msgs]
   (db-map!
    (fn [player]
      (modify
@@ -238,7 +265,9 @@
    :players)
   game-world)
 
-(defn game-world-get-decayed-owners [game-world]
+(defn game-world-get-decayed-owners
+  "find the owners of decayed plants so we can update the count"
+  [game-world]
   (db-reduce
    (fn [r tile]
      (concat r (tile-get-decayed-owners tile)))
@@ -247,7 +276,9 @@
 
 ; need to do this before tile update, when decayed plants
 ; are removed from the game
-(defn game-world-update-player-plant-counts [game-world]
+(defn game-world-update-player-plant-counts
+  "update the plant counts for each player"
+  [game-world]
   (let [decayed (game-world-get-decayed-owners game-world)]
     (db-map!
      (fn [player]
@@ -259,7 +290,9 @@
      :players))
   game-world)
 
-(defn game-world-update-tiles [game-world time delta]
+(defn game-world-update-tiles
+  "update the tiles"
+  [game-world time delta]
   (prof
    :update-tiles
    (do
@@ -276,7 +309,9 @@
         (load-companion-rules "rules.txt"))
       game-world))))
 
-(defn game-world-update-player-seeds [player]
+(defn game-world-update-player-seeds
+  "update the player's seed picking ability"
+  [player]
   (if (and
        (not (= (:next-refresh player) 0))
        (> (current-time) (:next-refresh player)))
@@ -286,7 +321,9 @@
      (modify :next-refresh (fn [r] 0) player))
     player))
 
-(defn game-world-update-players [game-world]
+(defn game-world-update-players
+  "do things that need updating for players"
+  [game-world]
   (prof
    :update-players
    (db-map!
@@ -300,7 +337,9 @@
   [game-world]
   (modify :summons (fn [s] {}) game-world))
 
-(defn game-world-update [game-world time delta]
+(defn game-world-update
+  "main update"
+  [game-world time delta]
   (let [msgs (game-world-collect-all-msgs game-world time)]
     (modify :log (fn [log]
                    (reduce
@@ -315,7 +354,9 @@
                (game-world-clear game-world);)
               msgs) time delta)))))
 
-(defn game-world-find-spirit [world name]
+(defn game-world-find-spirit
+  "get the spirit from it's name"
+  [world name]
   (reduce
    (fn [r spirit]
      (if (and (not r) (= name (:name spirit)))
@@ -323,109 +364,66 @@
    false
    (:spirits world)))
 
-(defn game-world-modify-player [game-world id f]
+(defn game-world-modify-spirit
+  "modify a spirit from it's name"
+  [world name f]
+  (map
+   (fn [spirit]
+     (if (= name (:name spirit))
+       (f spirit) spirit))
+   (:spirits world)))
+
+(defn game-world-modify-player
+  "replace the specified player with the result of f"
+  [game-world id f]
   (db-find-update! f :players {:id id})
   game-world)
 
-(defn game-world-add-player [game-world name fbid]
+(defn game-world-add-player
+  "make a new player"
+  [game-world name fbid]
   (db-add! :players
            (make-player ((:id-gen game-world)) name fbid))
   game-world)
 
-(defn game-world-can-player-pick? [game-world player-id]
+(defn game-world-find-plant
+  "find a plant from it's tile pos and id"
+  [game-world tile-pos plant-id]
+  (tile-find-entity
+   (game-world-get-tile game-world tile-pos)
+   plant-id))
+  
+(defn game-world-can-player-pick?
+  "can the player pick from a plant?"
+  [game-world player-id]
   (> (:seeds-left (game-world-find-player game-world player-id)) 0))
 
-(defn game-world-player-pick [game-world player-id]
+(defn game-world-player-pick
+  "pick fruit from a plant"
+  [game-world player-id tile-pos plant-id]
   (game-world-modify-player
    game-world
    player-id
    (fn [player]
      (modify
-      :seeds-left (fn [s] (- s 1))
-      (if (and (= (:next-refresh player) 0)
-               (>= (:seeds-capacity player)
-                   (:seeds-left player)))
-        (modify
-         :next-refresh
-         (fn [r] (+ (current-time) seeds-duration))
-         player)
-        player)))))
-
-(defn game-world-sync<-fatima [game-world fatima-world]
-  (modify :spirits
-          (fn [spirits]
-            (reduce
-             (fn [spirits agent]
-               (let [spirit (game-world-find-spirit
-                             game-world
-                             (remote-agent-name agent))]
-                 (if spirit
-                   (cons (spirit-update
-                          spirit agent
-                          (game-world-get-tile-with-neighbours
-                           game-world (:tile agent))
-                          (:rules game-world))
-                         spirits)
-                   (cons (make-spirit ((:id-gen game-world)) agent) spirits))))
-             '()
-             (world-agents fatima-world)))
-          game-world))
-
-(defn game-world-sync->fatima [fatima-world game-world time]
-  (prof
-   :->fatima
-   (db-partial-reduce
-    (fn [fw tile]
-      (let [r (reduce
-               (fn [fw entity]
-                 (cond
-                  ; check for a special event
-                  (> (count (:event-occurred entity)) 0)
-                  (reduce
-                   (fn [fw event]
-                     ;(println (str "detected event :" event " on " (:id entity)))
-                     (world-add-object
-                      fw
-                      {"name" event 
-                       "owner" (:layer entity)
-                       "position" (str (:x (:pos entity)) "," (:y (:pos entity)))
-                       "tile" (:pos tile)
-                       "type" "object"
-                       "time" time}))
-                   fw
-                   (:event-occurred entity))
-                  :else
-                  (do
-                    (if (or ; filter out most states
-                         (= (:state entity) "grow-a")
-                         (= (:state entity) "fruit-c")
-                         (= (:state entity) "ill-a")
-                         (= (:state entity) "ill-b")
-                         (= (:state entity) "ill-c"))
-                      ; stops duplicates for us
-                      (world-add-object fw
-                                        {"name" (str (:layer entity) "-" (:state entity) "#" (:id entity))
-                                         "owner" (:layer entity)
-                                         "position" (str (:x (:pos entity)) "," (:y (:pos entity)))
-                                         "tile" (:pos tile)
-                                         "type" "object"
-                                         "time" time})
-                      fw))))
-               fw
-               (:entities tile))]
-        ; need to clear the entity of events now
-        (db-update! :tiles tile (tile-clear-events tile))
-        r))
-    ; pick a random summons for each spirit
-    (reduce
-     (fn [fw summons]
-       (world-summon-agent
-        fw (first summons)
-        (rand-nth (second summons)))) 
-     fatima-world
-     (:summons game-world))
-    :tiles
-    time
-    4)))
-
+      :seeds
+      (fn [seeds]
+        (let [plant (game-world-find-plant
+                     game-world
+                     tile-pos
+                     plant-id)]
+          (max-cons (make-fruit
+                     ((:id-gen game-world))
+                     (:type plant) (:layer plant))
+                    seeds max-player-fruit)))
+      (modify
+       :seeds-left (fn [s] (- s 1))
+       (if (and (= (:next-refresh player) 0)
+                (>= (:seeds-capacity player)
+                    (:seeds-left player)))
+         (modify
+          :next-refresh
+          (fn [r] (+ (current-time) seeds-duration))
+          player)
+         player))))))
 

@@ -24,7 +24,7 @@
    :else (cons (first l) (discard (rest l) (- n 1)))))
 
 (defn max-cons [o l m]
-  (cons o (discard l m)))
+  (cons o (discard l (- m 1))))
 
 (defn make-id-generator [start]
   (let [i (atom start)]

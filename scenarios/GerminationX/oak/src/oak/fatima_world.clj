@@ -12,7 +12,7 @@
 ;; You should have received a copy of the GNU Affero General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-(ns oak.world
+(ns oak.fatima-world
   (:use
    oak.forms
    oak.remote-agent
@@ -202,9 +202,10 @@
           (properties-changed world agent (.getEffects gstep)))))))
 
 (defn in-location? [a b]
-  (let [d (vec2-sub a b)]
-    (and (<= (abs (:x d)) 1)
-         (<= (abs (:y d)) 1))))
+  (if (or (= a "none") (= b "none")) true
+      (let [d (vec2-sub a b)]
+        (and (<= (abs (:x d)) 1)
+             (<= (abs (:y d)) 1)))))
 
 (defn world-process-agent [world agent msg]
   ;(println (str "world-process-agent for " (remote-agent-name agent) " got " msg))

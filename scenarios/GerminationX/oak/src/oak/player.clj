@@ -61,4 +61,32 @@
 (defn player-list-id->player-name [player-list id]
   (:name (player-list-find-player player-list id)))
 
+(defn player-remove-fruit [player fruit-id]
+  (modify
+   :seeds
+   (fn [seeds]
+     (filter
+      (fn [seed]
+        (not (= (:id seed) fruit-id)))
+      seeds))
+   player))
 
+(defn player-has-fruit? [player fruit-id]
+  (modify
+   :seeds
+   (fn [seeds]
+     (reduce
+      (fn [r seed]
+        (if (and (not r) (= (:id seed) fruit-id))
+          true r))
+      false
+      seeds))
+   player))
+
+(defn player-get-fruit [player fruit-id]
+  (reduce
+   (fn [r seed]
+     (if (and (not r) (= (:id seed) fruit-id))
+       seed r))
+   false
+   (:seeds player)))

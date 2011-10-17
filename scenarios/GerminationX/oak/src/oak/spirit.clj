@@ -36,6 +36,7 @@
    :pos (make-vec2 5 5)
    :id id
    :name (remote-agent-name remote-agent)
+   :offerings ()
    :emotions (emotion-map)
    :emotionalloc {:tile (make-vec2 0 0)
                   :pos (make-vec2 0 0) }
@@ -159,7 +160,6 @@
                  (> (count (:harmful_plants diagnosis)) 0)
                  (< 5 (rand-int 10)))
               (let [harmful (rand-nth (:harmful_plants diagnosis))]
-                (println "in send diag.. " harmful (:owner-id harmful))
                 (log-add-msg
                  log
                  (make-spirit-msg
@@ -276,16 +276,26 @@
      (spirit-highest-emotion spirit))
    spirit))
 
+(defn spirit-clear
+  "clear stuff that needs clearing"
+  [spirit]
+  (modify :log (fn [log] (make-log 10))
+   (modify :offerings (fn [offerings] ()) spirit)))
+
+(defn spirit-update-location
+  "read the location from the fatima agent"
+  [spirit remote-agent]
+  (modify :tile (fn [t] (:tile remote-agent)) spirit))
+  
 (defn spirit-update [spirit remote-agent tiles rules]
   (spirit-update-highest-emotion
    (spirit-update-from-actions
     (spirit-update-emotionalloc
      (spirit-update-emotions
       (spirit-update-fatdebug
-       (modify :log
-               (fn [log]
-                 (make-log 10))
-               (modify :tile (fn [t] (:tile remote-agent)) spirit))
+       (spirit-update-location
+        (spirit-clear spirit)
+        remote-agent)
        remote-agent)
       remote-agent)
      remote-agent tiles) tiles rules)))

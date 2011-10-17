@@ -24,6 +24,7 @@
 (def min-neighbours 2)
 (def max-neighbours 5)
 (def max-fruit 5)
+(def max-player-fruit 5) ; max a player can store
 (def seeds-duration (* 60 60 1000))
 (def plant-influence-distance 3)
 
