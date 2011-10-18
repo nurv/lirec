@@ -86,14 +86,7 @@ APP_PROJECT_LIBPATH := ${basedir.lib}
 		<copy file="..\viPleoShivaModuleOutput\MyPleo.stk" tofile=".\assets\S3DMain.stk" />
 	</target>
 	
-	<target name="clean-bin" description="Removes output files created by other targets.">
-		<antcall target="android_rules.clean" />	
-	</target>
-	
-	<target name="setup-project" description="Updates properties according to the android sdk installation,
-		cleans any possibly automatic build, and calls the compile target in order to generate the R.java
-		for the project's resources">
-		<exec executable="updateProperties.bat"/>
+	<target name="setup-project" description="Writes the application mk and prepares libs needed by Shiva3D" >
 		<antcall target="-write-application-mk" />
 		<antcall target="-prepare-libs" />
 	</target>
