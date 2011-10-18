@@ -1,0 +1,27 @@
+<project name="ION" basedir="." default="main">
+
+    <property name="ION.Meta.dir"   value="Meta"/>
+    <property name="ION.Core.dir"  value="Core"/>
+    <property name="ION.SyncCollections.dir" value="SyncCollections"/>
+
+    <target name="clean">
+	<ant antfile="build.xml" dir="${ION.SyncCollections.dir}" target="clean"/>
+	<ant antfile="build.xml" dir="${ION.Core.dir}" target="clean"/>
+	<ant antfile="build.xml" dir="${ION.Meta.dir}" target="clean"/>
+    </target>
+
+    <target name="ION.SyncCollections" depends="ION.Meta">
+        <ant antfile="build.xml" dir="${ION.SyncCollections.dir}"/>
+    </target>
+
+    <target name="ION.Core" depends="ION.Meta">
+        <ant antfile="build.xml" dir="${ION.Core.dir}"/>
+    </target>
+
+    <target name="ION.Meta">
+        <ant antfile="build.xml" dir="${ION.Meta.dir}"/>
+    </target>
+
+    <target name="main" depends="ION.Meta,ION.Core,ION.SyncCollections"/>
+
+</project>
