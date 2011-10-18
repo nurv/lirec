@@ -9,7 +9,7 @@
      version-tag:custom
 -->
 
-<project name="MyPleo" default="Build debug apk">
+<project name="MyPleo" default="debug">
 	<path id="basedir.path">
 	    <pathelement path="${basedir}" />
 	</path>
@@ -43,112 +43,61 @@
 		<map from="z:" to="/cygdrive/z"/>
 	</pathconvert>	
 
+<property file="local.properties" />
+<property file="build.properties" />
+<property file="default.properties" />
 
-	<target name="Build debug apk">
+
+    <!-- Required pre-setup import -->
+    <import file="${sdk.dir}/tools/ant/pre_setup.xml" />	
+	
+	<target name="-write-application-mk">
 		<echo file="${basedir}/jni/Application.mk">APP_PLATFORM     := android-8
 APP_MODULES      := S3DClient
 APP_PROJECT_PATH := ${basedir.app}
 APP_PROJECT_LIBPATH := ${basedir.lib}
 		</echo>
+	</target>
+	
+	<target name="-prepare-libs">
 		<exec executable="${cygwin.dir}/bin/bash.exe">
 					<arg value="--login"/>
 					<arg value="-i"/>
 					<arg value="-c"/>
 					<arg value="cd &quot;${basedir.app}&quot; &amp;&amp; /cygdrive/${ndk.dir}/ndk-build &amp;&amp; cp obj/local/armeabi/libopenal.so libs/armeabi/libopenal.so"/>
-				</exec>
-		<antcall target="compile"/>
-		<antcall target="debug"/>
-	</target>
-	<target name="Build release apk">
-		<echo file="${basedir}/jni/Application.mk">APP_PLATFORM     := android-8
-APP_MODULES      := S3DClient
-APP_PROJECT_PATH := ${basedir.app}
-APP_PROJECT_LIBPATH := ${basedir.lib}
-		</echo>
-		<exec executable="${cygwin.dir}/bin/bash.exe">
-					<arg value="--login"/>
-					<arg value="-i"/>
-					<arg value="-c"/>
-					<arg value="cd &quot;${basedir.app}&quot; &amp;&amp; /cygdrive/${ndk.dir}/ndk-build  &amp;&amp; cp obj/local/armeabi/libopenal.so libs/armeabi/libopenal.so"/>
-				</exec>
-		<antcall target="compile"/>
-		<antcall target="release"/>
+		</exec>
 	</target>
 
-
-<!-- The local.properties file is created and updated by the 'android'
-     tool.
-     It contains the path to the SDK. It should *NOT* be checked into
-     Version Control Systems. -->
-    <property file="local.properties" />
-
-    <!-- The build.properties file can be created by you and is never touched
-         by the 'android' tool. This is the place to change some of the
-         default property values used by the Ant rules.
-         Here are some properties you may want to change/update:
-
-         source.dir
-             The name of the source directory. Default is 'src'.
-         out.dir
-             The name of the output directory. Default is 'bin'.
-
-         Properties related to the SDK location or the project target should
-         be updated using the 'android' tool with the 'update' action.
-
-         This file is an integral part of the build system for your
-         application and should be checked into Version Control Systems.
-
-         -->
-    <property file="build.properties" />
-
-    <!-- The default.properties file is created and updated by the 'android'
-         tool, as well as ADT.
-         This file is an integral part of the build system for your
-         application and should be checked into Version Control Systems. -->
-    <property file="default.properties" />
-
-
-    <!-- Required pre-setup import -->
-    <import file="${sdk.dir}/tools/ant/pre_setup.xml" />
-
-
-<!-- extension targets. Uncomment the ones where you want to do custom work
-     in between standard targets -->
-<!--
-    <target name="-pre-build">
-    </target>
-    <target name="-pre-compile">
-    </target>
-
-    [This is typically used for code obfuscation.
-     Compiled code location: ${out.classes.absolute.dir}
-     If this is not done in place, override ${out.dex.input.absolute.dir}]
-    <target name="-post-compile">
-    </target>
--->
-
-    <!-- Execute the Android Setup task that will setup some properties
-         specific to the target, and import the build rules files.
-
-         The rules file is imported from
-            <SDK>/tools/ant/
-         Depending on the project type it can be either:
-         - main_rules.xml
-         - lib_rules.xml
-         - test_rules.xml
-
-         To customize existing targets, there are two options:
-         - Customize only one target:
-             - copy/paste the target into this file, *before* the
-               <setup> task.
-             - customize it to your needs.
-         - Customize the whole script.
-             - copy/paste the content of the rules files (minus the top node)
-               into this file, *after* the <setup> task
-             - disable the import of the rules by changing the setup task
-               below to <setup import="false" />.
-             - customize to your needs.
-    -->
+	<target name="debug" description="Builds the application and signs it with a debug key.">
+		<antcall target="-write-application-mk" />
+		<antcall target="-prepare-libs" />
+		<antcall target="android_rules.compile"/>
+		<antcall target="android_rules.debug"/>
+	</target>
+	<target name="release" description="Builds the application. The generated apk file must be signed before
+        it is published.">
+		<antcall target="-write-application-mk" />
+		<antcall target="-prepare-libs" />
+		<antcall target="android_rules.compile"/>
+		<antcall target="android_rules.release"/>
+	</target>
+	
+	<target name="update-shiva" description="Update the Shiva3D runtime package used">
+		<copy file="..\viPleoShivaModuleOutput\MyPleo.stk" tofile=".\assets\S3DMain.stk" />
+	</target>
+	
+	<target name="clean-bin" description="Removes output files created by other targets.">
+		<antcall target="android_rules.clean" />	
+	</target>
+	
+	<target name="setup-project" description="Updates properties according to the android sdk installation,
+		cleans any possibly automatic build, and calls the compile target in order to generate the R.java
+		for the project's resources">
+		<exec executable="updateProperties.bat"/>
+		<antcall target="-write-application-mk" />
+		<antcall target="-prepare-libs" />
+	</target>
+	
     <setup />
 
 </project>
