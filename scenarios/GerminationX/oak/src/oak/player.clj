@@ -33,6 +33,7 @@
    :picked-by '()
    :has-picked '()
    :plant-count 0
+   :flowered-plants ()
    :log (make-log 10)))
 
 (defn player-inc-plant-count [player]
@@ -90,3 +91,62 @@
        seed r))
    false
    (:seeds player)))
+
+(defn player-update-seeds
+  "update the player's seed picking ability"
+  [player]
+  (if (and
+       (not (= (:next-refresh player) 0))
+       (> (current-time) (:next-refresh player)))
+    (modify
+     :seeds-left
+     (fn [s] (:seeds-capacity player))
+     (modify :next-refresh (fn [r] 0) player))
+    player))
+
+(defn player-update [player]
+  (let [leveledup-player 
+        (modify
+         :layer
+         (fn [layer]
+           (let [score (count (:flowered-plants player))]
+             (cond
+              (and (= layer 0) (> score level0up)) 1 ; cover -> shrub
+              (and (= layer 1) (> score level1up)) 2 ; shrub -> tree
+              (and (= layer 2) (> score level2up)) 3 ; tree -> all
+              :else layer))) 
+         (modify
+          :flowered-plants
+          (fn [fp]
+            (reduce
+             (fn [fp msg]
+               (set-cons (first (:extra msg)) fp))
+             fp
+             (log-find-msgs (:log player) "i_have_flowered")))
+          player))]
+    
+;    (modify ; add surprise seeds on levelup
+;     :seeds
+;     (fn [seeds]
+;       (cond
+;        (and (= (:layer player) 0) (= (:layer new-player) 1))
+;        (cons (make-plant 
+;        (and (= (:layer player) 1) (= (:layer new-player) 2))
+;         (log-add-note log (make-note "levelup2" ()))
+;        :else seeds)
+       
+    (modify ; add notes on levelup
+     :log 
+     (fn [log]
+       (log-remove-msgs
+        (cond
+         (and (= (:layer player) 0) (= (:layer leveledup-player) 1))
+         (log-add-note log (make-note "levelup1" ())) 
+         (and (= (:layer player) 1) (= (:layer leveledup-player) 2))
+         (log-add-note log (make-note "levelup2" ()))
+         (and (= (:layer player) 2) (= (:layer leveledup-player) 3))
+         (log-add-note log (make-note "levelup3" ()))
+         :else log)
+        "i_have_flowered"))
+     leveledup-player)))
+      

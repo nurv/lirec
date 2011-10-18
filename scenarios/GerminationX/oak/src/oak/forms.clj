@@ -26,6 +26,10 @@
 (defn max-cons [o l m]
   (cons o (discard l (- m 1))))
 
+(defn set-cons [o l]
+  (if (contains? l o)
+    l (cons o l)))
+
 (defn make-id-generator [start]
   (let [i (atom start)]
     (fn [] (swap! i inc))))

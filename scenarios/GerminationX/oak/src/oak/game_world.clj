@@ -124,10 +124,16 @@
                (Math/round (* (rand-gaussian) area))
                (Math/round (* (rand-gaussian) area)))))))))
 
-(defn gamw-world-db-build!
+(defn game-world-db-build!
   "build a database from the world"
   [game-world]
-  (db-build-collection! :players (:players game-world))
+  (db-build-collection! :players (map
+                                  (fn [player]
+                                    (merge player
+                                           {:flowered-plants ()}
+                                           {:log (merge (:log player)
+                                                        {:notes ()})}))
+                                  (:players game-world)))
   (db-add-index! :players [:id])
   
   (db-build-collection! :tiles
@@ -309,27 +315,17 @@
         (load-companion-rules "rules.txt"))
       game-world))))
 
-(defn game-world-update-player-seeds
-  "update the player's seed picking ability"
-  [player]
-  (if (and
-       (not (= (:next-refresh player) 0))
-       (> (current-time) (:next-refresh player)))
-    (modify
-     :seeds-left
-     (fn [s] (:seeds-capacity player))
-     (modify :next-refresh (fn [r] 0) player))
-    player))
-
 (defn game-world-update-players
   "do things that need updating for players"
-  [game-world]
+  [game-world time]
   (prof
    :update-players
-   (db-map!
+   (db-partial-map! 
     (fn [player]
-      (game-world-update-player-seeds player))
-    :players))
+      (player-update player))
+    :players
+    time
+    4))
   game-world)
 
 (defn game-world-clear
@@ -347,12 +343,12 @@
                       (log-add-msg log msg))
                     log
                     msgs))
-            (game-world-update-players
+            (game-world-update-players 
              (game-world-update-tiles
               (game-world-post-logs-to-players
                ;(game-world-update-player-plant-counts
                (game-world-clear game-world);)
-              msgs) time delta)))))
+              msgs) time delta) time))))
 
 (defn game-world-find-spirit
   "get the spirit from it's name"

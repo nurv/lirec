@@ -27,6 +27,9 @@
 (def max-player-fruit 5) ; max a player can store
 (def seeds-duration (* 60 60 1000))
 (def plant-influence-distance 3)
+(def level0up 5)
+(def level1up 10)
+(def level2up 15)
 
 (defn plant-type->layer [type]
   (cond
@@ -34,7 +37,10 @@
    (= type "clover") "cover"
    (= type "aronia") "shrub"
    (= type "apple") "tree"
-   (= type "cherry") "tree"))
+   (= type "cherry") "tree"
+   (= type "boletus") "fungi"
+   (= type "chanterelle") "fungi"
+   (= type "flyagaric") "fungi"))
 
 (defn plant-type->id [type]
   (cond
@@ -45,11 +51,15 @@
    (= type "plant-003") 2 ; temp aronia
    (= type "dandelion") 3
    (= type "plant-001") 3 ; temp dandelion
-   (= type "clover") 4))
+   (= type "clover") 4
+   (= type "boletus") 5
+   (= type "chanterelle") 6
+   (= type "flyagaric") 7))
 
-(def plant-types '("cherry" "apple" "aronia" "dandelion" "clover"))
+(def plant-types '("cherry" "apple" "aronia" "dandelion"
+                   "clover" "boletus" "chanterelle" "flyagaric"))
 
-(def plant-layers '(rhizosphere cover herbaceous shrub vertical tree canopy))
+(def plant-layers '(rhizosphere cover herbaceous shrub vertical tree canopy fungi))
 
 (defn plant-type-id->name [type]
   (nth plant-types type))

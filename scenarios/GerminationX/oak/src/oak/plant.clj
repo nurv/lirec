@@ -63,21 +63,26 @@
 
 (defn adv-state
   "the plant state machine, advance state, based on health and season"
-  [state health season annual]
+  [state health season annual fungi]
   (cond
    (= state "planted") "grow-a"
    (= state "grow-a") (cond (> health min-health) "grow-b" :else (rand-nth (list "grow-a" "grow-b")))
    (= state "grow-b") (cond (> health min-health) "grow-c" :else (rand-nth (list "grow-b" "grow-c")))
    (= state "grow-c") (cond (> health min-health) "grown" :else (rand-nth (list "grow-c" "grown")))
-   (= state "grown") (cond
-                      (< health min-health) "ill-a" 
-                      (and (> health max-health)
-                           (or (= season "spring")
-                               (= season "summer")))
-                      "fruit-a"
-                      (or (= season "autumn") (= season "winter"))
-                      "decay-a"
-                      :else "grown")
+   (= state "grown")
+   (if fungi
+     (cond
+      (< health min-health) "decayed"
+      :else "grown")
+     (cond
+      (< health min-health) "ill-a" 
+      (and (> health max-health)
+           (or (= season "spring")
+               (= season "summer")))
+      "fruit-a"
+      (or (= season "autumn") (= season "winter"))
+      "decay-a"
+      :else "grown"))
    (= state "fruit-a") (if (< health min-health) "decay-a" "fruit-b")
    (= state "fruit-b") (if (< health min-health) "decay-a" "fruit-c")
    (= state "fruit-c") (if (or (= season "autumn") (= season "winter")
@@ -114,6 +119,13 @@
   (log-add-msg 
    log
    (make-plant-msg type plant (:owner-id plant) ())))
+
+(defn plant-add-to-log-extra
+  "helper to add a message to a plant:s log"
+  [plant log type extra]
+  (log-add-msg 
+   log
+   (make-plant-msg type plant (:owner-id plant) extra)))
 
 (defn plant-clear-log
   "clear the things needed before an update"
@@ -235,6 +247,13 @@
          plant
          (neighbours-relationship plant neighbours rules >))
 
+        (and (not (= old-state "fruit-a"))
+             (= (:state plant) "fruit-a"))
+        ; we use this message to count flowered plants
+        ; so add a little extra detail we need
+        (plant-add-to-log-extra plant log :i_have_flowered
+                                (list (:id plant))) 
+
         (or
          (and
           (= old-state "ill-c")
@@ -343,7 +362,8 @@
                    season
                    ; for the moment assume cover plants
                    ; are annuals
-                   (= (:layer plant) "cover")))
+                   (= (:layer plant) "cover")
+                   (= (:layer plant) "fungi")))
       (modify
        :timer (fn [t] 0) plant))
      plant)))

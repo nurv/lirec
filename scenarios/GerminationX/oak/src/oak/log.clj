@@ -49,10 +49,17 @@
    :code code                        ; which message is this
    ))
 
+(defn make-note [code options]
+  (hash-map
+   :code code
+   :options options
+   :answer false))
+
 (defn make-log [max]
   (hash-map
    :msgs ()
-   :max max))
+   :max max
+   :notes ()))
 
 (defn log-add-msg [log msg]
   (modify
@@ -60,3 +67,53 @@
    (fn [msgs]
      (max-cons msg msgs (:max log)))
    log))
+
+(defn log-contains-msg? [log code]
+  (reduce
+   (fn [r msg]
+     (if (and (not r) (= (:code msg) code))
+       true r))
+   false
+   (:msgs log)))
+
+(defn log-find-msgs [log code]
+  (reduce
+   (fn [r msg]
+     (if (= (:code msg) code)
+       (cons msg r) r))
+   ()
+   (:msgs log)))
+
+(defn log-remove-msgs [log code]
+  (modify
+   :msgs
+   (fn [msgs]
+     (filter
+      (fn [msg]
+        (not (= (:code msg) code)))
+      msgs))
+   log))
+
+(defn log-add-note [log note]
+  (modify
+   :notes
+   (fn [notes]
+     (cons note notes))
+   log))
+
+; a note has been answered, record the answer
+(defn log-answer-note [log code index]
+  (map
+   (fn [note]
+     (if (= (:code note) code)
+       (modify
+        :answer
+        (fn [a]
+          (if (and
+               (>= index 0)
+               (< index (count (:options note))))
+            (nth (:options note) index)
+            :error))
+        note)
+       note))
+   (:notes log)))

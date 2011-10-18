@@ -52,9 +52,9 @@
        "data/characters/minds/Actions.xml"
        (list))))
 
-;(def my-game-world (ref (game-world-load state-filename)))
+(def my-game-world (ref (game-world-load state-filename)))
 ;(def my-game-world (ref (make-game-world 100 1)))
-;(game-world-db-build! (sym-replace2 (deref my-game-world)))
+(game-world-db-build! (sym-replace2 (deref my-game-world)))
 ;(game-world-save (deref my-game-world) "test.txt")
 
 (def my-game-world (ref (make-empty-game-world)))
@@ -65,7 +65,6 @@
 
 (defn run []
   (let [time (/ (.getTime (java.util.Date.)) 1000.0)]
-    ; assumes this way around game -> fat, game <- fat
     (dosync (ref-set fatima-world
                      (doall-recur
                       (world-run
