@@ -1,0 +1,42 @@
+<project name="CMION.cmionAddOns" basedir="." default="jar">
+
+    <property name="src.dir"     value="src"/>
+
+    <property name="build.dir"   value="build"/>
+    <property name="classes.dir" value="${build.dir}/classes"/>
+    <property name="jar.dir"     value="${build.dir}/jar"/>
+    <property name="lib.dir"     value="."/>
+
+    <property name="CMION.cmionMain.lib.dir" value="${CMION.cmionMain.dir}/build/jar"/>
+
+    <property name="ION.Meta.lib.dir"     value="${ION.dir}/Meta/build/jar"/>
+    <property name="ION.Core.lib.dir"     value="${ION.dir}/Core/build/jar"/>
+    <property name="ION.SyncCollections.lib.dir"     value="${ION.dir}/SyncCollections/build/jar"/>
+
+    <path id="ION.classpath">
+        <fileset dir="${ION.Meta.lib.dir}" includes="**/*.jar"/>
+	<fileset dir="${ION.Core.lib.dir}" includes="**/*.jar"/>
+	<fileset dir="${ION.SyncCollections.lib.dir}" includes="**/*.jar"/>
+    </path>
+
+    <path id="classpath">
+	<path refid="ION.classpath"/>
+        <fileset dir="${CMION.cmionMain.lib.dir}" includes="**/*.jar"/>
+	<fileset dir="${lib.dir}" includes="**/*.jar"/>
+    </path>
+
+    <target name="clean">
+        <delete dir="${build.dir}"/>
+    </target>
+
+    <target name="compile">
+        <mkdir dir="${classes.dir}"/>
+        <javac srcdir="${src.dir}" destdir="${classes.dir}" classpathref="classpath"/>
+    </target>
+
+    <target name="jar" depends="compile">
+        <mkdir dir="${jar.dir}"/>
+        <jar destfile="${jar.dir}/${ant.project.name}.jar" basedir="${classes.dir}"/>
+    </target>
+
+</project>

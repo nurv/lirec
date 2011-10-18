@@ -1,0 +1,53 @@
+<project name="CMION.cmionLauncher" basedir="." default="main">
+
+    <property name="main-class"  value="cmion.architecture.Architecture"/>
+    <property name="src.dir"     value="src"/>
+
+    <property name="build.dir"   value="build"/>
+    <property name="classes.dir" value="${build.dir}/classes"/>
+    <property name="jar.dir"     value="${build.dir}/jar"/>
+    <property name="lib.dir"     value="."/>
+
+    <property name="CMION.cmionMain.lib.dir" value="${CMION.cmionMain.dir}/build/jar"/>
+    <property name="CMION.cmionAddOns.lib.dir" value="${CMION.cmionAddOns.dir}/build/jar"/>
+    <property name="CMION.extra.lib.dir" value="../cmionAddOns/"/>
+
+    <property name="ION.Meta.lib.dir"     value="${ION.dir}/Meta/build/jar"/>
+    <property name="ION.Core.lib.dir"     value="${ION.dir}/Core/build/jar"/>
+    <property name="ION.SyncCollections.lib.dir"     value="${ION.dir}/SyncCollections/build/jar"/>
+
+    <path id="ION.classpath">
+        <fileset dir="${ION.Meta.lib.dir}" includes="**/*.jar"/>
+	<fileset dir="${ION.Core.lib.dir}" includes="**/*.jar"/>
+	<fileset dir="${ION.SyncCollections.lib.dir}" includes="**/*.jar"/>
+    </path>
+
+    <path id="classpath">
+	<path refid="ION.classpath"/>
+        <fileset dir="${CMION.cmionMain.lib.dir}" includes="**/*.jar"/>
+	<fileset dir="${CMION.cmionAddOns.lib.dir}" includes="**/*.jar"/>
+	<fileset dir="${CMION.extra.lib.dir}" includes="**/*.jar"/>
+    </path>
+
+    <target name="clean">
+        <delete dir="${build.dir}"/>
+    </target>
+
+    <target name="compile">
+        <mkdir dir="${classes.dir}"/>
+        <javac srcdir="${src.dir}" destdir="${classes.dir}" classpathref="classpath"/>
+    </target>
+
+    <target name="run" depends="compile">
+        <java classname="${main-class}" fork="true" >
+            <classpath>
+                <path refid="classpath"/>
+		<pathelement path="${java.class.path}"/>
+		<pathelement path="${classes.dir}"/>
+            </classpath>
+	</java>
+    </target>
+
+    <target name="main" depends="run"/>
+
+</project>

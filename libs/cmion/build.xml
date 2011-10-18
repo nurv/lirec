@@ -1,0 +1,29 @@
+<project name="CMION" basedir="." default="main">
+
+    <property name="ION.dir" value="${basedir}/../ion"/>
+    <property name="CMION.dir" value="${basedir}"/>
+    <property name="CMION.cmionLauncher.dir"   value="${CMION.dir}/cmionLauncher"/>
+    <property name="CMION.cmionMain.dir"  value="${CMION.dir}/cmionMain"/>
+    <property name="CMION.cmionAddOns.dir" value="${CMION.dir}/cmionAddOns"/>
+
+    <target name="clean">
+	<ant antfile="build.xml" dir="${CMION.cmionLauncher.dir}" target="clean"/>
+	<ant antfile="build.xml" dir="${CMION.cmionAddOns.dir}" target="clean"/>
+	<ant antfile="build.xml" dir="${CMION.cmionMain.dir}" target="clean"/>
+    </target>
+
+    <target name="CMION.cmionLauncher" depends="CMION.cmionMain,CMION.cmionAddOns">
+        <ant antfile="build.xml" dir="${CMION.cmionLauncher.dir}"/>
+    </target>
+
+    <target name="CMION.cmionAddOns" depends="CMION.cmionMain">
+        <ant antfile="build.xml" dir="${CMION.cmionAddOns.dir}"/>
+    </target>
+
+    <target name="CMION.cmionMain">
+        <ant antfile="build.xml" dir="${CMION.cmionMain.dir}"/>
+    </target>
+
+    <target name="main" depends="CMION.cmionMain,CMION.cmionAddOns,CMION.cmionLauncher"/>
+
+</project>
