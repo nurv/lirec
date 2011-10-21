@@ -459,7 +459,10 @@ public class ABSelectionPanel extends AgentDisplayPanel {
 		selectedIDs = selectedIDsTemp;
 
 		if (!cbSimulateSelection.isSelected()) {
+			// perform forgetting
 			episodicMemory.activationBasedForgetting(selectedIDs);
+			// clear selection
+			selectedIDs.clear();
 		}
 
 		table.repaint();
