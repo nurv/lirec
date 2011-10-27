@@ -1,0 +1,17 @@
+sound volume 0
+joint disable 0
+joint disable 1
+joint disable 2
+joint disable 3
+joint disable 4
+joint disable 5
+joint disable 6
+joint disable 7
+joint disable 8
+joint disable 9
+joint disable 10
+joint disable 11
+joint disable 12
+joint disable 13
+log disable all
+log enable script

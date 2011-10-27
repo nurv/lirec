@@ -1,0 +1,2 @@
+log disable all
+log enable script

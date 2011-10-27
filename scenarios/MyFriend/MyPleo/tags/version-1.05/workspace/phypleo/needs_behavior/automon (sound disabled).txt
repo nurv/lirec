@@ -1,0 +1,3 @@
+sound volume 0
+log disable all
+log enable script

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical" android:layout_width="fill_parent"
+	android:layout_height="fill_parent">
+	<TextView android:layout_width="fill_parent"
+		android:layout_height="wrap_content" android:text="" />
+
+<Button android:text="@string/vi_play" android:id="@+id/ViStartButton" android:layout_width="wrap_content" android:layout_height="wrap_content" android:visibility="visible" android:textSize="30sp"></Button>
+<Button android:text="@string/phy_play" android:id="@+id/PhyStartButton" android:layout_width="wrap_content" android:layout_height="wrap_content" android:visibility="visible" android:textSize="30sp"></Button>
+
+<Button android:text="@string/vi_start_migrate_button_label" android:id="@+id/ViStartMigrateButton" android:layout_width="wrap_content" android:layout_height="wrap_content" android:visibility="invisible" android:textSize="30sp"></Button>
+<Button android:text="@string/phy_start_migrate_button_label" android:id="@+id/PhyStartMigrateButton" android:layout_width="wrap_content" android:layout_height="wrap_content" android:visibility="invisible" android:textSize="30sp"></Button> 
+
+<TextView android:text="@string/connected_message" android:id="@+id/ConnectedTextView" android:layout_width="wrap_content" android:layout_height="wrap_content" android:visibility="invisible"></TextView>
+<TextView android:text="@string/disable_monitor_warning" android:id="@+id/DisablingMonitorTextView" android:layout_width="wrap_content" android:layout_height="wrap_content" android:visibility="invisible"></TextView>
+<TextView android:text="@string/shutdown_warning" android:id="@+id/ShutdownTextView" android:layout_width="wrap_content" android:layout_height="wrap_content" android:visibility="invisible"></TextView>
+</LinearLayout>

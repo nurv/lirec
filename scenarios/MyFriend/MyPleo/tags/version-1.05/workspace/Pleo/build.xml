@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- The following commented text will prevent the 'android' tool from overwriting this file.
+
+     (until sdk r12)
+     classname="com.android.ant.SetupTask"
+
+     (since sdk r13 FIXME)
+     version-tag:custom
+-->
+
+<project name="MyPleo" default="debug">
+	<path id="basedir.path">
+	    <pathelement path="${basedir}" />
+	</path>
+	<pathconvert targetos="unix" property="basedir.lib" refid="basedir.path"/>
+	<pathconvert targetos="unix" property="basedir.app" refid="basedir.path">
+		<map from="a:" to="/cygdrive/a"/>
+		<map from="b:" to="/cygdrive/b"/>
+		<map from="c:" to="/cygdrive/c"/>
+		<map from="d:" to="/cygdrive/d"/>
+		<map from="e:" to="/cygdrive/e"/>
+		<map from="f:" to="/cygdrive/f"/>
+		<map from="g:" to="/cygdrive/g"/>
+		<map from="h:" to="/cygdrive/h"/>
+		<map from="i:" to="/cygdrive/i"/>
+		<map from="j:" to="/cygdrive/j"/>
+		<map from="k:" to="/cygdrive/k"/>
+		<map from="l:" to="/cygdrive/l"/>
+		<map from="m:" to="/cygdrive/m"/>
+		<map from="n:" to="/cygdrive/n"/>
+		<map from="o:" to="/cygdrive/o"/>
+		<map from="p:" to="/cygdrive/p"/>
+		<map from="q:" to="/cygdrive/q"/>
+		<map from="r:" to="/cygdrive/r"/>
+		<map from="s:" to="/cygdrive/s"/>
+		<map from="t:" to="/cygdrive/t"/>
+		<map from="u:" to="/cygdrive/u"/>
+		<map from="v:" to="/cygdrive/v"/>
+		<map from="w:" to="/cygdrive/w"/>
+		<map from="x:" to="/cygdrive/x"/>
+		<map from="y:" to="/cygdrive/y"/>
+		<map from="z:" to="/cygdrive/z"/>
+	</pathconvert>	
+
+<property file="local.properties" />
+<property file="build.properties" />
+<property file="default.properties" />
+
+
+    <!-- Required pre-setup import -->
+    <import file="${sdk.dir}/tools/ant/pre_setup.xml" />	
+	
+	<target name="-write-application-mk">
+		<echo file="${basedir}/jni/Application.mk">APP_PLATFORM     := android-8
+APP_MODULES      := S3DClient
+APP_PROJECT_PATH := ${basedir.app}
+APP_PROJECT_LIBPATH := ${basedir.lib}
+		</echo>
+	</target>
+	
+	<target name="-prepare-libs">
+		<exec executable="${cygwin.dir}/bin/bash.exe">
+					<arg value="--login"/>
+					<arg value="-i"/>
+					<arg value="-c"/>
+					<arg value="cd &quot;${basedir.app}&quot; &amp;&amp; /cygdrive/${ndk.dir}/ndk-build &amp;&amp; cp obj/local/armeabi/libopenal.so libs/armeabi/libopenal.so"/>
+		</exec>
+	</target>
+
+	<target name="debug" description="Builds the application and signs it with a debug key.">
+		<antcall target="-write-application-mk" />
+		<antcall target="-prepare-libs" />
+		<antcall target="android_rules.compile"/>
+		<antcall target="android_rules.debug"/>
+	</target>
+	<target name="release" description="Builds the application. The generated apk file must be signed before
+        it is published.">
+		<antcall target="-write-application-mk" />
+		<antcall target="-prepare-libs" />
+		<antcall target="android_rules.compile"/>
+		<antcall target="android_rules.release"/>
+	</target>
+	
+	<target name="update-shiva" description="Update the Shiva3D runtime package used">
+		<copy file="..\viPleoShivaModuleOutput\MyPleo.stk" tofile=".\assets\S3DMain.stk" />
+	</target>
+	
+	<target name="setup-project" description="Writes the application mk and prepares libs needed by Shiva3D" >
+		<antcall target="-write-application-mk" />
+		<antcall target="-prepare-libs" />
+	</target>
+	
+    <setup />
+
+</project>
