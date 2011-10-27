@@ -44,7 +44,10 @@ class Plant extends SpriteEntity
             dandelion: new Vec2(0,-200),
             aronia: new Vec2(0,-120),
             apple: new Vec2(0,-140),
-            cherry: new Vec2(0,-210)
+            cherry: new Vec2(0,-210),
+            boletus: new Vec2(0,-50),
+            chanterelle: new Vec2(0,-50),
+            flyagaric: new Vec2(0,-50)
         }};
 
     // because not all states are represented by graphics
@@ -78,6 +81,16 @@ class Plant extends SpriteEntity
         for (i in 0...Std.parseInt(plant.fruit)) 
         {
             Fruit(world);
+        }
+
+        // display stars next to plants owned by the player
+        if (!Owned && Owner==world.MyID)
+        {
+            Star = new Sprite(Reflect.field(CentrePositions,PlantType),
+                              Resources.Get("star"));
+            world.AddSprite(Star);
+            Owned=true;
+            Star.Update(0,Spr.Transform);
         }
 	}
 

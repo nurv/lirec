@@ -98,6 +98,24 @@
                       <bitmap id="AppleFruitBTex" import="textures/apple-fruit-b.png"/>                     
                       <bitmap id="AppleFruitCTex" import="textures/apple-fruit-c.png"/>                     
 
+                      <bitmap id="BoletusGrowATex" import="textures/boletus-grow-a.png"/>                     
+                      <bitmap id="BoletusGrowBTex" import="textures/boletus-grow-b.png"/>                     
+                      <bitmap id="BoletusGrowCTex" import="textures/boletus-grow-c.png"/>                     
+                      <bitmap id="BoletusGrownTex" import="textures/boletus-grown.png"/>                     
+                      <bitmap id="BoletusFruitCTex" import="textures/boletus-fruit-c.png"/>                     
+
+                      <bitmap id="ChanterelleGrowATex" import="textures/chanterelle-grow-a.png"/>                     
+                      <bitmap id="ChanterelleGrowBTex" import="textures/chanterelle-grow-b.png"/>                     
+                      <bitmap id="ChanterelleGrowCTex" import="textures/chanterelle-grow-c.png"/>                     
+                      <bitmap id="ChanterelleGrownTex" import="textures/chanterelle-grown.png"/>                     
+                      <bitmap id="ChanterelleFruitCTex" import="textures/chanterelle-fruit-c.png"/>                     
+
+                      <bitmap id="FlyAgaricGrowATex" import="textures/flyagaric-grow-a.png"/>                     
+                      <bitmap id="FlyAgaricGrowBTex" import="textures/flyagaric-grow-b.png"/>                     
+                      <bitmap id="FlyAgaricGrowCTex" import="textures/flyagaric-grow-c.png"/>                     
+                      <bitmap id="FlyAgaricGrownTex" import="textures/flyagaric-grown.png"/>                     
+                      <bitmap id="FlyAgaricFruitCTex" import="textures/flyagaric-fruit-c.png"/>                     
+
                       <bitmap id="WingTex" import="textures/wing.png"/>                     
 
                       <bitmap id="ActionFlowerTex" import="textures/action-flower.png"/>                     
@@ -130,6 +148,46 @@
                       <bitmap id="GUINW001Tex" import="textures/gui-nw-001.png"/>                     
                       <bitmap id="GUINW002Tex" import="textures/gui-nw-002.png"/>                     
                       <bitmap id="GUINW003Tex" import="textures/gui-nw-003.png"/>                     
+
+                      <bitmap id="PP00Tex" import="textures/pp00.png"/>                     
+                      <bitmap id="PP01Tex" import="textures/pp01.png"/>                     
+                      <bitmap id="PP02Tex" import="textures/pp02.png"/>                     
+                      <bitmap id="PP03Tex" import="textures/pp03.png"/>                     
+                      <bitmap id="PP04Tex" import="textures/pp04.png"/>                     
+                      <bitmap id="PP05Tex" import="textures/pp05.png"/>                     
+
+                      <bitmap id="FloweredCover00Tex" import="textures/flowered-cover-00.png"/>                     
+                      <bitmap id="FloweredCover01Tex" import="textures/flowered-cover-01.png"/>                     
+                      <bitmap id="FloweredCover02Tex" import="textures/flowered-cover-02.png"/>                     
+                      <bitmap id="FloweredCover03Tex" import="textures/flowered-cover-03.png"/>                     
+                      <bitmap id="FloweredCover04Tex" import="textures/flowered-cover-04.png"/>                     
+                      <bitmap id="FloweredCover05Tex" import="textures/flowered-cover-05.png"/>                     
+
+                      <bitmap id="FloweredShrub00Tex" import="textures/flowered-shrub-00.png"/>                     
+                      <bitmap id="FloweredShrub01Tex" import="textures/flowered-shrub-01.png"/>                     
+                      <bitmap id="FloweredShrub02Tex" import="textures/flowered-shrub-02.png"/>                     
+                      <bitmap id="FloweredShrub03Tex" import="textures/flowered-shrub-03.png"/>                     
+                      <bitmap id="FloweredShrub04Tex" import="textures/flowered-shrub-04.png"/>                     
+                      <bitmap id="FloweredShrub05Tex" import="textures/flowered-shrub-05.png"/>                     
+                      <bitmap id="FloweredShrub06Tex" import="textures/flowered-shrub-06.png"/>                     
+                      <bitmap id="FloweredShrub07Tex" import="textures/flowered-shrub-07.png"/>                     
+                      <bitmap id="FloweredShrub08Tex" import="textures/flowered-shrub-08.png"/>                     
+
+
+                      <bitmap id="FloweredTree00Tex" import="textures/flowered-tree-00.png"/>                     
+                      <bitmap id="FloweredTree01Tex" import="textures/flowered-tree-01.png"/>                     
+                      <bitmap id="FloweredTree02Tex" import="textures/flowered-tree-02.png"/>                     
+                      <bitmap id="FloweredTree03Tex" import="textures/flowered-tree-03.png"/>                     
+                      <bitmap id="FloweredTree04Tex" import="textures/flowered-tree-04.png"/>                     
+                      <bitmap id="FloweredTree05Tex" import="textures/flowered-tree-05.png"/>                     
+                      <bitmap id="FloweredTree06Tex" import="textures/flowered-tree-06.png"/>                     
+                      <bitmap id="FloweredTree07Tex" import="textures/flowered-tree-07.png"/>                     
+                      <bitmap id="FloweredTree08Tex" import="textures/flowered-tree-08.png"/>                     
+                      <bitmap id="FloweredTree09Tex" import="textures/flowered-tree-09.png"/>                     
+                      <bitmap id="FloweredTree10Tex" import="textures/flowered-tree-10.png"/>                     
+                      <bitmap id="FloweredTree11Tex" import="textures/flowered-tree-11.png"/>                     
+                      <bitmap id="FloweredTree12Tex" import="textures/flowered-tree-12.png"/>                     
+
 
                 </library>
         </frame>

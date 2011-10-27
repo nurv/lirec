@@ -32,6 +32,8 @@ class Feed
     var EmotionIndices:Dynamic;
     var Fruit:Array<Dynamic>;
     var FruitSprites:Array<Sprite>;
+    var PickPower:Sprite;
+    var Flowered:Sprite;
 
     public function new(w:World)
     {
@@ -59,6 +61,16 @@ class Feed
         Info.G=1;
         Info.B=0.8;
         w.AddSprite(Info);
+
+        PickPower = new Sprite(new Vec2(340,50),Resources.Get("pp05"),false,false);
+        PickPower.Colour=new Vec3(1,0,0);
+        w.AddSprite(PickPower);
+        PickPower.Update(0,null); // make the colour take effect
+
+        Flowered = new Sprite(new Vec2(395,50),Resources.Get("flowered-cover-00"),false,false);
+        Flowered.Colour=new Vec3(1,0,0);
+        w.AddSprite(Flowered);
+        Flowered.Update(0,null);
     }
 
     static function IntToColourTriple(col:Int) : Vec3
@@ -119,6 +131,16 @@ class Feed
         return true;
     }
 
+    function GetLayerName(n:Int)
+    {
+        switch(n) {
+        case 0: return "cover";
+        case 1: return "shrub";
+        case 2: return "tree";
+        }
+        return "all";
+    }
+    
     function UpdateTopBox(w:World) 
     {
         if (w.MyName=="")
@@ -127,7 +149,29 @@ class Feed
         }
         else
         {
+            PickPower.Hide(false);
+            Flowered.Hide(false);
+
+            PickPower.ChangeBitmap(Resources.Get("pp0"+Std.string(Reflect.field(w.PlayerInfo,"seeds-left"))));
+
+            // pad zeros
+            var Flowers=Std.string(Reflect.field(w.PlayerInfo,"flowered-plants").length+100).substr(1,3);
+            Flowered.ChangeBitmap(
+                Resources.Get("flowered-"+
+                             GetLayerName(w.PlayerInfo.layer)+
+                             "-"+ Flowers));
+                
             Info.UpdateText("");
+
+/*            Info.UpdateText(
+                "Hello "+ w.MyName+" it is "+w.Season+", your layer is currently "+
+                    GetLayerName(Std.parseInt(w.PlayerInfo.layer))+
+                " and " +
+                Std.string(Reflect.field
+                           (w.PlayerInfo,
+                            "flowered-plants").length)
+                + " of your plants from this layer have flowered."
+            ); */
             
             var fruit:Array<Dynamic>=w.PlayerInfo.seeds;
             fruit.reverse();
@@ -244,8 +288,11 @@ class Feed
             var pos=new Vec2(595,32);
             for (i in d) 
             {
-                BuildMessage(w,i,pos);
-                pos.y+=90;
+                if (i.code!="i_have_flowered") // used for internal
+                {
+                    BuildMessage(w,i,pos);
+                    pos.y+=90;
+                }
             }
         }
     }
