@@ -112,15 +112,16 @@
       (remote-agent-done remote-agent))
     spirit)))
 
-(defn spirit-pick-helper-player [player-id]
+(defn spirit-pick-helper-player [player-id needed-layer]
   ; pick any player - should be based on needed layer
-  (let [found (db-get-random-one :players {:id {:$ne player-id}})]
+  (let [found (db-get-random-one :players {:id {:$ne player-id}
+                                           :layer (layer->num needed-layer)})]
     (if (empty? found)
       false
       (first found))))
 
 (defn spirit-ask-for-help [spirit plant diagnosis]
-  (let [player (spirit-pick-helper-player (:owner-id plant))]
+  (let [player (spirit-pick-helper-player (:owner-id plant) (:layer plant))]
     (if (and player
              (> (count (:needed_plants diagnosis)) 0))
       (do

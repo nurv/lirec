@@ -26,8 +26,14 @@
 (defn max-cons [o l m]
   (cons o (discard l (- m 1))))
 
+(defn list-contains? [l i]
+  (cond
+   (empty? l) false
+   (= (first l) i) true
+   :else (recur (rest l) i)))
+
 (defn set-cons [o l]
-  (if (contains? l o)
+  (if (list-contains? l o)
     l (cons o l)))
 
 (defn make-id-generator [start]

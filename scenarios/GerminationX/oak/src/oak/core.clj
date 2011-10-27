@@ -42,7 +42,6 @@
 
 (def state-filename "state.txt")
 (def log-filename "public/log.txt")
-(def game-world-tick 1)
 
 (def fatima-world
      (ref
@@ -52,16 +51,14 @@
        "data/characters/minds/Actions.xml"
        (list))))
 
-(def my-game-world (ref (game-world-load state-filename)))
+;(def my-game-world (ref (game-world-load state-filename)))
 ;(def my-game-world (ref (make-game-world 100 1)))
-(game-world-db-build! (sym-replace2 (deref my-game-world)))
+;(game-world-db-build! (sym-replace2 (deref my-game-world)))
 ;(game-world-save (deref my-game-world) "test.txt")
 
 (def my-game-world (ref (make-empty-game-world)))
 
 (append-spit log-filename (str (str (Date.)) " server started\n"))
-
-(mail "dave@fo.am" "friendly message from gx" "I have started!")
 
 (defn run []
   (let [time (/ (.getTime (java.util.Date.)) 1000.0)]
@@ -78,25 +75,16 @@
                        (game-world-sync<-fatima
                         (deref my-game-world)
                         (deref fatima-world))
-                       time 1))))))
+                       time server-tick))))))
 
 (defn tick []
-  (Thread/sleep 1000)
-  ;(println ".")
-  ;(game-world-print (deref my-game-world))
-
+  (Thread/sleep (* server-tick 1000))
   (try
     (profile (run))
-    ;(throw (Exception. "Testing error catching"))
     (catch Exception e
       (println "Oops ... an error ocurred.")
-      (.printStackTrace e)
-      (mail "dave@fo.am"
-            "friendly message from gx"
-            (.getStackTrace e))
-      )
-    (finally
-     ))
+      (.printStackTrace e))
+    (finally))
   (recur))
 
 ;(tick)
@@ -138,14 +126,20 @@
        (let [tiles (game-world-get-tile-with-neighbours
                      (deref my-game-world)
                      (make-vec2 (parse-number tilex)
-                                (parse-number tiley)))]
+                                (parse-number tiley)))
+             player (game-world-find-player
+                     (deref my-game-world)
+                     (parse-number player-id))
+             player-layer (player-get-allowed-layer player)]
          (json
-          {:player
-           (game-world-find-player
-            (deref my-game-world)
-            (parse-number player-id))
-           :tiles
-           (map tile-strip tiles)
+          {:player player
+           :tiles (if player
+                    (map
+                     (fn [tile]
+                       ; take off the fruit we are not allowed to pick
+                       (tile-strip tile player-layer))
+                     tiles)
+                    tiles)
            :spirits
            (:spirits (deref my-game-world))})))
 
@@ -185,7 +179,9 @@
                        tile-pos
                        (make-plant
                         ((:id-gen (deref my-game-world)))
-                        tile-pos pos type owner-id size))
+                        tile-pos pos type owner-id size)
+                       (/ (.getTime (java.util.Date.)) 1000.0)
+                       server-tick)
                       owner-id
                       (fn [player]
                       (player-inc-plant-count
@@ -203,8 +199,8 @@
        (let [player-id (parse-number player-id)
              tile-pos (make-vec2 (parse-number tilex) (parse-number tiley))
              plant-id (parse-number plant-id)]
-         (if true ;(comment game-world-can-player-pick?
-              ;(deref my-game-world) player-id)
+         (if (game-world-can-player-pick?
+              (deref my-game-world) player-id)
            (do
              (append-spit
               log-filename

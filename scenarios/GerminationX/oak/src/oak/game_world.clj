@@ -48,13 +48,6 @@
                    :pos.y {:$lt (+ (:y pos) 2)  
                            :$gt (- (:y pos) 2)}})))
 
-(defn game-world-add-tile
-  "add a tile to the game (this is done gradually as people plant)
-   leaving a sparse list"
-  [game-world tile]
-  (db-add! :tiles tile)
-  game-world)
-
 (defn game-world-modify-tile
   "run function f on the tile at position pos,
    giving the tile as the only argument"
@@ -79,19 +72,35 @@
                    (list tile-pos))}))
      world)))
 
+(defn game-world-add-tile
+  "add a tile to the game (this is done gradually as people plant)
+   leaving a sparse list"
+  [game-world tile time delta]
+  (db-add! :tiles tile)
+  (game-world-modify-tile ; run update on the tile to init the plant
+   game-world
+   (:pos tile)
+   (fn [tile]
+     (tile-update tile time delta (:rules game-world)
+                  (game-world-get-tile-with-neighbours
+                    game-world (:pos tile))))))
+
 (defn game-world-add-entity
   "add a new entity into the world, and summon the right
    spirit to come and look at it"
-  [game-world tile-pos entity]
+  [game-world tile-pos entity time delta]
    (let [tile (game-world-get-tile game-world tile-pos)]
     (game-world-summon-spirit
      (if (not tile)
-       (game-world-add-tile game-world (make-tile tile-pos (list entity)))
-       (game-world-modify-tile
+       (game-world-add-tile game-world (make-tile tile-pos (list entity)) time delta)
+       (game-world-modify-tile ; run update on the tile to init the plant
         game-world
         tile-pos
         (fn [tile]
-          (tile-add-entity tile entity))))
+          (tile-update (tile-add-entity tile entity)
+                       time delta (:rules game-world)
+                       (game-world-get-tile-with-neighbours
+                         game-world (:pos tile))))))
      tile-pos
      entity)))
 
@@ -105,7 +114,7 @@
        (game-world-add-entity
         world
         (:tile plant)
-        plant))
+        plant 0 1))
      (hash-map
       :version 1
       :log (make-log 10)
@@ -131,6 +140,8 @@
                                   (fn [player]
                                     (merge player
                                            {:flowered-plants ()}
+                                           {:seeds-capacity 5}
+                                           {:seeds-left 5}
                                            {:log (merge (:log player)
                                                         {:notes ()})}))
                                   (:players game-world)))
@@ -144,6 +155,9 @@
                             {:index (str (:x (:pos tile)) ","
                                          (:y (:pos tile)))}))
                          (:tiles game-world)))
+
+ ; todo - add new tick time to plants
+  
   (db-add-index! :tiles [:index]))
 
 (defn make-empty-game-world
@@ -322,7 +336,7 @@
    :update-players
    (db-partial-map! 
     (fn [player]
-      (player-update player))
+      (player-update player (:id-gen game-world)))
     :players
     time
     4))
@@ -396,7 +410,9 @@
 (defn game-world-can-player-pick?
   "can the player pick from a plant?"
   [game-world player-id]
-  (> (:seeds-left (game-world-find-player game-world player-id)) 0))
+  (let [player (game-world-find-player game-world player-id)]
+    (and (< (count (:seeds player)) 5)
+         (> (:seeds-left player) 0))))
 
 (defn game-world-player-pick
   "pick fruit from a plant"
@@ -416,14 +432,6 @@
                      ((:id-gen game-world))
                      (:type plant) (:layer plant))
                     seeds max-player-fruit)))
-      (modify
+      (modify ; will have checked > 0 already
        :seeds-left (fn [s] (- s 1))
-       (if (and (= (:next-refresh player) 0)
-                (>= (:seeds-capacity player)
-                    (:seeds-left player)))
-         (modify
-          :next-refresh
-          (fn [r] (+ (current-time) seeds-duration))
-          player)
-         player))))))
-
+       player)))))

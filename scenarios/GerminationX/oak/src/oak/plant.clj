@@ -33,8 +33,8 @@
    :picked-by-ids ()
    :owner-id owner-id
    :size size
-   :timer 0
-   :tick (+ 2 (Math/floor (rand 3)))
+   :timer 9999 ; force a tick when created
+   :tick (+ plant-tick (Math/floor (rand plant-tick-var)))
    :health start-health
    :fruit 0
    :event-occurred ()
@@ -42,16 +42,21 @@
 
 (defn plant-strip
   "remove crud that the client doesn't need - temporary measure"
-  [plant]
-  (select-keys
-   plant
-   [:id :state :type :layer :pos :fruit :owner-id]))
+  [plant player-layer]
+  (let [stripped (select-keys
+                  plant
+                  [:id :state :type :layer :pos :fruit :owner-id])]
+    ; remove the fruit if the player hasn't reached the level yet
+    (if (or (= player-layer "all")
+            (= player-layer (:layer plant)))
+      stripped
+      (merge stripped {:fruit 0}))))
 
 (defn plant-count [plant]
   (println (str "picked-by: " (count (:picked-by-ids plant)))))
 
 (defn make-random-plant [id tile]
-  (let [type (rand-nth plant-types)]
+  (let [type (rand-nth plant-types-wo-fungi)]
     (make-plant
      id
      tile
@@ -212,20 +217,22 @@
         ; around us about our relationship with them
         (and (= old-state "planted")
              (= (:state plant) "grow-a"))
-        (plant-add-to-log
-         plant
-         (log-relationship
-          (log-relationship
-           log plant
-           (ill-neighbours-relationship plant neighbours rules >)
-           :i_am_beneficial_to
-           :i_am_benefitting_from)
-          plant
-          (ill-neighbours-relationship plant neighbours rules <)
-          :i_am_detrimental_to
-          :i_am_detrimented_by)
-         :i_have_been_planted) 
-         
+        (do
+          (println "WAKEY WAKEY!!!")
+          (plant-add-to-log
+           plant
+           (log-relationship
+            (log-relationship
+             log plant
+             (ill-neighbours-relationship plant neighbours rules >)
+             :i_am_beneficial_to
+             :i_am_benefitting_from)
+            plant
+            (ill-neighbours-relationship plant neighbours rules <)
+            :i_am_detrimental_to
+            :i_am_detrimented_by)
+           :i_have_been_planted))
+          
         (and
          (not (= old-state "ill-a"))
          (not (= old-state "ill-b"))
@@ -400,7 +407,10 @@
     '()
     (map
      (fn [v t]
-       (list v t))
+       ; don't want to suggest fungi here
+       (if (= (plant-type->layer t) "fungi")
+         (list 0 t)
+         (list v t)))
      (nth rules (plant-type->id (:type plant)))
      plant-types))
    })

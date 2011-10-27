@@ -16,7 +16,8 @@
     (:use
      oak.log
      oak.defs
-     oak.forms))
+     oak.forms
+     oak.fruit))
 
 (defn make-player [id name fbid]
   (hash-map
@@ -27,8 +28,8 @@
    :layer 0
    :seeds '()
    :messages '()
-   :seeds-capacity 3
-   :seeds-left 10
+   :seeds-capacity 5
+   :seeds-left 5
    :next-refresh 0
    :picked-by '()
    :has-picked '()
@@ -95,16 +96,24 @@
 (defn player-update-seeds
   "update the player's seed picking ability"
   [player]
-  (if (and
-       (not (= (:next-refresh player) 0))
-       (> (current-time) (:next-refresh player)))
+  (if (> (current-time) (:next-refresh player))
     (modify
      :seeds-left
-     (fn [s] (:seeds-capacity player))
-     (modify :next-refresh (fn [r] 0) player))
+     (fn [s]
+       (min (+ 1 s) (:seeds-capacity player)))
+     (modify :next-refresh (fn [r] (+ (current-time) (* 5 60 1000))) player))
     player))
 
-(defn player-update [player]
+(defn player-get-allowed-layer
+  "map the level to the layer allowed"
+  [player]
+  (cond
+   (= (:layer player) 0) "cover"
+   (= (:layer player) 1) "shrub"
+   (= (:layer player) 2) "tree"
+   :else "all"))
+
+(defn player-update [player id-gen]
   (let [leveledup-player 
         (modify
          :layer
@@ -114,39 +123,52 @@
               (and (= layer 0) (> score level0up)) 1 ; cover -> shrub
               (and (= layer 1) (> score level1up)) 2 ; shrub -> tree
               (and (= layer 2) (> score level2up)) 3 ; tree -> all
-              :else layer))) 
-         (modify
-          :flowered-plants
-          (fn [fp]
-            (reduce
-             (fn [fp msg]
-               (set-cons (first (:extra msg)) fp))
-             fp
-             (log-find-msgs (:log player) "i_have_flowered")))
-          player))]
+              :else layer)))
+         player)]
     
-;    (modify ; add surprise seeds on levelup
-;     :seeds
-;     (fn [seeds]
-;       (cond
-;        (and (= (:layer player) 0) (= (:layer new-player) 1))
-;        (cons (make-plant 
-;        (and (= (:layer player) 1) (= (:layer new-player) 2))
-;         (log-add-note log (make-note "levelup2" ()))
-;        :else seeds)
-       
-    (modify ; add notes on levelup
-     :log 
-     (fn [log]
-       (log-remove-msgs
-        (cond
-         (and (= (:layer player) 0) (= (:layer leveledup-player) 1))
-         (log-add-note log (make-note "levelup1" ())) 
-         (and (= (:layer player) 1) (= (:layer leveledup-player) 2))
-         (log-add-note log (make-note "levelup2" ()))
-         (and (= (:layer player) 2) (= (:layer leveledup-player) 3))
-         (log-add-note log (make-note "levelup3" ()))
-         :else log)
-        "i_have_flowered"))
-     leveledup-player)))
-      
+    (modify ; add surprise seeds on levelup
+     :seeds
+     (fn [seeds]
+       (cond
+        (and (= (:layer player) 0) (= (:layer leveledup-player) 1))
+        (cons (make-fruit (id-gen) "boletus" "fungi") seeds)
+        (and (= (:layer player) 1) (= (:layer leveledup-player) 2))
+        (cons (make-fruit (id-gen) "chanterelle" "fungi") seeds)
+        (and (= (:layer player) 2) (= (:layer leveledup-player) 3))
+        (cons (make-fruit (id-gen) "flyagaric" "fungi") seeds)
+        :else seeds))
+     (modify ; add notes on levelup
+      :log 
+      (fn [log]
+        (log-remove-msgs
+         (cond
+          (and (= (:layer player) 0) (= (:layer leveledup-player) 1))
+          (log-add-note log (make-note "levelup1" ())) 
+          (and (= (:layer player) 1) (= (:layer leveledup-player) 2))
+          (log-add-note log (make-note "levelup2" ()))
+          (and (= (:layer player) 2) (= (:layer leveledup-player) 3))
+          (log-add-note log (make-note "levelup3" ()))
+          :else log)
+         "i_have_flowered"))
+      (modify ; update the flowered plant count
+       :flowered-plants
+       (fn [fp]
+         (reduce
+          (fn [fp msg]
+            (if (= (player-get-allowed-layer player)
+                   (plant-type->layer (:from msg))) ; if the plant is in the right layer
+              (let [r (set-cons (first (:extra msg)) fp)]
+                (when (not (= (count r) (count fp)))
+                  (println "added" (first (:extra msg)) "to"
+                           r))
+                r)
+              fp))
+          (if (or ; if we have just gone up a level, clear the flowered plants
+               (and (= (:layer player) 0) (= (:layer leveledup-player) 1))
+               (and (= (:layer player) 1) (= (:layer leveledup-player) 2))
+               (and (= (:layer player) 2) (= (:layer leveledup-player) 3)))
+            ()
+            fp)
+          (log-find-msgs (:log player) "i_have_flowered")))
+       (player-update-seeds leveledup-player))))))
+  

@@ -33,11 +33,11 @@
 
 (defn tile-strip
   "remove crud for download"
-  [tile]
+  [tile player-layer]
   (modify
    :entities
    (fn [entities]
-     (map plant-strip entities))
+     (map (fn [plant] (plant-strip plant player-layer)) entities))
    tile))
   
 (defn tile-distance

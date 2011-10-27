@@ -16,8 +16,11 @@
   (:require
    clojure.contrib.math))
 
+(def server-tick 1)
 (def tile-size 5)
 (def season-length (* 60 15))
+(def plant-tick 6)
+(def plant-tick-var 10)
 (def min-health 10)
 (def max-health 90)
 (def start-health 20)
@@ -28,8 +31,8 @@
 (def seeds-duration (* 60 60 1000))
 (def plant-influence-distance 3)
 (def level0up 5)
-(def level1up 10)
-(def level2up 15)
+(def level1up 8)
+(def level2up 12)
 
 (defn plant-type->layer [type]
   (cond
@@ -41,6 +44,20 @@
    (= type "boletus") "fungi"
    (= type "chanterelle") "fungi"
    (= type "flyagaric") "fungi"))
+
+(defn num->layer [num]
+  (cond
+   (= num 0) "cover"
+   (= num 1) "shrub"
+   (= num 2) "tree"
+   :else "all"))
+
+(defn layer->num [layer]
+  (cond
+   (= layer "cover") 0
+   (= layer "shrub") 1
+   (= layer "tree") 2
+   :else 3))
 
 (defn plant-type->id [type]
   (cond
@@ -57,12 +74,14 @@
    (= type "flyagaric") 7))
 
 (def plant-types '("cherry" "apple" "aronia" "dandelion"
-                   "clover" "boletus" "chanterelle" "flyagaric"))
+                   "clover" "boletus" "chanterelle" "flyagaric"
+                   ))
+
+(def plant-types-wo-fungi '("cherry" "apple" "aronia" "dandelion"
+                   "clover" 
+                   ))
 
 (def plant-layers '(rhizosphere cover herbaceous shrub vertical tree canopy fungi))
-
-(defn plant-type-id->name [type]
-  (nth plant-types type))
 
 (defn layer->spirit-name [layer]
   (cond
