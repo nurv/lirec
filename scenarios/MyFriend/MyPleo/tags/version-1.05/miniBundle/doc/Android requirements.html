@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="shortcut icon" type="image/x-icon" href="http://developer.android.com/favicon.ico">
+<title>System Requirements | Android Developers</title>
+<link href="Android%20requirements_files/android-developer-docs-devguide.css" rel="stylesheet" type="text/css">
+<script src="Android%20requirements_files/search_autocomplete.js" type="text/javascript"></script>
+<script src="Android%20requirements_files/jquery-resizable.js" type="text/javascript"></script>
+<script src="Android%20requirements_files/android-developer-docs.js" type="text/javascript"></script>
+<script src="Android%20requirements_files/prettify.js" type="text/javascript"></script>
+<script type="text/javascript">
+  setToRoot("/");
+</script>
+<noscript>
+  <style type="text/css">
+    html,body{overflow:auto;}
+    #body-content{position:relative; top:0;}
+    #doc-content{overflow:visible;border-left:3px solid #666;}
+    #side-nav{padding:0;}
+    #side-nav .toggle-list ul {display:block;}
+    #resize-packages-nav{border-bottom:3px solid #666;}
+  </style>
+</noscript>
+<script src="Android%20requirements_files/lists.js" type="text/javascript"></script></head>
+<body class="gc-documentation">
+
+  <div id="header">
+      <div id="headerLeft">
+          <a href="http://developer.android.com/index.html" tabindex="-1"><img src="Android%20requirements_files/bg_logo.png" alt="Android Developers"></a>
+          <ul id="header-tabs" class="sdk">
+    
+	<li id="home-link"><a href="http://developer.android.com/index.html">
+	
+		<span style="display: inline;" class="en">Home</span>
+		<span style="display:none" class="de">Startseite</span>
+		<span style="display:none" class="es"></span>
+		<span style="display:none" class="fr"></span>
+		<span style="display:none" class="it"></span>
+		<span style="display:none" class="ja">ホーム</span>
+		<span style="display:none" class="zh-CN">主页</span>
+		<span style="display:none" class="zh-TW">首頁</span>
+	
+	</a></li>
+	<li id="sdk-link"><a href="http://developer.android.com/sdk/index.html">
+		<span style="display: inline;" class="en">SDK</span>
+	</a></li>
+	<li id="guide-link"><a href="http://developer.android.com/guide/index.html" onclick="return loadLast('guide')">
+	
+		<span style="display: inline;" class="en">Dev Guide</span>
+		<span style="display:none" class="de">Handbuch</span>
+		<span style="display:none" class="es">Guía</span>
+		<span style="display:none" class="fr">Guide</span>
+		<span style="display:none" class="it">Guida</span>
+		<span style="display:none" class="ja">開発ガイド</span>
+		<span style="display:none" class="zh-CN">开发人员指南</span>
+		<span style="display:none" class="zh-TW">開發指南</span>
+	
+	</a></li>
+	<li id="reference-link"><a href="http://developer.android.com/reference/packages.html" onclick="return loadLast('reference')">
+	
+		<span style="display: inline;" class="en">Reference</span>
+		<span style="display:none" class="de">Referenz</span>
+		<span style="display:none" class="es">Referencia</span>
+		<span style="display:none" class="fr">Référence</span>
+		<span style="display:none" class="it">Riferimento</span>
+		<span style="display:none" class="ja">リファレンス</span>
+		<span style="display:none" class="zh-CN">参考</span>
+		<span style="display:none" class="zh-TW">參考資料</span>
+	
+	</a></li>
+	<li id="resources-link"><a href="http://developer.android.com/resources/index.html" onclick="return loadLast('resources')">
+	
+		<span style="display: inline;" class="en">Resources</span>
+		<span style="display:none" class="de"></span>
+		<span style="display:none" class="es"></span>
+		<span style="display:none" class="fr"></span>
+		<span style="display:none" class="it"></span>
+    		<span style="display:none" class="ja"></span>
+		<span style="display:none" class="zh-CN"></span>
+		<span style="display:none" class="zh-TW"></span>
+	
+	</a></li>
+	<li id="videos-link"><a href="http://developer.android.com/videos/index.html" onclick="return loadLast('videos')">
+	
+		<span style="display: inline;" class="en">Videos</span>
+		<span style="display:none" class="de"></span>
+		<span style="display:none" class="es"></span>
+		<span style="display:none" class="fr"></span>
+		<span style="display:none" class="it"></span>
+		<span style="display:none" class="ja">ビデオ</span>
+		<span style="display:none" class="zh-CN"></span>
+		<span style="display:none" class="zh-TW"></span>
+	
+	</a></li>
+	<li><a href="http://android-developers.blogspot.com/" onclick="return requestAppendHL(this.href)">
+	
+		<span style="display: inline;" class="en">Blog</span>
+		<span style="display:none" class="de"></span>
+		<span style="display:none" class="es"></span>
+		<span style="display:none" class="fr"></span>
+		<span style="display:none" class="it"></span>
+		<span style="display:none" class="ja">ブログ</span>
+		<span style="display:none" class="zh-CN">博客</span>
+		<span style="display:none" class="zh-TW">網誌</span>
+	
+	</a></li>
+
+
+     
+</ul>
+     
+      </div>
+      <div id="headerRight">
+          <div id="headerLinks">
+          
+            <img src="Android%20requirements_files/icon_world.jpg" alt="Language:"> 
+            <span id="language">
+             	<select name="language" onchange="changeLangPref(this.value, true)">
+          			<option selected="selected" value="en">English&nbsp;&nbsp;&nbsp;</option>
+          			<option value="ja">日本語</option>
+          			
+             	</select>	
+             	<script type="text/javascript">
+             	  <!--  
+                  loadLangPref();  
+             	   //-->
+             	</script>
+            </span>
+          
+          <a href="http://www.android.com/">Android.com</a>
+          </div>
+  <div id="search">
+      <div id="searchForm">
+          <form accept-charset="utf-8" class="gsc-search-box" onsubmit="return submit_search()">
+            <table class="gsc-search-box" cellpadding="0" cellspacing="0"><tbody>
+                <tr>
+                  <td class="gsc-input">
+                    <input id="search_autocomplete" class="gsc-input" size="33" autocomplete="off" title="search developer docs" name="q" value="search developer docs" onfocus="search_focus_changed(this, true)" onblur="search_focus_changed(this, false)" onkeydown="return search_changed(event, true, '/')" onkeyup="return search_changed(event, false, '/')" type="text">
+                  <div id="search_filtered_div" class="no-display">
+                      <table id="search_filtered" cellspacing="0">
+                      </table>
+                  </div>
+                  </td>
+                  <td class="gsc-search-button">
+                    <input value="Search" title="search" id="search-button" class="gsc-search-button" type="submit">
+                  </td>
+                  <td class="gsc-clear-button">
+                    <div title="clear results" class="gsc-clear-button">&nbsp;</div>
+                  </td>
+                </tr></tbody>
+              </table>
+          </form>
+      </div><!-- searchForm -->
+  </div><!-- search -->
+      </div><!-- headerRight -->
+      <script type="text/javascript">
+        <!--  
+        changeTabLang(getLangPref());
+        //-->
+      </script>
+  </div><!-- header -->
+
+  <div class="g-section g-tpl-240" id="body-content">
+    <div style="position: absolute; left: 0px; width: 243px; height: 834px;" class="g-unit g-first ui-resizable" id="side-nav">
+      <div style="height: 834px;" id="devdoc-nav">
+<ul>
+  <li>
+    <h2>
+      <span style="display: inline;" class="en">Android SDK Starter Package</span>
+      <span style="display:none" class="de">Aktuelle SDK-Version</span>
+      <span style="display:none" class="es">Versión actual del SDK</span>
+      <span style="display:none" class="fr">Version actuelle du SDK</span>
+      <span style="display:none" class="it">Release SDK attuale</span>
+      <span style="display:none" class="ja">現在リリースされている SDK</span>
+      <span style="display:none" class="zh-CN">当前的 SDK 版本</span>
+      <span style="display:none" class="zh-TW">目前 SDK 發行版本</span>
+    </h2>
+    <ul>
+      <li><a href="http://developer.android.com/sdk/index.html">
+          <span style="display: inline;" class="en">Download</span>
+          <span style="display:none" class="de">Herunterladen</span>
+          <span style="display:none" class="es">Descargar</span>
+          <span style="display:none" class="fr">Téléchargement</span>
+          <span style="display:none" class="it">Download</span>
+          <span style="display:none" class="ja">ダウンロード</span>
+          <span style="display:none" class="zh-CN">下载</span>
+          <span style="display:none" class="zh-TW">下載</span>
+        </a></li>
+      <li><a href="http://developer.android.com/sdk/installing.html">
+          <span style="display: inline;" class="en">Installing the SDK</span>
+          <span style="display:none" class="de">Installieren</span>
+          <span style="display:none" class="es">Instalación</span>
+          <span style="display:none" class="fr">Installation</span>
+          <span style="display:none" class="it">Installazione</span>
+          <span style="display:none" class="ja">インストール</span>
+          <span style="display:none" class="zh-CN">安装</span>
+          <span style="display:none" class="zh-TW">安裝</span>
+        </a></li>
+
+    </ul>
+  </li>
+  
+  
+  <li>
+    <h2>
+      <span style="display: inline;" class="en">Downloadable SDK Components</span>
+      <span style="display:none" class="de"></span>
+      <span style="display:none" class="es"></span>
+      <span style="display:none" class="fr"></span>
+      <span style="display:none" class="it"></span>
+      <span style="display:none" class="ja"></span>
+      <span style="display:none" class="zh-CN"></span>
+      <span style="display:none" class="zh-TW"></span>
+    </h2>
+    <ul>
+      <li><a href="http://developer.android.com/sdk/adding-components.html">
+      <span style="display: inline;" class="en">Adding SDK Components</span>
+      <span style="display:none" class="de"></span>
+      <span style="display:none" class="es"></span>
+      <span style="display:none" class="fr"></span>
+      <span style="display:none" class="it"></span>
+      <span style="display:none" class="ja"></span>
+      <span style="display:none" class="zh-CN"></span>
+      <span style="display:none" class="zh-TW"></span></a>
+      </li>
+    </ul>
+    <ul>
+      <li class="toggle-list closed">
+        <div><a href="http://developer.android.com/sdk/android-3.1.html">
+        <span style="display: inline;" class="en">Android 3.1 Platform</span></a> <span class="new">new!</span><a class="toggle-img" href="#" title="show pages" onclick="toggle(this.parentNode.parentNode, true); return false;"></a></div>
+        <ul>
+          <li><a href="http://developer.android.com/sdk/android-3.1-highlights.html">Platform Highlights</a></li> 
+          <li><a href="http://developer.android.com/sdk/api_diff/12/changes.html">API Differences Report »</a></li>
+        </ul>
+      </li>
+      <li class="toggle-list closed">
+        <div><a href="http://developer.android.com/sdk/android-3.0.html">
+        <span style="display: inline;" class="en">Android 3.0 Platform</span></a><a class="toggle-img" href="#" title="show pages" onclick="toggle(this.parentNode.parentNode, true); return false;"></a></div>
+        <ul>
+          <li><a href="http://developer.android.com/sdk/android-3.0-highlights.html">Platform Highlights</a></li> 
+          <li><a href="http://developer.android.com/sdk/api_diff/11/changes.html">API Differences Report »</a></li>
+        </ul>
+      </li>
+      <li><a href="http://developer.android.com/sdk/android-2.3.4.html">Android 2.3.4 Platform</a> <span class="new">new!</span></li>
+      <li class="toggle-list closed">
+      <div><a href="http://developer.android.com/sdk/android-2.3.3.html">
+      <span style="display: inline;" class="en">Android 2.3.3 Platform</span></a><a class="toggle-img" href="#" title="show pages" onclick="toggle(this.parentNode.parentNode, true); return false;"></a></div>
+        <ul>
+          <li><a href="http://developer.android.com/sdk/api_diff/10/changes.html">API Differences Report »</a></li> 
+        </ul>
+      </li>
+      <li class="toggle-list closed">
+        <div><a href="http://developer.android.com/sdk/android-2.2.html">
+        <span style="display: inline;" class="en">Android 2.2 Platform</span></a><a class="toggle-img" href="#" title="show pages" onclick="toggle(this.parentNode.parentNode, true); return false;"></a></div>
+        <ul>
+          <li><a href="http://developer.android.com/sdk/android-2.2-highlights.html">Platform Highlights</a></li> 
+          <li><a href="http://developer.android.com/sdk/api_diff/8/changes.html">API Differences Report »</a></li>
+        </ul>
+      </li>
+      <li class="toggle-list closed">
+        <div><a href="http://developer.android.com/sdk/android-2.1.html">
+        <span style="display: inline;" class="en">Android 2.1 Platform</span></a><a class="toggle-img" href="#" title="show pages" onclick="toggle(this.parentNode.parentNode, true); return false;"></a></div>
+        <ul>
+          <li><a href="http://developer.android.com/sdk/api_diff/7/changes.html">API Differences Report »</a></li>
+        </ul>
+      </li>
+      <li class="toggle-list closed">
+        <div><a href="#" onclick="toggle(this.parentNode.parentNode,true); return false;">Other Platforms</a><a class="toggle-img" href="#" title="show pages" onclick="toggle(this.parentNode.parentNode, true); return false;"></a></div>
+        <ul>
+          <li class="toggle-list closed">
+            <div><a href="http://developer.android.com/sdk/android-2.3.html">
+            <span style="display: inline;" class="en">Android 2.3 Platform</span></a><a class="toggle-img" href="#" title="show pages" onclick="toggle(this.parentNode.parentNode, true); return false;"></a></div>
+              <ul>
+                <li><a href="http://developer.android.com/sdk/android-2.3-highlights.html">Platform Highlights</a></li> 
+                <li><a href="http://developer.android.com/sdk/api_diff/9/changes.html">API Differences Report »</a></li> 
+              </ul>
+          </li>
+          <li><a href="http://developer.android.com/sdk/android-2.0.1.html">Android 2.0.1 Platform</a></li>
+          <li><a href="http://developer.android.com/sdk/android-2.0.html">Android 2.0 Platform</a></li>
+          <li><a href="http://developer.android.com/sdk/android-1.6.html">Android 1.6 Platform</a></li>
+          <li><a href="http://developer.android.com/sdk/android-1.5.html">Android 1.5 Platform</a></li>
+          <li><a href="http://developer.android.com/sdk/android-1.1.html">Android 1.1 Platform</a></li>
+        </ul>
+      </li>
+    </ul>
+    <ul>
+      <li><a href="http://developer.android.com/sdk/tools-notes.html">SDK Tools, r11</a> <span class="new">new!</span></li>
+      <li><a href="http://developer.android.com/sdk/win-usb.html">Google USB Driver, r4</a></li>
+      <li><a href="http://developer.android.com/sdk/compatibility-library.html">Compatibility Library, r2</a> <span class="new">new!</span></li>
+    </ul>
+  </li>
+  <li>
+      <h2>
+      <span style="display: inline;" class="en">ADT Plugin for Eclipse</span>
+      <span style="display:none" class="de"></span>
+      <span style="display:none" class="es"></span>
+      <span style="display:none" class="fr"></span>
+      <span style="display:none" class="it"></span>
+      <span style="display:none" class="ja"></span>
+      <span style="display:none" class="zh-CN"></span>
+      <span style="display:none" class="zh-TW"></span>
+      </h2>
+    <ul>
+      <li><a href="http://developer.android.com/sdk/eclipse-adt.html">ADT 11.0.0
+      <span style="display:none" class="de"></span>
+      <span style="display:none" class="es"></span>
+      <span style="display:none" class="fr"></span>
+      <span style="display:none" class="it"></span>
+      <span style="display:none" class="ja"></span>
+      <span style="display:none" class="zh-CN"></span>
+      <span style="display:none" class="zh-TW"></span></a>
+      <span class="new">new!</span></li>
+    </ul>
+  </li>
+  <li>
+    <h2><span style="display: inline;" class="en">Native Development Tools</span>
+      <span style="display:none" class="de"></span>
+      <span style="display:none" class="es"></span>
+      <span style="display:none" class="fr"></span>
+      <span style="display:none" class="it"></span>
+      <span style="display:none" class="ja"></span>
+      <span style="display:none" class="zh-CN"></span>
+      <span style="display:none" class="zh-TW"></span>
+    </h2>
+    <ul>
+      <li><a href="http://developer.android.com/sdk/ndk/index.html">Android NDK, r5c <span class="new">new!</span></a>
+        </li>
+      <li><a href="http://developer.android.com/sdk/ndk/overview.html">What is the NDK?</a></li>
+    </ul>
+  </li>
+
+  <li>
+    <h2>
+      <span style="display: inline;" class="en">More Information</span>
+      <span style="display:none" class="de"></span>
+      <span style="display:none" class="es"></span>
+      <span style="display:none" class="fr"></span>
+      <span style="display:none" class="it"></span>
+      <span style="display:none" class="ja"></span>
+      <span style="display:none" class="zh-CN"></span>
+      <span style="display:none" class="zh-TW"></span>
+    </h2>
+    <ul>
+      <li><a href="http://developer.android.com/sdk/oem-usb.html">
+        <span style="display: inline;" class="en">OEM USB Drivers</span>
+      </a></li>
+      <li class="selected"><a href="http://developer.android.com/sdk/requirements.html">SDK System Requirements</a></li>
+      <li><a href="http://developer.android.com/sdk/older_releases.html">SDK Archives</a></li>
+
+    </ul>
+  </li>
+
+</ul>
+
+<script type="text/javascript">
+<!--
+    buildToggleLists();
+    changeNavLang(getLangPref());
+//-->
+</script>
+
+
+      </div>
+    <div style="-moz-user-select: none;" unselectable="on" class="ui-resizable-handle ui-resizable-e"></div></div> <!-- end side-nav -->
+
+
+
+
+<div style="margin-left: 249px; height: 834px;" class="g-unit" id="doc-content"><a name="top"></a>
+
+<div id="jd-header" class="guide-header">
+  <span class="crumb">
+    &nbsp;
+    
+  </span>
+<h1>System Requirements</h1>
+</div>
+
+  <div id="jd-content">
+
+    <div class="jd-descr">
+    <p>The sections below describe the system and software requirements for developing 
+Android applications using the Android SDK. </p>
+
+<h3>Supported Operating Systems</h3>
+<ul>
+  <li>Windows XP (32-bit), Vista (32- or 64-bit), or Windows 7 (32- or 64-bit)</li>
+  <li>Mac OS X 10.5.8 or later (x86 only)</li>
+  <li>Linux (tested on Ubuntu Linux, Lucid Lynx)
+    <ul>
+      <li>GNU C Library (glibc) 2.7 or later is required.</li>
+      <li>On Ubuntu Linux, version 8.04 or later is required.</li>
+      <li>64-bit distributions must be capable of running 32-bit applications. 
+      For information about how to add support for 32-bit applications, see
+      the <a href="http://developer.android.com/sdk/installing.html#troubleshooting">Ubuntu Linux
+      installation notes</a>.</li>
+    </ul>
+  </li>
+</ul>
+
+<h3>Supported Development Environments</h3>
+
+<h4 style="margin-top:.25em"><em>Eclipse IDE</em></h4>
+    <ul>
+      <li>Eclipse 3.5 (Galileo) or greater 
+<p class="note"><strong>Note:</strong> Eclipse 3.4 (Ganymede) is no longer
+supported with the latest version of ADT.</p></li>
+      <li>Eclipse <a href="http://www.eclipse.org/jdt">JDT</a> plugin (included
+in most Eclipse IDE packages) </li>
+      <li>If you need to install or update Eclipse, you can download it from <a href="http://www.eclipse.org/downloads/">http://www.eclipse.org/downloads/</a>. 
+
+      <p>Several types of Eclipse packages are available for each platform. For
+developing Android applications, we recommend that you install one of these
+packages: </p>
+         <ul>
+           <li>Eclipse IDE for Java Developers</li>
+           <li>Eclipse Classic (versions 3.5.1 and higher)</li>
+           <li>Eclipse IDE for Java EE Developers</li>
+         </ul>
+      </li>
+      <li><a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">JDK 5 or JDK
+6</a> (JRE alone is not sufficient)</li>
+      <li><a href="http://developer.android.com/sdk/eclipse-adt.html">Android Development Tools plugin</a>
+(recommended)</li>
+      <li><strong>Not</strong> compatible with Gnu Compiler for Java (gcj)</li>
+    </ul>
+
+
+<h4><em>Other development environments or IDEs</em></h4>
+    <ul>
+      <li><a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">JDK 5 or JDK
+6</a> (JRE alone is not sufficient)</li>
+      <li><a href="http://ant.apache.org/">Apache Ant</a> 1.8 or later</li>
+      <li><strong>Not</strong> compatible with Gnu Compiler for Java (gcj)</li>
+    </ul>
+  
+
+
+<p class="note"><strong>Note:</strong> If JDK is already installed on 
+your development computer, please take a moment to make sure that it 
+meets the version requirements listed above. In
+particular, note that some Linux distributions may include JDK 1.4 or 
+Gnu Compiler for Java, both of which are not supported for Android 
+development. </p>
+
+<h3>Hardware requirements</h3>
+
+<p>The Android SDK requires disk storage for all of the components that 
+you choose to install. The table below provides a rough idea of the 
+disk-space requirements to expect, based on the components that you plan
+ to use. </p>
+
+<table>
+<tbody><tr>
+<th>Component type</th>
+<th>Approximate size</th>
+<th>Comments</th>
+</tr>
+<tr>
+<td>SDK Tools</td>
+<td>35 MB</td>
+<td>Required.</td>
+</tr>
+<tr>
+<td>SDK Platform-tools</td>
+<td>6 MB</td>
+<td>Required.</td>
+</tr>
+<tr>
+<td>Android platform (each)</td>
+<td>150 MB</td>
+<td>At least one platform is required.</td>
+</tr>
+<tr>
+<td>SDK Add-on (each)</td>
+<td>100 MB</td>
+<td>Optional.</td>
+</tr>
+<tr>
+<td>USB Driver for Windows</td>
+<td>10 MB</td>
+<td>Optional. For Windows only.</td>
+</tr>
+<tr>
+<td>Samples (per platform)</td>
+<td>10M</td>
+<td>Optional.</td>
+</tr>
+<tr>
+<td>Offline documentation</td>
+<td>250 MB</td>
+<td>Optional.</td>
+</tr>
+</tbody></table>
+
+<p>Note that the disk-space requirements above are <em>in addition to</em> those of the Eclipse IDE, JDK, or other prerequisite tools that you may need to install on your development computer.</p>
+
+
+
+    </div>
+
+  <a href="#top" style="float: right; display: inline;">↑ Go to top</a>
+  
+  </div>
+
+<div id="footer">
+
+
+  <div id="copyright">
+    
+  Except as noted, this content is 
+  licensed under <a href="http://creativecommons.org/licenses/by/2.5/">
+  Creative Commons Attribution 2.5</a>. For details and 
+  restrictions, see the <a href="http://developer.android.com/license.html">Content 
+  License</a>.
+  </div>
+
+  <div id="footerlinks">
+    
+  <p>
+    <a href="http://www.android.com/terms.html">Site Terms of Service</a> -
+    <a href="http://www.android.com/privacy.html">Privacy Policy</a> -
+    <a href="http://www.android.com/branding.html">Brand Guidelines</a>
+  </p>
+  </div>
+
+</div> <!-- end footer -->
+
+</div><!-- end doc-content -->
+
+</div> <!-- end body-content --> 
+
+<script type="text/javascript">
+init(); /* initialize android-developer-docs.js */
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script><script src="Android%20requirements_files/ga.js" type="text/javascript"></script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-5831155-1");
+pageTracker._trackPageview();
+</script>
+
+
+
+
+
+
+</body></html>

@@ -1,0 +1,243 @@
+
+/*...................................................................................
+===============GLOBAL=================
+......................................................................................*/
+
+.mif-tree-wrapper{
+margin:0;
+padding:0;
+font-size:11px;
+line-height:18px;/******Tree node height******/
+white-space:normal;
+cursor:default;
+}
+
+.mif-tree-bg{
+width:100%;
+height:100%;
+position:absolute;
+overflow:hidden;
+}
+
+.mif-tree-bg-container{
+width:100%;
+display:none;
+}
+
+.mif-tree-bg-node{
+width:100%;
+height:18px;
+}
+
+.mif-tree-bg-selected{
+background-color:#dcd7ab;
+}
+
+.mif-tree-wrapper:focus{
+outline:0;
+}
+
+.mif-tree-wrapper span{
+padding-bottom:2px;
+padding-top:2px;
+/*cursor:inherit;*/
+}
+
+.mif-tree-children{
+padding-left:15px;
+}
+
+.mif-tree-node{
+background:url('images/line.gif') repeat-y 8px 0px;
+cursor:inherit;
+}
+
+.mif-tree-node-last{
+background:url('images/line.gif') no-repeat 8px 0px;
+}
+
+.mif-tree-name{
+cursor:inherit;
+}
+
+.mif-tree-name a{
+color:#333;
+}
+
+.mif-tree-name a:hover{
+color:#000;
+text-decoration:underline;
+color:#000
+}
+
+
+.mif-tree-wrapper .mif-tree-node-wrapper{
+background:url('images/horizontal-line.gif') no-repeat 9px center;
+cursor:inherit;
+}
+
+/*...................................................................................
+================GADJETS=================
+......................................................................................*/
+
+.mif-tree-gadjet{
+background-image:url('images/twistygadjets.png');
+padding-right: 16px;
+z-index:1;
+overflow:hidden;
+background-repeat:no-repeat;
+cursor:default;
+}
+
+.mif-tree-gadjet-none{
+background:none;
+}
+
+.mif-tree-gadjet-minus{
+background-position: 0px 50%;
+}
+
+.mif-tree-gadjet-plus{
+background-position: -18px 50%;
+}
+
+
+
+/*...................................................................................
+================ICONS=================
+......................................................................................*/
+
+.mif-tree-icon{
+padding-right:18px;
+background-position:0 50%;
+background-repeat:no-repeat;
+cursor:inherit;
+}
+
+.api-icon{
+background-image:url('images/api.png');
+}
+
+.function-icon{
+background-image:url('images/function.png');
+}
+
+.constant-icon{
+background-image:url('images/constant.png');
+}
+
+.handler-icon{
+background-image:url('images/handler.png');
+}
+.folder-icon-open{
+background-image:url('images/folder-open.png');
+}
+
+.folder-icon-close{
+background-image:url('images/folder.png');
+}
+
+.page_white_text{
+background-image:url('images/page_white_text.png');
+}
+
+/*...................................................................................
+================SELECTION=================
+......................................................................................*/
+
+.mif-tree-node-selected .mif-tree-name a{
+color:#000;
+font-weight:bold
+}
+
+.mif-tree-hover-node .mif-tree-name{
+ cursor:pointer
+}
+
+
+/*--menu--*/
+.mif-menu-default{
+margin:0;
+/*border:solid 1px black;*/
+overflow:hidden;
+font-size:12px;
+zoom:1;
+white-space:nowrap;
+cursor:default;
+}
+
+.mif-menu-default .mif-menu-wrapper{
+background:#fff;
+border:solid 1px #bbb;
+}
+
+.mif-menu-default .mif-menu-list{
+padding:2px;
+margin:0;
+}
+
+.mif-menu-default .mif-menu-disabled{
+color:#9b9b9b;
+cursor:default;
+}
+
+.mif-menu-default .mif-menu-separator{
+margin:3px auto 3px auto;
+cursor:default;
+font-size:0;
+line-height:0px;
+
+height:1px;
+}
+
+.mif-menu-default .mif-menu-item{
+zoom:1;
+}
+
+.mif-menu-default .mif-menu-name{
+padding-right:50px;
+}
+
+.mif-menu-default .mif-menu-description{
+cursor: default;
+padding-left:18px;
+}
+
+.mif-menu-default .mif-menu-item-wrapper{
+color:#282828;
+text-decoration:none;
+line-height:18px;
+padding:2px 0px 2px 1px;
+}
+
+.mif-menu-default .mif-menu-disabled .mif-menu-item-wrapper{
+color:#a7a7a7;
+cursor:default;
+}
+
+.mif-menu-default .mif-menu-icon{
+display:inline;
+height:18px;
+line-height:18px;
+padding-right:18px;
+vertical-align:top;
+margin-right:2px;
+padding-top:2px;
+padding-bottom:2px;
+}
+
+.mif-menu-default .mif-menu-selected .mif-menu-item-wrapper{
+color:#fff;
+}
+
+.mif-menu-default .mif-menu-selected{
+/*cursor:pointer;*/
+cursor:default;
+color:#fff;
+background:#3976ac;
+}
+
+.mif-menu-default .mif-menu-selected-disabled{
+cursor:default;
+background:#3976ac;
+}

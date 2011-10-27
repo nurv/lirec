@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration>
+	<pleoBluetooth address="00:06:66:04:12:55" />
+	<!-- 00:06:66:04:12:55 or 00:06:66:03:72:31 -->
+	<myPleoTimer duration="1" active="false"/>
+</configuration>
