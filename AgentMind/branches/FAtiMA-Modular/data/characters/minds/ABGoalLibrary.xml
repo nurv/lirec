@@ -8,8 +8,6 @@ xsi:noNamespaceSchemaLocation="./schemas/GoalLibrary.xsd">
 			<PastEvent occurred="True" subject="[person]" action="[task]" target="[item]" />
 		</PreConditions>
 		<SucessConditions>
-			<PastEvent occurred="True" subject="[person]" action="[task]" target="[item]" />
-			<RecentEvent occurred="True" subject="[person]" action="[task]" target="[item]" />
 			<NewEvent occurred="True" subject="[SELF]" action="respondYes" target="[target]" parameters="[person],[task],[item]" />
 		</SucessConditions>
 	</ActivePursuitGoal>
@@ -21,8 +19,6 @@ xsi:noNamespaceSchemaLocation="./schemas/GoalLibrary.xsd">
 			<PastEvent occurred="False" subject="[person]" action="[task]" target="[item]" />
 		</PreConditions>
 		<SucessConditions>
-			<PastEvent occurred="False" subject="[person]" action="[task]" target="[item]" />
-			<RecentEvent occurred="True" subject="[person]" action="[task]" target="[item]" />
 			<NewEvent occurred="True" subject="[SELF]" action="respondYes" target="[target]" parameters="[person],[task],[item]" />
 		</SucessConditions>
 	</ActivePursuitGoal>
@@ -34,8 +30,6 @@ xsi:noNamespaceSchemaLocation="./schemas/GoalLibrary.xsd">
 			<PastEvent occurred="True" subject="[person]" action="[task]" target="[item]" />
 		</PreConditions>
 		<SucessConditions>
-			<PastEvent occurred="True" subject="[person]" action="[task]" target="[item]" />
-			<RecentEvent occurred="False" subject="[person]" action="[task]" target="[item]" />
 			<NewEvent occurred="True" subject="[SELF]" action="respondYes" target="[target]" parameters="[person],[task],[item]" />
 		</SucessConditions>
 	</ActivePursuitGoal>
@@ -47,8 +41,6 @@ xsi:noNamespaceSchemaLocation="./schemas/GoalLibrary.xsd">
 			<PastEvent occurred="False" subject="[person]" action="[task]" target="[item]" />
 		</PreConditions>
 		<SucessConditions>
-			<PastEvent occurred="False" subject="[person]" action="[task]" target="[item]" />
-			<RecentEvent occurred="False" subject="[person]" action="[task]" target="[item]" />
 			<NewEvent occurred="True" subject="[SELF]" action="respondNo" target="[target]" parameters="[person],[task],[item]" />
 		</SucessConditions>
 	</ActivePursuitGoal>
