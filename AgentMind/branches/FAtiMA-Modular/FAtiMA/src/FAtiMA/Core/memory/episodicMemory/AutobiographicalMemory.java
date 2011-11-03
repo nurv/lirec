@@ -44,7 +44,6 @@
 
 package FAtiMA.Core.memory.episodicMemory;
 
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.ListIterator;
@@ -56,311 +55,266 @@ import FAtiMA.Core.util.AgentLogger;
 import FAtiMA.Core.wellFormedNames.Substitution;
 
 public class AutobiographicalMemory implements Serializable {
-	
-	/**
-	 * for serialization purposes
-	 */
+
 	private static final long serialVersionUID = 1L;
-	
-	private ArrayList<MemoryEpisode> _memoryEvents;
-	
-	public AutobiographicalMemory()
-	{
-		this._memoryEvents = new ArrayList<MemoryEpisode>();
+
+	private ArrayList<MemoryEpisode> _memoryEpisodes;
+
+	public AutobiographicalMemory() {
+		this._memoryEpisodes = new ArrayList<MemoryEpisode>();
 	}
-	
-	public void applySubstitution(Substitution s)
-	{
-		for(MemoryEpisode mem : _memoryEvents)
-		{
+
+	public void applySubstitution(Substitution s) {
+		for (MemoryEpisode mem : _memoryEpisodes) {
 			mem.applySubstitution(s);
 		}
 	}
-	
-	public void StoreAction(ActionDetail action)
-	{
-		MemoryEpisode event;
-		//boolean found = false;
-		
+
+	public void StoreAction(ActionDetail actionDetail) {
 		synchronized (this) {
-			// this code delay the creation of episode until an event is transferred from STM
-			/*if(this._memoryEvents.size() == 0)
-			{
-				event = new MemoryEpisode(action.getLocation(), action.getTime());
-				this._memoryEvents.add(event);
-			}
-			else
-			{
-				event = (MemoryEpisode) this._memoryEvents.get(this._memoryEvents.size()-1);
-				oldLocation = event.getLocation();
-				if(oldLocation == null) {
-					event.setLocation(action.getLocation());
-				}
-				else if(!event.getLocation().equals(action.getLocation()) ||
-						(AgentSimulationTime.GetInstance().Time() - event.getTime().getNarrativeTime()) > 900000)
-				{
-					event = new MemoryEpisode(action.getLocation(), action.getTime());
-					this._memoryEvents.add(event);
-				}
-			}
-			event.AddActionDetail(action);*/			
-			
-			// add events from STM to the relevant episode - commented on 13/09/10
-//			for (int i = this._memoryEvents.size()-1; i >= 0 && !found; i--)
-//			{
-//				event = this._memoryEvents.get(i);
-//				if (event.getLocation().equals(action.getLocation()))
-//				{
-//					//if (event.getTime() == null)
-//					//	event.setTime(action.getTime());
-//					event.AddActionDetail(action);
-//					found = true;
-//				}
-//			}
-			
+
+			MemoryEpisode memoryEpisode;
+
 			// Meiyii 13/09/10
-			int i = this._memoryEvents.size()-1;
-			if (i >= 0)
-			{
-				event = this._memoryEvents.get(i);
-				event.AddActionDetail(action);		
-				if (!event.getLocation().equals(action.getLocation()))
-				{
-					event.AddLocation(action.getLocation());
-				}
+			int i = _memoryEpisodes.size() - 1;
+			if (i >= 0) {
+				memoryEpisode = _memoryEpisodes.get(i);
+				memoryEpisode.AddActionDetail(actionDetail);
+				memoryEpisode.AddLocation(actionDetail.getLocation());
 			}
-			
+
 		}
 	}
-	
-	/**
-	 * Creates a new episode 
-	 * @param location - the location of the agent
-	 */
-	public void NewEpisode(String location)
-	{	
-		MemoryEpisode event;
-		
+
+	public boolean RemoveAction(ActionDetail actionDetail) {
 		synchronized (this) {
-			event = new MemoryEpisode(location, new Time());			
-			this._memoryEvents.add(event);
-		}		
+
+			// delete action detail
+			for (MemoryEpisode memoryEpisode : _memoryEpisodes) {
+				if (RemoveAction(actionDetail, memoryEpisode)) {
+					return true;
+				}
+			}
+
+			return false;
+		}
 	}
-	
-//	/** commented on 13/09/10
-//	 * Creates a new episode when location changes
-//	 * @param newLocation - the new location of the agent
-//	 */
-//	public void NewEpisode(String newLocation)
-//	{	
-//		MemoryEpisode event;
-//		String oldLocation;
-//		
-//		synchronized (this) {
-//			if(this._memoryEvents.size() == 0)
-//			{
-//				event = new MemoryEpisode(newLocation, new Time());
-//				this._memoryEvents.add(event);
-//			}
-//			else 
-//			{
-//				event = (MemoryEpisode) this._memoryEvents.get(this._memoryEvents.size()-1);
-//				oldLocation = event.getLocation();
-//				if(oldLocation == null) {
-//					event.setLocation(newLocation);
-//				}
-//				else if(!event.getLocation().equals(newLocation))
-//				{
-//					event = new MemoryEpisode(newLocation, new Time());
-//					this._memoryEvents.add(event);
-//				}
-//			}
-//		}		
-//	}
-	
-	public Object GetSyncRoot()
-	{
+
+	public boolean RemoveAction(ActionDetail actionDetail, MemoryEpisode memoryEpisode) {
+		synchronized (this) {
+
+			// remove detail from episode
+			return memoryEpisode.RemoveAction(actionDetail);
+
+		}
+	}
+
+	public void NewEpisode(String location) {
+		synchronized (this) {
+			MemoryEpisode episode = new MemoryEpisode(location, new Time());
+			this._memoryEpisodes.add(episode);
+		}
+	}
+
+	public Object GetSyncRoot() {
 		return this;
 	}
-	
-	public ArrayList<MemoryEpisode> GetAllEpisodes()
-	{
-		return this._memoryEvents;
+
+	public ArrayList<MemoryEpisode> GetAllEpisodes() {
+		return this._memoryEpisodes;
 	}
-	
-	public int countMemoryDetails()
-	{
+
+	public int countMemoryDetails() {
 		int aux = 0;
 		MemoryEpisode episode;
-		
-		synchronized(this)
-		{
-			ListIterator<MemoryEpisode> li = this._memoryEvents.listIterator();
-			while(li.hasNext())
-			{
+
+		synchronized (this) {
+			ListIterator<MemoryEpisode> li = this._memoryEpisodes.listIterator();
+			while (li.hasNext()) {
 				episode = li.next();
 				aux += episode.getDetails().size();
 			}
 			return aux;
-		}	
+		}
 	}
-	
-	public float AssessGoalFamiliarity(Goal g)
-	{
+
+	public float AssessGoalFamiliarity(Goal g) {
 		MemoryEpisode episode;
 		float similarEvents = 0;
-		
-		synchronized(this)
-		{
-			for(int i=0; i<this._memoryEvents.size(); i++)
-			{
-				episode = (MemoryEpisode) this._memoryEvents.get(i);
+
+		synchronized (this) {
+			for (int i = 0; i < this._memoryEpisodes.size(); i++) {
+				episode = (MemoryEpisode) this._memoryEpisodes.get(i);
 				similarEvents += episode.AssessGoalFamiliarity(g);
 			}
-		}		
+		}
 		return similarEvents;
 	}
-	
-	
+
 	// currently not used
-	public float AssessFamiliarity(Event e)
-	{
+	public float AssessFamiliarity(Event e) {
 		MemoryEpisode episode;
 		float similarEvents = 0;
 		float familiarity = 0;
-		
-		synchronized(this)
-		{
-			for(int i=0; i<this._memoryEvents.size(); i++)
-			{
-				episode = (MemoryEpisode) this._memoryEvents.get(i);
+
+		synchronized (this) {
+			for (int i = 0; i < this._memoryEpisodes.size(); i++) {
+				episode = (MemoryEpisode) this._memoryEpisodes.get(i);
 				similarEvents += episode.AssessFamiliarity(e);
 			}
 		}
-		
-		//familiarity function f(x) = 1 - 1/(x/2 +1)
+
+		// familiarity function f(x) = 1 - 1/(x/2 +1)
 		// where x represents the number of similar events founds
 		// familiarity = 1 - (1 / (similarEvents/2 + 1));
-		
+
 		return familiarity;
 	}
-	
-	public int CountEvent(ArrayList<SearchKey> searchKeys)
-	{
+
+	public int CountEvent(ArrayList<SearchKey> searchKeys) {
 		MemoryEpisode episode;
 		int count = 0;
-		
-		synchronized(this)
-		{
-			if(this._memoryEvents.size() > 0)
-			{
-				for(int i=0; i<this._memoryEvents.size(); i++)
-				{
-					episode = this._memoryEvents.get(i);
-					count+= episode.CountEvent(searchKeys);
+
+		synchronized (this) {
+			if (this._memoryEpisodes.size() > 0) {
+				for (int i = 0; i < this._memoryEpisodes.size(); i++) {
+					episode = this._memoryEpisodes.get(i);
+					count += episode.CountEvent(searchKeys);
 				}
 			}
 			return count;
 		}
 	}
-	
-	public ArrayList<ActionDetail> SearchForRecentEvents(ArrayList<SearchKey> searchKeys)
-	{
+
+	public ArrayList<ActionDetail> SearchForRecentEvents(ArrayList<SearchKey> searchKeys) {
 		MemoryEpisode currentEpisode;
-		
 		synchronized (this) {
-			if(this._memoryEvents.size() > 0)
-			{
-				currentEpisode = this._memoryEvents.get(this._memoryEvents.size()-1);
+
+			if (this._memoryEpisodes.size() > 0) {
+				currentEpisode = this._memoryEpisodes.get(this._memoryEpisodes.size() - 1);
 				return currentEpisode.GetDetailsByKeys(searchKeys);
 			}
+
 			return new ArrayList<ActionDetail>();
 		}
 	}
-	
-	public ArrayList<ActionDetail> SearchForPastEvents(ArrayList<SearchKey> keys) 
-	{
+
+	public ArrayList<ActionDetail> SearchForRecentEventsIndexed(ArrayList<SearchKey> searchKeys) {
+		MemoryEpisode currentEpisode;
+		synchronized (this) {
+
+			if (_memoryEpisodes.size() > 0) {
+				currentEpisode = _memoryEpisodes.get(_memoryEpisodes.size() - 1);
+				return currentEpisode.GetDetailsByKeysIndexed(searchKeys);
+			}
+
+			return new ArrayList<ActionDetail>();
+		}
+	}
+
+	public ArrayList<ActionDetail> SearchForPastEvents(ArrayList<SearchKey> searchKeys) {
 		MemoryEpisode episode;
 		ArrayList<ActionDetail> details;
 		ActionDetail action;
 		ListIterator<ActionDetail> li;
-		
-		synchronized(this)
-		{
+
+		synchronized (this) {
 			ArrayList<ActionDetail> foundPastEvents = new ArrayList<ActionDetail>();
-			if(this._memoryEvents.size() > 1)
-			{
-				for(int i=0; i<this._memoryEvents.size()-1; i++)
-				{
-					episode = (MemoryEpisode) this._memoryEvents.get(i);
-					details = episode.GetDetailsByKeys(keys);
+
+			if (this._memoryEpisodes.size() > 1) {
+				for (int i = 0; i < this._memoryEpisodes.size() - 1; i++) {
+					episode = (MemoryEpisode) this._memoryEpisodes.get(i);
+					details = episode.GetDetailsByKeys(searchKeys);
 					li = details.listIterator();
-					while(li.hasNext())
-					{
-						action =  li.next();
-						if(!foundPastEvents.contains(action))
-						{
+					while (li.hasNext()) {
+						action = li.next();
+						if (!foundPastEvents.contains(action)) {
 							foundPastEvents.add(action);
 						}
 					}
 				}
 			}
-			
+
 			return foundPastEvents;
 		}
 	}
-	
-	public boolean ContainsRecentEvent(ArrayList<SearchKey> searchKeys)
-	{
-		MemoryEpisode currentEpisode;
-		
+
+	public ArrayList<ActionDetail> SearchForPastEventsIndexed(ArrayList<SearchKey> searchKeys) {
 		synchronized (this) {
-			
-			boolean status = false;
-			
-			if(this._memoryEvents.size() > 0)
-			{
-				currentEpisode = (MemoryEpisode) this._memoryEvents.get(this._memoryEvents.size()-1);				
-				status = currentEpisode.VerifiesKeys(searchKeys);
+
+			// store found events in a list
+			ArrayList<ActionDetail> foundPastEvents = new ArrayList<ActionDetail>();
+
+			// check if past episodes exist
+			if (_memoryEpisodes.size() > 1) {
+
+				// loop over episodes excluding current episode
+				for (int i = 0; i < _memoryEpisodes.size() - 1; i++) {
+					MemoryEpisode episode = _memoryEpisodes.get(i);
+					foundPastEvents.addAll(episode.GetDetailsByKeysIndexed(searchKeys));
+				}
 			}
-			
-			return status;
-		}		
+
+			return foundPastEvents;
+		}
 	}
-	
-	public boolean ContainsPastEvent(ArrayList<SearchKey> searchKeys)
-	{
+
+	public boolean ContainsRecentEvent(ArrayList<SearchKey> searchKeys) {
+		MemoryEpisode currentEpisode;
 		synchronized (this) {
-			
 			boolean status = false;
 
-			if(this._memoryEvents.size() > 1)
-			{
-				
-				for(int i=0; i<this._memoryEvents.size()-1; i++)
-				{
-					if(((MemoryEpisode)this._memoryEvents.get(i)).VerifiesKeys(searchKeys))
-					{
-						status = true;
-					}
-				}
-				
+			if (this._memoryEpisodes.size() > 0) {
+				currentEpisode = (MemoryEpisode) this._memoryEpisodes.get(this._memoryEpisodes.size() - 1);
+				status = currentEpisode.VerifiesKeys(searchKeys);
 			}
-			
+
 			return status;
 		}
 	}
-	
-	public String SummarizeEpisode(Memory m, int episodeID)
-	{	
-		
+
+	public boolean ContainsRecentEventIndexed(ArrayList<SearchKey> searchKeys) {
+		MemoryEpisode currentEpisode;
+		synchronized (this) {
+			boolean status = false;
+
+			if (_memoryEpisodes.size() > 0) {
+				currentEpisode = (MemoryEpisode) _memoryEpisodes.get(_memoryEpisodes.size() - 1);
+				status = currentEpisode.VerifiesKeysIndexed(searchKeys);
+			}
+
+			return status;
+		}
+	}
+
+	public boolean ContainsPastEvent(ArrayList<SearchKey> searchKeys) {
+		synchronized (this) {
+			boolean status = false;
+
+			if (this._memoryEpisodes.size() > 1) {
+				for (int i = 0; i < this._memoryEpisodes.size() - 1; i++) {
+					if (((MemoryEpisode) this._memoryEpisodes.get(i)).VerifiesKeys(searchKeys)) {
+						status = true;
+					}
+				}
+			}
+
+			return status;
+		}
+	}
+
+	public boolean ContainsPastEventIndexed(ArrayList<SearchKey> searchKeys) {
+		return (SearchForPastEventsIndexed(searchKeys).size() > 0);
+	}
+
+	public String SummarizeEpisode(Memory m, int episodeID) {
+
 		String AMSummary = "";
-		
+
 		//System.out.println("Number of Events in AM: " + this._memoryEvents.size());
-		
-		if(this._memoryEvents.size() > episodeID)
-		{
-			MemoryEpisode episode = (MemoryEpisode) this._memoryEvents.get(episodeID);
+
+		if (this._memoryEpisodes.size() > episodeID) {
+			MemoryEpisode episode = (MemoryEpisode) this._memoryEpisodes.get(episodeID);
 			long elapsedTime = episode.getTime().getElapsedRealTime();
 			//float avgEmotion = episode.determineEmotionAverage();
 			//float stdDev = episode.determineEmotionStdDeviation();
@@ -372,34 +326,31 @@ public class AutobiographicalMemory implements Serializable {
 			//we should also report if the episode is ambiguous, i.e if it is not very far from a neutral average
 			//if(elapsedTime >= 36000000 || stdDev >= 2.5)
 			//{
-				AMSummary += episode.GenerateSummary(m);
+			AMSummary += episode.GenerateSummary(m);
 			//}
 		}
-		
+
 		return AMSummary;
 	}
-	
+
 	/*
 	 * Put an episode to the AM - used when reloading in the memory
 	 * Meiyii - 17/12/10
 	 */
-	public void putEpisode(MemoryEpisode me)
-	{
-		_memoryEvents.add(me);
+	public void putEpisode(MemoryEpisode me) {
+		_memoryEpisodes.add(me);
 	}
 
-	public String toXML()
-	{
-		String am  = "<AutobiographicMemory>";
-		for(ListIterator<MemoryEpisode> li = this._memoryEvents.listIterator();li.hasNext();)
-		{
+	public String toXML() {
+		String am = "<AutobiographicMemory>";
+		for (ListIterator<MemoryEpisode> li = this._memoryEpisodes.listIterator(); li.hasNext();) {
 			MemoryEpisode episode = li.next();
 			am += episode.toXML();
 		}
 		am += "</AutobiographicMemory>\n";
-		return am; 
+		return am;
 	}
-	
+
 	/*public ArrayList Reconstruct(ArrayList searchKeys)
 	{
 		ArrayList reconstruction = new ArrayList();
@@ -421,7 +372,7 @@ public class AutobiographicalMemory implements Serializable {
 			return reconstruction;
 		}
 	}*/
-	
+
 	/*public ArrayList Reconstruct(SearchKey k)
 	{
 		ArrayList reconstruction = new ArrayList();
@@ -443,4 +394,5 @@ public class AutobiographicalMemory implements Serializable {
 			return reconstruction;
 		}
 	}*/
+
 }

@@ -24,6 +24,26 @@ public class EpisodicMemory implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	//private String _previousLocation;
+	private ShortTermEpisodicMemory _stm;
+	private AutobiographicalMemory _am;
+	private boolean _newData;
+
+	private ArrayList<ActionDetail> _newRecords;
+
+	// 09/03/11 - Matthias
+	// default decay value used for the calculation of activation values
+	private static final double DECAY_VALUE = 0.8;
+
+	// 03/05/11 - Matthias
+	// Activation-Based Forgetting in Short-Term Episodic Memory?
+	private static final boolean AB_FORGETTING_STEM = false;
+	// Activation-Based Forgetting in Autobiographic Memory?
+	private static final boolean AB_FORGETTING_AM = true;
+
+	// use indexed search?
+	private static final boolean INDEXED_SEARCH = true;
+
 	public static ArrayList<SearchKey> GenerateSearchKeys(Event e) {
 		ArrayList<SearchKey> keys = new ArrayList<SearchKey>();
 		ArrayList<String> params = new ArrayList<String>();
@@ -55,29 +75,11 @@ public class EpisodicMemory implements Serializable {
 		return keys;
 	}
 
-	//private String _previousLocation;
-	private ShortTermEpisodicMemory _stm;
-	private AutobiographicalMemory _am;
-	private boolean _newData;
-
-	private ArrayList<ActionDetail> _newRecords;
-
-	// 09/03/11 - Matthias
-	// default decay value used for the calculation of activation values
-	private static final double DECAY_VALUE = 0.8;
-
-	// 03/05/11 - Matthias
-	// Activation-Based Forgetting in Short-Term Episodic Memory?
-	private static final boolean AB_FORGETTING_STEM = false;
-	// Activation-Based Forgetting in Autobiographic Memory?
-	private static final boolean AB_FORGETTING_AM = true;
-
 	public EpisodicMemory() {
 		_stm = new ShortTermEpisodicMemory();
 		_am = new AutobiographicalMemory();
 		_newData = false;
 		_newRecords = new ArrayList<ActionDetail>();
-		//_previousLocation = Constants.EMPTY_LOCATION;
 	}
 
 	// 07/04/11 Matthias
@@ -144,20 +146,22 @@ public class EpisodicMemory implements Serializable {
 	}
 
 	public boolean ContainsPastEvent(ArrayList<SearchKey> searchKeys) {
-		return _am.ContainsPastEvent(searchKeys);
+		if (INDEXED_SEARCH)
+			return _am.ContainsPastEventIndexed(searchKeys);
+		else
+			return _am.ContainsPastEvent(searchKeys);
 	}
 
 	public boolean ContainsRecentEvent(ArrayList<SearchKey> searchKeys) {
-		boolean status = false;
-
-		if (_am.ContainsRecentEvent(searchKeys)) {
-			status = true;
-		}
+		boolean result;
+		if (INDEXED_SEARCH)
+			result = _am.ContainsRecentEventIndexed(searchKeys);
+		else
+			result = _am.ContainsRecentEvent(searchKeys);
 		if (ContainsNewEvent(searchKeys)) {
-			status = true;
+			result = true;
 		}
-
-		return status;
+		return result;
 	}
 
 	public boolean ContainsNewEvent(ArrayList<SearchKey> searchKeys) {
@@ -205,14 +209,20 @@ public class EpisodicMemory implements Serializable {
 		return aux;
 	}
 
-	public ArrayList<ActionDetail> SearchForPastEvents(ArrayList<SearchKey> keys) {
-		return _am.SearchForPastEvents(keys);
+	public ArrayList<ActionDetail> SearchForPastEvents(ArrayList<SearchKey> searchKeys) {
+		if (INDEXED_SEARCH)
+			return _am.SearchForPastEventsIndexed(searchKeys);
+		else
+			return _am.SearchForPastEvents(searchKeys);
 	}
 
-	public ArrayList<ActionDetail> SearchForRecentEvents(ArrayList<SearchKey> keys) {
-		ArrayList<ActionDetail> aux = _am.SearchForRecentEvents(keys);
-		aux.addAll(_stm.GetDetailsByKeys(keys));
-
+	public ArrayList<ActionDetail> SearchForRecentEvents(ArrayList<SearchKey> searchKeys) {
+		ArrayList<ActionDetail> aux;
+		if (INDEXED_SEARCH)
+			aux = _am.SearchForRecentEventsIndexed(searchKeys);
+		else
+			aux = _am.SearchForRecentEvents(searchKeys);
+		aux.addAll(_stm.GetDetailsByKeys(searchKeys));
 		return aux;
 	}
 
@@ -390,149 +400,25 @@ public class EpisodicMemory implements Serializable {
 
 	// 09/03/11 - Matthias
 	public void calculateActivationValues(Time timeCalculated, double decayValue) {
+		synchronized (this) {
 
-		// calculate values for Autobiographic Memory		
-		for (MemoryEpisode episode : _am.GetAllEpisodes()) {
-			for (ActionDetail detail : episode.getDetails()) {
-				detail.calculateActivationValue(timeCalculated, decayValue);
-			}
-		}
-
-		// calculate values for Short-Term Memory
-		for (ActionDetail detail : _stm.getDetails()) {
-			detail.calculateActivationValue(timeCalculated, decayValue);
-		}
-
-	}
-
-	// 09/03/11 - Matthias
-	public ArrayList<ActionDetail> activationBasedSelectionByThreshold(double threshold) {
-
-		// DEBUG
-		System.out.println("Activation-Based Selection by threshold...");
-
-		// hold selected details in one list
-		ArrayList<ActionDetail> selected = new ArrayList<ActionDetail>();
-
-		// select details not to be forgotten
-		if (!AB_FORGETTING_AM) {
-			// add details from Autobiographic Memory
-			for (MemoryEpisode episode : _am.GetAllEpisodes()) {
-				selected.addAll(episode.getDetails());
-			}
-			// DEBUG
-			System.out.println("selected all details from Autobiographic Memory");
-		}
-		if (!AB_FORGETTING_STEM) {
-			// add details from Short-Term Memory
-			selected.addAll(_stm.getDetails());
-			// DEBUG
-			System.out.println("selected all details from Short-Term Memory");
-		}
-
-		if (AB_FORGETTING_AM) {
-			// select details from Autobiographic Memory
+			// calculate values for Autobiographic Memory		
 			for (MemoryEpisode episode : _am.GetAllEpisodes()) {
 				for (ActionDetail detail : episode.getDetails()) {
-					double value = detail.getActivationValue().getValue();
-					if (value > threshold) {
-						selected.add(detail);
-						// DEBUG
-						System.out.println("selected detail " + detail.getID() + " with value " + value);
-					}
+					detail.calculateActivationValue(timeCalculated, decayValue);
 				}
 			}
-		}
 
-		if (AB_FORGETTING_STEM) {
-			// select details from Short-Term Memory
+			// calculate values for Short-Term Memory
 			for (ActionDetail detail : _stm.getDetails()) {
-				double value = detail.getActivationValue().getValue();
-				if (value > threshold) {
-					selected.add(detail);
-					// DEBUG
-					System.out.println("selected detail " + detail.getID() + " with value " + value);
-				}
+				detail.calculateActivationValue(timeCalculated, decayValue);
 			}
-		}
 
-		return selected;
+		}
 	}
 
-	// 09/03/11 - Matthias
-	public ArrayList<ActionDetail> activationBasedSelectionByCount(int countMax) {
-
-		// DEBUG
-		System.out.println("Activation-Based Selection by count...");
-
-		// hold selected details in one list
-		ArrayList<ActionDetail> selected = new ArrayList<ActionDetail>();
-
-		// select details not to be forgotten
-		if (!AB_FORGETTING_AM) {
-			// add details from Autobiographic Memory
-			for (MemoryEpisode episode : _am.GetAllEpisodes()) {
-				selected.addAll(episode.getDetails());
-			}
-			// DEBUG
-			System.out.println("selected all details from Autobiographic Memory");
-		}
-		if (!AB_FORGETTING_STEM) {
-			// add details from Short-Term Memory
-			selected.addAll(_stm.getDetails());
-			// DEBUG
-			System.out.println("selected all details from Short-Term Memory");
-		}
-
-		// merge details for applying selection into one list
-		ArrayList<ActionDetail> merged = new ArrayList<ActionDetail>();
-
-		// only take into account details which can be forgotten
-		if (AB_FORGETTING_AM) {
-			// add details from Autobiographic Memory
-			for (MemoryEpisode episode : _am.GetAllEpisodes()) {
-				merged.addAll(episode.getDetails());
-			}
-		}
-		if (AB_FORGETTING_STEM) {
-			// add details from Short-Term Memory
-			merged.addAll(_stm.getDetails());
-		}
-
-		// sort by value (ascending)
-		/*
-		// bubble sort
-		boolean swapped;
-		do {
-			swapped = false;
-			for (int i = 0; i < merged.size() - 1; i++) {
-				ActionDetail detailA = merged.get(i);
-				double valueA = detailA.getActivationValue().getValue();
-				ActionDetail detailB = merged.get(i + 1);
-				double valueB = detailB.getActivationValue().getValue();
-				if (valueA > valueB) {
-					merged.set(i, detailB);
-					merged.set(i + 1, detailA);
-					swapped = true;
-				}
-			}
-		} while (swapped);
-		*/
-		// quick sort
-		performQuickSort(merged, 0, merged.size() - 1);
-
-		// select tail of list (highest values)
-		int iMax = Math.min(countMax, merged.size());
-		for (int i = merged.size() - 1; i > merged.size() - 1 - iMax; i--) {
-			selected.add(merged.get(i));
-			// DEBUG
-			System.out.println("selected detail " + merged.get(i).getID() + " with value " + merged.get(i).getActivationValue().getValue());
-		}
-
-		return selected;
-	}
-
-	private void performQuickSort(ArrayList<ActionDetail> details, int lower, int upper) {
+	// sort by activation value (ascending)
+	private void quickSortByActivationValue(ArrayList<ActionDetail> details, int lower, int upper) {
 		int i = lower, j = upper;
 		ActionDetail pivot = details.get(lower + (upper - lower) / 2);
 		while (i <= j) {
@@ -551,103 +437,361 @@ public class EpisodicMemory implements Serializable {
 			}
 		}
 		if (lower < j)
-			performQuickSort(details, lower, j);
+			quickSortByActivationValue(details, lower, j);
 		if (i < upper)
-			performQuickSort(details, i, upper);
+			quickSortByActivationValue(details, i, upper);
+	}
+
+	// 09/03/11 - Matthias
+	public ArrayList<ActionDetail> activationBasedSelectionByThreshold(double threshold) {
+		synchronized (this) {
+
+			// DEBUG
+			System.out.println("Activation-Based Selection by threshold...");
+
+			// hold selected details in one list
+			ArrayList<ActionDetail> selected = new ArrayList<ActionDetail>();
+
+			// pre-select details not to be forgotten
+			if (!AB_FORGETTING_AM) {
+				// add details from Autobiographic Memory
+				for (MemoryEpisode episode : _am.GetAllEpisodes()) {
+					selected.addAll(episode.getDetails());
+				}
+				// DEBUG
+				System.out.println("selected all details from Autobiographic Memory");
+			}
+			if (!AB_FORGETTING_STEM) {
+				// add details from Short-Term Memory
+				selected.addAll(_stm.getDetails());
+				// DEBUG
+				System.out.println("selected all details from Short-Term Memory");
+			}
+
+			if (AB_FORGETTING_AM) {
+				// select details from Autobiographic Memory
+				for (MemoryEpisode episode : _am.GetAllEpisodes()) {
+					for (ActionDetail detail : episode.getDetails()) {
+						double value = detail.getActivationValue().getValue();
+						if (value > threshold) {
+							selected.add(detail);
+							// DEBUG
+							System.out.println("selected detail " + detail.getID() + " with value " + value);
+						}
+					}
+				}
+			}
+
+			if (AB_FORGETTING_STEM) {
+				// select details from Short-Term Memory
+				for (ActionDetail detail : _stm.getDetails()) {
+					double value = detail.getActivationValue().getValue();
+					if (value > threshold) {
+						selected.add(detail);
+						// DEBUG
+						System.out.println("selected detail " + detail.getID() + " with value " + value);
+					}
+				}
+			}
+
+			return selected;
+
+		}
+	}
+
+	// 09/03/11 - Matthias
+	public ArrayList<ActionDetail> activationBasedSelectionByCount(int countMax) {
+		synchronized (this) {
+
+			// DEBUG
+			System.out.println("Activation-Based Selection by count...");
+
+			// hold selected details in one list
+			ArrayList<ActionDetail> selected = new ArrayList<ActionDetail>();
+
+			// pre-select details not to be forgotten
+			if (!AB_FORGETTING_AM) {
+				// add details from Autobiographic Memory
+				for (MemoryEpisode episode : _am.GetAllEpisodes()) {
+					selected.addAll(episode.getDetails());
+				}
+				// DEBUG
+				System.out.println("selected all details from Autobiographic Memory");
+			}
+			if (!AB_FORGETTING_STEM) {
+				// add details from Short-Term Memory
+				selected.addAll(_stm.getDetails());
+				// DEBUG
+				System.out.println("selected all details from Short-Term Memory");
+			}
+
+			// merge details for applying selection into one list
+			ArrayList<ActionDetail> merged = new ArrayList<ActionDetail>();
+
+			// only take into account details which can be forgotten
+			if (AB_FORGETTING_AM) {
+				// add details from Autobiographic Memory
+				for (MemoryEpisode episode : _am.GetAllEpisodes()) {
+					merged.addAll(episode.getDetails());
+				}
+			}
+			if (AB_FORGETTING_STEM) {
+				// add details from Short-Term Memory
+				merged.addAll(_stm.getDetails());
+			}
+
+			// sort by activation value (ascending)
+			if (merged.size() > 0) {
+				quickSortByActivationValue(merged, 0, merged.size() - 1);
+			}
+
+			// select tail of list (highest values, to be selected)
+			int iMax = Math.min(countMax, merged.size());
+			for (int i = merged.size() - 1; i > merged.size() - 1 - iMax; i--) {
+				selected.add(merged.get(i));
+				// DEBUG
+				System.out.println("selected detail " + merged.get(i).getID() + " with value " + merged.get(i).getActivationValue().getValue());
+			}
+
+			return selected;
+
+		}
 	}
 
 	// 09/03/11 - Matthias
 	public ArrayList<ActionDetail> activationBasedSelectionByAmount(double amount) {
+		synchronized (this) {
 
-		// DEBUG
-		System.out.println("Activation-Based Selection by amount...");
+			// DEBUG
+			System.out.println("Activation-Based Selection by amount...");
 
-		// validate amount
-		if (amount < 0) {
-			amount = 0;
-		} else if (amount > 1) {
-			amount = 1;
-		}
-
-		// determine corresponding count
-		int countTotal = 0;
-
-		// count only details to be taken into account for selection
-		if (AB_FORGETTING_AM) {
-			for (MemoryEpisode episode : _am.GetAllEpisodes()) {
-				countTotal += episode.getDetails().size();
+			// validate amount
+			if (amount < 0) {
+				amount = 0;
+			} else if (amount > 1) {
+				amount = 1;
 			}
+
+			// determine corresponding count
+			int countTotal = 0;
+
+			// count only details to be taken into account for selection
+			if (AB_FORGETTING_AM) {
+				for (MemoryEpisode episode : _am.GetAllEpisodes()) {
+					countTotal += episode.getDetails().size();
+				}
+			}
+			if (AB_FORGETTING_STEM) {
+				countTotal += _stm.getDetails().size();
+			}
+
+			// calculate corresponding maximum count
+			int countMax = (int) Math.round(amount * countTotal);
+			// DEBUG
+			System.out.println(amount + " corresponds to " + countMax + "/" + countTotal + " events");
+
+			// select details by count
+			return activationBasedSelectionByCount(countMax);
+
 		}
-		if (AB_FORGETTING_STEM) {
-			countTotal += _stm.getDetails().size();
-		}
-
-		// calculate corresponding maximum count
-		int countMax = (int) Math.round(amount * countTotal);
-		// DEBUG
-		System.out.println(amount + " corresponds to " + countMax + "/" + countTotal + " events");
-
-		// select details by count
-		ArrayList<ActionDetail> selected = activationBasedSelectionByCount(countMax);
-
-		return selected;
 	}
 
-	// 02/05/11 - Matthias
-	public void activationBasedForgetting(ArrayList<Integer> selectedIDs) {
+	public void applyActivationBasedSelection(ArrayList<ActionDetail> selectedDetails) {
+		synchronized (this) {
 
-		// DEBUG
-		System.out.println("Activation-Based Forgetting...");
+			// DEBUG
+			System.out.println("Applying Activation-Based Selection...");
 
-		// workaround for java.util.ConcurrentModificationException:
-		// create temporary copy of episode list
-		ArrayList<MemoryEpisode> episodes = new ArrayList<MemoryEpisode>();
-		episodes.addAll(_am.GetAllEpisodes());
+			// loop over episodes
+			for (MemoryEpisode episode : _am.GetAllEpisodes()) {
+				ArrayList<ActionDetail> details = episode.getDetails();
 
-		// forget in each episode		
-		for (MemoryEpisode episode : episodes) {
+				// loop over details from episode
+				for (int i = 0; i < details.size(); i++) {
+					ActionDetail detail = details.get(i);
 
-			ArrayList<ActionDetail> selectedEpisodeDetails = new ArrayList<ActionDetail>();
-			for (ActionDetail detail : episode.getDetails()) {
-				if (selectedIDs.contains(detail.getID())) {
-					selectedEpisodeDetails.add(detail);
+					// check if detail is selected
+					boolean selected = false;
+					for (ActionDetail selectedDetail : selectedDetails) {
+						// compare pointers here
+						// no ArrayList.contains(Object) as equals() is overwritten in ActionDetail						
+						if (selectedDetail == detail) {
+							// detail is selected
+							selected = true;
+							break;
+						}
+					}
+
+					// check if detail needs to be removed
+					if (!selected) {
+						if (_am.RemoveAction(detail, episode)) {
+							i--;
+						}
+					}
 				}
 			}
 
-			// implementation decision (currently option b)
-			// a) delete old summary, regenerate summary when adding details (summary consistent with details)
-			// b) keep old summary with all values, forget only details (summary can be inconsistent with details)
-			//episode.getPeople().clear();
-			//episode.getLocation().clear();
-			//episode.getObjects().clear();
+			// loop over details from Short-Term Memory
+			ArrayList<ActionDetail> details = _stm.getDetails();
+			for (int i = 0; i < details.size(); i++) {
+				ActionDetail detail = details.get(i);
 
-			// temporarily remove details
-			episode.getDetails().clear();
-			for (ActionDetail detail : selectedEpisodeDetails) {
-				// add selected details (adds corresponding values to summary)
-				episode.AddActionDetail(detail);
+				// check if detail is selected
+				boolean selected = false;
+				for (ActionDetail selectedDetail : selectedDetails) {
+					// compare pointers here
+					// no ArrayList.contains(Object) as equals() is overwritten in ActionDetail					
+					if (selectedDetail == detail) {
+						// detail is selected
+						selected = true;
+						break;
+					}
+				}
+
+				// check if detail needs to be removed
+				if (!selected) {
+					if (_stm.RemoveAction(detail)) {
+						i--;
+					}
+				}
 			}
 
-			// implementation decision (currently option b)
-			// a) delete empty episodes
-			// b) keep empty episodes (and summary contains all values)
-			//if(episode.getDetails().size() == 0) {
-			//	_am.GetAllEpisodes().remove(episode);
-			//}
-
 		}
+	}
 
-		// forget in Short-Term Memory
-		ArrayList<ActionDetail> selectedShortTermDetails = new ArrayList<ActionDetail>();
-		for (ActionDetail detail : _stm.getDetails()) {
-			if (selectedIDs.contains(detail.getID())) {
-				selectedShortTermDetails.add(detail);
+	public ArrayList<ActionDetail> activationBasedForgettingByThreshold(double threshold) {
+		synchronized (this) {
+
+			// DEBUG
+			System.out.println("Activation-Based Forgetting by threshold...");
+
+			// hold forgetable details in one list
+			ArrayList<ActionDetail> forget = new ArrayList<ActionDetail>();
+
+			if (AB_FORGETTING_AM) {
+				// forget details from Autobiographic Memory
+				for (MemoryEpisode episode : _am.GetAllEpisodes()) {
+					for (ActionDetail detail : episode.getDetails()) {
+						double value = detail.getActivationValue().getValue();
+						if (value < threshold) {
+							forget.add(detail);
+							// DEBUG
+							System.out.println("forget detail " + detail.getID() + " with value " + value);
+						}
+					}
+				}
 			}
+
+			if (AB_FORGETTING_STEM) {
+				// forget details from Short-Term Memory
+				for (ActionDetail detail : _stm.getDetails()) {
+					double value = detail.getActivationValue().getValue();
+					if (value < threshold) {
+						forget.add(detail);
+						// DEBUG
+						System.out.println("forget detail " + detail.getID() + " with value " + value);
+					}
+				}
+			}
+
+			return forget;
+
 		}
-		// temporarily remove details
-		_stm.getDetails().clear();
-		// add selected details
-		_stm.getDetails().addAll(selectedShortTermDetails);
+	}
+
+	public ArrayList<ActionDetail> activationBasedForgettingByCount(int countMax) {
+		synchronized (this) {
+
+			// DEBUG
+			System.out.println("Activation-Based Forgetting by count...");
+
+			// hold forgetable details in one list
+			ArrayList<ActionDetail> forgetable = new ArrayList<ActionDetail>();
+
+			// select details to be forgetable
+			if (AB_FORGETTING_AM) {
+				// add details from Autobiographic Memory
+				for (MemoryEpisode episode : _am.GetAllEpisodes()) {
+					forgetable.addAll(episode.getDetails());
+				}
+			}
+			if (AB_FORGETTING_STEM) {
+				// add details from Short-Term Memory
+				forgetable.addAll(_stm.getDetails());
+			}
+
+			// sort by activation value (ascending)
+			if (forgetable.size() > 0) {
+				quickSortByActivationValue(forgetable, 0, forgetable.size() - 1);
+			}
+
+			// select head of list (lowest values, to be forgotten)
+			ArrayList<ActionDetail> forget = new ArrayList<ActionDetail>();
+			int iMax = Math.min(countMax, forgetable.size());
+			for (int i = 0; i < iMax; i++) {
+				forget.add(forgetable.get(i));
+				// DEBUG
+				System.out.println("forget detail " + forgetable.get(i).getID() + " with value " + forgetable.get(i).getActivationValue().getValue());
+			}
+
+			return forget;
+
+		}
+	}
+
+	public ArrayList<ActionDetail> activationBasedForgettingByAmount(double amount) {
+		synchronized (this) {
+
+			// DEBUG
+			System.out.println("Activation-Based Forgetting by amount...");
+
+			// validate amount
+			if (amount < 0) {
+				amount = 0;
+			} else if (amount > 1) {
+				amount = 1;
+			}
+
+			// determine corresponding count
+			int countTotal = 0;
+
+			// count only details to be taken into account for forgetting
+			if (AB_FORGETTING_AM) {
+				for (MemoryEpisode episode : _am.GetAllEpisodes()) {
+					countTotal += episode.getDetails().size();
+				}
+			}
+			if (AB_FORGETTING_STEM) {
+				countTotal += _stm.getDetails().size();
+			}
+
+			// calculate corresponding maximum count
+			int countMax = (int) Math.round(amount * countTotal);
+			// DEBUG
+			System.out.println(amount + " corresponds to " + countMax + "/" + countTotal + " events");
+
+			// forget details by count
+			return activationBasedForgettingByCount(countMax);
+
+		}
+	}
+
+	public void applyActivationBasedForgetting(ArrayList<ActionDetail> forgetDetails) {
+		synchronized (this) {
+
+			// DEBUG
+			System.out.println("Applying Activation-Based Forgetting...");
+
+			// remove details to be forgotten
+			for (ActionDetail detail : forgetDetails) {
+				// try to remove from Autobiographic Memory 
+				if (!_am.RemoveAction(detail)) {
+					// try to remove from Short-Term Memory
+					_stm.RemoveAction(detail);
+				}
+			}
+
+		}
 	}
 
 }

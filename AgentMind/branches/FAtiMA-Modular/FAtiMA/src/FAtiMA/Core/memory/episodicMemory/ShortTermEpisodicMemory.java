@@ -48,7 +48,6 @@ import FAtiMA.Core.util.Constants;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Substitution;
 
-
 /**
  * Record structure for recent events
  * 
@@ -56,53 +55,46 @@ import FAtiMA.Core.wellFormedNames.Substitution;
  */
 
 public class ShortTermEpisodicMemory implements Serializable {
-	
+
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	private static int eventID = 0;
-	
+
 	public static final short MAXRECORDS = 10;
 	private ArrayList<ActionDetail> _details;
-	
-	public ShortTermEpisodicMemory()
-	{
+
+	public ShortTermEpisodicMemory() {
 		this._details = new ArrayList<ActionDetail>(MAXRECORDS);
 	}
-	
-	public ArrayList<ActionDetail> getDetails()
-	{
+
+	public ArrayList<ActionDetail> getDetails() {
 		return this._details;
 	}
-	
-	public void AddActionDetail(Memory m, Event e, String location)
-	{
+
+	public void AddActionDetail(Memory m, Event e, String location) {
 		ActionDetail action;
-			
+
 		action = new ActionDetail(m, ShortTermEpisodicMemory.eventID++, e, location);
 		_details.add(action);
 	}
-	
+
 	/*
 	 * Meiyii
 	 * Called only during loading - Add event to the details list without further processing 
 	 */
-	public void putActionDetail(ActionDetail ad)
-	{
+	public void putActionDetail(ActionDetail ad) {
 		_details.add(ad);
 	}
-	
-	public void applySubstitution(Substitution s)
-	{
-		for(ActionDetail detail : _details)
-		{
+
+	public void applySubstitution(Substitution s) {
+		for (ActionDetail detail : _details) {
 			detail.applySubstitution(s);
 		}
 	}
-	
-	public int GetCount()
-	{
+
+	public int GetCount() {
 		return this._details.size();
 	}
 
@@ -111,82 +103,67 @@ public class ShortTermEpisodicMemory implements Serializable {
 		return ShortTermEpisodicMemory.eventID;
 	}
 
-	public void SetEventID(int eventID)
-	{
+	public void SetEventID(int eventID) {
 		ShortTermEpisodicMemory.eventID = eventID;
 	}
-	
-	public void ResetEventID()
-	{
+
+	public void ResetEventID() {
 		ShortTermEpisodicMemory.eventID = 0;
 	}
-	
-	public ActionDetail GetNewestRecord()
-	{
-		return (ActionDetail) this._details.get(_details.size()-1);
+
+	public ActionDetail GetNewestRecord() {
+		return (ActionDetail) this._details.get(_details.size() - 1);
 	}
-	
-	public ActionDetail GetOldestRecord()
-	{
+
+	public ActionDetail GetOldestRecord() {
 		return (ActionDetail) this._details.get(0);
 	}
-	
-	public void DeleteOldestRecord()
-	{
+
+	public void DeleteOldestRecord() {
 		this._details.remove(0);
 	}
-	
-	public BaseEmotion getStrongestEmotion()
-	{
+
+	public BaseEmotion getStrongestEmotion() {
 		BaseEmotion em;
 		BaseEmotion strongestEmotion = null;
-		
-		for(ActionDetail action : this._details)
-		{
+
+		for (ActionDetail action : this._details) {
 			em = action.getEmotion();
-			if(em != null)
-			{
-				if(strongestEmotion == null || em.GetPotential() > strongestEmotion.GetPotential())
-				{
+			if (em != null) {
+				if (strongestEmotion == null || em.GetPotential() > strongestEmotion.GetPotential()) {
 					strongestEmotion = em;
 				}
 			}
 		}
-		
+
 		return strongestEmotion;
 	}
-	
-	private ArrayList<ActionDetail> FilterExternalEvents(ArrayList<ActionDetail> events)
-	{
+
+	private ArrayList<ActionDetail> FilterExternalEvents(ArrayList<ActionDetail> events) {
 		ActionDetail action;
 		ArrayList<ActionDetail> newList = new ArrayList<ActionDetail>();
-		for(ListIterator<ActionDetail> li = events.listIterator();li.hasNext();)
-		{
+		for (ListIterator<ActionDetail> li = events.listIterator(); li.hasNext();) {
 			action = li.next();
-			if(action.getAction()!=null)
-			{
+			if (action.getAction() != null) {
 				newList.add(action);
 			}
 		}
 		return newList;
 	}
-	
-	
-	public String GenerateSummary(Memory m)
-	{
+
+	public String GenerateSummary(Memory m) {
 		ActionDetail action;
 		BaseEmotion strongestEmotion = null;
 		BaseEmotion secondStrongestEmotion = null;
 		int numberOfDetails = 3;
-		
+
 		Name locationKey = Name.ParseName(Constants.SELF + "(location)");
 		String location = (String) m.getSemanticMemory().AskProperty(locationKey);
-		
-		if(location == null)
-		{
+
+		if (location == null) {
 			location = Constants.EMPTY_LOCATION;
 		}
-		
+
 		// version with both internal and external events
 		List<ActionDetail> auxList = new ArrayList<ActionDetail>(_details);
 		// version with only internal events
@@ -195,260 +172,237 @@ public class ShortTermEpisodicMemory implements Serializable {
 		//List auxList = (List) FilterExternalEvents(_details);
 		// version with empty summary
 		//List auxList = (List) new ArrayList();
-		
-		
+
 		Collections.sort(auxList, new ActionDetailComparator(ActionDetailComparator.CompareByEmotionIntensity));
-		if(auxList.size() > numberOfDetails)
-		{
-			auxList = auxList.subList(auxList.size()-numberOfDetails,auxList.size());
+		if (auxList.size() > numberOfDetails) {
+			auxList = auxList.subList(auxList.size() - numberOfDetails, auxList.size());
 		}
-		
-		if(auxList.size() > 0) 
-		{
+
+		if (auxList.size() > 0) {
 			//determine the strongest feeling
-			action = (ActionDetail) auxList.get(auxList.size()-1);
+			action = (ActionDetail) auxList.get(auxList.size() - 1);
 			strongestEmotion = action.getEmotion();
-			
-			if(auxList.size() > 1)
-			{
-				for(int i = auxList.size() - 2;i >= 0; i--)
-				{
+
+			if (auxList.size() > 1) {
+				for (int i = auxList.size() - 2; i >= 0; i--) {
 					action = (ActionDetail) auxList.get(i);
 					secondStrongestEmotion = action.getEmotion();
-					if(secondStrongestEmotion.getType() != strongestEmotion.getType())
-					{
+					if (secondStrongestEmotion.getType() != strongestEmotion.getType()) {
 						break;
-					}
-					else 
-					{
+					} else {
 						secondStrongestEmotion = null;
 					}
 				}
 			}
 		}
-		
+
 		Collections.sort(auxList, new ActionDetailComparator(ActionDetailComparator.CompareByOrder));
-		
+
 		String AMSummary = "";
 		boolean firstEvent = true;
-		
+
 		ListIterator<ActionDetail> li = auxList.listIterator();
-		while(li.hasNext())
-		{
+		while (li.hasNext()) {
 			action = li.next();
-			if(action.getEmotion().GetPotential() > 0)
-			{
+			if (action.getEmotion().GetPotential() > 0) {
 				AMSummary += "<Event>";
-				if(firstEvent)
-				{
-					AMSummary +="<Location>" + location + "</Location>";
+				if (firstEvent) {
+					AMSummary += "<Location>" + location + "</Location>";
 					AMSummary += SummaryGenerator.generateTimeDescription(1000);
 					firstEvent = false;
 				}
-				
+
 				AMSummary += SummaryGenerator.GenerateActionSummary(m, action);
-				
-				if(strongestEmotion != null &&
-						action.getEmotion().getType() == strongestEmotion.getType() &&
-						action.getEmotion().GetPotential() == strongestEmotion.GetPotential())
-				{
+
+				if (strongestEmotion != null && action.getEmotion().getType() == strongestEmotion.getType() && action.getEmotion().GetPotential() == strongestEmotion.GetPotential()) {
 					AMSummary += SummaryGenerator.GenerateEmotionSummary(m, strongestEmotion);
 				}
-				
+
 				/*if(secondStrongestEmotion != null &&
 						action.getEmotion().GetType() == secondStrongestEmotion.GetType() &&
 						action.getEmotion().GetPotential() == secondStrongestEmotion.GetPotential())
 				{
 					AMSummary += SummaryGenerator.GenerateEmotionSummary(secondStrongestEmotion);
 				}*/
-				
+
 				AMSummary += "</Event>";
 			}
 		}
-		
+
 		return AMSummary;
 	}
-	
-	public void AssociateEmotionToDetail(Memory m, ActiveEmotion em, Event cause, String location)
-	{
+
+	public void AssociateEmotionToDetail(Memory m, ActiveEmotion em, Event cause, String location) {
 		ActionDetail action;
-		if(cause != null)
-		{
-			
-			for(int i = _details.size() -1; i >= 0; i--){
+		if (cause != null) {
+
+			for (int i = _details.size() - 1; i >= 0; i--) {
 				action = _details.get(i);
-				if(action.ReferencesEvent(cause))
-				{
+				if (action.ReferencesEvent(cause)) {
 					action.UpdateEmotionValues(m, em);
 					return;
 				}
 			}
-	
+
 			//action = new ActionDetail(m,eventID++,cause,location);
 			//_details.add(action);
 			//action.UpdateEmotionValues(m, em);
 		}
 	}
-	
-	
-	public boolean VerifiesKeys(ArrayList<SearchKey> searchKeys)
-	{
+
+	public boolean VerifiesKeys(ArrayList<SearchKey> searchKeys) {
 		ActionDetail action;
 		ListIterator<ActionDetail> li = _details.listIterator();
 
 		boolean status = false;
 
-		while(li.hasNext())
-		{
+		while (li.hasNext()) {
 			action = li.next();
-			if(action.verifiesKeys(searchKeys))
-			{
+			if (action.verifiesKeys(searchKeys)) {
 				// 09/03/11 - Matthias
 				action.getRetrievalQueue().addRetrievalTime(new Time());
-				// DEBUG
-				//System.out.println("ShortTermEpisodicMemory.java: retrieval of detail " + action.getID());
-				
+
 				status = true;
 			}
 		}
-		
+
 		return status;
 	}
-	
-	public boolean VerifiesKey(SearchKey k)
-	{
+
+	public boolean VerifiesKey(SearchKey searchKey) {
 		ListIterator<ActionDetail> li;
 		ActionDetail action;
 
 		boolean status = false;
-		
+
 		li = this._details.listIterator();
-		while(li.hasNext())
-		{
+		while (li.hasNext()) {
 			action = (ActionDetail) li.next();
-			if(action.verifiesKey(k))
-			{
+			if (action.verifiesKey(searchKey)) {
 				// 09/03/11 - Matthias
 				action.getRetrievalQueue().addRetrievalTime(new Time());
-				// DEBUG
-				//System.out.println("ShortTermEpisodicMemory.java: retrieval of detail " + action.getID());
-				
+
 				status = true;
 			}
 		}
-		
+
 		return status;
-	}	
-	
-	public ArrayList<ActionDetail> GetDetailsByKey(SearchKey key)
-	{
-		ListIterator<ActionDetail> li;
-		ActionDetail action;
-		ArrayList<ActionDetail> details = new ArrayList<ActionDetail>();
-		
-		li = this._details.listIterator();
-		while(li.hasNext())
-		{
-			action =  li.next();
-			if(action.verifiesKey(key)) 
-			{
-				// 09/03/11 - Matthias
-				action.getRetrievalQueue().addRetrievalTime(new Time());
-				// DEBUG
-				//System.out.println("ShortTermEpisodicMemory.java: retrieval of detail " + action.getID());
-				
-				details.add(action);
-			}
-		}
-		
-		return details;
 	}
-	
-	public ArrayList<ActionDetail> GetDetailsByKeys(ArrayList<SearchKey> keys)
-	{
+
+	public ArrayList<ActionDetail> GetDetailsByKey(SearchKey searchKey) {
 		ListIterator<ActionDetail> li;
 		ActionDetail action;
 		ArrayList<ActionDetail> details = new ArrayList<ActionDetail>();
-		
+
 		li = this._details.listIterator();
-		while(li.hasNext())
-		{
+		while (li.hasNext()) {
 			action = li.next();
-			if(action.verifiesKeys(keys) && !details.contains(action)) 
-			{
+			if (action.verifiesKey(searchKey)) {
 				// 09/03/11 - Matthias
 				action.getRetrievalQueue().addRetrievalTime(new Time());
-				// DEBUG
-				//System.out.println("ShortTermEpisodicMemory.java: retrieval of detail " + action.getID());
-				
+
 				details.add(action);
 			}
 		}
-		
+
 		return details;
 	}
-	
-	public float AssessGoalFamiliarity(Goal g)
-	{
+
+	public ArrayList<ActionDetail> GetDetailsByKeys(ArrayList<SearchKey> searchKeys) {
+		ListIterator<ActionDetail> li;
+		ActionDetail action;
+		ArrayList<ActionDetail> details = new ArrayList<ActionDetail>();
+
+		li = this._details.listIterator();
+		while (li.hasNext()) {
+			action = li.next();
+			if (action.verifiesKeys(searchKeys)) {
+				// 09/03/11 - Matthias
+				action.getRetrievalQueue().addRetrievalTime(new Time());
+
+				details.add(action);
+			}
+		}
+
+		return details;
+	}
+
+	public float AssessGoalFamiliarity(Goal g) {
 		float familiarity = 0;
 		ActionDetail action;
 		ListIterator<ActionDetail> li = _details.listIterator();
 		Event e = g.GetActivationEvent();
-		
-		while(li.hasNext())
-		{
+
+		while (li.hasNext()) {
 			action = (ActionDetail) li.next();
-			if(action.getAction().equals(e.GetAction()))
-			{
+			if (action.getAction().equals(e.GetAction())) {
 				//ok, we've found a goal activation				
-				if(action.getTarget().equals(e.GetTarget()))
-				{
+				if (action.getTarget().equals(e.GetTarget())) {
 					// and the goal is of the same class of the one we're searching for
 					// it seems familiar
-					familiarity += 0.5; 
-					
-					if(action.getParameters().toString().equals(e.GetParameters().toString()))
-					{
+					familiarity += 0.5;
+
+					if (action.getParameters().toString().equals(e.GetParameters().toString())) {
 						//and the parameters of the goal are also equal which makes the 
 						//goal even more familiar
-						familiarity +=0.5;
+						familiarity += 0.5;
 					}
-				}				
+				}
 			}
-		}		
+		}
 		return familiarity;
 	}
-	
-	public int CountEvent(ArrayList<SearchKey> searchKeys)
-	{
+
+	public int CountEvent(ArrayList<SearchKey> searchKeys) {
 		ListIterator<ActionDetail> li;
 		ActionDetail action;
 		int count = 0;
-		
+
 		li = this._details.listIterator();
-		while(li.hasNext())
-		{
+		while (li.hasNext()) {
 			action = li.next();
-			if(action.verifiesKeys(searchKeys)) 
-			{
+			if (action.verifiesKeys(searchKeys)) {
 				count++;
 			}
 		}
-		
+
 		return count;
 	}
-	
-	public String toXML()
-	{
+
+	// Matthias 28/10/11
+	public boolean RemoveAction(ActionDetail actionDetail) {
+		synchronized (this) {
+
+			// try to remove action detail from STEM
+			ArrayList<ActionDetail> details = getDetails();
+			for (int i = 0; i < details.size(); i++) {
+				ActionDetail detail = details.get(i);
+
+				// compare pointers here
+				// no ArrayList.remove(Object) as equals() is overwritten in ActionDetail
+				if (detail == actionDetail) {
+
+					// remove detail from STEM
+					details.remove(i);
+
+					return true;
+				}
+
+			}
+
+			return false;
+		}
+	}
+
+	public String toXML() {
 		ActionDetail detail;
 		String record = "<STEpisodicMemory>";
-		for(ListIterator<ActionDetail> li = _details.listIterator();li.hasNext();)
-		{
+		for (ListIterator<ActionDetail> li = _details.listIterator(); li.hasNext();) {
 			detail = li.next();
 			record += detail.toXML();
 		}
 		record += "</STEpisodicMemory>\n";
-		
+
 		return record;
 	}
 }

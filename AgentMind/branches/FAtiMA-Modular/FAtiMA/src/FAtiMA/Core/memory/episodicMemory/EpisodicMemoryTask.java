@@ -24,7 +24,6 @@
  * Email to: muk7@hw.ac.uk
  */
 
-
 package FAtiMA.Core.memory.episodicMemory;
 
 import java.text.SimpleDateFormat;
@@ -49,7 +48,7 @@ public class EpisodicMemoryTask extends TimerTask {
 
 		// move events to LTM
 		memory.getEpisodicMemory().MoveSTEMtoAM();
-		
+
 		// set date format
 		Calendar cal = Calendar.getInstance();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
@@ -63,20 +62,16 @@ public class EpisodicMemoryTask extends TimerTask {
 		// Activation-Based Forgetting
 		System.out.println(strTime + ": performing AB Forgetting (20%)");
 		memory.getEpisodicMemory().calculateActivationValues();
-		ArrayList<ActionDetail> selected = memory.getEpisodicMemory().activationBasedSelectionByAmount(0.8);
-		ArrayList<Integer> selectedIDs = new ArrayList<Integer>();
-		for (ActionDetail actionDetail : selected) {
-			selectedIDs.add(new Integer(actionDetail.getID()));
-		}
-		memory.getEpisodicMemory().activationBasedForgetting(selectedIDs);
+		ArrayList<ActionDetail> forget = memory.getEpisodicMemory().activationBasedForgettingByAmount(0.2);
+		memory.getEpisodicMemory().applyActivationBasedForgetting(forget);
 
 		// XML Memory export
 		System.out.println(strTime + ": saving XML Memory");
 		memoryWriter.outputMemorytoXML(filepath + "XMLMemory_" + strTime + "_AfterABForgetting" + ".xml");
-		
+
 		// start a new episode
 		memory.getEpisodicMemory().StartEpisode(memory);
-		
+
 	}
 
 }

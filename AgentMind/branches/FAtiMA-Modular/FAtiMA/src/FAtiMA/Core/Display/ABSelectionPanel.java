@@ -62,23 +62,30 @@ public class ABSelectionPanel extends AgentDisplayPanel {
 	private static final boolean SHOW_AM = true;
 	// It is suggested to set these variables according to
 	// AB_FORGETTING_STEM and AB_FORGETTING_AM (in EpisodicMemory.java)
+	// colour cells according to absolute min and max values or relative to current?
+	private static final boolean COLOURING_BY_ABSOLUTE_VALUE = true;
+	private static final double ACTIVATION_VALUE_MIN = -15;
+	private static final double ACTIVATION_VALUE_MAX = -5;
+	// show narrative time or real time?
+	private static final boolean DISPLAY_NARRATIVE_TIME = false;
 
 	private EpisodicMemory episodicMemory;
 	private JSpinner spDecayValue;
 	private JCheckBox cbConstantUpdate;
 	private JLabel lbCalculationStatus;
-	private JRadioButton rbSelectionCount;
-	private JTextField spSelectionCount;
-	private JRadioButton rbSelectionRatio;
-	private JSpinner spSelectionRatio;
-	private JRadioButton rbSelectionThreshold;
-	private JTextField tfSelectionThreshold;
-	private JCheckBox cbSimulateSelection;
-	private JLabel lbSelectionStatus;
+	private JRadioButton rbCount;
+	private JTextField spCount;
+	private JRadioButton rbRatio;
+	private JSpinner spRatio;
+	private JRadioButton rbThreshold;
+	private JTextField tfThreshold;
+	private JCheckBox cbSimulate;
+	private JLabel lbExecutionStatus;
 	private MyTable table;
 	private MyTableModel tableModel;
 	private TableRowSorter<MyTableModel> tableRowSorter;
 	private ArrayList<Integer> selectedIDs;
+	private ArrayList<Integer> forgetIDs;
 	private double activationValueMin;
 	private double activationValueMax;
 
@@ -96,7 +103,10 @@ public class ABSelectionPanel extends AgentDisplayPanel {
 			case 0:
 				return Integer.class;
 			case 9:
-				return Long.class;
+				if (DISPLAY_NARRATIVE_TIME)
+					return Long.class;
+				else
+					return String.class;
 			case 11:
 				return Double.class;
 			case 12:
@@ -125,19 +135,37 @@ public class ABSelectionPanel extends AgentDisplayPanel {
 		public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
 			Component component = super.prepareRenderer(renderer, row, column);
 			int rowID = (Integer) table.getValueAt(row, 0);
+
+			// colour by activation value
+			double activationValue = (Double) table.getValueAt(row, 11);
+			if (COLOURING_BY_ABSOLUTE_VALUE) {
+				// colour independent of current min and max
+				activationValueMin = ACTIVATION_VALUE_MIN;
+				activationValueMax = ACTIVATION_VALUE_MAX;
+				if (activationValue < activationValueMin) {
+					activationValue = activationValueMin;
+				} else if (activationValue > activationValueMax) {
+					activationValue = activationValueMax;
+				}
+			}
+			double range = activationValueMax - activationValueMin;
+			int grey = (int) Math.round((activationValue - activationValueMin) / range * 155) + 100;
+			if (grey < 0)
+				grey = 0;
+			if (grey > 255)
+				grey = 255;
+			component.setBackground(new Color(grey, grey, grey));
+
+			// colour selected id's in yellow
 			if (selectedIDs.contains(rowID)) {
 				component.setBackground(Color.YELLOW);
-			} else {
-				double activationValue = (Double) table.getValueAt(row, 11);
-				double range = activationValueMax - activationValueMin;
-				int grey = (int) Math.round((activationValue - activationValueMin) / range * 155) + 100;
-				if (grey < 0)
-					grey = 0;
-				if (grey > 255)
-					grey = 255;
-				component.setBackground(new Color(grey, grey, grey));
-				// component.setBackground(Color.WHITE);
 			}
+
+			// colour forget id's in red
+			if (forgetIDs.contains(rowID)) {
+				component.setBackground(Color.RED);
+			}
+
 			return component;
 		}
 	}
@@ -155,9 +183,16 @@ public class ABSelectionPanel extends AgentDisplayPanel {
 		}
 	}
 
+	private class AlABForgetting implements ActionListener {
+		public void actionPerformed(ActionEvent event) {
+			performForgetting();
+		}
+	}
+
 	public ABSelectionPanel() {
 		super();
 		selectedIDs = new ArrayList<Integer>();
+		forgetIDs = new ArrayList<Integer>();
 		createGUI();
 	}
 
@@ -213,63 +248,78 @@ public class ABSelectionPanel extends AgentDisplayPanel {
 		pnCalculationStatus.setLayout(new BoxLayout(pnCalculationStatus, BoxLayout.X_AXIS));
 		pnCalculation.add(pnCalculationStatus);
 
-		lbCalculationStatus = new JLabel("Updated at narrative time -");
+		lbCalculationStatus = new JLabel("-");
 		pnCalculationStatus.add(lbCalculationStatus);
 
 		JPanel pnSelectionMethod = new JPanel();
 		pnSelectionMethod.setLayout(new BoxLayout(pnSelectionMethod, BoxLayout.Y_AXIS));
 		pnSelection.add(pnSelectionMethod);
 
-		rbSelectionCount = new JRadioButton("Count");
-		pnSelectionMethod.add(rbSelectionCount);
-		rbSelectionRatio = new JRadioButton("Ratio");
-		pnSelectionMethod.add(rbSelectionRatio);
-		rbSelectionThreshold = new JRadioButton("Threshold");
-		pnSelectionMethod.add(rbSelectionThreshold);
+		rbCount = new JRadioButton("Count");
+		pnSelectionMethod.add(rbCount);
+		rbRatio = new JRadioButton("Ratio");
+		pnSelectionMethod.add(rbRatio);
+		rbThreshold = new JRadioButton("Threshold");
+		pnSelectionMethod.add(rbThreshold);
 
 		ButtonGroup bgSelectionMethod = new ButtonGroup();
-		bgSelectionMethod.add(rbSelectionCount);
-		bgSelectionMethod.add(rbSelectionRatio);
-		bgSelectionMethod.add(rbSelectionThreshold);
-		rbSelectionCount.setSelected(true);
+		bgSelectionMethod.add(rbCount);
+		bgSelectionMethod.add(rbRatio);
+		bgSelectionMethod.add(rbThreshold);
+		rbCount.setSelected(true);
 
 		JPanel pnSelectionParams = new JPanel();
 		pnSelectionParams.setLayout(new BoxLayout(pnSelectionParams, BoxLayout.Y_AXIS));
 		pnSelection.add(pnSelectionParams);
 
-		spSelectionCount = new JTextField();
-		spSelectionCount.setText("10");
-		spSelectionCount.setMinimumSize(new Dimension(60, 20));
-		spSelectionCount.setMaximumSize(new Dimension(60, 20));
-		pnSelectionParams.add(spSelectionCount);
+		spCount = new JTextField();
+		spCount.setText("10");
+		spCount.setMinimumSize(new Dimension(60, 20));
+		spCount.setMaximumSize(new Dimension(60, 20));
+		pnSelectionParams.add(spCount);
 
-		spSelectionRatio = new JSpinner();
-		spSelectionRatio.setModel(new SpinnerNumberModel(0.2, 0.0, 1.0, 0.1));
-		spSelectionRatio.setMinimumSize(new Dimension(60, 20));
-		spSelectionRatio.setMaximumSize(new Dimension(60, 20));
-		pnSelectionParams.add(spSelectionRatio);
+		spRatio = new JSpinner();
+		spRatio.setModel(new SpinnerNumberModel(0.5, 0.0, 1.0, 0.1));
+		spRatio.setMinimumSize(new Dimension(60, 20));
+		spRatio.setMaximumSize(new Dimension(60, 20));
+		pnSelectionParams.add(spRatio);
 
-		tfSelectionThreshold = new JTextField();
-		tfSelectionThreshold.setText("-5.0");
-		tfSelectionThreshold.setMinimumSize(new Dimension(60, 20));
-		tfSelectionThreshold.setMaximumSize(new Dimension(60, 20));
-		pnSelectionParams.add(tfSelectionThreshold);
+		tfThreshold = new JTextField();
+		tfThreshold.setText("-5.0");
+		tfThreshold.setMinimumSize(new Dimension(60, 20));
+		tfThreshold.setMaximumSize(new Dimension(60, 20));
+		pnSelectionParams.add(tfThreshold);
 
-		JPanel pnSelectionButton = new JPanel();
-		pnSelectionButton.setLayout(new BoxLayout(pnSelectionButton, BoxLayout.Y_AXIS));
-		pnSelection.add(pnSelectionButton);
+		JPanel pnExecution = new JPanel();
+		pnExecution.setLayout(new BoxLayout(pnExecution, BoxLayout.Y_AXIS));
+		pnSelection.add(pnExecution);
 
-		cbSimulateSelection = new JCheckBox("Simulate Selection");
-		cbSimulateSelection.setSelected(true);
-		// cbSimulateSelection.setEnabled(false);
-		pnSelectionButton.add(cbSimulateSelection);
+		JPanel pnSimulate = new JPanel();
+		pnSimulate.setLayout(new BoxLayout(pnSimulate, BoxLayout.X_AXIS));
+		pnExecution.add(pnSimulate);
 
-		JButton btABSelection = new JButton("Activation-Based Selection");
+		cbSimulate = new JCheckBox("Simulate");
+		cbSimulate.setSelected(true);
+		pnSimulate.add(cbSimulate);
+
+		JPanel pnExecutionButtons = new JPanel();
+		pnExecutionButtons.setLayout(new BoxLayout(pnExecutionButtons, BoxLayout.X_AXIS));
+		pnExecution.add(pnExecutionButtons);
+
+		JButton btABSelection = new JButton("Selection");
 		btABSelection.addActionListener(new AlABSelection());
-		pnSelectionButton.add(btABSelection);
+		pnExecutionButtons.add(btABSelection);
 
-		lbSelectionStatus = new JLabel("Selected at narrative time -");
-		pnSelectionButton.add(lbSelectionStatus);
+		JButton btABForgetting = new JButton("Forgetting");
+		btABForgetting.addActionListener(new AlABForgetting());
+		pnExecutionButtons.add(btABForgetting);
+
+		JPanel pnExecutionStatus = new JPanel();
+		pnExecutionStatus.setLayout(new BoxLayout(pnExecutionStatus, BoxLayout.X_AXIS));
+		pnExecution.add(pnExecutionStatus);
+
+		lbExecutionStatus = new JLabel("-");
+		pnExecutionStatus.add(lbExecutionStatus);
 
 		JPanel pnDetails = new JPanel();
 		pnDetails.setBorder(BorderFactory.createTitledBorder("Details"));
@@ -386,7 +436,10 @@ public class ABSelectionPanel extends AgentDisplayPanel {
 						rowData[j++] = NULL_STRING;
 
 					if (actionDetail.getTime() != null)
-						rowData[j++] = new Long(actionDetail.getTime().getNarrativeTime());
+						if (DISPLAY_NARRATIVE_TIME)
+							rowData[j++] = new Long(actionDetail.getTime().getNarrativeTime());
+						else
+							rowData[j++] = new String(actionDetail.getTime().getRealTimeFormatted());
 					else
 						rowData[j++] = NULL_STRING;
 
@@ -428,7 +481,10 @@ public class ABSelectionPanel extends AgentDisplayPanel {
 		double decayValue = Double.valueOf(spDecayValue.getValue().toString());
 		episodicMemory.calculateActivationValues(timeCalculated, decayValue);
 
-		lbCalculationStatus.setText("Calculated at narrative time " + timeCalculated.getNarrativeTime());
+		if (DISPLAY_NARRATIVE_TIME)
+			lbCalculationStatus.setText("Calculated at narrative time " + timeCalculated.getNarrativeTime());
+		else
+			lbCalculationStatus.setText("Calculated at " + timeCalculated.getRealTimeFormatted());
 
 	}
 
@@ -437,32 +493,74 @@ public class ABSelectionPanel extends AgentDisplayPanel {
 		Time timeSelected = new Time();
 		ArrayList<ActionDetail> selected = new ArrayList<ActionDetail>();
 
-		if (rbSelectionCount.isSelected()) {
-			int countMax = Integer.valueOf(Integer.valueOf(spSelectionCount.getText()));
+		if (rbCount.isSelected()) {
+			int countMax = Integer.valueOf(Integer.valueOf(spCount.getText()));
 			selected = episodicMemory.activationBasedSelectionByCount(countMax);
-
-		} else if (rbSelectionRatio.isSelected()) {
-			double amount = Double.valueOf(spSelectionRatio.getValue().toString());
+		} else if (rbRatio.isSelected()) {
+			double amount = Double.valueOf(spRatio.getValue().toString());
 			selected = episodicMemory.activationBasedSelectionByAmount(amount);
 
-		} else if (rbSelectionThreshold.isSelected()) {
-			double threshold = Double.valueOf(tfSelectionThreshold.getText());
+		} else if (rbThreshold.isSelected()) {
+			double threshold = Double.valueOf(tfThreshold.getText());
 			selected = episodicMemory.activationBasedSelectionByThreshold(threshold);
 		}
 
-		lbSelectionStatus.setText("Selected at narrative time " + timeSelected.getNarrativeTime());
+		if (DISPLAY_NARRATIVE_TIME)
+			lbExecutionStatus.setText("Selected at narrative time " + timeSelected.getNarrativeTime());
+		else
+			lbExecutionStatus.setText("Selected at " + timeSelected.getRealTimeFormatted());
 
 		ArrayList<Integer> selectedIDsTemp = new ArrayList<Integer>();
 		for (ActionDetail actionDetail : selected) {
 			selectedIDsTemp.add(new Integer(actionDetail.getID()));
 		}
+		forgetIDs.clear();
 		selectedIDs = selectedIDsTemp;
 
-		if (!cbSimulateSelection.isSelected()) {
-			// perform forgetting
-			episodicMemory.activationBasedForgetting(selectedIDs);
+		if (!cbSimulate.isSelected()) {
+			// perform selection
+			episodicMemory.applyActivationBasedSelection(selected);
 			// clear selection
 			selectedIDs.clear();
+		}
+
+		table.repaint();
+
+	}
+
+	private void performForgetting() {
+
+		Time timeForgotten = new Time();
+		ArrayList<ActionDetail> forget = new ArrayList<ActionDetail>();
+
+		if (rbCount.isSelected()) {
+			int countMax = Integer.valueOf(Integer.valueOf(spCount.getText()));
+			forget = episodicMemory.activationBasedForgettingByCount(countMax);
+		} else if (rbRatio.isSelected()) {
+			double amount = Double.valueOf(spRatio.getValue().toString());
+			forget = episodicMemory.activationBasedForgettingByAmount(amount);
+		} else if (rbThreshold.isSelected()) {
+			double threshold = Double.valueOf(tfThreshold.getText());
+			forget = episodicMemory.activationBasedForgettingByThreshold(threshold);
+		}
+
+		if (DISPLAY_NARRATIVE_TIME)
+			lbExecutionStatus.setText("Forgotten at narrative time " + timeForgotten.getNarrativeTime());
+		else
+			lbExecutionStatus.setText("Forgotten at " + timeForgotten.getRealTimeFormatted());
+
+		ArrayList<Integer> forgetIDsTemp = new ArrayList<Integer>();
+		for (ActionDetail actionDetail : forget) {
+			forgetIDsTemp.add(new Integer(actionDetail.getID()));
+		}
+		selectedIDs.clear();
+		forgetIDs = forgetIDsTemp;
+
+		if (!cbSimulate.isSelected()) {
+			// perform forgetting
+			episodicMemory.applyActivationBasedForgetting(forget);
+			// clear selection
+			forgetIDs.clear();
 		}
 
 		table.repaint();
