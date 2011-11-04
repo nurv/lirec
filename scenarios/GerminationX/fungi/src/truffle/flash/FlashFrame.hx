@@ -73,10 +73,11 @@ class FlashFrame implements Frame, extends MovieClip
         //TextField.backgroundColor = 0x8dd788;
         TextField.border = true;
         TextField.wordWrap = true;
+       
         var t = new flash.text.TextFormat();
         t.font = "Verdana"; 
         t.size = TextSize;                
-        t.color= 0x000000;           
+        t.color= 0x000000;    
         TextField.setTextFormat(t);
         R=1.0;
         G=1.0;
@@ -142,6 +143,23 @@ class FlashFrame implements Frame, extends MovieClip
     public function UpdateText(text:String) : Void
     { 
         TextField.text=text;
+
+        var t = new flash.text.TextFormat();
+        t.font = "Verdana"; 
+        t.size = TextSize;                
+        t.color= 0x000000;           
+        TextField.setTextFormat(t);
+ 
+        BG.clear();
+        BG.beginFill(0xffffff,0.5);
+        BG.drawRect(TextField.x,TextField.y,
+                    TextField.width,TextField.height);
+        BG.endFill();
+    }
+
+    public function UpdateHTMLText(text:String) : Void
+    { 
+        TextField.htmlText=text;
 
         var t = new flash.text.TextFormat();
         t.font = "Verdana"; 

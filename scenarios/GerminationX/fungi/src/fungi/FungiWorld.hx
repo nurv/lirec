@@ -480,7 +480,7 @@ class FungiWorld extends World
                                if (c.MyName!="") 
                                {
                                    c.PlayerInfo=d.player;
-                                   c.NewsFeed.Update(cast(c,World),d.player.log.msgs);
+                                   c.NewsFeed.Update(cast(c,World),d.player.log);
                                }
                                c.UpdateGhosts(d.spirits);
                            });
@@ -488,7 +488,7 @@ class FungiWorld extends World
             if (MyName=="")
             {
                 Server.Request("get-msgs/"+Std.string(MyID),this,
-                               function(c,d){c.NewsFeed.Update(cast(c,World),d);});
+                               function(c,d){c.NewsFeed.UpdateMsgs(cast(c,World),d);});
             }
 
 /*            if (MyName=="")

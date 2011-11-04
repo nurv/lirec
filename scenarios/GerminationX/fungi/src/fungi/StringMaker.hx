@@ -19,6 +19,7 @@ import truffle.RndGen;
 class StringMaker
 {
     var MsgMap:Dynamic;
+    var NoteMap:Dynamic;
 
     static var Reasons =
         {{
@@ -123,6 +124,17 @@ class StringMaker
                 else if (extra[3]=="ill-c") msg+=", which is a very ill.";
                 else msg+=".";
                 return msg;
+            },
+            i_have_flowered: function(from,to,owner,extra:Array<Dynamic>)
+            {
+                return to+", your "+from+" plant has flowered for the first time, and your score has increased!";
+            }
+        };
+
+        NoteMap={
+            welcome: function(name)
+            {
+                return "Welcome "+name+" <img src=\"http://www.pawfal.org/dave/blog/wp-content/uploads/2011/09/dandelion-all-300x92.png\">";
             }
         };
     }
@@ -131,8 +143,7 @@ class StringMaker
     {
         if (!Reflect.hasField(MsgMap,msg.code))
         {
-            trace("can't find string for message "+msg.code);
-            return "oops";
+            return "oops - no message found for "+msg.code;
         }
         else
         {
@@ -144,6 +155,21 @@ class StringMaker
                 msg.display, 
                 owner,
                 msg.extra
+            );
+        }
+    }
+
+    public function NoteToString(name:String,note:Dynamic) : String
+    {
+        if (!Reflect.hasField(NoteMap,note.code))
+        {
+            return "oops - no note found for "+note.code;
+        }
+        else
+        {
+            return NoteMap[note.code]
+            (  
+                name
             );
         }
     }

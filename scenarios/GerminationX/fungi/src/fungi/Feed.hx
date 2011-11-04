@@ -34,6 +34,8 @@ class Feed
     var FruitSprites:Array<Sprite>;
     var PickPower:Sprite;
     var Flowered:Sprite;
+    var NoteActive:Bool;
+    var NoteFrames:Array<Frame>;
 
     public function new(w:World)
     {
@@ -45,6 +47,8 @@ class Feed
         StrMkr=new StringMaker();
         Fruit=[];
         FruitSprites=[];
+        NoteActive=false;
+        NoteFrames=[];
 
         EmotionIndices={LOVE:0,HATE:1,HOPE:2,FEAR:3,SATISFACTION:4,
                         RELIEF:5,FEARS_CONFIRMED:6,DISAPOINTMENT:7,
@@ -140,7 +144,56 @@ class Feed
         }
         return "all";
     }
-    
+
+    function BuildNote(w:World,Note)
+    {
+        var f=new Frame("",200,200,64*4,64*4);
+        f.SetTextSize(10);
+        f.UpdateHTMLText(StrMkr.NoteToString(w.MyName,Note));
+        w.AddSprite(f);
+        
+        f.InitTextures(GUIFrameTextures.Get(),Rnd);
+
+        var b=new Frame("Ok",300,400,100,64);
+        b.SetTextSize(10);
+        b.InitTextures(GUIFrameTextures.Get(),Rnd);
+        w.AddSprite(b);
+        NoteFrames=[f,b];
+
+        // todo - deal with the options and call server
+        b.MouseDown(this,function(c) {
+            
+            w.Server.Request("answer/"+
+                             w.MyID+"/"+
+                             Note.code+"/"+
+                             "0", // take index from button
+                             c,function (c,data) {});
+
+            var Feed=cast(c,Feed);
+            for (f in Feed.NoteFrames) 
+            {
+                w.RemoveSprite(f);
+            }
+            Feed.NoteFrames=[];
+            Feed.NoteActive=false;
+        });
+    }
+
+    function ProcessNotes(w:World,Notes:Array<Dynamic>)
+    {
+        if (!NoteActive)
+        {
+            for (Note in Notes)
+            {
+                if (!Note.answer)
+                {
+                    BuildNote(w,Note);
+                    NoteActive=true;
+                }
+            }
+        }
+    }
+
     function UpdateTopBox(w:World) 
     {
         if (w.MyName=="")
@@ -288,24 +341,29 @@ class Feed
             var pos=new Vec2(595,32);
             for (i in d) 
             {
-                if (i.code!="i_have_flowered") // used for internal
-                {
-                    BuildMessage(w,i,pos);
-                    pos.y+=90;
-                }
+                BuildMessage(w,i,pos);
+                pos.y+=90;
             }
         }
     }
 
-
-    // todo - break up
-    public function Update(w:World,d:Array<Dynamic>)
+    public function UpdateMsgs(w:World,d:Dynamic)
     {
         UpdateTopBox(w);
-
         Rnd.Seed(0);
         Info.InitTextures(GUIFrameTextures.Get(),Rnd);
-
         UpdateMessages(w,d);
     }
+
+    public function UpdateNotes(w:World,d:Dynamic)
+    {
+        ProcessNotes(w,d);
+    }
+
+    public function Update(w:World,d:Dynamic)
+    {
+        UpdateMsgs(w,d.msgs);
+        UpdateNotes(w,d.notes);
+    }
+
 }
