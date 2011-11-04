@@ -80,6 +80,7 @@ status ()
 main ()
 {
 #    check_root
+    SERVER_PORT="8001"
 
     if [ "$2" = "debug" ]
     then
@@ -88,10 +89,8 @@ main ()
         LOG_FILE="/var/log/${APP}-${SERVER_PORT}.log"
     fi
    
-    SERVER_PORT="8001"
     PID_FILE="/var/run/${APP}-${SERVER_PORT}.pid"
 
- 
     case "$1" in
         start)
     	    start ${SERVER_PORT}

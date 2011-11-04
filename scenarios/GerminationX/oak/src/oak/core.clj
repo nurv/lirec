@@ -53,9 +53,12 @@
        (list))))
 
 ;(def my-game-world (ref (game-world-load state-filename)))
+
+; ****************************************************************
+; Uncomment the two lines below and run once to create a new world
+; ****************************************************************
 ;(def my-game-world (ref (make-game-world 100 1)))
 ;(game-world-db-build! (sym-replace2 (deref my-game-world)))
-;(game-world-save (deref my-game-world) "test.txt")
 
 (def my-game-world (ref (make-empty-game-world)))
 
