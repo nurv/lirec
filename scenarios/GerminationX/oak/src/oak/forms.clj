@@ -32,6 +32,13 @@
    (= (first l) i) true
    :else (recur (rest l) i)))
 
+(defn diff [new old]
+  (reduce
+   (fn [r item]
+     (if (list-contains? old item)
+       r (cons item r)))
+   () new))
+
 (defn set-cons [o l]
   (if (list-contains? l o)
     l (cons o l)))

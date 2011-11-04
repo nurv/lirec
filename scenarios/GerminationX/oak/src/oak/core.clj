@@ -33,7 +33,8 @@
    oak.logging
    oak.db
    oak.defs
-   oak.profile)
+   oak.profile
+   oak.log)
   (:import
    java.util.concurrent.Executors
    java.util.Date)
@@ -271,6 +272,22 @@
                 (json '("ok")))
               (json '("fail")))))))
 
+  (GET "/answer/:player-id/:code/:index/:iefix"
+       [player-id code index iefix]
+       (let [index (parse-number index)]
+         (dosync
+          (ref-set my-game-world
+                   (game-world-modify-player
+                    (deref my-game-world)
+                    (parse-number player-id)
+                    (fn [player]
+                      (modify
+                       :log
+                       (fn [log]
+                         (log-answer-note log code index))
+                       player)))))
+         (json '("ok"))))
+  
   (GET "/offering/:player-id/:fruit-id/:spirit/:iefix"
        [player-id fruit-id spirit iefix]
        (let [player-id (parse-number player-id)

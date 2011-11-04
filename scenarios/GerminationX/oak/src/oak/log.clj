@@ -103,17 +103,21 @@
 
 ; a note has been answered, record the answer
 (defn log-answer-note [log code index]
-  (map
-   (fn [note]
-     (if (= (:code note) code)
-       (modify
-        :answer
-        (fn [a]
-          (if (and
-               (>= index 0)
-               (< index (count (:options note))))
-            (nth (:options note) index)
-            :error))
-        note)
-       note))
-   (:notes log)))
+  (modify
+   :notes
+   (fn [notes]
+     (map
+      (fn [note]
+        (if (= (:code note) code)
+          (modify
+           :answer
+           (fn [a]
+             (if (and
+                  (>= index 0)
+                  (< index (count (:options note))))
+               (nth (:options note) index)
+               :error))
+           note)
+          note))
+      notes))
+   log))
