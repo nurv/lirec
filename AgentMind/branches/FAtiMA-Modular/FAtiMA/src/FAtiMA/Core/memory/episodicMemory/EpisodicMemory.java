@@ -19,9 +19,6 @@ import FAtiMA.Core.wellFormedNames.Substitution;
 
 public class EpisodicMemory implements Serializable {
 
-	/**
-	 * for serialization purposes
-	 */
 	private static final long serialVersionUID = 1L;
 
 	//private String _previousLocation;
@@ -43,6 +40,22 @@ public class EpisodicMemory implements Serializable {
 
 	// use indexed search?
 	private static final boolean INDEXED_SEARCH = true;
+
+	// use cached search?
+	private static final boolean CACHED_SEARCH = true;
+	private static final long CACHE_TIME = 1000; // milliseconds
+	private ArrayList<SearchKey> ContainsPastEventCachedSearchKeys;
+	private boolean ContainsPastEventCachedResult;
+	private long ContainsPastEventCachedTime;
+	private ArrayList<SearchKey> ContainsRecentEventCachedSearchKeys;
+	private boolean ContainsRecentEventCachedResult;
+	private long ContainsRecentEventCachedTime;
+	private ArrayList<SearchKey> SearchForPastEventsCachedSearchKeys;
+	private ArrayList<ActionDetail> SearchForPastEventsCachedResult;
+	private long SearchForPastEventsCachedTime;
+	private ArrayList<SearchKey> SearchForRecentEventsCachedSearchKeys;
+	private ArrayList<ActionDetail> SearchForRecentEventsCachedResult;
+	private long SearchForRecentEventsCachedTime;
 
 	public static ArrayList<SearchKey> GenerateSearchKeys(Event e) {
 		ArrayList<SearchKey> keys = new ArrayList<SearchKey>();
@@ -146,13 +159,56 @@ public class EpisodicMemory implements Serializable {
 	}
 
 	public boolean ContainsPastEvent(ArrayList<SearchKey> searchKeys) {
+
+		// check if cached search is enabled
+		if (CACHED_SEARCH) {
+			// check if search is cached
+			if (searchKeys.equals(ContainsPastEventCachedSearchKeys)) {
+				// check if cache has not expired
+				if (System.currentTimeMillis() < ContainsPastEventCachedTime + CACHE_TIME) {
+					// generate retrievals?
+					//
+					// return cached result
+					return ContainsPastEventCachedResult;
+				}
+			}
+		}
+
+		// perform search
+		boolean result;
 		if (INDEXED_SEARCH)
-			return _am.ContainsPastEventIndexed(searchKeys);
+			result = _am.ContainsPastEventIndexed(searchKeys);
 		else
-			return _am.ContainsPastEvent(searchKeys);
+			result = _am.ContainsPastEvent(searchKeys);
+
+		// check if cached search is enabled
+		if (CACHED_SEARCH) {
+			// update cache
+			ContainsPastEventCachedSearchKeys = searchKeys;
+			ContainsPastEventCachedResult = result;
+			ContainsPastEventCachedTime = System.currentTimeMillis();
+		}
+
+		return result;
 	}
 
 	public boolean ContainsRecentEvent(ArrayList<SearchKey> searchKeys) {
+
+		// check if cached search is enabled
+		if (CACHED_SEARCH) {
+			// check if search is cached
+			if (searchKeys.equals(ContainsRecentEventCachedSearchKeys)) {
+				// check if cache has not expired
+				if (System.currentTimeMillis() < ContainsRecentEventCachedTime + CACHE_TIME) {
+					// generate retrievals?
+					//
+					// return cached result
+					return ContainsRecentEventCachedResult;
+				}
+			}
+		}
+
+		// perform search		
 		boolean result;
 		if (INDEXED_SEARCH)
 			result = _am.ContainsRecentEventIndexed(searchKeys);
@@ -161,6 +217,15 @@ public class EpisodicMemory implements Serializable {
 		if (ContainsNewEvent(searchKeys)) {
 			result = true;
 		}
+
+		// check if cached search is enabled
+		if (CACHED_SEARCH) {
+			// update cache
+			ContainsRecentEventCachedSearchKeys = searchKeys;
+			ContainsRecentEventCachedResult = result;
+			ContainsRecentEventCachedTime = System.currentTimeMillis();
+		}
+
 		return result;
 	}
 
@@ -210,20 +275,72 @@ public class EpisodicMemory implements Serializable {
 	}
 
 	public ArrayList<ActionDetail> SearchForPastEvents(ArrayList<SearchKey> searchKeys) {
+
+		// check if cached search is enabled
+		if (CACHED_SEARCH) {
+			// check if search is cached
+			if (searchKeys.equals(SearchForPastEventsCachedSearchKeys)) {
+				// check if cache has not expired
+				if (System.currentTimeMillis() < SearchForPastEventsCachedTime + CACHE_TIME) {
+					// generate retrievals?
+					//
+					// return cached result
+					return SearchForPastEventsCachedResult;
+				}
+			}
+		}
+
+		// perform search
+		ArrayList<ActionDetail> result;
 		if (INDEXED_SEARCH)
-			return _am.SearchForPastEventsIndexed(searchKeys);
+			result = _am.SearchForPastEventsIndexed(searchKeys);
 		else
-			return _am.SearchForPastEvents(searchKeys);
+			result = _am.SearchForPastEvents(searchKeys);
+
+		// check if cached search is enabled
+		if (CACHED_SEARCH) {
+			// update cache
+			SearchForPastEventsCachedSearchKeys = searchKeys;
+			SearchForPastEventsCachedResult = result;
+			SearchForPastEventsCachedTime = System.currentTimeMillis();
+		}
+
+		return result;
 	}
 
 	public ArrayList<ActionDetail> SearchForRecentEvents(ArrayList<SearchKey> searchKeys) {
-		ArrayList<ActionDetail> aux;
+
+		// check if cached search is enabled
+		if (CACHED_SEARCH) {
+			// check if search is cached
+			if (searchKeys.equals(SearchForRecentEventsCachedSearchKeys)) {
+				// check if cache has not expired
+				if (System.currentTimeMillis() < SearchForRecentEventsCachedTime + CACHE_TIME) {
+					// generate retrievals?
+					//
+					// return cached result
+					return SearchForRecentEventsCachedResult;
+				}
+			}
+		}
+
+		// perform search
+		ArrayList<ActionDetail> result;
 		if (INDEXED_SEARCH)
-			aux = _am.SearchForRecentEventsIndexed(searchKeys);
+			result = _am.SearchForRecentEventsIndexed(searchKeys);
 		else
-			aux = _am.SearchForRecentEvents(searchKeys);
-		aux.addAll(_stm.GetDetailsByKeys(searchKeys));
-		return aux;
+			result = _am.SearchForRecentEvents(searchKeys);
+		result.addAll(_stm.GetDetailsByKeys(searchKeys));
+
+		// check if cached search is enabled
+		if (CACHED_SEARCH) {
+			// update cache
+			SearchForRecentEventsCachedSearchKeys = searchKeys;
+			SearchForRecentEventsCachedResult = result;
+			SearchForRecentEventsCachedTime = System.currentTimeMillis();
+		}
+
+		return result;
 	}
 
 	public ArrayList<ActionDetail> SearchForNewEvents(ArrayList<SearchKey> searchKeys) {

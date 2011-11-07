@@ -20,12 +20,12 @@
  * Company: GAIPS/INESC-ID
  * Project: FAtiMA
  * Created: 19/Jul/2006 
- * @author: João Dias
+ * @author: Joï¿½o Dias
  * Email to: joao.assis@tagus.ist.utl.pt
  * 
  * History: 
- * João Dias: 19/Jul/2006 - File created
- * João Dias: 02/10/2006 - Now its possible to have SearchKeys with objects instead
+ * Joï¿½o Dias: 19/Jul/2006 - File created
+ * Joï¿½o Dias: 02/10/2006 - Now its possible to have SearchKeys with objects instead
  * 						   of Strings
  * Meiyii Lim: 13/03/2009 - Moved the class from FAtiMA.autobiographicalMemory package
  * **/
@@ -33,7 +33,7 @@
 package FAtiMA.Core.memory.episodicMemory;
 
 public class SearchKey {
-	
+
 	public static short PEOPLE = 1;
 	public static short LOCATION = 2;
 	public static short OBJECTS = 3;
@@ -44,30 +44,32 @@ public class SearchKey {
 	public static short MAXELAPSEDTIME = 8;
 	public static short CONTAINSPARAMETER = 9;
 	//Meiyii 12/01/10
-	public static short INTENTION = 10; 
+	public static short INTENTION = 10;
 	public static short STATUS = 11;
 	public static short SPEECHACTMEANING = 12;
 	public static short MULTIMEDIAPATH = 13;
-	
-	
-	
+
 	private short _field;
 	private Object _key;
-	
-	public SearchKey(short field, Object key)
-	{
+
+	public SearchKey(short field, Object key) {
 		this._field = field;
 		this._key = key;
 	}
-	
-	public short getField()
-	{
+
+	public short getField() {
 		return this._field;
 	}
-	
-	public Object getKey()
-	{
+
+	public Object getKey() {
 		return this._key;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof SearchKey))
+			return false;
+		SearchKey s = (SearchKey) o;
+		return (s._field == this._field && s._key.equals(this._key));
+	}
 }
