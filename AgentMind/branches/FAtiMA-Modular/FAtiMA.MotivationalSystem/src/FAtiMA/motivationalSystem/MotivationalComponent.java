@@ -7,25 +7,29 @@ package FAtiMA.motivationalSystem;
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.StringTokenizer;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import FAtiMA.Core.AgentCore;
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.AgentSimulationTime;
 import FAtiMA.Core.Display.AgentDisplayPanel;
+import FAtiMA.Core.componentTypes.IAdvancedPerceptionsComponent;
 import FAtiMA.Core.componentTypes.IAppraisalDerivationComponent;
 import FAtiMA.Core.componentTypes.IComponent;
 import FAtiMA.Core.componentTypes.IModelOfOtherComponent;
+import FAtiMA.Core.componentTypes.IProcessExternalRequestComponent;
 import FAtiMA.Core.emotionalState.AppraisalFrame;
 import FAtiMA.Core.goals.ActivePursuitGoal;
 import FAtiMA.Core.plans.Step;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.util.AgentLogger;
-import FAtiMA.Core.util.ConfigurationManager;
 import FAtiMA.Core.util.Constants;
+import FAtiMA.Core.util.RatedObject;
+import FAtiMA.Core.util.parsers.ReflectXMLHandler2;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Substitution;
 import FAtiMA.Core.wellFormedNames.SubstitutionSet;
@@ -50,33 +54,15 @@ import FAtiMA.OCCAffectDerivation.OCCAppraisalVariables;
 public class MotivationalComponent implements Serializable, Cloneable,
 		IAppraisalDerivationComponent, IModelOfOtherComponent,
 		IExpectedUtilityStrategy, IProbabilityStrategy, IUtilityStrategy,
-		IGoalSuccessStrategy, IGoalFailureStrategy, IActionFailureStrategy {
+		IGoalSuccessStrategy, IGoalFailureStrategy, IActionFailureStrategy, 
+		IProcessExternalRequestComponent, IAdvancedPerceptionsComponent {
 
 	private static final float EFFECT_ON_DRIVES_WEIGHT = 0.5f;
 	private static final long serialVersionUID = 1L;
 	public static final String NAME = "MotivationalState";
-	private static final float MAX_INTENSITY = 10;
-	private static final float MIN_INTENSITY = 0;
 
-	public static double determineQuadraticNeedVariation(float currentLevel,
-			float deviation) {
-		double result = 0;
-		float finalLevel;
-		double currentLevelStr;
-		double finalLevelStr;
 
-		finalLevel = currentLevel + deviation;
-		finalLevel = Math.min(finalLevel, MAX_INTENSITY);
-		finalLevel = Math.max(finalLevel, MIN_INTENSITY);
-
-		currentLevelStr = Math.pow(MAX_INTENSITY - currentLevel, 2);
-		finalLevelStr = Math.pow(MAX_INTENSITY - finalLevel, 2);
-
-		result = -(finalLevelStr - currentLevelStr);
-		return result;
-	}
-
-	protected Motivator[] _motivators;
+	protected HashMap<String, Motivator> _motivators;
 	// protected Hashtable<String,Motivator[]> _otherAgentsMotivators;
 	protected long _lastTime;
 	protected int _goalTried;
@@ -86,29 +72,34 @@ public class MotivationalComponent implements Serializable, Cloneable,
 	protected HashMap<String, ExpectedGoalEffectsOnDrives> _goalEffectsOnDrives;
 
 	protected HashMap<String, ActionEffectsOnDrives> _actionEffectsOnDrives;
+	
+	private float _contributionToNeeds;
 
 	private ArrayList<String> _parsingFiles;
+	private NeedsLoaderHandler _parser;
 
 	/**
 	 * Creates an empty MotivationalState
 	 */
 	public MotivationalComponent(ArrayList<String> extraFiles) {
-		_motivators = new Motivator[MotivatorType.numberOfTypes()];
+		_motivators = new HashMap<String,Motivator>();
 		_goalTried = 0;
 		_goalSucceeded = 0;
 		_lastTime = AgentSimulationTime.GetInstance().Time();
 		_appraisals = new HashMap<String, Float>();
 		_goalEffectsOnDrives = new HashMap<String, ExpectedGoalEffectsOnDrives>();
 		_actionEffectsOnDrives = new HashMap<String, ActionEffectsOnDrives>();
+		
+		_contributionToNeeds = 0;
 
 		_parsingFiles = new ArrayList<String>();
-		_parsingFiles.add(ConfigurationManager.getGoalsFile());
+		/*_parsingFiles.add(ConfigurationManager.getGoalsFile());
 		_parsingFiles.add(ConfigurationManager.getPersonalityFile());
-		_parsingFiles.add(ConfigurationManager.getActionsFile());
+		_parsingFiles.add(ConfigurationManager.getActionsFile());*/
 		_parsingFiles.addAll(extraFiles);
 	}
 
-	private void LoadNeeds(AgentModel am) {
+	/*private void LoadNeeds(AgentModel am) {
 		AgentLogger.GetInstance().log("LOADING Needs: ");
 		NeedsLoaderHandler needsLoader = new NeedsLoaderHandler(am, this);
 
@@ -124,7 +115,7 @@ public class MotivationalComponent implements Serializable, Cloneable,
 			throw new RuntimeException("Error on Loading Needs from XML Files:"
 					+ e);
 		}
-	}
+	}*/
 
 	private float newCompetence(boolean succeed) {
 		float alpha = 0.25f;
@@ -134,7 +125,7 @@ public class MotivationalComponent implements Serializable, Cloneable,
 			value = 10;
 		}
 
-		Motivator competenceM = _motivators[MotivatorType.COMPETENCE];
+		Motivator competenceM = _motivators.get(MotivatorType.COMPETENCE);
 
 		newCompetence = alpha * value + (1 - alpha)
 				* competenceM.GetIntensity();
@@ -147,7 +138,7 @@ public class MotivationalComponent implements Serializable, Cloneable,
 	}
 
 	public void addActionEffectsOnDrive(String action, String driveName,
-			Symbol target, float value) {
+			Symbol target, Symbol value) {
 		ActionEffectsOnDrives effects;
 		if (!_actionEffectsOnDrives.containsKey(action)) {
 			effects = new ActionEffectsOnDrives(action);
@@ -161,7 +152,7 @@ public class MotivationalComponent implements Serializable, Cloneable,
 	}
 
 	public void addExpectedGoalEffectOnDrive(String goal, short effectType,
-			String driveName, Symbol target, float value) {
+			String driveName, Symbol target, Symbol value) {
 		ExpectedGoalEffectsOnDrives effects;
 		if (!_goalEffectsOnDrives.containsKey(goal)) {
 			effects = new ExpectedGoalEffectsOnDrives(goal);
@@ -178,18 +169,32 @@ public class MotivationalComponent implements Serializable, Cloneable,
 	 * Adds a motivator to the MotivationalState
 	 */
 	public void AddMotivator(Motivator motivator) {
-		_motivators[motivator.GetType()] = new Motivator(motivator);
+		_motivators.put(motivator.GetName(), motivator);
 	}
 
 	@Override
 	public void appraisal(AgentModel am, Event e, AppraisalFrame as) {
-		Float desirability = _appraisals.get(e.toString());
+		Float desirability = new Float(0);
+		
+		
+		desirability = _appraisals.get(e.toString());
+		_appraisals.remove(e.toString());	
+		
+		if(e.GetSubject().equals(Constants.SELF) || (e.GetTarget() != null && e.GetTarget().equals(Constants.SELF)))
+		{
+			if(desirability != null)
+			{
+				desirability += _contributionToNeeds;
+				_contributionToNeeds = 0;
+			}
+		}
+		
+		
 		if (desirability != null) {
 			as.SetAppraisalVariable(NAME, (short) 8,
 					OCCAppraisalVariables.DESIRABILITY.name(),
 					desirability.floatValue());
 		}
-		_appraisals.remove(e.toString());
 	}
 
 	@Override
@@ -203,9 +208,9 @@ public class MotivationalComponent implements Serializable, Cloneable,
 				new ArrayList<String>());
 		Motivator m2;
 
-		for (Motivator m : _motivators) {
-			m2 = new Motivator(m);
-			m2.SetIntensity(5);
+		for (Motivator m : _motivators.values()) {
+			m2 = (Motivator) m.clone();
+			m2.SetIntensity(m.GetInitialIntensity());
 			ms.AddMotivator(m2);
 		}
 
@@ -241,69 +246,69 @@ public class MotivationalComponent implements Serializable, Cloneable,
 	public float getContributionToNeeds(AgentModel am, ActivePursuitGoal g) {
 		float result = 0;
 		float expectedContribution;
-		float currentIntensity = 0;
 		float auxMultiplier = 1;
 		boolean test;
+		Motivator m;
+		EffectOnDrive groundedEffect;
+		Symbol value;
 
-		try {
-			result = 0;
+		
+		result = 0;
 
-			ExpectedGoalEffectsOnDrives effects = _goalEffectsOnDrives.get(g
-					.getKey());
-			if (effects == null)
-				return 0;
-			for (EffectOnDrive e : effects.getEffects()) {
-				if (am.isSelf()) {
-					test = e.getTarget().toString().equals(Constants.SELF);
-				} else {
-					Symbol target = (Symbol) e.getTarget().clone();
-					target.MakeGround(g.getAppliedSubstitutions());
-					test = target.toString().equals(am.getName());
-				}
-
-				if (test) {
-					expectedContribution = e.getValue();
-					currentIntensity = GetIntensity(MotivatorType.ParseType(e
-							.getDriveName()));
-					if (e.getType() == EffectType.ON_SELECT) {
-						auxMultiplier = 1;
-					} else if (e.getType() == EffectType.ON_IGNORE) {
-						auxMultiplier = -1;
-					}
-
-					result += auxMultiplier
-							* MotivationalComponent
-									.determineQuadraticNeedVariation(
-											currentIntensity,
-											expectedContribution) * 0.1f;
-				}
+		ExpectedGoalEffectsOnDrives effects = _goalEffectsOnDrives.get(g.getKey());
+		if (effects == null)
+			return 0;
+		for (EffectOnDrive e : effects.getEffects()) {
+			groundedEffect = (EffectOnDrive) e.clone();
+			groundedEffect.MakeGround(g.getAppliedSubstitutions());
+			
+			if (am.isSelf()) {
+				test = groundedEffect.getTarget().toString().equals(Constants.SELF);
+			} else {
+				test = groundedEffect.getTarget().toString().equals(am.getName());
 			}
 
-			float currentCompetenceIntensity = GetIntensity(MotivatorType.COMPETENCE);
-			float expectedCompetenceContribution = PredictCompetenceChange(true);
-			result += MotivationalComponent.determineQuadraticNeedVariation(
-					currentCompetenceIntensity, expectedCompetenceContribution) * 0.1f;
-
-			float currentUncertaintyIntensity = GetIntensity(MotivatorType.CERTAINTY);
-			// expected error assuming that the goal is successful
-			float expectedError = 1 - g.getProbability(am);
-			float currentError = g.getUncertainty(am);
-			float expectedUncertaintyContribution = 10 * (currentError - expectedError);
-			result += MotivationalComponent.determineQuadraticNeedVariation(
-					currentUncertaintyIntensity,
-					expectedUncertaintyContribution) * 0.1f;
-
-		} catch (InvalidMotivatorTypeException e) {
-			AgentLogger.GetInstance().log("EXCEPTION:" + e);
-			e.printStackTrace();
+			if (test) {
+				value = groundedEffect.getValue();
+				if(value.isGrounded())
+				{
+					expectedContribution = Float.parseFloat(value.toString());
+					if(_motivators.containsKey(groundedEffect.getDriveName()))
+					{
+						m = _motivators.get(groundedEffect.getDriveName());
+						
+						if (groundedEffect.getType() == EffectType.ON_SELECT) 
+						{
+							auxMultiplier = 1;
+						} else if (groundedEffect.getType() == EffectType.ON_IGNORE) 
+						{
+							auxMultiplier = -1;
+						}
+						
+						result += auxMultiplier * m.evaluateNeedVariation(expectedContribution);
+					}
+				}
+			}
 		}
+		
+		m = _motivators.get(MotivatorType.COMPETENCE);
+		float expectedCompetenceContribution = PredictCompetenceChange(true);
+		result += m.evaluateNeedVariation(expectedCompetenceContribution);
+		
+		m = _motivators.get(MotivatorType.CERTAINTY);
+		// expected error assuming that the goal is successful
+		float expectedError = 1 - g.getProbability(am);
+		float currentError = g.getUncertainty(am);
+		float expectedUncertaintyContribution = 10 * (currentError - expectedError);
+		result += m.evaluateNeedVariation(expectedUncertaintyContribution);
+
+		
 
 		return result;
 	}
 
 	public float getExpectedUtility(AgentModel am, ActivePursuitGoal g) {
-		DeliberativeComponent dc = (DeliberativeComponent) am
-				.getComponent(DeliberativeComponent.NAME);
+		DeliberativeComponent dc = (DeliberativeComponent) am.getComponent(DeliberativeComponent.NAME);
 		float utility = dc.getUtilityStrategy().getUtility(am, g);
 		float probability = dc.getProbabilityStrategy().getProbability(am, g);
 
@@ -317,8 +322,7 @@ public class MotivationalComponent implements Serializable, Cloneable,
 	}
 
 	public float getExpectedUtility(AgentModel am, Intention i) {
-		DeliberativeComponent dc = (DeliberativeComponent) am
-				.getComponent(DeliberativeComponent.NAME);
+		DeliberativeComponent dc = (DeliberativeComponent) am.getComponent(DeliberativeComponent.NAME);
 
 		float utility = dc.getUtilityStrategy().getUtility(am, i.getGoal());
 		float probability = dc.getProbabilityStrategy().getProbability(am, i);
@@ -339,15 +343,19 @@ public class MotivationalComponent implements Serializable, Cloneable,
 	 * 
 	 * @return a float value corresponding to the motivator's intensity
 	 */
-	public float GetIntensity(short type) {
-		return _motivators[type].GetIntensity();
+	public float GetIntensity(String type) {
+		if(_motivators.containsKey(type))
+		{
+			return _motivators.get(type).GetIntensity();
+		}
+		return 0;
 	}
 
-	public Motivator GetMotivator(short motivatorType) {
-		return _motivators[motivatorType];
+	public Motivator GetMotivator(String motivatorType) {
+		return _motivators.get(motivatorType);
 	}
 
-	public Motivator[] getMotivators() {
+	public HashMap<String,Motivator> getMotivators() {
 		return _motivators;
 	}
 
@@ -357,9 +365,15 @@ public class MotivationalComponent implements Serializable, Cloneable,
 	 * 
 	 * @return a multiplier corresponding to the motivator's urgency
 	 */
-	public float GetNeedUrgency(String agentName, short type) {
-		return _motivators[type].GetNeedUrgency();
-	}
+	/*public float GetNeedUrgency(String agentName, String type) {
+		
+		if(_motivators.containsKey(type))
+		{
+			return _motivators.get(type).GetNeedUrgency();
+		}
+		return 0;
+		
+	}*/
 
 	public float getProbability(AgentModel am, ActivePursuitGoal g) {
 		return getCompetence(am, g);
@@ -379,14 +393,17 @@ public class MotivationalComponent implements Serializable, Cloneable,
 	 * 
 	 * @return a float value corresponding to the motivator's weight
 	 */
-	public float GetWeight(short type) {
-		return _motivators[type].GetWeight();
+	public float GetWeight(String type) {
+		if(_motivators.containsKey(type))
+		{
+			return _motivators.get(type).GetWeight();
+		}
+		return 0;
 	}
 
 	@Override
 	public void initialize(AgentModel am) {
-		DeliberativeComponent dp = (DeliberativeComponent) am
-				.getComponent(DeliberativeComponent.NAME);
+		DeliberativeComponent dp = (DeliberativeComponent) am.getComponent(DeliberativeComponent.NAME);
 
 		dp.setExpectedUtilityStrategy(this);
 		dp.setProbabilityStrategy(this);
@@ -394,7 +411,8 @@ public class MotivationalComponent implements Serializable, Cloneable,
 		dp.addActionFailureStrategy(this);
 		dp.addGoalFailureStrategy(this);
 		dp.addGoalSuccessStrategy(this);
-		LoadNeeds(am);
+		//LoadNeeds(am);
+		this._parser = new NeedsLoaderHandler(am, this);
 	}
 
 	@Override
@@ -425,8 +443,7 @@ public class MotivationalComponent implements Serializable, Cloneable,
 		float observedError = g.getProbability(am);
 		float previousExpectedError = g.getUncertainty(am);
 
-		float newExpectedError = ActivePursuitGoal.alfa * observedError
-				+ (1 - ActivePursuitGoal.alfa) * previousExpectedError;
+		float newExpectedError = ActivePursuitGoal.alfa * observedError + (1 - ActivePursuitGoal.alfa) * previousExpectedError;
 		float deltaError = newExpectedError - previousExpectedError;
 		UpdateCertainty(-deltaError);
 		g.setUncertainty(am, newExpectedError);
@@ -444,15 +461,14 @@ public class MotivationalComponent implements Serializable, Cloneable,
 		float observedError = 1 - g.getProbability(am);
 		float previousExpectedError = g.getUncertainty(am);
 
-		float newExpectedError = ActivePursuitGoal.alfa * observedError
-				+ (1 - ActivePursuitGoal.alfa) * previousExpectedError;
+		float newExpectedError = ActivePursuitGoal.alfa * observedError + (1 - ActivePursuitGoal.alfa) * previousExpectedError;
 		float deltaError = newExpectedError - previousExpectedError;
 		UpdateCertainty(-deltaError);
 		g.setUncertainty(am, newExpectedError);
 	}
 
 	public float PredictCompetenceChange(boolean succeed) {
-		Motivator competenceM = _motivators[MotivatorType.COMPETENCE];
+		Motivator competenceM = _motivators.get(MotivatorType.COMPETENCE);
 		return newCompetence(succeed) - competenceM.GetIntensity();
 	}
 
@@ -476,18 +492,21 @@ public class MotivationalComponent implements Serializable, Cloneable,
 		String result;
 
 		result = "<MotivationalState>";
-		for (int i = 0; i < _motivators.length; i++) {
-			result = result + _motivators[i].toXml();
+		for(Motivator m : _motivators.values())
+		{
+			result = result + m.toXml();
 		}
-
+		
 		result = result + "</MotivationalState>";
 		return result;
 	}
 
 	@Override
 	public void update(AgentModel am, Event e) {
+		
 		float result = UpdateMotivators(am, e);
 		_appraisals.put(e.toString(), new Float(result));
+		
 	}
 
 	@Override
@@ -496,9 +515,10 @@ public class MotivationalComponent implements Serializable, Cloneable,
 		if (time >= _lastTime + 1000) {
 			_lastTime = time;
 
-			// decay self motivators
-			for (int i = 0; i < _motivators.length; i++) {
-				_motivators[i].DecayMotivator();
+			// decay self motivators			
+			for(Motivator m : _motivators.values())
+			{
+				m.DecayMotivator();
 			}
 
 		}
@@ -515,7 +535,7 @@ public class MotivationalComponent implements Serializable, Cloneable,
 	public void UpdateCertainty(float expectation) {
 		// System.out.println("Certainty before update" +
 		// _selfMotivators[MotivatorType.CERTAINTY].GetIntensity());
-		_motivators[MotivatorType.CERTAINTY].UpdateIntensity(expectation * 3);
+		_motivators.get(MotivatorType.CERTAINTY).UpdateIntensity(expectation * 3);
 		// System.out.println("Certainty after update" +
 		// _selfMotivators[MotivatorType.CERTAINTY].GetIntensity());
 	}
@@ -528,7 +548,7 @@ public class MotivationalComponent implements Serializable, Cloneable,
 	 *            failure
 	 */
 	public void UpdateCompetence(boolean succeed) {
-		Motivator competenceM = _motivators[MotivatorType.COMPETENCE];
+		Motivator competenceM = _motivators.get(MotivatorType.COMPETENCE);
 		// System.out.println("Competence before update" +
 		// competenceM.GetIntensity());
 
@@ -543,31 +563,37 @@ public class MotivationalComponent implements Serializable, Cloneable,
 	 * @throws InvalidMotivatorTypeException
 	 */
 	public float UpdateMotivators(AgentModel am, Event e) {
-		ArrayList<Substitution> substitutions;
+		EffectOnDrive groundedEffect;
+		Float value;
+		Motivator motivator;
+		ArrayList<Substitution> substitutions = new ArrayList<Substitution>();
 		Symbol target;
-		float deviation = 0;
 		double contributionToNeed = 0f;
 		float contributionToSelfNeeds = 0f; // used for events performed by the
 											// agent
 
 		for (ActionEffectsOnDrives actionEffects : _actionEffectsOnDrives.values()) {
 			Name actionName = actionEffects.getActionName();
-			substitutions = Unifier.Unify(e.toStepName(), actionName);
-			if (substitutions != null) {
+			if (Unifier.PartialUnify(e.toStepName(), actionName, substitutions)) {
 				substitutions.add(new Substitution(new Symbol("[AGENT]"),new Symbol(e.GetSubject())));
 				for (EffectOnDrive eff : actionEffects.getEffects()) {
-					target = (Symbol) eff.getTarget().clone();
-					target.MakeGround(substitutions);
+					groundedEffect = (EffectOnDrive) eff.clone();
+					groundedEffect.MakeGround(substitutions);
+					target = groundedEffect.getTarget();
+					
 					if (target.toString().equals(Constants.SELF)) {
-						AgentLogger.GetInstance().log("Updating motivator " + eff.getDriveName());
-						try {
-							short driveType = MotivatorType.ParseType(eff.getDriveName());
-							float oldLevel = _motivators[driveType].GetIntensity();
-							deviation = _motivators[driveType].UpdateIntensity(eff.getValue());
-							contributionToNeed = determineQuadraticNeedVariation(oldLevel, deviation) * 0.1f;
-							contributionToSelfNeeds += contributionToNeed;
-						} catch (InvalidMotivatorTypeException e1) {
-							e1.printStackTrace();
+						AgentLogger.GetInstance().log("Updating motivator " + groundedEffect.getDriveName());
+						
+						if(_motivators.containsKey(groundedEffect.getDriveName()))
+						{
+							motivator = _motivators.get(groundedEffect.getDriveName());
+							if(motivator.hasInternalUpdate())
+							{
+								value = Float.parseFloat(groundedEffect.getValue().toString());
+								contributionToNeed = motivator.evaluateNeedVariation(value);
+								contributionToSelfNeeds += contributionToNeed;
+								motivator.UpdateIntensity(value);
+							}
 						}
 					}
 				}
@@ -579,10 +605,10 @@ public class MotivationalComponent implements Serializable, Cloneable,
 		}
 
 		return 0; // no action was found that unified with the event
-	}
+	}	
 
-	public ArrayList<SubstitutionSet> searchEventsWithAppraisal(AgentModel am,
-			Symbol subjectVariable, Symbol actionVariable,
+	public ArrayList<RatedObject<SubstitutionSet>> searchEventsWithAppraisal(AgentModel am,
+			Symbol appraisingAgent, Symbol subjectVariable, Symbol actionVariable,
 			Symbol targetVariable, Symbol paramVariable, float desirability) {
 		class Box {
 			float value;
@@ -595,95 +621,204 @@ public class MotivationalComponent implements Serializable, Cloneable,
 		}
 
 		HashMap<String, Box> test;
-
-		ArrayList<SubstitutionSet> substitutions = new ArrayList<SubstitutionSet>();
+		
+		ArrayList<Substitution> subs;
+		ArrayList<RatedObject<SubstitutionSet>> ratedSubstitutions = new ArrayList<RatedObject<SubstitutionSet>>();
 		ArrayList<Symbol> actionListOfSymbols;
+		EffectOnDrive groundedEffect;
 		SubstitutionSet currentSet;
-		Symbol target;
+		Symbol actionTarget;
+		Symbol effectTarget;
 		Symbol action;
 		Symbol param1;
-		String auxName;
+		Symbol sValue;
+		float fValue;
+		float ratio;
+		Name actionName;
+		Motivator motivator;
 		float contributionToNeed = 0f;
+		float score;
 
-		if (am.isSelf()) {
-			auxName = Constants.SELF;
-		} else {
-			auxName = am.getName();
-		}
-
-		for (ActionEffectsOnDrives actionEffects : _actionEffectsOnDrives
-				.values()) {
+		for (ActionEffectsOnDrives actionEffects : _actionEffectsOnDrives.values()) {
 
 			test = new HashMap<String, Box>();
 
 			for (EffectOnDrive eff : actionEffects.getEffects()) {
-				try {
-					target = eff.getTarget();
-					short driveType = MotivatorType.ParseType(eff
-							.getDriveName());
-					float oldValue = _motivators[driveType].GetIntensity();
-					float newValue = Math.max(0,
-							Math.min(10, oldValue + eff.getValue()));
-					contributionToNeed = (float) determineQuadraticNeedVariation(
-							oldValue, newValue - oldValue) * 0.1f;
-					if (test.containsKey(target.toString())) {
-						Box b = test.get(target.toString());
-						b.value = b.value + contributionToNeed;
-					} else {
-						test.put(target.toString(), new Box(target.toString(),
-								contributionToNeed));
+				
+				effectTarget = eff.getTarget();
+				if(_motivators.containsKey(eff.getDriveName()))
+				{
+					motivator = _motivators.get(eff.getDriveName());
+					sValue = eff.getValue();
+					if(sValue.isGrounded())
+					{
+						fValue = Float.parseFloat(sValue.toString());
+						contributionToNeed = (float) motivator.evaluateNeedVariation(fValue);
+						if (test.containsKey(effectTarget.toString())) {
+							Box b = test.get(effectTarget.toString());
+							b.value = b.value + contributionToNeed;
+						} else {
+							test.put(effectTarget.toString(), new Box(effectTarget.toString(),contributionToNeed));
+						}
 					}
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+				}				
 			}
 
 			for (Box b : test.values()) {
-				if ((desirability >= 0) ? b.value >= desirability
-						: b.value <= desirability) {
+				ratio = b.value/desirability;
+				if ((desirability >= 0) ? ratio > 0.3 : ratio > 0.3) {
 					
-					//this test is done temporarily because right now I'm only interested in
-					//in interpersonal emotion regulation and I don't want to consider the 
-					//actions where the target causes an emotion in itself
-				    //TODO: this must be done properly latter
-					if(!b.target.equals("[AGENT]"))
+					//AgentLogger.GetInstance().log("found a desired motivational effect torwards -" + b.target);
+					//AgentLogger.GetInstance().log("appraising agent: "  + appraisingAgent);
+					actionName = (Name) actionEffects.getActionName().clone();
+					
+					subs = Unifier.Unify(new Symbol(b.target), appraisingAgent);
+					if(subs != null)
 					{
-						actionListOfSymbols = actionEffects.getActionName().GetLiteralList();
-	
-						action = actionListOfSymbols.get(0);
 						currentSet = new SubstitutionSet();
-						currentSet.AddSubstitution(new Substitution(actionVariable,
-								action));
-						if (b.target.equals("[AGENT]")) {
-							currentSet.AddSubstitution(new Substitution(
-									subjectVariable, new Symbol(auxName)));
-						}
-	
-						if (actionListOfSymbols.size() > 1) {
-							target = actionListOfSymbols.get(1);
-							if (b.target.equals(target.toString())) {
-								currentSet.AddSubstitution(new Substitution(
-										targetVariable, new Symbol(auxName)));
-							} else {
-								currentSet.AddSubstitution(new Substitution(
-										targetVariable, target));
-							}
+						//unfortunately I don't have the performer agent in the action's name, so I have to do
+						//this test manually
+						if(b.target.equals("[AGENT]"))
+						{
+							currentSet.AddSubstitution(new Substitution(subjectVariable,appraisingAgent));
 						}
 						
+						actionName.MakeGround(subs);
+						//AgentLogger.GetInstance().log("action after grounding: " + actionName);
+						actionListOfSymbols = actionName.GetLiteralList();
+						
+						action = actionListOfSymbols.get(0);
+						
+						currentSet.AddSubstitution(new Substitution(actionVariable,action));
+							
+		
+						if (actionListOfSymbols.size() > 1) {
+							actionTarget = actionListOfSymbols.get(1);
+							currentSet.AddSubstitution(new Substitution(targetVariable, actionTarget));
+						}
+							
 						if(actionListOfSymbols.size() > 2)
 						{
 							param1 = actionListOfSymbols.get(2);
 							currentSet.AddSubstitution(new Substitution(paramVariable, param1));
 						}
-						substitutions.add(currentSet);
+						
+						score = Math.abs(desirability-b.value);
+						//AgentLogger.GetInstance().log("Score: " + score);
+						RatedObject<SubstitutionSet> ratedSet = new RatedObject<SubstitutionSet>(currentSet, score);
+						ratedSubstitutions.add(ratedSet);
 					}
 				}
 			}
 		}
 
-		Collections.shuffle(substitutions);
-		return substitutions; // finishes after finding the action that unifies
+		return ratedSubstitutions; // finishes after finding the action that unifies
 								// with the event
+	}
+
+	@Override
+	public void processExternalRequest(AgentModel am, String msgType, String perception) {
+		
+		Motivator motivator;
+		String motivatorName;
+		
+		AgentLogger.GetInstance().log("Processing external request: " + msgType + " " + perception);
+		
+		if(msgType.equals("DRIVECHANGED"))
+		{
+			StringTokenizer st = new StringTokenizer(perception);
+			String agent = st.nextToken();
+			if(agent.equals(am.getName()))
+			{
+				motivatorName = st.nextToken();
+				
+				if(_motivators.containsKey(motivatorName))
+				{
+					motivator = _motivators.get(motivatorName);
+					
+					float deviation = Float.parseFloat(st.nextToken());
+					double contributionToNeed = motivator.evaluateNeedVariation(deviation);
+					_contributionToNeeds += contributionToNeed;
+					motivator.UpdateIntensity(deviation);
+				}	
+			}
+		}
+	}
+
+	@Override
+	public void propertyChangedPerception(String ToM, Name propertyName, String value) {
+		
+		Motivator motivator;
+		
+		if(ToM.equals(Constants.UNIVERSAL.toString()))
+		{
+			String agent = propertyName.GetFirstLiteral().toString();
+			if(agent.equals(Constants.SELF))
+			{
+				String property = propertyName.GetLiteralList().get(1).toString();
+				
+				if(_motivators.containsKey(property))
+				{
+					motivator = _motivators.get(property);
+					float oldLevel = motivator.GetIntensity();
+					
+					//quick fix for culture-variant decimal point separator
+					String newValue = value.replace(",", ".");
+					float intensity = Float.parseFloat(newValue);
+					float deviation = intensity - oldLevel;
+					double contributionToNeed = motivator.evaluateNeedVariation(deviation);
+					_contributionToNeeds += contributionToNeed;
+					motivator.SetIntensity(intensity);		
+				}
+			}
+		}
+	}
+
+	@Override
+	public void lookAtPerception(AgentCore ag, String subject, String target) {
+	}
+
+	@Override
+	public void entityRemovedPerception(String entity) {
+		
+	}
+
+	@Override
+	public void actionFailedPerception(Event e) {
+		
+	}
+
+	@Override
+	public ReflectXMLHandler2 getActionsParser(AgentModel am) {
+		return this._parser;
+	}
+
+	@Override
+	public ReflectXMLHandler2 getGoalsParser(AgentModel am) {
+		return this._parser;
+	}
+
+	@Override
+	public ReflectXMLHandler2 getPersonalityParser(AgentModel am) {
+		return this._parser;
+	}
+
+	@Override
+	public void parseAdditionalFiles(AgentModel am) 
+	{
+		AgentLogger.GetInstance().log("LOADING Needs: ");
+
+		try {
+			SAXParserFactory factory = SAXParserFactory.newInstance();
+			SAXParser parser = factory.newSAXParser();
+
+			for (String file : _parsingFiles) {
+				parser.parse(new File(file), this._parser);
+			}
+
+		} catch (Exception e) {
+			throw new RuntimeException("Error on Loading Needs from XML Files:" + e);
+		}	
 	}
 
 }

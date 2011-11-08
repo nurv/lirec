@@ -40,7 +40,7 @@ public class NeedsPanel extends AgentDisplayPanel {
 		
 		this.add(goalsScrool);
 		
-		DrivesDisplay aux = new DrivesDisplay(Constants.SELF);
+		DrivesDisplay aux = new DrivesDisplay(Constants.SELF, ms);
 		_needs.add(aux.getDrivesPanel());
 		_drivesDisplays.put(Constants.SELF,aux);
 		

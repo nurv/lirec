@@ -6,6 +6,10 @@ import java.util.Collection;
 
 public class ExpectedGoalEffectsOnDrives implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String _goalName;
 	private ArrayList<EffectOnDrive> _effects;
 	

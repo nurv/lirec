@@ -5,11 +5,11 @@ import org.xml.sax.Attributes;
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.util.AgentLogger;
 import FAtiMA.Core.util.Constants;
-import FAtiMA.Core.util.parsers.ReflectXMLHandler;
+import FAtiMA.Core.util.parsers.ReflectXMLHandler2;
 import FAtiMA.Core.wellFormedNames.Substitution;
 import FAtiMA.Core.wellFormedNames.Symbol;
 
-public class NeedsLoaderHandler  extends ReflectXMLHandler {
+public class NeedsLoaderHandler  extends ReflectXMLHandler2 {
 	
 	AgentModel _agent;
 	String _currentGoalKey;
@@ -20,21 +20,48 @@ public class NeedsLoaderHandler  extends ReflectXMLHandler {
 		this._agent = agent;
 	}
 	
-	public void MotivationalParameter(Attributes attributes) throws InvalidMotivatorTypeException {
+	public void MotivationalParameter(Attributes attributes) {
 		String motivatorName;
-		short type;
+		String motivatorType;
+		String updateType;
+		boolean internalUpdate;
+		Motivator motivator;
 
 		motivatorName = attributes.getValue("motivator");
-		type = MotivatorType.ParseType(motivatorName);
+		motivatorType = attributes.getValue("type");
+		updateType = attributes.getValue("update");
+		
+		if(updateType != null && updateType.equalsIgnoreCase("external"))
+		{	
+			internalUpdate = false;
+		}
+		else
+		{
+			internalUpdate = true;
+		}
+		
+		if(motivatorType != null && motivatorType.equals("Linear"))
+		{
+			motivator = new LinearMotivator(motivatorName,
+					new Float(attributes.getValue("decayFactor")).floatValue(),
+					new Float(attributes.getValue("weight")).floatValue(),
+					new Float(attributes.getValue("intensity")).floatValue(),
+					internalUpdate);
+		}
+		else
+		{
+			motivator = new Motivator(motivatorName,
+					new Float(attributes.getValue("decayFactor")).floatValue(),
+					new Float(attributes.getValue("weight")).floatValue(),
+					new Float(attributes.getValue("intensity")).floatValue(),
+					internalUpdate);
+		}
+		
 		MotivationalComponent ms = (MotivationalComponent)_agent.getComponent(MotivationalComponent.NAME);
 		
-		ms.AddMotivator(new Motivator(type,
-				new Float(attributes.getValue("decayFactor")).floatValue(),
-				new Float(attributes.getValue("weight")).floatValue(),
-				new Float(attributes.getValue("intensity")).floatValue()));
+		ms.AddMotivator(motivator);
 		
-		
-		AgentLogger.GetInstance().logAndPrint("Motivator found: " + type);
+		AgentLogger.GetInstance().logAndPrint("Motivator found: " + motivatorName);
 	}
 	
 	public void Goal(Attributes attributes) {
@@ -62,7 +89,7 @@ public class NeedsLoaderHandler  extends ReflectXMLHandler {
 		String target = attributes.getValue("target");
 
 		if(driveName != null && _currentStepKey != null){
-			motivComp.addActionEffectsOnDrive(_currentStepKey, driveName, new Symbol(target), Float.parseFloat(value));
+			motivComp.addActionEffectsOnDrive(_currentStepKey, driveName, new Symbol(target), new Symbol(value));
 		}
 	}
 	
@@ -87,7 +114,7 @@ public class NeedsLoaderHandler  extends ReflectXMLHandler {
 		t.MakeGround(self);
 
 		if(driveName != null && _currentGoalKey != null){
-			ms.addExpectedGoalEffectOnDrive(_currentGoalKey, effectType, driveName, t, Float.parseFloat(value));
+			ms.addExpectedGoalEffectOnDrive(_currentGoalKey, effectType, driveName, t, new Symbol(value));
 		}
 	}
 }

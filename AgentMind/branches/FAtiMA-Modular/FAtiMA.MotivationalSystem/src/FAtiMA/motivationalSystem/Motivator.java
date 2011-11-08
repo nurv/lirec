@@ -23,30 +23,37 @@ public class Motivator implements Serializable {
 	 */
 	//public static final float MotivatorDecayFactor = 0.0025f;
 	public static final float MotivatorDecayFactor = 0.001f;
+	private static final int MAX_VALUE = 10;
+	private static final int MIN_VALUE = 0;
 
-	private final short _type;
-	private float _decayFactor;	
-	private float _weight;		// a factor of the personality threshold?
-	private float _intensity;
+	protected final String _name;
+	protected float _decayFactor;	
+	protected float _weight;		// a factor of the personality threshold?
+	protected float _intensity;
+	protected boolean _internal;
 
-	private float _intensityATt0; 
-	private long _t0=0;
+	protected float _intensityATt0;
+	protected float _initialIntensity;
+	protected long _t0=0;
 	
 	/**
 	 * Creates a new Motivator
-	 * @param type - the type of built-in motivator
+	 * @param name - the name of built-in motivator
 	 // * @param threshold - the min value for the motivator that the character wants to maintain
 	 * @param decayFactor - the decay factor for the intensity of the motivator over time 
 	 * @param weight - the weight of the motivator
 	 * @param intensity- intensity of the built-in motivator, the higher the intensity 
 	 * 					 the lower the need due to a smaller deviation from the threshold, 
-	 * 					 this value will be pre-defined based on scenario	
+	 * 					 this value will be pre-defined based on scenario
+	 * @param internalUpdate - defines if the update of the motivator is done internally or externally 	
 	 */
-	public Motivator(short type, float decayFactor, float weight, float intensity) {
-		_type = type;
+	public Motivator(String name, float decayFactor, float weight, float intensity, boolean internalUpdate) {
+		_name = name;
 		_decayFactor = decayFactor;
 		_weight = weight;
 		_intensity = intensity;
+		_initialIntensity = intensity;
+		_internal = internalUpdate;
 		
 		_t0 = AgentSimulationTime.GetInstance().Time();
 		_intensityATt0 = _intensity;
@@ -56,11 +63,13 @@ public class Motivator implements Serializable {
 	 * Creates a new Motivator that consists in a copy of a given motivator
 	 * @param mot - the motivator that will be copied into the new motivator
 	 */
-	public Motivator(Motivator mot) {
-		_type = mot._type;
+	protected Motivator(Motivator mot) {
+		_name = mot._name;
 		_decayFactor = mot._decayFactor;
 		_weight = mot._weight;
 		_intensity = mot._intensity;
+		_initialIntensity = mot._initialIntensity;
+		_internal = mot._internal;
 		
 		_t0 = AgentSimulationTime.GetInstance().Time();
 		_intensityATt0 = _intensity;
@@ -68,11 +77,11 @@ public class Motivator implements Serializable {
 	
 	/**
 	 * Gets the motivator's type
-	 * @return a short representing the motivator type (enumerable)
-	 * @see the enumerable MotivatorType
+	 * @return a string representing the motivator name
+	 * @see the enumerable MotivatorType for some predifined Motivators, however you can create additional motivators
 	 */
-	public short GetType() {
-		return _type;
+	public String GetName() {
+		return _name;
 	}
 	
 	/**
@@ -97,13 +106,26 @@ public class Motivator implements Serializable {
 	}
 	
 	/**
+	 * Gets the intensity that the motivator was initialized with 
+	 * @return a float value corresponding to the motivator's initial intensity
+	 */
+	public float GetInitialIntensity() {
+		return _initialIntensity;	
+	}
+	
+	public boolean hasInternalUpdate()
+	{
+		return _internal;
+	}
+	
+	/**
 	 * Gets the motivator's need
 	 * @return a float value corresponding to the motivator's intensity
 	 * @deprecated use GetNeedUrgency() instead.
 	 */
-	public float GetNeed() {
-		return (10 - _intensity);	
-	}
+	/*public float GetNeed() {
+		return (MAX_VALUE - _intensity);	
+	}*/
 
 	
 	/**
@@ -112,9 +134,9 @@ public class Motivator implements Serializable {
 	 * (very urgent, urgent, not urgent, satisfied)
 	 * @return a multiplier corresponding to the motivator's urgency 
 	 */
-	public float GetNeedUrgency() {
+	/*public float GetNeedUrgency() {
 		
-		return 10 - _intensity;
+		return MAX_VALUE - _intensity;
 		/*if(_intensity < 2.5){ // VERY URGENT
 			return 4;
 		}
@@ -126,8 +148,8 @@ public class Motivator implements Serializable {
 		}
 		else{
 			return 1; // NEED SATISFIED
-		}*/		
-	}
+		}		
+	}*/
 	
 	/**
 	 * Update the motivator's intensity 
@@ -138,7 +160,7 @@ public class Motivator implements Serializable {
 		
 		_t0 = AgentSimulationTime.GetInstance().Time();
 		//_intensity = Math.max(0, Math.min(10, _intensity + (_weight*K*effect)));
-		_intensity = Math.max(0, Math.min(10, _intensity + effect));
+		_intensity = Math.max(MIN_VALUE, Math.min(MAX_VALUE, _intensity + effect));
 		_intensityATt0 = _intensity;
 		
 		float gain =  _intensity - oldIntensity;
@@ -154,8 +176,33 @@ public class Motivator implements Serializable {
 	public void SetIntensity(float intensity) {
 		_t0 = AgentSimulationTime.GetInstance().Time();
 		_intensity = intensity;
+		if(_intensity > MAX_VALUE)
+		{
+			_intensity = MAX_VALUE;
+		}
+		else if(_intensity < MIN_VALUE)
+		{
+			_intensity = 0;
+		}
 		
 		_intensityATt0 = _intensity; 
+	}
+	
+	public double evaluateNeedVariation(float deviation) {
+		double result = 0;
+		float finalLevel;
+		double currentLevelStr;
+		double finalLevelStr;
+
+		finalLevel = _intensity + deviation;
+		finalLevel = Math.min(finalLevel, MAX_VALUE);
+		finalLevel = Math.max(finalLevel, MIN_VALUE);
+
+		currentLevelStr = Math.pow(MAX_VALUE - _intensity, 2);
+		finalLevelStr = Math.pow(MAX_VALUE - finalLevel, 2);
+
+		result = -(finalLevelStr - currentLevelStr);
+		return result * 0.2f;
 	}
 	
 	/**
@@ -164,6 +211,10 @@ public class Motivator implements Serializable {
 	 */
 	public void DecayMotivator() {
 		long deltaT;
+		if(_decayFactor == 0)
+		{
+			return;
+		}
 	
 		deltaT = (AgentSimulationTime.GetInstance().Time() - _t0)/1000;
 		_intensity = Math.max(0, _intensityATt0 * ((float) Math.exp(-MotivatorDecayFactor * _decayFactor * deltaT)));
@@ -174,7 +225,7 @@ public class Motivator implements Serializable {
 	 * @return a XML String that contains all information about the Motivator
 	 */
 	public String toXml() {
-		return "<Motivator type=\"" + MotivatorType.GetName(_type) + 
+		return "<Motivator type=\"" + _name + 
 				"\" decayFactor=\"" + _decayFactor + 
 				"\" weight=\"" + _weight + 
 				"\" intensity=\"" + _intensity + "\" />";
@@ -187,6 +238,10 @@ public class Motivator implements Serializable {
 
 	public void SetDecayFactor(float newAffiliationDecayFactor) {
 		this._decayFactor = newAffiliationDecayFactor;
-		
+	}
+	
+	public Object clone()
+	{
+		return new Motivator(this);
 	}
 }
