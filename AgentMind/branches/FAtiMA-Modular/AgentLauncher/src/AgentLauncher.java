@@ -1,4 +1,3 @@
-package FAtiMA;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -15,8 +14,9 @@ import FAtiMA.DeliberativeComponent.DeliberativeComponent;
 import FAtiMA.OCCAffectDerivation.OCCAffectDerivationComponent;
 import FAtiMA.ReactiveComponent.ReactiveComponent;
 import FAtiMA.ToM.ToMComponent;
-import FAtiMA.culture.CulturalDimensionsComponent;
+import FAtiMA.emotionalIntelligence.EmotionalIntelligenceComponent;
 import FAtiMA.motivationalSystem.MotivationalComponent;
+import FAtiMA.socialRelations.SocialRelationsComponent;
 
 public class AgentLauncher {
 	
@@ -34,34 +34,34 @@ public class AgentLauncher {
 		
 		AgentCore aG = initializeAgentCore(args);
 		ArrayList<String> extraFiles = new ArrayList<String>();
-		String cultureFile = ConfigurationManager.getMindPath() + ConfigurationManager.getOptionalConfigurationValue("cultureName") + ".xml"; 
-		//String conversationalGoalLibraryFile = ConfigurationManager.getMindPath() + ConfigurationManager.getOptionalConfigurationValue("conversationalGoalsFile") + ".xml"; 
+		//String cultureFile = ConfigurationManager.getMindPath() + ConfigurationManager.getOptionalConfigurationValue("cultureName") + ".xml";
+		String relationsFile = ConfigurationManager.getMindPath() + "relations.xml"; //fixed for now, read it as an optional configuration value latter
 		
 		if (!aG.getAgentLoad())
 		{
-			extraFiles.add(cultureFile); 
+			//extraFiles.add(cultureFile);
 			
-			//extraFiles.add(conversationalGoalLibraryFile);
-			
+			//FAtiMA Light
 			aG.addComponent(new ReactiveComponent());
 			aG.addComponent(new OCCAffectDerivationComponent());
 			aG.addComponent(new DeliberativeComponent());
-			//aG.addComponent(new SocialRelationsComponent(extraFiles));
-			//aG.addComponent(new EmpathyComponent());
-			aG.addComponent(new MotivationalComponent(extraFiles));
-			aG.addComponent(new ToMComponent(ConfigurationManager.getName()));
-			aG.addComponent(new CulturalDimensionsComponent(cultureFile));
-			//aG.addComponent(new ConversationComponent(conversationalGoalLibraryFile));
 			
+			//FAtiMA Advanced Components
+			aG.addComponent(new MotivationalComponent(extraFiles));
+			aG.addComponent(new SocialRelationsComponent(relationsFile, extraFiles));
+			aG.addComponent(new ToMComponent(ConfigurationManager.getName()));
+			//aG.addComponent(new CulturalDimensionsComponent(cultureFile));
 			//aG.addComponent(new AdvancedMemoryComponent());
+			aG.addComponent(new EmotionalIntelligenceComponent(extraFiles));
+			
 		}
 		aG.StartAgent();
 	}
 	
 	
 	static private AgentCore initializeAgentCore(String args[]) throws ParserConfigurationException, SAXException, IOException, UnknownGoalException, ActionsParsingException, GoalLibParsingException{
-		if(args.length < 3){
-			System.err.println("ERROR - expecting 3 arguments at least: Scenarios File, Scenario Name, and Agent Name");
+		if(args.length != 3){
+			System.err.println("ERROR - expecting 3 arguments: Scenarios File, Scenario Name, and Agent Name");
 			System.exit(1);
 		}
 		
