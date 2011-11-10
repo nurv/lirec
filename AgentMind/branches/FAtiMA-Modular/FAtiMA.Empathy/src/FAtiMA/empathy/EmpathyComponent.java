@@ -21,6 +21,7 @@ import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.util.AgentLogger;
 import FAtiMA.Core.util.ConfigurationManager;
 import FAtiMA.Core.util.Constants;
+import FAtiMA.Core.util.parsers.ReflectXMLHandler2;
 import FAtiMA.ReactiveComponent.ActionTendencies;
 import FAtiMA.ReactiveComponent.ReactiveComponent;
 import FAtiMA.socialRelations.LikeRelation;
@@ -55,18 +56,6 @@ public class EmpathyComponent  implements IAppraisalDerivationComponent, IAffect
 		_empathicActions = new EmpathicActions();
 		_empathicAppraisals = new ArrayList<EmpathicAppraisal>();
 		_elicitedEmotions = new HashMap<String,BaseEmotion>();
-		
-		AgentLogger.GetInstance().log("Adding Reactive Empathic Actions in the EmpathyComponent:");
-		EmpathyLoaderHandler empathyLoader = new EmpathyLoaderHandler(this);
-		
-		try {
-			SAXParserFactory factory = SAXParserFactory.newInstance();
-			SAXParser parser = factory.newSAXParser();
-			parser.parse(new File(ConfigurationManager.getPersonalityFile()), empathyLoader);
-		} catch (Exception e) {
-			throw new RuntimeException(
-					"Error reading the agent XML Files:" + e);
-		}
 		
 	}
 	
@@ -224,7 +213,22 @@ public class EmpathyComponent  implements IAppraisalDerivationComponent, IAffect
 		}else{
 			return null;
 		}
-	}	
+	}
+	
+	@Override
+	public ReflectXMLHandler2 getActionsParser(AgentModel am) {
+		return null;
+	}
+
+	@Override
+	public ReflectXMLHandler2 getGoalsParser(AgentModel am) {
+		return null;
+	}
+
+	@Override
+	public ReflectXMLHandler2 getPersonalityParser(AgentModel am) {
+		return new EmpathyLoaderHandler(this);
+	}
 
 
 	public ActionTendencies getEmpathicActions() {
@@ -262,14 +266,13 @@ public class EmpathyComponent  implements IAppraisalDerivationComponent, IAffect
 
 
 	@Override
-	public void actionSelectedForExecution(ValuedAction va) {
+	public void actionSelectedForExecution(AgentModel am, ValuedAction va) {
 		/*
 		 * Temporarily removes the action selected for execution. This means 
 		 * that when a action is executed it should not be selected again for a while,
 		 * or else we will have a character reacting in the same way several times
 		 */
-		_empathicActions.IgnoreActionForDuration(va,IGNOREDURATION);
-		
+		_empathicActions.IgnoreActionEmotion(am, va);		
 	}
 
 	@Override
@@ -282,6 +285,12 @@ public class EmpathyComponent  implements IAppraisalDerivationComponent, IAffect
 	@Override
 	public void inverseAffectDerivation(AgentModel am, BaseEmotion em,
 			AppraisalFrame af) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void parseAdditionalFiles(AgentModel am) {
 		// TODO Auto-generated method stub
 		
 	}

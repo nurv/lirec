@@ -29,10 +29,12 @@ public class EmpathicActions extends ActionTendencies {
 		if(empathicEmotions.size() == 0){
 			return null;
 		}
+		
+		this.UpdateFilters();
 				
 		for(Action a : _actions){
-			va = a.TriggerAction(am, empathicEmotions);
-			if (va != null && !isIgnored(va))
+			va = a.TriggerAction(am,_filteredEmotions, empathicEmotions);
+			if (va != null)
 				if(bestAction == null || va.getValue(emState) > bestAction.getValue(emState)) 
 				{
 				    bestAction = va;
