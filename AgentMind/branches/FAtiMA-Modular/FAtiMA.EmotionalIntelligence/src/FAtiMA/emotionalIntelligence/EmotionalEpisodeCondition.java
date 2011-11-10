@@ -112,13 +112,13 @@ public class EmotionalEpisodeCondition extends Condition {
 	 * @return 
 	 * @see 
 	 */
-	public boolean CheckCondition(AgentModel am) {
+	public float CheckCondition(AgentModel am) {
 		
 		BaseEmotion emotion;
 		MemoryEpisode episode;
 		ArrayList<MemoryEpisode> episodes;
 		
-		if(!this.isGrounded()) return false;
+		if(!this.isGrounded()) return 0;
 		
 		episodes = am.getMemory().getEpisodicMemory().GetAllEpisodes();
 		
@@ -139,11 +139,11 @@ public class EmotionalEpisodeCondition extends Condition {
 		{
 			if(emotion.GetPotential() >= this._value)
 			{
-				return true;
+				return 1;
 			}
 		}		
 		
-		return false;
+		return 0;
 		
 	}
 	
@@ -173,7 +173,7 @@ public class EmotionalEpisodeCondition extends Condition {
 		int i = 0;
 		
 		if (getName().isGrounded() && _emotion.isGrounded()) {
-			if(CheckCondition(am))
+			if(CheckCondition(am)==1)
 			{ 
 				bindingSets.add(new SubstitutionSet());
 				return bindingSets;
@@ -278,7 +278,7 @@ public class EmotionalEpisodeCondition extends Condition {
 	}
 	
 	@Override
-	public Name GetValue() {
+	public Name getValue() {
 		return Name.ParseName(String.valueOf(this._value));
 	}
 	

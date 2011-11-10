@@ -1,18 +1,18 @@
 package FAtiMA.emotionalIntelligence;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.ListIterator;
 
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.conditions.PastEventCondition;
 import FAtiMA.Core.emotionalState.EmotionalPameters;
-import FAtiMA.Core.memory.episodicMemory.ActionDetail;
-import FAtiMA.Core.util.Constants;
+import FAtiMA.Core.util.RatedObject;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Substitution;
 import FAtiMA.Core.wellFormedNames.SubstitutionSet;
 import FAtiMA.Core.wellFormedNames.Symbol;
-import FAtiMA.advancedMemoryComponent.AdvancedMemoryComponent;
+import FAtiMA.ReactiveComponent.ReactiveComponent;
 import FAtiMA.motivationalSystem.MotivationalComponent;
 
 public class AppraisalCondition extends PastEventCondition {
@@ -75,8 +75,12 @@ public class AppraisalCondition extends PastEventCondition {
 		this.setName(Name.ParseName("Appraisal(" + aux + ")"));
 	}
 	
-	public boolean CheckCondition(AgentModel am) {
-		return this._action.isGrounded();
+	public float CheckCondition(AgentModel am) {
+		if(this._action.isGrounded())
+		{
+			return 1;
+		}
+		else return 0;
 	}
 	
 	public Object clone()
@@ -94,6 +98,7 @@ public class AppraisalCondition extends PastEventCondition {
 		
 		float finalemotionvalue;
 		float appraisalVariableValue;
+		ArrayList<RatedObject<SubstitutionSet>> ratedSubs;
 		ArrayList<SubstitutionSet> subs;
 		float mood;
 	
@@ -107,7 +112,6 @@ public class AppraisalCondition extends PastEventCondition {
 		
 		//meaning that the valence of the corresponding emotion is positive
 		if(_test == 0){
-			
 			appraisalVariableValue = finalemotionvalue - (mood * EmotionalPameters.MoodInfluenceOnEmotion);
 			if(appraisalVariableValue < 0)
 			{
@@ -123,42 +127,50 @@ public class AppraisalCondition extends PastEventCondition {
 				appraisalVariableValue = 0;
 			}
 		}
+		
+		ratedSubs = new ArrayList<RatedObject<SubstitutionSet>>();
 
-	
+		//subs = searchReactiveAppraisals(modelToTest, appraisalVariableValue);
 		
 		//subs = searchMemoryAppraisals(modelToTest, appraisalVariableValue);
-		subs = new ArrayList<SubstitutionSet>();
 		
-		subs.addAll(searchDrivesAppraisals(modelToTest, appraisalVariableValue));
+		ratedSubs.addAll(searchDrivesAppraisals(modelToTest, appraisalVariableValue));
+		
+		Collections.sort(ratedSubs);
 	
-		if(subs.size() > 0)
+		if(ratedSubs.size() > 0)
 		{
+			subs = new ArrayList<SubstitutionSet>();
+			for(RatedObject<SubstitutionSet> ro : ratedSubs)
+			{
+				subs.add(ro.getObject());
+			}
 			return subs;
 		}
 		else return null;
 		
 	}
 	
-	private ArrayList<SubstitutionSet> searchMemoryAppraisals(AgentModel am, float desirability)
+	/*private ArrayList<SubstitutionSet> searchMemoryAppraisals(AgentModel am, float desirability)
 	{
 		ArrayList<SubstitutionSet> subs = new ArrayList<SubstitutionSet>();
 		SubstitutionSet sset;
 		Symbol target;
 		AdvancedMemoryComponent advMem;
-		
+		  
 		ArrayList<String> knownInfo = new ArrayList<String>();
 		knownInfo.add("desirability " + desirability);
 		//float desirability = Float.parseFloat(this._value.toString());
-		/*if(desirability >= 0)
-		{
-			knownInfo.add("positive");
-		}
-		else
-		{
-			knownInfo.add("negative");
-		}*/
+		//if(desirability >= 0)
+		//{
+		//	knownInfo.add("positive");
+		//}
+		//else
+		//{
+		//	knownInfo.add("negative");
+		//}
 		
-		String question = "action";
+		String question = "events";
 		
 		advMem = (AdvancedMemoryComponent) am.getComponent(AdvancedMemoryComponent.NAME);
 		
@@ -166,6 +178,11 @@ public class AppraisalCondition extends PastEventCondition {
 		
 		ArrayList<ActionDetail> details = advMem.getSpreadActivate().getDetails();
 		
+		
+		//wtf, isto devolve todos os eventos com desirability >= ao valor pretendido, inclusivamente
+		//repetido
+		
+		//TODO must do this properly
 		if(details.size() > 0)
 		{
 			for(ActionDetail ad : details)
@@ -185,14 +202,23 @@ public class AppraisalCondition extends PastEventCondition {
 			}
 		}
 		
+		//TODO procurar events com desejabilidade nos GER's (Generic Event Representation) 
+		
 		return subs;
 	}
+	*/
 	
-	private ArrayList<SubstitutionSet> searchDrivesAppraisals(AgentModel am, float desirability)
+	private ArrayList<SubstitutionSet> searchReactiveAppraisals(AgentModel am, float desirability)
+	{
+		ReactiveComponent reactiveComponent = (ReactiveComponent) am.getComponent(ReactiveComponent.NAME);
+		return reactiveComponent.searchEventsWithAppraisal(am, _subject, _action, _target, _parameters.get(0), desirability);
+	}
+	
+	private ArrayList<RatedObject<SubstitutionSet>> searchDrivesAppraisals(AgentModel am, float desirability)
 	{
 		MotivationalComponent motivationalComponent = (MotivationalComponent) am.getComponent(MotivationalComponent.NAME);
 		
-		return motivationalComponent.searchEventsWithAppraisal(am, _subject, _action, _target, _parameters.get(0), desirability);	
+		return motivationalComponent.searchEventsWithAppraisal(am, this.getToM(), _subject, _action, _target, _parameters.get(0), desirability);	
 	}
 
 	public Object Ground(ArrayList<Substitution> bindingConstraints) {

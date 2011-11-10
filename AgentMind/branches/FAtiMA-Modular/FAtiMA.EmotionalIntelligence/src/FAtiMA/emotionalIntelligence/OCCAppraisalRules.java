@@ -5,14 +5,15 @@ import java.util.ArrayList;
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.conditions.EmotionCondition;
 import FAtiMA.Core.conditions.NewEventCondition;
+import FAtiMA.Core.conditions.PropertyEqual;
 import FAtiMA.Core.emotionalState.EmotionDisposition;
 import FAtiMA.Core.plans.Effect;
 import FAtiMA.Core.plans.Step;
+import FAtiMA.Core.util.Constants;
 import FAtiMA.Core.util.enumerables.ActionEvent;
 import FAtiMA.Core.util.enumerables.EventType;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Symbol;
-import FAtiMA.OCCAffectDerivation.OCCAffectDerivationComponent;
 import FAtiMA.OCCAffectDerivation.OCCAppraisalVariables;
 import FAtiMA.OCCAffectDerivation.OCCEmotionType;
 
@@ -35,8 +36,14 @@ public abstract class OCCAppraisalRules {
 		AppraisalCondition appraisal;
 		NewEventCondition event;
 		ArrayList<Symbol> params;
+		PropertyEqual subjectIsSelf;
+		PropertyEqual subjectIsPerson;
 		
 		appraisalOperators = new ArrayList<Step>();
+		
+		subjectIsPerson = new PropertyEqual(Name.ParseName("[s](isPerson)"),new Symbol("True"), Constants.UNIVERSAL);
+		subjectIsSelf = new PropertyEqual(new Symbol("[s]"), new Symbol("SELF"), Constants.UNIVERSAL);
+		
 		
 		joyOperator = new Step(new Symbol("[AGENT]"),Name.ParseName("JoyAppraisal()"),1.0f);
 		c = new EmotionCondition(true, new Symbol("[AGENT]"), OCCEmotionType.JOY.name());
@@ -63,6 +70,9 @@ public abstract class OCCAppraisalRules {
 		
 		event = new NewEventCondition(true, EventType.ACTION,ActionEvent.SUCCESS,ev);
 		joyOperator.AddPrecondition(event);
+		
+		joyOperator.AddPrecondition((PropertyEqual) subjectIsPerson.clone());
+		joyOperator.AddPrecondition((PropertyEqual) subjectIsSelf.clone());
 		
 		appraisalOperators.add(joyOperator);
 		
@@ -95,12 +105,16 @@ public abstract class OCCAppraisalRules {
 		event = new NewEventCondition(true, EventType.ACTION,ActionEvent.SUCCESS,ev);
 		
 		distressOperator.AddPrecondition(event);
+		distressOperator.AddPrecondition((PropertyEqual) subjectIsPerson.clone());
+		distressOperator.AddPrecondition((PropertyEqual) subjectIsSelf.clone());
 		
 		appraisalOperators.add(distressOperator);
 		
 		return appraisalOperators;
 		
 	}
+	
+	
 
 	
 	/*public Step getJoyOperator()

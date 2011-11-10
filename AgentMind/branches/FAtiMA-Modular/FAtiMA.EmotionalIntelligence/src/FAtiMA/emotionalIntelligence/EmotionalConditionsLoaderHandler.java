@@ -5,12 +5,12 @@ import org.xml.sax.Attributes;
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.goals.Goal;
 import FAtiMA.Core.util.Constants;
-import FAtiMA.Core.util.parsers.ReflectXMLHandler;
+import FAtiMA.Core.util.parsers.ReflectXMLHandler2;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Substitution;
 import FAtiMA.Core.wellFormedNames.Symbol;
 
-public class EmotionalConditionsLoaderHandler extends ReflectXMLHandler {
+public class EmotionalConditionsLoaderHandler extends ReflectXMLHandler2 {
 	
 	private AgentModel _aM;
 	private String _currentGoalKey;

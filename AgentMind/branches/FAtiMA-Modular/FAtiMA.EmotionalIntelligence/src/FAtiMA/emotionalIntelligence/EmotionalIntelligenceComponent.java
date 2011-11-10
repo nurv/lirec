@@ -1,47 +1,37 @@
 package FAtiMA.emotionalIntelligence;
 
-import java.io.File;
 import java.util.ArrayList;
-
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.Display.AgentDisplayPanel;
 import FAtiMA.Core.componentTypes.IComponent;
-import FAtiMA.Core.goals.Goal;
 import FAtiMA.Core.plans.Step;
 import FAtiMA.Core.sensorEffector.Event;
-import FAtiMA.Core.util.AgentLogger;
-import FAtiMA.Core.util.ConfigurationManager;
-import FAtiMA.Core.util.parsers.GoalLoaderHandler;
+import FAtiMA.Core.util.parsers.ReflectXMLHandler2;
 import FAtiMA.DeliberativeComponent.DeliberativeComponent;
 import FAtiMA.OCCAffectDerivation.OCCAffectDerivationComponent;
 import FAtiMA.ReactiveComponent.Action;
 import FAtiMA.ReactiveComponent.ReactiveComponent;
 import FAtiMA.ToM.ToMComponent;
-import FAtiMA.advancedMemoryComponent.AdvancedMemoryComponent;
-import FAtiMA.motivationalSystem.MotivationalComponent;
-import FAtiMA.socialRelations.SocialRelationsComponent;
 
 public class EmotionalIntelligenceComponent implements IComponent {
 	
 	public static final String NAME = "EmotionalIntelligence";
 	
-	private ArrayList<String> _parsingFiles;
+	//private ArrayList<String> _parsingFiles;
+	private EmotionalConditionsLoaderHandler _parser;
 	
 	public EmotionalIntelligenceComponent(ArrayList<String> extraFiles)
 	{
-		_parsingFiles = new ArrayList<String>();
+		/*_parsingFiles = new ArrayList<String>();
 		_parsingFiles.add(ConfigurationManager.getGoalsFile());
 		_parsingFiles.add(ConfigurationManager.getActionsFile());
-		_parsingFiles.addAll(extraFiles);
-		
+		_parsingFiles.addAll(extraFiles);*/
 	}
 	
 	
 
-	private void LoadOperators(AgentModel am)
+	/*private void LoadOperators(AgentModel am)
 	{
 		
 		AgentLogger.GetInstance().log("LOADING EI Operators: ");
@@ -59,7 +49,7 @@ public class EmotionalIntelligenceComponent implements IComponent {
 		}catch(Exception e){
 			throw new RuntimeException("Error on Loading EI Operators from XML Files:" + e);
 		}
-	}
+	}*/
 
 	@Override
 	public AgentDisplayPanel createDisplayPanel(AgentModel am) {
@@ -72,9 +62,10 @@ public class EmotionalIntelligenceComponent implements IComponent {
 				ReactiveComponent.NAME, 
 				DeliberativeComponent.NAME,
 				OCCAffectDerivationComponent.NAME,
-				MotivationalComponent.NAME,
-				ToMComponent.NAME,
-				SocialRelationsComponent.NAME};
+				//MotivationalComponent.NAME,
+				ToMComponent.NAME//,
+				//SocialRelationsComponent.NAME};
+		};
 		return dependencies;
 	}
 
@@ -94,7 +85,8 @@ public class EmotionalIntelligenceComponent implements IComponent {
 			am.getActionLibrary().addAction(ActionTendencyOperatorFactory.CreateATOperator(am, at));
 		}
 		
-		LoadOperators(am);
+		this._parser = new EmotionalConditionsLoaderHandler(am);
+		//LoadOperators(am);
 	}
 
 	@Override
@@ -115,5 +107,30 @@ public class EmotionalIntelligenceComponent implements IComponent {
 	@Override
 	public void update(AgentModel am, long time) {
 		// TODO Auto-generated method stub
+	}
+
+
+
+	@Override
+	public ReflectXMLHandler2 getActionsParser(AgentModel am) {
+		return this._parser;
+	}
+
+	@Override
+	public ReflectXMLHandler2 getGoalsParser(AgentModel am) {
+		return this._parser;
+	}
+
+
+
+	@Override
+	public ReflectXMLHandler2 getPersonalityParser(AgentModel am) {
+		return null;
+	}
+
+
+
+	@Override
+	public void parseAdditionalFiles(AgentModel am) {
 	}
 }
