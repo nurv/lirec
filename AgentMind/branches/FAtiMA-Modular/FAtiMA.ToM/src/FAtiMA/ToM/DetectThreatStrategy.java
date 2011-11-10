@@ -6,6 +6,11 @@ import FAtiMA.Core.util.Constants;
 
 public class DetectThreatStrategy extends DefaultDetectThreatStrategy {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public DetectThreatStrategy()
 	{
 	}

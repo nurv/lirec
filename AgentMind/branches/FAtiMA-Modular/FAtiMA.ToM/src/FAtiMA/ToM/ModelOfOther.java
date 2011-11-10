@@ -9,10 +9,12 @@ import FAtiMA.Core.ActionLibrary;
 import FAtiMA.Core.AgentCore;
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.IGetModelStrategy;
+import FAtiMA.Core.componentTypes.IAdvancedPerceptionsComponent;
 import FAtiMA.Core.componentTypes.IAffectDerivationComponent;
 import FAtiMA.Core.componentTypes.IAppraisalDerivationComponent;
 import FAtiMA.Core.componentTypes.IComponent;
 import FAtiMA.Core.componentTypes.IProcessEmotionComponent;
+import FAtiMA.Core.componentTypes.IProcessExternalRequestComponent;
 import FAtiMA.Core.emotionalState.ActiveEmotion;
 import FAtiMA.Core.emotionalState.AppraisalFrame;
 import FAtiMA.Core.emotionalState.BaseEmotion;
@@ -23,6 +25,7 @@ import FAtiMA.Core.memory.Memory;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.sensorEffector.RemoteAgent;
 import FAtiMA.Core.util.Constants;
+import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Symbol;
 import FAtiMA.ReactiveComponent.ReactiveComponent;
 
@@ -39,6 +42,8 @@ public class ModelOfOther implements AgentModel, Serializable {
 	private ArrayList<IProcessEmotionComponent> _processEmotionComponents;
 	private ArrayList<IAppraisalDerivationComponent> _appraisalComponents;
 	private ArrayList<IAffectDerivationComponent> _affectDerivationComponents;
+	private ArrayList<IProcessExternalRequestComponent> _processExternalRequestComponents;
+	private ArrayList<IAdvancedPerceptionsComponent> _perceptionComponents;
 	private ReactiveComponent _reactiveComponent;
 	
 	public ModelOfOther(String name, AgentCore ag) 
@@ -50,6 +55,8 @@ public class ModelOfOther implements AgentModel, Serializable {
 		_processEmotionComponents = new ArrayList<IProcessEmotionComponent>();
 		_appraisalComponents = new ArrayList<IAppraisalDerivationComponent>();
 		_affectDerivationComponents = new ArrayList<IAffectDerivationComponent>();
+		_processExternalRequestComponents = new ArrayList<IProcessExternalRequestComponent>();
+		_perceptionComponents = new ArrayList<IAdvancedPerceptionsComponent>();
 		
 		for(EmotionDisposition ed : ag.getEmotionalState().getEmotionDispositions())
 		{
@@ -186,6 +193,14 @@ public class ModelOfOther implements AgentModel, Serializable {
 		{
 			_affectDerivationComponents.add((IAffectDerivationComponent) c);
 		}
+		if(c instanceof IProcessExternalRequestComponent)
+		{
+			_processExternalRequestComponents.add((IProcessExternalRequestComponent) c);
+		}
+		if(c instanceof IAdvancedPerceptionsComponent)
+		{
+			_perceptionComponents.add((IAdvancedPerceptionsComponent) c);
+		}
 		
 		_components.put(c.name(),c);
 	}
@@ -253,5 +268,19 @@ public class ModelOfOther implements AgentModel, Serializable {
 			IComponent callingComponent) {
 		return null;
 	}
-
+	
+	public void processExternalRequest(String msgType, String perception) {
+		for(IProcessExternalRequestComponent c : _processExternalRequestComponents)
+		{
+			c.processExternalRequest(this, msgType, perception);
+		}
+	}
+	
+	public void propertyChangedPerception(String ToM, Name propertyName, String value)
+	{
+		for(IAdvancedPerceptionsComponent c : _perceptionComponents)
+		{
+			c.propertyChangedPerception(ToM, propertyName, value);
+		}
+	}
 }

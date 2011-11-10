@@ -12,12 +12,14 @@ import FAtiMA.Core.componentTypes.IAdvancedPerceptionsComponent;
 import FAtiMA.Core.componentTypes.IAppraisalDerivationComponent;
 import FAtiMA.Core.componentTypes.IComponent;
 import FAtiMA.Core.componentTypes.IModelOfOtherComponent;
+import FAtiMA.Core.componentTypes.IProcessExternalRequestComponent;
 import FAtiMA.Core.emotionalState.AppraisalFrame;
 import FAtiMA.Core.goals.ActivePursuitGoal;
 import FAtiMA.Core.memory.semanticMemory.KnowledgeSlot;
 import FAtiMA.Core.plans.Plan;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.util.Constants;
+import FAtiMA.Core.util.parsers.ReflectXMLHandler2;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Symbol;
 import FAtiMA.DeliberativeComponent.DeliberativeComponent;
@@ -25,7 +27,7 @@ import FAtiMA.DeliberativeComponent.strategies.IGetUtilityForOthers;
 import FAtiMA.OCCAffectDerivation.OCCAppraisalVariables;
 import FAtiMA.ReactiveComponent.ReactiveComponent;
 
-public class ToMComponent implements Serializable, IAppraisalDerivationComponent, IAdvancedPerceptionsComponent, IGetModelStrategy, IGetUtilityForOthers {
+public class ToMComponent implements Serializable, IAppraisalDerivationComponent, IAdvancedPerceptionsComponent, IGetModelStrategy, IGetUtilityForOthers, IProcessExternalRequestComponent {
 	
 	/**
 	 * 
@@ -176,7 +178,13 @@ public class ToMComponent implements Serializable, IAppraisalDerivationComponent
 	public void lookAtPerception(AgentCore ag, String subject, String target) {
 		KnowledgeSlot knownInfo;
 		KnowledgeSlot property;
-		Name propertyName;
+		Name originalProperty;
+		Name propertyWithoutPerspective;
+		Name propertyWithNewPerspective;
+		
+		String originalValue;
+		String valueWithoutPerspective;
+		String valueWithNewPerspective;
 		
 		if(subject.equals(Constants.SELF))
 		{
@@ -193,17 +201,31 @@ public class ToMComponent implements Serializable, IAppraisalDerivationComponent
 		
 		for(String other : _nearbyAgents)
 		{
+			
 			if(other.equals(subject))
 			{
 				ModelOfOther m = _ToM.get(other);
 				knownInfo = ag.getMemory().getSemanticMemory().GetObjectDetails(target);
 				if(knownInfo!= null)
-				{
+				{				
 					for(String s : knownInfo.getKeys())
 					{	
 						property = knownInfo.get(s);
-						propertyName = Name.ParseName(target + "(" + property.getName() + ")");
-						m.getMemory().getSemanticMemory().Tell(AgentCore.applyPerspective(propertyName,other), property.getValue());
+						if(property.getValue() != null)
+						{
+							originalProperty = Name.ParseName(target + "(" + property.getName() + ")");
+							propertyWithoutPerspective = AgentCore.removePerspective(originalProperty, ag.getName());
+							propertyWithNewPerspective = AgentCore.applyPerspective(propertyWithoutPerspective, other);
+							
+							
+							originalValue = property.getValue().toString();
+							valueWithoutPerspective = AgentCore.removePerspective(originalValue, ag.getName());
+							valueWithNewPerspective = AgentCore.applyPerspective(valueWithoutPerspective, other);
+							
+							
+							m.getMemory().getSemanticMemory().Tell(propertyWithNewPerspective, valueWithNewPerspective);
+							m.propertyChangedPerception("*", propertyWithNewPerspective, valueWithNewPerspective);
+						}
 					}
 				}		
 			}	
@@ -218,14 +240,22 @@ public class ToMComponent implements Serializable, IAppraisalDerivationComponent
 	@Override
 	public void propertyChangedPerception(String ToM, Name propertyName, String value) 
 	{
-		Name propertyName2 = AgentCore.removePerspective(propertyName, _name);
+		String valueWithoutPerspective = AgentCore.removePerspective(value, _name);
+		String valueWithNewPerspective;
+	
+		Name propertyWithoutPerspective = AgentCore.removePerspective(propertyName, _name);
+		Name propertyWithNewPerspective;
 		
 		if(ToM.equals(Constants.UNIVERSAL.toString()))
 		{
 			for(String other : _nearbyAgents)
 			{
+				valueWithNewPerspective = AgentCore.applyPerspective(valueWithoutPerspective, other);
+				propertyWithNewPerspective = AgentCore.applyPerspective(propertyWithoutPerspective, other);
+				
 				ModelOfOther m = _ToM.get(other);
-				m.getMemory().getSemanticMemory().Tell(AgentCore.applyPerspective(propertyName2,other), value);
+				m.getMemory().getSemanticMemory().Tell(propertyWithNewPerspective, valueWithNewPerspective);
+				m.propertyChangedPerception(ToM, propertyWithNewPerspective, valueWithNewPerspective);
 			}
 		}
 		else if(!ToM.equals(_name))
@@ -233,10 +263,13 @@ public class ToMComponent implements Serializable, IAppraisalDerivationComponent
 			ModelOfOther m = _ToM.get(ToM);
 			if(m != null)
 			{
-				m.getMemory().getSemanticMemory().Tell(AgentCore.applyPerspective(propertyName2,ToM), value);
+				valueWithNewPerspective = AgentCore.applyPerspective(valueWithoutPerspective, ToM);
+				propertyWithNewPerspective = AgentCore.applyPerspective(propertyWithoutPerspective, ToM);
+				
+				m.getMemory().getSemanticMemory().Tell(propertyWithNewPerspective, valueWithNewPerspective);
+				m.propertyChangedPerception(ToM, propertyWithNewPerspective, valueWithNewPerspective);
 			}
-		}
-		
+		}	
 	}
 
 	@Override
@@ -275,5 +308,34 @@ public class ToMComponent implements Serializable, IAppraisalDerivationComponent
 			ModelOfOther m = _ToM.get(s);
 			m.update(time);
 		}		
+	}
+
+	@Override
+	public void processExternalRequest(AgentModel am, String msgType, String perception) {
+		
+		for(String s: _nearbyAgents)
+		{
+			ModelOfOther m = _ToM.get(s);
+			m.processExternalRequest(msgType, perception);
+		}
+	}
+
+	@Override
+	public ReflectXMLHandler2 getActionsParser(AgentModel am) {
+		return null;
+	}
+
+	@Override
+	public ReflectXMLHandler2 getGoalsParser(AgentModel am) {
+		return null;
+	}
+
+	@Override
+	public ReflectXMLHandler2 getPersonalityParser(AgentModel am) {
+		return null;
+	}
+
+	@Override
+	public void parseAdditionalFiles(AgentModel am) {	
 	}
 }
