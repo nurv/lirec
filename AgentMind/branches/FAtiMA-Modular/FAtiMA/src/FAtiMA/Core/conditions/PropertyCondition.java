@@ -145,6 +145,15 @@ public class PropertyCondition extends Condition {
 				cond = new PropertyLesserEqual(name,value,ToM);
 			else
 				cond = new PropertyEqual(name, value,ToM);
+			
+			aux = attributes.getValue("static");
+			if(aux != null)
+			{
+				if(aux.equalsIgnoreCase("true"))
+				{
+					cond.setStatic(true);
+				}
+			}
 		}
 		else{
 			
@@ -160,17 +169,17 @@ public class PropertyCondition extends Condition {
 	 * Checks if the Property Condition is verified in the agent's memory (KB + AM)
 	 * @return true if the condition is verified, false otherwise
 	 */
-	public boolean CheckCondition(AgentModel am) {
+	public float CheckCondition(AgentModel am) {
 		if (!getName().isGrounded() && !_value.isGrounded())
-			return false;
-		return true;
+			return  0;
+		return  1;
 	}
-
+	
 	/**
 	 * Gets the Property's test value
 	 * @return the test value of the property
 	 */
-	public Name GetValue() {
+	public Name getValue() {
 		return _value;
 	}
 	
@@ -244,13 +253,13 @@ public class PropertyCondition extends Condition {
 			val = groundValue.evaluate(perspective.getMemory());
 			if (val != null) {
 				bindings = new ArrayList<Substitution>();
-				if(Unifier.Unify(value, Name.ParseName((String) val), bindings))
+				if(Unifier.Unify(value, Name.ParseName(val.toString()), bindings))
 					return bindings;
 				else return null;
 			}
 			else return null;
 		}
-		else if (this.CheckCondition(am)) {
+		else if (this.CheckCondition(am)==1) {
 			return new ArrayList<Substitution>();
 		}
 		else return null;

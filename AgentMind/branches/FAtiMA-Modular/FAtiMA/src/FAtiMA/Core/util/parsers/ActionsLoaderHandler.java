@@ -42,14 +42,14 @@
 
 package FAtiMA.Core.util.parsers;
 
-import java.util.ArrayList;
 import java.util.ListIterator;
-
 
 import org.xml.sax.Attributes;
 
+import FAtiMA.Core.ActionLibrary;
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.conditions.EmotionCondition;
+import FAtiMA.Core.conditions.EmotionalEventCondition;
 import FAtiMA.Core.conditions.MoodCondition;
 import FAtiMA.Core.conditions.NewEventCondition;
 import FAtiMA.Core.conditions.PastEventCondition;
@@ -69,21 +69,22 @@ import FAtiMA.Core.wellFormedNames.Symbol;
  * @author João Dias
  *
  */
-public class ActionsLoaderHandler extends ReflectXMLHandler {
+public class ActionsLoaderHandler extends ReflectXMLHandler2 {
 	private Step _currentOperator;
-	private ArrayList<Step> _operators; 
+	//private ArrayList<Step> _operators; 
+	private ActionLibrary _actionLibrary;
 	private boolean _precondition;
 	private float _probability;
 	//private Substitution _self;
 	private AgentModel _am;
 	
-	public ActionsLoaderHandler(AgentModel am) {
-		_operators = new ArrayList<Step>();
+	public ActionsLoaderHandler(ActionLibrary actionLibrary, AgentModel am) {
+		//_operators = new ArrayList<Step>();
+		_actionLibrary = actionLibrary;
 		_precondition = true;
 		_am = am;
 		//_self = new Substitution(new Symbol("[SELF]"), new Symbol(Constants.SELF));
 	}
-	
 	
 	public void Action(Attributes attributes) {
 		Name action;
@@ -104,7 +105,8 @@ public class ActionsLoaderHandler extends ReflectXMLHandler {
 			probability = 0.1f;
 		}
 		_currentOperator = new Step(new Symbol("[AGENT]"),action,probability);
-		_operators.add(_currentOperator);
+		_actionLibrary.addAction(_currentOperator);
+		//_operators.add(_currentOperator);
 		
 		//action.MakeGround(this._self);
 		if(action.toString().startsWith("Inference"))
@@ -158,12 +160,32 @@ public class ActionsLoaderHandler extends ReflectXMLHandler {
 		}
 	}
 	
+	public void EmotionalEvent(Attributes attributes)
+	{
+		EmotionalEventCondition ec;
+		try
+		{
+			ec = EmotionalEventCondition.ParseEmotionalEventCondition(attributes);
+			//ec.MakeGround(_self);
+			if(_precondition) 
+			  	_currentOperator.AddPrecondition(ec);
+			else {
+			  	String operatorName = _currentOperator.getName().GetFirstLiteral().toString();
+			  	_currentOperator.AddEffect(new Effect(_am, operatorName,_probability, ec));	
+			}
+		}
+		catch(InvalidEmotionTypeException e)
+		{
+			e.printStackTrace();
+		}
+	}
+	
 	/**
 	 * @return
 	 */
-	public ArrayList<Step> getOperators() {
+	/*public ArrayList<Step> getOperators() {
 		return _operators;
-	}
+	}*/
     
 	public void MoodCondition(Attributes attributes)
     {

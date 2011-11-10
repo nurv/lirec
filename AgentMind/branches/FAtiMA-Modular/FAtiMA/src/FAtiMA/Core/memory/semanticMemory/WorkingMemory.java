@@ -81,7 +81,7 @@ public class WorkingMemory implements Serializable {
 	 * Creates a new Empty WorkingMemory
 	 */
 	public WorkingMemory() {
-		_wM = new KnowledgeSlot("WM");
+		_wM = new KnowledgeSlot("WM","WM");
 		_factList = new ArrayList<KnowledgeSlot>(WorkingMemory.MAXENTRY);
 		_newKnowledge = false;
 		_newFacts = new ArrayList<KnowledgeSlot>();
@@ -169,8 +169,6 @@ public class WorkingMemory implements Serializable {
 	 */
 	public void RearrangeWorkingMemory(Name predicate, Object value)
 	{
-		KnowledgeSlot ksNew = new KnowledgeSlot(predicate.toString());
-		ksNew.setValue(value);
 		KnowledgeSlot ks;
 		ArrayList<KnowledgeSlot> tempFactList = new ArrayList<KnowledgeSlot>(_factList); 
 		ListIterator<KnowledgeSlot> li = tempFactList.listIterator();
@@ -178,12 +176,10 @@ public class WorkingMemory implements Serializable {
 			while(li.hasNext())
 			{
 				ks = (KnowledgeSlot) li.next();
-				if(ks.getName().equals(predicate.toString()))
+				if(ks.getDisplayName().equals(predicate.toString()))
 				{
 					_factList.remove(ks);
-					_factList.add(ksNew);
-					if(_changeList.contains(ks)) _changeList.remove(ks);
-					_changeList.add(ksNew);
+					_factList.add(ks);
 					return;
 				}
 			}
@@ -270,13 +266,12 @@ public class WorkingMemory implements Serializable {
 				{
 					newProperty = true;
 					_newKnowledge = true;
-					aux = new KnowledgeSlot(l.toString());
+					aux = new KnowledgeSlot(l.toString(),property.toString());
 					currentSlot.put(l.toString(), aux);
 				} 
 			}
 			
-			if(aux.getValue() == null || 
-					!aux.getValue().equals(value))
+			if(aux.getValue() == null || !aux.getValue().equals(value))
 			{
 				aux.setValue(value);
 				_newKnowledge = true;
@@ -289,11 +284,8 @@ public class WorkingMemory implements Serializable {
 			
 			if(newProperty)
 			{	
-				KnowledgeSlot ks = new KnowledgeSlot(property.toString());
-				ks.setValue(value);
-			 	_factList.add(ks);
-				_changeList.add(ks); // new info
-				_newFacts.add(ks);
+			 	_factList.add(aux);
+				_changeList.add(aux); // new info				
 				//System.out.println("New property knowledge: " + ks.toString());
 			}
 			else
@@ -307,7 +299,7 @@ public class WorkingMemory implements Serializable {
 				KnowledgeSlot temp = (KnowledgeSlot) _factList.get(0);
 				_factList.remove(0);
 				
-				Name tempName = Name.ParseName(temp.getName());
+				Name tempName = Name.ParseName(temp.getDisplayName());
 				ArrayList<Symbol> literals = tempName.GetLiteralList();
 				li = literals.listIterator();
 			
@@ -334,7 +326,7 @@ public class WorkingMemory implements Serializable {
 	            }*/
 				currentSlot.remove(l.toString());
 				
-				kb.Tell(tempName, temp.getValue());		
+				kb.Tell(tempName, aux.getValue());		
 				//_changeList.remove(temp);
 			}
 		}

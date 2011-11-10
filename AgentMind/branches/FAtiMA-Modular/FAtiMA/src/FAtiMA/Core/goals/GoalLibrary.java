@@ -31,17 +31,11 @@
 
 package FAtiMA.Core.goals;
 
-import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
 import FAtiMA.Core.exceptions.GoalLibParsingException;
-import FAtiMA.Core.util.AgentLogger;
-import FAtiMA.Core.util.parsers.GoalLoaderHandler;
 import FAtiMA.Core.wellFormedNames.Name;
 
 
@@ -61,17 +55,23 @@ public class GoalLibrary implements Serializable {
 	
 	/**
 	 * Creates a new GoalLibrary
+	 */
+	public GoalLibrary()  {
+		_goals = new ArrayList<Goal>();
+	}
+	/**
+	 * Loads the goal's library file
 	 * @param file - the file that contains the information about goals and that
 	 * 				 will be parsed
-	 * @param self - the agent's name 
+	 *  
 	 * @throws GoalLibParsingException - thrown when there is a parsing error when reading
 	 * 		   the GoalLibrary file
 	 */
-	public GoalLibrary(String file) throws GoalLibParsingException {
+	/*public void LoadGoalsFile(String file) throws GoalLibParsingException 
+	{
 		GoalLoaderHandler g = Load(file);
 		_goals = g.GetGoals();
-		//SetGoalLinks();
-	}
+	}*/
 	
 	public void AddGoal(Goal g)
 	{
@@ -114,7 +114,7 @@ public class GoalLibrary implements Serializable {
 		return null;
 	}
 
-	private GoalLoaderHandler Load(String xmlFile) throws GoalLibParsingException {
+	/*private GoalLoaderHandler Load(String xmlFile) throws GoalLibParsingException {
 		AgentLogger.GetInstance().logAndPrint("LOAD: " + xmlFile);
 		
 		//com.sun.xml.parser.Parser parser;
@@ -132,5 +132,5 @@ public class GoalLibrary implements Serializable {
 		catch (Exception ex) {
 			throw new GoalLibParsingException("Error parsing the Goal Library file.",ex);
 		}
-	}
+	}*/
 }

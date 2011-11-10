@@ -108,7 +108,7 @@ public class KnowledgeBase implements Serializable {
 	 * Creates a new Empty KnowledgeBase
 	 */
 	public KnowledgeBase() {
-		_kB = new KnowledgeSlot("KB");
+		_kB = new KnowledgeSlot("KB","KB");
 		_factList = new ArrayList<KnowledgeSlot>();
 		_inferenceOperators = new ArrayList<Step>();
 	}
@@ -253,12 +253,11 @@ public class KnowledgeBase implements Serializable {
 					aux = currentSlot.get(l.toString());
 				} else {
 					newProperty = true;
-					aux = new KnowledgeSlot(l.toString());
+					aux = new KnowledgeSlot(l.toString(),property.toString());
 					currentSlot.put(l.toString(), aux);
 				} 
 			}
-			if(aux.getValue() == null || 
-					!aux.getValue().equals(value))
+			if(aux.getValue() == null || !aux.getValue().equals(value))
 			{
 				aux.setValue(value);
 				//System.out.println("New facts in KB: " + aux.toString());
@@ -266,9 +265,8 @@ public class KnowledgeBase implements Serializable {
 			
 			if(newProperty)
 			{
-				KnowledgeSlot ks = new KnowledgeSlot(property.toString());
-				ks.setValue(value);
-				_factList.add(ks);
+		
+				_factList.add(aux);
 				//System.out.println("New property knowledge in KB: " + ks.toString());
 			}
 			else

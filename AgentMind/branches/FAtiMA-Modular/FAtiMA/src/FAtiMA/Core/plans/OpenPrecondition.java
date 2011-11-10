@@ -57,7 +57,7 @@ public class OpenPrecondition implements Serializable {
 	/**
 	 * Creates a new OpenPrecondition
 	 * @param step - the ID of the step that needs the precondition to be satisfied
-	 * @param cond - the ID of the precondition (in the step) that needs to be satified 
+	 * @param cond - the ID of the precondition (in the step) that needs to be satisfied 
 	 */
 	public OpenPrecondition(Integer step, Integer cond) {
 		this._condition = cond;

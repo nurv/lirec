@@ -30,6 +30,8 @@
  * João Dias: 14/03/2006 - Improved Unification Algorithm - Now works much better 
  * João Dias: 14/05/2006 - Added the Unify(Name,Name) Method
  * João Dias: 12/07/2006 - Replaced the deprecated Ground methods for the new ones
+ * João Dias: 05/2011    - Added the Desunify method
+ * João Dias: 05/08/2011 - Added the PartialUnify method
  */
 
 package FAtiMA.Core.wellFormedNames;
@@ -81,6 +83,44 @@ public abstract class Unifier {
 			return aux1.equals(aux2);
 		}
 		bindAux = FindSubst(aux1, aux2);
+		if (bindAux == null)
+			return false;
+		bindings.addAll(bindAux);
+		return true;
+	}
+	
+	/**
+     * @see Name
+     * @see Substitution
+     * 
+     * Unifying Method similar to Unify but with an important difference. If one of the unifying names
+     * is smaller or bigger than the other, this method considers that the names can still be partially unifyable. 
+     * The regular Unify method will always return false in such situations. 
+     * 
+     * @param n1 - The first Name
+     * @param n2 - The second Name
+     * @param binding - Place an empty Substitution List here
+     * @return True if the names are unifyable, even if they do not have the same size one can be unified
+     *         with the initial partof the other, 
+     *         in this case the bindings list will
+     * 		   contain the found Substitutions, otherwise it will be empty
+     */
+	public static boolean PartialUnify(Name n1, Name n2, ArrayList<Substitution> bindings) {
+		Name aux1;
+		Name aux2;
+		ArrayList<Substitution> bindAux;
+
+		if (n1 == null || n2 == null)
+			return false;
+		//parto do principio que a lista de bindings está consistente
+		aux1 = (Name) n1.clone();
+		aux2 = (Name) n2.clone();
+		aux1.MakeGround(bindings);
+		aux2.MakeGround(bindings);
+		if (aux1.isGrounded() && aux2.isGrounded()) {
+			return aux1.toString().startsWith(aux2.toString()) || aux2.toString().startsWith(aux1.toString());
+		}
+		bindAux = FindPartialSubst(aux1, aux2);
 		if (bindAux == null)
 			return false;
 		bindings.addAll(bindAux);
@@ -209,6 +249,30 @@ public abstract class Unifier {
 
 		if (li2.hasNext())
 			return null;
+		return bindings;
+	}
+	
+	private static ArrayList<Substitution> FindPartialSubst(Name n1, Name n2) {
+		ListIterator<Symbol> li1;
+		ListIterator<Symbol> li2;
+
+		Symbol l1;
+		Symbol l2;
+		ArrayList<Substitution> bindings = new ArrayList<Substitution>();
+
+		li1 = n1.GetLiteralList().listIterator();
+		li2 = n2.GetLiteralList().listIterator();
+
+		while (li1.hasNext()) {
+			l1 = li1.next();
+			if (li2.hasNext()) {
+				l2 = li2.next();
+				if (!FindSubst(l1, l2, bindings))
+					return null;
+			}
+			else return bindings;
+		}
+
 		return bindings;
 	}
 }

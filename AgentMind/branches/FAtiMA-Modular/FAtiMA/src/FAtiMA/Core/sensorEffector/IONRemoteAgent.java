@@ -339,6 +339,7 @@ public class IONRemoteAgent extends RemoteAgent {
 			if(_currentAction.getAction().GetFirstLiteral().toString().equals(event.GetAction()))
 			{
 				_currentAction = null;
+				AgentLogger.GetInstance().logAndPrint("SELF Action finished - can act again");
 				_canAct = true;
 			}
 		}

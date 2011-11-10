@@ -70,6 +70,7 @@ public class MemoryTable extends JTable {
         this._model.addColumn("Intention");
         this._model.addColumn("Target");
         this._model.addColumn("Status");
+        this._model.addColumn("Meaning");
         this._model.addColumn("Path");
         this._model.addColumn("Object");
         this._model.addColumn("Desirability");
@@ -90,13 +91,14 @@ public class MemoryTable extends JTable {
 		rowData[3] = detail.getIntention();
         rowData[4] = detail.getTarget();
         rowData[5] = detail.getStatus();
-        rowData[6] = detail.getMultimediaPath();
-        rowData[7] = detail.getObject();
-        rowData[8] = detail.getDesirability();
-        rowData[9] = detail.getPraiseworthiness();
-        rowData[10] = detail.getEmotion().getType() + "-" + detail.getEmotion().GetPotential();
-        rowData[11] = detail.getTime(); 
-        rowData[12] = detail.getLocation();
+        rowData[6] = detail.getSpeechActMeaning();
+        rowData[7] = detail.getMultimediaPath();
+        rowData[8] = detail.getObject();
+        rowData[9] = detail.getDesirability();
+        rowData[10] = detail.getPraiseworthiness();
+        rowData[11] = detail.getEmotion().getType() + "-" + detail.getEmotion().GetPotential();
+        rowData[12] = detail.getTime(); 
+        rowData[13] = detail.getLocation();
         
         this._model.addRow(rowData);
 	}

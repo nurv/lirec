@@ -123,6 +123,8 @@ public class PredicateCondition extends Condition {
     public static PredicateCondition ParsePredicate(Attributes attributes) {
 		String aux;
 		Symbol ToM;
+		
+		PredicateCondition cond;
 	
 		Name name;
 		boolean positive = true;
@@ -143,6 +145,16 @@ public class PredicateCondition extends Condition {
 			ToM = new Symbol(aux);
 		}
 		
+		cond = new PredicateCondition(positive,name,ToM);
+		
+		aux = attributes.getValue("static");
+		if(aux != null)
+		{
+			if(aux.equalsIgnoreCase("true"))
+			{
+				cond.setStatic(true);
+			}
+		}
 		
 		return new PredicateCondition(positive,name,ToM);
 	}
@@ -155,21 +167,25 @@ public class PredicateCondition extends Condition {
 	 * @return true if the Predicate is verified, false otherwise
 	 * @see KnowledgeBase
 	 */
-	public boolean CheckCondition(AgentModel am) {
+	public float CheckCondition(AgentModel am) {
 		boolean result;
 		AgentModel perspective = am.getModelToTest(getToM());
-		if(!getName().isGrounded()) return false;
+		if(!getName().isGrounded()) return 0;
 		
 		
-		result = perspective.getMemory().getSemanticMemory().AskPredicate(getName()); 
-		return _positive == result;
+		result = perspective.getMemory().getSemanticMemory().AskPredicate(getName());
+		if(_positive == result)
+		{
+			return 1;
+		}
+		else return 0;
 	}
 	
 	/**
 	 * Gets the predicates's value - the object compared against the condition's name
 	 * @return the predicates's value
 	 */
-	public Name GetValue() {
+	public Name getValue() {
 		if(_positive) return new Symbol("True");
 		else return new Symbol("False");
 	}
@@ -204,7 +220,7 @@ public class PredicateCondition extends Condition {
      * @return returns all set of Substitutions that make the condition valid.
 	 */
 	protected ArrayList<Substitution> GetValueBindings(AgentModel am) {
-		if(CheckCondition(am)) {
+		if(CheckCondition(am)==1) {
 			return new ArrayList<Substitution>();
 		}
 		else return null;

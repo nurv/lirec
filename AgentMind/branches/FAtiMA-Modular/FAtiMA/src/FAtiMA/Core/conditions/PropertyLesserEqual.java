@@ -81,7 +81,7 @@ public class PropertyLesserEqual extends PropertyCondition {
      * Checks if the Property Condition is verified in the agent's Memory (KB + AM)
      * @return true if the condition is verified, false otherwise
      */
-	public boolean CheckCondition(AgentModel am) {
+	public float CheckCondition(AgentModel am) {
 		Object propertyValue;
 		Object value;
 		Float aux;
@@ -89,17 +89,24 @@ public class PropertyLesserEqual extends PropertyCondition {
 
         AgentModel perspective = am.getModelToTest(getToM());
 
-        if (!super.CheckCondition(am))
-            return false;
+        if (super.CheckCondition(am)!=1)
+            return 0;
         
         propertyValue = this.getName().evaluate(perspective.getMemory());
-        value = this.GetValue().evaluate(perspective.getMemory());
+        value = this.getValue().evaluate(perspective.getMemory());
 
 		if (propertyValue == null || value == null || propertyValue =="null" || value == "null")
-			return false;
+			return 0;
 		aux = new Float(propertyValue.toString());
 		aux2 = new Float(value.toString());
-		return aux.floatValue() <= aux2.floatValue();
+		if(aux.floatValue() <= aux2.floatValue())
+		{
+			return 1;
+		}
+		else
+		{
+			return 0;
+		}
 	}
 
 
@@ -116,6 +123,6 @@ public class PropertyLesserEqual extends PropertyCondition {
      * @return the Converted String
      */
 	public String toString() {
-		return getName() + " <= " + GetValue();
+		return getName() + " <= " + getValue();
 	}
 }

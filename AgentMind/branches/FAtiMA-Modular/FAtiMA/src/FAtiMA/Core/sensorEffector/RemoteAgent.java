@@ -81,7 +81,6 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.StringTokenizer;
 
@@ -95,7 +94,6 @@ import FAtiMA.Core.util.AgentLogger;
 import FAtiMA.Core.util.parsers.SocketListener;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Substitution;
-import FAtiMA.Core.wellFormedNames.SubstitutionSet;
 import FAtiMA.Core.wellFormedNames.Symbol;
 
 
@@ -132,6 +130,7 @@ public abstract class RemoteAgent extends SocketListener {
 	
 	protected AgentCore _agent;
 	protected boolean _canAct;
+	protected boolean _canLook;
 	
 	//protected FileWriter _fileWriter;
 	//protected File _logFile;
@@ -150,6 +149,7 @@ public abstract class RemoteAgent extends SocketListener {
 		_lookAtList = new ArrayList<String>();
 		_actions = new ArrayList<ValuedAction>();
 		_canAct = true;
+		_canLook = true;
 		_running = true;
 		_processActionStrategy = new DefaultProcessActionStrategy();
 		
@@ -163,16 +163,12 @@ public abstract class RemoteAgent extends SocketListener {
 	
 	protected void waitForServerAck() throws IOException
 	{
-		byte[] buff = new byte[this.maxSize];
-		if(this.socket.getInputStream().read(buff)<=0) {
-			throw new IOException("Server Does not Confirm!");
+		String msg = this.reader.readLine();
+		
+		if(!msg.equals("OK")) {
+			throw new IOException("Error: " + msg);
 		}
 		
-		String aux = new String(buff,"UTF-8");
-		String aux2 = (aux.split("\n"))[0];
-		if(!aux2.equals("OK")) {
-			throw new IOException("Error: " + aux);
-		}
 	}
 	
 	
@@ -192,6 +188,7 @@ public abstract class RemoteAgent extends SocketListener {
 	 */
 	public final void Clear() {
 		_canAct = true;
+		_canLook = true;
 		_actions.clear();
 	}
 	
@@ -335,12 +332,12 @@ public abstract class RemoteAgent extends SocketListener {
 			
 			if(_lookAtList.size() > 0)
 			{
-				if(_canAct)
+				if(_canLook)
 				{
 					//there are still some objects/agents that the character hasn't looked yet
 					AgentLogger.GetInstance().log("Sending Look-AT: " + _lookAtList.get(0));
 					Send("look-at " + _lookAtList.remove(0));
-					_canAct = false;
+					_canLook = false;
 				}
 			}
 		}
@@ -486,7 +483,7 @@ public abstract class RemoteAgent extends SocketListener {
 			/* determining the context variables victim,bully,bystander and defender
 			 * its harder but we can do it nonetheless
 			 */
-			SubstitutionSet ss;
+			/*SubstitutionSet ss;
 			Name n1 = Name.ParseName("[x](role)");
 			Name n2 = Name.ParseName("[x](displayName)");
 			Name auxName;
@@ -512,7 +509,7 @@ public abstract class RemoteAgent extends SocketListener {
 						speechAct.AddContextVariable(role.toLowerCase(), displayName);
 					}
 				}
-			}
+			}*/
 			
 			if(speechAct.getMeaning().equals("episodesummary"))
 			{
@@ -615,6 +612,7 @@ public abstract class RemoteAgent extends SocketListener {
 	    	s.writeObject(_lookAtList);
 	    	s.writeObject(_userName);
 	    	s.writeObject(new Boolean(_canAct));
+	    	s.writeObject(new Boolean(_canLook));
 	    	//s.writeObject(new Boolean(_running));
 	    	
         	s.flush();
@@ -639,6 +637,7 @@ public abstract class RemoteAgent extends SocketListener {
 			this._lookAtList = (ArrayList<String>) s.readObject();
 			this._userName = (String) s.readObject();
 			this._canAct = ((Boolean) s.readObject()).booleanValue();
+			this._canLook = ((Boolean) s.readObject()).booleanValue();
 			//this._running = ((Boolean) s.readObject()).booleanValue();
 			
 			s.close();
@@ -702,6 +701,7 @@ public abstract class RemoteAgent extends SocketListener {
 		{
 			_agent.Reset();
 			_canAct = true;
+			_canLook = true;
 			//_running = true;
 		}
 		else if(action.equals("Save"))
@@ -794,7 +794,7 @@ public abstract class RemoteAgent extends SocketListener {
 		//Event event = new Event(_agent.name(), "look-at", subject);
 		//_agent.PerceiveEvent(event);
 		
-		this._canAct = true;
+		this._canLook = true;
 	}
 	
 	protected void EntityAddedPerception(String perc)

@@ -35,7 +35,6 @@
 package FAtiMA.Core.conditions;
 
 import java.util.ArrayList;
-import java.util.ListIterator;
 
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.memory.episodicMemory.ActionDetail;
@@ -43,7 +42,6 @@ import FAtiMA.Core.memory.episodicMemory.AutobiographicalMemory;
 import FAtiMA.Core.memory.episodicMemory.SearchKey;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.wellFormedNames.Name;
-import FAtiMA.Core.wellFormedNames.Substitution;
 import FAtiMA.Core.wellFormedNames.Symbol;
 
 
@@ -93,9 +91,9 @@ public class RecentEventCondition extends PastEventCondition {
 	 * @return true if the EventPredicate is verified, false otherwise
 	 * @see AutobiographicalMemory
 	 */
-	public boolean CheckCondition(AgentModel am) {
+	public float CheckCondition(AgentModel am) {
 		
-		if(!getName().isGrounded()) return false;
+		if(!getName().isGrounded()) return 0;
 		
 		if(getPositive() == false){
 			System.out.print("");
@@ -103,8 +101,11 @@ public class RecentEventCondition extends PastEventCondition {
 		
 		boolean result = getPositive() == am.getMemory().getEpisodicMemory().ContainsRecentEvent(GetSearchKeys()); 
  
-		
-		return result; 	
+		if(result)
+		{
+			return 1;
+		}
+		else return 0; 	
 	}
 	
 	protected ArrayList<ActionDetail> GetPossibleBindings(AgentModel am)

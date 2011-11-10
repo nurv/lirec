@@ -40,11 +40,12 @@
 
 package FAtiMA.Core.util.parsers;
 
-import java.util.ArrayList;
-
 import org.xml.sax.Attributes;
 
+import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.conditions.EmotionCondition;
+import FAtiMA.Core.conditions.EmotionalEventCondition;
+import FAtiMA.Core.conditions.EquationCondition;
 import FAtiMA.Core.conditions.MoodCondition;
 import FAtiMA.Core.conditions.NewEventCondition;
 import FAtiMA.Core.conditions.PastEventCondition;
@@ -54,20 +55,23 @@ import FAtiMA.Core.conditions.RecentEventCondition;
 import FAtiMA.Core.exceptions.InvalidEmotionTypeException;
 import FAtiMA.Core.goals.ActivePursuitGoal;
 import FAtiMA.Core.goals.Goal;
+import FAtiMA.Core.goals.GoalLibrary;
 import FAtiMA.Core.goals.InterestGoal;
 import FAtiMA.Core.util.Constants;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Substitution;
 import FAtiMA.Core.wellFormedNames.Symbol;
 
-public class GoalLoaderHandler extends ReflectXMLHandler {
+public class GoalLoaderHandler extends ReflectXMLHandler2 {
     protected String _conditionType;
     protected Goal _currentGoal;
-    protected ArrayList<Goal> _goals;
+    //protected ArrayList<Goal> _goals;
+    protected GoalLibrary _goalLibrary;
     private Substitution _self;
 
-    public GoalLoaderHandler() {
-      _goals = new ArrayList<Goal>();
+    public GoalLoaderHandler(AgentModel am) {
+      //_goals = new ArrayList<Goal>();
+      _goalLibrary = am.getGoalLibrary();
       _self = new Substitution(new Symbol("[SELF]"), new Symbol(Constants.SELF));
     }
     
@@ -75,18 +79,20 @@ public class GoalLoaderHandler extends ReflectXMLHandler {
     	Name description;
     	description = Name.ParseName(attributes.getValue("name"));
     	_currentGoal = new ActivePursuitGoal(description);
-    	_goals.add(_currentGoal);
+    	_goalLibrary.AddGoal(_currentGoal);
+    	//_goals.add(_currentGoal);
     }
 
-    public ArrayList<Goal> GetGoals() {
+    /*public ArrayList<Goal> GetGoals() {
       return _goals;
-    }
+    }*/
     
     public void InterestGoal(Attributes attributes) {
     	Name description;
     	description = Name.ParseName(attributes.getValue("name"));
     	_currentGoal = new InterestGoal(description);
-    	_goals.add(_currentGoal);
+    	_goalLibrary.AddGoal(_currentGoal);
+    	//_goals.add(_currentGoal);
     }
 
 
@@ -94,11 +100,32 @@ public class GoalLoaderHandler extends ReflectXMLHandler {
       _conditionType = "PreConditions";
     }
     
+    public void Equation(Attributes attributes) {
+    	EquationCondition cond;
+    	cond = EquationCondition.ParseEquation(attributes);
+    	cond.MakeGround(this._self);
+    	_currentGoal.AddCondition(_conditionType, cond);
+    }
     
+    public void EmotionalEvent(Attributes attributes)
+    {
+    	EmotionalEventCondition cond;
+    	
+    	try
+    	{
+    		cond = EmotionalEventCondition.ParseEmotionalEventCondition(attributes);
+        	cond.MakeGround(this._self);
+        	_currentGoal.AddCondition(_conditionType, cond);
+    	}
+    	catch(Exception e)
+    	{
+    		e.printStackTrace();
+    	}
+    	
+    }
     
     public void Predicate(Attributes attributes) {
     	PredicateCondition cond;
-    	
     	cond = PredicateCondition.ParsePredicate(attributes);
     	cond.MakeGround(this._self);
 		_currentGoal.AddCondition(_conditionType, cond); 

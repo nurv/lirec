@@ -23,7 +23,7 @@ public class DefaultDetectThreatStrategy implements Serializable, IDetectThreatS
 		
 		if(c1.getName().equals(c2.getName())) 
 		{
-			different = !c1.GetValue().equals(c2.GetValue());
+			different = !c1.getValue().equals(c2.getValue());
 			if(c2 instanceof PropertyNotEqual)
 			{
 				return !different;

@@ -316,7 +316,7 @@ public class PastEventCondition extends PredicateCondition {
 		ArrayList<ActionDetail> details;
 		
 		if (getName().isGrounded()) {
-			if(CheckCondition(am))
+			if(CheckCondition(am)==1)
 			{
 				bindingSets.add(new SubstitutionSet());
 				return bindingSets;
@@ -393,11 +393,18 @@ public class PastEventCondition extends PredicateCondition {
 	 * @return true if the PastPredicate is verified, false otherwise
 	 * @see AutobiographicalMemory
 	 */
-	public boolean CheckCondition(AgentModel am) {
+	public float CheckCondition(AgentModel am) {
 		
-		if(!(getName().isGrounded())) return false;
+		if(!(getName().isGrounded())) return 0;
 		
-		return getPositive() == am.getMemory().getEpisodicMemory().ContainsPastEvent(GetSearchKeys()); 
+		if(getPositive() == am.getMemory().getEpisodicMemory().ContainsPastEvent(GetSearchKeys()))
+		{
+			return 1;
+		}
+		else
+		{
+			return 0;
+		}
 	}
 	
 	protected ArrayList<SearchKey> GetSearchKeys()

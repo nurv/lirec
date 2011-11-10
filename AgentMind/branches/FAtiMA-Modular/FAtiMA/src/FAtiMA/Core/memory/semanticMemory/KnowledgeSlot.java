@@ -58,15 +58,18 @@ public class KnowledgeSlot implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	
+	private KnowledgeSlot _parent;
 	private HashMap<String,Object> _children;
     private String _name;
+    private String _displayName;
     private Object _value;
     
     /**
      * Creates an empty KnowledgeSpot, identified by the received name
      * @param name - the name that identifies the KnowledgeSlot
      */
-    public KnowledgeSlot(String name) {
+    public KnowledgeSlot(String name, String displayName) {
+    	_displayName = displayName;
         _name = name;
         _children = new HashMap<String,Object>();
     }
@@ -119,6 +122,14 @@ public class KnowledgeSlot implements Serializable {
 	 */
 	public String getName() {
 	    return _name;
+	}
+	
+	/**
+	 * Gets the KnowledgeSlot display Name, usefull for displaying the KS in the ShortTermMemory Panel for isntance 
+	 * @return the KnowledgeSlot display Name
+	 */
+	public String getDisplayName() {
+		return _displayName;
 	}
     
     /**

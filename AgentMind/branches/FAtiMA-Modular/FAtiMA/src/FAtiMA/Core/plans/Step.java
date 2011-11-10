@@ -272,7 +272,7 @@ public class Step implements IPlanningOperator, Cloneable, Serializable {
 			//we only update the probability if the condition is grounded 
 			if(e.GetEffect().isGrounded())
 			{
-				if (e.GetEffect().CheckCondition(am)) {
+				if (e.GetEffect().CheckCondition(am)==1) {
 					e.IncreaseProbability(am);
 				}
 				else {
@@ -367,7 +367,7 @@ public class Step implements IPlanningOperator, Cloneable, Serializable {
 		
 		for(Condition c : _preconditions)
 		{
-			if(!c.CheckCondition(am)) return false;
+			if(c.CheckCondition(am)!=1) return false;
 		}
 		
 		return true;

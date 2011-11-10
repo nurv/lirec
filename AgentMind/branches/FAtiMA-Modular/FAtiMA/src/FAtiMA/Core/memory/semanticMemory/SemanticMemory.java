@@ -268,7 +268,7 @@ public class SemanticMemory implements Serializable {
     		{
     			cond = eff.GetEffect();
     			perspective = am.getModelToTest(cond.getToM());
-    			perspective.getMemory().getSemanticMemory().Tell(cond.getName(), cond.GetValue().toString());
+    			perspective.getMemory().getSemanticMemory().Tell(cond.getName(), cond.getValue().toString());
     			//System.out.println("InferEffects");    			
     		}
     	}

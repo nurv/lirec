@@ -162,7 +162,7 @@ public class MoodCondition extends Condition {
 	 * Gets the condition's value - the object compared against the condition's name
 	 * @return the condition's value
 	 */
-	 public Name GetValue()
+	 public Name getValue()
 	 {
 		return new Symbol(Float.toString(this._value));
 	 }
@@ -172,38 +172,53 @@ public class MoodCondition extends Condition {
 	 * @return true if the Predicate is verified, false otherwise
 	 * @see KnowledgeBase
 	 */
-	public boolean CheckCondition(AgentModel am) {
+	public float CheckCondition(AgentModel am) {
 		
+		boolean result = false;
 		float currentMood = am.getEmotionalState().GetMood();
 		
 		switch(this._operator)
 		{
 			case operatorEqual:
 			{
-				return currentMood == this._value;
+				result = currentMood == this._value;
+				break;
 			}
 			case operatorNotEqual:
 			{
-				return currentMood != this._value;
+				result = currentMood != this._value;
+				break;
 			}
 			case operatorGreater:
 			{
-				return currentMood > this._value;
+				result = currentMood > this._value;
+				break;
 			}
 			case operatorGreaterEqual:
 			{
-				return currentMood >= this._value;
+				result = currentMood >= this._value;
+				break;
 			}
 			case operatorLesser:
 			{
-				return currentMood < this._value;
+				result = currentMood < this._value;
+				break;
 			}
 			case operatorLesserEqual:
 			{
-				return currentMood <= this._value;
+				result = currentMood <= this._value;
+				break;
 			}
 		}
-		return false;
+		
+		if(result)
+		{
+			return 1;
+		}
+		else
+		{
+			return 0;
+		}
 	}
 	
 	/**
@@ -213,7 +228,7 @@ public class MoodCondition extends Condition {
 	 * @see EmotionalState
 	 */
 	public ArrayList<SubstitutionSet> GetValidBindings(AgentModel am) {
-		if(CheckCondition(am))
+		if(CheckCondition(am)==1)
 		{
 			ArrayList<SubstitutionSet> bindings = new ArrayList<SubstitutionSet>();
 			bindings.add(new SubstitutionSet());
@@ -224,7 +239,7 @@ public class MoodCondition extends Condition {
 	
 	public ArrayList<Substitution> GetValueBindings(AgentModel am)
 	{
-		if(CheckCondition(am)) {
+		if(CheckCondition(am)==1) {
 			return new ArrayList<Substitution>();
 		}
 		else return null;

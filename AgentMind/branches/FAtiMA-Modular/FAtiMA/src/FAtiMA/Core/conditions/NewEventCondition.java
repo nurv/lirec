@@ -36,25 +36,28 @@ public class NewEventCondition extends RecentEventCondition {
 		return new NewEventCondition(this);		
 	}
 
-	public boolean CheckCondition(AgentModel am) {
+	public float CheckCondition(AgentModel am) {
 		boolean conditionVerified;
 		
 
 		if(!getName().isGrounded()){
-			return false;
+			return 0;
 		}
 		
 		if(this._conditionAlreadyVerified){
-			return true;
+			return 1;
 		}
 	
 		conditionVerified = (getPositive() == am.getMemory().getEpisodicMemory().ContainsNewEvent(GetSearchKeys()));
 		
 		if(conditionVerified){
 			_conditionAlreadyVerified = true;
+			return 1;
 		}
-		
-		return conditionVerified;
+		else
+		{
+			return 0;
+		}
 	}
 	
 	protected ArrayList<ActionDetail> GetPossibleBindings(AgentModel am)

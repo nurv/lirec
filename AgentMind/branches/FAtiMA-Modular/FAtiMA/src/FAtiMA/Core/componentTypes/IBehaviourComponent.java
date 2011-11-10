@@ -7,6 +7,6 @@ public interface IBehaviourComponent extends IComponent{
 	
 	public ValuedAction actionSelection(AgentModel am);
 	
-	public void actionSelectedForExecution(ValuedAction va);
+	public void actionSelectedForExecution(AgentModel am, ValuedAction va);
 
 }

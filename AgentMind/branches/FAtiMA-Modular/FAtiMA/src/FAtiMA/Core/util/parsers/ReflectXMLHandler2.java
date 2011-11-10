@@ -4,14 +4,22 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
+import org.xml.sax.Locator;
+import org.xml.sax.SAXParseException;
+import org.xml.sax.helpers.DefaultHandler;
 
-public abstract class ReflectXMLHandler2 {
+import FAtiMA.Core.util.VersionChecker;
+
+public abstract class ReflectXMLHandler2 extends DefaultHandler {
     // used for reflect
     Class<?>[] argTypes = {Attributes.class};
     Class<?>[] charArgTypes = {String.class};
     Class<? extends ReflectXMLHandler2> cl;
+    String lastTag;
 
     public ReflectXMLHandler2() {
+    	super();
         cl = this.getClass();
     }
 
@@ -70,5 +78,73 @@ public abstract class ReflectXMLHandler2 {
       catch(IllegalAccessException e) {
         e.printStackTrace();
       }
+    }
+    
+    public void characters(char[] ch, int start, int length) {
+        callCharMethod(lastTag + "Characters", new String(ch).substring(start,start+length));
+        //System.out.println("start " + start + " lehngth " + length);
+        //System.out.println("characters = '" + new String(ch).substring(start,start+length) + "')");
+    }
+
+    public void endDocument() {
+//        System.out.println("endDocument");
+    }
+    
+    public void endElement(String namespaceURI, String localName, String qName)
+    {
+    	if (VersionChecker.runningOnAndroid())
+    		callEndMethod(localName + "End");
+    	else
+    		callEndMethod(qName + "End");
+    }
+
+    /* Dealing with errors */
+    public void error(SAXParseException e) {
+    }
+
+    public void fatalError(SAXParseException e) {
+    }
+
+    public void ignorableWhitespace(char[] ch, int start, int length) {
+//        System.out.println("start " + start + " length " + length);
+//        System.out.println("whitespaces = '" + new String(ch).substring(start,start+length) + "')");
+    }
+
+    /* */
+    public void notationDecl(java.lang.String name, java.lang.String publicId, java.lang.String systemId) {
+    }
+
+    public void processingInstruction(java.lang.String target, java.lang.String data) {
+    }
+
+    public InputSource resolveEntity(java.lang.String publicId, java.lang.String systemId)  {
+//        System.out.println("public " + publicId + " system " + systemId);
+        return null;
+    }
+
+    public void setDocumentLocator(Locator locator) {
+    }
+
+    public void startDocument() {
+//        System.out.println("beginDocument");
+    }
+    
+    public void startElement(String uri, String localName, String qName, Attributes attributes) {
+    	if (VersionChecker.runningOnAndroid())
+    	{
+    		callTagMethod(localName, attributes);
+    		lastTag = localName;
+    	}
+    	else
+    	{
+    		callTagMethod(qName, attributes);
+    		lastTag = qName;    		
+    	}
+    }
+
+    public void unparsedEntityDecl(java.lang.String name, java.lang.String publicId, java.lang.String systemId, java.lang.String notationName) {
+    }
+
+    public void warning(SAXParseException e) {
     }
 }

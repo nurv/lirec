@@ -127,28 +127,42 @@ public class PropertyNotEqual extends PropertyCondition {
      * Checks if the Property Condition is verified in the agent's Memory (KB + AM)
      * @return true if the condition is verified, false otherwise
      */
-	public boolean CheckCondition(AgentModel am) {
+	public float CheckCondition(AgentModel am) {
 		Object propertyValue;
 		Object value;
 		
         AgentModel perspective = am.getModelToTest(getToM());
 
-        if (!super.CheckCondition(am))
-            return false;
+        if (super.CheckCondition(am)!=1)
+            return 0;
         
         
         propertyValue = this.getName().evaluate(perspective.getMemory());
-        value = this.GetValue().evaluate(perspective.getMemory());
+        value = this.getValue().evaluate(perspective.getMemory());
 
 		if (propertyValue == null || value == null) 
 		{
 		    //if at least one of them is null, we consider that:
 		    //if both are null - they are equal
 		    //if only one is null - they are different and thus the condition is true
-		    return propertyValue != value;
+		    if(propertyValue != value)
+		    {
+		    	return 1;
+		    }
+		    else
+		    {
+		    	return 0;
+		    }
 		}
 		    
-		return !propertyValue.equals(value);
+		if(!propertyValue.equals(value))
+		{
+			return 1;
+		}
+		else
+		{
+			return 0;
+		}
 	}
 
 	/**
@@ -164,14 +178,14 @@ public class PropertyNotEqual extends PropertyCondition {
 		//if the value part of a PropertyNotEqual is not grounded, we cannot
 		//determine the possible range of substitutions for it, so we assume
 		//that this property test returns false in those situations
-		if(!GetValue().isGrounded())
+		if(!getValue().isGrounded())
 		{
 			return null;
 		}
 		if (getName().isGrounded()) {
 			//if the name is ground, both name and value are grounded and we
 			//just need to call the checkcondition function
-			if(CheckCondition(am))
+			if(CheckCondition(am)==1)
 			{
 				validSubstitutionSets.add(new SubstitutionSet());
 				return validSubstitutionSets;
@@ -190,7 +204,7 @@ public class PropertyNotEqual extends PropertyCondition {
 		{
 			cond = (Condition) this.clone();
 			cond.MakeGround(subSet.GetSubstitutions());
-			if(cond.CheckCondition(am))
+			if(cond.CheckCondition(am)==1)
 			{
 				validSubstitutionSets.add(subSet);
 			}
@@ -223,12 +237,12 @@ public class PropertyNotEqual extends PropertyCondition {
 		//must be grounded. i.e, we cannot determine inequalities between
 		// [X] != [Y]
 		if (getName().isGrounded()) {
-			bindings = this.GetBindings(am,getName(),GetValue());
+			bindings = this.GetBindings(am,getName(),getValue());
 			if (bindings == null)
 				return null;
 		}
-		else if(GetValue().isGrounded()) {
-			bindings = this.GetBindings(am,GetValue(),getName());
+		else if(getValue().isGrounded()) {
+			bindings = this.GetBindings(am,getValue(),getName());
 			if (bindings == null)
 				return null;
 		}
@@ -266,6 +280,6 @@ public class PropertyNotEqual extends PropertyCondition {
      * @return the Converted String
      */
 	public String toString() {
-		return getName() + " != " + GetValue();
+		return getName() + " != " + getValue();
 	}
 }

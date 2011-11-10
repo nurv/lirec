@@ -91,9 +91,14 @@ public abstract class Condition implements IGroundable, Cloneable, Serializable 
 
 	private boolean _previousVerifiableStatus;
 	private boolean _currentVerifiableStatus;
-	private boolean _hasChangedVerifiability;	
+	private boolean _hasChangedVerifiability;
+	
+	//attribute that defines is a condition (PropertyCondition) is static or not (dynamic)
+	protected boolean _static;
+	
 	private Name _name;
 	private Symbol _ToM;
+	
 
 	public Name getName() {
 		return _name;
@@ -108,6 +113,17 @@ public abstract class Condition implements IGroundable, Cloneable, Serializable 
 	{
 		return this._currentVerifiableStatus;
 	}
+	
+	public boolean isStatic()
+	{
+		return this._static;
+	}
+	
+	public void setStatic(boolean st)
+	{
+		_static = st;
+	}
+
 	
 	protected void setName(Name name){
 		this._name = name;
@@ -253,15 +269,22 @@ public abstract class Condition implements IGroundable, Cloneable, Serializable 
 	{
 		_name = (Name) c._name.clone();
 		_ToM = (Symbol) c._ToM.clone();
+		
 		_currentVerifiableStatus = c._currentVerifiableStatus;
 		_previousVerifiableStatus = c._previousVerifiableStatus;
 		_hasChangedVerifiability = c._hasChangedVerifiability;
+		
+		//by default all conditions are assumed non-static, i.e, dynamic
+		_static = c._static;
 	}
 	
 	protected Condition(){
 		_currentVerifiableStatus = false;
 		_previousVerifiableStatus = false;
-		_hasChangedVerifiability = false;	
+		_hasChangedVerifiability = false;
+		
+		//by default all conditions are assumed non-static, i.e, dynamic
+		_static = false;
 	}
 	
 	/**
@@ -280,6 +303,9 @@ public abstract class Condition implements IGroundable, Cloneable, Serializable 
 		_name = name;
 		_ToM = Constants.UNIVERSAL;
 		_currentVerifiableStatus = false;
+		
+		//by default all conditions are assumed non-static, i.e, dynamic
+		_static = false;
 	}
 	
 	public Condition(Name name, Symbol ToM)
@@ -287,6 +313,9 @@ public abstract class Condition implements IGroundable, Cloneable, Serializable 
 		_name = name;
 		_ToM = ToM;
 		_currentVerifiableStatus = false;
+		
+		//by default all conditions are assumed non-static, i.e, dynamic
+		_static = false;
 	}
 	
 	/**
@@ -295,7 +324,7 @@ public abstract class Condition implements IGroundable, Cloneable, Serializable 
 	 * @see KnowledgeBase
 	 * @see AutobiographicalMemory
 	 */
-	public abstract boolean CheckCondition(AgentModel am);
+	public abstract float CheckCondition(AgentModel am);
 
 	
 	/**
@@ -349,7 +378,7 @@ public abstract class Condition implements IGroundable, Cloneable, Serializable 
 	 * Gets the condition's value - the object compared against the condition's name
 	 * @return the condition's value
 	 */
-	public abstract Name GetValue();
+	public abstract Name getValue();
 
 
 	/**
@@ -413,8 +442,5 @@ public abstract class Condition implements IGroundable, Cloneable, Serializable 
 	public boolean isGrounded() {
 		return _name.isGrounded() && _ToM.isGrounded();
 	}
-
-	
-
 
 }

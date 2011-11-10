@@ -29,20 +29,13 @@
  */
 package FAtiMA.Core;
 
-import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
-import FAtiMA.Core.exceptions.ActionsParsingException;
 import FAtiMA.Core.exceptions.UnknownSpeechActException;
 import FAtiMA.Core.exceptions.UnspecifiedVariableException;
 import FAtiMA.Core.plans.Step;
-import FAtiMA.Core.util.AgentLogger;
-import FAtiMA.Core.util.parsers.ActionsLoaderHandler;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Substitution;
 import FAtiMA.Core.wellFormedNames.Unifier;
@@ -135,7 +128,7 @@ public class ActionLibrary implements Serializable {
 		return _actions;
 	}
 	
-	public void LoadActionsFile(String xmlFile, AgentModel am) throws ActionsParsingException
+	/*public void LoadActionsFile(String xmlFile, AgentModel am) throws ActionsParsingException
 	{
 		ActionsLoaderHandler op = LoadOperators(xmlFile, am);
 		_actions = op.getOperators();
@@ -155,5 +148,5 @@ public class ActionLibrary implements Serializable {
 		catch (Exception ex) {
 			throw new ActionsParsingException("Error parsing the actions file.",ex);
 		}	
-	}
+	}*/
 }

@@ -37,6 +37,7 @@ import FAtiMA.Core.emotionalState.BaseEmotion;
 import FAtiMA.Core.emotionalState.EmotionalState;
 import FAtiMA.Core.emotionalState.NeutralEmotion;
 import FAtiMA.Core.exceptions.ActionsParsingException;
+import FAtiMA.Core.exceptions.AgentParsingException;
 import FAtiMA.Core.exceptions.GoalLibParsingException;
 import FAtiMA.Core.exceptions.RequiredComponentException;
 import FAtiMA.Core.exceptions.UndefinedComponentException;
@@ -45,7 +46,6 @@ import FAtiMA.Core.goals.Goal;
 import FAtiMA.Core.goals.GoalLibrary;
 import FAtiMA.Core.memory.Memory;
 import FAtiMA.Core.memory.semanticMemory.KnowledgeSlot;
-import FAtiMA.Core.plans.IDetectThreatStrategy;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.sensorEffector.IONRemoteAgent;
 import FAtiMA.Core.sensorEffector.RemoteAgent;
@@ -56,10 +56,13 @@ import FAtiMA.Core.util.ConfigurationManager;
 import FAtiMA.Core.util.Constants;
 import FAtiMA.Core.util.VersionChecker;
 import FAtiMA.Core.util.enumerables.AgentPlatform;
+import FAtiMA.Core.util.parsers.ActionsLoaderHandler;
 import FAtiMA.Core.util.parsers.BinaryStringConverter;
 import FAtiMA.Core.util.parsers.CentralXMLParser;
 import FAtiMA.Core.util.parsers.EmotionDispositionsLoaderHandler;
+import FAtiMA.Core.util.parsers.GoalLoaderHandler;
 import FAtiMA.Core.util.parsers.MemoryLoaderHandler;
+import FAtiMA.Core.util.parsers.ReflectXMLHandler2;
 import FAtiMA.Core.util.writers.MemoryWriter;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Symbol;
@@ -85,10 +88,10 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 	protected ArrayList<IAppraisalDerivationComponent> _appraisalComponents;
 	
 	//Strategies
-	protected IDetectThreatStrategy _detectThreatStrat;
+	//protected IDetectThreatStrategy _detectThreatStrat;
 	
 	//Data structures
-	protected CentralXMLParser _centralParser;
+	
 	protected EmotionalState _emotionalState;
 	protected Memory _memory;
 	protected GoalLibrary _goalLibrary;
@@ -136,6 +139,7 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 		_memoryWriter = new MemoryWriter(_memory);
 		_strat = this;
 		_actionLibrary = new ActionLibrary();
+		_goalLibrary = new GoalLibrary();
 		
 		_generalComponents = new HashMap<String,IComponent>();
 		_processEmotionComponents = new ArrayList<IProcessEmotionComponent>();
@@ -145,6 +149,7 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 		_processPerceptionsComponents = new ArrayList<IAdvancedPerceptionsComponent>();
 		_affectDerivationComponents = new ArrayList<IAffectDerivationComponent>();
 		_appraisalComponents = new ArrayList<IAppraisalDerivationComponent>();
+		
 		
 		AgentSimulationTime.GetInstance(); //This call will initialize the timer for the agent's simulation time
 	}
@@ -190,20 +195,7 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 				else
 				{
 					_memory.setMemoryLoad(false);
-				}
-				
-				// Load Plan Operators
-				_actionLibrary.LoadActionsFile(ConfigurationManager.getActionsFile(), this);
-	
-				// Load GoalLibrary
-				_goalLibrary = new GoalLibrary(ConfigurationManager.getGoalsFile());
-	
-	
-				//TODO:PARSETHEGOALS
-				loadPersonality(ConfigurationManager.getPersonalityFile(),ConfigurationManager.getPlatform(),new ArrayList<String>());
-				//Start the remote agent socket
-				
-				_remoteAgent = createNewRemoteAgent(ConfigurationManager.getPlatform(), ConfigurationManager.getHost(), ConfigurationManager.getPort(), ConfigurationManager.getAgentProperties());
+				}				
 			}
 			
 		}catch (Exception e) {
@@ -292,6 +284,30 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 		return newName;
 	}
 	
+	public static String applyPerspective(String name, String agentName)
+	{
+		if(name.equals(agentName))
+		{
+			return Constants.SELF;
+		}
+		else 
+		{
+			return name;
+		}
+	}
+	
+	public static String removePerspective(String name, String agentName)
+	{
+		if(name.equals(Constants.SELF))
+		{
+			return agentName;
+		}
+		else
+		{
+			return name;
+		}
+	}
+	
 	public boolean isSelf()
 	{
 		return true;
@@ -337,6 +353,7 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 		}
 		
 		c.initialize(this);
+		
 		AgentDisplayPanel panel = c.createDisplayPanel(this);
 		if(panel != null & _showStateWindow)
 		{
@@ -510,17 +527,6 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 		//_remoteAgent.LoadState(fileName+"-RemoteAgent.dat");
 	}
 
-	private void loadPersonality(String personalityFile, short agentPlatform, ArrayList<String> goalList) 
-	throws	ParserConfigurationException, SAXException, IOException, UnknownGoalException{
-
-		AgentLogger.GetInstance().log("LOADING Personality: " + personalityFile);
-		EmotionDispositionsLoaderHandler c = new EmotionDispositionsLoaderHandler(_emotionalState);
-
-		SAXParserFactory factory = SAXParserFactory.newInstance();
-		SAXParser parser = factory.newSAXParser();
-		parser.parse(new File(personalityFile), c);
-	}
-
 	/**
 	 * Perceives a given event from the virtual world
 	 * @param e - the Event to perceive
@@ -566,25 +572,21 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 	{
 		AgentLogger.GetInstance().logAndPrint("PropertyChanged: " + ToM + " " + propertyName + " " + value);
 		
-		_memory.getSemanticMemory().Tell(applyPerspective(propertyName, _name), value);
+		String newValue = applyPerspective(value,_name);
+		
+		_memory.getSemanticMemory().Tell(applyPerspective(propertyName, _name), newValue);
 		
 		for(IAdvancedPerceptionsComponent c : this._processPerceptionsComponents)
 		{
-			c.propertyChangedPerception(ToM, applyPerspective(propertyName, _name), value);
+			c.propertyChangedPerception(ToM, applyPerspective(propertyName, _name), newValue);
 		}
 	}
 
 	public void PerceivePropertyChanged(String ToM,String subject, String property, String value)
 	{
-		String newSubject = subject;
 		Name propertyName;
 
-		if(subject.equals(_name))
-		{
-			newSubject = Constants.SELF;
-		}
-
-		propertyName = Name.ParseName(newSubject + "(" + property + ")");
+		propertyName = Name.ParseName(subject + "(" + property + ")");
 
 		PerceivePropertyChanged(ToM,propertyName,value);
 	}
@@ -621,6 +623,97 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 			c.reset();
 		}
 	}
+	
+	private void LoadActionsFile() throws ActionsParsingException
+	{
+		ReflectXMLHandler2 parser;
+		// Load Actions file
+		CentralXMLParser centralParser = new CentralXMLParser();
+		centralParser.addParser(new ActionsLoaderHandler(_actionLibrary, this));
+		
+		for(IComponent c : this._generalComponents.values())
+		{
+			parser = c.getActionsParser(this);
+			if(parser!= null)
+			{
+				centralParser.addParser(parser);
+			}
+		}
+		
+		try {
+			SAXParserFactory factory = SAXParserFactory.newInstance();
+			SAXParser SAXparser = factory.newSAXParser();
+			SAXparser.parse(new File(ConfigurationManager.getActionsFile()), centralParser);
+		}
+		catch (Exception ex) {
+			throw new ActionsParsingException("Error parsing the actions file.",ex);
+		}
+		
+		/*_actionLibrary.LoadActionsFile(ConfigurationManager.getActionsFile(), this);
+
+		// Load GoalLibrary
+		_goalLibrary.LoadGoalsFile(ConfigurationManager.getGoalsFile());
+
+
+		//TODO:PARSETHEGOALS
+		loadPersonality(ConfigurationManager.getPersonalityFile(),ConfigurationManager.getPlatform(),new ArrayList<String>());
+		*/
+	}
+	
+	private void LoadGoalsFile() throws GoalLibParsingException
+	{
+		ReflectXMLHandler2 parser;
+		// Load Actions file
+		CentralXMLParser centralParser = new CentralXMLParser();
+		centralParser.addParser(new GoalLoaderHandler(this));
+		
+		for(IComponent c : this._generalComponents.values())
+		{
+			parser = c.getGoalsParser(this);
+			if(parser!= null)
+			{
+				centralParser.addParser(parser);
+			}
+		}
+		
+		try {
+			SAXParserFactory factory = SAXParserFactory.newInstance();
+			SAXParser SAXparser = factory.newSAXParser();
+			SAXparser.parse(new File(ConfigurationManager.getGoalsFile()), centralParser);
+		}
+		catch (Exception ex) {
+			throw new GoalLibParsingException("Error parsing the GoalLibrary file.",ex);
+		}
+	}
+	
+	private void LoadPersonalityFile() throws AgentParsingException
+	{
+		ReflectXMLHandler2 parser;
+		// Load Actions file
+		CentralXMLParser centralParser = new CentralXMLParser();
+		centralParser.addParser(new EmotionDispositionsLoaderHandler(this._emotionalState));
+		
+		for(IComponent c : this._generalComponents.values())
+		{
+			parser = c.getPersonalityParser(this);
+			if(parser!= null)
+			{
+				centralParser.addParser(parser);
+			}
+		}
+		
+		try {
+			
+			SAXParserFactory factory = SAXParserFactory.newInstance();
+			SAXParser SAXparser = factory.newSAXParser();
+			AgentLogger.GetInstance().log("LOADING Personality: " + ConfigurationManager.getPersonalityFile());
+			SAXparser.parse(new File(ConfigurationManager.getPersonalityFile()), centralParser);
+		}
+		catch (Exception ex) {
+			throw new AgentParsingException("Error parsing the personality file.",ex);
+		}		
+	}
+	
 
 	/**
 	 * Gets the agent's role
@@ -639,6 +732,28 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 		float bestActionValue;
 		float value;
 		AppraisalFrame appraisalFrame;
+		
+		try
+		{
+			//parsing the files will be done right before the first run
+			LoadActionsFile();
+			LoadGoalsFile();
+			LoadPersonalityFile();
+			
+			for(IComponent c : this._generalComponents.values())
+			{
+				c.parseAdditionalFiles(this);
+			}
+			
+			//Start the remote agent socket
+			//this was moved from initialize method to here, because it has to be done after all parsing
+			_remoteAgent = createNewRemoteAgent(ConfigurationManager.getPlatform(), ConfigurationManager.getHost(), ConfigurationManager.getPort(), ConfigurationManager.getAgentProperties());
+			_remoteAgent.start();
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
 		
 		long updateTime = System.currentTimeMillis();
 
@@ -700,6 +815,8 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 					if(_memory.getEpisodicMemory().HasNewData() ||
 							_memory.getSemanticMemory().HasNewKnowledge())
 					{
+						//just to clear facts added before the inference process.
+						_memory.getSemanticMemory().getNewFacts();
 
 						//calling the KnowledgeBase inference process
 						_memory.getSemanticMemory().PerformInference(this);
@@ -711,10 +828,9 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 							for(ListIterator<KnowledgeSlot> li = facts.listIterator();li.hasNext();)
 							{
 								KnowledgeSlot ks = (KnowledgeSlot) li.next();
-								if(ks.getName().startsWith(Constants.SELF))
+								if(ks.getDisplayName().startsWith(Constants.SELF))
 								{
-									_remoteAgent.ReportInternalPropertyChange(this._name,Name.ParseName(ks.getName()),
-											ks.getValue());
+									_remoteAgent.ReportInternalPropertyChange(this._name,Name.ParseName(ks.getDisplayName()),ks.getValue());
 								}
 							}
 						}
@@ -743,7 +859,7 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 						
 						_remoteAgent.AddAction(bestAction);
 						IBehaviourComponent c = (IBehaviourComponent) getComponent(bestAction.getComponent());
-						c.actionSelectedForExecution(bestAction);
+						c.actionSelectedForExecution(this,bestAction);
 
 						_remoteAgent.ExecuteNextAction(this);
 					}
@@ -966,7 +1082,6 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 	public void StartAgent()
 	{
 		try{
-			_remoteAgent.start();
 			this.Run();
 		}
 		catch (Exception e) {

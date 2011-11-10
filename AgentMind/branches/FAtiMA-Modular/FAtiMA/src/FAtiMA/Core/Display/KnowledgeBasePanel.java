@@ -97,10 +97,10 @@ public class KnowledgeBasePanel extends AgentDisplayPanel {
             {
             //if(index >=  _knowledgeFactList.size()) {
                 newFactAdded = true;
-                _table.AddKBFact(slot.getName(),slot.getValue());
+                _table.AddKBFact(slot.getDisplayName(),slot.getValue());
             }
             else {
-                _table.SetRow(index, slot.getName(), slot.getValue());
+                _table.SetRow(index, slot.getDisplayName(), slot.getValue());
             }
         }
         

@@ -122,11 +122,11 @@ public class ShortTermMemoryPanel extends AgentDisplayPanel implements Runnable 
             slot = (KnowledgeSlot) li.next();
             if (changeList.contains(slot))
             {
-            	_KBTable.AddKBFact(slot.getName(), slot.getValue(),true);
+            	_KBTable.AddKBFact(slot.getDisplayName(), slot.getValue(),true);
             }
             else
             {
-            	_KBTable.AddKBFact(slot.getName(), slot.getValue(),false);
+            	_KBTable.AddKBFact(slot.getDisplayName(), slot.getValue(),false);
             } 
         }
         synchronized(sm)

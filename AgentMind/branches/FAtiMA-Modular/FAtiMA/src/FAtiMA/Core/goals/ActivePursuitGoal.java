@@ -71,7 +71,6 @@ package FAtiMA.Core.goals;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Hashtable;
 import java.util.ListIterator;
 
 import FAtiMA.Core.AgentModel;
@@ -608,7 +607,7 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
 		li = this._preConditions.listIterator();
 		
 		while(li.hasNext()) {
-			if (!((Condition) li.next()).CheckCondition(am)) return false;
+			if (((Condition) li.next()).CheckCondition(am)!=1) return false;
 		}
 		return true;
 	}

@@ -148,6 +148,7 @@ public class Plan implements Cloneable, Serializable
 	private ArrayList<Inequality> _inequalityConstraints;
 	private ArrayList<CausalLink> _links;
 	private ArrayList<OpenPrecondition> _openPreconditions;
+	private ArrayList<OpenPrecondition> _staticPreconditions;
 	private ArrayList<OrderRelation> _orderingConstraints;
 	private ArrayList<ProtectedCondition> _protectedConditions;
 	private ArrayList<GoalThreat> _protectionThreats;
@@ -229,6 +230,7 @@ public class Plan implements Cloneable, Serializable
         _stepCounter = 0;
         _links = new ArrayList<CausalLink>();
         _openPreconditions = new ArrayList<OpenPrecondition>();
+        _staticPreconditions = new ArrayList<OpenPrecondition>();
         _causalConflicts = new ArrayList<CausalConflictFlaw>();
         _bindingConstraints = new HashMap<String,Substitution>();
         _orderingConstraints = new ArrayList<OrderRelation>();
@@ -404,13 +406,19 @@ public class Plan implements Cloneable, Serializable
 
         li = op.getPreconditions().listIterator();
         int i = 0;
-        while (li.hasNext())
+        
+        for(Condition c : op.getPreconditions())
         {
-            li.next();
-            _openPreconditions.add(new OpenPrecondition(op.getID(),
-                    new Integer(i++)));
+        	if(c.isStatic())
+        	{
+        		_staticPreconditions.add(new OpenPrecondition(op.getID(),new Integer(i++)));
+        	}
+        	else
+        	{
+        		_openPreconditions.add(new OpenPrecondition(op.getID(),new Integer(i++)));
+        	}
         }
-
+        
         CheckProtectedConstraints(op);
 
         CheckCausalConflicts(op);
@@ -654,7 +662,7 @@ public class Plan implements Cloneable, Serializable
                 //think whether I should change this
                 if(cond.isGrounded())
                 {
-                	if(cond.CheckCondition(am))
+                	if(cond.CheckCondition(am)==1)
                 	{
                 		startLink = new CausalLink(this._start.getID(),
                 			    new Integer(-1),
@@ -751,7 +759,7 @@ public class Plan implements Cloneable, Serializable
                 //for removal the unsupportedlink and create an 
                 //OpenPrecondition that must again be satisfied by 
                 //the plan
-                if(!cond.CheckCondition(am))
+                if(cond.CheckCondition(am)!=1)
                 {
                 	_openPreconditions.add(new OpenPrecondition(link
                             .getDestination(), link.getCondition()));
@@ -857,6 +865,7 @@ public class Plan implements Cloneable, Serializable
         //no need to clone the elements
         p._bindingConstraints = new HashMap<String,Substitution>(_bindingConstraints);
         p._openPreconditions = new ArrayList<OpenPrecondition>(_openPreconditions);
+        p._staticPreconditions = new ArrayList<OpenPrecondition>(_staticPreconditions);
         p._links = new ArrayList<CausalLink>(_links);
         p._causalConflicts = new ArrayList<CausalConflictFlaw>(_causalConflicts);
         
@@ -919,6 +928,11 @@ public class Plan implements Cloneable, Serializable
     public ArrayList<OpenPrecondition> getOpenPreconditions()
     {
         return _openPreconditions;
+    }
+    
+    public ArrayList<OpenPrecondition> getStaticPreconditions()
+    {
+    	return _staticPreconditions;
     }
     
     public void debug()
@@ -1058,6 +1072,11 @@ public class Plan implements Cloneable, Serializable
     {
         return _valid;
     }
+    
+    public boolean isSolution()
+    {
+    	return _openPreconditions.size() == 0 && _staticPreconditions.size() == 0;
+    }
 
     /**
      * Gets the next CausalConflictFlaw in the plan
@@ -1158,6 +1177,17 @@ public class Plan implements Cloneable, Serializable
 
         li = _openPreconditions.listIterator();
 
+        while (li.hasNext())
+        {
+            openPre = (OpenPrecondition) li.next();
+            if (openPre.getStep().equals(stepID))
+            {
+                li.remove();
+            }
+        }
+        
+        li = _staticPreconditions.listIterator();
+    
         while (li.hasNext())
         {
             openPre = (OpenPrecondition) li.next();
@@ -1302,7 +1332,7 @@ public class Plan implements Cloneable, Serializable
             	//possible next action detected
             	//additional restrictions, if the next action correspond to an action performed
             	//by self, it must necessarily be grounded
-            	if(!op.getAgent().isGrounded() ||
+            	/*if(!op.getAgent().isGrounded() ||
             			op.getAgent().toString().equals("SELF"))
             	{
             		if(!op.getName().isGrounded())
@@ -1310,7 +1340,7 @@ public class Plan implements Cloneable, Serializable
             			AgentLogger.GetInstance().logAndPrint("The next action by self is not grounded: " + op.getName());
             			return null;
             		}
-            	}
+            	}*/
             			 	
             	//the next action must have the preconditions verified
             	if(!op.checkPreconditions(am))

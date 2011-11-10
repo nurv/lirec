@@ -31,7 +31,6 @@ package FAtiMA.Core.conditions;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Locale;
 
 import org.xml.sax.Attributes;
@@ -56,16 +55,20 @@ public class EmotionCondition extends PredicateCondition {
 	private static final long serialVersionUID = 1L;
 	
 	protected String _emotionType;
+	
 	protected Symbol _intensity;
 	protected Symbol _direction;
+	
 	
 	public EmotionCondition(boolean active, String emotion)
 	{
 		super(active,null,Constants.UNIVERSAL);
-		this._emotionType = emotion;	
+		this._emotionType = emotion;
+		
 		this._direction = null;
 		this._intensity = new Symbol("0");
 		UpdateName();
+		
 	}
 	
 	public EmotionCondition(boolean active, Symbol ToM, String emotion)
@@ -81,6 +84,7 @@ public class EmotionCondition extends PredicateCondition {
     	super(eC);
     	_emotionType = eC._emotionType;
 		_intensity = (Symbol) eC._intensity.clone();
+		
 		if(eC._direction != null)
 		{
 			_direction = (Symbol) eC._direction.clone();
@@ -127,6 +131,8 @@ public class EmotionCondition extends PredicateCondition {
 			ec = new EmotionCondition(active,emotionType);
 		}
 		
+		aux = attributes.getValue("cause");
+		
 		
 		aux = attributes.getValue("target");
 		if(aux != null)
@@ -144,10 +150,9 @@ public class EmotionCondition extends PredicateCondition {
 		return ec;
 	}
 	
-	private static Symbol FloatToSymbol(float f)
+	protected static Symbol FloatToSymbol(float f)
 	{
-		DecimalFormat oneDForm = new DecimalFormat("#.#");
-		return new Symbol(Double.valueOf(oneDForm.format(f)).toString()); 
+		return new Symbol(Float.toString(f));
 	}
 	
 	
@@ -170,7 +175,9 @@ public class EmotionCondition extends PredicateCondition {
 	
 	private void UpdateName()
 	{
-		String aux = this._emotionType + "("; 
+		String aux;
+		
+		aux = this._emotionType + "("; 
 		
 		if(this._direction != null)
 		{
@@ -181,13 +188,12 @@ public class EmotionCondition extends PredicateCondition {
 		setName(Name.ParseName(aux));
 	}
 	
-	
 
 	/**
 	 * Gets the condition's value - the object compared against the condition's name
 	 * @return the condition's value
 	 */
-	 public Name GetValue()
+	 public Name getValue()
 	 {
 		return this._intensity;
 	 }
@@ -197,14 +203,54 @@ public class EmotionCondition extends PredicateCondition {
 	 * @return true if the Predicate is verified, false otherwise
 	 * @see KnowledgeBase
 	 */
-	public boolean CheckCondition(AgentModel am) {
-		boolean result;
-		if(!getToM().isGrounded()) return false;
+	public float CheckCondition(AgentModel am) {
+		float fIntensity;
+		float satisfactionLevel;
+		float maxSatisfactionLevel = 0;
 		
-		if(!getName().isGrounded() || !_intensity.isGrounded()) return false;
+		if(!getToM().isGrounded()) return 0;
 		
-		result = SearchEmotion(am).size() > 0; 
-		return getPositive() == result;
+		if(!this.isGrounded()) return 0;
+		
+	
+		AgentModel perspective = am.getModelToTest(getToM());
+		
+		
+		
+		EmotionalState es = perspective.getEmotionalState();
+		
+		for(ActiveEmotion aem : es.GetEmotionsIterator())
+		{
+			if(aem.getType().equalsIgnoreCase(this._emotionType))
+			{
+				//TODO I should check direction here also
+				if(this._intensity.isGrounded())
+				{
+					fIntensity = Float.parseFloat(this._intensity.toString());
+					if(fIntensity != 0)
+					{
+						satisfactionLevel = aem.GetIntensity()/fIntensity;
+						if(satisfactionLevel > maxSatisfactionLevel)
+						{
+							maxSatisfactionLevel = satisfactionLevel;
+						}
+					}
+				}				
+			}
+		}
+		
+		if(getPositive())
+		{
+			return Math.min(maxSatisfactionLevel,1f);
+		}
+		else
+		{
+			if(maxSatisfactionLevel == 1)
+			{
+				return 0;
+			}
+			return 1;
+		}
 	}
 	
 	/**
@@ -217,8 +263,8 @@ public class EmotionCondition extends PredicateCondition {
 		ArrayList<SubstitutionSet> bindingSets = new ArrayList<SubstitutionSet>();
 		ArrayList<SubstitutionSet> subSets;
 		
-		if (getName().isGrounded() && _intensity.isGrounded()) {
-			if(CheckCondition(am))
+		if (this.isGrounded()) {
+			if(CheckCondition(am)>0.3)
 			{
 				bindingSets.add(new SubstitutionSet());
 				return bindingSets;
@@ -239,54 +285,53 @@ public class EmotionCondition extends PredicateCondition {
 		ArrayList<Substitution> bindings;
 		ArrayList <SubstitutionSet>substitutionSets = new ArrayList<SubstitutionSet>();
 		AgentModel perspective = am.getModelToTest(getToM());
+		SubstitutionSet sSet;
+		boolean intensityOk;
+		boolean directionOk;
 		
 		EmotionalState es = perspective.getEmotionalState();
 		
 		for(ActiveEmotion aem : es.GetEmotionsIterator())
 		{
+			sSet = new SubstitutionSet();
+			intensityOk = false;
+			directionOk = false;
+			
 			if(aem.getType().equalsIgnoreCase(this._emotionType))
 			{
 				if(this._intensity.isGrounded())
 				{
 					if(aem.GetIntensity() >= Float.parseFloat(this._intensity.toString()))
 					{
-						if(this._direction != null)
-						{
-							bindings = Unifier.Unify(this._direction,aem.GetDirection());
-							if(bindings != null)
-							{
-								substitutionSets.add(new SubstitutionSet(bindings));
-							}
-						}
-						else
-						{
-							substitutionSets.add(new SubstitutionSet());
-						}
-					}	
+						intensityOk = true;
+					}
 				}
 				else
 				{
-					SubstitutionSet sset1;
+					intensityOk = true;
 					Symbol intensityValue = FloatToSymbol(aem.GetIntensity());
 					Substitution s = new Substitution(this._intensity,intensityValue);
-					if(this._direction != null)
-					{
-						bindings = Unifier.Unify(this._direction,aem.GetDirection());
-						if(bindings != null)
-						{
-							sset1 = new SubstitutionSet(bindings);
-							sset1.AddSubstitution(s);
-							substitutionSets.add(sset1);
-						}
-					}
-					else
-					{
-						sset1 = new SubstitutionSet();
-						sset1.AddSubstitution(s);
-						substitutionSets.add(sset1);
-					}
+					sSet.AddSubstitution(s);
 				}
 				
+				if(this._direction != null)
+				{
+					bindings = Unifier.Unify(this._direction,aem.GetDirection());
+					if(bindings != null)
+					{
+						directionOk = true;
+						sSet.AddSubstitutions(bindings);
+					}
+				}
+				else
+				{
+					directionOk = true;
+				}
+				
+				if(intensityOk && directionOk)
+				{
+					substitutionSets.add(sSet);
+				}
 			}
 		}
 		

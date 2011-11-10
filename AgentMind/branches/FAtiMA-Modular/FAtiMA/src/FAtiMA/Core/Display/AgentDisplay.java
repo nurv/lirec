@@ -32,8 +32,11 @@
 
 package FAtiMA.Core.Display;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.ArrayList;
 
+import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -61,6 +64,17 @@ public class AgentDisplay {
         _frame.getContentPane().setLayout(new BoxLayout(_frame.getContentPane(),BoxLayout.Y_AXIS));
 		_frame.setSize(850,650);
 		_frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		try
+		{
+			
+			BufferedImage image = ImageIO.read(new File("FAtiMA-Logo.jpg"));
+			_frame.setIconImage(image);
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
 		
 		_displayPane = new JTabbedPane();
 		_frame.getContentPane().add(_displayPane);
@@ -117,7 +131,9 @@ public class AgentDisplay {
     
     public void update() {
         AgentDisplayPanel pnl = (AgentDisplayPanel) _displayPane.getSelectedComponent();
-        if(pnl.Update(_ag)) _frame.setVisible(true);
+        //pnl.Update(_ag);
+        if(pnl.Update(_ag) && _frame.isActive()) _frame.setVisible(true);
+        //if(pnl.Update(_ag)) _frame.setVisible(true);
     }
     
     public void dispose() {

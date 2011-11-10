@@ -62,7 +62,7 @@ public class ShortTermEpisodicMemory implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private static int eventID = 0;
 
-	public static final short MAXRECORDS = 10;
+	public static final short MAXRECORDS = 20;
 	private ArrayList<ActionDetail> _details;
 
 	public ShortTermEpisodicMemory() {

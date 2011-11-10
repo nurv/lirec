@@ -222,19 +222,20 @@ public class SpeechAct extends RemoteAction {
 			_contextVariables.add(new Parameter("topic",topic));
 		}
 		
+		
 		//fourth literal of a speech corresponds to the verbal-style adopted
-		if(li.hasNext()){
+		/*if(li.hasNext()){
 			String verbalStyle = li.next().toString();
 			_contextVariables.add(new Parameter("verbal-style",verbalStyle));
 			
-		}
+		}*/
 		
 		_contextVariables.add(new Parameter("me", _subject));
 		
 		_contextVariables.add(new Parameter("you", _target));
 		
 			
-		int counter = 1;
+		int counter = 0;
 		while(li.hasNext())
 		{
 			counter++;

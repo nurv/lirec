@@ -58,6 +58,7 @@ import java.util.StringTokenizer;
 
 import FAtiMA.Core.AgentSimulationTime;
 import FAtiMA.Core.memory.episodicMemory.Time;
+import FAtiMA.Core.util.AgentLogger;
 import FAtiMA.Core.util.Constants;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Substitution;
@@ -94,6 +95,7 @@ public class Event implements Cloneable, Serializable {
 	 * @return true if the events match, false otherwise
 	 */
 	public static boolean MatchEvent(Event matchRule, Event eventPerception) {
+		AgentLogger.GetInstance().log("Matching event " + matchRule + " with " + eventPerception);
 		if (matchRule._subject != null && eventPerception._subject != null) {
 			
 			if (!matchRule._subject.equals(eventPerception._subject)) 

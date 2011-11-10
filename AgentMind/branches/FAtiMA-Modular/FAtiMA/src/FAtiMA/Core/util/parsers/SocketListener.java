@@ -36,24 +36,31 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.ArrayList;
 
 public abstract class SocketListener extends Thread {
-    protected int maxSize = 256;
-
+    
+	private static final String UPDATE = "Update";
+	
+	protected int maxSize = 256;
     protected Socket socket;
     byte[] buffer = new byte[maxSize];
-    BufferedReader reader; 
+    protected BufferedReader reader;
+    protected boolean synch;
+    protected ArrayList<String> messageBuffer;
 
     protected boolean stopped = false;
 
     public SocketListener() {
+    	this.synch = false;
+    	this.messageBuffer = new ArrayList<String>();
     }
     
     /** Creates new SocketListener */
     public SocketListener(Socket socket) {
         this.socket = socket;
+        this.synch = false;
     }
-    
     
     public void initializeSocket()
     {
@@ -96,8 +103,24 @@ public abstract class SocketListener extends Thread {
         catch(java.io.IOException ex) {
         }
     }
-
+    
     public abstract void processMessage(String msg) throws IOException;
+
+    public void processSynchronizedMessage(String msg) throws IOException
+    {
+    	if(msg.equals(UPDATE))
+    	{
+    		for(String bufferedMsg : this.messageBuffer)
+    		{
+    			this.processMessage(bufferedMsg);
+    		}
+    		this.messageBuffer.clear();
+    	}
+    	else
+    	{
+    		this.messageBuffer.add(msg);
+    	}
+    }
     
     public abstract void handleSocketException();
 
@@ -107,7 +130,7 @@ public abstract class SocketListener extends Thread {
     	
         while(!stopped) {
             try {
-                sleep(100);
+                sleep(10);
             }
             catch(InterruptedException ex) {
             }
@@ -117,7 +140,15 @@ public abstract class SocketListener extends Thread {
                try
                {
             		msg = reader.readLine();
-            		processMessage(msg);
+            		
+            		if(this.synch)
+             	    {
+            			processSynchronizedMessage(msg);
+             	    }
+            		else
+            		{
+            			processMessage(msg);
+            		}
                }
                catch (java.io.IOException ex) {            	  
             	   if(!(ex instanceof SocketException)){      		   
