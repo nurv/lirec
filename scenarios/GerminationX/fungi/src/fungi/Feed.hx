@@ -36,6 +36,7 @@ class Feed
     var Flowered:Sprite;
     var NoteActive:Bool;
     var NoteFrames:Array<Frame>;
+    var NotesRead:Array<String>;
 
     public function new(w:World)
     {
@@ -49,6 +50,7 @@ class Feed
         FruitSprites=[];
         NoteActive=false;
         NoteFrames=[];
+        NotesRead=[];
 
         EmotionIndices={LOVE:0,HATE:1,HOPE:2,FEAR:3,SATISFACTION:4,
                         RELIEF:5,FEARS_CONFIRMED:6,DISAPOINTMENT:7,
@@ -59,11 +61,11 @@ class Feed
 
         Info=new Frame("",120,25,64*5,64);
         Info.SetTextSize(12);
-        Info.UpdateText("Loading...");
-        Info.InitTextures(GUIFrameTextures.Get(),Rnd);
         Info.R=1;
         Info.G=1;
         Info.B=0.8;
+        Info.UpdateText("Loading...");
+        Info.InitTextures(GUIFrameTextures.Get(),Rnd);
         w.AddSprite(Info);
 
         PickPower = new Sprite(new Vec2(340,50),Resources.Get("pp05"),false,false);
@@ -147,16 +149,22 @@ class Feed
 
     function BuildNote(w:World,Note)
     {
-        var f=new Frame("",200,200,64*4,64*4);
+        var f=new Frame("",160,170,64*4,64*4);
+        f.R=0.8;
+        f.G=1;
+        f.B=0.8;        
         f.SetTextSize(10);
         f.UpdateHTMLText(StrMkr.NoteToString(w.MyName,Note));
         w.AddSprite(f);
         
         f.InitTextures(GUIFrameTextures.Get(),Rnd);
 
-        var b=new Frame("Ok",300,400,100,64);
+        var b=new Frame("Ok",120+200,170+200,50,20);
+        b.R=1;
+        b.G=1;
+        b.B=0.8;
         b.SetTextSize(10);
-        b.InitTextures(GUIFrameTextures.Get(),Rnd);
+       // b.InitTextures(GUIFrameTextures.Get(),Rnd);
         w.AddSprite(b);
         NoteFrames=[f,b];
 
@@ -185,10 +193,19 @@ class Feed
         {
             for (Note in Notes)
             {
-                if (!Note.answer)
+                // may take server a time to update the
+                // answered field, so duplicate here
+                var AlreadyRead=false;
+                for (c in NotesRead)
+                {
+                    if (c==Note.code) AlreadyRead=true;      
+                }
+
+                if (!Note.answer && !AlreadyRead)
                 {
                     BuildNote(w,Note);
                     NoteActive=true;
+                    NotesRead.push(Note.code);
                 }
             }
         }
@@ -214,7 +231,7 @@ class Feed
                              GetLayerName(w.PlayerInfo.layer)+
                              "-"+ Flowers));
                 
-            Info.UpdateText("");
+            Info.UpdateText(Std.string(w.PlayerInfo.layer));
 
 /*            Info.UpdateText(
                 "Hello "+ w.MyName+" it is "+w.Season+", your layer is currently "+
@@ -259,6 +276,17 @@ class Feed
         }
     }
 
+    static function IsGift(code:String) : Bool
+    {
+        return (code == "your_plant_doesnt_like" ||
+                code == "i_am_detrimented_by" ||
+                code == "i_am_detrimental_to" ||
+                code == "i_am_benefitted_by" ||
+                code == "i_am_beneficial_to" ||
+                code == "needs_help" ||
+                code == "ive_asked_x_for_help");
+    }
+
     function BuildMessage(w:World, i:Dynamic, pos:Vec2)
     {
         Rnd.Seed(Std.int(i.time));
@@ -286,17 +314,37 @@ class Feed
         
         if (i.type=="spirit")
         {
+            var ToolTip=null;
+            var x=pos.x;
+            var y=pos.y;
+            f.MouseOver(this,function(c){
+                if (w.Seeds.Carrying())
+                {
+                    if (IsGift(i.code))
+                    {
+                        ToolTip=new Frame("Give fruit to "+i.extra[0],x,y,100,20);
+                    }
+                    else
+                    {
+                        ToolTip=new Frame("Give fruit to "+i.from,x,y,100,20);
+                    }
+
+                    w.AddSprite(ToolTip);
+                }
+            });
+
+            f.MouseOut(this,function(c){
+                if (ToolTip!=null)
+                {
+                    w.RemoveSprite(ToolTip);
+                }
+            });
+
             f.MouseUp(this,function(c){
                 if (w.Seeds.Carrying())
                 {
                     var Fruit=w.Seeds.Remove(w);
-                    if (i.code == "your_plant_doesnt_like" ||
-                        i.code == "i_am_detrimented_by" ||
-                        i.code == "i_am_detrimental_to" ||
-                        i.code == "i_am_benefitted_by" ||
-                        i.code == "i_am_beneficial_to" ||
-                        i.code == "needs_help" ||
-                        i.code == "ive_asked_x_for_help")
+                    if (IsGift(i.code))
                     {
                         w.Server.Request("gift/"+
                                          w.MyID+"/"+

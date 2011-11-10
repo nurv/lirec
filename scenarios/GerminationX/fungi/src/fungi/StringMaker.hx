@@ -27,7 +27,10 @@ class StringMaker
             dandelion: "nutrients",
             aronia: "erosion control",
             apple: "protection",
-            cherry: "protection"
+            cherry: "protection",
+            boletus: "increased nutrients",
+            chanterelle: "increased nutrients",
+            flyagaric: "increased magic",
         }};
 
     public function new()
@@ -134,7 +137,39 @@ class StringMaker
         NoteMap={
             welcome: function(name)
             {
-                return "Welcome "+name+" <img src=\"http://www.pawfal.org/dave/blog/wp-content/uploads/2011/09/dandelion-all-300x92.png\">";
+                return 
+                "Welcome to Germination X "+name+". \n"+ 
+                    "<img src=\"images/welcome.png\"> ";
+            },
+
+            levelup1: function (name)
+            {
+                return "Well done on planting all those ground cover plants "+name+"!\n"+
+                    "<img src=\"images/levelup1.png\"> ";
+
+//                return "Well done on planting all those ground cover plants "+name+"!\n"+
+//                    "You will find a mystery magic item in your fruit store - use it wisely! Your new role is to plant shrub plants with fruit like this:"+
+//                    "<img src=\"images/aronia-fruit-c.png\">\n"+
+//                    "The shrub spirit will help you in this quest. You can also send fruit to other players or spirits by dropping them on messages.";
+            },
+
+            levelup2: function (name)
+            {
+                return name+", you are a master gardener!\n"+
+                    "<img src=\"images/levelup2.png\"> ";
+
+//                return name+", you are a master gardener!\n"+
+//                    "Your next role in Germination X is to plant tree plants with fruit like this:"+
+//                    "<img src=\"images/cherry-fruit-c.png\"> <img src=\"images/apple-fruit-c.png\">\n"+
+//                    "You should also find another surprise magic item!";
+            },
+
+            levelup3: function (name)
+            {
+                return name+", you have proved your planting prowess, and are now an expert on companion planting and permaculture!\n"+
+                    "\nCongratulations, you have completed the current version of Germination X."+
+                    "\n\nYou have earned a final surprise as a gift, from now on you can pick and plant any type of plant."+
+                    "\n\nThankyou for playing!";                
             }
         };
     }

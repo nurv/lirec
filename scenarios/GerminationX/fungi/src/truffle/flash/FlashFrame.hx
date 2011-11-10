@@ -85,7 +85,7 @@ class FlashFrame implements Frame, extends MovieClip
         
         Figures = new Shape();
         BG = Figures.graphics;
-        BG.beginFill(0xffffff,0.5);
+        BG.beginFill(0xffffff,1);
         BG.drawRect(TextField.x,TextField.y,
                     TextField.width,TextField.height);
         BG.endFill();
