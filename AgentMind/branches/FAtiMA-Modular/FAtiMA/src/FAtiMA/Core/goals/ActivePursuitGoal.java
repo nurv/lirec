@@ -106,6 +106,7 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
 	protected ArrayList<Condition> _failureConditions;
 	protected ArrayList<Condition> _preConditions;
 	protected ArrayList<Condition> _successConditions;
+	protected ArrayList<Condition> _cancelConditions;
 	protected int _numberOfTries;
 		
 	protected Float _probability = null;
@@ -129,13 +130,13 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
 		_preConditions = new ArrayList<Condition>(5);
 		_successConditions = new ArrayList<Condition>(2);
 		_failureConditions = new ArrayList<Condition>(2);
+		_cancelConditions = new ArrayList<Condition>(2);
 		_active = false;
 		_numberOfTries = 0;
 		
 		//IPlanningOperator
 		_agent = new Symbol(Constants.SELF);
 		_effects = new ArrayList<Effect>();
-		
 	}
 
 	protected ActivePursuitGoal() {
@@ -146,7 +147,8 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
 	 * @param conditionType - the type of the condition: 
 	 * 						  PreConditions
 	 * 			  			  SuccessConditions
-	 * 						  FailureConditions 
+	 * 						  FailureConditions
+	 * 						  CancelConditions 
 	 * @param cond - the condition to add
 	 */
 	public void AddCondition(String conditionType, Condition cond) {
@@ -156,8 +158,9 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
 			_successConditions.add(cond);
 		else if (conditionType.equals("FailureConditions")) 
 		    _failureConditions.add(cond);
+		else if (conditionType.equals("CancelConditions"))
+			_cancelConditions.add(cond);
 	}
-	
 	
 	
 	/**
@@ -202,9 +205,7 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
 	 * @return true if the goal succeeded, false otherwise
 	 */
 	public boolean CheckSuccess(AgentModel am) {
-	    ListIterator<Condition> li;
-		Condition cond;
-		
+	    
 		for (Condition c : _successConditions){
 			if(c.GetValidBindings(am) == null)
 			{
@@ -339,6 +340,11 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
 		return _successConditions;
 	}
 	
+	public ArrayList<Condition> GetCancelConditions()
+	{
+		return _cancelConditions;
+	}
+	
 	/**
 	 * Gets the goal's preconditions
 	 * @return a list with the goal's preconditions
@@ -379,6 +385,11 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
     		((Condition) li.next()).ReplaceUnboundVariables(variableID);
     	}
     	
+    	for(Condition c : this._cancelConditions)
+    	{
+    		c.ReplaceUnboundVariables(variableID);
+    	}
+    	
     	for(Effect e : this._effects)
     	{
     		e.ReplaceUnboundVariables(variableID);
@@ -417,6 +428,11 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
     	while(li.hasNext())
     	{
     		((Condition) li.next()).MakeGround(bindings);
+    	}
+    	
+    	for(Condition c : this._cancelConditions)
+    	{
+    		c.MakeGround(bindings);
     	}
     	
     	for(Effect e : this._effects)
@@ -493,6 +509,11 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
     		((Condition) li.next()).MakeGround(subst);
     	}
     	
+    	for(Condition c : this._cancelConditions)
+    	{
+    		c.MakeGround(subst);
+    	}
+    	
     	for(Effect e : this._effects)
     	{
     		e.MakeGround(subst);
@@ -555,6 +576,15 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
 			{
 				g._successConditions.add((Condition) li.next().clone());
 			}
+		}
+		
+		if(this._cancelConditions != null)
+		{
+			g._cancelConditions = new ArrayList<Condition>(this._cancelConditions.size());
+			for(Condition c : this._cancelConditions)
+	    	{
+	    		g._successConditions.add((Condition)c.clone());
+	    	}
 		}
 		
 	
