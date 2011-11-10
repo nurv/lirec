@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src/main/java"/>
-	<classpathentry kind="src" path="src/main/rules">
+	<classpathentry excluding=".svn/" kind="src" path="src/main/java"/>
+	<classpathentry excluding=".svn/" kind="src" path="src/main/rules">
 		<attributes>
 			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="FAtiMA.AdvancedMemory/drools-runtime"/>
 		</attributes>
