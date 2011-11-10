@@ -114,6 +114,7 @@ import java.util.ListIterator;
 
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.conditions.Condition;
+import FAtiMA.Core.conditions.PastEventCondition;
 import FAtiMA.Core.conditions.PropertyNotEqual;
 import FAtiMA.Core.emotionalState.ActiveEmotion;
 import FAtiMA.Core.emotionalState.AppraisalFrame;
@@ -268,10 +269,19 @@ public class EmotionalPlanner implements Serializable {
 							ToM_effect.equals(Constants.UNIVERSAL) || 
 							Unifier.Unify(ToM_Cond, ToM_effect, substs))
 					{
-						if(Unifier.Unify(cond.getName(), effectCond.getName(), substs))
+						if(cond instanceof PastEventCondition)
 						{
-							condValue = cond.GetValue();
-							effectValue = effectCond.GetValue();
+							unifyResult = Unifier.PartialUnify(cond.getName(),effectCond.getName(), substs);
+						}
+						else
+						{
+							unifyResult = Unifier.Unify(cond.getName(), effectCond.getName(), substs);
+						}
+						
+						if(unifyResult)
+						{
+							condValue = cond.getValue();
+							effectValue = effectCond.getValue();
 							
 							if (cond instanceof PropertyNotEqual)
 							{
@@ -375,15 +385,16 @@ public class EmotionalPlanner implements Serializable {
 		
 		af = intention.getAppraisalFrame();
 		p = intention.GetBestPlan(am); //gets the best plan so far to achieve the intention
+		AgentLogger.GetInstance().logAndPrint("Best plan: " + p);
 		//System.out.println("BEST PLAN: " + p);
 
 		if (p == null) {
 			//There's no possible plan to achieve the goal, the goal fails
 			return null;
 		}
+		//else if (p.getOpenPreconditions().size() == 0 && p.getStaticPreconditions().size() == 0 && p.getSteps().size() == 0) {
 		else if (p.getOpenPreconditions().size() == 0 && p.getSteps().size() == 0) {
 		    //There aren't open conditions left and no steps in the plan, it means that the goal has been achieved
-			
 			return p;
 		}
 	
@@ -416,7 +427,38 @@ public class EmotionalPlanner implements Serializable {
 		intention.SetFear(fearEmotion);
 		if(hopeEmotion != null) hopeIntensity = hopeEmotion.GetIntensity();
 		if(fearEmotion != null) fearIntensity = fearEmotion.GetIntensity();
-
+		
+		
+		//the first thing to do is to check for grounded static conditions. If a grounded static condition
+		//is not verified, then this plan is immediately invalid, we should remove it and return
+		//Open preconditions 
+		openConditions = p.getStaticPreconditions();
+		ListIterator<OpenPrecondition> staticIterator = openConditions.listIterator();
+		while(staticIterator.hasNext())
+		{
+			openPrecond = staticIterator.next();
+			cond = p.getOperator(openPrecond.getStep()).getPrecondition(openPrecond.getCondition());
+			
+			if(cond.isGrounded())
+			{
+				staticIterator.remove();
+				if(cond.CheckCondition(am)!=1)
+				{
+					//the plan is not valid
+					intention.RemovePlan(p);
+					return null;
+				}
+			}
+		}
+		//in the case that there are no dynamic Open Preconditions but there are ungrounded static ones (this should
+		//not be too frequent though), we should promote the static preconditions to dynamic so that the
+		//planner can properly handle them
+		if(openConditions.size() > 0 && p.getOpenPreconditions().size() == 0)
+		{
+			AgentLogger.GetInstance().log("Promoting static condition to dynamic!!");
+			p.getOpenPreconditions().add(openConditions.remove(0)); 
+		}
+			
 		//emotion-focused coping: Acceptance - if the plan probability is too low the agent will not consider
 		//this plan, but the mood also influences this threshold, characters on positive moods will give up
 		//goals more easily and thus the threshold is higher, character on negative moods will have a lower
@@ -471,7 +513,7 @@ public class EmotionalPlanner implements Serializable {
 			System.out.println("Hope: " + hopeIntensity);*/
 	
 			
-			/** we give up a plan in favour of a threat if the utility of pursuing the plan and
+			/** we give up a plan in favor of a threat if the utility of pursuing the plan and
 			 *  ignoring the threat is lesser or equal than the utility of giving up the goal and 
 			 *  avoiding the treath, which is given by the inequality:
 			 *  %g*IS(g) - (1-%g)*IF(g)) - %t*IF(t) <= - IF(g)
@@ -578,7 +620,7 @@ public class EmotionalPlanner implements Serializable {
 			//first we must determine if the condition is verified in the start step
 			//TODO I've just realized a PROBLEM, even if the condition is grounded and verified 
 			// in the start step, we must check whether adding a new operator is a better move!
-			if (cond.isGrounded() && cond.CheckCondition(am)) {
+			if (cond.isGrounded() && cond.CheckCondition(am)==1) {
 				//in this case, we don't have to do much, just add a causal link from start
 				newPlan = (Plan) p.clone();
 				newPlan.AddLink(new CausalLink(p.getStart().getID(),

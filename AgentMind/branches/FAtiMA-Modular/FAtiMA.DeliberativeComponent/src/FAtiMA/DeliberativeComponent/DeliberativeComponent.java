@@ -117,7 +117,6 @@
 
 package FAtiMA.DeliberativeComponent;
 
-import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -125,9 +124,6 @@ import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.Set;
 import java.util.StringTokenizer;
-
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 
 import FAtiMA.Core.AgentCore;
 import FAtiMA.Core.AgentModel;
@@ -153,9 +149,11 @@ import FAtiMA.Core.plans.ProtectedCondition;
 import FAtiMA.Core.plans.Step;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.sensorEffector.Parameter;
+import FAtiMA.Core.sensorEffector.SpeechAct;
 import FAtiMA.Core.util.AgentLogger;
-import FAtiMA.Core.util.ConfigurationManager;
 import FAtiMA.Core.util.Constants;
+import FAtiMA.Core.util.enumerables.ActionEvent;
+import FAtiMA.Core.util.parsers.ReflectXMLHandler2;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Substitution;
 import FAtiMA.Core.wellFormedNames.SubstitutionSet;
@@ -188,8 +186,8 @@ public class DeliberativeComponent implements Serializable, IComponent,
 	 */
 	private static final long serialVersionUID = 1L;
 	private static final long waitingTime = 30000;
-	private static final float MINIMUMUTILITY = 0.5f;
-	private static final float SELECTIONTHRESHOLD = 1.2f;
+	private static final float MINIMUMUTILITY = 0.7f;
+	private static final float SELECTIONTHRESHOLD = 1.5f;
 	public static final String NAME = "Deliberative";
 
 	private static final String CHANGE_IMPORTANCE_SUCCESS = "CIS";
@@ -303,6 +301,24 @@ public class DeliberativeComponent implements Serializable, IComponent,
 		if (_selectedAction == null) {
 			return null;
 		}
+		
+		//special case when dealing with AppraisalOperators, we just create an action monitor to wait
+		// a second or two for the emotion to happen
+		if(_selectedAction.getName().toString().contains("Appraisal"))
+		{
+			AgentLogger.GetInstance().logAndPrint(
+					"Waiting for Appraisal Operator to complete " 
+							+ _selectedAction.getAgent().toString() + " : "
+							+ _selectedAction.getName().toString());
+
+			e = new Event(_selectedAction.getAgent().toString(), null, null);
+			_actionMonitor = new ExpirableActionMonitor(1000,
+					_selectedAction, e);
+			_selectedAction = null;
+			_selectedActionEmotion = null;
+			return null;
+		}
+		
 
 		/*
 		 * Prepares the action selected for execution, by adding a monitor to it
@@ -310,7 +326,8 @@ public class DeliberativeComponent implements Serializable, IComponent,
 		 * action from the selected state so that it is not selected again.
 		 */
 
-		if (!_selectedAction.getAgent().isGrounded()) {
+		if (!_selectedAction.getAgent().isGrounded()) 
+		{
 			// in this situation the agent that is going to perform the action
 			// is not defined. Since the agent needs this action to be performed
 			// it will check if he can do it himself by applying the [SELF]
@@ -334,14 +351,15 @@ public class DeliberativeComponent implements Serializable, IComponent,
 				_selectedPlan.AddBindingConstraint(sub);
 				_selectedPlan.CheckProtectedConstraints();
 				_selectedPlan.CheckCausalConflicts();
-			} else {
+			} 
+			else 
+			{
 				// the agent cannot perform the action, we must inform
 				// the step that it cannot be executed by the agent, so
 				// that the plan's probability is correctly updated
 				_selectedAction.SetSelfExecutable(false);
 			}
-		} else if (!_selectedAction.getAgent().toString()
-				.equals(Constants.SELF)) {
+		} else if (!_selectedAction.getAgent().toString().equals(Constants.SELF)) {
 			// we have to wait for another agent to act
 			AgentLogger.GetInstance().logAndPrint(
 					"Waiting for agent "
@@ -356,8 +374,7 @@ public class DeliberativeComponent implements Serializable, IComponent,
 			return null;
 		}
 
-		return new ValuedAction(DeliberativeComponent.NAME,
-				_selectedAction.getName(), _selectedActionEmotion);
+		return new ValuedAction(DeliberativeComponent.NAME,_selectedAction.getName(), _selectedActionEmotion);
 	}
 
 	@Override
@@ -371,30 +388,37 @@ public class DeliberativeComponent implements Serializable, IComponent,
 		}
 	}
 
-	public void actionSelectedForExecution(ValuedAction selectedAction) {
+	public void actionSelectedForExecution(AgentModel am, ValuedAction selectedAction) {
 		String action;
 		String target = null;
 		Event e;
 
-		if (_selectedAction == null) {
-			return;
+		
+		
+		if(_selectedAction.getName().toString().startsWith("SpeechAct"))
+		{
+			SpeechAct speech = new SpeechAct(selectedAction,am);
+			e = speech.toEvent(ActionEvent.SUCCESS);
+			e = e.ApplyPerspective(am.getName());
+		}
+		else
+		{
+			ListIterator<Symbol> li = _selectedAction.getName().GetLiteralList().listIterator();
+			
+			action = li.next().toString();
+
+			if (li.hasNext()) {
+				target = li.next().toString();
+			}
+
+			e = new Event(Constants.SELF, action, target);
+			while (li.hasNext()) {
+				e.AddParameter(new Parameter("parameter", li.next().toString()));
+			}
 		}
 
-		ListIterator<Symbol> li = _selectedAction.getName().GetLiteralList()
-				.listIterator();
-
-		action = li.next().toString();
-
-		if (li.hasNext()) {
-			target = li.next().toString();
-		}
-
-		e = new Event(Constants.SELF, action, target);
 		_actionMonitor = new ActionMonitor(_selectedAction, e);
 
-		while (li.hasNext()) {
-			e.AddParameter(new Parameter("parameter", li.next().toString()));
-		}
 
 		_selectedActionEmotion = null;
 		_selectedAction = null;
@@ -419,6 +443,25 @@ public class DeliberativeComponent implements Serializable, IComponent,
 		_selectedPlan = null;
 
 		_options.clear();
+		
+		//forget old intentions that are not brought into attention
+		for(Intention intention : _intentions.values())
+		{
+			if(intention.isForgotten())
+			{
+				AgentLogger.GetInstance().logAndPrint("Removing forgotten intention " + intention.getGoal().getName());
+				removeIntention(intention);
+				if(intention.IsStrongCommitment())
+				{
+					cancelAction(am);
+				}
+				
+				//remove one forgotten intention at a time, or else the for will crash
+				break;
+			}
+		}
+		
+		
 		for (IOptionsStrategy strategy : _optionStrategies) {
 			_options.addAll(strategy.options(am));
 		}
@@ -435,52 +478,51 @@ public class DeliberativeComponent implements Serializable, IComponent,
 		if (_currentIntention != null) {
 			i = _currentIntention.GetSubIntention();
 
-			// TODO adding and removing intentions from memory.
-			// ok, this needs some explaining. If you play close attention to
-			// the following
+			_currentIntention.FocusAttention();
+			// ok, this needs some explaining. If you pay close attention to the following
 			// code u'll see that if an intention has no available plans (i.e.
-			// failed), I will not
-			// remove the intention unless it has been strongly committed. This
-			// is intended.
-			// If not strongly committed the intention needs to stay in the list
-			// of current intentions.
-			// This is because if we would remove it, the agent would
-			// immediately select the intention
+			// failed), I will not remove the intention unless it has been strongly committed. 
+			// This is intended. If not strongly committed the intention needs to stay in the list
+			// of current intentions. This is because if we would remove it, the agent would immediately select the intention
 			// again not knowing that he would fail to create a plan for it. So
-			// he needs to remember that
-			// the intention is not feasible. What we should do latter is to
-			// remove the intention from memory
-			// after some significant time has passed, or if a maximum number of
+			// he needs to remember that the intention is not feasible. What we should do latter is to
+			// remove the intention from memory after some significant time has passed, or if a maximum number of
 			// stored intentions is reached
 
 			if (i.getGoal().CheckSuccess(am)) {
 				removeIntention(i);
-				for (IGoalSuccessStrategy s : _goalSuccessStrategies) {
-					s.perceiveGoalSuccess(am, i.getGoal());
+				if(i.IsStrongCommitment())
+				{
+					for (IGoalSuccessStrategy s : _goalSuccessStrategies) {
+						s.perceiveGoalSuccess(am, i.getGoal());
+					}
+					i.ProcessIntentionSuccess(am);
+					cancelAction(am);
 				}
-				i.ProcessIntentionSuccess(am);
 				return null;
 			} else if (i.getGoal().CheckFailure(am)) {
 				removeIntention(i);
-				for (IGoalFailureStrategy s : _goalFailureStrategies) {
-					s.perceiveGoalFailure(am, i.getGoal());
+				if(i.IsStrongCommitment())
+				{
+					for (IGoalFailureStrategy s : _goalFailureStrategies) {
+						s.perceiveGoalFailure(am, i.getGoal());
+					}
+					i.ProcessIntentionFailure(am);
+					cancelAction(am);
 				}
-				i.ProcessIntentionFailure(am);
-				cancelAction(am);
 				return null;
 			} else if (i.NumberOfAlternativePlans() == 0) {
-				for (IGoalFailureStrategy s : _goalFailureStrategies) {
-					s.perceiveGoalFailure(am, i.getGoal());
-				}
-				i.ProcessIntentionFailure(am);
+				AgentLogger.GetInstance().logAndPrint("no plans found for the intention");
 				_currentIntention = null;
-				// we need to maintain the goal failure in memory (remembering
-				// there is no way to achieve the goal)
-				// if there is no strong commitment
-				if (i.IsStrongCommitment()) {
+				if(i.IsStrongCommitment())
+				{
 					removeIntention(i);
+					for (IGoalFailureStrategy s : _goalFailureStrategies) {
+						s.perceiveGoalFailure(am, i.getGoal());
+					}
+					i.ProcessIntentionFailure(am);
+					cancelAction(am);
 				}
-				cancelAction(am);
 				return null;
 			}
 			/*
@@ -506,48 +548,61 @@ public class DeliberativeComponent implements Serializable, IComponent,
 			// achieved
 			if (_selectedPlan != null
 					&& _selectedPlan.getOpenPreconditions().size() == 0
+					&& _selectedPlan.getStaticPreconditions().size() == 0
 					&& _selectedPlan.getSteps().size() == 0) {
 				removeIntention(i);
-				for (IGoalSuccessStrategy s : _goalSuccessStrategies) {
-					s.perceiveGoalSuccess(am, i.getGoal());
+				if(i.IsStrongCommitment())
+				{
+					for (IGoalSuccessStrategy s : _goalSuccessStrategies) {
+						s.perceiveGoalSuccess(am, i.getGoal());
+					}
+					i.ProcessIntentionSuccess(am);
+					cancelAction(am);
 				}
-				i.ProcessIntentionSuccess(am);
+				
 				return null;
 			}
 
 			if (_actionMonitor == null && _selectedPlan != null) {
-				//AgentLogger.GetInstance().logAndPrint(
-				//		"Plan Finished: " + _selectedPlan.toString());
+				AgentLogger.GetInstance().logAndPrint("Plan Finished: " + _selectedPlan.toString());
 				copingAction = _selectedPlan.UnexecutedAction(am);
 
 				if (copingAction != null) {
 					if (!i.IsStrongCommitment()) {
+						AgentLogger.GetInstance().log("Plan Commited: " + _selectedPlan.toString());
 						i.SetStrongCommitment(am);
-						AgentLogger.GetInstance().log(
-								"Plan Commited: " + _selectedPlan.toString());
+						i.ProcessIntentionActivation(am);
 					}
-					String actionName = copingAction.getName()
-							.GetFirstLiteral().toString();
+					String actionName = copingAction.getName().GetFirstLiteral().toString();
 
-					if (copingAction instanceof ActivePursuitGoal) {
-						addSubIntention(am, _currentIntention,
-								(ActivePursuitGoal) copingAction);
-					} else if (!actionName.startsWith("Inference")
-							&& !actionName.endsWith("Appraisal")
-							&& !actionName.startsWith("SA")) {
+					if (copingAction instanceof ActivePursuitGoal) 
+					{
+						addSubIntention(am, _currentIntention,(ActivePursuitGoal) copingAction);
+					} 
+					else if (!actionName.startsWith("Inference") && !actionName.startsWith("SA")) 
+					{
 						fear = i.GetFear(am.getEmotionalState());
 						hope = i.GetHope(am.getEmotionalState());
-						if (hope != null) {
-							if (fear != null) {
-								if (hope.GetIntensity() >= fear.GetIntensity()) {
+						if (hope != null) 
+						{
+							if (fear != null) 
+							{
+								if (hope.GetIntensity() >= fear.GetIntensity()) 
+								{
 									_selectedActionEmotion = hope;
-								} else {
+								} 
+								else 
+								{
 									_selectedActionEmotion = fear;
 								}
-							} else {
+							} 
+							else 
+							{
 								_selectedActionEmotion = hope;
 							}
-						} else {
+						} 
+						else 
+						{
 							_selectedActionEmotion = fear;
 						}
 
@@ -560,15 +615,10 @@ public class DeliberativeComponent implements Serializable, IComponent,
 					} else if (actionName.startsWith("SA")) {
 						Effect eff;
 
-						for (ListIterator<Effect> li = copingAction
-								.getEffects().listIterator(); li.hasNext();) {
+						for (ListIterator<Effect> li = copingAction.getEffects().listIterator(); li.hasNext();) {
 							eff = (Effect) li.next();
 							if (eff.isGrounded())
-								am.getMemory()
-										.getSemanticMemory()
-										.Tell(eff.GetEffect().getName(),
-												eff.GetEffect().GetValue()
-														.toString());
+								am.getMemory().getSemanticMemory().Tell(eff.GetEffect().getName(),eff.GetEffect().getValue().toString());
 						}
 						this.checkLinks(am);
 					} else {
@@ -703,21 +753,19 @@ public class DeliberativeComponent implements Serializable, IComponent,
 		String goalName = goal.getNameWithCharactersOrdered();
 
 		synchronized (this) {
-			AgentLogger.GetInstance().logAndPrint(
-					"Adding 1st level intention: " + goal.getName());
+			AgentLogger.GetInstance().logAndPrint("Adding 1st level intention: " + goal.getName());
 			intention = new Intention(am, goal);
 
 			plans = goal.getPlans(am);
 			if (plans == null) {
-				newPlan = new Plan(_protectionConstraints,
-						goal.GetSuccessConditions());
+				newPlan = new Plan(_protectionConstraints,goal.GetSuccessConditions());
 				intention.AddPlan(newPlan);
 			} else {
 				intention.AddPlans(plans);
 			}
 
 			_intentions.put(goalName, intention);
-			intention.ProcessIntentionActivation(am);
+			//intention.ProcessIntentionActivation(am);
 		}
 	}
 
@@ -862,9 +910,8 @@ public class DeliberativeComponent implements Serializable, IComponent,
 
 		if (maxGoal != null) {
 			if (maxUtility >= MINIMUMUTILITY) {
-				if (_currentIntention == null
-						|| maxUtility > _EUStrategy.getExpectedUtility(am,
-								_currentIntention) * SELECTIONTHRESHOLD) {
+				if (_currentIntention == null || maxUtility > _EUStrategy.getExpectedUtility(am,_currentIntention) * SELECTIONTHRESHOLD) 
+				{
 					return maxGoal;
 				}
 			}
@@ -888,11 +935,9 @@ public class DeliberativeComponent implements Serializable, IComponent,
 		float EU;
 
 		if (_currentIntention != null) {
-			highestUtility = _EUStrategy.getExpectedUtility(am,
-					_currentIntention);
+			highestUtility = _EUStrategy.getExpectedUtility(am,_currentIntention)*SELECTIONTHRESHOLD;
 
 			maxIntention = _currentIntention;
-			// TODO selection threshold here!
 		} else {
 			maxIntention = null;
 			highestUtility = -200;
@@ -907,18 +952,25 @@ public class DeliberativeComponent implements Serializable, IComponent,
 
 				if (intention.getGoal().CheckSuccess(am)) {
 					removeIntention(intention);
-					for (IGoalSuccessStrategy s : _goalSuccessStrategies) {
-						s.perceiveGoalSuccess(am, intention.getGoal());
+					if(intention.IsStrongCommitment())
+					{
+						for (IGoalSuccessStrategy s : _goalSuccessStrategies) {
+							s.perceiveGoalSuccess(am, intention.getGoal());
+						}
+						intention.ProcessIntentionSuccess(am);
 					}
-					intention.ProcessIntentionSuccess(am);
 					return null;
+					
 				} else if (intention.getGoal().CheckFailure(am)) {
 					removeIntention(intention);
-					for (IGoalFailureStrategy s : _goalFailureStrategies) {
-						s.perceiveGoalFailure(am, intention.getGoal());
+					if(intention.IsStrongCommitment())
+					{
+						for (IGoalFailureStrategy s : _goalFailureStrategies) {
+							s.perceiveGoalFailure(am, intention.getGoal());
+						}
+						intention.ProcessIntentionFailure(am);
+						cancelAction(am);
 					}
-					intention.ProcessIntentionFailure(am);
-					cancelAction(am);
 					return null;
 				}
 
@@ -934,9 +986,7 @@ public class DeliberativeComponent implements Serializable, IComponent,
 		}
 
 		if (this._currentIntention != maxIntention) {
-			AgentLogger.GetInstance().logAndPrint(
-					"Switching 2nd level intention from "
-							+ this._currentIntention + " to " + maxIntention);
+			AgentLogger.GetInstance().logAndPrint("Switching 2nd level intention from " + this._currentIntention + " to " + maxIntention);
 		}
 
 		this._currentIntention = maxIntention;
@@ -965,8 +1015,7 @@ public class DeliberativeComponent implements Serializable, IComponent,
 	}
 
 	public float getExpectedUtility(AgentModel am, Intention i) {
-		return _UStrategy.getUtility(am, i.getGoal())
-				* _PStrategy.getProbability(am, i);
+		return _UStrategy.getUtility(am, i.getGoal()) * _PStrategy.getProbability(am, i);
 	}
 
 	public IExpectedUtilityStrategy getExpectedUtilityStrategy() {
@@ -1018,10 +1067,9 @@ public class DeliberativeComponent implements Serializable, IComponent,
 	@Override
 	public void initialize(AgentModel ag) {
 
-		AgentLogger.GetInstance().log(
+		/*AgentLogger.GetInstance().log(
 				"Adding Goals in the DeliberativeComponent:");
-		DeliberativeLoaderHandler deliberativeLoader = new DeliberativeLoaderHandler(
-				ag, this);
+		DeliberativeLoaderHandler deliberativeLoader = new DeliberativeLoaderHandler(ag, this);
 
 		try {
 			SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -1033,7 +1081,7 @@ public class DeliberativeComponent implements Serializable, IComponent,
 		} catch (Exception e) {
 			throw new RuntimeException(
 					"Error on loading goals from the agent XML Files:" + e);
-		}
+		}*/
 	}
 
 	@Override
@@ -1166,8 +1214,7 @@ public class DeliberativeComponent implements Serializable, IComponent,
 	public void removeIntention(Intention i) {
 		if (i.isRootIntention()) {
 			synchronized (this) {
-				_intentions.remove(i.getGoal().getNameWithCharactersOrdered()
-						.toString());
+				_intentions.remove(i.getGoal().getNameWithCharactersOrdered().toString());
 			}
 			_currentIntention = null;
 		} else {
@@ -1267,20 +1314,32 @@ public class DeliberativeComponent implements Serializable, IComponent,
 
 		if (_actionMonitor != null && _actionMonitor.matchEvent(event)) {
 			if (_actionMonitor.getStep().getAgent().isGrounded()
-					&& !_actionMonitor.getStep().getAgent().toString()
-							.equals(Constants.SELF)) {
+					&& !_actionMonitor.getStep().getAgent().toString().equals(Constants.SELF)) 
+			{
 				// the agent was waiting for an action of other agent to be
-				// complete
-				// since the step of another agent may contain unbound
-				// variables,
-				// we cannot just compare the names, we need to try to unify
-				// them
-				if (Unifier.Unify(event.toStepName(), _actionMonitor.getStep()
-						.getName()) != null) {
+				// complete, since the step of another agent may contain unbound variables,
+				// we cannot just compare the names, we need to try to unify them
+				if (Unifier.Unify(event.toStepName(), _actionMonitor.getStep().getName()) != null) {
 					_actionMonitor.getStep().IncreaseProbability(am);
 					// System.out.println("Calling updateEffectsProbability (other's action: step completed)");
 					_actionMonitor.getStep().updateEffectsProbability(am);
 				} else {
+					
+					//special case - Appraisal Operator
+					if(_actionMonitor.getStep().getName().toString().contains("Appraisal"))
+					{
+						if(this._currentIntention != null)
+						{
+							for (IGoalFailureStrategy s : _goalFailureStrategies) {
+								s.perceiveGoalFailure(am, this._currentIntention.getGoal());
+							}
+							this._currentIntention.ProcessIntentionFailure(am);
+							removeIntention(this._currentIntention);
+						}
+						_actionMonitor = null;
+						return;
+					}
+					
 					for (IActionFailureStrategy s : _actionFailureStrategies) {
 						s.perceiveActionFailure(am, _actionMonitor.getStep());
 					}
@@ -1315,7 +1374,6 @@ public class DeliberativeComponent implements Serializable, IComponent,
 						return;
 					}
 				}
-
 			}
 		}
 
@@ -1323,6 +1381,21 @@ public class DeliberativeComponent implements Serializable, IComponent,
 			if (_actionMonitor.expired()) {
 				AgentLogger.GetInstance().logAndPrint(
 						"Action monitor expired: " + _actionMonitor.toString());
+				
+				//special case - Appraisal Operator
+				if(_actionMonitor.getStep().getName().toString().contains("Appraisal"))
+				{
+					if(this._currentIntention != null)
+					{
+						for (IGoalFailureStrategy s : _goalFailureStrategies) {
+							s.perceiveGoalFailure(am, this._currentIntention.getGoal());
+						}
+						this._currentIntention.ProcessIntentionFailure(am);
+						removeIntention(this._currentIntention);
+					}
+					_actionMonitor = null;
+					return;
+				}
 				// If the action expired we must check the plan links
 				// (continuous planning)
 				// just to make sure
@@ -1374,5 +1447,24 @@ public class DeliberativeComponent implements Serializable, IComponent,
 		while (it.hasNext()) {
 			((Intention) it.next()).UpdateProbabilities();
 		}
+	}
+
+	@Override
+	public ReflectXMLHandler2 getActionsParser(AgentModel am) {
+		return null;
+	}
+
+	@Override
+	public ReflectXMLHandler2 getGoalsParser(AgentModel am) {
+		return null;
+	}
+
+	@Override
+	public ReflectXMLHandler2 getPersonalityParser(AgentModel am) {
+		return new DeliberativeLoaderHandler(am, this);
+	}
+
+	@Override
+	public void parseAdditionalFiles(AgentModel am) {		
 	}
 }

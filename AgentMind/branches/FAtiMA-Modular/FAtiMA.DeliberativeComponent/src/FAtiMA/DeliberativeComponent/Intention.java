@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.ListIterator;
 
 import FAtiMA.Core.AgentModel;
+import FAtiMA.Core.AgentSimulationTime;
 import FAtiMA.Core.emotionalState.ActiveEmotion;
 import FAtiMA.Core.emotionalState.AppraisalFrame;
 import FAtiMA.Core.emotionalState.EmotionalState;
@@ -63,6 +64,7 @@ public class Intention implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	private static final int MAXPLANS = 150;
+	private static final int FORGET_TIMER = 3000;
 	
 	private String _fearEmotionID;
 	private String _hopeEmotionID;
@@ -72,6 +74,8 @@ public class Intention implements Serializable {
 	private Intention _parentIntention = null;
 	private boolean _strongCommitment;
 	private AppraisalFrame _appraisalFrame;
+	private long _lastAttentionTime;
+	
 
 
 	/**
@@ -89,6 +93,7 @@ public class Intention implements Serializable {
 		_strongCommitment = false;
 		_appraisalFrame = new AppraisalFrame(g.GetActivationEvent());
 		_appraisalFrame.SetAppraisalVariable(DeliberativeComponent.NAME, (short) 7, OCCAppraisalVariables.GOALSTATUS.name(), OCCAffectDerivationComponent.GOALUNCONFIRMED);
+		_lastAttentionTime = AgentSimulationTime.GetInstance().Time();
 	}
 	
 	
@@ -180,6 +185,19 @@ public class Intention implements Serializable {
 	{
 		return this._parentIntention;
 	}
+	
+	public void FocusAttention()
+	{
+		this._lastAttentionTime = AgentSimulationTime.GetInstance().Time();
+	}
+	
+	public boolean isForgotten()
+	{
+		long timeDiff = AgentSimulationTime.GetInstance().Time() - this._lastAttentionTime;
+		
+		return timeDiff > FORGET_TIMER;
+		
+	}
 
 	
 	/**
@@ -248,7 +266,7 @@ public class Intention implements Serializable {
 		for(Plan plan : _planConstruction)
 		{
 			p = plan.getProbability(am);
-			if(plan.getOpenPreconditions().size() == 0)
+			if(plan.getOpenPreconditions().size() == 0 && plan.getStaticPreconditions().size() == 0)
 			{
 				p2 = p;
 			}
