@@ -49,7 +49,7 @@ import FAtiMA.Core.memory.episodicMemory.ActionDetail;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.util.AgentLogger;
 import FAtiMA.Core.util.ConfigurationManager;
-import FAtiMA.Core.util.parsers.ReflectXMLHandler2;
+import FAtiMA.Core.util.parsers.ReflectXMLHandler;
 import FAtiMA.OCCAffectDerivation.OCCAppraisalVariables;
 
 public class AdvancedMemoryComponent implements Serializable, IAppraisalDerivationComponent, IProcessExternalRequestComponent {
@@ -338,17 +338,17 @@ public class AdvancedMemoryComponent implements Serializable, IAppraisalDerivati
 	}
 
 	@Override
-	public ReflectXMLHandler2 getActionsParser(AgentModel am) {
+	public ReflectXMLHandler getActionsParser(AgentModel am) {
 		return new ActionsLoaderHandler(am);
 	}
 
 	@Override
-	public ReflectXMLHandler2 getGoalsParser(AgentModel am) {
+	public ReflectXMLHandler getGoalsParser(AgentModel am) {
 		return null;
 	}
 
 	@Override
-	public ReflectXMLHandler2 getPersonalityParser(AgentModel am) {
+	public ReflectXMLHandler getPersonalityParser(AgentModel am) {
 		return null;
 	}
 

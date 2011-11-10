@@ -7,7 +7,7 @@ import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.plans.Effect;
 import FAtiMA.Core.plans.Step;
 import FAtiMA.Core.util.Constants;
-import FAtiMA.Core.util.parsers.ReflectXMLHandler2;
+import FAtiMA.Core.util.parsers.ReflectXMLHandler;
 import FAtiMA.Core.wellFormedNames.Substitution;
 import FAtiMA.Core.wellFormedNames.Symbol;
 
@@ -16,7 +16,7 @@ import FAtiMA.Core.wellFormedNames.Symbol;
  * @author João Dias
  *
  */
-public class ActionsLoaderHandler extends ReflectXMLHandler2 {
+public class ActionsLoaderHandler extends ReflectXMLHandler {
 	private String  _operatorKey;
 	 
 	private boolean _precondition;
