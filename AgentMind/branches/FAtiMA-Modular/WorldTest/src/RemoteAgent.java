@@ -9,6 +9,7 @@ import FAtiMA.Core.conditions.Condition;
 import FAtiMA.Core.plans.Effect;
 import FAtiMA.Core.plans.Step;
 import FAtiMA.Core.sensorEffector.SpeechAct;
+import FAtiMA.Core.util.AgentLogger;
 import FAtiMA.Core.util.Constants;
 import FAtiMA.Core.util.parsers.SocketListener;
 import FAtiMA.Core.wellFormedNames.Name;
@@ -226,7 +227,7 @@ public class RemoteAgent extends SocketListener {
 				if(e.GetProbability(null) > _r.nextFloat())
 				{
 					
-					msg = "PROPERTY-CHANGED " + c.getToM() + " " + name + " " + c.GetValue();
+					msg = "PROPERTY-CHANGED " + c.getToM() + " " + name + " " + c.getValue();
 
 					_world.GetUserInterface().WriteLine(msg);
 					this._world.SendPerceptionToAll(msg);
@@ -326,6 +327,7 @@ class ActionSimulator extends Thread{
 				}
 				else
 				{
+					System.out.println(say.toLanguageEngine());
 					_world.GetUserInterface().WriteLine(_agentName + " says to " + receiver + ": " + say.getMeaning());
 				}
 

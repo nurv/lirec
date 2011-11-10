@@ -10,6 +10,7 @@ import javax.xml.parsers.SAXParserFactory;
 
 import org.xml.sax.SAXException;
 
+import FAtiMA.Core.ActionLibrary;
 import FAtiMA.Core.plans.Step;
 import FAtiMA.Core.sensorEffector.SpeechAct;
 import FAtiMA.Core.util.parsers.ActionsLoaderHandler;
@@ -117,8 +118,8 @@ public class WorldTest {
 			
 			_userInterface.WriteLine("Finished ALE initialization!");
 		
-			ActionsLoaderHandler op = LoadOperators(actionsFile, "[SELF]");
-			this._actions = op.getOperators();
+			LoadOperators(actionsFile, "[SELF]");
+			
 			_ss = new ServerSocket(port);
 			//_ssToGreta = new ServerSocket(100);
 
@@ -152,15 +153,17 @@ public class WorldTest {
 	}
 	
 
-	private ActionsLoaderHandler LoadOperators(String xmlFile, String self) throws ParserConfigurationException, SAXException, IOException 
+	private void LoadOperators(String xmlFile, String self) throws ParserConfigurationException, SAXException, IOException 
 	{
+		ActionLibrary library = new ActionLibrary();
 		_userInterface.WriteLine("Loaded actions from: " + xmlFile);
-		ActionsLoaderHandler op = new ActionsLoaderHandler(null);
+		ActionsLoaderHandler op = new ActionsLoaderHandler(library, null);
 		
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		SAXParser parser = factory.newSAXParser();
 		parser.parse(new File(xmlFile), op);
-		return op;		
+		
+		_actions = library.getActions();		
 	}
 
 	public void run() {

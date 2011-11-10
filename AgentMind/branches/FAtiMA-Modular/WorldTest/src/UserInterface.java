@@ -66,7 +66,7 @@ public class UserInterface implements ActionListener {
 	public static final String PAULIE = "Paulie";
 	public static final String LUKE = "Luke";
 	public static final String LUKEPAULIE = "LukePaulie";
-	public static final String USER = "Amy";
+	public static final String USER = "User";
 	
 	private Random _r;
 	private static int buffsize = 250;
@@ -172,6 +172,8 @@ public class UserInterface implements ActionListener {
             	//_userOptions.addItem("Judy");
     			//_userOptions.addItem("David");
             }
+            
+      
 
             _locationOptions.addActionListener(new ActionListener(){
     			public void actionPerformed(ActionEvent e) {
@@ -455,7 +457,7 @@ public class UserInterface implements ActionListener {
 			{
 				if(e.GetProbability(null) > _r.nextFloat())
 				{
-					msg = "PROPERTY-CHANGED " + c.getToM() + " " + name + " " + c.GetValue();
+					msg = "PROPERTY-CHANGED " + c.getToM() + " " + name + " " + c.getValue();
 					
 					_world.GetUserInterface().WriteLine(msg);
 					this._world.SendPerceptionToAll(msg);
