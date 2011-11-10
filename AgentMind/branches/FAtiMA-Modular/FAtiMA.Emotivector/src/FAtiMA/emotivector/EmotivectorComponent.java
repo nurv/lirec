@@ -10,6 +10,7 @@ import FAtiMA.Core.componentTypes.IComponent;
 import FAtiMA.Core.emotionalState.AppraisalFrame;
 import FAtiMA.Core.emotionalState.BaseEmotion;
 import FAtiMA.Core.sensorEffector.Event;
+import FAtiMA.Core.util.parsers.ReflectXMLHandler2;
 
 public class EmotivectorComponent implements IComponent, IAppraisalDerivationComponent, IAffectDerivationComponent {
 
@@ -96,7 +97,7 @@ public class EmotivectorComponent implements IComponent, IAppraisalDerivationCom
 		ArrayList<BaseEmotion> result = new ArrayList<BaseEmotion>();
 		
 		float sv, ev, mismatch;
-		BaseEmotion bE = null;
+		//BaseEmotion bE = null;
 		
 			
 		if(af.containsAppraisalVariable(AppraisalVariables.SENSED_VALUE.name()) && af.containsAppraisalVariable(AppraisalVariables.EXPECTED_VALUE.name())){
@@ -202,7 +203,25 @@ public class EmotivectorComponent implements IComponent, IAppraisalDerivationCom
 
 	@Override
 	public void update(AgentModel am, long time) {
-		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public ReflectXMLHandler2 getActionsParser(AgentModel am) {
+		return null;
+	}
+
+	@Override
+	public ReflectXMLHandler2 getGoalsParser(AgentModel am) {
+		return null;
+	}
+
+	@Override
+	public ReflectXMLHandler2 getPersonalityParser(AgentModel am) {
+		return null;
+	}
+
+	@Override
+	public void parseAdditionalFiles(AgentModel am) {
 	}
 
 }
