@@ -55,9 +55,7 @@ import java.util.ArrayList;
 import java.util.ListIterator;
 import java.util.StringTokenizer;
 
-
 import FAtiMA.Core.AgentSimulationTime;
-import FAtiMA.Core.memory.episodicMemory.Time;
 import FAtiMA.Core.util.AgentLogger;
 import FAtiMA.Core.util.Constants;
 import FAtiMA.Core.wellFormedNames.Name;

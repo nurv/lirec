@@ -141,7 +141,7 @@ public class ConfigurationManager {
 
 	
 	public static boolean getAgentLoad(){
-		String agentLoad = getInstance().getOptionalConfigurationValue(AGENT_LOAD);
+		String agentLoad = ConfigurationManager.getOptionalConfigurationValue(AGENT_LOAD);
 		if(agentLoad!=null){
 			return Boolean.parseBoolean(agentLoad);
 		}else{
@@ -150,7 +150,7 @@ public class ConfigurationManager {
 	}
 	
 	public static boolean getMemoryLoad(){
-		String memoryLoad = getInstance().getOptionalConfigurationValue(MEMORY_LOAD);
+		String memoryLoad = ConfigurationManager.getOptionalConfigurationValue(MEMORY_LOAD);
 		if(memoryLoad!=null){
 			return Boolean.parseBoolean(memoryLoad);
 		}else{

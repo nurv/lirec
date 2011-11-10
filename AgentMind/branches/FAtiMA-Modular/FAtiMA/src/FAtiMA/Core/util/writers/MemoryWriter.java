@@ -39,7 +39,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.Writer;
-import java.util.Date;
 
 import org.znerd.xmlenc.LineBreak;
 import org.znerd.xmlenc.XMLOutputter;
@@ -48,10 +47,10 @@ import FAtiMA.Core.AgentSimulationTime;
 import FAtiMA.Core.memory.Memory;
 import FAtiMA.Core.memory.episodicMemory.ActionDetail;
 import FAtiMA.Core.memory.episodicMemory.MemoryEpisode;
+import FAtiMA.Core.memory.episodicMemory.Time;
 import FAtiMA.Core.memory.semanticMemory.KnowledgeSlot;
 import FAtiMA.Core.sensorEffector.Parameter;
 import FAtiMA.Core.util.enumerables.EventType;
-import FAtiMA.Core.memory.episodicMemory.Time;
 
 
 

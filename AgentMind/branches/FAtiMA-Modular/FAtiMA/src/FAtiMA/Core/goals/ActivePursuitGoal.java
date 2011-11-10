@@ -158,7 +158,7 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
 			_successConditions.add(cond);
 		else if (conditionType.equals("FailureConditions")) 
 		    _failureConditions.add(cond);
-		else if (conditionType.equals("CancelConditions"))
+		else if (conditionType.equals("CancelingConditions"))
 			_cancelConditions.add(cond);
 	}
 	
@@ -216,6 +216,22 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
 			}
 		}
 		return true;
+	}
+	
+	/**
+	 * Checks an ActivePursuitGoal's canceling conditions
+	 * if at least one of them of them is verified the goal is considered canceled
+	 * @return true if the goal should be canceled, false otherwise
+	 */
+	public boolean CheckCanceling(AgentModel am) {
+	    
+		for (Condition c : this._cancelConditions){
+			if(c.GetValidBindings(am) != null)
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	public boolean mayContainSelf()

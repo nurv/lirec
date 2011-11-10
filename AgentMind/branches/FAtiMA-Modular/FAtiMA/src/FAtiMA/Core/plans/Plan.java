@@ -399,12 +399,10 @@ public class Plan implements Cloneable, Serializable
      */
     public void AddOperator(IPlanningOperator op)
     {
-        ListIterator<Condition> li;
      
         op.setID(new Integer(_stepCounter++));
         _steps.add(op);
 
-        li = op.getPreconditions().listIterator();
         int i = 0;
         
         for(Condition c : op.getPreconditions())

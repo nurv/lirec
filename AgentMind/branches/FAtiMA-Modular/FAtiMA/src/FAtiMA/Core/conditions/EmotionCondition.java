@@ -29,7 +29,6 @@
 
 package FAtiMA.Core.conditions;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Locale;
 

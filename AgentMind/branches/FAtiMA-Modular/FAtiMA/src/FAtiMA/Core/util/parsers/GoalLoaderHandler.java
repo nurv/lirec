@@ -216,6 +216,8 @@ public class GoalLoaderHandler extends ReflectXMLHandler2 {
       _conditionType = "FailureConditions";
     }
     
-  
-       
+    public void CancelingConditions(Attributes attributes)
+    {
+    	_conditionType = "CancelingConditions";
+    }
 }
