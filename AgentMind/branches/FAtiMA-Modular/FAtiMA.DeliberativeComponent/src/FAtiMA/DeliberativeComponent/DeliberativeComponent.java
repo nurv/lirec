@@ -392,8 +392,6 @@ public class DeliberativeComponent implements Serializable, IComponent,
 		String action;
 		String target = null;
 		Event e;
-
-		
 		
 		if(_selectedAction.getName().toString().startsWith("SpeechAct"))
 		{
@@ -525,13 +523,17 @@ public class DeliberativeComponent implements Serializable, IComponent,
 				}
 				return null;
 			}
-			/*
-			 * else if(!i.IsStrongCommitment() &&
-			 * !i.getGoal().checkPreconditions(am)) { //this is done only if the
-			 * agent hasn't tried to do anything yet, he cancels the goal out
-			 * //if the preconditions are not yet established
-			 * removeIntention(i); }
-			 */
+			else if(i.getGoal().CheckCanceling(am)) { 
+				//the agent cancels the goal out
+				//if the cancel conditions are verified
+				if(i.IsStrongCommitment())
+				{
+					i.ProcessIntentionCancel(am);
+					cancelAction(am);
+				}
+				
+				removeIntention(i); 
+			} 
 			else {
 				_selectedPlan = _planner.ThinkAbout(am, this, i);
 			}

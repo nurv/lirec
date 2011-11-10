@@ -48,8 +48,8 @@ import FAtiMA.Core.goals.Goal;
 import FAtiMA.Core.plans.Plan;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.util.AgentLogger;
-import FAtiMA.OCCAffectDerivation.OCCAppraisalVariables;
 import FAtiMA.OCCAffectDerivation.OCCAffectDerivationComponent;
+import FAtiMA.OCCAffectDerivation.OCCAppraisalVariables;
 
 
 /**
@@ -63,7 +63,7 @@ public class Intention implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private static final int MAXPLANS = 150;
+	//private static final int MAXPLANS = 150;
 	private static final int FORGET_TIMER = 3000;
 	
 	private String _fearEmotionID;
