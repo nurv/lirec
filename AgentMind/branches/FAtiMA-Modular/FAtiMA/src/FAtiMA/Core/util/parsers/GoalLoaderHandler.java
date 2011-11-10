@@ -62,7 +62,7 @@ import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Substitution;
 import FAtiMA.Core.wellFormedNames.Symbol;
 
-public class GoalLoaderHandler extends ReflectXMLHandler2 {
+public class GoalLoaderHandler extends ReflectXMLHandler {
     protected String _conditionType;
     protected Goal _currentGoal;
     //protected ArrayList<Goal> _goals;

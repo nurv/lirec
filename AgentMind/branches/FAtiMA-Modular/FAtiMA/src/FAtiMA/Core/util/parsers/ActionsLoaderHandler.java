@@ -69,7 +69,7 @@ import FAtiMA.Core.wellFormedNames.Symbol;
  * @author João Dias
  *
  */
-public class ActionsLoaderHandler extends ReflectXMLHandler2 {
+public class ActionsLoaderHandler extends ReflectXMLHandler {
 	private Step _currentOperator;
 	//private ArrayList<Step> _operators; 
 	private ActionLibrary _actionLibrary;

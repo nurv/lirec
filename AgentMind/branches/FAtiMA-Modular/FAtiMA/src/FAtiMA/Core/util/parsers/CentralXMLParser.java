@@ -13,14 +13,14 @@ import FAtiMA.Core.util.VersionChecker;
 public class CentralXMLParser extends DefaultHandler {
     
     String lastTag;
-    ArrayList<ReflectXMLHandler2> _parsers;
+    ArrayList<ReflectXMLHandler> _parsers;
 
     public CentralXMLParser() {
         super();
-        _parsers = new ArrayList<ReflectXMLHandler2>();
+        _parsers = new ArrayList<ReflectXMLHandler>();
     }
     
-    public void addParser(ReflectXMLHandler2 p)
+    public void addParser(ReflectXMLHandler p)
     {
     	_parsers.add(p);
     }
@@ -28,7 +28,7 @@ public class CentralXMLParser extends DefaultHandler {
 
     
     public void characters(char[] ch, int start, int length) {
-    	for(ReflectXMLHandler2 parser: _parsers)
+    	for(ReflectXMLHandler parser: _parsers)
     	{
     		parser.callCharMethod(lastTag + "Characters", new String(ch).substring(start,start+length));
     	}      
@@ -47,7 +47,7 @@ public class CentralXMLParser extends DefaultHandler {
     		args = localName + "End";
     	else
     		args = qName + "End";
-    	for(ReflectXMLHandler2 parser: _parsers)
+    	for(ReflectXMLHandler parser: _parsers)
     	{
     		parser.callEndMethod(args);
     	}
@@ -98,7 +98,7 @@ public class CentralXMLParser extends DefaultHandler {
     		name = qName;
     	}
     		
-    	for(ReflectXMLHandler2 parser: _parsers)
+    	for(ReflectXMLHandler parser: _parsers)
     	{
     		parser.callTagMethod(name,attributes);
     	}

@@ -62,7 +62,7 @@ import FAtiMA.Core.util.parsers.CentralXMLParser;
 import FAtiMA.Core.util.parsers.EmotionDispositionsLoaderHandler;
 import FAtiMA.Core.util.parsers.GoalLoaderHandler;
 import FAtiMA.Core.util.parsers.MemoryLoaderHandler;
-import FAtiMA.Core.util.parsers.ReflectXMLHandler2;
+import FAtiMA.Core.util.parsers.ReflectXMLHandler;
 import FAtiMA.Core.util.writers.MemoryWriter;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Symbol;
@@ -626,7 +626,7 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 	
 	private void LoadActionsFile() throws ActionsParsingException
 	{
-		ReflectXMLHandler2 parser;
+		ReflectXMLHandler parser;
 		// Load Actions file
 		CentralXMLParser centralParser = new CentralXMLParser();
 		centralParser.addParser(new ActionsLoaderHandler(_actionLibrary, this));
@@ -662,7 +662,7 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 	
 	private void LoadGoalsFile() throws GoalLibParsingException
 	{
-		ReflectXMLHandler2 parser;
+		ReflectXMLHandler parser;
 		// Load Actions file
 		CentralXMLParser centralParser = new CentralXMLParser();
 		centralParser.addParser(new GoalLoaderHandler(this));
@@ -688,7 +688,7 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 	
 	private void LoadPersonalityFile() throws AgentParsingException
 	{
-		ReflectXMLHandler2 parser;
+		ReflectXMLHandler parser;
 		// Load Actions file
 		CentralXMLParser centralParser = new CentralXMLParser();
 		centralParser.addParser(new EmotionDispositionsLoaderHandler(this._emotionalState));

@@ -57,7 +57,7 @@ import FAtiMA.Core.emotionalState.EmotionDisposition;
 import FAtiMA.Core.emotionalState.EmotionalState;
 import FAtiMA.Core.exceptions.InvalidEmotionTypeException;
 
-public class EmotionDispositionsLoaderHandler extends ReflectXMLHandler2 {
+public class EmotionDispositionsLoaderHandler extends ReflectXMLHandler {
 	
     private EmotionalState _emotionalState;
     

@@ -3,7 +3,7 @@ package FAtiMA.Core.componentTypes;
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.Display.AgentDisplayPanel;
 import FAtiMA.Core.sensorEffector.Event;
-import FAtiMA.Core.util.parsers.ReflectXMLHandler2;
+import FAtiMA.Core.util.parsers.ReflectXMLHandler;
 
 public interface IComponent {
 	
@@ -19,11 +19,11 @@ public interface IComponent {
 	
 	public AgentDisplayPanel createDisplayPanel(AgentModel am);
 	
-	public ReflectXMLHandler2 getActionsParser(AgentModel am);
+	public ReflectXMLHandler getActionsParser(AgentModel am);
 	
-	public ReflectXMLHandler2 getGoalsParser(AgentModel am);
+	public ReflectXMLHandler getGoalsParser(AgentModel am);
 	
-	public ReflectXMLHandler2 getPersonalityParser(AgentModel am);
+	public ReflectXMLHandler getPersonalityParser(AgentModel am);
 	
 	public void parseAdditionalFiles(AgentModel am);
 	
