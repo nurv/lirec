@@ -4,13 +4,10 @@ package FAtiMA.advancedMemoryComponent;
 import org.xml.sax.Attributes;
 
 import FAtiMA.Core.AgentModel;
-
-
 import FAtiMA.Core.plans.Effect;
 import FAtiMA.Core.plans.Step;
 import FAtiMA.Core.util.Constants;
-import FAtiMA.Core.util.parsers.ReflectXMLHandler;
-
+import FAtiMA.Core.util.parsers.ReflectXMLHandler2;
 import FAtiMA.Core.wellFormedNames.Substitution;
 import FAtiMA.Core.wellFormedNames.Symbol;
 
@@ -19,7 +16,7 @@ import FAtiMA.Core.wellFormedNames.Symbol;
  * @author João Dias
  *
  */
-public class ActionsLoaderHandler extends ReflectXMLHandler {
+public class ActionsLoaderHandler extends ReflectXMLHandler2 {
 	private String  _operatorKey;
 	 
 	private boolean _precondition;
@@ -58,9 +55,7 @@ public class ActionsLoaderHandler extends ReflectXMLHandler {
 		try
     	{
     		_sac = SACondition.ParseSA(attributes);
-    		operator = 
-    		
-    		_am.getActionLibrary().getAction(_operatorKey);
+    		operator = _am.getActionLibrary().getAction(_operatorKey);
   
     		_sac.MakeGround(_self);
     		if(_precondition) 

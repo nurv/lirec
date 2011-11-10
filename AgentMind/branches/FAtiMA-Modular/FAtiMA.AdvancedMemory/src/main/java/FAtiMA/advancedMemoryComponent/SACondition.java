@@ -79,12 +79,16 @@ public class SACondition extends Condition{
 	}
 	
 	@Override
-	public boolean CheckCondition(AgentModel am) {
-		return this._value.isGrounded();
+	public float CheckCondition(AgentModel am) {
+		if(this._value.isGrounded())
+		{
+			return 1;
+		}
+		else return 0;
 	}
 
 	@Override
-	public Name GetValue() {
+	public Name getValue() {
 		return this._value;
 	}
 
