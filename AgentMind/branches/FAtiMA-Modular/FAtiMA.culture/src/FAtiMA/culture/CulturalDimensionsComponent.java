@@ -17,8 +17,8 @@ import FAtiMA.Core.emotionalState.AppraisalFrame;
 import FAtiMA.Core.goals.ActivePursuitGoal;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.util.AgentLogger;
-import FAtiMA.Core.util.ConfigurationManager;
 import FAtiMA.Core.util.Constants;
+import FAtiMA.Core.util.parsers.ReflectXMLHandler2;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.SubstitutionSet;
 import FAtiMA.Core.wellFormedNames.Symbol;
@@ -55,14 +55,14 @@ public class CulturalDimensionsComponent implements IAppraisalDerivationComponen
 	}
 
 	public String name(){
-		return this.NAME;
+		return CulturalDimensionsComponent.NAME;
 	}
 	
 	//unused interface methods:
 	@Override
 	public void initialize(AgentModel aM){
 		DeliberativeComponent dc = (DeliberativeComponent) aM.getComponent(DeliberativeComponent.NAME);
-		this.loadCulture(aM);
+		//this.loadCulture(aM);
 		dc.addOptionsStrategy(this);
 		dc.setExpectedUtilityStrategy(this);
 		aM.getRemoteAgent().setProcessActionStrategy(new CultureProcessActionStrategy());
@@ -164,7 +164,7 @@ public class CulturalDimensionsComponent implements IAppraisalDerivationComponen
 	}
 	
 	
-	private void loadCulture(AgentModel aM){
+	/*private void loadCulture(AgentModel aM){
 		
 		DeliberativeComponent dp = (DeliberativeComponent) aM.getComponent(DeliberativeComponent.NAME);
 
@@ -188,7 +188,7 @@ public class CulturalDimensionsComponent implements IAppraisalDerivationComponen
 			throw new RuntimeException("Error on Loading the Culture XML File:" + e);
 		}
 		//this.changeNeedsWeightsAndDecays(aM);
-	}
+	}*/
 
 	public int getDimensionValue(short dimensionType){
 		return _dimensionalValues[dimensionType];
@@ -346,7 +346,6 @@ public class CulturalDimensionsComponent implements IAppraisalDerivationComponen
 
 	@Override
 	public void update(AgentModel am,long time) {
-		// TODO Auto-generated method stub
 	}
 	
 	@Override
@@ -372,5 +371,43 @@ public class CulturalDimensionsComponent implements IAppraisalDerivationComponen
 	public String[] getComponentDependencies() {
 		String[] dependencies = {ReactiveComponent.NAME,DeliberativeComponent.NAME,MotivationalComponent.NAME,ToMComponent.NAME};
 		return dependencies;
+	}
+
+	@Override
+	public ReflectXMLHandler2 getActionsParser(AgentModel am) {
+		return null;
+	}
+
+	@Override
+	public ReflectXMLHandler2 getGoalsParser(AgentModel am) {
+		return new CultureLoaderHandler(am,this);
+	}
+
+	@Override
+	public ReflectXMLHandler2 getPersonalityParser(AgentModel am) {
+		return null;
+	}
+
+	@Override
+	public void parseAdditionalFiles(AgentModel am) {
+		DeliberativeComponent dp = (DeliberativeComponent) am.getComponent(DeliberativeComponent.NAME);
+
+		AgentLogger.GetInstance().log("LOADING Culture: " + this.cultureFile);
+		CultureLoaderHandler cultureLoader = new CultureLoaderHandler(am,this);
+		
+		try{
+			SAXParserFactory factory = SAXParserFactory.newInstance();
+			SAXParser parser = factory.newSAXParser();
+				
+			parser.parse(new File(this.cultureFile), cultureLoader);
+
+			for(Ritual r : cultureLoader.GetRituals(am)){
+				this._rituals.add(r);
+				dp.addGoal(r);
+			}
+			
+		}catch(Exception e){
+			throw new RuntimeException("Error on Loading the Culture XML File:" + e);
+		}
 	}	
 }

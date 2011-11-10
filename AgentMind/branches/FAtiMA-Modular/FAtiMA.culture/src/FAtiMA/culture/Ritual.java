@@ -48,7 +48,6 @@ import FAtiMA.Core.plans.ProtectedCondition;
 import FAtiMA.Core.plans.Step;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.sensorEffector.Parameter;
-import FAtiMA.Core.util.Constants;
 import FAtiMA.Core.util.enumerables.EventType;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Substitution;

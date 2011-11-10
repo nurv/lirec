@@ -41,13 +41,12 @@ import FAtiMA.Core.conditions.PastEventCondition;
 import FAtiMA.Core.conditions.PredicateCondition;
 import FAtiMA.Core.conditions.PropertyCondition;
 import FAtiMA.Core.conditions.RecentEventCondition;
-import FAtiMA.Core.exceptions.ContextParsingException;
 import FAtiMA.Core.exceptions.InvalidEmotionTypeException;
 import FAtiMA.Core.exceptions.UnknownGoalException;
 import FAtiMA.Core.goals.Goal;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.util.AgentLogger;
-import FAtiMA.Core.util.parsers.ReflectXMLHandler;
+import FAtiMA.Core.util.parsers.ReflectXMLHandler2;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Substitution;
 import FAtiMA.Core.wellFormedNames.Symbol;
@@ -58,7 +57,7 @@ import FAtiMA.culture.exceptions.DuplicateSymbolTranslatorEntry;
 import FAtiMA.culture.exceptions.InvalidDimensionTypeException;
 
 
-public class CultureLoaderHandler extends ReflectXMLHandler {
+public class CultureLoaderHandler extends ReflectXMLHandler2 {
 
 	private ArrayList<Ritual> _rituals;
 	private Ritual _ritual = null;

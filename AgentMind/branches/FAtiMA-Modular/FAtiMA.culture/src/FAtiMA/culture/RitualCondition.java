@@ -42,7 +42,6 @@ import FAtiMA.Core.goals.Goal;
 import FAtiMA.Core.memory.episodicMemory.ActionDetail;
 import FAtiMA.Core.memory.episodicMemory.AutobiographicalMemory;
 import FAtiMA.Core.memory.episodicMemory.SearchKey;
-import FAtiMA.Core.sensorEffector.Parameter;
 import FAtiMA.Core.util.PermutationGenerator;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Substitution;
@@ -204,10 +203,10 @@ public class RitualCondition extends PredicateCondition {
 	 * @return true if the RitualCondition is verified, false otherwise
 	 * @see AutobiographicalMemory
 	 */
-	public boolean CheckCondition(AgentModel am) {
+	public float CheckCondition(AgentModel am) {
 		boolean result = false;
 		
-		if(!getName().isGrounded()) return false;
+		if(!getName().isGrounded()) return 0;
 		
 		
 		PermutationGenerator pGenerator = new PermutationGenerator(_roles.size());
@@ -227,12 +226,20 @@ public class RitualCondition extends PredicateCondition {
 			result = am.getMemory().getEpisodicMemory().ContainsRecentEvent(searchKeys);
 				
 			if(result ==  getPositive()){
-				return result == getPositive();
+				if(result == getPositive())
+				{
+					return 1;
+				}
+				else return 0;
 			}
 		}	
 		
 		
-		return result == getPositive();
+		if(result == getPositive())
+		{
+			return 1;
+		}
+		else return 0;
 	}
 	
 	private ArrayList<SearchKey> getSearchKeys()
@@ -255,12 +262,11 @@ public class RitualCondition extends PredicateCondition {
 		ActionDetail detail;
 		Substitution sub;
 		SubstitutionSet subSet;
-		Symbol param;
 		ArrayList<SubstitutionSet> bindingSets = new ArrayList<SubstitutionSet>();
 		ArrayList<ActionDetail> details;
 		
 		if (getName().isGrounded()) {
-			if(CheckCondition(am))
+			if(CheckCondition(am)==1)
 			{
 				bindingSets.add(new SubstitutionSet());
 				return bindingSets;
