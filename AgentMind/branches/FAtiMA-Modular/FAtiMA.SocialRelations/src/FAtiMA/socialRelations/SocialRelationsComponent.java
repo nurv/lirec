@@ -18,8 +18,8 @@ import FAtiMA.Core.emotionalState.AppraisalFrame;
 import FAtiMA.Core.memory.Memory;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.util.AgentLogger;
-import FAtiMA.Core.util.ConfigurationManager;
 import FAtiMA.Core.util.Constants;
+import FAtiMA.Core.util.parsers.ReflectXMLHandler2;
 import FAtiMA.OCCAffectDerivation.OCCAppraisalVariables;
 import FAtiMA.OCCAffectDerivation.OCCEmotionType;
 import FAtiMA.socialRelations.display.SocialRelationsPanel;
@@ -38,17 +38,18 @@ IProcessEmotionComponent {
 
 	public static final String NAME = "SocialRelations";
 	private ArrayList<String> _parsingFiles;
+	private RelationsLoaderHandler _parser;
 
 	public SocialRelationsComponent(String socialRelationsFile, ArrayList<String> extraParsingFiles) {
 		_parsingFiles = new ArrayList<String>();
 		_parsingFiles.add(socialRelationsFile);
-		_parsingFiles.add(ConfigurationManager.getGoalsFile());
+		/*_parsingFiles.add(ConfigurationManager.getGoalsFile());
 		_parsingFiles.add(ConfigurationManager.getPersonalityFile());
-		_parsingFiles.add(ConfigurationManager.getActionsFile());
+		_parsingFiles.add(ConfigurationManager.getActionsFile());*/
 		_parsingFiles.addAll(extraParsingFiles);
 	}
 
-	private void loadRelations(AgentModel aM) {
+	/*private void loadRelations(AgentModel aM) {
 
 		AgentLogger.GetInstance().log("LOADING Social Relations:");
 		RelationsLoaderHandler relationsLoader = new RelationsLoaderHandler(aM);
@@ -68,7 +69,7 @@ IProcessEmotionComponent {
 			throw new RuntimeException(
 					"Error on Loading the Social Relations XML Files:" + e);
 		}
-	}
+	}*/
 
 	@Override
 	public void appraisal(AgentModel am, Event e, AppraisalFrame as)
@@ -158,7 +159,8 @@ IProcessEmotionComponent {
 
 	@Override
 	public void initialize(AgentModel am) {
-		this.loadRelations(am);
+		this._parser = new RelationsLoaderHandler(am);
+		//this.loadRelations(am);
 	}
 
 	@Override
@@ -195,5 +197,42 @@ IProcessEmotionComponent {
 	
 	@Override
 	public void update(AgentModel am, long time) {
+	}
+
+	@Override
+	public ReflectXMLHandler2 getActionsParser(AgentModel am) {
+		return this._parser;
+	}
+
+	@Override
+	public ReflectXMLHandler2 getGoalsParser(AgentModel am) {
+		return this._parser;
+	}
+
+	@Override
+	public ReflectXMLHandler2 getPersonalityParser(AgentModel am) {
+		return this._parser;
+	}
+
+	@Override
+	public void parseAdditionalFiles(AgentModel am) {
+		
+		AgentLogger.GetInstance().log("LOADING Social Relations:");
+
+		try {
+			SAXParserFactory factory = SAXParserFactory.newInstance();
+			SAXParser parser = factory.newSAXParser();
+
+			for (String file : _parsingFiles) {
+				if(file != null)
+				{
+					parser.parse(new File(file),this._parser);
+				}
+			}
+
+		} catch (Exception e) {
+			throw new RuntimeException(
+					"Error on Loading the Social Relations XML Files:" + e);
+		}
 	}
 }

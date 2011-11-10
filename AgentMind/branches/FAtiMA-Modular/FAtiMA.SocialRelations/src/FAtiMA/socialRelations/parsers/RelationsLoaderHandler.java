@@ -9,7 +9,7 @@ import FAtiMA.Core.goals.Goal;
 import FAtiMA.Core.plans.Effect;
 import FAtiMA.Core.plans.Step;
 import FAtiMA.Core.util.Constants;
-import FAtiMA.Core.util.parsers.ReflectXMLHandler;
+import FAtiMA.Core.util.parsers.ReflectXMLHandler2;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Substitution;
 import FAtiMA.Core.wellFormedNames.Symbol;
@@ -17,7 +17,7 @@ import FAtiMA.socialRelations.LikeCondition;
 import FAtiMA.socialRelations.LikeRelation;
 import FAtiMA.socialRelations.RespectRelation;
 
-public class RelationsLoaderHandler  extends ReflectXMLHandler{
+public class RelationsLoaderHandler  extends ReflectXMLHandler2{
 
 	private String _currentGoalKey;
 	private String _currentActionKey;

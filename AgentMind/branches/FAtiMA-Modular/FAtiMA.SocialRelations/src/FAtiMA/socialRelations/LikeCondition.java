@@ -9,6 +9,7 @@ import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.conditions.Condition;
 import FAtiMA.Core.exceptions.ContextParsingException;
 import FAtiMA.Core.exceptions.InvalidEmotionTypeException;
+import FAtiMA.Core.util.AgentLogger;
 import FAtiMA.Core.util.Constants;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Substitution;
@@ -91,7 +92,7 @@ public class LikeCondition extends Condition {
 	
 	protected LikeCondition(LikeCondition lC){
 		super(lC);
-		_value = lC._value;
+		_value = (Symbol)lC._value.clone();
 		_operator = lC._operator;
 	}
 	
@@ -100,14 +101,9 @@ public class LikeCondition extends Condition {
 		return new LikeCondition(this);
 	}
 	
-	
-	public boolean CheckCondition(AgentModel am) {
-		float existingValue;
-		String targetName;
-		
-		if(!this.isGrounded()) return false;
-		
-		AgentModel perspective = am.getModelToTest(getToM());
+	private String getTargetName(AgentModel am)
+	{
+		String targetName; 
 		
 		if(getToM().toString().equals(Constants.SELF))
 		{
@@ -125,15 +121,35 @@ public class LikeCondition extends Condition {
 			}
 		}
 		
+		return targetName;
+	}
+	
+	
+	public float CheckCondition(AgentModel am) {
+		float existingValue;
+		
+		if(!this.isGrounded()) return 0;
+		
+		AgentModel perspective = am.getModelToTest(getToM());
+		
+		String targetName = getTargetName(am);
+		
 		existingValue = LikeRelation.getRelation(Constants.SELF, targetName).getValue(perspective.getMemory());
 		
-		return _operator.process(existingValue, Float.parseFloat(_value.toString()));
+		if(_operator.process(existingValue, Float.parseFloat(_value.toString())))
+		{
+			return 1;
+		}
+		else
+		{
+			return 0;
+		}
 	}
 	
 	
 	public String toString()
 	{
-		return getToM() + " like" + _operator + " " + getName() + " " + _value;
+		return getToM() + " like " + _operator + " " + getName() + " " + _value;
 	}
 	
 	
@@ -229,28 +245,45 @@ public class LikeCondition extends Condition {
 	}
 
 	@Override
-	public Name GetValue() {
+	public Name getValue() {
 		return new Symbol(String.valueOf(this._value));
 	}
 
 	@Override
 	public ArrayList<SubstitutionSet> GetValidBindings(AgentModel am) {
 		ArrayList<SubstitutionSet> bindingSets = new ArrayList<SubstitutionSet>();
+		SubstitutionSet subSet;
 		String targetName;
 		
 		if(!this.getToM().isGrounded()) return null;
 		
+		AgentModel perspective = am.getModelToTest(getToM());
+		
 		if(this.getName().isGrounded())
 		{
-			if(CheckCondition(am))
+			//TODO complete the rest for when we have Like John Luke != [3], or Like John [y] = [z]
+			if(this._value.isGrounded())
 			{
-				bindingSets.add(new SubstitutionSet());
-				return bindingSets;
+				if(CheckCondition(am)==1)
+				{
+					bindingSets.add(new SubstitutionSet());
+					return bindingSets;
+				}
+				else return null;
 			}
-			else return null;
+			else 
+			{
+				targetName = getTargetName(am);
+				
+				Float existingValue = LikeRelation.getRelation(Constants.SELF, targetName).getValue(perspective.getMemory());
+				subSet = new SubstitutionSet();
+				subSet.AddSubstitution(new Substitution(this._value,new Symbol(existingValue.toString())));
+				bindingSets.add(subSet);
+				return bindingSets;
+			}	
 		}
 		
-		AgentModel perspective = am.getModelToTest(getToM());
+		
 		
 		if(getToM().toString().equals(Constants.SELF))
 		{
@@ -300,7 +333,6 @@ public class LikeCondition extends Condition {
 
 	@Override
 	protected ArrayList<Substitution> GetValueBindings(AgentModel am) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 }
