@@ -510,14 +510,18 @@ public class DeliberativeComponent2 implements Serializable, IComponent,
 				}
 				return null;
 			}
-			
-			/*
-			 * else if(!i.IsStrongCommitment() &&
-			 * !i.getGoal().checkPreconditions(am)) { //this is done only if the
-			 * agent hasn't tried to do anything yet, he cancels the goal out
-			 * //if the preconditions are not yet established
-			 * removeIntention(i); }
-			 */
+			else if(i.getGoal().CheckCanceling(am)) { 
+				//the agent cancels the goal out
+				//if the cancel conditions are verified
+				if(i.IsStrongCommitment())
+				{
+					i.ProcessIntentionCancel(am);
+					cancelAction(am);
+				}
+				
+				removeIntention(i);
+				return null;
+			} 
 			
 			return i;
 		}

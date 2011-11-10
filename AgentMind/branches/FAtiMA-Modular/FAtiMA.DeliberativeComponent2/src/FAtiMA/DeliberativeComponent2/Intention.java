@@ -63,7 +63,7 @@ public class Intention implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private static final int MAXPLANS = 150;
+	//private static final int MAXPLANS = 150;
 	private static final int FORGET_TIMER = 3000;
 	
 	private String _fearEmotionID;
