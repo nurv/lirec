@@ -115,15 +115,15 @@
    (= (:layer player) 2) "tree"
    :else "all"))
 
-(defn levelup-player [player]
+(defn player-levelup [player]
   (modify
    :layer
    (fn [layer]
      (let [score (count (:flowered-plants player))]
        (cond
-        (and (= layer 0) (> score level0up)) 1 ; cover -> shrub
-        (and (= layer 1) (> score level1up)) 2 ; shrub -> tree
-        (and (= layer 2) (> score level2up)) 3 ; tree -> all
+        (and (= layer 0) (>= score level0up)) 1 ; cover -> shrub
+        (and (= layer 1) (>= score level1up)) 2 ; shrub -> tree
+        (and (= layer 2) (>= score level2up)) 3 ; tree -> all
         :else layer)))
    player))
 
@@ -145,7 +145,7 @@
   (modify ; add notes on levelup
    :log 
    (fn [log]
-     (log-remove-msgs
+      ;(log-remove-msgs
       (cond
        (and (= (:layer player) 0) (= (:layer leveledup-player) 1))
        (log-add-note log (make-note "levelup1" (list "ok"))) 
@@ -154,20 +154,20 @@
        (and (= (:layer player) 2) (= (:layer leveledup-player) 3))
        (log-add-note log (make-note "levelup3" (list "ok")))
        :else log)
-      "i_have_flowered"))
+     ; "i_have_flowered")
+     )
    player))
  
 ; call after add notes (will clear messages) and finding new
 ; flowered plants
 (defn player-add-flowered-msgs
-  "detect new flowered messages and send them out"
+  "detect new flowered plants messages and add them to the log"
   [player leveledup-player]
   (modify ; add notes on levelup
    :log 
    (fn [log]
      (reduce
       (fn [log new-fp]
-        (println "passing on flowered message")
         (log-add-msg log new-fp))
       log
       (diff
@@ -176,48 +176,45 @@
    player))
 
 (defn set-add-message-to-flowered
-  "add message to flowered list, if we haven't sent one already"
+  "add message to flowered list, if there isn't one already"
   [flowered msg]
-  (if (reduce
+  (if (reduce ; does it exist?
        (fn [r fm]
          (if (and (not r) (= (first (:extra fm))
                              (first (:extra msg))))
            true r))
        false
        flowered)
-    (cons msg flowered)
-    flowered))
+    flowered
+    (cons msg flowered)))
 
 (defn player-update-flowered-plants [player leveledup-player]
-  (modify ; update the flowered plant count
+  (modify ; copy the flowered messages to the flowered-plants list
    :flowered-plants
    (fn [fp]
-     (reduce
-      (fn [fp msg]
-        (if (= (player-get-allowed-layer player)
-               (plant-type->layer (:from msg))) ; if the plant is in the right layer
-          (let [r (set-add-message-to-flowered msg fp)]
-            (when (not (= (count r) (count fp)))
-              (println "added" (first (:extra msg)) "to"
-                       r))
-                r)
-          fp))
-      (if (or ; if we have just gone up a level, clear the flowered plants
-           (and (= (:layer player) 0) (= (:layer leveledup-player) 1))
-           (and (= (:layer player) 1) (= (:layer leveledup-player) 2))
-           (and (= (:layer player) 2) (= (:layer leveledup-player) 3)))
-        ()
-        fp)
-      (log-find-msgs (:log player) "i_have_flowered")))
-   (player-update-seeds leveledup-player)))
-
+     (if ; if we have just gone up a level, clear the flowered plants
+         (not (= (:layer player) (:layer leveledup-player)))
+       ()
+       (reduce ; otherwise look for new flowered plants
+        (fn [fp msg]
+          (if (= (player-get-allowed-layer player)
+                 (plant-type->layer (:from msg))) ; if the plant is in the right layer
+            (set-add-message-to-flowered fp msg)
+            fp))
+        fp
+        (log-find-msgs (:log player) "i_have_flowered"))))
+   player))
 
 (defn player-update [player id-gen]
-  (let [leveledup-player (levelup-player player)]
-    (player-add-surprises
-     (player-add-flowered-msgs
-      (player-add-notes
-       (player-update-flowered-plants player leveledup-player)
+  (let [leveledup-player (player-levelup player)]
+    (merge
+     (player-add-surprises
+      (player-add-flowered-msgs
+       (player-add-notes
+        (player-update-flowered-plants
+         (player-update-seeds player)
+         leveledup-player)
+        leveledup-player)
        leveledup-player)
-      leveledup-player)
-     leveledup-player id-gen)))
+      leveledup-player id-gen)
+     {:layer (:layer leveledup-player)})))
