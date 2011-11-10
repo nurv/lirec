@@ -14,7 +14,7 @@ import FAtiMA.Core.emotionalState.ElicitingEmotion;
 import FAtiMA.Core.exceptions.InvalidEmotionTypeException;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.util.Constants;
-import FAtiMA.Core.util.parsers.ReflectXMLHandler;
+import FAtiMA.Core.util.parsers.ReflectXMLHandler2;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Substitution;
 import FAtiMA.Core.wellFormedNames.Symbol;
@@ -22,7 +22,7 @@ import FAtiMA.ReactiveComponent.Action;
 import FAtiMA.ReactiveComponent.Reaction;
 import FAtiMA.ReactiveComponent.ReactiveComponent;
 
-public class ReactiveLoaderHandler extends ReflectXMLHandler{
+public class ReactiveLoaderHandler extends ReflectXMLHandler2{
 	
 	private ReactiveComponent _reactiveComponent;
 	protected Action _action;
@@ -54,6 +54,8 @@ public class ReactiveLoaderHandler extends ReflectXMLHandler{
 		String parameters = attributes.getValue("parameters");
 		
     	Event event = Event.ParseEvent(subject, action, target, parameters);
+    	//this is a trick just to save time, replacing [SELF] by SELF
+    	event = event.ApplyPerspective("[SELF]");
     	_elicitingEmotion.SetCause(event);
     }
 
@@ -108,8 +110,8 @@ public class ReactiveLoaderHandler extends ReflectXMLHandler{
 		String parameters = attributes.getValue("parameters");
 			
     	Event event = Event.ParseEvent(subject, action, target, parameters);
-    	//this is a trick just to save time
-    	event = event.ApplyPerspective(Constants.SELF);
+    	//this is a trick just to save time, replacing [SELF] by SELF
+    	event = event.ApplyPerspective("[SELF]");
      
     	_eventReaction.setEvent(event);
     	_reactiveComponent.getEmotionalReactions().AddEmotionalReaction(_eventReaction);

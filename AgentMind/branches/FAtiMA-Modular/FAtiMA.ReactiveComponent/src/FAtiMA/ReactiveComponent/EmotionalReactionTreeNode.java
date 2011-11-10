@@ -79,6 +79,7 @@ public class EmotionalReactionTreeNode implements Serializable, IReactionNode {
 	private static String nullValue = "null";
 	
 	private HashMap<String,IReactionNode> _childs;
+	private ArrayList<Reaction> _reactionRules;
 
 	private String _type;
 	
@@ -91,6 +92,7 @@ public class EmotionalReactionTreeNode implements Serializable, IReactionNode {
 	 * EmotionalReactionTreeNode(String type) instead 
 	 */
 	public EmotionalReactionTreeNode(String type, String value) {
+		_reactionRules = new ArrayList<Reaction>();
 		_childs = new HashMap<String,IReactionNode>();
 		_type = type;
 	}
@@ -101,6 +103,7 @@ public class EmotionalReactionTreeNode implements Serializable, IReactionNode {
 	 */
 	public EmotionalReactionTreeNode(String type)
 	{
+		_reactionRules = new ArrayList<Reaction>();
 	    _childs = new HashMap<String,IReactionNode>();
 	    _type = type;
 	}
@@ -155,6 +158,7 @@ public class EmotionalReactionTreeNode implements Serializable, IReactionNode {
 		else if(_type.equals(subjectNode)) {
 			key = er.getEvent().GetSubject();
 			nextNodeType = actionNode;
+			_reactionRules.add(er);
 		}
 		
 		if(key == null || key.equals("*")) key = EmotionalReactionTreeNode.nullValue;
@@ -268,9 +272,17 @@ public class EmotionalReactionTreeNode implements Serializable, IReactionNode {
 		else return ((EmotionalReactionTreeNode) obj).MatchEvent(e);
 	}
 	
+	public ArrayList<Reaction> getAllReactions()
+	{
+		return this._reactionRules;
+	}
+	
 	public Object clone()
 	{
 		EmotionalReactionTreeNode n = new EmotionalReactionTreeNode(_type);
+		
+		n._reactionRules = new ArrayList<Reaction>(this._reactionRules);
+		
 		n._childs = new HashMap<String, IReactionNode>();
 		
 		for(Map.Entry<String, IReactionNode> e : _childs.entrySet())

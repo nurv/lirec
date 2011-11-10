@@ -35,15 +35,14 @@ package FAtiMA.ReactiveComponent;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.ListIterator;
 
 import FAtiMA.Core.AgentModel;
-import FAtiMA.Core.AgentSimulationTime;
 import FAtiMA.Core.IntegrityValidator;
 import FAtiMA.Core.ValuedAction;
 import FAtiMA.Core.conditions.Condition;
+import FAtiMA.Core.emotionalState.ActiveEmotion;
 import FAtiMA.Core.emotionalState.BaseEmotion;
 import FAtiMA.Core.emotionalState.EmotionalState;
 import FAtiMA.Core.exceptions.UnknownSpeechActException;
@@ -67,14 +66,16 @@ public class ActionTendencies implements Serializable, Cloneable {
 	private static final long serialVersionUID = 1L;
 	
 	protected ArrayList<Action> _actions;
-	protected HashMap<String,Long> _filteredActions;
+	//protected HashMap<String,Long> _filteredActions;
+	protected ArrayList<ActiveEmotion> _filteredEmotions;
 	
 	/**
 	 * Create a new ActionTendenciesSet
 	 */
 	public ActionTendencies() {
 		_actions = new ArrayList<Action>();
-		_filteredActions = new HashMap<String,Long>();
+		//_filteredActions = new HashMap<String,Long>();
+		_filteredEmotions = new ArrayList<ActiveEmotion>();
 	}
 
 	/**
@@ -107,30 +108,41 @@ public class ActionTendencies implements Serializable, Cloneable {
 	}
 	
 	/**
-	 * Temporarly deactives an action tendency. It means that even if the
-	 * action's preconditions and emotions are verified, the action is not 
-	 * selected for execution
-	 * @param va -  the action tendency to be deactivated
-	 * @param time - the amount of time that the action should be deactivated
+	 * deactives an emotion that was used to triggered an action tendency. It means that 
+	 * this particular instance of the emotion cannot be used to trigger another action 
+	 * even if the action's preconditions and emotions are verified
+	 * @param va -  the action with the emotion that needs to be deactivated
 	 */
-	public void IgnoreActionForDuration(ValuedAction va, long time) {
-		Long wakeUpTime = new Long(AgentSimulationTime.GetInstance().Time() + time);
-		_filteredActions.put(va.getAction().toString(),wakeUpTime);
+	public void IgnoreActionEmotion(AgentModel am, ValuedAction va) {
+		_filteredEmotions.add(va.getEmotion(am.getEmotionalState()));
 	}
 	
 	public void ClearFilters()
 	{
-		_filteredActions.clear();
+		_filteredEmotions.clear();
 	}
 	
-	protected boolean isIgnored(ValuedAction va) {
+	public void UpdateFilters()
+	{
+		ListIterator<ActiveEmotion> li = this._filteredEmotions.listIterator();
+		
+		while(li.hasNext())
+		{
+			if(li.next().GetIntensity() < 0.5f)
+			{
+				li.remove();
+			}
+		}
+	}
+	
+	/*protected boolean isIgnored(ValuedAction va) {
 		String actionName = va.getAction().toString();
 		if(_filteredActions.containsKey(actionName)) {
 			Long wakeUpTime = (Long)_filteredActions.get(actionName);
 			return AgentSimulationTime.GetInstance().Time() < wakeUpTime.longValue();
 		}
 		else return false;
-	}
+	}*/
 	
 	/**
 	 * Selects the most appropriate ActionTendency given the 
@@ -145,11 +157,13 @@ public class ActionTendencies implements Serializable, Cloneable {
 		ValuedAction bestAction = null;
 		EmotionalState emState = am.getEmotionalState();
 		
+		this.UpdateFilters();
+		
 		it = _actions.iterator();
 		while(it.hasNext()) {
 			a = it.next();
-			va = a.TriggerAction(am, emState.GetEmotionsIterator());
-			if (va != null && !isIgnored(va)) {
+			va = a.TriggerAction(am, _filteredEmotions, emState.GetEmotionsIterator());
+			if (va != null) {
 				if(bestAction == null || va.getValue(emState) > bestAction.getValue(emState)) 
 				{
 				    bestAction = va;
@@ -218,7 +232,7 @@ public class ActionTendencies implements Serializable, Cloneable {
 			at._actions.add(a);
 		}
 		
-		at._filteredActions = new HashMap<String,Long>(_filteredActions);
+		at._filteredEmotions = new ArrayList<ActiveEmotion>(_filteredEmotions);
 		
 		return at;
 	}

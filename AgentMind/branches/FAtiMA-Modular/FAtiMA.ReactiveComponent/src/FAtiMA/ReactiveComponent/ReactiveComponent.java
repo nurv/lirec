@@ -61,11 +61,9 @@
 package FAtiMA.ReactiveComponent;
 
 
-import java.io.File;
 import java.io.Serializable;
-
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
+import java.util.ArrayList;
+import java.util.Collections;
 
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.ValuedAction;
@@ -76,8 +74,11 @@ import FAtiMA.Core.componentTypes.IComponent;
 import FAtiMA.Core.componentTypes.IModelOfOtherComponent;
 import FAtiMA.Core.emotionalState.AppraisalFrame;
 import FAtiMA.Core.sensorEffector.Event;
-import FAtiMA.Core.util.AgentLogger;
-import FAtiMA.Core.util.ConfigurationManager;
+import FAtiMA.Core.util.Constants;
+import FAtiMA.Core.util.parsers.ReflectXMLHandler2;
+import FAtiMA.Core.wellFormedNames.Substitution;
+import FAtiMA.Core.wellFormedNames.SubstitutionSet;
+import FAtiMA.Core.wellFormedNames.Symbol;
 import FAtiMA.OCCAffectDerivation.OCCAppraisalVariables;
 import FAtiMA.ReactiveComponent.display.ActionTendenciesPanel;
 import FAtiMA.ReactiveComponent.parsers.ReactiveLoaderHandler;
@@ -94,7 +95,7 @@ public class ReactiveComponent implements Serializable, IComponent, IBehaviourCo
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	public static final long IGNOREDURATION = 30000;
+	public static final long IGNOREDURATION = 5000;
 	public static final String NAME = "Reactive";
 	
 	private ActionTendencies _actionTendencies;
@@ -109,14 +110,14 @@ public class ReactiveComponent implements Serializable, IComponent, IBehaviourCo
 	}
 	
 	@Override
-	public void actionSelectedForExecution(ValuedAction action)
+	public void actionSelectedForExecution(AgentModel am, ValuedAction action)
 	{		
 		/*
 		 * Temporarily removes the action selected for execution. This means 
 		 * that when a action is executed it should not be selected again for a while,
 		 * or else we will have a character reacting in the same way several times
 		 */
-		_actionTendencies.IgnoreActionForDuration(action,IGNOREDURATION);
+		_actionTendencies.IgnoreActionEmotion(am, action);
 	}
 	
 	/**
@@ -268,7 +269,7 @@ public class ReactiveComponent implements Serializable, IComponent, IBehaviourCo
 	@Override
 	public void initialize(AgentModel am) {
 		
-		AgentLogger.GetInstance().log("Adding Reactive rules in the ReactiveComponent:");
+		/*AgentLogger.GetInstance().log("Adding Reactive rules in the ReactiveComponent:");
 		ReactiveLoaderHandler reactiveLoader = new ReactiveLoaderHandler(this);
 
 		try {
@@ -281,7 +282,7 @@ public class ReactiveComponent implements Serializable, IComponent, IBehaviourCo
 		} catch (Exception e) {
 			throw new RuntimeException(
 					"Error reading the agent XML Files:" + e);
-		}
+		}*/
 	}
 
 	@Override
@@ -298,6 +299,85 @@ public class ReactiveComponent implements Serializable, IComponent, IBehaviourCo
 			r.setPraiseworthiness(praiseworthiness);
 			AddEmotionalReaction(r);
 		}
+	}
+	
+	public ArrayList<SubstitutionSet> searchEventsWithAppraisal(AgentModel am,
+			Symbol subjectVariable, Symbol actionVariable,
+			Symbol targetVariable, Symbol paramVariable, float desirability)
+	{
+		
+		ArrayList<SubstitutionSet> substs = new ArrayList<SubstitutionSet>();
+		
+		for(Reaction r : _emotionalReactions.getAllReactions())
+		{
+			if(desirability > 0) 
+			{
+				if(r._desirability >= desirability)
+				{
+					substs.add(getEventSubstitutions(am, subjectVariable, actionVariable, targetVariable, paramVariable, r._event));
+				}
+			}
+			else if(r._desirability <= desirability)
+			{
+				substs.add(getEventSubstitutions(am, subjectVariable, actionVariable, targetVariable, paramVariable, r._event));
+			}
+		}
+		
+		Collections.shuffle(substs);
+		
+		return substs;
+	}
+	
+	private SubstitutionSet getEventSubstitutions(AgentModel am, Symbol subjectVariable,Symbol actionVariable, Symbol targetVariable, Symbol paramVariable, Event e)
+	{
+		SubstitutionSet ss = new SubstitutionSet();
+		Symbol s;
+		
+		if(e.GetSubject() != null && !e.GetSubject().equals("*"))
+		{
+			if(e.GetSubject().equals(Constants.SELF))
+			{
+				s = new Symbol(am.getName());
+			}
+			else
+			{
+				s = new Symbol(e.GetSubject());
+			}
+			ss.AddSubstitution(new Substitution(subjectVariable,s));
+		}
+		
+		if(e.GetAction() != null && !e.GetAction().equals("*"))
+		{
+			ss.AddSubstitution(new Substitution(actionVariable, new Symbol(e.GetAction())));
+		}
+		
+		if(e.GetTarget() != null && !e.GetTarget().equals("*"))
+		{
+			if(e.GetTarget().equals(Constants.SELF))
+			{
+				s = new Symbol(am.getName());
+			}
+			else
+			{
+				s = new Symbol(e.GetTarget());
+			}
+			ss.AddSubstitution(new Substitution(targetVariable, s));
+		}
+		
+		if(e.GetParameters() != null && e.GetParameters().size() > 0 && !e.GetParameters().get(0).GetValue().equals("*"))
+		{
+			if(e.GetParameters().get(0).GetValue().equals(Constants.SELF))
+			{
+				s = new Symbol(am.getName());
+			}
+			else
+			{
+				s = new Symbol(e.GetParameters().get(0).GetValue().toString());
+			}
+			ss.AddSubstitution(new Substitution(paramVariable, s));
+		}
+		
+		return ss;
 	}
 	
 	@Override
@@ -331,5 +411,24 @@ public class ReactiveComponent implements Serializable, IComponent, IBehaviourCo
 	
 	@Override
 	public void update(AgentModel am,long time) {
+	}
+
+	@Override
+	public ReflectXMLHandler2 getActionsParser(AgentModel am) {
+		return null;
+	}
+
+	@Override
+	public ReflectXMLHandler2 getGoalsParser(AgentModel am) {
+		return null;
+	}
+
+	@Override
+	public ReflectXMLHandler2 getPersonalityParser(AgentModel am) {
+		return new ReactiveLoaderHandler(this);
+	}
+
+	@Override
+	public void parseAdditionalFiles(AgentModel am) {
 	}
 }

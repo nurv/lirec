@@ -46,7 +46,6 @@ package FAtiMA.ReactiveComponent;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.ListIterator;
 
 import FAtiMA.Core.AgentModel;
@@ -178,8 +177,13 @@ public class Action implements IIntegrityTester, Serializable, IGroundable, Clon
 		}
 	}
 	
+	public ValuedAction TriggerAction(AgentModel am, Iterable<ActiveEmotion> emotions)
+	{
+		return TriggerAction(am,new ArrayList<ActiveEmotion>(),emotions);
+	}
 	
-	public ValuedAction TriggerAction(AgentModel am, Iterable<ActiveEmotion> emotionsIterator) {
+	
+	public ValuedAction TriggerAction(AgentModel am, ArrayList<ActiveEmotion> filteredEmotions, Iterable<ActiveEmotion> emotionsIterator) {
 
 		float maxValue = 0;
 		Name action;
@@ -202,31 +206,33 @@ public class Action implements IIntegrityTester, Serializable, IGroundable, Clon
 		if(substitutionSets != null) {
 			for(ActiveEmotion em : emotionsIterator)
 			{
-				if(em.getType().equals(_elicitingEmotion.getType()) &&
-				   em.GetIntensity() >= _elicitingEmotion.GetPotential())
+				if(!filteredEmotions.contains(em))
 				{
-					//if the emotion has passed these two first tests, we need to
-					//check if applying any possible SubstitutionSet to the expected
-					//event will match with the perceived emotion event
-					for(ListIterator<SubstitutionSet> li = substitutionSets.listIterator();li.hasNext();)
+					if(em.getType().equals(_elicitingEmotion.getType()) && em.GetIntensity() >= _elicitingEmotion.GetPotential())
 					{
-						subSet = (SubstitutionSet) li.next();
-						groundEvent = (Event) _elicitingEmotion.GetCause().clone();
-						groundEvent.MakeGround(subSet.GetSubstitutions());
-						if(Event.MatchEvent(groundEvent,em.GetCause()))
+						//if the emotion has passed these two first tests, we need to
+						//check if applying any possible SubstitutionSet to the expected
+						//event will match with the perceived emotion event
+						for(ListIterator<SubstitutionSet> li = substitutionSets.listIterator();li.hasNext();)
 						{
-							subSet.AddSubstitutions(em.GetCause().GenerateBindings());
-							action = (Name) _name.clone();
-							action.MakeGround(subSet.GetSubstitutions());
-							//the action is selected only if elicited by the most intense emotion
-							//who's intensity is greater than the specified minimum intensity (for this particular action)
-							if (em.GetIntensity() > maxValue && action.isGrounded()) {
-								maxValue = em.GetIntensity();
-								va = new ValuedAction(ReactiveComponent.NAME, action, em);
+							subSet = (SubstitutionSet) li.next();
+							groundEvent = (Event) _elicitingEmotion.GetCause().clone();
+							groundEvent.MakeGround(subSet.GetSubstitutions());
+							if(Event.MatchEvent(groundEvent,em.GetCause()))
+							{
+								subSet.AddSubstitutions(em.GetCause().GenerateBindings());
+								action = (Name) _name.clone();
+								action.MakeGround(subSet.GetSubstitutions());
+								//the action is selected only if elicited by the most intense emotion
+								//who's intensity is greater than the specified minimum intensity (for this particular action)
+								if (em.GetIntensity() > maxValue && action.isGrounded()) {
+									maxValue = em.GetIntensity();
+									va = new ValuedAction(ReactiveComponent.NAME, action, em);
+								}
 							}
 						}
 					}
-				}		
+				}
 			}
 		}
 		return va;
