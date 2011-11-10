@@ -692,7 +692,6 @@ public class Plan implements Cloneable, Serializable
                 	}
                 	
                 }
-            	       
             }
         }
         
@@ -759,13 +758,10 @@ public class Plan implements Cloneable, Serializable
                 //the plan
                 if(cond.CheckCondition(am)!=1)
                 {
-                	_openPreconditions.add(new OpenPrecondition(link
-                            .getDestination(), link.getCondition()));
+                	_openPreconditions.add(new OpenPrecondition(link.getDestination(), link.getCondition()));
                     linksToRemove.add(link);
                     
                     canceledActions.add(op);
-                    
-                    
                 }
         	}
         }

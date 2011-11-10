@@ -130,7 +130,7 @@ public abstract class SocketListener extends Thread {
     	
         while(!stopped) {
             try {
-                sleep(10);
+                sleep(100);
             }
             catch(InterruptedException ex) {
             }
@@ -139,16 +139,19 @@ public abstract class SocketListener extends Thread {
             {
                try
                {
-            		msg = reader.readLine();
-            		
-            		if(this.synch)
-             	    {
-            			processSynchronizedMessage(msg);
-             	    }
-            		else
-            		{
-            			processMessage(msg);
-            		}
+            	   while(reader.ready())
+            	   {
+            		   msg = reader.readLine();
+               		
+               			if(this.synch)
+                	    {
+               				processSynchronizedMessage(msg);
+                	    }
+               			else
+               			{
+               				processMessage(msg);
+               			}
+            	   }
                }
                catch (java.io.IOException ex) {            	  
             	   if(!(ex instanceof SocketException)){      		   

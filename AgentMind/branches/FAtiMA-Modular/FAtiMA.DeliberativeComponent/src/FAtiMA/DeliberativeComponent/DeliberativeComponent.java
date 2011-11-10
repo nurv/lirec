@@ -276,16 +276,14 @@ public class DeliberativeComponent implements Serializable, IComponent,
 	}
 
 	private void cancelAction(AgentModel am) {
-		/*if (_actionMonitor != null) {
-			if (_actionMonitor.getStep().getAgent().toString()
-					.equals(Constants.SELF)) {
+		if (_actionMonitor != null) {
+			if (_actionMonitor.getStep().getAgent().toString().equals(Constants.SELF)) {
 				am.getRemoteAgent().cancelAction();
 			}
 			_actionMonitor = null;
 		}
 
 		_selectedAction = null;
-		*/
 	}
 
 	/**
