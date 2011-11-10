@@ -153,7 +153,7 @@ import FAtiMA.Core.sensorEffector.SpeechAct;
 import FAtiMA.Core.util.AgentLogger;
 import FAtiMA.Core.util.Constants;
 import FAtiMA.Core.util.enumerables.ActionEvent;
-import FAtiMA.Core.util.parsers.ReflectXMLHandler2;
+import FAtiMA.Core.util.parsers.ReflectXMLHandler;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Substitution;
 import FAtiMA.Core.wellFormedNames.SubstitutionSet;
@@ -1514,17 +1514,17 @@ public class DeliberativeComponent2 implements Serializable, IComponent,
 	}
 
 	@Override
-	public ReflectXMLHandler2 getActionsParser(AgentModel am) {
+	public ReflectXMLHandler getActionsParser(AgentModel am) {
 		return null;
 	}
 
 	@Override
-	public ReflectXMLHandler2 getGoalsParser(AgentModel am) {
+	public ReflectXMLHandler getGoalsParser(AgentModel am) {
 		return null;
 	}
 
 	@Override
-	public ReflectXMLHandler2 getPersonalityParser(AgentModel am) {
+	public ReflectXMLHandler getPersonalityParser(AgentModel am) {
 		return new DeliberativeLoaderHandler(am, this);
 	}
 

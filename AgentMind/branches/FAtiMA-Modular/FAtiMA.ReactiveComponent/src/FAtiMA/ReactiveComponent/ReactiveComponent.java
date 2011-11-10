@@ -75,7 +75,7 @@ import FAtiMA.Core.componentTypes.IModelOfOtherComponent;
 import FAtiMA.Core.emotionalState.AppraisalFrame;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.util.Constants;
-import FAtiMA.Core.util.parsers.ReflectXMLHandler2;
+import FAtiMA.Core.util.parsers.ReflectXMLHandler;
 import FAtiMA.Core.wellFormedNames.Substitution;
 import FAtiMA.Core.wellFormedNames.SubstitutionSet;
 import FAtiMA.Core.wellFormedNames.Symbol;
@@ -414,17 +414,17 @@ public class ReactiveComponent implements Serializable, IComponent, IBehaviourCo
 	}
 
 	@Override
-	public ReflectXMLHandler2 getActionsParser(AgentModel am) {
+	public ReflectXMLHandler getActionsParser(AgentModel am) {
 		return null;
 	}
 
 	@Override
-	public ReflectXMLHandler2 getGoalsParser(AgentModel am) {
+	public ReflectXMLHandler getGoalsParser(AgentModel am) {
 		return null;
 	}
 
 	@Override
-	public ReflectXMLHandler2 getPersonalityParser(AgentModel am) {
+	public ReflectXMLHandler getPersonalityParser(AgentModel am) {
 		return new ReactiveLoaderHandler(this);
 	}
 

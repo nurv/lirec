@@ -21,7 +21,7 @@ import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.util.AgentLogger;
 import FAtiMA.Core.util.ConfigurationManager;
 import FAtiMA.Core.util.Constants;
-import FAtiMA.Core.util.parsers.ReflectXMLHandler2;
+import FAtiMA.Core.util.parsers.ReflectXMLHandler;
 import FAtiMA.ReactiveComponent.ActionTendencies;
 import FAtiMA.ReactiveComponent.ReactiveComponent;
 import FAtiMA.socialRelations.LikeRelation;
@@ -216,17 +216,17 @@ public class EmpathyComponent  implements IAppraisalDerivationComponent, IAffect
 	}
 	
 	@Override
-	public ReflectXMLHandler2 getActionsParser(AgentModel am) {
+	public ReflectXMLHandler getActionsParser(AgentModel am) {
 		return null;
 	}
 
 	@Override
-	public ReflectXMLHandler2 getGoalsParser(AgentModel am) {
+	public ReflectXMLHandler getGoalsParser(AgentModel am) {
 		return null;
 	}
 
 	@Override
-	public ReflectXMLHandler2 getPersonalityParser(AgentModel am) {
+	public ReflectXMLHandler getPersonalityParser(AgentModel am) {
 		return new EmpathyLoaderHandler(this);
 	}
 

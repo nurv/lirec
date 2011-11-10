@@ -7,7 +7,7 @@ import FAtiMA.Core.Display.AgentDisplayPanel;
 import FAtiMA.Core.componentTypes.IComponent;
 import FAtiMA.Core.plans.Step;
 import FAtiMA.Core.sensorEffector.Event;
-import FAtiMA.Core.util.parsers.ReflectXMLHandler2;
+import FAtiMA.Core.util.parsers.ReflectXMLHandler;
 import FAtiMA.DeliberativeComponent.DeliberativeComponent;
 import FAtiMA.OCCAffectDerivation.OCCAffectDerivationComponent;
 import FAtiMA.ReactiveComponent.Action;
@@ -112,19 +112,19 @@ public class EmotionalIntelligenceComponent implements IComponent {
 
 
 	@Override
-	public ReflectXMLHandler2 getActionsParser(AgentModel am) {
+	public ReflectXMLHandler getActionsParser(AgentModel am) {
 		return this._parser;
 	}
 
 	@Override
-	public ReflectXMLHandler2 getGoalsParser(AgentModel am) {
+	public ReflectXMLHandler getGoalsParser(AgentModel am) {
 		return this._parser;
 	}
 
 
 
 	@Override
-	public ReflectXMLHandler2 getPersonalityParser(AgentModel am) {
+	public ReflectXMLHandler getPersonalityParser(AgentModel am) {
 		return null;
 	}
 

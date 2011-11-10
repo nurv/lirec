@@ -5,11 +5,11 @@ import org.xml.sax.Attributes;
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.util.AgentLogger;
 import FAtiMA.Core.util.Constants;
-import FAtiMA.Core.util.parsers.ReflectXMLHandler2;
+import FAtiMA.Core.util.parsers.ReflectXMLHandler;
 import FAtiMA.Core.wellFormedNames.Substitution;
 import FAtiMA.Core.wellFormedNames.Symbol;
 
-public class NeedsLoaderHandler  extends ReflectXMLHandler2 {
+public class NeedsLoaderHandler  extends ReflectXMLHandler {
 	
 	AgentModel _agent;
 	String _currentGoalKey;

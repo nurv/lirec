@@ -14,7 +14,7 @@ import FAtiMA.Core.emotionalState.BaseEmotion;
 import FAtiMA.Core.emotionalState.EmotionDisposition;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.util.Constants;
-import FAtiMA.Core.util.parsers.ReflectXMLHandler2;
+import FAtiMA.Core.util.parsers.ReflectXMLHandler;
 import FAtiMA.Core.wellFormedNames.Name;
 
 public class OCCAffectDerivationComponent implements Serializable, IAffectDerivationComponent, IModelOfOtherComponent {
@@ -422,17 +422,17 @@ public class OCCAffectDerivationComponent implements Serializable, IAffectDeriva
 	}
 
 	@Override
-	public ReflectXMLHandler2 getActionsParser(AgentModel am) {
+	public ReflectXMLHandler getActionsParser(AgentModel am) {
 		return null;
 	}
 
 	@Override
-	public ReflectXMLHandler2 getGoalsParser(AgentModel am) {
+	public ReflectXMLHandler getGoalsParser(AgentModel am) {
 		return null;
 	}
 
 	@Override
-	public ReflectXMLHandler2 getPersonalityParser(AgentModel am) {
+	public ReflectXMLHandler getPersonalityParser(AgentModel am) {
 		return null;
 	}
 

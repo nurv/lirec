@@ -18,7 +18,7 @@ import FAtiMA.Core.goals.ActivePursuitGoal;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.util.AgentLogger;
 import FAtiMA.Core.util.Constants;
-import FAtiMA.Core.util.parsers.ReflectXMLHandler2;
+import FAtiMA.Core.util.parsers.ReflectXMLHandler;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.SubstitutionSet;
 import FAtiMA.Core.wellFormedNames.Symbol;
@@ -374,17 +374,17 @@ public class CulturalDimensionsComponent implements IAppraisalDerivationComponen
 	}
 
 	@Override
-	public ReflectXMLHandler2 getActionsParser(AgentModel am) {
+	public ReflectXMLHandler getActionsParser(AgentModel am) {
 		return null;
 	}
 
 	@Override
-	public ReflectXMLHandler2 getGoalsParser(AgentModel am) {
+	public ReflectXMLHandler getGoalsParser(AgentModel am) {
 		return new CultureLoaderHandler(am,this);
 	}
 
 	@Override
-	public ReflectXMLHandler2 getPersonalityParser(AgentModel am) {
+	public ReflectXMLHandler getPersonalityParser(AgentModel am) {
 		return null;
 	}
 

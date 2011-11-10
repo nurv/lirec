@@ -19,7 +19,7 @@ import FAtiMA.Core.memory.semanticMemory.KnowledgeSlot;
 import FAtiMA.Core.plans.Plan;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.util.Constants;
-import FAtiMA.Core.util.parsers.ReflectXMLHandler2;
+import FAtiMA.Core.util.parsers.ReflectXMLHandler;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Symbol;
 import FAtiMA.DeliberativeComponent.DeliberativeComponent;
@@ -321,17 +321,17 @@ public class ToMComponent implements Serializable, IAppraisalDerivationComponent
 	}
 
 	@Override
-	public ReflectXMLHandler2 getActionsParser(AgentModel am) {
+	public ReflectXMLHandler getActionsParser(AgentModel am) {
 		return null;
 	}
 
 	@Override
-	public ReflectXMLHandler2 getGoalsParser(AgentModel am) {
+	public ReflectXMLHandler getGoalsParser(AgentModel am) {
 		return null;
 	}
 
 	@Override
-	public ReflectXMLHandler2 getPersonalityParser(AgentModel am) {
+	public ReflectXMLHandler getPersonalityParser(AgentModel am) {
 		return null;
 	}
 

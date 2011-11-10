@@ -14,7 +14,7 @@ import FAtiMA.Core.emotionalState.ElicitingEmotion;
 import FAtiMA.Core.exceptions.InvalidEmotionTypeException;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.util.Constants;
-import FAtiMA.Core.util.parsers.ReflectXMLHandler2;
+import FAtiMA.Core.util.parsers.ReflectXMLHandler;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Substitution;
 import FAtiMA.Core.wellFormedNames.Symbol;
@@ -22,7 +22,7 @@ import FAtiMA.ReactiveComponent.Action;
 import FAtiMA.ReactiveComponent.Reaction;
 import FAtiMA.ReactiveComponent.ReactiveComponent;
 
-public class ReactiveLoaderHandler extends ReflectXMLHandler2{
+public class ReactiveLoaderHandler extends ReflectXMLHandler{
 	
 	private ReactiveComponent _reactiveComponent;
 	protected Action _action;
