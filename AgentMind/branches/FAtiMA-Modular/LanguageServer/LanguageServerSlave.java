@@ -36,6 +36,9 @@ public class LanguageServerSlave extends SocketListener {
 	
 	public LanguageServerSlave(int port, String agentSex, String userSex, String agentLanguageFile, String userLanguageFile) throws Exception
 	{
+		System.out.println("Connecting to localhost:" + port);
+		this.socket = new Socket(InetAddress.getLocalHost(), port);
+		
 		String agentFileName = "data/characters/minds/" + agentLanguageFile;
 		System.out.println("Initializing Agent Language Engine(ALE)... ");
 		System.out.println("Language File: " + agentFileName);
@@ -52,8 +55,6 @@ public class LanguageServerSlave extends SocketListener {
 		this.userLanguageEngine = new LanguageEngine("name",userSex,"User",new File(userFileName));
 		System.out.println("Finished ULE initialization!");
 		
-		System.out.println("Connecting to localhost:" + port);
-		this.socket = new Socket(InetAddress.getLocalHost(), port);
 	}
 	
 	/**
@@ -64,14 +65,15 @@ public class LanguageServerSlave extends SocketListener {
 		String msg;
 		StringTokenizer st;
 		
-		try
-		{
-			msg = new String(data,"UTF-8");
-		}
-		catch(UnsupportedEncodingException ex)
+		//try
+		//{
+			msg = new String(data);
+			//msg = new String(data,"UTF-8");
+		//}
+		/*catch(UnsupportedEncodingException ex)
 		{
 			msg = new String(data);
-		}
+		}*/
 	
 		st = new StringTokenizer(msg,"\n");
 		while(st.hasMoreTokens()) {
@@ -134,6 +136,7 @@ public class LanguageServerSlave extends SocketListener {
 		try {
 			String aux = msg + "\n";
 			OutputStream out = this.socket.getOutputStream();
+			//out.write(aux.getBytes());
 			out.write(aux.getBytes("UTF-8"));
 			out.flush();
 			return true;
