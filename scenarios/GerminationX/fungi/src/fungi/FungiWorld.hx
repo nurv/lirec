@@ -51,6 +51,7 @@ class FungiWorld extends World
     public var Season:String;
     public var PlayerInfo:Dynamic;
     var LogicalCameraPos:Vec2;
+    var HighlightEntity:SpriteEntity; 
 
 	public function new(w:Int, h:Int) 
 	{
@@ -169,7 +170,42 @@ class FungiWorld extends World
 
         var c=this;
         MouseMove(this, function(e) { c.Seeds.Update(e.stageX,e.stageY); });
+
+        HighlightEntity = new SpriteEntity(this,new Vec3(0,0,0), Resources.Get("arr1"),false);
+        Add(HighlightEntity);
 	}
+    
+    public function SetWorldPos(tile:Vec3,pos:Vec2)
+    {
+        if (!tile.Eq(WorldPos))
+        {
+            for (p in Plants) Remove(p);
+            Plants=[];
+
+        }
+        LogicalCameraPos.x=pos.x;
+        LogicalCameraPos.y=pos.y;
+        UpdateWorld(tile);
+        SortScene();
+        var t=ScreenSpaceTransform(new Vec3(-LogicalCameraPos.x,
+                                            -LogicalCameraPos.y,0));
+
+        SetTranslate(new Vec2(ScreenCentre.x+t.x,
+                              ScreenCentre.y+t.y));
+        
+    }
+
+    public function Highlight(pos)
+    {
+        HighlightEntity.Hide(false);
+        HighlightEntity.SetLogicalPos(this,new Vec3(pos.x,pos.y,3));
+        //HighlightEntity.Update(0,this);
+    }
+
+    public function UnHighlight()
+    {
+        HighlightEntity.Hide(true);
+    }
 
     function MoveWorld(dir)
     {
@@ -178,25 +214,25 @@ class FungiWorld extends World
 
         if (LogicalCameraPos.x>5)
         {
-            UpdateWorld(new Vec3(1,0,0));
+            ShiftWorld(new Vec3(1,0,0));
             LogicalCameraPos.x=0;
         }
         if (LogicalCameraPos.y>5)
         {
-            UpdateWorld(new Vec3(0,1,0));
+            ShiftWorld(new Vec3(0,1,0));
             LogicalCameraPos.y=0;
         }
         if (LogicalCameraPos.x<-5)
         {
-            UpdateWorld(new Vec3(-1,0,0));
+            ShiftWorld(new Vec3(-1,0,0));
             LogicalCameraPos.x=0;
         }
         if (LogicalCameraPos.y<-5)
         {
-            UpdateWorld(new Vec3(0,-1,0));
+            ShiftWorld(new Vec3(0,-1,0));
             LogicalCameraPos.y=0;
         }
-
+ 
         var t=ScreenSpaceTransform(new Vec3(-LogicalCameraPos.x,
                                             -LogicalCameraPos.y,0));
 
@@ -246,10 +282,17 @@ class FungiWorld extends World
 
 		//WorldClient.GetPlants(cast(WorldPos.x,Int),cast(WorldPos.y,Int));
 	}
+
+	public function ShiftWorld(dir:Vec3)
+    {
+        UpdateWorld(WorldPos.Add(dir));
+        MovePlants(new Vec2(dir.x*5,dir.y*5));		
+        SortScene();
+    }
 	
-	public function UpdateWorld(dir:Vec3)
+	public function UpdateWorld(pos:Vec3)
 	{
-		WorldPos=WorldPos.Add(dir);
+		WorldPos=pos;
         SetCurrentTilePos(new Vec2(WorldPos.x,WorldPos.y));
 		
         var TileSize=5;
@@ -285,9 +328,7 @@ class FungiWorld extends World
 			Objs[i].UpdateTex(MyRndGen);
             Objs[i].Update(0,this);
 		}
-
-        MovePlants(new Vec2(dir.x*5,dir.y*5));		
-        SortScene();
+        TickTime=0; // force a server update
 	}
 
 	public function AddServerPlant(pos:Vec3,type,FruitID)

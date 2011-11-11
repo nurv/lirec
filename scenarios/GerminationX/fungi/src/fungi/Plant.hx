@@ -98,7 +98,7 @@ class Plant extends SpriteEntity
     {
         var s=FixState(plant.state);
         // if the state has changed
-        if (State!=s)
+        if (State!=plant.state)
         {
             State=s;
 
@@ -107,13 +107,13 @@ class Plant extends SpriteEntity
                 Spr.ChangeBitmap(Resources.Get(PlantType+"-"+State));
             }
 
-            if (State=="fruit-a" ||
-                State=="fruit-b" ||
-                State=="fruit-c")
+            if (plant.state=="fruit-a" ||
+                plant.state=="fruit-b" ||
+                plant.state=="fruit-c")
             {
                 for (s in Seeds)
                 {
-                    s.ChangeState(State);
+                    s.ChangeState(plant.state);
                 }
             };
             // display stars next to plants owned by the player
@@ -184,7 +184,7 @@ class Plant extends SpriteEntity
         Update(0,world);
         Fruit.Spr.MouseDown(this,function(p) 
         {            
-            if (world.MyName!="")// && f.State=="fruit-c")
+            if (world.MyName!="" && Fruit.State=="fruit-c")
             {
                 // arsing around with the sprites to get
                 // better feedback for the player

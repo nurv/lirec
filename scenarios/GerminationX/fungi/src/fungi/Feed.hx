@@ -311,6 +311,21 @@ class Feed
                           i.type, i.from, Colour);
         w.AddSprite(Icon);
         Icons.push(Icon);
+
+        // goto sender on click
+        f.MouseDown(this,function(c){
+            if (!w.Seeds.Carrying())
+            {
+                w.SetWorldPos(new Vec3(i.tile.x,i.tile.y,0),
+                              new Vec2(i.pos.x,i.pos.y));
+                w.Highlight(new Vec2(i.pos.x+5,i.pos.y+5));
+            }
+        });
+
+        // overridden below for spirit messages
+        f.MouseOut(this,function(c){
+            w.UnHighlight();
+        });
         
         if (i.type=="spirit")
         {
@@ -338,6 +353,7 @@ class Feed
                 {
                     w.RemoveSprite(ToolTip);
                 }
+                w.UnHighlight();
             });
 
             f.MouseUp(this,function(c){
@@ -389,8 +405,11 @@ class Feed
             var pos=new Vec2(595,32);
             for (i in d) 
             {
-                BuildMessage(w,i,pos);
-                pos.y+=90;
+                if (i.code!="i_have_flowered_internal")
+                {
+                    BuildMessage(w,i,pos);
+                    pos.y+=90;
+                }
             }
         }
     }
