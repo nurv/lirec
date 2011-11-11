@@ -36,7 +36,7 @@
    :plant-count 0
    :flowered-plants ()
    :log (log-add-note
-         (make-log 10)
+         (make-log 20)
          (make-note "welcome" (list "ok")))))
 
 (defn player-inc-plant-count [player]
@@ -145,17 +145,16 @@
   (modify ; add notes on levelup
    :log 
    (fn [log]
-      ;(log-remove-msgs
-      (cond
-       (and (= (:layer player) 0) (= (:layer leveledup-player) 1))
-       (log-add-note log (make-note "levelup1" (list "ok"))) 
-       (and (= (:layer player) 1) (= (:layer leveledup-player) 2))
-       (log-add-note log (make-note "levelup2" (list "ok")))
-       (and (= (:layer player) 2) (= (:layer leveledup-player) 3))
-       (log-add-note log (make-note "levelup3" (list "ok")))
-       :else log)
-     ; "i_have_flowered")
-     )
+      (log-remove-msgs
+       (cond
+        (and (= (:layer player) 0) (= (:layer leveledup-player) 1))
+        (log-add-note log (make-note "levelup1" (list "ok"))) 
+        (and (= (:layer player) 1) (= (:layer leveledup-player) 2))
+        (log-add-note log (make-note "levelup2" (list "ok")))
+        (and (= (:layer player) 2) (= (:layer leveledup-player) 3))
+        (log-add-note log (make-note "levelup3" (list "ok")))
+        :else log)
+       "i_have_flowered_internal"))
    player))
  
 ; call after add notes (will clear messages) and finding new
@@ -163,12 +162,14 @@
 (defn player-add-flowered-msgs
   "detect new flowered plants messages and add them to the log"
   [player leveledup-player]
-  (modify ; add notes on levelup
+  (modify 
    :log 
    (fn [log]
      (reduce
       (fn [log new-fp]
-        (log-add-msg log new-fp))
+        ; rename the message code
+        (log-add-msg
+         log (merge new-fp {:code "i_have_flowered"})))
       log
       (diff
        (:flowered-plants player)
@@ -202,7 +203,7 @@
             (set-add-message-to-flowered fp msg)
             fp))
         fp
-        (log-find-msgs (:log player) "i_have_flowered"))))
+        (log-find-msgs (:log player) "i_have_flowered_internal"))))
    player))
 
 (defn player-update [player id-gen]

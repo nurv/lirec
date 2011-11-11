@@ -117,7 +117,7 @@
         plant 0 1))
      (hash-map
       :version 1
-      :log (make-log 10)
+      :log (make-log 100)
       :id-gen id-gen
       :spirits ()
       :players (list (make-player 97 "Charlie" -1)
@@ -166,7 +166,7 @@
   (let [id-gen (make-id-generator 10000)]
      (hash-map
       :version 1
-      :log (make-log 10)
+      :log (make-log 100)
       :id-gen id-gen
       :spirits ()
       :summons {}

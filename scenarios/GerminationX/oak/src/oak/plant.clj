@@ -257,7 +257,7 @@
              (= (:state plant) "fruit-a"))
         ; we use this message to count flowered plants
         ; so add a little extra detail we need
-        (plant-add-to-log-extra plant log "i_have_flowered"
+        (plant-add-to-log-extra plant log :i_have_flowered_internal
                                 (list (:id plant))) 
 
         (or

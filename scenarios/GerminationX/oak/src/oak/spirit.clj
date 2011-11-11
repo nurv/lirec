@@ -134,7 +134,7 @@
                      :needs_help
                      spirit
                      (:id player)
-                     (:tile spirit)
+                     (:tile plant)
                      (:pos plant)
                      (list
                       (:owner-id plant)
@@ -167,7 +167,7 @@
                   :your_plant_doesnt_like
                   spirit
                   (:owner-id plant)
-                  (:tile spirit)
+                  (:tile plant)
                   (:pos plant)
                   (list
                    (:owner-id harmful)
@@ -180,7 +180,7 @@
                   :your_plant_needs
                   spirit
                   (:owner-id plant)
-                  (:tile spirit)
+                  (:tile plant)
                   (:pos plant)
                   (list
                    (:type plant)
