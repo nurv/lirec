@@ -10,6 +10,7 @@ import FAtiMA.Core.goals.Goal;
 import FAtiMA.Core.memory.Memory;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.sensorEffector.Parameter;
+import FAtiMA.Core.util.AgentLogger;
 import FAtiMA.Core.util.Constants;
 import FAtiMA.Core.util.enumerables.ActionEvent;
 import FAtiMA.Core.util.enumerables.EventType;
@@ -43,19 +44,8 @@ public class EpisodicMemory implements Serializable {
 
 	// use cached search?
 	private static final boolean CACHED_SEARCH = true;
-	private static final long CACHE_TIME = 1000; // milliseconds
-	private ArrayList<SearchKey> ContainsPastEventCachedSearchKeys;
-	private boolean ContainsPastEventCachedResult;
-	private long ContainsPastEventCachedTime;
-	private ArrayList<SearchKey> ContainsRecentEventCachedSearchKeys;
-	private boolean ContainsRecentEventCachedResult;
-	private long ContainsRecentEventCachedTime;
-	private ArrayList<SearchKey> SearchForPastEventsCachedSearchKeys;
-	private ArrayList<ActionDetail> SearchForPastEventsCachedResult;
-	private long SearchForPastEventsCachedTime;
-	private ArrayList<SearchKey> SearchForRecentEventsCachedSearchKeys;
-	private ArrayList<ActionDetail> SearchForRecentEventsCachedResult;
-	private long SearchForRecentEventsCachedTime;
+	private SearchCache searchCacheSearchForPastEvents;
+	private SearchCache searchCacheSearchForRecentEvents;
 
 	public static ArrayList<SearchKey> GenerateSearchKeys(Event e) {
 		ArrayList<SearchKey> keys = new ArrayList<SearchKey>();
@@ -93,6 +83,10 @@ public class EpisodicMemory implements Serializable {
 		_am = new AutobiographicalMemory();
 		_newData = false;
 		_newRecords = new ArrayList<ActionDetail>();
+		if (CACHED_SEARCH) {
+			searchCacheSearchForPastEvents = new SearchCache();
+			searchCacheSearchForRecentEvents = new SearchCache();
+		}
 	}
 
 	// 07/04/11 Matthias
@@ -159,74 +153,11 @@ public class EpisodicMemory implements Serializable {
 	}
 
 	public boolean ContainsPastEvent(ArrayList<SearchKey> searchKeys) {
-
-		// check if cached search is enabled
-		if (CACHED_SEARCH) {
-			// check if search is cached
-			if (searchKeys.equals(ContainsPastEventCachedSearchKeys)) {
-				// check if cache has not expired
-				if (System.currentTimeMillis() < ContainsPastEventCachedTime + CACHE_TIME) {
-					// generate retrievals?
-					//
-					// return cached result
-					return ContainsPastEventCachedResult;
-				}
-			}
-		}
-
-		// perform search
-		boolean result;
-		if (INDEXED_SEARCH)
-			result = _am.ContainsPastEventIndexed(searchKeys);
-		else
-			result = _am.ContainsPastEvent(searchKeys);
-
-		// check if cached search is enabled
-		if (CACHED_SEARCH) {
-			// update cache
-			ContainsPastEventCachedSearchKeys = searchKeys;
-			ContainsPastEventCachedResult = result;
-			ContainsPastEventCachedTime = System.currentTimeMillis();
-		}
-
-		return result;
+		return (SearchForPastEvents(searchKeys).size() > 0);
 	}
 
 	public boolean ContainsRecentEvent(ArrayList<SearchKey> searchKeys) {
-
-		// check if cached search is enabled
-		if (CACHED_SEARCH) {
-			// check if search is cached
-			if (searchKeys.equals(ContainsRecentEventCachedSearchKeys)) {
-				// check if cache has not expired
-				if (System.currentTimeMillis() < ContainsRecentEventCachedTime + CACHE_TIME) {
-					// generate retrievals?
-					//
-					// return cached result
-					return ContainsRecentEventCachedResult;
-				}
-			}
-		}
-
-		// perform search		
-		boolean result;
-		if (INDEXED_SEARCH)
-			result = _am.ContainsRecentEventIndexed(searchKeys);
-		else
-			result = _am.ContainsRecentEvent(searchKeys);
-		if (ContainsNewEvent(searchKeys)) {
-			result = true;
-		}
-
-		// check if cached search is enabled
-		if (CACHED_SEARCH) {
-			// update cache
-			ContainsRecentEventCachedSearchKeys = searchKeys;
-			ContainsRecentEventCachedResult = result;
-			ContainsRecentEventCachedTime = System.currentTimeMillis();
-		}
-
-		return result;
+		return (SearchForRecentEvents(searchKeys).size() > 0);
 	}
 
 	public boolean ContainsNewEvent(ArrayList<SearchKey> searchKeys) {
@@ -275,72 +206,56 @@ public class EpisodicMemory implements Serializable {
 	}
 
 	public ArrayList<ActionDetail> SearchForPastEvents(ArrayList<SearchKey> searchKeys) {
+		ArrayList<ActionDetail> actionDetails;
 
 		// check if cached search is enabled
 		if (CACHED_SEARCH) {
-			// check if search is cached
-			if (searchKeys.equals(SearchForPastEventsCachedSearchKeys)) {
-				// check if cache has not expired
-				if (System.currentTimeMillis() < SearchForPastEventsCachedTime + CACHE_TIME) {
-					// generate retrievals?
-					//
-					// return cached result
-					return SearchForPastEventsCachedResult;
-				}
+			actionDetails = searchCacheSearchForPastEvents.getSearchResult(searchKeys);
+			if (actionDetails != null) {
+				return actionDetails;
 			}
 		}
 
 		// perform search
-		ArrayList<ActionDetail> result;
 		if (INDEXED_SEARCH)
-			result = _am.SearchForPastEventsIndexed(searchKeys);
+			actionDetails = _am.SearchForPastEventsIndexed(searchKeys);
 		else
-			result = _am.SearchForPastEvents(searchKeys);
+			actionDetails = _am.SearchForPastEvents(searchKeys);
 
 		// check if cached search is enabled
 		if (CACHED_SEARCH) {
 			// update cache
-			SearchForPastEventsCachedSearchKeys = searchKeys;
-			SearchForPastEventsCachedResult = result;
-			SearchForPastEventsCachedTime = System.currentTimeMillis();
+			searchCacheSearchForPastEvents.addSearchResult(searchKeys, actionDetails);
 		}
 
-		return result;
+		return actionDetails;
 	}
 
 	public ArrayList<ActionDetail> SearchForRecentEvents(ArrayList<SearchKey> searchKeys) {
+		ArrayList<ActionDetail> actionDetails;
 
 		// check if cached search is enabled
 		if (CACHED_SEARCH) {
-			// check if search is cached
-			if (searchKeys.equals(SearchForRecentEventsCachedSearchKeys)) {
-				// check if cache has not expired
-				if (System.currentTimeMillis() < SearchForRecentEventsCachedTime + CACHE_TIME) {
-					// generate retrievals?
-					//
-					// return cached result
-					return SearchForRecentEventsCachedResult;
-				}
+			actionDetails = searchCacheSearchForRecentEvents.getSearchResult(searchKeys);
+			if (actionDetails != null) {
+				return actionDetails;
 			}
 		}
 
 		// perform search
-		ArrayList<ActionDetail> result;
 		if (INDEXED_SEARCH)
-			result = _am.SearchForRecentEventsIndexed(searchKeys);
+			actionDetails = _am.SearchForRecentEventsIndexed(searchKeys);
 		else
-			result = _am.SearchForRecentEvents(searchKeys);
-		result.addAll(_stm.GetDetailsByKeys(searchKeys));
+			actionDetails = _am.SearchForRecentEvents(searchKeys);
+		actionDetails.addAll(_stm.GetDetailsByKeys(searchKeys));
 
 		// check if cached search is enabled
 		if (CACHED_SEARCH) {
 			// update cache
-			SearchForRecentEventsCachedSearchKeys = searchKeys;
-			SearchForRecentEventsCachedResult = result;
-			SearchForRecentEventsCachedTime = System.currentTimeMillis();
+			searchCacheSearchForRecentEvents.addSearchResult(searchKeys, actionDetails);
 		}
 
-		return result;
+		return actionDetails;
 	}
 
 	public ArrayList<ActionDetail> SearchForNewEvents(ArrayList<SearchKey> searchKeys) {
@@ -563,8 +478,8 @@ public class EpisodicMemory implements Serializable {
 	public ArrayList<ActionDetail> activationBasedSelectionByThreshold(double threshold) {
 		synchronized (this) {
 
-			// DEBUG
-			System.out.println("Activation-Based Selection by threshold...");
+			// DEBUG			
+			AgentLogger.GetInstance().logAndPrint("Activation-Based Selection by threshold...");
 
 			// hold selected details in one list
 			ArrayList<ActionDetail> selected = new ArrayList<ActionDetail>();
@@ -576,13 +491,13 @@ public class EpisodicMemory implements Serializable {
 					selected.addAll(episode.getDetails());
 				}
 				// DEBUG
-				System.out.println("selected all details from Autobiographic Memory");
+				AgentLogger.GetInstance().logAndPrint("selected all details from Autobiographic Memory");
 			}
 			if (!AB_FORGETTING_STEM) {
 				// add details from Short-Term Memory
 				selected.addAll(_stm.getDetails());
 				// DEBUG
-				System.out.println("selected all details from Short-Term Memory");
+				AgentLogger.GetInstance().logAndPrint("selected all details from Short-Term Memory");
 			}
 
 			if (AB_FORGETTING_AM) {
@@ -593,7 +508,7 @@ public class EpisodicMemory implements Serializable {
 						if (value > threshold) {
 							selected.add(detail);
 							// DEBUG
-							System.out.println("selected detail " + detail.getID() + " with value " + value);
+							AgentLogger.GetInstance().logAndPrint("selected detail " + detail.getID() + " with value " + value);
 						}
 					}
 				}
@@ -606,7 +521,7 @@ public class EpisodicMemory implements Serializable {
 					if (value > threshold) {
 						selected.add(detail);
 						// DEBUG
-						System.out.println("selected detail " + detail.getID() + " with value " + value);
+						AgentLogger.GetInstance().logAndPrint("selected detail " + detail.getID() + " with value " + value);
 					}
 				}
 			}
@@ -621,7 +536,7 @@ public class EpisodicMemory implements Serializable {
 		synchronized (this) {
 
 			// DEBUG
-			System.out.println("Activation-Based Selection by count...");
+			AgentLogger.GetInstance().logAndPrint("Activation-Based Selection by count...");
 
 			// hold selected details in one list
 			ArrayList<ActionDetail> selected = new ArrayList<ActionDetail>();
@@ -633,13 +548,13 @@ public class EpisodicMemory implements Serializable {
 					selected.addAll(episode.getDetails());
 				}
 				// DEBUG
-				System.out.println("selected all details from Autobiographic Memory");
+				AgentLogger.GetInstance().logAndPrint("selected all details from Autobiographic Memory");
 			}
 			if (!AB_FORGETTING_STEM) {
 				// add details from Short-Term Memory
 				selected.addAll(_stm.getDetails());
 				// DEBUG
-				System.out.println("selected all details from Short-Term Memory");
+				AgentLogger.GetInstance().logAndPrint("selected all details from Short-Term Memory");
 			}
 
 			// merge details for applying selection into one list
@@ -667,7 +582,7 @@ public class EpisodicMemory implements Serializable {
 			for (int i = merged.size() - 1; i > merged.size() - 1 - iMax; i--) {
 				selected.add(merged.get(i));
 				// DEBUG
-				System.out.println("selected detail " + merged.get(i).getID() + " with value " + merged.get(i).getActivationValue().getValue());
+				AgentLogger.GetInstance().logAndPrint("selected detail " + merged.get(i).getID() + " with value " + merged.get(i).getActivationValue().getValue());
 			}
 
 			return selected;
@@ -680,7 +595,7 @@ public class EpisodicMemory implements Serializable {
 		synchronized (this) {
 
 			// DEBUG
-			System.out.println("Activation-Based Selection by amount...");
+			AgentLogger.GetInstance().logAndPrint("Activation-Based Selection by amount...");
 
 			// validate amount
 			if (amount < 0) {
@@ -705,7 +620,7 @@ public class EpisodicMemory implements Serializable {
 			// calculate corresponding maximum count
 			int countMax = (int) Math.round(amount * countTotal);
 			// DEBUG
-			System.out.println(amount + " corresponds to " + countMax + "/" + countTotal + " events");
+			AgentLogger.GetInstance().logAndPrint(amount + " corresponds to " + countMax + "/" + countTotal + " events");
 
 			// select details by count
 			return activationBasedSelectionByCount(countMax);
@@ -717,7 +632,7 @@ public class EpisodicMemory implements Serializable {
 		synchronized (this) {
 
 			// DEBUG
-			System.out.println("Applying Activation-Based Selection...");
+			AgentLogger.GetInstance().logAndPrint("Applying Activation-Based Selection...");
 
 			// loop over episodes
 			for (MemoryEpisode episode : _am.GetAllEpisodes()) {
@@ -780,7 +695,7 @@ public class EpisodicMemory implements Serializable {
 		synchronized (this) {
 
 			// DEBUG
-			System.out.println("Activation-Based Forgetting by threshold...");
+			AgentLogger.GetInstance().logAndPrint("Activation-Based Forgetting by threshold...");
 
 			// hold forgetable details in one list
 			ArrayList<ActionDetail> forget = new ArrayList<ActionDetail>();
@@ -793,7 +708,7 @@ public class EpisodicMemory implements Serializable {
 						if (value < threshold) {
 							forget.add(detail);
 							// DEBUG
-							System.out.println("forget detail " + detail.getID() + " with value " + value);
+							AgentLogger.GetInstance().logAndPrint("forget detail " + detail.getID() + " with value " + value);
 						}
 					}
 				}
@@ -806,7 +721,7 @@ public class EpisodicMemory implements Serializable {
 					if (value < threshold) {
 						forget.add(detail);
 						// DEBUG
-						System.out.println("forget detail " + detail.getID() + " with value " + value);
+						AgentLogger.GetInstance().logAndPrint("forget detail " + detail.getID() + " with value " + value);
 					}
 				}
 			}
@@ -820,7 +735,7 @@ public class EpisodicMemory implements Serializable {
 		synchronized (this) {
 
 			// DEBUG
-			System.out.println("Activation-Based Forgetting by count...");
+			AgentLogger.GetInstance().logAndPrint("Activation-Based Forgetting by count...");
 
 			// hold forgetable details in one list
 			ArrayList<ActionDetail> forgetable = new ArrayList<ActionDetail>();
@@ -848,7 +763,7 @@ public class EpisodicMemory implements Serializable {
 			for (int i = 0; i < iMax; i++) {
 				forget.add(forgetable.get(i));
 				// DEBUG
-				System.out.println("forget detail " + forgetable.get(i).getID() + " with value " + forgetable.get(i).getActivationValue().getValue());
+				AgentLogger.GetInstance().logAndPrint("forget detail " + forgetable.get(i).getID() + " with value " + forgetable.get(i).getActivationValue().getValue());
 			}
 
 			return forget;
@@ -860,7 +775,7 @@ public class EpisodicMemory implements Serializable {
 		synchronized (this) {
 
 			// DEBUG
-			System.out.println("Activation-Based Forgetting by amount...");
+			AgentLogger.GetInstance().logAndPrint("Activation-Based Forgetting by amount...");
 
 			// validate amount
 			if (amount < 0) {
@@ -885,7 +800,7 @@ public class EpisodicMemory implements Serializable {
 			// calculate corresponding maximum count
 			int countMax = (int) Math.round(amount * countTotal);
 			// DEBUG
-			System.out.println(amount + " corresponds to " + countMax + "/" + countTotal + " events");
+			AgentLogger.GetInstance().logAndPrint(amount + " corresponds to " + countMax + "/" + countTotal + " events");
 
 			// forget details by count
 			return activationBasedForgettingByCount(countMax);
@@ -897,7 +812,7 @@ public class EpisodicMemory implements Serializable {
 		synchronized (this) {
 
 			// DEBUG
-			System.out.println("Applying Activation-Based Forgetting...");
+			AgentLogger.GetInstance().logAndPrint("Applying Activation-Based Forgetting...");
 
 			// remove details to be forgotten
 			for (ActionDetail detail : forgetDetails) {

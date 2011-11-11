@@ -39,7 +39,8 @@
  * Meiyii Lim: 13/03/2009 - search for recent events is now also performed in STM,
  * 							AM now stores only external events that have an emotional impact on the agent
  * 							and internal events (ie. goal activation, success and failure)
- * Matthias Keysermann: 04/05/2011 - ContainsPastEvent loops always over all episodes and then returns true/false
+ * Matthias Keysermann: 04/05/2011 - ContainsPast/RecentEvent, SearchForPast/RecentEvents loops always over all episodes and then returns true/false
+ * Matthias Keysermann: 10/11/2011 - Removed ContainsPast/RecentEvent (covered by SearchForPast/RecentEvents)
  * **/
 
 package FAtiMA.Core.memory.episodicMemory;
@@ -257,54 +258,6 @@ public class AutobiographicalMemory implements Serializable {
 
 			return foundPastEvents;
 		}
-	}
-
-	public boolean ContainsRecentEvent(ArrayList<SearchKey> searchKeys) {
-		MemoryEpisode currentEpisode;
-		synchronized (this) {
-			boolean status = false;
-
-			if (this._memoryEpisodes.size() > 0) {
-				currentEpisode = (MemoryEpisode) this._memoryEpisodes.get(this._memoryEpisodes.size() - 1);
-				status = currentEpisode.VerifiesKeys(searchKeys);
-			}
-
-			return status;
-		}
-	}
-
-	public boolean ContainsRecentEventIndexed(ArrayList<SearchKey> searchKeys) {
-		MemoryEpisode currentEpisode;
-		synchronized (this) {
-			boolean status = false;
-
-			if (_memoryEpisodes.size() > 0) {
-				currentEpisode = (MemoryEpisode) _memoryEpisodes.get(_memoryEpisodes.size() - 1);
-				status = currentEpisode.VerifiesKeysIndexed(searchKeys);
-			}
-
-			return status;
-		}
-	}
-
-	public boolean ContainsPastEvent(ArrayList<SearchKey> searchKeys) {
-		synchronized (this) {
-			boolean status = false;
-
-			if (this._memoryEpisodes.size() > 1) {
-				for (int i = 0; i < this._memoryEpisodes.size() - 1; i++) {
-					if (((MemoryEpisode) this._memoryEpisodes.get(i)).VerifiesKeys(searchKeys)) {
-						status = true;
-					}
-				}
-			}
-
-			return status;
-		}
-	}
-
-	public boolean ContainsPastEventIndexed(ArrayList<SearchKey> searchKeys) {
-		return (SearchForPastEventsIndexed(searchKeys).size() > 0);
 	}
 
 	public String SummarizeEpisode(Memory m, int episodeID) {
