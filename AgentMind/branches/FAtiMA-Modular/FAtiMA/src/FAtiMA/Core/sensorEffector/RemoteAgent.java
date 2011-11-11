@@ -210,7 +210,7 @@ public abstract class RemoteAgent extends SocketListener {
 	 * @return true if the agent has finished execution and can perform another
 	 * action, false otherwise
 	 */
-	public final boolean FinishedExecuting() {
+	public final boolean canAct() {
 		return _canAct;
 	}
 	
@@ -777,15 +777,11 @@ public abstract class RemoteAgent extends SocketListener {
 		String subject = st.nextToken();
 		String[] properties;
 		
-		
-		
 		//the following ones correspond to ":" separated property value pairs
 		while(st.hasMoreTokens()) {
 			properties = st.nextToken().split(":");
 			//property[0] corresponds to the property name, [1] to the property value
 			//constructs something like Luke(Strength)
-			
-			
 			
 			_agent.PerceivePropertyChanged("*",subject, properties[0], properties[1]);
 			AgentLogger.GetInstance().log("Look-At:" + subject + " " + properties[0] + " " + properties[1]);

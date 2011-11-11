@@ -27,7 +27,6 @@
  * Rui Prada: 01/04/2002 - File created
  */
 
-package FAtiMA.Core.util.parsers;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -107,8 +106,7 @@ public abstract class SocketListener extends Thread {
     	
         while(!stopped) {
             try {
-            	//the socket checks for messages at the most 4 times per second
-                sleep(250);
+                sleep(50);
             }
             catch(InterruptedException ex) {
             }
@@ -117,21 +115,11 @@ public abstract class SocketListener extends Thread {
             {
                try
                {
-            	   //this lock is used to enforce the agent's perceptual process to wait until
-            	   //there is nothing more to read from the socket
-            	   synchronized(this)
-            	   {
-            		   while(reader.ready())
-                	   {
-            		   		msg = reader.readLine();
-            		   		processMessage(msg);
-                	   }
-            	   }
+            	   msg = reader.readLine();
+            	   processMessage(msg);
                }
                catch (java.io.IOException ex) {            	  
-            	   if(!(ex instanceof SocketException)){      		   
-                      ex.printStackTrace();
-            	   }
+            	   if(!(ex instanceof SocketException)) ex.printStackTrace();   	
             	   stopped = true;
             	   handleSocketException();
                }

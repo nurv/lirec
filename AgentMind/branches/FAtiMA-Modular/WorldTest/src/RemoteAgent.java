@@ -9,9 +9,7 @@ import FAtiMA.Core.conditions.Condition;
 import FAtiMA.Core.plans.Effect;
 import FAtiMA.Core.plans.Step;
 import FAtiMA.Core.sensorEffector.SpeechAct;
-import FAtiMA.Core.util.AgentLogger;
 import FAtiMA.Core.util.Constants;
-import FAtiMA.Core.util.parsers.SocketListener;
 import FAtiMA.Core.wellFormedNames.Name;
 import FAtiMA.Core.wellFormedNames.Substitution;
 import FAtiMA.Core.wellFormedNames.Symbol;
@@ -122,6 +120,7 @@ public class RemoteAgent extends SocketListener {
 		}
 		catch (IOException e) {
 			e.printStackTrace();
+			_world.removeAgent(this);
 			this.stopped = true;
 			try {
 				this.socket.close();
@@ -170,6 +169,7 @@ public class RemoteAgent extends SocketListener {
 			int randomDelayTime = _generator.nextInt(MAX_ACTION_DELAY_MS - MIN_ACTION_DELAY_MS + 1) + MIN_ACTION_DELAY_MS;
 			//the +1 is just for the MAX = MIN situation
 			
+			_world.GetUserInterface().WriteLine("Starting Action: " + msg);
 			ActionSimulator as = new ActionSimulator(_world,_name,msg,randomDelayTime,this);
 			as.start();
 			
@@ -220,6 +220,16 @@ public class RemoteAgent extends SocketListener {
 		
 		for(Effect e : effects)
 		{
+			/*try
+			{
+				sleep(200);
+			}
+			catch(Exception ex)
+			{
+				
+			}
+			*/
+			
 			c = e.GetEffect();
 			String name = c.getName().toString();
 			if(!name.startsWith("EVENT") && !name.startsWith("SpeechContext"))
@@ -230,7 +240,7 @@ public class RemoteAgent extends SocketListener {
 					msg = "PROPERTY-CHANGED " + c.getToM() + " " + name + " " + c.getValue();
 
 					_world.GetUserInterface().WriteLine(msg);
-					this._world.SendPerceptionToAll(msg);
+					//this._world.SendPerceptionToAll(msg);
 					
 					if(c.getToM().equals(Constants.UNIVERSAL))
 					{

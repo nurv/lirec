@@ -46,6 +46,10 @@ import FAtiMA.Core.goals.Goal;
 import FAtiMA.Core.goals.GoalLibrary;
 import FAtiMA.Core.memory.Memory;
 import FAtiMA.Core.memory.semanticMemory.KnowledgeSlot;
+import FAtiMA.Core.perceptions.EntityRemovedPerception;
+import FAtiMA.Core.perceptions.LookAtPerception;
+import FAtiMA.Core.perceptions.PropertyPerception;
+import FAtiMA.Core.perceptions.PropertyRemovedPerception;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.sensorEffector.IONRemoteAgent;
 import FAtiMA.Core.sensorEffector.RemoteAgent;
@@ -97,9 +101,16 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 	protected GoalLibrary _goalLibrary;
 	protected ActionLibrary _actionLibrary;
 	
+	//perception structures
+	protected ArrayList<Event> _perceivedActions;
+	protected ArrayList<Event> _perceivedActionFailures;
+	protected ArrayList<LookAtPerception> _perceivedLookAts;
+	protected ArrayList<EntityRemovedPerception> _perceivedEntitiesRemoved;
+	protected ArrayList<PropertyPerception> _perceivedProperties;
+	protected ArrayList<PropertyRemovedPerception> _perceivedPropertiesRemoved;
+	
 	protected boolean _shutdown;
 	protected ArrayList<ValuedAction> _actionsForExecution;
-	protected ArrayList<Event> _perceivedEvents;
 	protected RemoteAgent _remoteAgent;
 	protected String _role;
 	protected String _name; //the agent's name
@@ -129,7 +140,6 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 		_numberOfCycles = 0;
 		_currentEmotion = NeutralEmotion.NAME; //neutral emotion - no emotion
 		_actionsForExecution = new ArrayList<ValuedAction>();
-		_perceivedEvents = new ArrayList<Event>();
 		_saveDirectory = "";
 		
 		_emotionalState = new EmotionalState();
@@ -141,6 +151,15 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 		_actionLibrary = new ActionLibrary();
 		_goalLibrary = new GoalLibrary();
 		
+		//perception structures
+		_perceivedActions = new ArrayList<Event>();
+		_perceivedActionFailures = new ArrayList<Event>();
+		_perceivedLookAts = new ArrayList<LookAtPerception>();
+		_perceivedEntitiesRemoved = new ArrayList<EntityRemovedPerception>();
+		_perceivedProperties = new ArrayList<PropertyPerception>();
+		_perceivedPropertiesRemoved = new ArrayList<PropertyRemovedPerception>();
+		
+		//component lists
 		_generalComponents = new HashMap<String,IComponent>();
 		_processEmotionComponents = new ArrayList<IProcessEmotionComponent>();
 		_behaviourComponents = new ArrayList<IBehaviourComponent>();
@@ -321,7 +340,6 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 				throw new RequiredComponentException(c.name(),dependency);
 		}
 			
-		
 		this._generalComponents.put(c.name(), c);
 		if(c instanceof IProcessEmotionComponent)
 		{
@@ -395,17 +413,6 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 		this._components.remove(c.name());
 	}*/
 
-
-	public void PerceiveActionFailed(Event e)
-	{
-		Event e2 = e.ApplyPerspective(_name);
-		
-		for(IAdvancedPerceptionsComponent c : _processPerceptionsComponents)
-		{
-			c.actionFailedPerception(e2);
-		}
-	}
-
 	/**
 	 * Gets the agent's name that is displayed externally
 	 * @return the agent's external name
@@ -471,10 +478,8 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 
 
 	@SuppressWarnings("unchecked")
-	public void LoadAgentState(String fileName) 
-	throws IOException, ClassNotFoundException{
-
-
+	public void LoadAgentState(String fileName) throws IOException, ClassNotFoundException {
+		
 		FileInputStream in = new FileInputStream(fileName);
 		ObjectInputStream s = new ObjectInputStream(in);
 	
@@ -493,7 +498,15 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 		this._displayName = (String) s.readObject();
 		this._showStateWindow = ((Boolean) s.readObject()).booleanValue();
 		this._actionsForExecution = (ArrayList<ValuedAction>) s.readObject();
-		this._perceivedEvents = (ArrayList<Event>) s.readObject();
+		this._perceivedActions = (ArrayList<Event>) s.readObject();
+		this._actionsForExecution = (ArrayList<ValuedAction>) s.readObject();
+		this._perceivedActions = (ArrayList<Event>) s.readObject();
+		this._perceivedActionFailures = (ArrayList<Event>) s.readObject();
+		this._perceivedLookAts = (ArrayList<LookAtPerception>) s.readObject();
+		this._perceivedEntitiesRemoved = (ArrayList<EntityRemovedPerception>) s.readObject();
+		this._perceivedProperties = (ArrayList<PropertyPerception>) s.readObject();
+		this._perceivedPropertiesRemoved = (ArrayList<PropertyRemovedPerception>) s.readObject();
+			
 		this._saveDirectory = (String) s.readObject();
 		
 		Object stratObject = s.readObject();
@@ -535,10 +548,17 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 	{   
 		synchronized (this)
 		{	
-			_perceivedEvents.add(e);
+			Event e2 = e.ApplyPerspective(_name);
+			_perceivedActions.add(e2);
 		}
 	}
-
+	
+	public void PerceiveActionFailed(Event e)
+	{
+		Event e2 = e.ApplyPerspective(_name);
+		_perceivedActionFailures.add(e2);
+	}
+	
 	public void PerceiveLookAt(String subject, String target)
 	{
 		String auxTarget;
@@ -562,24 +582,15 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 			auxTarget = target;
 		}
 
-		for(IAdvancedPerceptionsComponent c : this._processPerceptionsComponents)
-		{
-			c.lookAtPerception(this, auxSubject, auxTarget);
-		}
+		_perceivedLookAts.add(new LookAtPerception(auxSubject, auxTarget));
 	}
 
 	public void PerceivePropertyChanged(String ToM, Name propertyName, String value)
 	{
-		AgentLogger.GetInstance().logAndPrint("PropertyChanged: " + ToM + " " + propertyName + " " + value);
-		
 		String newValue = applyPerspective(value,_name);
+		Name newProperty = applyPerspective(propertyName,_name);
 		
-		_memory.getSemanticMemory().Tell(applyPerspective(propertyName, _name), newValue);
-		
-		for(IAdvancedPerceptionsComponent c : this._processPerceptionsComponents)
-		{
-			c.propertyChangedPerception(ToM, applyPerspective(propertyName, _name), newValue);
-		}
+		_perceivedProperties.add(new PropertyPerception(ToM, newProperty, newValue));
 	}
 
 	public void PerceivePropertyChanged(String ToM,String subject, String property, String value)
@@ -599,18 +610,17 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 			subject = Constants.SELF;
 		}
 
-		Name propertyName = Name.ParseName(subject + "(" + property + ")");
-
-		_memory.getSemanticMemory().Retract(propertyName);
-
+		_perceivedPropertiesRemoved.add(new PropertyRemovedPerception(subject, property));
 	}
 
 	public void PerceiveEntityRemoved(String entity)
 	{
-		for(IAdvancedPerceptionsComponent c : this._processPerceptionsComponents)
+		if(entity.equals(_name))
 		{
-			c.entityRemovedPerception(entity);
+			entity = Constants.SELF;
 		}
+		
+		_perceivedEntitiesRemoved.add(new EntityRemovedPerception(entity));
 	}
 
 	/**
@@ -722,17 +732,9 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 	public String role() {
 		return _role;
 	}
-
-	/**
-	 * Runs the agent, endless loop until there is a shutdown
-	 */
-	public void Run() {
-		ValuedAction action;
-		ValuedAction bestAction;
-		float bestActionValue;
-		float value;
-		AppraisalFrame appraisalFrame;
-		
+	
+	private void lateInitialization()
+	{
 		try
 		{
 			//parsing the files will be done right before the first run
@@ -754,6 +756,109 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 		{
 			e.printStackTrace();
 		}
+	}
+	
+	/**
+	 *  this method perceives and appraises new events
+	 */
+	private void perceive()
+	{
+		AppraisalFrame appraisalFrame;
+		
+		//we use a lock on the remote agent. The idea is that the perceptual process should be 
+		//blocked while the remote agent is getting messages from the external world.
+		synchronized(_remoteAgent)
+		{
+			for(LookAtPerception p : this._perceivedLookAts)
+			{
+				for(IAdvancedPerceptionsComponent c : this._processPerceptionsComponents)
+				{
+					c.lookAtPerception(this, p.getSubject(), p.getTarget());
+				}
+			}
+			this._perceivedLookAts.clear();
+			
+			for(PropertyPerception p : this._perceivedProperties)
+			{
+				AgentLogger.GetInstance().logAndPrint("PropertyChanged: " + p.getToM() + " " + p.getProperty() + " " + p.getValue());
+				_memory.getSemanticMemory().Tell(p.getProperty(), p.getValue());
+				
+				for(IAdvancedPerceptionsComponent c : this._processPerceptionsComponents)
+				{
+					c.propertyChangedPerception(p.getToM(), p.getProperty(), p.getValue());
+				}
+			}
+			this._perceivedProperties.clear();
+			
+			for(PropertyRemovedPerception p : this._perceivedPropertiesRemoved)
+			{
+				Name propertyName = Name.ParseName(p.getSubject() + "(" + p.getProperty() + ")");
+				AgentLogger.GetInstance().logAndPrint("PropertyRemoved: " +  propertyName);
+
+				_memory.getSemanticMemory().Retract(propertyName);
+			}
+			this._perceivedPropertiesRemoved.clear();
+			
+			for(EntityRemovedPerception p : this._perceivedEntitiesRemoved)
+			{
+				for(IAdvancedPerceptionsComponent c : this._processPerceptionsComponents)
+				{
+					c.entityRemovedPerception(p.getSubject());
+				}
+			}
+			this._perceivedEntitiesRemoved.clear();
+			
+			for(Event e : this._perceivedActionFailures)
+			{
+				for(IAdvancedPerceptionsComponent c : _processPerceptionsComponents)
+				{
+					c.actionFailedPerception(e);
+				}
+			}
+			this._perceivedActionFailures.clear();
+			
+			
+			for(IComponent c : this._generalComponents.values())
+			{
+				c.update(this, AgentSimulationTime.GetInstance().Time());
+			}
+			
+			
+			for(Event e : this._perceivedActions)
+			{
+				AgentLogger.GetInstance().log("appraising event: " + e.toName());
+				
+				
+				_memory.getEpisodicMemory().StoreAction(_memory, e);
+				_memory.getSemanticMemory().Tell(ACTION_CONTEXT, e.toName().toString());
+				
+				for(IComponent c : this._generalComponents.values())
+				{
+					c.update(this, e);
+				}
+				
+				appraisalFrame = new AppraisalFrame(e);
+				for(IAppraisalDerivationComponent c : this._appraisalComponents)
+				{
+					c.appraisal(this,e, appraisalFrame);
+					updateEmotions(appraisalFrame);
+				}
+			}
+			this._perceivedActions.clear();
+		}
+	}
+
+	/**
+	 * Runs the agent, endless loop until there is a shutdown
+	 */
+	public void Run() {
+		ValuedAction action;
+		ValuedAction bestAction;
+		float bestActionValue;
+		float value;
+		AppraisalFrame appraisalFrame;
+		
+		lateInitialization();
 		
 		long updateTime = System.currentTimeMillis();
 
@@ -770,37 +875,10 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 					
 					_emotionalState.Decay();
 
-					for(IComponent c : this._generalComponents.values())
-					{
-						c.update(this, AgentSimulationTime.GetInstance().Time());
-					}
-
-					//perceives and appraises new events
-					synchronized (this)
-					{
-						for(Event e : this._perceivedEvents)
-						{
-							AgentLogger.GetInstance().log("appraising event: " + e.toName());
-							
-							Event e2 = e.ApplyPerspective(_name);
-							_memory.getEpisodicMemory().StoreAction(_memory, e2);
-							_memory.getSemanticMemory().Tell(ACTION_CONTEXT, e2.toName().toString());
-							
-							for(IComponent c : this._generalComponents.values())
-							{
-								c.update(this, e2);
-							}
-							
-							appraisalFrame = new AppraisalFrame(e2);
-							for(IAppraisalDerivationComponent c : this._appraisalComponents)
-							{
-								c.appraisal(this,e2, appraisalFrame);
-								updateEmotions(appraisalFrame);
-							}
-						}
-						this._perceivedEvents.clear();
-					}
+					//perception and appraisal
+					this.perceive();
 					
+					//continuous reappraisal
 					for(IAppraisalDerivationComponent c : this._appraisalComponents)
 					{
 						appraisalFrame = c.reappraisal(this);
@@ -836,7 +914,6 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 						}
 					}
 
-
 					bestActionValue = -1;
 					bestAction = null;
 					
@@ -855,7 +932,7 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 						
 					}
 
-					if(_remoteAgent.FinishedExecuting() && _remoteAgent.isRunning() && bestAction != null) {
+					if(_remoteAgent.canAct() && _remoteAgent.isRunning() && bestAction != null) {
 						
 						_remoteAgent.AddAction(bestAction);
 						IBehaviourComponent c = (IBehaviourComponent) getComponent(bestAction.getComponent());
@@ -1033,7 +1110,12 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 			s.writeObject(_displayName);
 			s.writeObject(new Boolean(_showStateWindow));
 			s.writeObject(_actionsForExecution);
-			s.writeObject(_perceivedEvents);
+			s.writeObject(_perceivedActions);
+			s.writeObject(_perceivedActionFailures);
+			s.writeObject(_perceivedLookAts);
+			s.writeObject(_perceivedEntitiesRemoved);
+			s.writeObject(_perceivedProperties);
+			s.writeObject(_perceivedPropertiesRemoved);			
 			s.writeObject(_saveDirectory);
 			
 			// prevent saving of the whole AgentCore which contains _agentDisplay as this would 
@@ -1121,7 +1203,12 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 			s.writeObject(_displayName);
 			//s.writeObject(new Boolean(_showStateWindow));
 			s.writeObject(_actionsForExecution);
-			s.writeObject(_perceivedEvents);
+			s.writeObject(_perceivedActions);
+			s.writeObject(_perceivedActionFailures);
+			s.writeObject(_perceivedLookAts);
+			s.writeObject(_perceivedEntitiesRemoved);
+			s.writeObject(_perceivedProperties);
+			s.writeObject(_perceivedPropertiesRemoved);		
 			
 			// prevent saving of the whole AgentCore which contains _agentDisplay as this would 
 			// lead to NonSerializableException
@@ -1193,7 +1280,12 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 			this._displayName = (String) s.readObject();
 			//this._showStateWindow = ((Boolean) s.readObject()).booleanValue();
 			this._actionsForExecution = (ArrayList<ValuedAction>) s.readObject();
-			this._perceivedEvents = (ArrayList<Event>) s.readObject();
+			this._perceivedActions = (ArrayList<Event>) s.readObject();
+			this._perceivedActionFailures = (ArrayList<Event>) s.readObject();
+			this._perceivedLookAts = (ArrayList<LookAtPerception>) s.readObject();
+			this._perceivedEntitiesRemoved = (ArrayList<EntityRemovedPerception>) s.readObject();
+			this._perceivedProperties = (ArrayList<PropertyPerception>) s.readObject();
+			this._perceivedPropertiesRemoved = (ArrayList<PropertyRemovedPerception>) s.readObject();
 			
 			Object stratObject = s.readObject();
 			if (stratObject instanceof IGetModelStrategy)

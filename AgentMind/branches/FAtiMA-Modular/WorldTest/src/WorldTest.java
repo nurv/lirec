@@ -90,9 +90,6 @@ public class WorldTest {
 		}			
 	}
 
-
-
-
 	public WorldTest(int port, String scenery, String actionsFile, String agentLanguageFile, String userLanguageFile, String userOptionsFile, boolean simplifiedVersion, ArrayList<String> objects) throws IOException {
 		_scenery = scenery;
 		_agents = new ArrayList<RemoteAgent>();

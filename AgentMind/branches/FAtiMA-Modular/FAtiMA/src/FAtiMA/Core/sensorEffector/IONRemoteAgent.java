@@ -333,7 +333,7 @@ public class IONRemoteAgent extends RemoteAgent {
 		System.out.println("Perceiving event: " + event);
 		_agent.PerceiveEvent(event);
 		
-		//the agent last action suceeded!
+		//the agent last action succeeded!
 		if(_currentAction != null && event.GetSubject().equals(_agent.getName()))
 		{
 			if(_currentAction.getAction().GetFirstLiteral().toString().equals(event.GetAction()))

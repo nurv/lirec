@@ -68,7 +68,7 @@ public class AgentDisplay {
 		try
 		{
 			
-			BufferedImage image = ImageIO.read(new File("FAtiMA-Logo.jpg"));
+			BufferedImage image = ImageIO.read(new File("FAtiMA-Logo-small.gif"));
 			_frame.setIconImage(image);
 		}
 		catch(Exception e)

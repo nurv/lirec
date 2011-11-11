@@ -447,10 +447,10 @@ public class DeliberativeComponent implements Serializable, IComponent,
 			{
 				AgentLogger.GetInstance().logAndPrint("Removing forgotten intention " + intention.getGoal().getName());
 				removeIntention(intention);
-				if(intention.IsStrongCommitment())
+				/*if(intention.IsStrongCommitment())
 				{
 					cancelAction(am);
-				}
+				}*/
 				
 				//remove one forgotten intention at a time, or else the for will crash
 				break;
