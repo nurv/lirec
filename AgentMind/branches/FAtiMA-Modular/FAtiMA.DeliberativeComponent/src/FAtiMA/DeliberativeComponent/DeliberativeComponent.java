@@ -376,10 +376,11 @@ public class DeliberativeComponent implements Serializable, IComponent,
 	}
 
 	@Override
-	public void actionFailedPerception(Event e) {
+	public void actionFailedPerception(AgentModel am, Event e) {
 		if (e.GetSubject().equals(Constants.SELF)) {
 			if (_actionMonitor != null) {
 				if (_actionMonitor.matchEvent(e)) {
+					_actionMonitor.getStep().DecreaseProbability(am);
 					_actionMonitor = null;
 				}
 			}
@@ -882,7 +883,7 @@ public class DeliberativeComponent implements Serializable, IComponent,
 	}
 
 	@Override
-	public void entityRemovedPerception(String entity) {
+	public void entityRemovedPerception(AgentModel am, String entity) {
 	}
 
 	public ActivePursuitGoal filter(AgentModel am,
@@ -1169,8 +1170,7 @@ public class DeliberativeComponent implements Serializable, IComponent,
 	}
 
 	@Override
-	public void propertyChangedPerception(String ToM, Name propertyName,
-			String value) {
+	public void propertyChangedPerception(AgentModel am, String ToM, Name propertyName,String value) {
 	}
 
 	@Override

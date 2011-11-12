@@ -379,10 +379,11 @@ public class DeliberativeComponent2 implements Serializable, IComponent,
 	}
 
 	@Override
-	public void actionFailedPerception(Event e) {
+	public void actionFailedPerception(AgentModel am, Event e) {
 		if (e.GetSubject().equals(Constants.SELF)) {
 			if (_actionMonitor != null) {
 				if (_actionMonitor.matchEvent(e)) {
+					_actionMonitor.getStep().DecreaseProbability(am);
 					_actionMonitor = null;
 				}
 			}
@@ -474,29 +475,7 @@ public class DeliberativeComponent2 implements Serializable, IComponent,
 			// remove the intention from memory after some significant time has passed, or if a maximum number of
 			// stored intentions is reached
 
-			if (i.getGoal().CheckSuccess(am)) {
-				removeIntention(i);
-				if(i.IsStrongCommitment())
-				{
-					for (IGoalSuccessStrategy s : _goalSuccessStrategies) {
-						s.perceiveGoalSuccess(am, i.getGoal());
-					}
-					i.ProcessIntentionSuccess(am);
-					cancelAction(am);
-				}
-				return null;
-			} else if (i.getGoal().CheckFailure(am)) {
-				removeIntention(i);
-				if(i.IsStrongCommitment())
-				{
-					for (IGoalFailureStrategy s : _goalFailureStrategies) {
-						s.perceiveGoalFailure(am, i.getGoal());
-					}
-					i.ProcessIntentionFailure(am);
-					cancelAction(am);
-				}
-				return null;
-			} else if (i.NumberOfAlternativePlans() == 0 && i.GetSolutions().size() == 0) {
+			if (i.NumberOfAlternativePlans() == 0 && i.GetSolutions().size() == 0) {
 				AgentLogger.GetInstance().logAndPrint("no solutions found for the intention");
 				_currentIntention = null;
 				if(i.IsStrongCommitment())
@@ -510,18 +489,7 @@ public class DeliberativeComponent2 implements Serializable, IComponent,
 				}
 				return null;
 			}
-			else if(i.getGoal().CheckCanceling(am)) { 
-				//the agent cancels the goal out
-				//if the cancel conditions are verified
-				if(i.IsStrongCommitment())
-				{
-					i.ProcessIntentionCancel(am);
-					cancelAction(am);
-				}
-				
-				removeIntention(i);
-				return null;
-			} 
+			 
 			
 			return i;
 		}
@@ -947,7 +915,7 @@ public class DeliberativeComponent2 implements Serializable, IComponent,
 	}
 
 	@Override
-	public void entityRemovedPerception(String entity) {
+	public void entityRemovedPerception(AgentModel am, String entity) {
 	}
 
 	public ActivePursuitGoal filter(AgentModel am,
@@ -1014,7 +982,7 @@ public class DeliberativeComponent2 implements Serializable, IComponent,
 			while (it.hasNext()) {
 
 				intention = (Intention) it.next();
-
+				
 				if (intention.getGoal().CheckSuccess(am)) {
 					removeIntention(intention);
 					if(intention.IsStrongCommitment())
@@ -1023,6 +991,10 @@ public class DeliberativeComponent2 implements Serializable, IComponent,
 							s.perceiveGoalSuccess(am, intention.getGoal());
 						}
 						intention.ProcessIntentionSuccess(am);
+						//TODO there is a problem with this cancel action, if an intention succeeds by 
+						//by serendipity while another intention is focused, this will cause
+						//the action of the second intention to be wrongly canceled
+						cancelAction(am);
 					}
 					return null;
 					
@@ -1036,6 +1008,18 @@ public class DeliberativeComponent2 implements Serializable, IComponent,
 						intention.ProcessIntentionFailure(am);
 						cancelAction(am);
 					}
+					return null;
+				}
+				else if(intention.getGoal().CheckCanceling(am)) { 
+					//the agent cancels the goal out
+					//if the cancel conditions are verified
+					if(intention.IsStrongCommitment())
+					{
+						intention.ProcessIntentionCancel(am);
+						cancelAction(am);
+					}
+					
+					removeIntention(intention);
 					return null;
 				}
 
@@ -1233,8 +1217,7 @@ public class DeliberativeComponent2 implements Serializable, IComponent,
 	}
 
 	@Override
-	public void propertyChangedPerception(String ToM, Name propertyName,
-			String value) {
+	public void propertyChangedPerception(AgentModel am, String ToM, Name propertyName,String value) {
 	}
 
 	@Override

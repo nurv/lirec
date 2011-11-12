@@ -280,7 +280,7 @@ public class ModelOfOther implements AgentModel, Serializable {
 	{
 		for(IAdvancedPerceptionsComponent c : _perceptionComponents)
 		{
-			c.propertyChangedPerception(ToM, propertyName, value);
+			c.propertyChangedPerception(this,ToM, propertyName, value);
 		}
 	}
 }

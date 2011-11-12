@@ -83,8 +83,7 @@ public class ToMComponent implements Serializable, IAppraisalDerivationComponent
 	}
 
 	@Override
-	public void actionFailedPerception(Event e) {
-		// TODO Auto-generated method stub	
+	public void actionFailedPerception(AgentModel am, Event e) {	
 	}
 
 	@Override
@@ -121,7 +120,7 @@ public class ToMComponent implements Serializable, IAppraisalDerivationComponent
 	}
 	
 	@Override
-	public void entityRemovedPerception(String entity) {
+	public void entityRemovedPerception(AgentModel am, String entity) {
 		_nearbyAgents.remove(entity);
 	}
 
@@ -238,7 +237,7 @@ public class ToMComponent implements Serializable, IAppraisalDerivationComponent
 	}
 
 	@Override
-	public void propertyChangedPerception(String ToM, Name propertyName, String value) 
+	public void propertyChangedPerception(AgentModel am, String ToM, Name propertyName, String value) 
 	{
 		String valueWithoutPerspective = AgentCore.removePerspective(value, _name);
 		String valueWithNewPerspective;

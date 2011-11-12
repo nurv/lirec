@@ -746,7 +746,7 @@ public class MotivationalComponent implements Serializable, Cloneable,
 	}
 
 	@Override
-	public void propertyChangedPerception(String ToM, Name propertyName, String value) {
+	public void propertyChangedPerception(AgentModel am, String ToM, Name propertyName, String value) {
 		
 		Motivator motivator;
 		
@@ -779,12 +779,12 @@ public class MotivationalComponent implements Serializable, Cloneable,
 	}
 
 	@Override
-	public void entityRemovedPerception(String entity) {
+	public void entityRemovedPerception(AgentModel am, String entity) {
 		
 	}
 
 	@Override
-	public void actionFailedPerception(Event e) {
+	public void actionFailedPerception(AgentModel am, Event e) {
 		
 	}
 

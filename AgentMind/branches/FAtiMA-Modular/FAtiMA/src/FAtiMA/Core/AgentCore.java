@@ -785,7 +785,7 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 				
 				for(IAdvancedPerceptionsComponent c : this._processPerceptionsComponents)
 				{
-					c.propertyChangedPerception(p.getToM(), p.getProperty(), p.getValue());
+					c.propertyChangedPerception(this,p.getToM(), p.getProperty(), p.getValue());
 				}
 			}
 			this._perceivedProperties.clear();
@@ -803,7 +803,7 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 			{
 				for(IAdvancedPerceptionsComponent c : this._processPerceptionsComponents)
 				{
-					c.entityRemovedPerception(p.getSubject());
+					c.entityRemovedPerception(this,p.getSubject());
 				}
 			}
 			this._perceivedEntitiesRemoved.clear();
@@ -812,7 +812,7 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 			{
 				for(IAdvancedPerceptionsComponent c : _processPerceptionsComponents)
 				{
-					c.actionFailedPerception(e);
+					c.actionFailedPerception(this,e);
 				}
 			}
 			this._perceivedActionFailures.clear();
