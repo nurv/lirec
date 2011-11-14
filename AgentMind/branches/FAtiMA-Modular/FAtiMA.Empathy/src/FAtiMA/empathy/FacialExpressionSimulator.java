@@ -41,7 +41,7 @@ public class FacialExpressionSimulator {
 		
 		if(previousFacialExpression == null){
 			//Set the initial FacialExpression
-			am.getMemory().getSemanticMemory().Tell(Name.ParseName(Constants.SELF + FACIAL_EXP_PROPERTY), FacialExpressionType.NEUTRAL.name());
+			am.getMemory().getSemanticMemory().Tell(true,Name.ParseName(Constants.SELF + FACIAL_EXP_PROPERTY), FacialExpressionType.NEUTRAL.name());
 			previousFacialExpression = FacialExpressionType.NEUTRAL.name();
 		}
 		
@@ -72,7 +72,7 @@ public class FacialExpressionSimulator {
 		}
 		
 		if(newFacialExpression != FacialExpressionType.valueOf(previousFacialExpression)){	
-			am.getMemory().getSemanticMemory().Tell(Name.ParseName(Constants.SELF + FACIAL_EXP_PROPERTY), newFacialExpression.name());			
+			am.getMemory().getSemanticMemory().Tell(true,Name.ParseName(Constants.SELF + FACIAL_EXP_PROPERTY), newFacialExpression.name());			
 			return newFacialExpression;
 		}else{
 			return null;

@@ -48,7 +48,7 @@ public class RespectRelation extends Relation{
 		//If relation doesn't exists, create it in a neutral state
 		if(result == null)
 		{
-			m.getSemanticMemory().Tell(respectProperty, new Float(0));
+			m.getSemanticMemory().Tell(true,respectProperty, new Float(0));
 			return 0;
 		}
 		return result.floatValue();
@@ -57,7 +57,7 @@ public class RespectRelation extends Relation{
 	public void setValue(Memory m, float like)
 	{
 		Name respectProperty = Name.ParseName("Respect(" + this._subj1 + "," + this._subj2 + ")");
-		m.getSemanticMemory().Tell(respectProperty, new Float(like));
+		m.getSemanticMemory().Tell(true,respectProperty, new Float(like));
 	}
 	
 	public String getHashKey() {

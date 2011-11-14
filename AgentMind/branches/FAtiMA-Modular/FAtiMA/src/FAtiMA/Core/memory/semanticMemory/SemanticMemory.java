@@ -57,7 +57,7 @@ public class SemanticMemory implements Serializable {
 	        	ks= (KnowledgeSlot) _kb.Ask(predicate);
 	        	if (ks != null && ks.getValue() != null && ks.getValue().toString().equalsIgnoreCase("True"))
 	            {
-	        		_stm.Tell(_kb,predicate, ks.getValue());
+	        		_stm.Tell(ks.getPersistent(),_kb,predicate, ks.getValue());
 	                return true;
 	            }
 	        }
@@ -81,7 +81,7 @@ public class SemanticMemory implements Serializable {
 				if (prop == null)
 					return null;
 				else
-					_stm.Tell(_kb, property, prop.getValue());
+					_stm.Tell(prop.getPersistent(),_kb, property, prop.getValue());
 			}
 			else
 			{
@@ -95,10 +95,10 @@ public class SemanticMemory implements Serializable {
 	 * Inserts a Predicate in the WorkingMemory
 	 * @param predicate - the predicate to be inserted
 	 */
-	public void Assert(Name predicate) {
+	public void Assert(boolean stat, Name predicate) {
 		synchronized(this)
 		{
-			_stm.Tell(_kb, predicate,new Symbol("True"));
+			_stm.Tell(stat, _kb, predicate,new Symbol("True"));
 		}
 	}
 	
@@ -268,17 +268,17 @@ public class SemanticMemory implements Serializable {
     		{
     			cond = eff.GetEffect();
     			perspective = am.getModelToTest(cond.getToM());
-    			perspective.getMemory().getSemanticMemory().Tell(cond.getName(), cond.getValue().toString());
+    			perspective.getMemory().getSemanticMemory().Tell(true,cond.getName(), cond.getValue().toString());
     			//System.out.println("InferEffects");    			
     		}
     	}
     }
 	
-	public void InitializeProperty(Name property, Object value)
+	public void InitializeProperty(boolean stat,Name property, Object value)
 	{
 		synchronized(this)
 		{
-			_kb.Tell(property, value);
+			_kb.Tell(stat,property, value);
 		}
 	}
 	
@@ -336,10 +336,10 @@ public class SemanticMemory implements Serializable {
 		}
 	}
     
-	public void Tell(Name property, Object value) {
+	public void Tell(boolean stat, Name property, Object value) {
 		synchronized(this)
 		{
-			_stm.Tell(_kb, property, value);
+			_stm.Tell(stat, _kb, property, value);
 		}	
 	}
 	

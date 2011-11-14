@@ -241,10 +241,11 @@ public class WorkingMemory implements Serializable {
 	
 	/**
 	 * Adds a new property or sets its value (if already exists) in the WorkingMemory
+	 * @param persistent - defines if the property is persistent on migration
 	 * @param property - the property to be added/changed
 	 * @param value - the value to be stored in the property
 	 */
-	public void Tell(KnowledgeBase kb, Name property, Object value) {
+	public void Tell(boolean persistent, KnowledgeBase kb, Name property, Object value) {
 
 		boolean newProperty = false;
 		KnowledgeSlot aux = _wM;
@@ -284,6 +285,7 @@ public class WorkingMemory implements Serializable {
 			
 			if(newProperty)
 			{	
+				aux.setPersistent(persistent);
 			 	_factList.add(aux);
 				_changeList.add(aux); // new info				
 				//System.out.println("New property knowledge: " + ks.toString());
@@ -326,7 +328,7 @@ public class WorkingMemory implements Serializable {
 	            }*/
 				currentSlot.remove(l.toString());
 				
-				kb.Tell(tempName, aux.getValue());		
+				kb.Tell(temp.getPersistent(),tempName, aux.getValue());		
 				//_changeList.remove(temp);
 			}
 		}

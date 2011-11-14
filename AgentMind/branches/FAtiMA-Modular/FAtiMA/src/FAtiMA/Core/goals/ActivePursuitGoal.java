@@ -329,7 +329,7 @@ public class ActivePursuitGoal extends Goal implements IPlanningOperator {
 	
 	public void setUncertainty(AgentModel am, float uncertainty)
 	{	
-		am.getMemory().getSemanticMemory().Tell(this.getName(), new Float(uncertainty));
+		am.getMemory().getSemanticMemory().Tell(true,this.getName(), new Float(uncertainty));
 	}
 	
 	

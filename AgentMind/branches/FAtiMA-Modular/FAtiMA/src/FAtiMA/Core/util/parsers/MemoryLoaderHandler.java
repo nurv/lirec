@@ -100,6 +100,7 @@ public class MemoryLoaderHandler extends ReflectXMLHandler {
 	{
 		String name = attributes.getValue("name");
 		Object value;
+		boolean persistent = Boolean.parseBoolean(attributes.getValue("persistent"));
 		
 		try
 		{
@@ -110,7 +111,7 @@ public class MemoryLoaderHandler extends ReflectXMLHandler {
 			value = attributes.getValue("value");			
 		}
 		
-		_currentKB.Tell(Name.ParseName(name), value); 
+		_currentKB.Tell(persistent,Name.ParseName(name), value); 
 		
 		//System.out.println("KBSlot");
 	    //System.out.println(name + " " + value);
@@ -120,6 +121,7 @@ public class MemoryLoaderHandler extends ReflectXMLHandler {
 	{
 		String name = attributes.getValue("name");
 		Object value;
+		boolean persistent = Boolean.parseBoolean(attributes.getValue("persistent"));
 		
 		try
 		{
@@ -130,7 +132,7 @@ public class MemoryLoaderHandler extends ReflectXMLHandler {
 			value = attributes.getValue("value");			
 		}
 		
-		_currentWM.Tell(_currentKB, Name.ParseName(name), value); 
+		_currentWM.Tell(persistent,_currentKB, Name.ParseName(name), value); 
 		
 		//System.out.println("WMSlot");
 	    //System.out.println(name + " " + value);

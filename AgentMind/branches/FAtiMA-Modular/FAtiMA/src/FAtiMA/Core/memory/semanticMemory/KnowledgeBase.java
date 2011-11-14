@@ -233,10 +233,11 @@ public class KnowledgeBase implements Serializable {
 	
 	/**
 	 * Adds a new property or sets its value (if already exists) in the KnowledgeBase
+	 * @param persistent - defines if the added property is persistent on migration
 	 * @param property - the property to be added/changed
 	 * @param value - the value to be stored in the property
 	 */
-	public void Tell(Name property, Object value) {
+	public void Tell(boolean persistent, Name property, Object value) {
 
 		boolean newProperty = false;
 		KnowledgeSlot aux = _kB;
@@ -265,7 +266,7 @@ public class KnowledgeBase implements Serializable {
 			
 			if(newProperty)
 			{
-		
+				aux.setPersistent(persistent);
 				_factList.add(aux);
 				//System.out.println("New property knowledge in KB: " + ks.toString());
 			}

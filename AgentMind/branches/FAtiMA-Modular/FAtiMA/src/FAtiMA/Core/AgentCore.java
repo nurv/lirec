@@ -781,7 +781,7 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 			for(PropertyPerception p : this._perceivedProperties)
 			{
 				AgentLogger.GetInstance().logAndPrint("PropertyChanged: " + p.getToM() + " " + p.getProperty() + " " + p.getValue());
-				_memory.getSemanticMemory().Tell(p.getProperty(), p.getValue());
+				_memory.getSemanticMemory().Tell(false,p.getProperty(), p.getValue());
 				
 				for(IAdvancedPerceptionsComponent c : this._processPerceptionsComponents)
 				{
@@ -830,7 +830,7 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 				
 				
 				_memory.getEpisodicMemory().StoreAction(_memory, e);
-				_memory.getSemanticMemory().Tell(ACTION_CONTEXT, e.toName().toString());
+				_memory.getSemanticMemory().Tell(true,ACTION_CONTEXT, e.toName().toString());
 				
 				for(IComponent c : this._generalComponents.values())
 				{

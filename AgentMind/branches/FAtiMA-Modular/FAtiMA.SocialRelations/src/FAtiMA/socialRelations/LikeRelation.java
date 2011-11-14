@@ -41,7 +41,7 @@ public class LikeRelation extends Relation {
 		Float result = (Float) m.getSemanticMemory().AskProperty(relationProperty);
 		//If relation doesn't exists, create it in a neutral state
 		if (result == null) {
-			m.getSemanticMemory().Tell(relationProperty, new Float(0));
+			m.getSemanticMemory().Tell(true,relationProperty, new Float(0));
 			return 0;
 		}
 		return result.floatValue();
@@ -50,7 +50,7 @@ public class LikeRelation extends Relation {
 	public void setValue(Memory m, float like) {
 		Name relationProperty = Name.ParseName("Like(" + this._subj1 + ","
 				+ this._subj2 + ")");
-		m.getSemanticMemory().Tell(relationProperty, new Float(like));
+		m.getSemanticMemory().Tell(true,relationProperty, new Float(like));
 	}
 
 	public String getHashKey() {

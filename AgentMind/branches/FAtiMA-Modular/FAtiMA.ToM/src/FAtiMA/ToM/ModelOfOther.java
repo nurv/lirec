@@ -100,7 +100,7 @@ public class ModelOfOther implements AgentModel, Serializable {
 	public void update(Event e)
 	{
 		_mem.getEpisodicMemory().StoreAction(_mem, e);
-		_mem.getSemanticMemory().Tell(AgentCore.ACTION_CONTEXT, e.toName().toString());
+		_mem.getSemanticMemory().Tell(true,AgentCore.ACTION_CONTEXT, e.toName().toString());
 		
 		for(IAppraisalDerivationComponent c : _appraisalComponents)
 		{

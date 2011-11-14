@@ -197,7 +197,7 @@ public abstract class Goal implements IGroundable, Cloneable, Serializable {
 		}
 		else iof = new Float(0 - _baseIOF);
 		
-		am.getMemory().getSemanticMemory().Tell(_dynamicIOF,iof);
+		am.getMemory().getSemanticMemory().Tell(true,_dynamicIOF,iof);
 	}
 	
 	public String getKey(){
@@ -221,7 +221,7 @@ public abstract class Goal implements IGroundable, Cloneable, Serializable {
 			iof = new Float(iof.floatValue() + incr);
 		}
 		
-		am.getMemory().getSemanticMemory().Tell(_dynamicIOF,iof);
+		am.getMemory().getSemanticMemory().Tell(true,_dynamicIOF,iof);
 	}
 	
 	/**
@@ -243,7 +243,7 @@ public abstract class Goal implements IGroundable, Cloneable, Serializable {
 		}
 		else ios = new Float(0 - _baseIOS);
 		
-		am.getMemory().getSemanticMemory().Tell(_dynamicIOS,ios);
+		am.getMemory().getSemanticMemory().Tell(true,_dynamicIOS,ios);
 	}
 	
 	/**
@@ -263,7 +263,7 @@ public abstract class Goal implements IGroundable, Cloneable, Serializable {
 			ios = new Float(ios.floatValue() + incr);
 		}
 		
-		am.getMemory().getSemanticMemory().Tell(_dynamicIOS,ios);
+		am.getMemory().getSemanticMemory().Tell(true,_dynamicIOS,ios);
 	}
 	
 	/**
@@ -428,7 +428,7 @@ public abstract class Goal implements IGroundable, Cloneable, Serializable {
 			float aux = _baseIOF + iof.floatValue();
 			if(aux < 0) {
 				iof = new Float(0 - _baseIOF);
-				am.getMemory().getSemanticMemory().Tell(this._dynamicIOF,iof);
+				am.getMemory().getSemanticMemory().Tell(true,this._dynamicIOF,iof);
 			}
 		}
 	}
@@ -455,7 +455,7 @@ public abstract class Goal implements IGroundable, Cloneable, Serializable {
 			float aux = _baseIOS + ios.floatValue();
 			if(aux < 0) {
 				ios = new Float(0 - _baseIOS);
-				am.getMemory().getSemanticMemory().Tell(this._dynamicIOS,ios);
+				am.getMemory().getSemanticMemory().Tell(true,this._dynamicIOS,ios);
 			}
 		}
 	}

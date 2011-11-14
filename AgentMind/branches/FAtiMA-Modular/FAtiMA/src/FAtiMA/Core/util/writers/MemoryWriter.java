@@ -298,6 +298,8 @@ public class MemoryWriter implements Serializable {
 	private void knowledgeSlottoXML(KnowledgeSlot ks)
 	{
 		try {
+			_outputter.attribute("persistent", Boolean.toString(ks.getPersistent()));
+			
 			if(ks.getName() != null)
 				_outputter.attribute("name", ks.getName());
 			if(ks.getValue() != null)

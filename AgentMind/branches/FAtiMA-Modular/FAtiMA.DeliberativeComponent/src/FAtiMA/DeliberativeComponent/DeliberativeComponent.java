@@ -619,7 +619,7 @@ public class DeliberativeComponent implements Serializable, IComponent,
 						for (ListIterator<Effect> li = copingAction.getEffects().listIterator(); li.hasNext();) {
 							eff = (Effect) li.next();
 							if (eff.isGrounded())
-								am.getMemory().getSemanticMemory().Tell(eff.GetEffect().getName(),eff.GetEffect().getValue().toString());
+								am.getMemory().getSemanticMemory().Tell(true,eff.GetEffect().getName(),eff.GetEffect().getValue().toString());
 						}
 						this.checkLinks(am);
 					} else {

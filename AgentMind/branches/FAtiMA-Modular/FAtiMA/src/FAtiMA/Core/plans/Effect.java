@@ -81,7 +81,7 @@ public class Effect implements IGroundable, Cloneable, Serializable {
 			this._biasName = Name.ParseName("ProbBias(" + stepName + idCounter++ + ")");
 			if(am != null)
 			{
-				am.getMemory().getSemanticMemory().Tell(this._biasName, new Float(0));
+				am.getMemory().getSemanticMemory().Tell(true,this._biasName, new Float(0));
 			}
 		}
 	}
@@ -104,7 +104,7 @@ public class Effect implements IGroundable, Cloneable, Serializable {
 		prob = bias + _baseprob;
 		newprob = 0.6f * prob;
 		newbias = newprob - _baseprob;
-		am.getMemory().getSemanticMemory().Tell(_biasName,new Float(newbias));   
+		am.getMemory().getSemanticMemory().Tell(true,_biasName,new Float(newbias));   
 	}
 	
 	/**
@@ -189,7 +189,7 @@ public class Effect implements IGroundable, Cloneable, Serializable {
 		prob = bias + _baseprob;
 		newprob = 0.6f * prob + 0.4f;
 		newbias = newprob - _baseprob;
-		am.getMemory().getSemanticMemory().Tell(_biasName,new Float(newbias));   
+		am.getMemory().getSemanticMemory().Tell(true,_biasName,new Float(newbias));   
 	}
 	
 	/**

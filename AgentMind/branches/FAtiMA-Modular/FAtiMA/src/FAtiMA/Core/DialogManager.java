@@ -74,7 +74,7 @@ public class DialogManager implements Serializable {
 	{
 		if(!speechEvent.GetAction().equals(SpeechAct.Reinforce))
 		{
-			m.getSemanticMemory().Tell(SPEECH_CONTEXT, speechEvent.toName().toString());
+			m.getSemanticMemory().Tell(true,SPEECH_CONTEXT, speechEvent.toName().toString());
 		}
 		this._canSpeak = true;
 		this._contextExpireTime = AgentSimulationTime.GetInstance().Time() + CONTEXT_DURATION;
@@ -97,7 +97,7 @@ public class DialogManager implements Serializable {
 		{
 			if(AgentSimulationTime.GetInstance().Time() > this._contextExpireTime)
 			{
-				m.getSemanticMemory().Tell(SPEECH_CONTEXT, "");
+				m.getSemanticMemory().Tell(true,SPEECH_CONTEXT, "");
 				this._contextExpireTime = 0;
 				this._andCounting = false;
 			}
