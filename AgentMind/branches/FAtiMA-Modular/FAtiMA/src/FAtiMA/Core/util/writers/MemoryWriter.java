@@ -300,6 +300,8 @@ public class MemoryWriter implements Serializable {
 		try {
 			_outputter.attribute("persistent", Boolean.toString(ks.getPersistent()));
 			
+			if(ks.getDisplayName() != null)
+				_outputter.attribute("displayName", ks.getDisplayName());
 			if(ks.getName() != null)
 				_outputter.attribute("name", ks.getName());
 			if(ks.getValue() != null)

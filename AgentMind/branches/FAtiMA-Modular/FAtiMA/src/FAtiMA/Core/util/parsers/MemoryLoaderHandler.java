@@ -98,20 +98,28 @@ public class MemoryLoaderHandler extends ReflectXMLHandler {
 	
 	public void KBSlot(Attributes attributes)
 	{
-		String name = attributes.getValue("name");
-		Object value;
 		boolean persistent = Boolean.parseBoolean(attributes.getValue("persistent"));
 		
-		try
-		{
-			value = Float.parseFloat(attributes.getValue("value")); 
+		// load only persistent properties
+		if (persistent)
+		{			
+			String displayName = attributes.getValue("displayName");
+			
+			//String name = attributes.getValue("name");
+			String name = displayName;
+			
+			Object value;
+			try
+			{
+				value = Float.parseFloat(attributes.getValue("value")); 
+			}
+			catch (NumberFormatException nfe)
+			{
+				value = attributes.getValue("value");			
+			}
+			
+			_currentKB.Tell(persistent, Name.ParseName(name), value);			
 		}
-		catch (NumberFormatException nfe)
-		{
-			value = attributes.getValue("value");			
-		}
-		
-		_currentKB.Tell(persistent,Name.ParseName(name), value); 
 		
 		//System.out.println("KBSlot");
 	    //System.out.println(name + " " + value);
@@ -119,20 +127,28 @@ public class MemoryLoaderHandler extends ReflectXMLHandler {
 	
 	public void WMSlot(Attributes attributes)
 	{
-		String name = attributes.getValue("name");
-		Object value;
 		boolean persistent = Boolean.parseBoolean(attributes.getValue("persistent"));
 		
-		try
-		{
-			value = Float.parseFloat(attributes.getValue("value")); 
+		// load only persistent properties
+		if (persistent)
+		{			
+			String displayName = attributes.getValue("displayName");
+			
+			//String name = attributes.getValue("name");
+			String name = displayName;
+			
+			Object value;
+			try
+			{
+				value = Float.parseFloat(attributes.getValue("value")); 
+			}
+			catch (NumberFormatException nfe)
+			{
+				value = attributes.getValue("value");			
+			}
+						
+			_currentWM.Tell(persistent, _currentKB, Name.ParseName(name), value); 
 		}
-		catch (NumberFormatException nfe)
-		{
-			value = attributes.getValue("value");			
-		}
-		
-		_currentWM.Tell(persistent,_currentKB, Name.ParseName(name), value); 
 		
 		//System.out.println("WMSlot");
 	    //System.out.println(name + " " + value);
