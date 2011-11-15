@@ -818,20 +818,24 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 			this._perceivedActionFailures.clear();
 			
 			
+			for(Event e : this._perceivedActions)
+			{
+				//first we need to store all events in memory even before any update method is 
+				//processed. For instance Deliberative update will check for actions in episodic
+				//memory
+				_memory.getEpisodicMemory().StoreAction(_memory, e);
+				_memory.getSemanticMemory().Tell(true,ACTION_CONTEXT, e.toName().toString());
+			}
+			
 			for(IComponent c : this._generalComponents.values())
 			{
 				c.update(this, AgentSimulationTime.GetInstance().Time());
 			}
 			
-			
 			for(Event e : this._perceivedActions)
 			{
 				AgentLogger.GetInstance().log("appraising event: " + e.toName());
-				
-				
-				_memory.getEpisodicMemory().StoreAction(_memory, e);
-				_memory.getSemanticMemory().Tell(true,ACTION_CONTEXT, e.toName().toString());
-				
+					
 				for(IComponent c : this._generalComponents.values())
 				{
 					c.update(this, e);

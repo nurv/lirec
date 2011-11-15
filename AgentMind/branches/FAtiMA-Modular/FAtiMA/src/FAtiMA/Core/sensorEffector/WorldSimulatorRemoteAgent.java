@@ -95,7 +95,7 @@ public class WorldSimulatorRemoteAgent extends RemoteAgent {
 		//an object/agent has one of its properties changed
 		//the perception specifies which property was changed and its new value
 		//percept-type object property newvalue 
-		//Ex: PROPERTYCHANGED Luke pose onfloor
+		//Ex: PROPERTYCHANGED ToM Luke pose onfloor
 		
 		Name propertyName = null;
 		String ToM = null;
