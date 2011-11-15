@@ -199,8 +199,7 @@ public class ToMComponent implements Serializable, IAppraisalDerivationComponent
 		}
 		
 		for(String other : _nearbyAgents)
-		{
-			
+		{	
 			if(other.equals(subject))
 			{
 				ModelOfOther m = _ToM.get(other);
