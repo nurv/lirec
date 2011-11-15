@@ -40,12 +40,14 @@ public class PropertyPerception implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	
+	private Boolean _persistent;
 	private String _ToM;
 	private Name _property;
 	private String _value;
 	
-	public PropertyPerception(String ToM, Name property, String value)
+	public PropertyPerception(Boolean persistent, String ToM, Name property, String value)
 	{
+		this._persistent = persistent;
 		this._ToM = ToM;
 		this._property = property;
 		this._value = value;
@@ -64,5 +66,10 @@ public class PropertyPerception implements Serializable {
 	public String getValue()
 	{
 		return this._value;
+	}
+	
+	public Boolean getPersistent()
+	{
+		return this._persistent;
 	}
 }

@@ -1170,7 +1170,7 @@ public class DeliberativeComponent implements Serializable, IComponent,
 	}
 
 	@Override
-	public void propertyChangedPerception(AgentModel am, String ToM, Name propertyName,String value) {
+	public void propertyChangedPerception(AgentModel am, Boolean persistent, String ToM, Name propertyName,String value) {
 	}
 
 	@Override

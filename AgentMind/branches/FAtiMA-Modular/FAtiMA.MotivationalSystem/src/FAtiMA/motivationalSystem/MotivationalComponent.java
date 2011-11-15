@@ -746,7 +746,7 @@ public class MotivationalComponent implements Serializable, Cloneable,
 	}
 
 	@Override
-	public void propertyChangedPerception(AgentModel am, String ToM, Name propertyName, String value) {
+	public void propertyChangedPerception(AgentModel am, Boolean persistent, String ToM, Name propertyName, String value) {
 		
 		Motivator motivator;
 		

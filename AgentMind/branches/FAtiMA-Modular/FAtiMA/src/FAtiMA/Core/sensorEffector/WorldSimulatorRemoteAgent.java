@@ -89,7 +89,7 @@ public class WorldSimulatorRemoteAgent extends RemoteAgent {
 		Send(msg);
 	}
 	
-	protected void PropertyChangedPerception(String perc)
+	protected void PropertyChangedPerception(Boolean persistent, String perc)
 	{
 		StringTokenizer st = new StringTokenizer(perc," ");
 		//an object/agent has one of its properties changed
@@ -108,7 +108,7 @@ public class WorldSimulatorRemoteAgent extends RemoteAgent {
 			subject = st.nextToken();
 			property = st.nextToken();
 			value = st.nextToken();
-			_agent.PerceivePropertyChanged(ToM,subject, property, value);
+			_agent.PerceivePropertyChanged(persistent,ToM,subject, property, value);
 			
 		}
 		else if( st.countTokens() == 3 ){
@@ -116,7 +116,7 @@ public class WorldSimulatorRemoteAgent extends RemoteAgent {
 			String subjectWithProperty = st.nextToken();
 			propertyName = Name.ParseName(subjectWithProperty);
 			value = st.nextToken();
-			_agent.PerceivePropertyChanged(ToM, propertyName, value);
+			_agent.PerceivePropertyChanged(persistent,ToM, propertyName, value);
 		}
 		
 		

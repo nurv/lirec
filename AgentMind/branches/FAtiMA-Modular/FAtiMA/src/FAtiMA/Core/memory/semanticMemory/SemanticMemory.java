@@ -336,10 +336,10 @@ public class SemanticMemory implements Serializable {
 		}
 	}
     
-	public void Tell(boolean stat, Name property, Object value) {
+	public void Tell(Boolean persistent, Name property, Object value) {
 		synchronized(this)
 		{
-			_stm.Tell(stat, _kb, property, value);
+			_stm.Tell(persistent, _kb, property, value);
 		}	
 	}
 	

@@ -147,7 +147,7 @@ public class IONRemoteAgent extends RemoteAgent {
 	 * Methods for handling perceptions
 	 */
 	
-	protected void PropertyChangedPerception(String perc)
+	protected void PropertyChangedPerception(Boolean persistent, String perc)
 	{
 		StringTokenizer st = new StringTokenizer(perc," ");
 		String visibility;
@@ -166,7 +166,7 @@ public class IONRemoteAgent extends RemoteAgent {
 		String property = st.nextToken();
 		String value = st.nextToken();
 		
-		_agent.PerceivePropertyChanged(visibility,subject, property, value);
+		_agent.PerceivePropertyChanged(persistent,visibility,subject, property, value);
 		
 		/*Event event;
 		event = new Event(subject,PROPERTY_CHANGED,property);

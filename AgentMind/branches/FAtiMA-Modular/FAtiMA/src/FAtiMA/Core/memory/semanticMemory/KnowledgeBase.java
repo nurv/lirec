@@ -237,7 +237,7 @@ public class KnowledgeBase implements Serializable {
 	 * @param property - the property to be added/changed
 	 * @param value - the value to be stored in the property
 	 */
-	public void Tell(boolean persistent, Name property, Object value) {
+	public void Tell(Boolean persistent, Name property, Object value) {
 
 		boolean newProperty = false;
 		KnowledgeSlot aux = _kB;
@@ -260,6 +260,7 @@ public class KnowledgeBase implements Serializable {
 			}
 			if(aux.getValue() == null || !aux.getValue().equals(value))
 			{
+				aux.setPersistent(persistent);
 				aux.setValue(value);
 				//System.out.println("New facts in KB: " + aux.toString());
 			}

@@ -80,11 +80,18 @@ public class KnowledgeSlot implements Serializable {
      * Creates an empty KnowledgeSpot, identified by the received name
      * @param name - the name that identifies the KnowledgeSlot
      */
-    public KnowledgeSlot(boolean persistent, String name, String displayName) {
+    public KnowledgeSlot(Boolean persistent, String name, String displayName) {
     	_displayName = displayName;
         _name = name;
         _children = new HashMap<String,Object>();
-        _persistent = persistent;
+        if(persistent != null)
+        {
+        	_persistent = persistent;
+        }
+        else
+        {
+        	_persistent = false;
+        }
     }
 	
     /**
@@ -166,9 +173,12 @@ public class KnowledgeSlot implements Serializable {
 	 * Sets a KS's persistent value (i.e. it will be saved and reused on migration)
 	 * @param stat - whether this KS is persistent or not
 	 */
-	public void setPersistent(boolean persistent)
+	public void setPersistent(Boolean persistent)
 	{
-		_persistent = persistent;
+		if(persistent != null)
+		{
+			_persistent = persistent;
+		}
 	}
 	
 	/**

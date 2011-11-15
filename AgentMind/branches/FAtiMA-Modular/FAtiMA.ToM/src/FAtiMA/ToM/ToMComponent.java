@@ -222,7 +222,7 @@ public class ToMComponent implements Serializable, IAppraisalDerivationComponent
 							
 							
 							m.getMemory().getSemanticMemory().Tell(property.getPersistent(),propertyWithNewPerspective, valueWithNewPerspective);
-							m.propertyChangedPerception("*", propertyWithNewPerspective, valueWithNewPerspective);
+							m.propertyChangedPerception(property.getPersistent(),"*", propertyWithNewPerspective, valueWithNewPerspective);
 						}
 					}
 				}		
@@ -236,7 +236,7 @@ public class ToMComponent implements Serializable, IAppraisalDerivationComponent
 	}
 
 	@Override
-	public void propertyChangedPerception(AgentModel am, String ToM, Name propertyName, String value) 
+	public void propertyChangedPerception(AgentModel am, Boolean persistent, String ToM, Name propertyName, String value) 
 	{
 		String valueWithoutPerspective = AgentCore.removePerspective(value, _name);
 		String valueWithNewPerspective;
@@ -252,8 +252,8 @@ public class ToMComponent implements Serializable, IAppraisalDerivationComponent
 				propertyWithNewPerspective = AgentCore.applyPerspective(propertyWithoutPerspective, other);
 				
 				ModelOfOther m = _ToM.get(other);
-				m.getMemory().getSemanticMemory().Tell(true,propertyWithNewPerspective, valueWithNewPerspective);
-				m.propertyChangedPerception(ToM, propertyWithNewPerspective, valueWithNewPerspective);
+				m.getMemory().getSemanticMemory().Tell(persistent,propertyWithNewPerspective, valueWithNewPerspective);
+				m.propertyChangedPerception(persistent,ToM, propertyWithNewPerspective, valueWithNewPerspective);
 			}
 		}
 		else if(!ToM.equals(_name))
@@ -264,8 +264,8 @@ public class ToMComponent implements Serializable, IAppraisalDerivationComponent
 				valueWithNewPerspective = AgentCore.applyPerspective(valueWithoutPerspective, ToM);
 				propertyWithNewPerspective = AgentCore.applyPerspective(propertyWithoutPerspective, ToM);
 				
-				m.getMemory().getSemanticMemory().Tell(true,propertyWithNewPerspective, valueWithNewPerspective);
-				m.propertyChangedPerception(ToM, propertyWithNewPerspective, valueWithNewPerspective);
+				m.getMemory().getSemanticMemory().Tell(persistent,propertyWithNewPerspective, valueWithNewPerspective);
+				m.propertyChangedPerception(persistent,ToM, propertyWithNewPerspective, valueWithNewPerspective);
 			}
 		}	
 	}

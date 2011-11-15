@@ -7,7 +7,7 @@ import FAtiMA.Core.wellFormedNames.Name;
 
 public interface IAdvancedPerceptionsComponent extends IComponent{
 	
-	public void propertyChangedPerception(AgentModel am, String ToM, Name propertyName, String value);
+	public void propertyChangedPerception(AgentModel am, Boolean persistent, String ToM, Name propertyName, String value);
 	
 	public void lookAtPerception(AgentCore ag, String subject, String target);
 	

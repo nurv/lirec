@@ -585,21 +585,21 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 		_perceivedLookAts.add(new LookAtPerception(auxSubject, auxTarget));
 	}
 
-	public void PerceivePropertyChanged(String ToM, Name propertyName, String value)
+	public void PerceivePropertyChanged(Boolean persistent,String ToM, Name propertyName, String value)
 	{
 		String newValue = applyPerspective(value,_name);
 		Name newProperty = applyPerspective(propertyName,_name);
 		
-		_perceivedProperties.add(new PropertyPerception(ToM, newProperty, newValue));
+		_perceivedProperties.add(new PropertyPerception(persistent,ToM, newProperty, newValue));
 	}
 
-	public void PerceivePropertyChanged(String ToM,String subject, String property, String value)
+	public void PerceivePropertyChanged(Boolean persistent,String ToM,String subject, String property, String value)
 	{
 		Name propertyName;
 
 		propertyName = Name.ParseName(subject + "(" + property + ")");
 
-		PerceivePropertyChanged(ToM,propertyName,value);
+		PerceivePropertyChanged(persistent,ToM,propertyName,value);
 	}
 
 
@@ -781,11 +781,12 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 			for(PropertyPerception p : this._perceivedProperties)
 			{
 				AgentLogger.GetInstance().logAndPrint("PropertyChanged: " + p.getToM() + " " + p.getProperty() + " " + p.getValue());
-				_memory.getSemanticMemory().Tell(false,p.getProperty(), p.getValue());
+				
+				_memory.getSemanticMemory().Tell(p.getPersistent(),p.getProperty(), p.getValue());
 				
 				for(IAdvancedPerceptionsComponent c : this._processPerceptionsComponents)
 				{
-					c.propertyChangedPerception(this,p.getToM(), p.getProperty(), p.getValue());
+					c.propertyChangedPerception(this, p.getPersistent(), p.getToM(), p.getProperty(), p.getValue());
 				}
 			}
 			this._perceivedProperties.clear();

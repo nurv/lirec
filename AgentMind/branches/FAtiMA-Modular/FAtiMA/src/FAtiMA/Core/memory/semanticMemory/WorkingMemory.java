@@ -245,7 +245,7 @@ public class WorkingMemory implements Serializable {
 	 * @param property - the property to be added/changed
 	 * @param value - the value to be stored in the property
 	 */
-	public void Tell(boolean persistent, KnowledgeBase kb, Name property, Object value) {
+	public void Tell(Boolean persistent, KnowledgeBase kb, Name property, Object value) {
 
 		boolean newProperty = false;
 		KnowledgeSlot aux = _wM;
@@ -274,6 +274,7 @@ public class WorkingMemory implements Serializable {
 			
 			if(aux.getValue() == null || !aux.getValue().equals(value))
 			{
+				aux.setPersistent(persistent);
 				aux.setValue(value);
 				_newKnowledge = true;
 				//KnowledgeSlot ksAux = new KnowledgeSlot(property.toString());

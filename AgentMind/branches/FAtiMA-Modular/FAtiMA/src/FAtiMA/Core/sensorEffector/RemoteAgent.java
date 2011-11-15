@@ -113,6 +113,8 @@ public abstract class RemoteAgent extends SocketListener {
 	protected static final String ENTITY_ADDED = "ENTITY-ADDED";
 	protected static final String ENTITY_REMOVED = "ENTITY-REMOVED";
 	protected static final String PROPERTY_CHANGED = "PROPERTY-CHANGED";
+	protected static final String PROPERTY_CHANGED_PERSISTENT = "PROPERTY-CHANGED-PERSISTENT";
+	protected static final String PROPERTY_CHANGED_NONPERSISTENT = "PROPERTY-CHANGED-NONPERSISTENT";
 	protected static final String PROPERTY_REMOVED = "PROPERTY-REMOVED";
 	protected static final String USER_SPEECH = "USER-SPEECH";
 	protected static final String ACTION_STARTED = "ACTION-STARTED";
@@ -286,7 +288,15 @@ public abstract class RemoteAgent extends SocketListener {
 				EntityRemovedPerception(perception);
 			}
 			else if(msgType.equals(PROPERTY_CHANGED)) {
-				PropertyChangedPerception(perception);
+				PropertyChangedPerception(null,perception);
+			}
+			else if(msgType.equals(PROPERTY_CHANGED_PERSISTENT))
+			{
+				PropertyChangedPerception(true,perception);
+			}
+			else if(msgType.equals(PROPERTY_CHANGED_NONPERSISTENT))
+			{
+				PropertyChangedPerception(false,perception);
 			}
 			else if(msgType.equals(PROPERTY_REMOVED))
 			{
@@ -653,7 +663,7 @@ public abstract class RemoteAgent extends SocketListener {
 	 * Methods for handling perceptions
 	 */
 	
-	protected abstract void PropertyChangedPerception(String perc);
+	protected abstract void PropertyChangedPerception(Boolean persistent, String perc);
 	
 	protected abstract void PropertyRemovedPerception(String perc);
 	
@@ -771,6 +781,9 @@ public abstract class RemoteAgent extends SocketListener {
 	
 	protected void LookAtPerception(String perc)
 	{ 
+		Boolean persistent;
+		String name;
+		String value;
 		StringTokenizer st = new StringTokenizer(perc," ");
 		//perception about the properties of a given object/character
 		//the second word corresponds to the object/character
@@ -782,8 +795,26 @@ public abstract class RemoteAgent extends SocketListener {
 			properties = st.nextToken().split(":");
 			//property[0] corresponds to the property name, [1] to the property value
 			//constructs something like Luke(Strength)
+			if(properties[0].equals("P"))
+			{
+				persistent = true;
+				name = properties[1];
+				value = properties[2];
+			}
+			else if (properties[0].equals("NP"))
+			{
+				persistent = false;
+				name = properties[1];
+				value = properties[2];
+			}
+			else
+			{
+				name = properties[0];
+				value = properties[1];
+				persistent = null;
+			}
 			
-			_agent.PerceivePropertyChanged("*",subject, properties[0], properties[1]);
+			_agent.PerceivePropertyChanged(persistent,"*",subject, name, value);
 			AgentLogger.GetInstance().log("Look-At:" + subject + " " + properties[0] + " " + properties[1]);
 		}
 		//Signals a lookat event to the Agent

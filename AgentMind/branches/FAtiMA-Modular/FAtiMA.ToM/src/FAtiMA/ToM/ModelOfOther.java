@@ -276,11 +276,11 @@ public class ModelOfOther implements AgentModel, Serializable {
 		}
 	}
 	
-	public void propertyChangedPerception(String ToM, Name propertyName, String value)
+	public void propertyChangedPerception(Boolean persistent, String ToM, Name propertyName, String value)
 	{
 		for(IAdvancedPerceptionsComponent c : _perceptionComponents)
 		{
-			c.propertyChangedPerception(this,ToM, propertyName, value);
+			c.propertyChangedPerception(this,persistent,ToM, propertyName, value);
 		}
 	}
 }
