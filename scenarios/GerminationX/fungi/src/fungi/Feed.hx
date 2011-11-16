@@ -38,6 +38,8 @@ class Feed
     var NoteFrames:Array<Frame>;
     var NotesRead:Array<String>;
 
+    var BuiltText:Bool;
+
     public function new(w:World)
     {
         Blocks = [];
@@ -51,6 +53,7 @@ class Feed
         NoteActive=false;
         NoteFrames=[];
         NotesRead=[];
+        BuiltText=false;
 
         EmotionIndices={LOVE:0,HATE:1,HOPE:2,FEAR:3,SATISFACTION:4,
                         RELIEF:5,FEARS_CONFIRMED:6,DISAPOINTMENT:7,
@@ -68,12 +71,12 @@ class Feed
         Info.InitTextures(GUIFrameTextures.Get(),Rnd);
         w.AddSprite(Info);
 
-        PickPower = new Sprite(new Vec2(340,50),Resources.Get("pp05"),false,false);
+        PickPower = new Sprite(new Vec2(340,54),Resources.Get("pp05"),false,false);
         PickPower.Colour=new Vec3(1,0,0);
         w.AddSprite(PickPower);
         PickPower.Update(0,null); // make the colour take effect
 
-        Flowered = new Sprite(new Vec2(395,50),Resources.Get("flowered-cover-00"),false,false);
+        Flowered = new Sprite(new Vec2(395,54),Resources.Get("flowered-cover-00"),false,false);
         Flowered.Colour=new Vec3(1,0,0);
         w.AddSprite(Flowered);
         Flowered.Update(0,null);
@@ -230,8 +233,24 @@ class Feed
                 Resources.Get("flowered-"+
                              GetLayerName(w.PlayerInfo.layer)+
                              "-"+ Flowers));
-                
-            Info.UpdateText(Std.string(w.PlayerInfo.layer));
+            Info.UpdateText("");
+
+            if (!BuiltText)
+            {
+                var TextField = new flash.text.TextField();
+                TextField.text = "Fruit Store                                                 Pick Power     Flowered";
+                TextField.x=125;
+                TextField.y=16;
+                TextField.width=300;
+                TextField.background = false;                
+                var t = new flash.text.TextFormat();
+                t.font = "Verdana"; 
+                t.size = 8;                
+                t.color= 0x000000;    
+                TextField.setTextFormat(t);
+                BuiltText=true;
+                w.addChild(TextField);
+            }
 
 /*            Info.UpdateText(
                 "Hello "+ w.MyName+" it is "+w.Season+", your layer is currently "+
