@@ -40,6 +40,7 @@
  * Matthias Keysermann: 09/03/2011 - Added (reference to) activation value 
  * Matthias Keysermann: 15/03/2011 - Added retrieval queue to toXML()
  * Matthias Keysermann: 15/03/2011 - Added activation value to toXML()
+ * Matthias Keysermann: 18/11/2011 - Added getValueByName() to retrieve a value by an attribute name
  */
 package FAtiMA.Core.memory.episodicMemory;
 
@@ -50,7 +51,6 @@ import java.util.ListIterator;
 
 import FAtiMA.Core.emotionalState.ActiveEmotion;
 import FAtiMA.Core.emotionalState.BaseEmotion;
-import FAtiMA.Core.emotionalState.EmotionalState;
 import FAtiMA.Core.emotionalState.NeutralEmotion;
 import FAtiMA.Core.memory.Memory;
 import FAtiMA.Core.memory.semanticMemory.KnowledgeSlot;
@@ -101,7 +101,6 @@ public class ActionDetail implements Serializable {
 	private ActivationValue _activationValue;
 
 	public ActionDetail(Memory m, int ID, Event e, String location) {
-		Parameter p;
 
 		this._memory = m;
 
@@ -141,9 +140,7 @@ public class ActionDetail implements Serializable {
 	/*
 	 * Meiyii 22/12/10 Called during loading
 	 */
-	public ActionDetail(Memory m, int ID, String subject, Short eType,
-			String event, String status, String target, String location,
-			float desirability, float praiseworthiness) {
+	public ActionDetail(Memory m, int ID, String subject, Short eType, String event, String status, String target, String location, float desirability, float praiseworthiness) {
 		this._memory = m;
 
 		this._id = ID;
@@ -168,9 +165,7 @@ public class ActionDetail implements Serializable {
 		this._activationValue = new ActivationValue(this._id);
 	}
 
-	public ActionDetail(int ID, String subject, String action, String target,
-			ArrayList<Parameter> parameters, Time time, String location,
-			BaseEmotion emotion) {
+	public ActionDetail(int ID, String subject, String action, String target, ArrayList<Parameter> parameters, Time time, String location, BaseEmotion emotion) {
 		this._id = ID;
 
 		this._subject = subject;
@@ -263,8 +258,7 @@ public class ActionDetail implements Serializable {
 	public Object getSubjectDetails(String property) {
 		KnowledgeSlot aux = null;
 		if (this._subject != null) {
-			aux = _memory.getSemanticMemory().GetObjectProperty(_subject,
-					property);
+			aux = _memory.getSemanticMemory().GetObjectProperty(_subject, property);
 			if (aux != null)
 				return aux.getValue();
 		}
@@ -274,8 +268,7 @@ public class ActionDetail implements Serializable {
 	public Object getTargetDetails(String property) {
 		KnowledgeSlot aux = null;
 		if (this._target != null) {
-			aux = _memory.getSemanticMemory().GetObjectProperty(_target,
-					property);
+			aux = _memory.getSemanticMemory().GetObjectProperty(_target, property);
 			if (aux != null)
 				return aux.getValue();
 		}
@@ -285,8 +278,7 @@ public class ActionDetail implements Serializable {
 	public Object getObjectDetails(String property) {
 		KnowledgeSlot aux = null;
 		if (this._object != null) {
-			aux = _memory.getSemanticMemory().GetObjectProperty(_object,
-					property);
+			aux = _memory.getSemanticMemory().GetObjectProperty(_object, property);
 			if (aux != null)
 				return aux.getValue();
 		}
@@ -363,8 +355,7 @@ public class ActionDetail implements Serializable {
 		for (Time timeRetrieval : retrievalTimes) {
 
 			// calculate time difference
-			long timeDifference = timeCalculated.getNarrativeTime()
-					- timeRetrieval.getNarrativeTime();
+			long timeDifference = timeCalculated.getNarrativeTime() - timeRetrieval.getNarrativeTime();
 
 			// DEBUG
 			// System.out.println("  time difference is " + timeDifference);
@@ -435,8 +426,7 @@ public class ActionDetail implements Serializable {
 		}
 		if (this._parameters != null) {
 			if (e.GetParameters() != null) {
-				if (!this._parameters.toString().equals(
-						e.GetParameters().toString())) {
+				if (!this._parameters.toString().equals(e.GetParameters().toString())) {
 					return false;
 				}
 			} else
@@ -549,8 +539,7 @@ public class ActionDetail implements Serializable {
 		}
 		if (this._parameters != null) {
 			if (action._parameters != null) {
-				if (!this._parameters.toString().equals(
-						action._parameters.toString())) {
+				if (!this._parameters.toString().equals(action._parameters.toString())) {
 					return false;
 				}
 			} else
@@ -562,25 +551,55 @@ public class ActionDetail implements Serializable {
 		return true;
 	}
 
+	public Object getValueByName(String name) {
+		Object value = null;
+
+		if (name.equals("subject")) {
+			value = getSubject();
+		} else if (name.equals("action")) {
+			value = getAction();
+		} else if (name.equals("target")) {
+			value = getTarget();
+		} else if (name.equals("object")) {
+			value = getObject();
+		} else if (name.equals("location")) {
+			value = getLocation();
+		} else if (name.equals("intention")) {
+			value = getIntention();
+		} else if (name.equals("status")) {
+			value = getStatus();
+		} else if (name.equals("emotion")) {
+			value = getEmotion();
+		} else if (name.equals("speechActMeaning")) {
+			value = getSpeechActMeaning();
+		} else if (name.equals("multimediaPath")) {
+			value = getMultimediaPath();
+		} else if (name.equals("praiseworthiness")) {
+			value = getPraiseworthiness();
+		} else if (name.equals("desirability")) {
+			value = getDesirability();
+		} else if (name.equals("time")) {
+			value = getTime();
+		}
+
+		return value;
+	}
+
 	public String toXML() {
 		String action = "<Event>";
 		action += "<EventID>" + this.getID() + "</EventID>";
-		action += "<Emotion>" + this.getEmotion().getType() + " "
-				+ this.getEmotion().GetPotential() + "</Emotion>";
+		action += "<Emotion>" + this.getEmotion().getType() + " " + this.getEmotion().GetPotential() + "</Emotion>";
 		action += "<Subject>" + this.getSubject() + "</Subject>";
 		action += "<Intention>" + this.getIntention() + "</Intention>";
 		action += "<Status>" + this.getStatus() + "</Status>";
 		action += "<Action>" + this.getAction() + "</Action>";
 		action += "<Target>" + this.getTarget() + "</Target>";
 		action += "<Parameters>" + this.getParameters() + "</Parameters>";
-		action += "<SpeechActMeaning>" + this.getSpeechActMeaning()
-				+ "</SpeechActMeaning>";
-		action += "<MultimediaPath>" + this.getMultimediaPath()
-				+ "</MultimediaPath>";
+		action += "<SpeechActMeaning>" + this.getSpeechActMeaning() + "</SpeechActMeaning>";
+		action += "<MultimediaPath>" + this.getMultimediaPath() + "</MultimediaPath>";
 		action += "<Object>" + this.getObject() + "</Object>";
 		action += "<Desirability>" + this.getDesirability() + "</Desirability>";
-		action += "<Praiseworthiness>" + this.getPraiseworthiness()
-				+ "</Praiseworthiness>";
+		action += "<Praiseworthiness>" + this.getPraiseworthiness() + "</Praiseworthiness>";
 		action += "<Time>" + this.getTime().getRealTime() + "</Time>";
 		action += "<Location>" + this.getLocation() + "</Location>";
 		action += "</Event>\n";
