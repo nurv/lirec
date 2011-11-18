@@ -272,9 +272,9 @@ public class WorkingMemory implements Serializable {
 				} 
 			}
 			
+			aux.setPersistent(persistent);
 			if(aux.getValue() == null || !aux.getValue().equals(value))
 			{
-				aux.setPersistent(persistent);
 				aux.setValue(value);
 				_newKnowledge = true;
 				//KnowledgeSlot ksAux = new KnowledgeSlot(property.toString());
@@ -286,7 +286,6 @@ public class WorkingMemory implements Serializable {
 			
 			if(newProperty)
 			{	
-				aux.setPersistent(persistent);
 			 	_factList.add(aux);
 				_changeList.add(aux); // new info				
 				//System.out.println("New property knowledge: " + ks.toString());
