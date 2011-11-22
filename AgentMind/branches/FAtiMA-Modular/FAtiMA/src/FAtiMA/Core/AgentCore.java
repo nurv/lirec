@@ -476,70 +476,6 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 		}
 	}
 
-
-	@SuppressWarnings("unchecked")
-	public void LoadAgentState(String fileName) throws IOException, ClassNotFoundException {
-		
-		FileInputStream in = new FileInputStream(fileName);
-		ObjectInputStream s = new ObjectInputStream(in);
-	
-		this._emotionalState = (EmotionalState) s.readObject();
-		this._memory = (Memory) s.readObject();
-		// we need to recreate the memory writer because it holds a reference to the memory object
-		this._memoryWriter = new MemoryWriter(this._memory);
-		this._goalLibrary = (GoalLibrary) s.readObject();
-		this._actionLibrary = (ActionLibrary) s.readObject();
-		//this._dialogManager = (DialogManager) s.readObject();
-		this._role = (String) s.readObject();
-		this._name = (String) s.readObject();
-		this._sex = (String) s.readObject();
-		this._speechAct = (SpeechAct) s.readObject();
-		this._currentEmotion = ((String) s.readObject());
-		this._displayName = (String) s.readObject();
-		this._showStateWindow = ((Boolean) s.readObject()).booleanValue();
-		this._actionsForExecution = (ArrayList<ValuedAction>) s.readObject();
-		this._perceivedActions = (ArrayList<Event>) s.readObject();
-		this._actionsForExecution = (ArrayList<ValuedAction>) s.readObject();
-		this._perceivedActions = (ArrayList<Event>) s.readObject();
-		this._perceivedActionFailures = (ArrayList<Event>) s.readObject();
-		this._perceivedLookAts = (ArrayList<LookAtPerception>) s.readObject();
-		this._perceivedEntitiesRemoved = (ArrayList<EntityRemovedPerception>) s.readObject();
-		this._perceivedProperties = (ArrayList<PropertyPerception>) s.readObject();
-		this._perceivedPropertiesRemoved = (ArrayList<PropertyRemovedPerception>) s.readObject();
-			
-		this._saveDirectory = (String) s.readObject();
-		
-		Object stratObject = s.readObject();
-		if (stratObject instanceof IGetModelStrategy)
-		{
-			this._strat = (IGetModelStrategy) stratObject;
-		}
-		else 
-		{	
-			if (stratObject instanceof String)
-			{
-				String stratObjectStr = (String) stratObject;
-				if (stratObjectStr.equals("SELF")) this._strat = this;
-			}
-		}
-		 
-		this._generalComponents = (HashMap<String,IComponent>) s.readObject();
-		this._processEmotionComponents = (ArrayList<IProcessEmotionComponent>) s.readObject();
-		this._behaviourComponents = (ArrayList<IBehaviourComponent>) s.readObject();
-		this._modelOfOtherComponents = (ArrayList<IModelOfOtherComponent>) s.readObject();
-		this._processExternalRequestComponents = (ArrayList<IProcessExternalRequestComponent>) s.readObject();
-		this._processPerceptionsComponents = (ArrayList<IAdvancedPerceptionsComponent>) s.readObject();
-		this._affectDerivationComponents = (ArrayList<IAffectDerivationComponent>) s.readObject();
-		this._appraisalComponents = (ArrayList<IAppraisalDerivationComponent>) s.readObject();
-		
-		s.close();
-		in.close();
-
-		AgentSimulationTime.LoadState(fileName+"-Timer.dat");
-
-		//_remoteAgent.LoadState(fileName+"-RemoteAgent.dat");
-	}
-
 	/**
 	 * Perceives a given event from the virtual world
 	 * @param e - the Event to perceive
@@ -1152,6 +1088,71 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
+	public void LoadAgentState(String fileName) throws IOException, ClassNotFoundException {
+		
+		FileInputStream in = new FileInputStream(fileName);
+		ObjectInputStream s = new ObjectInputStream(in);
+	
+		this._emotionalState = (EmotionalState) s.readObject();
+		this._memory = (Memory) s.readObject();
+		// we need to recreate the memory writer because it holds a reference to the memory object
+		this._memoryWriter = new MemoryWriter(this._memory);
+		// we also want to delete all non-persistent facts from the KB
+		//this._memory.getSemanticMemory().removeNonPersistent();
+		
+		this._goalLibrary = (GoalLibrary) s.readObject();
+		this._actionLibrary = (ActionLibrary) s.readObject();
+		//this._dialogManager = (DialogManager) s.readObject();
+		this._role = (String) s.readObject();
+		this._name = (String) s.readObject();
+		this._sex = (String) s.readObject();
+		this._speechAct = (SpeechAct) s.readObject();
+		this._currentEmotion = ((String) s.readObject());
+		this._displayName = (String) s.readObject();
+		this._showStateWindow = ((Boolean) s.readObject()).booleanValue();
+		this._actionsForExecution = (ArrayList<ValuedAction>) s.readObject();
+		this._perceivedActions = (ArrayList<Event>) s.readObject();
+		this._perceivedActionFailures = (ArrayList<Event>) s.readObject();
+		this._perceivedLookAts = (ArrayList<LookAtPerception>) s.readObject();
+		this._perceivedEntitiesRemoved = (ArrayList<EntityRemovedPerception>) s.readObject();
+		this._perceivedProperties = (ArrayList<PropertyPerception>) s.readObject();
+		this._perceivedPropertiesRemoved = (ArrayList<PropertyRemovedPerception>) s.readObject();
+			
+		this._saveDirectory = (String) s.readObject();
+		
+		Object stratObject = s.readObject();
+		if (stratObject instanceof IGetModelStrategy)
+		{
+			this._strat = (IGetModelStrategy) stratObject;
+		}
+		else 
+		{	
+			if (stratObject instanceof String)
+			{
+				String stratObjectStr = (String) stratObject;
+				if (stratObjectStr.equals("SELF")) this._strat = this;
+			}
+		}
+		 
+		this._generalComponents = (HashMap<String,IComponent>) s.readObject();
+		this._processEmotionComponents = (ArrayList<IProcessEmotionComponent>) s.readObject();
+		this._behaviourComponents = (ArrayList<IBehaviourComponent>) s.readObject();
+		this._modelOfOtherComponents = (ArrayList<IModelOfOtherComponent>) s.readObject();
+		this._processExternalRequestComponents = (ArrayList<IProcessExternalRequestComponent>) s.readObject();
+		this._processPerceptionsComponents = (ArrayList<IAdvancedPerceptionsComponent>) s.readObject();
+		this._affectDerivationComponents = (ArrayList<IAffectDerivationComponent>) s.readObject();
+		this._appraisalComponents = (ArrayList<IAppraisalDerivationComponent>) s.readObject();
+		
+		s.close();
+		in.close();
+
+		AgentSimulationTime.LoadState(fileName+"-Timer.dat");
+
+		//_remoteAgent.LoadState(fileName+"-RemoteAgent.dat");
+	}
+	
+	
 	/**
 	 * Gets the gender of the agent
 	 * @return the agent's sex
@@ -1262,6 +1263,7 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 
 	/** sets the internal state of the agent to the state which is contained
 	 *  in the passed string */
+	@SuppressWarnings("unchecked")
 	public void setSerializedState(String state) 
 	{
 		try
@@ -1274,6 +1276,8 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 			this._memory = (Memory) s.readObject();
 			// we need to recreate the memory writer because it holds a reference to the memory object
 			this._memoryWriter = new MemoryWriter(this._memory);
+			// we also want to delete all non-persistent facts from the KB
+			this._memory.getSemanticMemory().removeNonPersistent();
 			this._goalLibrary = (GoalLibrary) s.readObject();
 			this._actionLibrary = (ActionLibrary) s.readObject();
 			//this._dialogManager = (DialogManager) s.readObject();
