@@ -20,7 +20,7 @@ import truffle.RndGen;
 import truffle.Vec2;
 import truffle.Vec3;
 
-class Feed
+class GUI
 {
     var Blocks:Array<Frame>;
     var Icons:Array<Sprite>;
@@ -30,8 +30,7 @@ class Feed
     var TopItem:Dynamic;
     var StrMkr:StringMaker;
     var EmotionIndices:Dynamic;
-    var Fruit:Array<Dynamic>;
-    var FruitSprites:Array<Sprite>;
+    public var Store:FruitStore;
     var PickPower:Sprite;
     var Flowered:Sprite;
     var NoteActive:Bool;
@@ -48,8 +47,7 @@ class Feed
         Rnd=new RndGen();
         TopItem={};
         StrMkr=new StringMaker();
-        Fruit=[];
-        FruitSprites=[];
+        Store=new FruitStore();
         NoteActive=false;
         NoteFrames=[];
         NotesRead=[];
@@ -130,16 +128,6 @@ class Feed
         return true;
     }
 
-    function FruitEq(a:Array<Dynamic>, b:Array<Dynamic>) : Bool
-    {
-        if (a.length!=b.length) return false;
-        for (i in 0...a.length)
-        {
-            if (a[i].id!=b[i].id) return false;
-        }
-        return true;
-    }
-
     function GetLayerName(n:Int)
     {
         switch(n) {
@@ -180,13 +168,13 @@ class Feed
                              "0", // take index from button
                              c,function (c,data) {});
 
-            var Feed=cast(c,Feed);
-            for (f in Feed.NoteFrames) 
+            var GUI=cast(c,GUI);
+            for (f in GUI.NoteFrames) 
             {
                 w.RemoveSprite(f);
             }
-            Feed.NoteFrames=[];
-            Feed.NoteActive=false;
+            GUI.NoteFrames=[];
+            GUI.NoteActive=false;
         });
     }
 
@@ -246,7 +234,7 @@ class Feed
                 var t = new flash.text.TextFormat();
                 t.font = "Verdana"; 
                 t.size = 8;                
-                t.color= 0x000000;    
+                t.color= 0x000000;     
                 TextField.setTextFormat(t);
                 BuiltText=true;
                 w.addChild(TextField);
@@ -264,39 +252,13 @@ class Feed
             
             var fruit:Array<Dynamic>=w.PlayerInfo.seeds;
             fruit.reverse();
-            if (!FruitEq(Fruit,fruit))
-            {
-                Fruit=fruit;
-                for (s in FruitSprites) w.RemoveSprite(s);
-                FruitSprites=[];
-                
-                var Pos=new Vec2(140,50);
-                for (f in Fruit)
-                {
-                    var feed=this;
-                    var s=new Sprite(Pos,Resources.Get(f.type+"-fruit-c"));
-                    var ppx=Pos.x; // things you need to do when
-                    var ppy=Pos.y; // closure captures refs :(
-                    s.MouseDown(w,function(c)
-                                {
-                                    var ns = new Seed(new Vec2(ppx,ppy),f.type,f.id);
-                                    ns.ChangeState("fruit-c");
-                                    c.RemoveSprite(s);
-                                    feed.FruitSprites.remove(s);
-                                    c.Seeds.Add(cast(c,World),ns);
-                                    c.AddSprite(ns.Spr);
-                                    c.SortScene();
-                                });
-                    Pos.x+=30;
-                    FruitSprites.push(s);
-                    w.AddSprite(s);
-                }
-            }
+            Store.UpdateFruit(w,fruit);
         }
     }
 
     static function IsGift(code:String) : Bool
     {
+        // should match codes in game-world-process-msg
         return (code == "your_plant_doesnt_like" ||
                 code == "i_am_detrimented_by" ||
                 code == "i_am_detrimental_to" ||
@@ -333,7 +295,7 @@ class Feed
 
         // goto sender on click
         f.MouseDown(this,function(c){
-            if (!w.Seeds.Carrying())
+            if (!c.Store.Carrying())
             {
                 w.SetWorldPos(new Vec3(i.tile.x,i.tile.y,0),
                               new Vec2(i.pos.x,i.pos.y));
@@ -345,14 +307,15 @@ class Feed
         f.MouseOut(this,function(c){
             w.UnHighlight();
         });
-        
+
+        // don't have owner id for recipients of plant messages :(
         if (i.type=="spirit")
         {
             var ToolTip=null;
             var x=pos.x;
             var y=pos.y;
             f.MouseOver(this,function(c){
-                if (w.Seeds.Carrying())
+                if (c.Store.Carrying())
                 {
                     if (IsGift(i.code))
                     {
@@ -376,9 +339,9 @@ class Feed
             });
 
             f.MouseUp(this,function(c){
-                if (w.Seeds.Carrying())
+                if (c.Store.Carrying())
                 {
-                    var Fruit=w.Seeds.Remove(w);
+                    var Fruit=c.Store.Drop(w);
                     if (IsGift(i.code))
                     {
                         w.Server.Request("gift/"+

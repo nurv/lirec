@@ -30,7 +30,7 @@ class Plant extends SpriteEntity
     var Scale:Float;
     var PlantType:String;
     public var State:String;
-    var Seeds:Array<Seed>;
+    var Fruits:Array<Fruit>;
     var Layer:String;
     var Star:Sprite;
     var Owned:Bool;
@@ -69,7 +69,7 @@ class Plant extends SpriteEntity
 		Owner=Std.parseInt(Reflect.field(plant,"owner-id"));
         PlantScale=0;
         //NeedsUpdate=true;
-        Seeds=[];
+        Fruits=[];
         Layer=plant.layer;
         Owned=false;
         Spr.Hide(false);
@@ -111,9 +111,9 @@ class Plant extends SpriteEntity
                 plant.state=="fruit-b" ||
                 plant.state=="fruit-c")
             {
-                for (s in Seeds)
+                for (f in Fruits)
                 {
-                    s.ChangeState(plant.state);
+                    f.ChangeState(plant.state);
                 }
             };
             // display stars next to plants owned by the player
@@ -127,8 +127,8 @@ class Plant extends SpriteEntity
             }
         }
 
-        // see if any seeds have been picked or arrived
-        var FruitDiff = Std.parseInt(plant.fruit)-Seeds.length;
+        // see if any fruit have been picked or arrived
+        var FruitDiff = Std.parseInt(plant.fruit)-Fruits.length;
         if (FruitDiff!=0)
         {
             if (FruitDiff>0)
@@ -145,9 +145,9 @@ class Plant extends SpriteEntity
     override function Destroy(world:World)
     {
         super.Destroy(world);
-        for (seed in Seeds)
+        for (fruit in Fruits)
         {
-            world.RemoveSprite(seed.Spr);
+            world.RemoveSprite(fruit.Spr);
         }
         if (Owned) world.RemoveSprite(Star);
     }
@@ -155,9 +155,9 @@ class Plant extends SpriteEntity
 	public override function Update(frame:Int, world:World)
 	{
 		super.Update(frame,world);
-        for (seed in Seeds)
+        for (fruit in Fruits)
         {
-            seed.Spr.Update(frame,Spr.Transform);
+            fruit.Spr.Update(frame,Spr.Transform);
         }
         
         if (Owned) Star.Update(frame,Spr.Transform);
@@ -166,9 +166,9 @@ class Plant extends SpriteEntity
     override function OnSortScene(world:World, order:Int) : Int
     {
         Spr.SetDepth(order++);
-        for (seed in Seeds)
+        for (fruit in Fruits)
         {
-            world.setChildIndex(seed.Spr,order++);
+            world.setChildIndex(fruit.Spr,order++);
         }        
         if (Owned) Star.SetDepth(order++);
         return order;
@@ -178,18 +178,18 @@ class Plant extends SpriteEntity
     {
         var Pos:Vec2=Reflect.field(CentrePositions,PlantType)
             .Add(Rnd.RndCircleVec2().Mul(32));
-        var Fruit=new Seed(Pos,PlantType,0);
-        world.AddSprite(Fruit.Spr);
-        Seeds.push(Fruit);
+        var NewFruit=new Fruit(Pos,PlantType,0);
+        world.AddSprite(NewFruit.Spr);
+        Fruits.push(NewFruit);
         Update(0,world);
-        Fruit.Spr.MouseDown(this,function(p) 
+        NewFruit.Spr.MouseDown(this,function(p) 
         {            
-            if (world.MyName!="" && Fruit.State=="fruit-c")
+            if (world.MyName!="" && world.CanPick() /*&& Fruit.State=="fruit-c"*/)
             {
                 // arsing around with the sprites to get
                 // better feedback for the player
-                p.Seeds.remove(Fruit);
-                world.RemoveSprite(Fruit.Spr);
+                p.Fruits.remove(NewFruit);
+                world.RemoveSprite(NewFruit.Spr);
 
                 // get the server tile
                 var ServerTileWidth:Int=5;
@@ -223,11 +223,11 @@ class Plant extends SpriteEntity
 
     function Unfruit(world:World)
     {
-        if (Seeds.length>0)
+        if (Fruits.length>0)
         {
-            var seed:Seed=Rnd.Choose(Seeds);
-            world.RemoveSprite(seed.Spr);
-            Seeds.remove(seed);        
+            var f:Fruit=Rnd.Choose(Fruits);
+            world.RemoveSprite(f.Spr);
+            Fruits.remove(f);        
         }
     }
 }

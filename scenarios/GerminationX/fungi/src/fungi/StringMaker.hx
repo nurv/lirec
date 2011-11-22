@@ -131,6 +131,14 @@ class StringMaker
             i_have_flowered: function(from,to,owner,extra:Array<Dynamic>)
             {
                 return to+", your "+from+" plant has flowered for the first time, and your score has increased!";
+            },
+            gift_received: function(from,to,owner,extra:Array<Dynamic>)
+            {
+                return extra[0]+", you have been given a "+extra[2]+" fruit by "+extra[1]+"!";
+            },
+            gift_sent: function(from,to,owner,extra:Array<Dynamic>)
+            {
+                return extra[0]+", you have given a "+extra[2]+" fruit to "+extra[1]+"!";
             }
         };
 

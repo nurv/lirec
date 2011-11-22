@@ -42,11 +42,10 @@ class FungiWorld extends World
     var TickTime:Int;
     var PerceiveTime:Int;
     var Spirits:Array<Spirit>;
-    public var Seeds:SeedStore;
     var Server:ServerConnection;
     var Spiral:Sprite;
     var SpiralScale:Float;
-    var NewsFeed:Feed;
+    var GameGUI:GUI;
     public var NumPlants:Int;
     public var Season:String;
     public var PlayerInfo:Dynamic;
@@ -65,7 +64,6 @@ class FungiWorld extends World
         Objs = [];
         Spirits = [];
         SpiralScale=0;
-        Seeds = new SeedStore(1);
 		WorldPos = new Vec3(0,0,0);
 		MyRndGen = new RndGen();
         Server = new ServerConnection();
@@ -77,16 +75,24 @@ class FungiWorld extends World
         LogicalCameraPos=new Vec2(0,0);
 
         GUIFrameTextures.Init();
+
+        // drop seeds if they are not on tiles...
+        MouseUp(this,function(c) {
+            if (c.GameGUI.Store.Carrying())
+            {
+                c.GameGUI.Store.DropError();
+            }
+        });
         
 		for (y in 0...h)
 		{
 			for (x in 0...w)
 			{
 				var ob:Cube = new Cube(this,new Vec3(0,0,0));
-             
+                
                 ob.Spr.MouseUp(this,function(c)
                 {
-                    if (c.Seeds.Carrying())
+                    if (c.GameGUI.Store.Carrying())
                     {
                         // look for a plant here already
                         // - done on the server, but need to do it
@@ -95,16 +101,20 @@ class FungiWorld extends World
                                       new Vec2(ob.LogicalPos.x,
                                                ob.LogicalPos.y));
                         
-                        if (e==null)
+                        if (e==null) // make sure the space is empty
                         {
-                            var Seed=c.Seeds.Remove(cast(c,truffle.World));
-                            if (Seed!=null)
+                            var f=c.GameGUI.Store.Drop(cast(c,truffle.World));
+                            if (f!=null)
                             {
                                 c.SpiralScale=1;
                                 c.Spiral.SetPos(new Vec2(ob.Pos.x,ob.Pos.y-128));
                                 c.AddServerPlant(ob.LogicalPos.Add(new Vec3(0,0,1)),
-                                                 Seed.Type,Seed.ID);
+                                                 f.Type,f.ID);
                             }
+                        }
+                        else // planting didn't work
+                        {
+                            c.GameGUI.Store.DropError();
                         }
                     }
                 });
@@ -114,7 +124,7 @@ class FungiWorld extends World
 
 		UpdateWorld(new Vec3(0,0,0));
 		
-        NewsFeed = new Feed(this);
+        GameGUI = new GUI(this);
 		MyTextEntry=new TextEntry(150,50,250,20,NameCallback);
 		addChild(MyTextEntry);	
 
@@ -169,7 +179,7 @@ class FungiWorld extends World
         addChild(arrow4);
 
         var c=this;
-        MouseMove(this, function(e) { c.Seeds.Update(e.stageX,e.stageY); });
+        MouseMove(this, function(e) { c.GameGUI.Store.UpdateCarrying(e.stageX,e.stageY); });
 
         HighlightEntity = new SpriteEntity(this,new Vec3(0,0,0), Resources.Get("arr1"),false);
         Add(HighlightEntity);
@@ -205,6 +215,12 @@ class FungiWorld extends World
     public function UnHighlight()
     {
         HighlightEntity.Hide(true);
+    }
+
+    public function CanPick()
+    {
+        return Reflect.field(PlayerInfo,"seeds-left")>0 &&
+            PlayerInfo.seeds.length<5;
     }
 
     function MoveWorld(dir)
@@ -359,7 +375,7 @@ class FungiWorld extends World
 
     override public function PostSortScene(depth:Int)
     {
-        Seeds.SortScene(depth);
+        GameGUI.Store.SortScene(depth);
     }
 
     public function ClearPlants() : Void
@@ -497,7 +513,9 @@ class FungiWorld extends World
 
         Server.Update();
         TheCritters.Update();
-
+        // for the drag drop pingback
+        GameGUI.Store.Update(this);
+ 
         if (SpiralScale>0.1)
         {
             Spiral.Hide(false);
@@ -521,7 +539,10 @@ class FungiWorld extends World
                                if (c.MyName!="") 
                                {
                                    c.PlayerInfo=d.player;
-                                   c.NewsFeed.Update(cast(c,World),d.player.log);
+                                   if (d.player.log!=null)
+                                   {
+                                       c.GameGUI.Update(cast(c,World),d.player.log);
+                                   }
                                }
                                c.UpdateGhosts(d.spirits);
                            });
@@ -529,7 +550,7 @@ class FungiWorld extends World
             if (MyName=="")
             {
                 Server.Request("get-msgs/"+Std.string(MyID),this,
-                               function(c,d){c.NewsFeed.UpdateMsgs(cast(c,World),d);});
+                               function(c,d){c.GameGUI.UpdateMsgs(cast(c,World),d);});
             }
 
 /*            if (MyName=="")
@@ -557,7 +578,7 @@ class FungiWorld extends World
                 };
             }*/
             
-            TickTime=time+200;
+            TickTime=time+100;
         }
     }
 
