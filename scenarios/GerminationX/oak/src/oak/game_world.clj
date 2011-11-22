@@ -218,12 +218,16 @@
                    (= (:code msg) :i_am_beneficial_to)
                    (= (:code msg) :needs_help)
                    (= (:code msg) :ive_asked_x_for_help)
+                   (= (:code msg) :gift_sent) ; this msgs doesn't get here as sent by core
+                   (= (:code msg) :gift_received) ; this msgs doesn't get here as sent by core
                    ;(= (:code msg) :thanks_for_helping)
                    )
-                (cons ; add the id to the start of the list
-                 (game-world-id->player-name
-                  game-world (first (:extra msg)))
-                 (:extra msg))
+                (do
+                  (println "fixup for" (:code msg))
+                  (cons ; add the name to the start of the list
+                   (game-world-id->player-name
+                    game-world (first (:extra msg)))
+                   (:extra msg)))
                 (:extra msg))]    
     (cond
      (= (:type msg) "plant")

@@ -36,7 +36,7 @@
 
 (defn make-spirit-msg [code spirit for-player-id tile pos extra]
   (hash-map
-   :type "spirit"                     ; it:s from a spirit         
+   :type "spirit"                    ; it's from a spirit         
    :time (current-time)              ; when the message was sent (not used)
    :player for-player-id             ; for getting to right player
    :display "none"                   ; *** will be replaced by name

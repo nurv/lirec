@@ -95,6 +95,13 @@
    false
    (:seeds player)))
 
+(defn player-add-msg [player msg]
+  (modify
+   :log
+   (fn [log]
+     (log-add-msg log msg))
+   player))
+
 (defn player-update-seeds
   "update the player's seed picking ability"
   [player]
@@ -166,7 +173,7 @@
    :log 
    (fn [log]
      (reduce
-      (fn [log new-fp]
+     (fn [log new-fp]
         ; rename the message code
         (log-add-msg
          log (merge new-fp {:code "i_have_flowered"})))

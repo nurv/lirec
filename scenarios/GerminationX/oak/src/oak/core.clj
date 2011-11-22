@@ -57,8 +57,8 @@
 ; ****************************************************************
 ; Uncomment the two lines below and run once to create a new world
 ; ****************************************************************
-(def my-game-world (ref (make-game-world 100 1)))
-(game-world-db-build! (sym-replace2 (deref my-game-world)))
+;(def my-game-world (ref (make-game-world 100 1)))
+;(game-world-db-build! (sym-replace2 (deref my-game-world)))
 
 (def my-game-world (ref (make-empty-game-world)))
 
@@ -242,36 +242,54 @@
        [player-id fruit-id receiver-id iefix]
        (let [player-id (parse-number player-id)
              fruit-id (parse-number fruit-id)
-             receiver-id (parse-number receiver-id)]
-         (append-spit
-          log-filename
-          (str (Date.) " " (game-world-id->player-name
-                            (deref my-game-world) player-id)
-               " is giving a fruit to "
-               (game-world-id->player-name
-                (deref my-game-world) receiver-id) "\n"))
-         (dosync
-          (let [fruit (player-get-fruit
-                       (game-world-find-player
+             receiver-id (parse-number receiver-id)
+             tile (make-vec2 0 0) ; (for the messages) doesn't make sense in this context
+             pos (make-vec2 0 0) ; hmmm
+             sender (game-world-find-player
                         (deref my-game-world)
                         player-id)
-                       fruit-id)]
+             receiver (game-world-find-player
+                        (deref my-game-world)
+                        receiver-id)]
+         (append-spit
+          log-filename
+          (str (Date.) " " (:name sender) " is giving a fruit to " (:name receiver) "\n"))
+         (dosync
+          (let [fruit (player-get-fruit sender fruit-id)]
             (if fruit
               (do
-                (println receiver-id)
+                ; this is ridiculous
                 (ref-set my-game-world
-                         (game-world-modify-player
-                          (game-world-modify-player
+                         (game-world-modify-player ; modify the sender
+                          (game-world-modify-player ; modify the receiver
                            (deref my-game-world) receiver-id
                            (fn [player]
                              (modify
                               :seeds
                               (fn [fruits]
                                 (max-cons fruit fruits max-player-fruit))
-                              player)))
+                              (player-add-msg ; add the recieved message
+                               player
+                               (make-spirit-msg ; make the message
+                                :gift_received ; this message doesn't get processed
+                                (game-world-find-spirit
+                                 (deref my-game-world)
+                                 (layer->spirit-name (:layer fruit)))
+                                receiver-id tile pos (list (:name receiver)
+                                                           (:name sender) (:type fruit)))))))
                           player-id
                           (fn [player]
-                            (player-remove-fruit player fruit-id))))
+                            (player-remove-fruit
+                             (player-add-msg ; add the sent message
+                              player
+                              (make-spirit-msg ; make the message
+                               :gift_sent ; this message doesn't get processed
+                               (game-world-find-spirit
+                                (deref my-game-world)
+                                (layer->spirit-name (:layer fruit)))
+                               player-id tile pos (list (:name sender)
+                                                        (:name receiver) (:type fruit))))
+                             fruit-id))))
                 (json '("ok")))
               (json '("fail")))))))
 
