@@ -189,7 +189,11 @@ class Plant extends SpriteEntity
                 // arsing around with the sprites to get
                 // better feedback for the player
                 p.Fruits.remove(NewFruit);
-                world.RemoveSprite(NewFruit.Spr);
+                // correct from local to screen coords
+                NewFruit.Spr.Pos=NewFruit.Spr.Pos.Add(
+                    new Vec2(p.Pos.x,p.Pos.y));
+                // pass it to the fruit store
+                world.GameGUI.Store.Pick(world,NewFruit);
 
                 // get the server tile
                 var ServerTileWidth:Int=5;

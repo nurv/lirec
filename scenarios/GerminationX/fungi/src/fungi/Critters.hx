@@ -30,14 +30,17 @@ class Butterfly extends SkeletonEntity
 {
     var LeftWing:Bone;
     var RightWing:Bone;
+    var Rnd:RndGen;
 
-    public function new(world:World,pos:Vec3)
+    public function new(world:World,pos:Vec3,seed:Int)
     {
 	    super(world,pos);
         Hide(true);
         NeedsUpdate=true;
         UpdateFreq=3;
         Speed=0.02;
+        Rnd=new RndGen();
+        Rnd.Seed(seed);
 
         LeftWing = new Bone(new Vec2(0,0), Resources.Get("wing"));
         Root = LeftWing;
@@ -53,8 +56,6 @@ class Butterfly extends SkeletonEntity
 
     override function Update(frame:Int,world:World)
     {
-        var Rnd=world.MyRndGen;   
-
         var Rot = Rnd.RndRange(-45,45);
         LeftWing.SetRotate(Rot+Rnd.RndRange(-10,10));
         RightWing.SetRotate(Rot*2);
@@ -81,31 +82,42 @@ class Butterfly extends SkeletonEntity
 
 class Bug extends SpriteEntity
 {
-    public function new(world:World,pos:Vec3)
+    var Rnd:RndGen;
+
+    public function new(world:World,pos:Vec3,seed:Int)
     {
-	    super(world,pos,Resources.Get(""));
+	    super(world,pos,Resources.Get("spider-a"));
         Hide(true);
         NeedsUpdate=true;
         UpdateFreq=3;
-        Speed=0.1;
+        Speed=0.02;
+        Rnd=new RndGen();
+        Rnd.Seed(seed);
     }
 
     override function Update(frame:Int,world:World)
     {
-        var Rnd=world.MyRndGen;   
+//        if (Rnd.RndInt()%21==0)
+        {
+            Spr.ChangeBitmap(Resources.Get(
+                Rnd.Choose(["spider-a",
+                            "spider-b",
+                            "spider-c"])));
+        }
         
         if (Rnd.RndInt()%10==0)
         {
             // random walk
-            LogicalPos = LogicalPos.Add(new Vec3(Rnd.RndRange(-1,2),
-                                                 Rnd.RndRange(-1,2),0));
-
-
+            var lp=LogicalPos.Add(new Vec3(Rnd.RndRange(-1,2),
+                                           Rnd.RndRange(-1,2),0));
+        
             var cube = world.Get("Cube",new Vec2(LogicalPos.x,LogicalPos.y));
             if (cube!=null)
             {
-                LogicalPos.z=cube.LogicalPos.z+1;   
+                lp.z=cube.LogicalPos.z+2;   
             }
+
+            SetLogicalPos(world,lp);
 
             if (LogicalPos.x < 0 ||
                 LogicalPos.y < 0 ||
@@ -134,10 +146,10 @@ class Critters
 
         for(i in 0...numcritters)
         {
-            var critter = new Butterfly(world,new Vec3(0,0,4));
+            var critter = new Butterfly(world,new Vec3(0,0,4), i);
             CritterList.push(critter);
-            //var critter2 = new Bug(world,new Vec3(0,0,4));
-            //CritterList.push(critter2);
+            var critter2 = new Bug(world,new Vec3(0,0,1), i);
+            CritterList.push(critter2);
         }
     }
 

@@ -29,7 +29,9 @@ class Fruit
     public function new(pos:Vec2,t:String,id:Int)
     {
         Type=t;
-        State="fruit-a";
+        // mushrooms only have c variations
+        // so initialise to this 
+        State="fruit-c";
         ID=id;
         OriginalPos=null;
         Spr=new Sprite(pos,Resources.Get(Type+"-"+State));

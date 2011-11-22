@@ -117,6 +117,9 @@
                       <bitmap id="FlyAgaricFruitCTex" import="textures/flyagaric-fruit-c.png"/>                     
 
                       <bitmap id="WingTex" import="textures/wing.png"/>                     
+                      <bitmap id="SpiderATex" import="textures/spider-a.png"/>                     
+                      <bitmap id="SpiderBTex" import="textures/spider-b.png"/>                     
+                      <bitmap id="SpiderCTex" import="textures/spider-c.png"/>                     
 
                       <bitmap id="ActionFlowerTex" import="textures/action-flower.png"/>                     
                       <bitmap id="ActionDropLeavesTex" import="textures/action-drop-leaves.png"/>                     

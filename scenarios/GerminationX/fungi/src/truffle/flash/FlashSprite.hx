@@ -229,6 +229,11 @@ class FlashSprite implements truffle.interfaces.Sprite, extends flash.display.Sp
         hitArea = new Sprite();
     }
 
+    public function UnSetClickThrough()
+    {
+        hitArea = this;
+    }
+
     public function SetPos(s:Vec2) { Pos=s; PreTransformDirty=true; }
 	public function SetScale(s:Vec2) { MyScale=s; PreTransformDirty=true; }
 	public function SetRotate(angle:Float) { Angle=angle; PreTransformDirty=true; }

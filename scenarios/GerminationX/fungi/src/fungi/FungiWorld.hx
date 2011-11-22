@@ -131,7 +131,7 @@ class FungiWorld extends World
         Spiral = new Sprite(new Vec2(0,0), Resources.Get("spiral"), true);
         AddSprite(Spiral);
 
-        TheCritters = new Critters(this,10);
+        TheCritters = new Critters(this,3);
 
         Update(0);
         SortScene();
@@ -538,9 +538,9 @@ class FungiWorld extends World
                                c.UpdateTile(d.tiles);
                                if (c.MyName!="") 
                                {
-                                   c.PlayerInfo=d.player;
-                                   if (d.player.log!=null)
+                                   if (d.player!=null)
                                    {
+                                       c.PlayerInfo=d.player;
                                        c.GameGUI.Update(cast(c,World),d.player.log);
                                    }
                                }
@@ -578,7 +578,7 @@ class FungiWorld extends World
                 };
             }*/
             
-            TickTime=time+100;
+            TickTime=time+200;
         }
     }
 

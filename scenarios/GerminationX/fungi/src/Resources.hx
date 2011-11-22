@@ -135,6 +135,9 @@ class FlyAgaricGrownTex extends BitmapData { public function new() { super(0,0);
 class FlyAgaricFruitCTex extends BitmapData { public function new() { super(0,0); } }
 
 class WingTex extends BitmapData { public function new() { super(0,0); } }
+class SpiderATex extends BitmapData { public function new() { super(0,0); } }
+class SpiderBTex extends BitmapData { public function new() { super(0,0); } }
+class SpiderCTex extends BitmapData { public function new() { super(0,0); } }
 class ActionDropLeavesTex extends BitmapData { public function new() { super(0,0); } }
 class ActionFlowerTex extends BitmapData { public function new() { super(0,0); } }
 class SpiralTex extends BitmapData { public function new() { super(0,0); } }
@@ -328,6 +331,9 @@ class Resources
         case "flyagaric-fruit-c": tex.data = new FlyAgaricFruitCTex();
 
         case "wing": tex.data = new WingTex();
+        case "spider-a": tex.data = new SpiderATex();
+        case "spider-b": tex.data = new SpiderBTex();
+        case "spider-c": tex.data = new SpiderCTex();
         case "action-flower": tex.data = new ActionFlowerTex();
         case "action-drop-leaves": tex.data = new ActionDropLeavesTex();
         case "spiral": tex.data = new SpiralTex();
