@@ -158,7 +158,7 @@ public class ABSelectionPanel extends AgentDisplayPanel {
 
 			// colour selected id's in yellow
 			if (selectedIDs.contains(rowID)) {
-				component.setBackground(Color.YELLOW);
+				component.setBackground(Color.GREEN);
 			}
 
 			// colour forget id's in red
@@ -298,7 +298,7 @@ public class ABSelectionPanel extends AgentDisplayPanel {
 		pnSimulate.setLayout(new BoxLayout(pnSimulate, BoxLayout.X_AXIS));
 		pnExecution.add(pnSimulate);
 
-		cbSimulate = new JCheckBox("Simulate");
+		cbSimulate = new JCheckBox("Simulate (display only)");
 		cbSimulate.setSelected(true);
 		pnSimulate.add(cbSimulate);
 
