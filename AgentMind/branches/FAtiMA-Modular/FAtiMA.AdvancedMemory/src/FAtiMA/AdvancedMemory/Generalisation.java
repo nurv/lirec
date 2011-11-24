@@ -1,0 +1,246 @@
+/** 
+ * Generalisation.java - Display panel for the Compound Cue mechanism
+ *    
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * 
+ * Company: HWU
+ * Project: LIREC
+ * Created: 18/11/11
+ * @author: Matthias Keysermann
+ * Email to: muk7@hw.ac.uk
+ * 
+ * History: 
+ * Matthias Keysermann: 18/11/11 - File created
+ * 
+ * **/
+
+package FAtiMA.AdvancedMemory;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+
+import FAtiMA.Core.memory.episodicMemory.ActionDetail;
+import FAtiMA.Core.memory.episodicMemory.EpisodicMemory;
+import FAtiMA.Core.memory.episodicMemory.MemoryEpisode;
+import FAtiMA.Core.memory.episodicMemory.Time;
+
+public class Generalisation implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+
+	public static final String NAME = "Generalisation";
+
+	private Time time;
+	private ArrayList<String> attributeNames;
+	private int minimumCoverage;
+	private ArrayList<GER> gers;
+
+	public Time getTime() {
+		return time;
+	}
+
+	public void setTime(Time time) {
+		this.time = time;
+	}
+
+	public ArrayList<String> getAttributeNames() {
+		return attributeNames;
+	}
+
+	public void setAttributeNames(ArrayList<String> attributeNames) {
+		this.attributeNames = attributeNames;
+	}
+
+	public int getMinimumCoverage() {
+		return minimumCoverage;
+	}
+
+	public void setMinimumCoverage(int minimumCoverage) {
+		this.minimumCoverage = minimumCoverage;
+	}
+
+	public ArrayList<GER> getGers() {
+		return gers;
+	}
+
+	public void setGers(ArrayList<GER> gers) {
+		this.gers = gers;
+	}
+
+	private AttributeItemSet combineItemSets(AttributeItemSet itemSetA, AttributeItemSet itemSetB) {
+		AttributeItemSet itemSetCombined = new AttributeItemSet();
+
+		// check if item sets have the same number of attributes
+		if (itemSetA.size() != itemSetB.size()) {
+			return null;
+		}
+
+		// merge item sets
+		for (AttributeItem itemA : itemSetA.getAttributeItems()) {
+			itemSetCombined.addToSet(itemA);
+		}
+		for (AttributeItem itemB : itemSetB.getAttributeItems()) {
+			itemSetCombined.addToSet(itemB);
+		}
+
+		// check for size
+		if (itemSetCombined.size() != itemSetA.size() + 1) {
+			return null;
+		}
+
+		return itemSetCombined;
+	}
+
+	public GER generalise(EpisodicMemory episodicMemory, ArrayList<String> attributeNames, int minimumCoverage) {
+		ArrayList<ActionDetail> actionDetails = new ArrayList<ActionDetail>();
+		for (MemoryEpisode memoryEpisode : episodicMemory.getAM().GetAllEpisodes()) {
+			actionDetails.addAll(memoryEpisode.getDetails());
+		}
+		for (ActionDetail actionDetail : episodicMemory.getSTEM().getDetails()) {
+			actionDetails.add(actionDetail);
+		}
+		return generalise(actionDetails, attributeNames, minimumCoverage);
+	}
+
+	public GER generalise(ArrayList<ActionDetail> actionDetails, ArrayList<String> attributeNames, int minimumCoverage) {
+
+		// initialise
+		GER gerMax = null;
+		int coverageMax = 0;
+		Time time = new Time();
+
+		// create initial attribute item sets
+		ArrayList<AttributeItemSet> attributeItemSets = new ArrayList<AttributeItemSet>();
+		for (String attributeName : attributeNames) {
+			for (ActionDetail actionDetail : actionDetails) {
+
+				// create attribute item
+				AttributeItem attributeItem = new AttributeItem();
+				attributeItem.setName(attributeName);
+				attributeItem.setValue(actionDetail.getValueByName(attributeName));
+
+				// check if an attribute item set already contains this item
+				boolean containedInSets = false;
+				for (AttributeItemSet attributeItemSet : attributeItemSets) {
+					if (attributeItemSet.contains(attributeItem)) {
+						containedInSets = true;
+						break;
+					}
+				}
+
+				// create and add attribute item set
+				if (!containedInSets) {
+					AttributeItemSet attributeItemSet = new AttributeItemSet();
+					attributeItemSet.addToSet(attributeItem);
+					attributeItemSets.add(attributeItemSet);
+				}
+
+			}
+		}
+
+		// filter by coverage
+		for (int i = 0; i < attributeItemSets.size(); i++) {
+			AttributeItemSet attributeItemSet = attributeItemSets.get(i);
+			int coverage = attributeItemSet.getCoverage(actionDetails);
+			if (coverage < minimumCoverage) {
+				attributeItemSets.remove(i);
+				i--;
+			}
+		}
+
+		// combine k item sets to k+1 item sets
+		while (true) {
+
+			// stop if list is empty		
+			if (attributeItemSets.size() == 0) {
+				break;
+			}
+
+			// stop if k = number of attribute
+			if (attributeItemSets.get(0).size() == attributeNames.size()) {
+				break;
+			}
+
+			ArrayList<AttributeItemSet> attributeItemSetsCombined = new ArrayList<AttributeItemSet>();
+			for (int i = 0; i < attributeItemSets.size(); i++) {
+				for (int j = i; j < attributeItemSets.size(); j++) {
+
+					AttributeItemSet itemSetI = attributeItemSets.get(i);
+					AttributeItemSet itemSetJ = attributeItemSets.get(j);
+					AttributeItemSet itemSetCombined = combineItemSets(itemSetI, itemSetJ);
+
+					// check if combination was valid
+					if (itemSetCombined != null) {
+
+						// check if combined item set is not in list yet
+						boolean contained = false;
+						for (AttributeItemSet attributeItemSet : attributeItemSetsCombined) {
+							if (attributeItemSet.equals(itemSetCombined)) {
+								contained = true;
+								break;
+							}
+						}
+						if (!contained) {
+							attributeItemSetsCombined.add(itemSetCombined);
+						}
+
+					}
+
+				}
+			}
+			attributeItemSets = attributeItemSetsCombined;
+
+			// filter by coverage
+			for (int i = 0; i < attributeItemSets.size(); i++) {
+				AttributeItemSet attributeItemSet = attributeItemSets.get(i);
+				int coverage = attributeItemSet.getCoverage(actionDetails);
+				if (coverage < minimumCoverage) {
+					attributeItemSets.remove(i);
+					i--;
+				}
+			}
+
+		}
+
+		// store GERs
+
+		ArrayList<GER> gers = new ArrayList<GER>();
+
+		for (AttributeItemSet attributeItemSet : attributeItemSets) {
+
+			GER ger = new GER();
+			ger.setAttributeItemSet(attributeItemSet);
+			int coverage = attributeItemSet.getCoverage(actionDetails);
+			ger.setCoverage(coverage);
+			gers.add(ger);
+
+			// update maximum
+			if (coverage > coverageMax) {
+				coverageMax = coverage;
+				gerMax = ger;
+			}
+
+		}
+
+		// update attributes
+		this.time = time;
+		this.attributeNames = attributeNames;
+		this.minimumCoverage = minimumCoverage;
+		this.gers = gers;
+
+		return gerMax;
+	}
+
+}
