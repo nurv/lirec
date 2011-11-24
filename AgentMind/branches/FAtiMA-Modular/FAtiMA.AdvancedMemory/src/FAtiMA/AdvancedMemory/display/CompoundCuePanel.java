@@ -94,7 +94,7 @@ public class CompoundCuePanel extends JPanel {
 
 		tmResults = new TableModelCompoundCue();
 		tmResults.addColumn("Action Detail ID");
-		tmResults.addColumn("Similarity Score");
+		tmResults.addColumn("Evaluation Value");
 		JTable tResults = new JTable(tmResults);
 		tResults.setAutoCreateRowSorter(true);
 		JScrollPane spResults = new JScrollPane(tResults);

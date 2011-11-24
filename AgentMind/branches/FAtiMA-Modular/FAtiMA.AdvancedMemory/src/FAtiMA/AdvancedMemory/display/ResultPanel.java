@@ -26,7 +26,7 @@
  * 
  * **/
 
-package FAtiMA.AdvancedMemory;
+package FAtiMA.AdvancedMemory.display;
 
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -38,9 +38,10 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import FAtiMA.AdvancedMemory.display.CompoundCuePanel;
-import FAtiMA.AdvancedMemory.display.GeneralisationPanel;
-import FAtiMA.AdvancedMemory.display.SpreadingActivationPanel;
+import FAtiMA.AdvancedMemory.AdvancedMemoryComponent;
+import FAtiMA.AdvancedMemory.CompoundCue;
+import FAtiMA.AdvancedMemory.Generalisation;
+import FAtiMA.AdvancedMemory.SpreadingActivation;
 
 public class ResultPanel extends JPanel {
 

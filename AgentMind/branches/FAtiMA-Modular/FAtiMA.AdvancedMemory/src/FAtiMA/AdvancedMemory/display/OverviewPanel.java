@@ -41,7 +41,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
 import FAtiMA.AdvancedMemory.AdvancedMemoryComponent;
-import FAtiMA.AdvancedMemory.ResultPanel;
 import FAtiMA.Core.memory.episodicMemory.Time;
 
 public class OverviewPanel extends JPanel {
