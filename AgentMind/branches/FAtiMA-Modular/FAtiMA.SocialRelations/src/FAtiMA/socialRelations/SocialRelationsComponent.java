@@ -25,11 +25,7 @@ import FAtiMA.OCCAffectDerivation.OCCEmotionType;
 import FAtiMA.socialRelations.display.SocialRelationsPanel;
 import FAtiMA.socialRelations.parsers.RelationsLoaderHandler;
 
-public class SocialRelationsComponent implements Serializable,
-
-IAppraisalDerivationComponent, IModelOfOtherComponent,
-
-IProcessEmotionComponent {
+public class SocialRelationsComponent implements Serializable,IAppraisalDerivationComponent, IModelOfOtherComponent,IProcessEmotionComponent {
 
 	/**
 	 * 
@@ -38,7 +34,7 @@ IProcessEmotionComponent {
 
 	public static final String NAME = "SocialRelations";
 	private ArrayList<String> _parsingFiles;
-	private RelationsLoaderHandler _parser;
+	//private RelationsLoaderHandler _parser;
 
 	public SocialRelationsComponent(String socialRelationsFile, ArrayList<String> extraParsingFiles) {
 		_parsingFiles = new ArrayList<String>();
@@ -159,7 +155,7 @@ IProcessEmotionComponent {
 
 	@Override
 	public void initialize(AgentModel am) {
-		this._parser = new RelationsLoaderHandler(am);
+		//this._parser = new RelationsLoaderHandler(am);
 		//this.loadRelations(am);
 	}
 
@@ -201,17 +197,17 @@ IProcessEmotionComponent {
 
 	@Override
 	public ReflectXMLHandler getActionsParser(AgentModel am) {
-		return this._parser;
+		return new RelationsLoaderHandler(am);
 	}
 
 	@Override
 	public ReflectXMLHandler getGoalsParser(AgentModel am) {
-		return this._parser;
+		return new RelationsLoaderHandler(am);
 	}
 
 	@Override
 	public ReflectXMLHandler getPersonalityParser(AgentModel am) {
-		return this._parser;
+		return new RelationsLoaderHandler(am);
 	}
 
 	@Override
@@ -226,7 +222,7 @@ IProcessEmotionComponent {
 			for (String file : _parsingFiles) {
 				if(file != null)
 				{
-					parser.parse(new File(file),this._parser);
+					parser.parse(new File(file),new RelationsLoaderHandler(am));
 				}
 			}
 

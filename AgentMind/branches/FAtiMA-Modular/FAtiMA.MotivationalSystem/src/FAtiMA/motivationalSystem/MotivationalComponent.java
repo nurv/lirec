@@ -51,7 +51,7 @@ import FAtiMA.OCCAffectDerivation.OCCAppraisalVariables;
  * @author Meiyii Lim, Samuel Mascarenhas
  */
 
-public class MotivationalComponent implements Serializable, Cloneable,
+public class MotivationalComponent implements Cloneable,
 		IAppraisalDerivationComponent, IModelOfOtherComponent,
 		IExpectedUtilityStrategy, IProbabilityStrategy, IUtilityStrategy,
 		IGoalSuccessStrategy, IGoalFailureStrategy, IActionFailureStrategy, 
@@ -76,7 +76,6 @@ public class MotivationalComponent implements Serializable, Cloneable,
 	private float _contributionToNeeds;
 
 	private ArrayList<String> _parsingFiles;
-	private NeedsLoaderHandler _parser;
 
 	/**
 	 * Creates an empty MotivationalState
@@ -411,8 +410,6 @@ public class MotivationalComponent implements Serializable, Cloneable,
 		dp.addActionFailureStrategy(this);
 		dp.addGoalFailureStrategy(this);
 		dp.addGoalSuccessStrategy(this);
-		//LoadNeeds(am);
-		this._parser = new NeedsLoaderHandler(am, this);
 	}
 
 	@Override
@@ -790,17 +787,17 @@ public class MotivationalComponent implements Serializable, Cloneable,
 
 	@Override
 	public ReflectXMLHandler getActionsParser(AgentModel am) {
-		return this._parser;
+		return new NeedsLoaderHandler(am, this);
 	}
 
 	@Override
 	public ReflectXMLHandler getGoalsParser(AgentModel am) {
-		return this._parser;
+		return new NeedsLoaderHandler(am, this);
 	}
 
 	@Override
 	public ReflectXMLHandler getPersonalityParser(AgentModel am) {
-		return this._parser;
+		return new NeedsLoaderHandler(am, this);
 	}
 
 	@Override
@@ -813,7 +810,7 @@ public class MotivationalComponent implements Serializable, Cloneable,
 			SAXParser parser = factory.newSAXParser();
 
 			for (String file : _parsingFiles) {
-				parser.parse(new File(file), this._parser);
+				parser.parse(new File(file), new NeedsLoaderHandler(am, this));
 			}
 
 		} catch (Exception e) {

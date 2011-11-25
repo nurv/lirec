@@ -1,11 +1,13 @@
 package FAtiMA.Core.componentTypes;
 
+import java.io.Serializable;
+
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.Display.AgentDisplayPanel;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.util.parsers.ReflectXMLHandler;
 
-public interface IComponent {
+public interface IComponent extends Serializable {
 	
 	public String name();
 	

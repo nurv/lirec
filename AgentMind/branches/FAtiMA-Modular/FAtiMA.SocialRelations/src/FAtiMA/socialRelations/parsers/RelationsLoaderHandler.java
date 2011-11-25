@@ -17,8 +17,10 @@ import FAtiMA.socialRelations.LikeCondition;
 import FAtiMA.socialRelations.LikeRelation;
 import FAtiMA.socialRelations.RespectRelation;
 
-public class RelationsLoaderHandler  extends ReflectXMLHandler{
+public class RelationsLoaderHandler  extends ReflectXMLHandler  {
 
+	
+	
 	private String _currentGoalKey;
 	private String _currentActionKey;
 	private String _conditionType;

@@ -1,5 +1,6 @@
 package FAtiMA.socialRelations;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import org.xml.sax.Attributes;
@@ -178,7 +179,12 @@ public class LikeCondition extends Condition {
 		public abstract boolean process( float val1, float val2 );
 	}
 	
-	private static class LessThan implements Operator{
+	private static class LessThan implements Serializable, Operator {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		public boolean process( float val1, float val2 ){
 			return val1 < val2;
 		}
@@ -189,7 +195,7 @@ public class LikeCondition extends Condition {
 		}
 	}
 	
-	private static class LessThanOrEqual implements Operator{
+	private static class LessThanOrEqual implements Serializable, Operator{
 		public boolean process( float val1, float val2 ){
 			return val1 <= val2;
 		}
@@ -200,7 +206,12 @@ public class LikeCondition extends Condition {
 		}
 	}
 	
-	private static class Equal implements Operator{
+	private static class Equal implements Serializable, Operator{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		public boolean process( float val1, float val2 ){
 			return val1 == val2;
 		}
@@ -211,7 +222,12 @@ public class LikeCondition extends Condition {
 		}
 	}
 	
-	private static class MoreThanOrEqual implements Operator{
+	private static class MoreThanOrEqual implements Serializable, Operator {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		public boolean process( float val1, float val2 ){
 			return val1 >= val2;
 		}
@@ -222,7 +238,12 @@ public class LikeCondition extends Condition {
 		}
 	}
 	
-	private static class MoreThan implements Operator{
+	private static class MoreThan implements Serializable, Operator{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		public boolean process( float val1, float val2 ){
 			return val1 > val2;
 		}
@@ -233,7 +254,12 @@ public class LikeCondition extends Condition {
 		}
 	}
 	
-	private static class NotEqual implements Operator{
+	private static class NotEqual implements Serializable, Operator{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		public boolean process( float val1, float val2 ){
 			return val1 != val2;
 		}

@@ -256,8 +256,7 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 					{
 						this._agentDisplay.AddPanel(panel, c.name(),"");
 					}
-				}
-				
+				}	
 			}
 			
 			// creating a new episode when the agent loads 13/09/10
@@ -726,6 +725,8 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 				}
 			}
 			this._perceivedProperties.clear();
+			
+			
 			
 			for(PropertyRemovedPerception p : this._perceivedPropertiesRemoved)
 			{
