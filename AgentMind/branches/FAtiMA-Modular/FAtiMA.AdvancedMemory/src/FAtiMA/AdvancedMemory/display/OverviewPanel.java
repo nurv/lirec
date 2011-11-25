@@ -98,6 +98,8 @@ public class OverviewPanel extends JPanel {
 		lbStatus = new JLabel(" ");
 		pnStatus.add(lbStatus);
 
+		updateResultList();
+
 	}
 
 	public void updateResultList() {
