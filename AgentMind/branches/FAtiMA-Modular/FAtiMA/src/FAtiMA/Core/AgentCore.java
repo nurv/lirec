@@ -1006,21 +1006,10 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 		
 		// creating a new episode
 		_memory.getEpisodicMemory().StartEpisode(_memory);
+		
+		// Advanced Memory is loaded when Advanced Memory Component is initialised
 	}
-	
-	/* Currently not called 
-	 * Call it when there is an AdvancedMemory component and memory is being loaded 
-	 * and an AdvancedMemory component previously existed
-	 * Meiyii 14/01/11
-	 */
-	private void loadAgentAdvMemory() throws ParserConfigurationException, SAXException, IOException
-	{
-		for(IProcessExternalRequestComponent ip: _processExternalRequestComponents)
-		{
-			ip.processExternalRequest(this,"LOAD_ADV_MEMORY","");
-		}
-	}
-	
+		
 	private void SaveAgentState(String agentName)
 	{
 		String fileName = _saveDirectory + agentName;

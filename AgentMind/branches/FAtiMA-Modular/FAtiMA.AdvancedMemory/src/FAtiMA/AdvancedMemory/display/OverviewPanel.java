@@ -28,6 +28,7 @@
 
 package FAtiMA.AdvancedMemory.display;
 
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -35,6 +36,7 @@ import java.awt.event.ActionListener;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -109,6 +111,9 @@ public class OverviewPanel extends JPanel {
 		//pnResults.repaint();
 		// workaround
 		pnResults.updateUI();
+
+		for (Component component : pnResults.getComponents())
+			((JComponent) component).setAlignmentX(Component.LEFT_ALIGNMENT);
 
 		//lbStatus.setText("Result list updated at " + new Time().getRealTimeFormatted());
 

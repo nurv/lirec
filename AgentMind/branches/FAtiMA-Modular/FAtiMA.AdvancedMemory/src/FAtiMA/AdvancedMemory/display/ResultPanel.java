@@ -69,13 +69,13 @@ public class ResultPanel extends JPanel {
 		add(lbTime);
 
 		JLabel lbParameters = new JLabel();
-		lbParameters.setMinimumSize(new Dimension(400, 26));
-		lbParameters.setMaximumSize(new Dimension(400, 26));
+		lbParameters.setMinimumSize(new Dimension(430, 26));
+		lbParameters.setMaximumSize(new Dimension(430, 26));
 		add(lbParameters);
 
 		if (result instanceof CompoundCue) {
 			CompoundCue compoundCue = (CompoundCue) result;
-			lbMechanism.setText(CompoundCue.NAME);
+			lbMechanism.setText(" " + CompoundCue.NAME);
 			lbTime.setText(compoundCue.getTime().getRealTimeFormatted());
 			String parameters = "";
 			parameters += "Filter Attributes: " + compoundCue.getFilterAttributes();
@@ -84,7 +84,7 @@ public class ResultPanel extends JPanel {
 			lbParameters.setText(parameters);
 		} else if (result instanceof SpreadingActivation) {
 			SpreadingActivation spreadingActivation = (SpreadingActivation) result;
-			lbMechanism.setText(SpreadingActivation.NAME);
+			lbMechanism.setText(" " + SpreadingActivation.NAME);
 			lbTime.setText(spreadingActivation.getTime().getRealTimeFormatted());
 			String parameters = "";
 			parameters += "Filter Attributes: " + spreadingActivation.getFilterAttributes();
@@ -93,7 +93,7 @@ public class ResultPanel extends JPanel {
 			lbParameters.setText(parameters);
 		} else if (result instanceof Generalisation) {
 			Generalisation generalisation = (Generalisation) result;
-			lbMechanism.setText(Generalisation.NAME);
+			lbMechanism.setText(" " + Generalisation.NAME);
 			lbTime.setText(generalisation.getTime().getRealTimeFormatted());
 			String parameters = "";
 			parameters += "Filter Attributes: " + generalisation.getFilterAttributes();

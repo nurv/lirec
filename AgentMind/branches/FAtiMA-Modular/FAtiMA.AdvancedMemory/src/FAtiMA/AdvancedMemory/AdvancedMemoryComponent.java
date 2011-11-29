@@ -48,6 +48,8 @@ import FAtiMA.Core.emotionalState.AppraisalFrame;
 import FAtiMA.Core.memory.Memory;
 import FAtiMA.Core.memory.episodicMemory.ActionDetail;
 import FAtiMA.Core.sensorEffector.Event;
+import FAtiMA.Core.util.AgentLogger;
+import FAtiMA.Core.util.ConfigurationManager;
 import FAtiMA.Core.util.parsers.ReflectXMLHandler;
 import FAtiMA.OCCAffectDerivation.OCCAppraisalVariables;
 
@@ -103,6 +105,9 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 	@Override
 	public void initialize(AgentModel am) {
 		memory = am.getMemory();
+		if (ConfigurationManager.getMemoryLoad()) {
+			load(memory.getSaveDirectory() + FILENAME);
+		}
 	}
 
 	@Override
@@ -234,15 +239,23 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 	}
 
 	public void load(String fileName) {
+		AgentLogger.GetInstance().log("LOADING Advanced Memory: " + fileName);
 		try {
 			AdvancedMemoryHandler advancedMemoryHandler = new AdvancedMemoryHandler(this);
 			SAXParserFactory factory = SAXParserFactory.newInstance();
 			SAXParser parser = factory.newSAXParser();
-			parser.parse(new File(fileName), advancedMemoryHandler);
+			File file = new File(fileName);
+			if (file.exists()) {
+				parser.parse(new File(fileName), advancedMemoryHandler);
+			} else {
+				AgentLogger.GetInstance().log("File does not exist: " + fileName);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		advancedMemoryPanel.getOverviewPanel().updateResultList();
+		if (advancedMemoryPanel != null) {
+			advancedMemoryPanel.getOverviewPanel().updateResultList();
+		}
 	}
 
 	public void save(String fileName) {
