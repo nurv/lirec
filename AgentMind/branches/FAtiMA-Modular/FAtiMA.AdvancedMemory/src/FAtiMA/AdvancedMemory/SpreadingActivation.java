@@ -48,7 +48,7 @@ public class SpreadingActivation implements Serializable {
 	public static final String NAME = "Spreading Activation";
 
 	private Time time;
-	private ArrayList<String> knownAttributes;
+	private ArrayList<String> filterAttributes;
 	private String targetAttributeName;
 	private HashMap<String, Integer> frequencies;
 
@@ -60,12 +60,12 @@ public class SpreadingActivation implements Serializable {
 		this.time = time;
 	}
 
-	public ArrayList<String> getKnownAttributes() {
-		return knownAttributes;
+	public ArrayList<String> getFilterAttributes() {
+		return filterAttributes;
 	}
 
-	public void setKnownAttributes(ArrayList<String> knownAttributes) {
-		this.knownAttributes = knownAttributes;
+	public void setFilterAttributes(ArrayList<String> filterAttributes) {
+		this.filterAttributes = filterAttributes;
 	}
 
 	public String getTargetAttributeName() {
@@ -84,7 +84,7 @@ public class SpreadingActivation implements Serializable {
 		this.frequencies = frequencies;
 	}
 
-	private ArrayList<ActionDetail> filterEvents(ArrayList<ActionDetail> actionDetails, String attributeName, Object attributeValue) {
+	private ArrayList<ActionDetail> filterActionDetails(ArrayList<ActionDetail> actionDetails, String attributeName, Object attributeValue) {
 
 		ArrayList<ActionDetail> actionDetailsFiltered = new ArrayList<ActionDetail>();
 
@@ -99,7 +99,15 @@ public class SpreadingActivation implements Serializable {
 		return actionDetailsFiltered;
 	}
 
-	public Object spreadActivation(EpisodicMemory episodicMemory, String knownAttributesStr, String targetAttributeName) {
+	public Object spreadActivation(EpisodicMemory episodicMemory, String targetAttributeName) {
+		return spreadActivation(episodicMemory, null, targetAttributeName);
+	}
+
+	public Object spreadActivation(ArrayList<ActionDetail> actionDetails, String targetAttributeName) {
+		return spreadActivation(actionDetails, null, targetAttributeName);
+	}
+
+	public Object spreadActivation(EpisodicMemory episodicMemory, String filterAttributesStr, String targetAttributeName) {
 
 		ArrayList<ActionDetail> actionDetails = new ArrayList<ActionDetail>();
 		for (MemoryEpisode memoryEpisode : episodicMemory.getAM().GetAllEpisodes()) {
@@ -109,35 +117,37 @@ public class SpreadingActivation implements Serializable {
 			actionDetails.add(actionDetail);
 		}
 
-		return spreadActivation(actionDetails, knownAttributesStr, targetAttributeName);
+		return spreadActivation(actionDetails, filterAttributesStr, targetAttributeName);
 	}
 
-	public Object spreadActivation(ArrayList<ActionDetail> actionDetails, String knownAttributesStr, String targetAttributeName) {
+	public Object spreadActivation(ArrayList<ActionDetail> actionDetails, String filterAttributesStr, String targetAttributeName) {
 
 		// initialise
 		Object valueMax = null;
 		int frequencyMax = 0;
 		Time time = new Time();
 
-		// extract known attributes
-		ArrayList<String> knownAttributes = new ArrayList<String>();
-		StringTokenizer stringTokenizer = new StringTokenizer(knownAttributesStr, "*");
-		while (stringTokenizer.hasMoreTokens()) {
-			String knownStr = stringTokenizer.nextToken();
-			knownAttributes.add(knownStr);
+		// extract filter attributes
+		ArrayList<String> filterAttributes = new ArrayList<String>();
+		if (filterAttributesStr != null) {
+			StringTokenizer stringTokenizer = new StringTokenizer(filterAttributesStr, "*");
+			while (stringTokenizer.hasMoreTokens()) {
+				String knownStr = stringTokenizer.nextToken();
+				filterAttributes.add(knownStr);
+			}
 		}
 
-		// filter action details
+		// filter action details		
 		ArrayList<ActionDetail> actionDetailsFiltered = new ArrayList<ActionDetail>();
 		actionDetailsFiltered.addAll(actionDetails);
-		for (String knownAttribute : knownAttributes) {
-			String[] attributeSplitted = knownAttribute.split(" ");
+		for (String filterAttribute : filterAttributes) {
+			String[] attributeSplitted = filterAttribute.split(" ");
 			String name = attributeSplitted[0];
 			String value = "";
 			if (attributeSplitted.length == 2) {
 				value = attributeSplitted[1];
 			}
-			actionDetailsFiltered = filterEvents(actionDetailsFiltered, name, value);
+			actionDetailsFiltered = filterActionDetails(actionDetailsFiltered, name, value);
 		}
 
 		// calculate frequencies
@@ -166,11 +176,11 @@ public class SpreadingActivation implements Serializable {
 
 		// update attributes
 		this.time = time;
-		this.knownAttributes = knownAttributes;
+		this.filterAttributes = filterAttributes;
 		this.targetAttributeName = targetAttributeName;
 		this.frequencies = frequencies;
 
 		return valueMax;
 	}
-	
+
 }

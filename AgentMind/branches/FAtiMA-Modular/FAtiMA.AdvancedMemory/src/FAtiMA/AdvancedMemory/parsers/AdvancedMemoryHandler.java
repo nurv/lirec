@@ -50,12 +50,13 @@ public class AdvancedMemoryHandler extends ReflectXMLHandler {
 	private AdvancedMemoryComponent advancedMemoryComponent;
 	private ArrayList<Object> results;
 	private Object result;
+	// Common
+	private ArrayList<String> filterAttributes;
 	// Compound Cue
 	private CompoundCue compoundCue;
 	private HashMap<Integer, Double> evaluationValues;
 	// Spreading Activation
 	private SpreadingActivation spreadingActivation;
-	private ArrayList<String> knownAttributes;
 	private HashMap<String, Integer> frequencies;
 	// Generalisation
 	private Generalisation generalisation;
@@ -91,12 +92,29 @@ public class AdvancedMemoryHandler extends ReflectXMLHandler {
 		}
 	}
 
+	public void FilterAttributes(Attributes attributes) {
+		filterAttributes = new ArrayList<String>();
+		if (result instanceof CompoundCue) {
+			compoundCue.setFilterAttributes(filterAttributes);
+		} else if (result instanceof SpreadingActivation) {
+			spreadingActivation.setFilterAttributes(filterAttributes);
+		} else if (result instanceof Generalisation) {
+			generalisation.setFilterAttributes(filterAttributes);
+		}
+	}
+
+	public void FilterAttribute(Attributes attributes) {
+		String name = attributes.getValue("name");
+		String value = attributes.getValue("value");
+		filterAttributes.add(name + " " + value);
+	}
+
 	// Compound Cue
 
 	public void CompoundCue(Attributes attributes) {
 		compoundCue = new CompoundCue();
-		int actionDetailTargetID = Integer.parseInt(attributes.getValue("actionDetailTargetID"));
-		compoundCue.setActionDetailTargetID(actionDetailTargetID);
+		int targetID = Integer.parseInt(attributes.getValue("targetID"));
+		compoundCue.setTargetID(targetID);
 		result = compoundCue;
 		results.add(compoundCue);
 	}
@@ -120,17 +138,6 @@ public class AdvancedMemoryHandler extends ReflectXMLHandler {
 		spreadingActivation.setTargetAttributeName(targetAttributeName);
 		result = spreadingActivation;
 		results.add(spreadingActivation);
-	}
-
-	public void KnownAttributes(Attributes attributes) {
-		knownAttributes = new ArrayList<String>();
-		spreadingActivation.setKnownAttributes(knownAttributes);
-	}
-
-	public void KnownAttribute(Attributes attributes) {
-		String name = attributes.getValue("name");
-		String value = attributes.getValue("value");
-		knownAttributes.add(name + " " + value);
 	}
 
 	public void Frequencies(Attributes attributes) {

@@ -59,31 +59,35 @@ public class ResultPanel extends JPanel {
 		setBorder(BorderFactory.createEtchedBorder());
 
 		JLabel lbMechanism = new JLabel();
-		lbMechanism.setMinimumSize(new Dimension(150, 26));
-		lbMechanism.setMaximumSize(new Dimension(150, 26));
+		lbMechanism.setMinimumSize(new Dimension(140, 26));
+		lbMechanism.setMaximumSize(new Dimension(140, 26));
 		add(lbMechanism);
 
 		JLabel lbTime = new JLabel();
-		lbTime.setMinimumSize(new Dimension(120, 26));
-		lbTime.setMaximumSize(new Dimension(120, 26));
+		lbTime.setMinimumSize(new Dimension(110, 26));
+		lbTime.setMaximumSize(new Dimension(110, 26));
 		add(lbTime);
 
 		JLabel lbParameters = new JLabel();
-		lbParameters.setMinimumSize(new Dimension(380, 26));
-		lbParameters.setMaximumSize(new Dimension(380, 26));
+		lbParameters.setMinimumSize(new Dimension(400, 26));
+		lbParameters.setMaximumSize(new Dimension(400, 26));
 		add(lbParameters);
 
 		if (result instanceof CompoundCue) {
 			CompoundCue compoundCue = (CompoundCue) result;
 			lbMechanism.setText(CompoundCue.NAME);
 			lbTime.setText(compoundCue.getTime().getRealTimeFormatted());
-			lbParameters.setText("Target ID: " + compoundCue.getActionDetailTargetID());
+			String parameters = "";
+			parameters += "Filter Attributes: " + compoundCue.getFilterAttributes();
+			parameters += " | ";
+			parameters += "Target ID: " + compoundCue.getTargetID();
+			lbParameters.setText(parameters);
 		} else if (result instanceof SpreadingActivation) {
 			SpreadingActivation spreadingActivation = (SpreadingActivation) result;
 			lbMechanism.setText(SpreadingActivation.NAME);
 			lbTime.setText(spreadingActivation.getTime().getRealTimeFormatted());
 			String parameters = "";
-			parameters += "Known Attributes: " + spreadingActivation.getKnownAttributes();
+			parameters += "Filter Attributes: " + spreadingActivation.getFilterAttributes();
 			parameters += " | ";
 			parameters += "Target Attribute: " + spreadingActivation.getTargetAttributeName();
 			lbParameters.setText(parameters);
@@ -92,7 +96,9 @@ public class ResultPanel extends JPanel {
 			lbMechanism.setText(Generalisation.NAME);
 			lbTime.setText(generalisation.getTime().getRealTimeFormatted());
 			String parameters = "";
-			parameters += "Attributes: " + generalisation.getAttributeNames();
+			parameters += "Filter Attributes: " + generalisation.getFilterAttributes();
+			parameters += " | ";
+			parameters += "Generalisation Attributes: " + generalisation.getAttributeNames();
 			parameters += " | ";
 			parameters += "Minimum Coverage: " + generalisation.getMinimumCoverage();
 			lbParameters.setText(parameters);

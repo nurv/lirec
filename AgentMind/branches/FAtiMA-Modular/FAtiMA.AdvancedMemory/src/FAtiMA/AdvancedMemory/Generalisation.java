@@ -30,6 +30,7 @@ package FAtiMA.AdvancedMemory;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.StringTokenizer;
 
 import FAtiMA.Core.memory.episodicMemory.ActionDetail;
 import FAtiMA.Core.memory.episodicMemory.EpisodicMemory;
@@ -43,6 +44,7 @@ public class Generalisation implements Serializable {
 	public static final String NAME = "Generalisation";
 
 	private Time time;
+	private ArrayList<String> filterAttributes;
 	private ArrayList<String> attributeNames;
 	private int minimumCoverage;
 	private ArrayList<GER> gers;
@@ -53,6 +55,14 @@ public class Generalisation implements Serializable {
 
 	public void setTime(Time time) {
 		this.time = time;
+	}
+
+	public ArrayList<String> getFilterAttributes() {
+		return filterAttributes;
+	}
+
+	public void setFilterAttributes(ArrayList<String> filterAttributes) {
+		this.filterAttributes = filterAttributes;
 	}
 
 	public ArrayList<String> getAttributeNames() {
@@ -77,6 +87,21 @@ public class Generalisation implements Serializable {
 
 	public void setGers(ArrayList<GER> gers) {
 		this.gers = gers;
+	}
+
+	private ArrayList<ActionDetail> filterActionDetails(ArrayList<ActionDetail> actionDetails, String attributeName, Object attributeValue) {
+
+		ArrayList<ActionDetail> actionDetailsFiltered = new ArrayList<ActionDetail>();
+
+		for (ActionDetail actionDetail : actionDetails) {
+			Object attributeValueCurrent = actionDetail.getValueByName(attributeName);
+
+			if (attributeValueCurrent != null && attributeValueCurrent.equals(attributeValue)) {
+				actionDetailsFiltered.add(actionDetail);
+			}
+		}
+
+		return actionDetailsFiltered;
 	}
 
 	private AttributeItemSet combineItemSets(AttributeItemSet itemSetA, AttributeItemSet itemSetB) {
@@ -104,6 +129,14 @@ public class Generalisation implements Serializable {
 	}
 
 	public GER generalise(EpisodicMemory episodicMemory, ArrayList<String> attributeNames, int minimumCoverage) {
+		return generalise(episodicMemory, null, attributeNames, minimumCoverage);
+	}
+
+	public GER generalise(ArrayList<ActionDetail> actionDetails, ArrayList<String> attributeNames, int minimumCoverage) {
+		return generalise(actionDetails, null, attributeNames, minimumCoverage);
+	}
+
+	public GER generalise(EpisodicMemory episodicMemory, String filterAttributesStr, ArrayList<String> attributeNames, int minimumCoverage) {
 		ArrayList<ActionDetail> actionDetails = new ArrayList<ActionDetail>();
 		for (MemoryEpisode memoryEpisode : episodicMemory.getAM().GetAllEpisodes()) {
 			actionDetails.addAll(memoryEpisode.getDetails());
@@ -111,20 +144,43 @@ public class Generalisation implements Serializable {
 		for (ActionDetail actionDetail : episodicMemory.getSTEM().getDetails()) {
 			actionDetails.add(actionDetail);
 		}
-		return generalise(actionDetails, attributeNames, minimumCoverage);
+		return generalise(actionDetails, filterAttributesStr, attributeNames, minimumCoverage);
 	}
 
-	public GER generalise(ArrayList<ActionDetail> actionDetails, ArrayList<String> attributeNames, int minimumCoverage) {
+	public GER generalise(ArrayList<ActionDetail> actionDetails, String filterAttributesStr, ArrayList<String> attributeNames, int minimumCoverage) {
 
 		// initialise
 		GER gerMax = null;
 		int coverageMax = 0;
 		Time time = new Time();
 
+		// extract filter attributes
+		ArrayList<String> filterAttributes = new ArrayList<String>();
+		if (filterAttributesStr != null) {
+			StringTokenizer stringTokenizer = new StringTokenizer(filterAttributesStr, "*");
+			while (stringTokenizer.hasMoreTokens()) {
+				String knownStr = stringTokenizer.nextToken();
+				filterAttributes.add(knownStr);
+			}
+		}
+
+		// filter action details		
+		ArrayList<ActionDetail> actionDetailsFiltered = new ArrayList<ActionDetail>();
+		actionDetailsFiltered.addAll(actionDetails);
+		for (String filterAttribute : filterAttributes) {
+			String[] attributeSplitted = filterAttribute.split(" ");
+			String name = attributeSplitted[0];
+			String value = "";
+			if (attributeSplitted.length == 2) {
+				value = attributeSplitted[1];
+			}
+			actionDetailsFiltered = filterActionDetails(actionDetailsFiltered, name, value);
+		}
+
 		// create initial attribute item sets
 		ArrayList<AttributeItemSet> attributeItemSets = new ArrayList<AttributeItemSet>();
 		for (String attributeName : attributeNames) {
-			for (ActionDetail actionDetail : actionDetails) {
+			for (ActionDetail actionDetail : actionDetailsFiltered) {
 
 				// create attribute item
 				AttributeItem attributeItem = new AttributeItem();
@@ -236,6 +292,7 @@ public class Generalisation implements Serializable {
 
 		// update attributes
 		this.time = time;
+		this.filterAttributes = filterAttributes;
 		this.attributeNames = attributeNames;
 		this.minimumCoverage = minimumCoverage;
 		this.gers = gers;

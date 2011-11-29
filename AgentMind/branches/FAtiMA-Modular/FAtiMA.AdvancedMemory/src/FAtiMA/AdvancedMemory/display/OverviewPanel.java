@@ -69,12 +69,10 @@ public class OverviewPanel extends JPanel {
 		JLabel lbFileName = new JLabel("File Name:");
 		pnActions.add(lbFileName);
 
-		//String fileName = AdvancedMemoryComponent.FILENAME;
 		String fileName = advancedMemoryComponent.getMemory().getSaveDirectory() + AdvancedMemoryComponent.FILENAME;
 		tfFileName = new JTextField(fileName);
 		tfFileName.setMinimumSize(new Dimension(320, 26));
 		tfFileName.setMaximumSize(new Dimension(320, 26));
-		//tfFileName.setEditable(false);
 		pnActions.add(tfFileName);
 
 		JButton btLoad = new JButton("Load Advanced Memory");

@@ -57,13 +57,29 @@ public class AdvancedMemoryWriter {
 					CompoundCue compoundCue = (CompoundCue) result;
 
 					xmlOutputter.startTag("CompoundCue");
-					xmlOutputter.attribute("actionDetailTargetID", String.valueOf(compoundCue.getActionDetailTargetID()));
+					xmlOutputter.attribute("targetID", String.valueOf(compoundCue.getTargetID()));
 
 					xmlOutputter.startTag("Time");
 					xmlOutputter.attribute("narrativeTime", String.valueOf(compoundCue.getTime().getNarrativeTime()));
 					xmlOutputter.attribute("realTime", String.valueOf(compoundCue.getTime().getRealTime()));
 					xmlOutputter.attribute("eventSequence", String.valueOf(compoundCue.getTime().getEventSequence()));
 					xmlOutputter.endTag(); //Time
+
+					xmlOutputter.startTag("FilterAttributes");
+					for (String filterAttribute : compoundCue.getFilterAttributes()) {
+						xmlOutputter.startTag("FilterAttribute");
+						String[] attributeSplitted = filterAttribute.split(" ");
+						String name = attributeSplitted[0];
+						String value = "";
+						// check if a value was given
+						if (attributeSplitted.length == 2) {
+							value = attributeSplitted[1];
+						}
+						xmlOutputter.attribute("name", name);
+						xmlOutputter.attribute("value", value);
+						xmlOutputter.endTag(); //FilterAttribute			
+					}
+					xmlOutputter.endTag(); //FilterAttributes
 
 					xmlOutputter.startTag("EvaluationValues");
 					for (Integer id : compoundCue.getEvaluationValues().keySet()) {
@@ -89,10 +105,10 @@ public class AdvancedMemoryWriter {
 					xmlOutputter.attribute("eventSequence", String.valueOf(spreadingActivation.getTime().getEventSequence()));
 					xmlOutputter.endTag(); //Time
 
-					xmlOutputter.startTag("KnownAttributes");
-					for (String knownAttribute : spreadingActivation.getKnownAttributes()) {
-						xmlOutputter.startTag("KnownAttribute");
-						String[] attributeSplitted = knownAttribute.split(" ");
+					xmlOutputter.startTag("FilterAttributes");
+					for (String filterAttribute : spreadingActivation.getFilterAttributes()) {
+						xmlOutputter.startTag("FilterAttribute");
+						String[] attributeSplitted = filterAttribute.split(" ");
 						String name = attributeSplitted[0];
 						String value = "";
 						// check if a value was given
@@ -101,9 +117,9 @@ public class AdvancedMemoryWriter {
 						}
 						xmlOutputter.attribute("name", name);
 						xmlOutputter.attribute("value", value);
-						xmlOutputter.endTag(); //KnownAttribute			
+						xmlOutputter.endTag(); //FilterAttribute			
 					}
-					xmlOutputter.endTag(); //KnownAttributes
+					xmlOutputter.endTag(); //FilterAttributes
 
 					xmlOutputter.startTag("Frequencies");
 					for (String value : spreadingActivation.getFrequencies().keySet()) {
@@ -127,6 +143,22 @@ public class AdvancedMemoryWriter {
 					xmlOutputter.attribute("realTime", String.valueOf(generalisation.getTime().getRealTime()));
 					xmlOutputter.attribute("eventSequence", String.valueOf(generalisation.getTime().getEventSequence()));
 					xmlOutputter.endTag(); //Time
+
+					xmlOutputter.startTag("FilterAttributes");
+					for (String filterAttribute : generalisation.getFilterAttributes()) {
+						xmlOutputter.startTag("FilterAttribute");
+						String[] attributeSplitted = filterAttribute.split(" ");
+						String name = attributeSplitted[0];
+						String value = "";
+						// check if a value was given
+						if (attributeSplitted.length == 2) {
+							value = attributeSplitted[1];
+						}
+						xmlOutputter.attribute("name", name);
+						xmlOutputter.attribute("value", value);
+						xmlOutputter.endTag(); //FilterAttribute			
+					}
+					xmlOutputter.endTag(); //FilterAttributes
 
 					xmlOutputter.startTag("AttributeNames");
 					for (String attributeName : generalisation.getAttributeNames()) {

@@ -34,6 +34,7 @@ package FAtiMA.AdvancedMemory;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.StringTokenizer;
 
 import FAtiMA.Core.memory.episodicMemory.ActionDetail;
 import FAtiMA.Core.memory.episodicMemory.EpisodicMemory;
@@ -50,7 +51,8 @@ public class CompoundCue implements Serializable {
 	private static final double FACTOR_DIFFERENT = 0.8;
 
 	private Time time;
-	private int actionDetailTargetID;
+	private ArrayList<String> filterAttributes;
+	private int targetID;
 	private HashMap<Integer, Double> evaluationValues;
 
 	public Time getTime() {
@@ -61,12 +63,20 @@ public class CompoundCue implements Serializable {
 		this.time = time;
 	}
 
-	public int getActionDetailTargetID() {
-		return actionDetailTargetID;
+	public ArrayList<String> getFilterAttributes() {
+		return filterAttributes;
 	}
 
-	public void setActionDetailTargetID(int actionDetailTargetID) {
-		this.actionDetailTargetID = actionDetailTargetID;
+	public void setFilterAttributes(ArrayList<String> filterAttributes) {
+		this.filterAttributes = filterAttributes;
+	}
+
+	public int getTargetID() {
+		return targetID;
+	}
+
+	public void setTargetID(int targetID) {
+		this.targetID = targetID;
 	}
 
 	public HashMap<Integer, Double> getEvaluationValues() {
@@ -75,6 +85,21 @@ public class CompoundCue implements Serializable {
 
 	public void setEvaluationValues(HashMap<Integer, Double> evaluationValues) {
 		this.evaluationValues = evaluationValues;
+	}
+
+	private ArrayList<ActionDetail> filterActionDetails(ArrayList<ActionDetail> actionDetails, String attributeName, Object attributeValue) {
+
+		ArrayList<ActionDetail> actionDetailsFiltered = new ArrayList<ActionDetail>();
+
+		for (ActionDetail actionDetail : actionDetails) {
+			Object attributeValueCurrent = actionDetail.getValueByName(attributeName);
+
+			if (attributeValueCurrent != null && attributeValueCurrent.equals(attributeValue)) {
+				actionDetailsFiltered.add(actionDetail);
+			}
+		}
+
+		return actionDetailsFiltered;
 	}
 
 	private double getMultiplicationFactor(Object object1, Object object2) {
@@ -98,6 +123,14 @@ public class CompoundCue implements Serializable {
 	}
 
 	public ActionDetail execute(EpisodicMemory episodicMemory, ActionDetail actionDetailTarget) {
+		return execute(episodicMemory, null, actionDetailTarget);
+	}
+
+	public ActionDetail execute(ArrayList<ActionDetail> actionDetails, ActionDetail actionDetailTarget) {
+		return execute(actionDetails, null, actionDetailTarget);
+	}
+
+	public ActionDetail execute(EpisodicMemory episodicMemory, String filterAttributesStr, ActionDetail actionDetailTarget) {
 
 		ArrayList<ActionDetail> actionDetails = new ArrayList<ActionDetail>();
 		for (MemoryEpisode memoryEpisode : episodicMemory.getAM().GetAllEpisodes()) {
@@ -107,21 +140,43 @@ public class CompoundCue implements Serializable {
 			actionDetails.add(actionDetail);
 		}
 
-		return execute(actionDetails, actionDetailTarget);
+		return execute(actionDetails, filterAttributesStr, actionDetailTarget);
 	}
 
-	public ActionDetail execute(ArrayList<ActionDetail> actionDetails, ActionDetail actionDetailTarget) {
+	public ActionDetail execute(ArrayList<ActionDetail> actionDetails, String filterAttributesStr, ActionDetail actionDetailTarget) {
 
 		// initialise
 		ActionDetail actionDetailMax = null;
 		double evaluationValueMax = 0;
 		Time time = new Time();
 
+		// extract filter attributes
+		ArrayList<String> filterAttributes = new ArrayList<String>();
+		if (filterAttributesStr != null) {
+			StringTokenizer stringTokenizer = new StringTokenizer(filterAttributesStr, "*");
+			while (stringTokenizer.hasMoreTokens()) {
+				String knownStr = stringTokenizer.nextToken();
+				filterAttributes.add(knownStr);
+			}
+		}
+
+		// filter action details		
+		ArrayList<ActionDetail> actionDetailsFiltered = new ArrayList<ActionDetail>();
+		actionDetailsFiltered.addAll(actionDetails);
+		for (String filterAttribute : filterAttributes) {
+			String[] attributeSplitted = filterAttribute.split(" ");
+			String name = attributeSplitted[0];
+			String value = "";
+			if (attributeSplitted.length == 2) {
+				value = attributeSplitted[1];
+			}
+			actionDetailsFiltered = filterActionDetails(actionDetailsFiltered, name, value);
+		}
 		// calculate evaluation values
 
 		HashMap<Integer, Double> evaluationValues = new HashMap<Integer, Double>();
 
-		for (ActionDetail actionDetail : actionDetails) {
+		for (ActionDetail actionDetail : actionDetailsFiltered) {
 
 			double evaluationValue = 1.0;
 
@@ -148,7 +203,8 @@ public class CompoundCue implements Serializable {
 
 		// update attributes
 		this.time = time;
-		this.actionDetailTargetID = actionDetailTarget.getID();
+		this.filterAttributes = filterAttributes;
+		this.targetID = actionDetailTarget.getID();
 		this.evaluationValues = evaluationValues;
 
 		return actionDetailMax;

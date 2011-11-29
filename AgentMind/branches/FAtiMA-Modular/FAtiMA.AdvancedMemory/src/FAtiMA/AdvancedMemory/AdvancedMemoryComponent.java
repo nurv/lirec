@@ -155,14 +155,14 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 			// parse perception
 			StringTokenizer stringTokenizer = new StringTokenizer(perception, "$");
 			String targetAttribute = stringTokenizer.nextToken();
-			String knownAttributesStr = "";
+			String filterAttributesStr = "";
 			while (stringTokenizer.hasMoreTokens()) {
-				knownAttributesStr += stringTokenizer.nextToken();
+				filterAttributesStr += stringTokenizer.nextToken();
 			}
 
 			// execute Spreading Activation mechanism
 			SpreadingActivation spreadingActivation = new SpreadingActivation();
-			spreadingActivation.spreadActivation(memory.getEpisodicMemory(), knownAttributesStr, targetAttribute);
+			spreadingActivation.spreadActivation(memory.getEpisodicMemory(), filterAttributesStr, targetAttribute);
 
 			// add to results
 			results.add(spreadingActivation);
