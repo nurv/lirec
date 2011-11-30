@@ -14,6 +14,7 @@
                       <bitmap id="Arr2Tex" import="textures/arr2.png"/>                     
                       <bitmap id="Arr3Tex" import="textures/arr3.png"/>                     
                       <bitmap id="Arr4Tex" import="textures/arr4.png"/>                     
+                      <bitmap id="Arr5Tex" import="textures/arr5.png"/>                     
 
                       <bitmap id="RockCube01Tex" import="textures/rock-cube-01.png"/>                     
                       <bitmap id="RockCube02Tex" import="textures/rock-cube-02.png"/>                     

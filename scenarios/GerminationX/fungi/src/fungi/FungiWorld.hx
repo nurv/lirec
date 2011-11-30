@@ -181,7 +181,7 @@ class FungiWorld extends World
         var c=this;
         MouseMove(this, function(e) { c.GameGUI.Store.UpdateCarrying(e.stageX,e.stageY); });
 
-        HighlightEntity = new SpriteEntity(this,new Vec3(0,0,0), Resources.Get("arr1"),false);
+        HighlightEntity = new SpriteEntity(this,new Vec3(0,0,0), Resources.Get("arr5"),false);
         Add(HighlightEntity);
 	}
     
@@ -209,7 +209,7 @@ class FungiWorld extends World
     {
         HighlightEntity.Hide(false);
         HighlightEntity.SetLogicalPos(this,new Vec3(pos.x,pos.y,3));
-        //HighlightEntity.Update(0,this);
+        HighlightEntity.Update(0,this);
     }
 
     public function UnHighlight()
@@ -515,6 +515,13 @@ class FungiWorld extends World
         TheCritters.Update();
         // for the drag drop pingback
         GameGUI.Store.Update(this);
+
+        if (HighlightEntity!=null && !HighlightEntity.Hidden)
+        {
+            var Pos=HighlightEntity.Spr.Pos;
+            HighlightEntity.Spr.SetPos(Pos.Add(new Vec2(0,Math.sin(time/5)*5)));
+            HighlightEntity.Spr.Update(0,null);
+        }
  
         if (SpiralScale>0.1)
         {
