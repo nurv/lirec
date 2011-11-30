@@ -121,38 +121,46 @@
       (first found))))
 
 (defn spirit-ask-for-help [spirit plant diagnosis]
-  (let [player (spirit-pick-helper-player (:owner-id plant) (:layer plant))]
-    (if (and player
-             (> (count (:needed_plants diagnosis)) 0))
-      (do
-        (modify :log
-                (fn [log]
-                  (log-add-msg
-                   (log-add-msg
-                    log
-                    (make-spirit-msg ; ask for help
-                     :needs_help
-                     spirit
-                     (:id player)
-                     (:tile plant)
-                     (:pos plant)
-                     (list
+  ;(println "trying to ask for help")
+  (if (> (count (:needed_plants diagnosis)) 0)
+    (let [needed-plant (rand-nth (:needed_plants diagnosis))
+          player (spirit-pick-helper-player
+                  (:owner-id plant)
+                  (plant-type->layer needed-plant))]
+      ;(println "have a needed plant or two")
+      ;(println "chosen" needed-plant (plant-type->layer needed-plant))
+      (if player
+        (do
+          ;(println "have a player " (:name player))
+          (modify :log
+                  (fn [log]
+                    (log-add-msg
+                     (log-add-msg
+                      log
+                      (make-spirit-msg ; ask for help
+                       :needs_help
+                       spirit
+                       (:id player)
+                       (:tile plant)
+                       (:pos plant)
+                       (list
+                        (:owner-id plant)
+                        (:type plant)
+                        needed-plant)))
+                     ; tell owner we are asking
+                     (make-spirit-msg
+                      :ive_asked_x_for_help
+                      spirit
                       (:owner-id plant)
-                      (:type plant)
-                      (rand-nth (:needed_plants diagnosis)))))
-                   ; tell owner we are asking
-                   (make-spirit-msg
-                    :ive_asked_x_for_help
-                    spirit
-                    (:owner-id plant)
-                    (:tile plant)
-                    (:pos plant)
-                    (list
-                     (:id player)
-                     (:type plant)
-                     (:state plant)))))
-                spirit))
-        spirit)))
+                      (:tile plant)
+                      (:pos plant)
+                      (list
+                       (:id player)
+                       (:type plant)
+                       (:state plant)))))
+                  spirit))
+        spirit))
+    spirit))
              
 (defn spirit-send-diagnosis [spirit diagnosis plant rules]
   (modify :log
@@ -197,9 +205,9 @@
          (tile-get-neighbours (:tile spirit) (:id plant) (:pos plant) tiles)
          rules)]
     (spirit-send-diagnosis
-     (if (< 5 (rand-int 10)) ; sometimes ask for help
+     ;(if (< 5 (rand-int 10)) ; sometimes ask for help
        (spirit-ask-for-help spirit plant diagnosis)
-       spirit)
+       ;spirit)
      diagnosis plant rules)))
 
 (defn make-praise-msg [type spirit plant]
@@ -259,8 +267,9 @@
                        (and
                         (= type "diagnose")
                         (not (= reason "detriment")))
-                       ; don't want to diagnose plants that are detriments to our plants
-                       (spirit-diagnose spirit e rules tiles)
+                       (do ;(println "attempting diagnosis")
+                           ; don't want to diagnose plants that are detriments to our plants
+                           (spirit-diagnose spirit e rules tiles))
                        (= type "praise") (spirit-praise spirit e)
                        :else spirit))
               spirit)) ; can happen if we have moved away from the tile

@@ -34,15 +34,16 @@
    oak.db
    oak.defs
    oak.profile
-   oak.log)
+   oak.log
+   oak.game-data
+   oak.id-gen)
   (:import
    java.util.concurrent.Executors
    java.util.Date)
   (:require [compojure.route :as route]
             [org.danlarkin.json :as dojson])) 
 
-(def state-filename "state.txt")
-(def log-filename "public/log.txt")
+(check-&-build-id-gen)
 
 (def fatima-world
      (ref
@@ -52,8 +53,6 @@
        "data/characters/minds/Actions.xml"
        (list))))
 
-;(def my-game-world (ref (game-world-load state-filename)))
-
 ; ****************************************************************
 ; Uncomment the two lines below and run once to create a new world
 ; ****************************************************************
@@ -61,8 +60,6 @@
 ;(game-world-db-build! (sym-replace2 (deref my-game-world)))
 
 (def my-game-world (ref (make-empty-game-world)))
-
-(append-spit log-filename (str (str (Date.)) " server started\n"))
 
 (defn run []
   (let [time (/ (.getTime (java.util.Date.)) 1000.0)]
@@ -103,28 +100,22 @@
          (cond
           (not id)
           (do
-            (append-spit
-             log-filename
-             (str (Date.) " new player " name " has registered\n"))
-            (mail "dave@fo.am" (str "gx: new player" name) "")
             (dosync
              (ref-set my-game-world
                       (game-world-add-player
                        (deref my-game-world) name fbid)))
-            (json
-             (game-world-find-player
-              (deref my-game-world)
-              (game-world-find-player-id
-               (deref my-game-world) name))))
+            (let [player (game-world-find-player
+                          (deref my-game-world)
+                          (game-world-find-player-id
+                           (deref my-game-world) name))]
+              (game-log player "registered")
+              (json player)))
           :else
-          (do
-            (append-spit
-             log-filename
-             (str (Date.) " " name " is logging in\n"))
-            (json
-             (game-world-find-player
-              (deref my-game-world) id))))))
-
+          (let [player (game-world-find-player
+                        (deref my-game-world) id)]
+            (game-log player "login")
+            (json player)))))
+       
   (GET "/pull/:player-id/:tilex/:tiley/:iefix"
        [player-id tilex tiley iefix]
        (let [tiles (game-world-get-tile-with-neighbours
@@ -163,18 +154,11 @@
        (let [tile-pos (make-vec2 (parse-number tilex) (parse-number tiley))
              pos (make-vec2 (parse-number posx) (parse-number posy))
              owner-id (parse-number owner-id)
-             fruit-id (parse-number fruit-id)]
-         (append-spit
-          log-filename
-          (str
-           (str (Date.)) " " (game-world-id->player-name
-                              (deref my-game-world)
-                              owner-id) " has created a " type " at tile "
-                              tilex "," tiley " position " posx "," posy "\n"))
-         (if (player-has-fruit?
-              (game-world-find-player
-               (deref my-game-world) owner-id)
-              fruit-id)
+             fruit-id (parse-number fruit-id)
+             player (game-world-find-player
+                     (deref my-game-world) owner-id)]
+         (game-log player "planted" (make-location tile-pos pos) (list type))
+         (if (player-has-fruit? player fruit-id)
            (dosync
             (ref-set my-game-world
                      (game-world-modify-player
@@ -190,27 +174,26 @@
                       (fn [player]
                       (player-inc-plant-count
                        (player-remove-fruit player fruit-id))))))
-           (append-spit
-            log-filename
-            (str
-             (str (Date.)) " " (game-world-id->player-name
-                                (deref my-game-world)
-                                owner-id) " tried to plant a "
-                                type " without a seed!\n")))
+           (game-log player "plant-error!"))
          (json '("ok"))))
 
   (GET "/pick/:tilex/:tiley/:plant-id/:player-id/:iefix" [tilex tiley plant-id player-id iefix]
        (let [player-id (parse-number player-id)
              tile-pos (make-vec2 (parse-number tilex) (parse-number tiley))
-             plant-id (parse-number plant-id)]
+             plant-id (parse-number plant-id)
+             plant (game-world-find-plant
+                    (deref my-game-world) tile-pos plant-id)
+             player (game-world-find-player
+                     (deref my-game-world) player-id)]
+         
          (if (game-world-can-player-pick?
               (deref my-game-world) player-id)
            (do
-             (append-spit
-              log-filename
-              (str (Date.) " " (game-world-id->player-name
-                                (deref my-game-world) player-id)
-                   " has picked a seed\n"))
+             (game-log player "pick" (make-location tile-pos (:pos plant))
+                       (list (:type plant)
+                             (game-world-id->player-name
+                              (deref my-game-world)
+                              (:owner-id plant))))
              (dosync
               (ref-set my-game-world
                        (game-world-modify-tile
@@ -251,13 +234,12 @@
              receiver (game-world-find-player
                         (deref my-game-world)
                         receiver-id)]
-         (append-spit
-          log-filename
-          (str (Date.) " " (:name sender) " is giving a fruit to " (:name receiver) "\n"))
          (dosync
           (let [fruit (player-get-fruit sender fruit-id)]
             (if fruit
               (do
+                (game-log sender "player-gift" nil
+                          (list (:name receiver) (:type fruit)))
                 ; this is ridiculous
                 (ref-set my-game-world
                          (game-world-modify-player ; modify the sender
@@ -312,20 +294,16 @@
   (GET "/offering/:player-id/:fruit-id/:spirit/:iefix"
        [player-id fruit-id spirit iefix]
        (let [player-id (parse-number player-id)
-             fruit-id (parse-number fruit-id)]
-         (append-spit
-          log-filename
-          (str (Date.) " " (game-world-id->player-name
-                            (deref my-game-world) player-id)
-               " is offering a fruit to " spirit "\n"))
+             fruit-id (parse-number fruit-id)
+             player (game-world-find-player
+                     (deref my-game-world)
+                     player-id)]
          (dosync
-          (let [fruit (player-get-fruit
-                       (game-world-find-player
-                        (deref my-game-world)
-                        player-id)
-                       fruit-id)]
+          (let [fruit (player-get-fruit player fruit-id)]
             (if fruit
               (do
+                (game-log player "spirit-gift" nil
+                          (list spirit (:type fruit)))
                 (ref-set my-game-world
                          (game-world-modify-player
                           (game-world-modify-spirit

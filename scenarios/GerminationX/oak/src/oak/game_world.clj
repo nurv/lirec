@@ -26,7 +26,8 @@
    oak.player
    oak.defs
    oak.db
-   oak.profile)
+   oak.profile
+   oak.id-gen)
   (:require
    clojure.contrib.math))
 
@@ -108,7 +109,7 @@
   "make a world in the old-fashioned way for building a new
    database with"
   [num-plants area]
-  (let [id-gen (make-id-generator 10000)]
+  (let [id-gen (make-id-generator)]
     (reduce
      (fn [world plant]
        (game-world-add-entity
@@ -163,7 +164,7 @@
 (defn make-empty-game-world
   "make a world for use with the database"
   []
-  (let [id-gen (make-id-generator 10000)]
+  (let [id-gen (make-id-generator)]
      (hash-map
       :version 1
       :log (make-log 100)
@@ -186,7 +187,7 @@
     (modify
      :id-gen
      (fn [id]
-       (make-id-generator id)) ; convert the id into the function
+       (make-id-generator)) ; convert the id into the function
      w)))
 
 (defn game-world-find-player-id
@@ -223,7 +224,7 @@
                    ;(= (:code msg) :thanks_for_helping)
                    )
                 (do
-                  (println "fixup for" (:code msg))
+                  ;(println "fixup for" (:code msg))
                   (cons ; add the name to the start of the list
                    (game-world-id->player-name
                     game-world (first (:extra msg)))

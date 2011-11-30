@@ -66,14 +66,21 @@
      (rand-nth (list 97 98 99))
      (Math/round (+ 1 (rand 10))))))
 
+(defn ill-slow []
+  (= (rand 100) 0))
+
+(defn growing-season [season]
+  (or (= season "spring")
+      (= season "summer")))
+
 (defn adv-state
   "the plant state machine, advance state, based on health and season"
   [state health season annual fungi]
   (cond
    (= state "planted") "grow-a"
-   (= state "grow-a") (cond (> health min-health) "grow-b" :else (rand-nth (list "grow-a" "grow-b")))
-   (= state "grow-b") (cond (> health min-health) "grow-c" :else (rand-nth (list "grow-b" "grow-c")))
-   (= state "grow-c") (cond (> health min-health) "grown" :else (rand-nth (list "grow-c" "grown")))
+   (= state "grow-a") (cond (growing-season season) "grow-b" :else "grow-a")
+   (= state "grow-b") (cond (growing-season season) "grow-c" :else "grow-b")
+   (= state "grow-c") (cond (growing-season season) "grown" :else "grow-c")
    (= state "grown")
    (if fungi
      (cond
@@ -82,16 +89,15 @@
      (cond
       (< health min-health) "ill-a" 
       (and (> health max-health)
-           (or (= season "spring")
-               (= season "summer")))
+           (growing-season season))
       "fruit-a"
-      (or (= season "autumn") (= season "winter"))
+      (not (growing-season season))
       "decay-a"
       :else "grown"))
    (= state "fruit-a") (if (< health min-health) "decay-a" "fruit-b")
    (= state "fruit-b") (if (< health min-health) "decay-a" "fruit-c")
    (= state "fruit-c") (if (or (= season "autumn") (= season "winter")
-                              (< health min-health))
+                               (< health min-health))
                         "decay-a" "grown")
    (= state "decay-a") (if (< health min-health) "ill-a" "decay-b")
    (= state "decay-b") (if (< health min-health) "ill-a" "decay-c")
@@ -100,15 +106,15 @@
                             (if annual "grow-a" "grown")
                             :else
                             (if (< health min-health) "ill-a" "decay-c"))
-   (= state "ill-a") (cond (< health min-health) "ill-b"
-                (> health max-health) "grown"
-                :else "ill-a")
-   (= state "ill-b") (cond (< health min-health) "ill-c" 
-                (> health max-health) "ill-a"
-                :else "ill-b")
-   (= state "ill-c") (cond (< health min-health) "decayed"
-                (> health max-health) "ill-b"
-                :else "ill-c")
+   (= state "ill-a") (cond (and (< health min-health) (ill-slow)) "ill-b"
+                           (> health max-health) "grown"
+                           :else "ill-a")
+   (= state "ill-b") (cond (and (< health min-health) (ill-slow)) "ill-c" 
+                           (> health max-health) "ill-a"
+                           :else "ill-b")
+   (= state "ill-c") (cond (and (< health min-health) (ill-slow)) "decayed"
+                           (> health max-health) "ill-b"
+                           :else "ill-c")
    (= state "decayed") "decayed"))
 
 (defn load-companion-rules [filename]
@@ -335,14 +341,17 @@
 (defn plant-update-health [plant neighbours rules]
   (modify
    :health
-   (fn [health]
+   (fn [health] ; the main health algorithm
      health (max 0 (min 100
                         (+ health
                            (reduce
-                            (fn [r n]
+                            (fn [r n] ; look at companion planting rules
                               (+ r (get-relationship
                                     (:type plant) (:type n) rules)))
-                            (if (empty? neighbours) -1 1)
+                            (cond ; general count of surrounding plants
+                             (empty? neighbours) -1
+                             (> (count neighbours) max-neighbours) -1
+                             :else 1)
                             neighbours)))))
    plant))
 

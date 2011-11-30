@@ -43,9 +43,9 @@
   (if (list-contains? l o)
     l (cons o l)))
 
-(defn make-id-generator [start]
-  (let [i (atom start)]
-    (fn [] (swap! i inc))))
+;(defn make-id-generator [start]
+;  (let [i (atom start)]
+;    (fn [] (swap! i inc))))
 
 ; force all sequences and maps to un-lazy
 (defn doall-recur [s]

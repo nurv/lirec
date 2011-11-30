@@ -316,16 +316,15 @@
              (world-update-agent world agent))
            (world-agents world))}))
 
-(def object-max-age 100)
+(def object-max-age 500)
 
 (defn world-remove-old-objects [world time]
-  (comment merge world
+  (merge world
          {:objects
           (filter
            (fn [obj]
              (< (- time (get obj "time")) object-max-age))
-           (world-objects world))})
-  world)
+           (world-objects world))}))
 
 (defn world-run [world time]
   (world-update-agents
