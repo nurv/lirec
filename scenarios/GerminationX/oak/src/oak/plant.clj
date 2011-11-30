@@ -67,7 +67,7 @@
      (Math/round (+ 1 (rand 10))))))
 
 (defn ill-slow []
-  (= (rand 100) 0))
+  true);(= (rand 100) 0))
 
 (defn growing-season [season]
   (or (= season "spring")
@@ -205,7 +205,7 @@
      (log-add-msg 
       log
       (make-plant-msg
-       :thanks_for_helping
+       "thanks_for_helping"
        plant (:owner-id other)
        (list (:type other)))))
    log
@@ -230,32 +230,32 @@
             (log-relationship
              log plant
              (ill-neighbours-relationship plant neighbours rules >)
-             :i_am_beneficial_to
-             :i_am_benefitting_from)
+             "i_am_beneficial_to"
+             "i_am_benefitting_from")
             plant
             (ill-neighbours-relationship plant neighbours rules <)
-            :i_am_detrimental_to
-            :i_am_detrimented_by)
-           :i_have_been_planted))
+            "i_am_detrimental_to"
+            "i_am_detrimented_by")
+           "i_have_been_planted"))
           
         (and
          (not (= old-state "ill-a"))
          (not (= old-state "ill-b"))
          (= (:state plant) "ill-a"))
-        (plant-add-to-log plant log :i_am_ill)
+        (plant-add-to-log plant log "i_am_ill")
         
        ; (and (= old-state "decay-c")
        ;      (= (:state plant) "grow-a"))
-       ; (plant-add-to-log plant log :i_am_regrowing)
+       ; (plant-add-to-log plant log "i_am_regrowing")
         
         (and (= old-state "ill-c")
              (= (:state plant) "decayed"))
-        (plant-add-to-log plant log :i_have_died)
+        (plant-add-to-log plant log "i_have_died")
 
         (and (= old-state "ill-a")
              (= (:state plant) "grown"))
         (log-thank-owners
-         (plant-add-to-log plant log :i_have_recovered)
+         (plant-add-to-log plant log "i_have_recovered")
          plant
          (neighbours-relationship plant neighbours rules >))
 
@@ -263,7 +263,7 @@
              (= (:state plant) "fruit-a"))
         ; we use this message to count flowered plants
         ; so add a little extra detail we need
-        (plant-add-to-log-extra plant log :i_have_flowered_internal
+        (plant-add-to-log-extra plant log "i_have_flowered_internal"
                                 (list (:id plant))) 
 
         (or
@@ -273,11 +273,11 @@
          (and
           (= old-state "ill-b")
           (= (:state plant) "ill-a")))
-        (plant-add-to-log plant log :i_am_recovering)
+        (plant-add-to-log plant log "i_am_recovering")
         
 ;        (and (not (= old-state :fruit-a))
 ;             (= (:state plant) :fruit-a))
-;        (plant-add-to-log plant log :i_have_fruited)
+;        (plant-add-to-log plant log "i_have_fruited")
       
         :else log))
      plant))
@@ -348,10 +348,11 @@
                             (fn [r n] ; look at companion planting rules
                               (+ r (get-relationship
                                     (:type plant) (:type n) rules)))
-                            (cond ; general count of surrounding plants
-                             (empty? neighbours) -1
-                             (> (count neighbours) max-neighbours) -1
-                             :else 1)
+                            (let [nn (count neighbours)]
+                              (cond ; general count of surrounding plants
+                               (= 0 nn) -1
+                               (> nn max-neighbours) (- max-neighbours nn)
+                               :else 0))
                             neighbours)))))
    plant))
 
@@ -432,7 +433,7 @@
      (log-add-msg 
       log
       (make-plant-msg
-       :i_have_been_picked_by
+       "i_have_been_picked_by"
        plant (:owner-id plant)
        (list (:name player)))))
    (modify :fruit (fn [f] (- f 1)) plant)))

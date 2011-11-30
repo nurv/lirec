@@ -138,7 +138,7 @@
                      (log-add-msg
                       log
                       (make-spirit-msg ; ask for help
-                       :needs_help
+                       "needs_help"
                        spirit
                        (:id player)
                        (:tile plant)
@@ -149,7 +149,7 @@
                         needed-plant)))
                      ; tell owner we are asking
                      (make-spirit-msg
-                      :ive_asked_x_for_help
+                      "ive_asked_x_for_help"
                       spirit
                       (:owner-id plant)
                       (:tile plant)
@@ -172,7 +172,7 @@
                 (log-add-msg
                  log
                  (make-spirit-msg
-                  :your_plant_doesnt_like
+                  "your_plant_doesnt_like"
                   spirit
                   (:owner-id plant)
                   (:tile plant)
@@ -185,7 +185,7 @@
                 (log-add-msg
                  log
                  (make-spirit-msg
-                  :your_plant_needs
+                  "your_plant_needs"
                   spirit
                   (:owner-id plant)
                   (:tile plant)
@@ -231,20 +231,20 @@
              ; if it:s not the same type as the spirit
              (if (not (= (:name spirit)
                          (layer->spirit-name (:layer plant))))
-               (make-praise-msg :spirit_helper_praise spirit plant)
+               (make-praise-msg "spirit_helper_praise" spirit plant)
                ; it:s the same type
                (cond
                 (= (:state plant) "grow-a")
-                (make-praise-msg :spirit_growing_praise spirit plant)
+                (make-praise-msg "spirit_growing_praise" spirit plant)
 
                 (= (:state plant) "fruit-a")
-                (make-praise-msg :spirit_flowering_praise spirit plant)
+                (make-praise-msg "spirit_flowering_praise" spirit plant)
                 
                 (= (:state plant) "fruit-c")
-                (make-praise-msg :spirit_fruiting_praise spirit plant)
+                (make-praise-msg "spirit_fruiting_praise" spirit plant)
 
                 ; i give up!
-                :else (make-praise-msg :spirit_general_praise spirit plant)))))
+                :else (make-praise-msg "spirit_general_praise" spirit plant)))))
           spirit))
 
 (defn spirit-update-from-actions [spirit tiles rules]

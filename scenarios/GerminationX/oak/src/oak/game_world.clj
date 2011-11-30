@@ -212,16 +212,16 @@
                    ; in these messages, we want to replace the id
                    ; of the other player in the extra field with
                    ; their name 
-                   (= (:code msg) :your_plant_doesnt_like)
-                   (= (:code msg) :i_am_detrimented_by)
-                   (= (:code msg) :i_am_detrimental_to)
-                   (= (:code msg) :i_am_benefitting_from)
-                   (= (:code msg) :i_am_beneficial_to)
-                   (= (:code msg) :needs_help)
-                   (= (:code msg) :ive_asked_x_for_help)
-                   (= (:code msg) :gift_sent) ; this msgs doesn't get here as sent by core
-                   (= (:code msg) :gift_received) ; this msgs doesn't get here as sent by core
-                   ;(= (:code msg) :thanks_for_helping)
+                   (= (:code msg) "your_plant_doesnt_like")
+                   (= (:code msg) "i_am_detrimented_by")
+                   (= (:code msg) "i_am_detrimental_to")
+                   (= (:code msg) "i_am_benefitting_from")
+                   (= (:code msg) "i_am_beneficial_to")
+                   (= (:code msg) "needs_help")
+                   (= (:code msg) "ive_asked_x_for_help")
+                   (= (:code msg) "gift_sent") ; this msgs doesn't get here as sent by core
+                   (= (:code msg) "gift_received") ; this msgs doesn't get here as sent by core
+                   ;(= (:code msg) "thanks_for_helping")
                    )
                 (do
                   ;(println "fixup for" (:code msg))

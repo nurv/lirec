@@ -18,15 +18,15 @@
 
 (def server-tick 1)
 (def tile-size 5)
-(def season-length (* 60 30))
-(def plant-tick 2)
+(def season-length (* 60 30)) 
+(def plant-tick 2) 
 (def plant-tick-var 3)
 (def min-health 10)
 (def max-health 90)
 (def start-health 20)
-(def min-neighbours 2)
-(def max-neighbours 5)
-(def max-fruit 5)
+(def min-neighbours 2) ; not used
+(def max-neighbours 10)
+(def max-fruit 3)
 (def max-player-fruit 5) ; max a player can store
 (def seeds-duration (* 60 60 1000))
 (def plant-influence-distance 3)
