@@ -96,17 +96,18 @@ public class AgentDisplay {
 		panel = new ABSelectionPanel();
 		_displayPane.addTab("Activation-Based Selection", null, panel, "displays information related to Activation-Based Selection");
 		
-		JButton teste = new JButton("Save");
-		teste.addActionListener(new TestAction(ag));
-		teste.setText("Save");
-		teste.setEnabled(true);
-		_frame.getContentPane().add(teste);
+		JPanel pnActions = new JPanel();
+		pnActions.setLayout(new BoxLayout(pnActions, BoxLayout.X_AXIS));
+		_frame.getContentPane().add(pnActions);
+				
+		JButton btSaveAgent = new JButton("Save Agent");
+		btSaveAgent.addActionListener(new TestAction(ag));
+		pnActions.add(btSaveAgent);
 		
-		JButton sMemory = new JButton("Save Memory");
-		sMemory.addActionListener(new SaveMemory(ag));
-		sMemory.setText("Save Memory");
-		sMemory.setEnabled(true);
-		_frame.getContentPane().add(sMemory);
+		JButton btSaveMemory = new JButton("Save Memory");
+		btSaveMemory.addActionListener(new SaveMemory(ag));
+		pnActions.add(btSaveMemory);
+		
 		_frame.setVisible(true);		
     }
     
