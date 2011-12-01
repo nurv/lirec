@@ -40,6 +40,7 @@ class FungiWorld extends World
     var MyID:Int;
     var Frame:Int;
     var TickTime:Int;
+    var DepthTickTime:Int;
     var PerceiveTime:Int;
     var Spirits:Array<Spirit>;
     var Server:ServerConnection;
@@ -51,12 +52,15 @@ class FungiWorld extends World
     public var PlayerInfo:Dynamic;
     var LogicalCameraPos:Vec2;
     var HighlightEntity:SpriteEntity; 
+    var HighlightEndTime:Int;
+    public var Time:Int;
 
 	public function new(w:Int, h:Int) 
 	{
 		super();
 		Frame=0;
         TickTime=0;
+        DepthTickTime=0;
         PerceiveTime=0;
 		Width=w;
 		Height=h;
@@ -210,11 +214,7 @@ class FungiWorld extends World
         HighlightEntity.Hide(false);
         HighlightEntity.SetLogicalPos(this,new Vec3(pos.x,pos.y,3));
         HighlightEntity.Update(0,this);
-    }
-
-    public function UnHighlight()
-    {
-        HighlightEntity.Hide(true);
+        HighlightEndTime=Time+100;
     }
 
     public function CanPick()
@@ -289,11 +289,13 @@ class FungiWorld extends World
                        this,
                        function (c,d:Dynamic)
                        {
+                           c.GameGUI.Clear(cast(c,World));
                            c.PlayerInfo=d;
                            // todo: remove MyID, MyName
                            c.MyID=c.PlayerInfo.id;
 		                   c.MyName=c.PlayerInfo.name;
 		                   c.removeChild(c.MyTextEntry);
+                           c.TickTime=0; // force refresh
                        });
 
 		//WorldClient.GetPlants(cast(WorldPos.x,Int),cast(WorldPos.y,Int));
@@ -511,16 +513,17 @@ class FungiWorld extends World
     {
         super.Update(time);
 
+        Time=time;
         Server.Update();
         TheCritters.Update();
-        // for the drag drop pingback
-        GameGUI.Store.Update(this);
+        GameGUI.Update(this,time);
 
         if (HighlightEntity!=null && !HighlightEntity.Hidden)
         {
             var Pos=HighlightEntity.Spr.Pos;
             HighlightEntity.Spr.SetPos(Pos.Add(new Vec2(0,Math.sin(time/5)*5)));
             HighlightEntity.Spr.Update(0,null);
+            if (HighlightEndTime<time) HighlightEntity.Hide(true);
         }
  
         if (SpiralScale>0.1)
@@ -531,7 +534,13 @@ class FungiWorld extends World
             Spiral.SetScale(new Vec2(SpiralScale,SpiralScale));
             Spiral.Update(time,null);
         }
-        
+
+        if (time>DepthTickTime)
+        {
+            SortScene();
+            DepthTickTime=time+50;
+        }
+
         if (time>TickTime)
         {
 //            UpdateSpiritSprites();
@@ -548,7 +557,7 @@ class FungiWorld extends World
                                    if (d.player!=null)
                                    {
                                        c.PlayerInfo=d.player;
-                                       c.GameGUI.Update(cast(c,World),d.player.log);
+                                       c.GameGUI.UpdateData(cast(c,World),d.player.log,time);
                                    }
                                }
                                c.UpdateGhosts(d.spirits);
@@ -557,7 +566,7 @@ class FungiWorld extends World
             if (MyName=="")
             {
                 Server.Request("get-msgs/"+Std.string(MyID),this,
-                               function(c,d){c.GameGUI.UpdateMsgs(cast(c,World),d);});
+                               function(c,d){c.GameGUI.UpdateMsgs(cast(c,World),d,time);});
             }
 
 /*            if (MyName=="")

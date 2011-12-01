@@ -22,13 +22,12 @@ import truffle.Vec3;
 
 class GUI
 {
-    var Blocks:Array<Frame>;
-    var Icons:Array<Sprite>;
+    var Msgs:Array<Message>;
     var MaxStories:Int;
     var Rnd:RndGen;
     var Info:Frame;
     var TopItem:Dynamic;
-    var StrMkr:StringMaker;
+    public var StrMkr:StringMaker;
     var EmotionIndices:Dynamic;
     public var Store:FruitStore;
     var PickPower:Sprite;
@@ -36,13 +35,12 @@ class GUI
     var NoteActive:Bool;
     var NoteFrames:Array<Frame>;
     var NotesRead:Array<String>;
-
+    public var Instructions:Int;
     var BuiltText:Bool;
 
     public function new(w:World)
     {
-        Blocks = [];
-        Icons = [];
+        Msgs = [];
         MaxStories=5;
         Rnd=new RndGen();
         TopItem={};
@@ -52,6 +50,7 @@ class GUI
         NoteFrames=[];
         NotesRead=[];
         BuiltText=false;
+        Instructions=0;
 
         EmotionIndices={LOVE:0,HATE:1,HOPE:2,FEAR:3,SATISFACTION:4,
                         RELIEF:5,FEARS_CONFIRMED:6,DISAPOINTMENT:7,
@@ -87,29 +86,6 @@ class GUI
 		                (col & 0xFF)/255.0);
     }
 
-    function MakeIcon(Pos:Vec2, Type:String, Icon:String, Colour:Vec3)
-    {
-        if (Type=="plant" || Type=="spirit")
-        {
-            var s=new Sprite(Pos,Resources.Get(""));
-            s.LoadFromURL("images/icons/"+Icon+".png");
-
-            if (Type=="spirit")
-            {
-                s.Colour=new Vec3(Colour.x,Colour.y,Colour.z);
-                s.Update(0,null);
-            }
-
-            return s;
-        }
-        else if (Type=="player")
-        {
-            var s=new Sprite(Pos,Resources.Get(""));
-            //s.LoadFromURL("http://graph.facebook.com/"+Icon+"/picture");
-            return s;
-        }
-        else return new Sprite(Pos,Resources.Get("test"));
-    }
 
     function MessagesEq(a:Dynamic, b:Dynamic) : Bool
     {
@@ -140,42 +116,18 @@ class GUI
 
     function BuildNote(w:World,Note)
     {
-        var f=new Frame("",160,170,64*4,64*4);
-        f.R=0.8;
-        f.G=1;
-        f.B=0.8;        
-        f.SetTextSize(10);
-        f.UpdateHTMLText(StrMkr.NoteToString(w.MyName,Note));
-        w.AddSprite(f);
-        
-        f.InitTextures(GUIFrameTextures.Get(),Rnd);
-
-        var b=new Frame("Ok",120+200,170+200,50,20);
-        b.R=1;
-        b.G=1;
-        b.B=0.8;
-        b.SetTextSize(10);
-       // b.InitTextures(GUIFrameTextures.Get(),Rnd);
-        w.AddSprite(b);
-        NoteFrames=[f,b];
-
-        // todo - deal with the options and call server
-        b.MouseDown(this,function(c) {
-            
-            w.Server.Request("answer/"+
-                             w.MyID+"/"+
-                             Note.code+"/"+
-                             "0", // take index from button
-                             c,function (c,data) {});
-
-            var GUI=cast(c,GUI);
-            for (f in GUI.NoteFrames) 
-            {
-                w.RemoveSprite(f);
-            }
-            GUI.NoteFrames=[];
-            GUI.NoteActive=false;
-        });
+        var c=this;
+        var Box=new InfoBox(w,StrMkr.NoteToString(w.MyName,Note),
+                            160,170,64*4,64*4,
+                            function()
+                            {
+                                w.Server.Request("answer/"+
+                                                 w.MyID+"/"+
+                                                 Note.code+"/"+
+                                                 "0", // take index from button
+                                                 w,function (c,data) {});
+                                if (Note.code=="welcome") c.Instructions=1;
+                            },null);
     }
 
     function ProcessNotes(w:World,Notes:Array<Dynamic>)
@@ -231,6 +183,7 @@ class GUI
                 TextField.y=16;
                 TextField.width=300;
                 TextField.background = false;                
+                TextField.selectable = false;
                 var t = new flash.text.TextFormat();
                 t.font = "Verdana"; 
                 t.size = 8;                
@@ -253,126 +206,38 @@ class GUI
             var fruit:Array<Dynamic>=w.PlayerInfo.seeds;
             fruit.reverse();
             Store.UpdateFruit(w,fruit);
-        }
-    }
 
-    static function IsGift(code:String) : Bool
-    {
-        // should match codes in game-world-process-msg
-        return (code == "your_plant_doesnt_like" ||
-                code == "i_am_detrimented_by" ||
-                code == "i_am_detrimental_to" ||
-                code == "i_am_benefitted_by" ||
-                code == "i_am_beneficial_to" ||
-                code == "needs_help" ||
-                code == "ive_asked_x_for_help");
+            if (Instructions==1 && Store.HaveFruit())
+            {
+                Instructions=2;
+                var c=this;
+                var Box = new InfoBox(w,"Great! Now drag your fruit from here to an empty space in the world to plant it",
+                                      100,140,64*3,64*1,
+                                      function()
+                                      {
+                                          c.Instructions=3;
+                                      },
+                                      new Sprite(new Vec2(100+40,100),Resources.Get("arrup")));
+            }
+        }
     }
 
     function BuildMessage(w:World, i:Dynamic, pos:Vec2)
     {
-        Rnd.Seed(Std.int(i.time));
-        var f=new Frame("",pos.x,pos.y,64*2,64*1);
-        f.ExpandLeft=70;
-        f.SetTextSize(10);
-        
-        f.UpdateText(StrMkr.MsgToString(i));
-        
-        var Colour = new Vec3(0.8,0.9,0.7);
-        if (i.type=="spirit") Colour=Spirit.GetEmotionColour(i.emotion);
-        
-        f.R=Colour.x;
-        f.G=Colour.y;
-        f.B=Colour.z;
-        
-        f.InitTextures(GUIFrameTextures.Get(),Rnd);
-        Blocks.push(f);
-        w.AddSprite(f);
-        
-        var Icon=MakeIcon(new Vec2(pos.x-20,pos.y+32),
-                          i.type, i.from, Colour);
-        w.AddSprite(Icon);
-        Icons.push(Icon);
-
-        // goto sender on click
-        f.MouseDown(this,function(c){
-            if (!c.Store.Carrying())
-            {
-                w.SetWorldPos(new Vec3(i.tile.x,i.tile.y,0),
-                              new Vec2(i.pos.x,i.pos.y));
-                w.Highlight(new Vec2(i.pos.x+5,i.pos.y+5));
-            }
-        });
-
-        // overridden below for spirit messages
-        f.MouseOut(this,function(c){
-            w.UnHighlight();
-        });
-
-        // don't have owner id for recipients of plant messages :(
-        if (i.type=="spirit")
-        {
-            var ToolTip=null;
-            var x=pos.x;
-            var y=pos.y;
-            f.MouseOver(this,function(c){
-                if (c.Store.Carrying())
-                {
-                    if (IsGift(i.code))
-                    {
-                        ToolTip=new Frame("Give fruit to "+i.extra[0],x,y,100,20);
-                    }
-                    else
-                    {
-                        ToolTip=new Frame("Give fruit to "+i.from,x,y,100,20);
-                    }
-
-                    w.AddSprite(ToolTip);
-                }
-            });
-
-            f.MouseOut(this,function(c){
-                if (ToolTip!=null)
-                {
-                    w.RemoveSprite(ToolTip);
-                }
-                w.UnHighlight();
-            });
-
-            f.MouseUp(this,function(c){
-                if (c.Store.Carrying())
-                {
-                    var Fruit=c.Store.Drop(w);
-                    if (IsGift(i.code))
-                    {
-                        w.Server.Request("gift/"+
-                                         w.MyID+"/"+
-                                         Fruit.ID+"/"+
-                                         i.extra[1],
-                                         c,function (c,data) {});
-                        
-                    }
-                    else
-                    {
-                        w.Server.Request("offering/"+
-                                         w.MyID+"/"+
-                                         Fruit.ID+"/"+
-                                         i.from,
-                                         c,function (c,data) {});
-                    }
-                }
-            });
-        }
+        Msgs.push(new Message(w,i,pos,this));
     }
 
     function Clear(w:World)
     {
-        for (b in Blocks) w.RemoveSprite(b);
-        Blocks=[];
-        for (i in Icons) w.RemoveSprite(i);
-        Icons=[];
+        for (m in Msgs)
+        {
+            w.RemoveSprite(m.Block);
+            w.RemoveSprite(m.Icon);
+        }
+        Msgs=[];
     }
 
-    function UpdateMessages(w:World, d:Array<Dynamic>)
+    function UpdateMessages(w:World, d:Array<Dynamic>,time:Int)
     {
         if (d.length>0 && !MessagesEq(TopItem,d[0]))
         {
@@ -396,12 +261,12 @@ class GUI
         }
     }
 
-    public function UpdateMsgs(w:World,d:Dynamic)
+    public function UpdateMsgs(w:World,d:Dynamic,time:Int)
     {
         UpdateTopBox(w);
         Rnd.Seed(0);
         Info.InitTextures(GUIFrameTextures.Get(),Rnd);
-        UpdateMessages(w,d);
+        UpdateMessages(w,d,time);
     }
 
     public function UpdateNotes(w:World,d:Dynamic)
@@ -409,10 +274,19 @@ class GUI
         ProcessNotes(w,d);
     }
 
-    public function Update(w:World,d:Dynamic)
+    public function UpdateData(w:World,d:Dynamic,time:Int)
     {
-        UpdateMsgs(w,d.msgs);
+        UpdateMsgs(w,d.msgs,time);
         UpdateNotes(w,d.notes);
     }
 
+    public function Update(w:World,time:Int)
+    {
+        // for the drag drop pingback
+        Store.Update(w);
+        for (m in Msgs)
+        {
+            m.Update(w,time);
+        }
+    }
 }

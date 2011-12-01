@@ -152,6 +152,14 @@ class Spirit extends ClusterEntity
         MessageTime=Date.now().getSeconds()+10;
     }
 
+    override function OnSortScene(world:World, order:Int) : Int
+    {
+        var order=super.OnSortScene(world,order);
+        Message.SetDepth(order++);
+        return order;
+    }
+
+
     static function IntToColourTriple(col:Int) : Vec3
     {
         return new Vec3((col >> 16 & 0xFF)/255.0,
@@ -207,7 +215,7 @@ class Spirit extends ClusterEntity
                 dst = dst.Add(new Vec2(world.MyRndGen.Choose([-2,0,2]),
                                        world.MyRndGen.Choose([-2,0,2])));
             }
-            SetLogicalPos(world,new Vec3(dst.x,dst.y,4));
+            SetLogicalPos(world,new Vec3(dst.x,dst.y,3));
         }
 
         RawEmotions = e.emotions;
@@ -248,7 +256,6 @@ class Spirit extends ClusterEntity
 
     override function Update(frame:Int, world:World)
     {
-
         if (!Message.Hidden)
         {
             Rnd.Seed(0);

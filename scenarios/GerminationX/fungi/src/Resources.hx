@@ -33,6 +33,8 @@ class Arr2Tex extends BitmapData { public function new() { super(0,0); } }
 class Arr3Tex extends BitmapData { public function new() { super(0,0); } }
 class Arr4Tex extends BitmapData { public function new() { super(0,0); } }
 class Arr5Tex extends BitmapData { public function new() { super(0,0); } }
+class ArrUpTex extends BitmapData { public function new() { super(0,0); } }
+class ArrRightTex extends BitmapData { public function new() { super(0,0); } }
 
 class RockCube01Tex extends BitmapData { public function new() { super(0,0); } }
 class RockCube02Tex extends BitmapData { public function new() { super(0,0); } }
@@ -230,6 +232,8 @@ class Resources
         case "arr3": tex.data = new Arr3Tex();
         case "arr4": tex.data = new Arr4Tex();
         case "arr5": tex.data = new Arr5Tex();
+        case "arrup": tex.data = new ArrUpTex();
+        case "arrright": tex.data = new ArrRightTex();
 
         case "rock-cube-01": tex.data = new RockCube01Tex();
         case "rock-cube-02": tex.data = new RockCube02Tex();

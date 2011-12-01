@@ -73,7 +73,8 @@ class FlashFrame implements Frame, extends MovieClip
         //TextField.backgroundColor = 0x8dd788;
         TextField.border = true;
         TextField.wordWrap = true;
-       
+        TextField.selectable = false;
+
         var t = new flash.text.TextFormat();
         t.font = "Verdana"; 
         t.size = TextSize;                
@@ -293,4 +294,10 @@ class FlashFrame implements Frame, extends MovieClip
     {
         MouseOutFunc(MouseOutContext);
     }
+
+    public function SetDepth(s:Int)
+    {
+        parent.setChildIndex(this,s);
+    }
+
 }
