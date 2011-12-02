@@ -27,7 +27,6 @@
 package FAtiMA.AdvancedMemory;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.TimerTask;
 
@@ -49,16 +48,15 @@ public class AdvancedMemoryTask extends TimerTask {
 		String strTime = sdf.format(cal.getTime());
 
 		// initialise
-		ArrayList<String> attributeNames;
+		String attributeNamesStr;
+		int minimumCoverage;
 
 		// generalise
 		System.out.println(strTime + ": performing Generalisation");
-		attributeNames = new ArrayList<String>();
-		attributeNames.add("subject");
-		attributeNames.add("action");
-		attributeNames.add("target");
+		attributeNamesStr = "subject*action*target";
+		minimumCoverage = 1;
 		Generalisation generalisation = new Generalisation();
-		generalisation.generalise(advancedMemoryComponent.getMemory().getEpisodicMemory(), attributeNames, 1);
+		generalisation.generalise(advancedMemoryComponent.getMemory().getEpisodicMemory(), attributeNamesStr, minimumCoverage);
 
 		// add to results
 		advancedMemoryComponent.getResults().add(generalisation);

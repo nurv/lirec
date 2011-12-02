@@ -38,6 +38,7 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import FAtiMA.AdvancedMemory.display.AdvancedMemoryPanel;
+import FAtiMA.AdvancedMemory.ontology.TimeOntology;
 import FAtiMA.AdvancedMemory.parsers.AdvancedMemoryHandler;
 import FAtiMA.AdvancedMemory.writers.AdvancedMemoryWriter;
 import FAtiMA.Core.AgentModel;
@@ -47,6 +48,7 @@ import FAtiMA.Core.componentTypes.IProcessExternalRequestComponent;
 import FAtiMA.Core.emotionalState.AppraisalFrame;
 import FAtiMA.Core.memory.Memory;
 import FAtiMA.Core.memory.episodicMemory.ActionDetail;
+import FAtiMA.Core.memory.episodicMemory.MemoryEpisode;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.util.AgentLogger;
 import FAtiMA.Core.util.ConfigurationManager;
@@ -155,49 +157,236 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 	@Override
 	public void processExternalRequest(AgentModel am, String msgType, String perception) {
 
-		if (msgType.equals(SA_MEMORY)) {
+		if (msgType.equals(CC_MEMORY)) {
+
+			// perception format:
+
+			// different parameters are separated by $
+			// <target id>$<filter attributes>$<time ontology parameters>
+			// note: multiple successive $ are recognised as only one separator 
+
+			// filter attributes are separated by *
+			// <filter attributes> = <filter attribute>*<filter attribute>*...
+			// name and value of a filter attribute are separated by a space
+			// <filter attribute> = <name> <value>
+
+			// <time ontology parameters> = <time abstraction mode>
+			// values for time abstraction mode are defined in TimeOntology
 
 			// parse perception
 			StringTokenizer stringTokenizer = new StringTokenizer(perception, "$");
-			String targetAttribute = stringTokenizer.nextToken();
-			String filterAttributesStr = "";
-			while (stringTokenizer.hasMoreTokens()) {
-				filterAttributesStr += stringTokenizer.nextToken();
+			String targetIDStr = null;
+			try {
+				targetIDStr = stringTokenizer.nextToken();
+			} catch (Exception e) {
+				// no target id given
+				System.err.println("No Target ID given!");
+				return;
+			}
+			String filterAttributesStr = null;
+			try {
+				filterAttributesStr = stringTokenizer.nextToken();
+			} catch (Exception e) {
+				// no filter attributes given
+			}
+			String timeAbstractionModeStr = null;
+			try {
+				timeAbstractionModeStr = stringTokenizer.nextToken();
+			} catch (Exception e) {
+				// no time abstraction mode given
+			}
+
+			// parse target ID
+			Integer targetID = null;
+			try {
+				targetID = Integer.valueOf(targetIDStr);
+			} catch (Exception e) {
+				System.err.println("Error while parsing Target ID!");
+				return;
+			}
+
+			// obtain target action detail
+			ActionDetail actionDetailTarget = null;
+			for (MemoryEpisode memoryEpisode : getMemory().getEpisodicMemory().getAM().GetAllEpisodes()) {
+				for (ActionDetail actionDetail : memoryEpisode.getDetails()) {
+					if (actionDetail.getID() == targetID) {
+						actionDetailTarget = actionDetail;
+					}
+				}
+			}
+			for (ActionDetail actionDetail : getMemory().getEpisodicMemory().getSTEM().getDetails()) {
+				if (actionDetail.getID() == targetID) {
+					actionDetailTarget = actionDetail;
+				}
+			}
+
+			if (actionDetailTarget == null) {
+				// no action detail with Target ID
+				System.err.println("Action Detail with Target ID does not exist!");
+				return;
+			}
+
+			// parse time ontology
+			TimeOntology timeOntology = null;
+			if (timeAbstractionModeStr != null) {
+				// parse time abstraction mode
+				Short timeAbstractionMode = null;
+				try {
+					timeAbstractionMode = Short.valueOf(timeAbstractionModeStr);
+					// create time ontology
+					timeOntology = new TimeOntology();
+					timeOntology.setAbstractionMode(timeAbstractionMode);
+				} catch (Exception e) {
+					System.err.println("Error while parsing Time Abstraction Mode!");
+				}
 			}
 
 			// execute Spreading Activation mechanism
-			SpreadingActivation spreadingActivation = new SpreadingActivation();
-			spreadingActivation.spreadActivation(memory.getEpisodicMemory(), filterAttributesStr, targetAttribute);
-
-			// add to results
-			results.add(spreadingActivation);
-			advancedMemoryPanel.getOverviewPanel().updateResultList();
-
-		} else if (msgType.equals(CC_MEMORY)) {
-
-			// choose target action detail
-			ActionDetail actionDetailTarget = memory.getEpisodicMemory().getSTEM().getDetails().get(0);
-
-			// execute Spreading Activation mechanism
 			CompoundCue compoundCue = new CompoundCue();
-			compoundCue.execute(memory.getEpisodicMemory(), actionDetailTarget);
+			compoundCue.execute(memory.getEpisodicMemory(), filterAttributesStr, actionDetailTarget, timeOntology);
 
 			// add to results
 			results.add(compoundCue);
 			advancedMemoryPanel.getOverviewPanel().updateResultList();
 
-		} else if (msgType.equals(G_MEMORY)) {
+		} else if (msgType.equals(SA_MEMORY)) {
+
+			// perception format:
+
+			// different parameters are separated by $
+			// <target attribute name>$<filter attributes>$<time ontology parameters>
+			// note: multiple successive $ are recognised as only one separator 
+
+			// filter attributes are separated by *
+			// <filter attributes> = <filter attribute>*<filter attribute>*...
+			// name and value of a filter attribute are separated by a space
+			// <filter attribute> = <name> <value>
+
+			// <time ontology parameters> = <time abstraction mode>
+			// values for time abstraction mode are defined in TimeOntology
 
 			// parse perception
-			ArrayList<String> attributeNames = new ArrayList<String>();
-			StringTokenizer stringTokenizer = new StringTokenizer(perception, "*");
-			while (stringTokenizer.hasMoreTokens()) {
-				attributeNames.add(stringTokenizer.nextToken());
+			StringTokenizer stringTokenizer = new StringTokenizer(perception, "$");
+			String targetAttributeName = null;
+			try {
+				targetAttributeName = stringTokenizer.nextToken();
+			} catch (Exception e) {
+				// no target attribute name given
+				System.err.println("No Target Attribute Name given!");
+				return;
+			}
+			String filterAttributesStr = null;
+			try {
+				filterAttributesStr = stringTokenizer.nextToken();
+			} catch (Exception e) {
+				// no filter attributes given
+			}
+			String timeAbstractionModeStr = null;
+			try {
+				timeAbstractionModeStr = stringTokenizer.nextToken();
+			} catch (Exception e) {
+				// no time abstraction mode given
+			}
+
+			// parse time ontology
+			TimeOntology timeOntology = null;
+			if (timeAbstractionModeStr != null) {
+				// parse time abstraction mode
+				Short timeAbstractionMode = null;
+				try {
+					timeAbstractionMode = Short.valueOf(timeAbstractionModeStr);
+					// create time ontology
+					timeOntology = new TimeOntology();
+					timeOntology.setAbstractionMode(timeAbstractionMode);
+				} catch (Exception e) {
+					System.err.println("Error while parsing Time Abstraction Mode!");
+				}
+			}
+
+			// execute Spreading Activation mechanism
+			SpreadingActivation spreadingActivation = new SpreadingActivation();
+			spreadingActivation.spreadActivation(memory.getEpisodicMemory(), filterAttributesStr, targetAttributeName, timeOntology);
+
+			// add to results
+			results.add(spreadingActivation);
+			advancedMemoryPanel.getOverviewPanel().updateResultList();
+
+		} else if (msgType.equals(G_MEMORY)) {
+
+			// perception format:
+
+			// different parameters are separated by $
+			// <attribute names>$<minimum coverage>$<filter attributes>$<time ontology parameters>
+			// note: multiple successive $ are recognised as only one separator 
+
+			// attribute names are separated by *
+			// <attributes names> = <attribute name>*<attribute name>*...
+
+			// filter attributes are separated by *
+			// <filter attributes> = <filter attribute>*<filter attribute>*...
+			// name and value of a filter attribute are separated by a space
+			// <filterAttribute> = <name> <value>
+
+			// <time ontology parameters> = <time abstraction mode>
+			// values for time abstraction mode are defined in TimeOntology
+
+			// parse perception
+			StringTokenizer stringTokenizer = new StringTokenizer(perception, "$");
+			String attributeNamesStr = null;
+			try {
+				attributeNamesStr = stringTokenizer.nextToken();
+			} catch (Exception e) {
+				// no target id given
+				System.err.println("No Attribute Names given!");
+				return;
+			}
+			String minimumCoverageStr = null;
+			try {
+				minimumCoverageStr = stringTokenizer.nextToken();
+			} catch (Exception e) {
+				// no minimum coverage given, use minimum coverage 1
+				minimumCoverageStr = "1";
+			}
+			String filterAttributesStr = null;
+			try {
+				filterAttributesStr = stringTokenizer.nextToken();
+			} catch (Exception e) {
+				// no filter attributes given
+			}
+			String timeAbstractionModeStr = null;
+			try {
+				timeAbstractionModeStr = stringTokenizer.nextToken();
+			} catch (Exception e) {
+				// no time abstraction mode given
+			}
+
+			// parse minimum coverage
+			Integer minimumCoverage = null;
+			try {
+				minimumCoverage = Integer.valueOf(minimumCoverageStr);
+			} catch (Exception e) {
+				System.err.println("Error while parsing Minimum Coverage!");
+				return;
+			}
+
+			// parse time ontology
+			TimeOntology timeOntology = null;
+			if (timeAbstractionModeStr != null) {
+				// parse time abstraction mode
+				Short timeAbstractionMode = null;
+				try {
+					timeAbstractionMode = Short.valueOf(timeAbstractionModeStr);
+					// create time ontology
+					timeOntology = new TimeOntology();
+					timeOntology.setAbstractionMode(timeAbstractionMode);
+				} catch (Exception e) {
+					System.err.println("Error while parsing Time Abstraction Mode!");
+				}
 			}
 
 			// execute Generalisation mechanism
 			Generalisation generalisation = new Generalisation();
-			generalisation.generalise(memory.getEpisodicMemory(), attributeNames, 1);
+			generalisation.generalise(memory.getEpisodicMemory(), filterAttributesStr, attributeNamesStr, minimumCoverage, timeOntology);
 
 			// add to results
 			results.add(generalisation);

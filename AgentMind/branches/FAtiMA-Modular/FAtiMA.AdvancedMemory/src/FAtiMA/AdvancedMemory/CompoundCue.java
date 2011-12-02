@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 
+import FAtiMA.AdvancedMemory.ontology.TimeOntology;
 import FAtiMA.Core.memory.episodicMemory.ActionDetail;
 import FAtiMA.Core.memory.episodicMemory.EpisodicMemory;
 import FAtiMA.Core.memory.episodicMemory.MemoryEpisode;
@@ -52,6 +53,7 @@ public class CompoundCue implements Serializable {
 
 	private Time time;
 	private ArrayList<String> filterAttributes;
+	private TimeOntology timeOntology;
 	private int targetID;
 	private HashMap<Integer, Double> evaluationValues;
 
@@ -71,6 +73,14 @@ public class CompoundCue implements Serializable {
 		this.filterAttributes = filterAttributes;
 	}
 
+	public TimeOntology getTimeOntology() {
+		return timeOntology;
+	}
+
+	public void setTimeOntology(TimeOntology timeOntology) {
+		this.timeOntology = timeOntology;
+	}
+
 	public int getTargetID() {
 		return targetID;
 	}
@@ -87,12 +97,17 @@ public class CompoundCue implements Serializable {
 		this.evaluationValues = evaluationValues;
 	}
 
-	private ArrayList<ActionDetail> filterActionDetails(ArrayList<ActionDetail> actionDetails, String attributeName, Object attributeValue) {
+	private ArrayList<ActionDetail> filterActionDetails(ArrayList<ActionDetail> actionDetails, String attributeName, Object attributeValue, TimeOntology timeOntology) {
 
 		ArrayList<ActionDetail> actionDetailsFiltered = new ArrayList<ActionDetail>();
 
 		for (ActionDetail actionDetail : actionDetails) {
-			Object attributeValueCurrent = actionDetail.getValueByName(attributeName);
+
+			AttributeItem attributeItem = new AttributeItem();
+			attributeItem.setName(attributeName);
+			attributeItem.setValue(actionDetail.getValueByName(attributeName), timeOntology);
+
+			Object attributeValueCurrent = attributeItem.getValue();
 
 			if (attributeValueCurrent != null && attributeValueCurrent.equals(attributeValue)) {
 				actionDetailsFiltered.add(actionDetail);
@@ -123,14 +138,14 @@ public class CompoundCue implements Serializable {
 	}
 
 	public ActionDetail execute(EpisodicMemory episodicMemory, ActionDetail actionDetailTarget) {
-		return execute(episodicMemory, null, actionDetailTarget);
+		return execute(episodicMemory, null, actionDetailTarget, null);
 	}
 
 	public ActionDetail execute(ArrayList<ActionDetail> actionDetails, ActionDetail actionDetailTarget) {
-		return execute(actionDetails, null, actionDetailTarget);
+		return execute(actionDetails, null, actionDetailTarget, null);
 	}
 
-	public ActionDetail execute(EpisodicMemory episodicMemory, String filterAttributesStr, ActionDetail actionDetailTarget) {
+	public ActionDetail execute(EpisodicMemory episodicMemory, String filterAttributesStr, ActionDetail actionDetailTarget, TimeOntology timeOntology) {
 
 		ArrayList<ActionDetail> actionDetails = new ArrayList<ActionDetail>();
 		for (MemoryEpisode memoryEpisode : episodicMemory.getAM().GetAllEpisodes()) {
@@ -140,10 +155,15 @@ public class CompoundCue implements Serializable {
 			actionDetails.add(actionDetail);
 		}
 
-		return execute(actionDetails, filterAttributesStr, actionDetailTarget);
+		// alternative:
+		// create search keys from filter attributes string
+		// use memory search to get list of action details (both past and recent)
+		// call generalise with these action details and an empty filter attributes string (or null)
+
+		return execute(actionDetails, filterAttributesStr, actionDetailTarget, timeOntology);
 	}
 
-	public ActionDetail execute(ArrayList<ActionDetail> actionDetails, String filterAttributesStr, ActionDetail actionDetailTarget) {
+	public ActionDetail execute(ArrayList<ActionDetail> actionDetails, String filterAttributesStr, ActionDetail actionDetailTarget, TimeOntology timeOntology) {
 
 		// initialise
 		ActionDetail actionDetailMax = null;
@@ -155,12 +175,12 @@ public class CompoundCue implements Serializable {
 		if (filterAttributesStr != null) {
 			StringTokenizer stringTokenizer = new StringTokenizer(filterAttributesStr, "*");
 			while (stringTokenizer.hasMoreTokens()) {
-				String knownStr = stringTokenizer.nextToken();
-				filterAttributes.add(knownStr);
+				String filterAttribute = stringTokenizer.nextToken();
+				filterAttributes.add(filterAttribute);
 			}
 		}
 
-		// filter action details		
+		// filter action details
 		ArrayList<ActionDetail> actionDetailsFiltered = new ArrayList<ActionDetail>();
 		actionDetailsFiltered.addAll(actionDetails);
 		for (String filterAttribute : filterAttributes) {
@@ -170,7 +190,7 @@ public class CompoundCue implements Serializable {
 			if (attributeSplitted.length == 2) {
 				value = attributeSplitted[1];
 			}
-			actionDetailsFiltered = filterActionDetails(actionDetailsFiltered, name, value);
+			actionDetailsFiltered = filterActionDetails(actionDetailsFiltered, name, value, timeOntology);
 		}
 		// calculate evaluation values
 
@@ -204,6 +224,7 @@ public class CompoundCue implements Serializable {
 		// update attributes
 		this.time = time;
 		this.filterAttributes = filterAttributes;
+		this.timeOntology = timeOntology;
 		this.targetID = actionDetailTarget.getID();
 		this.evaluationValues = evaluationValues;
 

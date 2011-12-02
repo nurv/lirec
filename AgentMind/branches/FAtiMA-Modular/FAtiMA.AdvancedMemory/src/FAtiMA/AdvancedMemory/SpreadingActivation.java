@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 
+import FAtiMA.AdvancedMemory.ontology.TimeOntology;
 import FAtiMA.Core.memory.episodicMemory.ActionDetail;
 import FAtiMA.Core.memory.episodicMemory.EpisodicMemory;
 import FAtiMA.Core.memory.episodicMemory.MemoryEpisode;
@@ -49,6 +50,7 @@ public class SpreadingActivation implements Serializable {
 
 	private Time time;
 	private ArrayList<String> filterAttributes;
+	private TimeOntology timeOntology;
 	private String targetAttributeName;
 	private HashMap<String, Integer> frequencies;
 
@@ -68,6 +70,14 @@ public class SpreadingActivation implements Serializable {
 		this.filterAttributes = filterAttributes;
 	}
 
+	public TimeOntology getTimeOntology() {
+		return timeOntology;
+	}
+
+	public void setTimeOntology(TimeOntology timeOntology) {
+		this.timeOntology = timeOntology;
+	}
+
 	public String getTargetAttributeName() {
 		return targetAttributeName;
 	}
@@ -84,12 +94,17 @@ public class SpreadingActivation implements Serializable {
 		this.frequencies = frequencies;
 	}
 
-	private ArrayList<ActionDetail> filterActionDetails(ArrayList<ActionDetail> actionDetails, String attributeName, Object attributeValue) {
+	private ArrayList<ActionDetail> filterActionDetails(ArrayList<ActionDetail> actionDetails, String attributeName, Object attributeValue, TimeOntology timeOntology) {
 
 		ArrayList<ActionDetail> actionDetailsFiltered = new ArrayList<ActionDetail>();
 
 		for (ActionDetail actionDetail : actionDetails) {
-			Object attributeValueCurrent = actionDetail.getValueByName(attributeName);
+
+			AttributeItem attributeItem = new AttributeItem();
+			attributeItem.setName(attributeName);
+			attributeItem.setValue(actionDetail.getValueByName(attributeName), timeOntology);
+
+			Object attributeValueCurrent = attributeItem.getValue();
 
 			if (attributeValueCurrent != null && attributeValueCurrent.equals(attributeValue)) {
 				actionDetailsFiltered.add(actionDetail);
@@ -100,14 +115,14 @@ public class SpreadingActivation implements Serializable {
 	}
 
 	public Object spreadActivation(EpisodicMemory episodicMemory, String targetAttributeName) {
-		return spreadActivation(episodicMemory, null, targetAttributeName);
+		return spreadActivation(episodicMemory, null, targetAttributeName, null);
 	}
 
 	public Object spreadActivation(ArrayList<ActionDetail> actionDetails, String targetAttributeName) {
-		return spreadActivation(actionDetails, null, targetAttributeName);
+		return spreadActivation(actionDetails, null, targetAttributeName, null);
 	}
 
-	public Object spreadActivation(EpisodicMemory episodicMemory, String filterAttributesStr, String targetAttributeName) {
+	public Object spreadActivation(EpisodicMemory episodicMemory, String filterAttributesStr, String targetAttributeName, TimeOntology timeOntology) {
 
 		ArrayList<ActionDetail> actionDetails = new ArrayList<ActionDetail>();
 		for (MemoryEpisode memoryEpisode : episodicMemory.getAM().GetAllEpisodes()) {
@@ -117,10 +132,15 @@ public class SpreadingActivation implements Serializable {
 			actionDetails.add(actionDetail);
 		}
 
-		return spreadActivation(actionDetails, filterAttributesStr, targetAttributeName);
+		// alternative:
+		// create search keys from filter attributes string
+		// use memory search to get list of action details (both past and recent)
+		// call generalise with these action details and an empty filter attributes string (or null)
+
+		return spreadActivation(actionDetails, filterAttributesStr, targetAttributeName, timeOntology);
 	}
 
-	public Object spreadActivation(ArrayList<ActionDetail> actionDetails, String filterAttributesStr, String targetAttributeName) {
+	public Object spreadActivation(ArrayList<ActionDetail> actionDetails, String filterAttributesStr, String targetAttributeName, TimeOntology timeOntology) {
 
 		// initialise
 		Object valueMax = null;
@@ -132,12 +152,12 @@ public class SpreadingActivation implements Serializable {
 		if (filterAttributesStr != null) {
 			StringTokenizer stringTokenizer = new StringTokenizer(filterAttributesStr, "*");
 			while (stringTokenizer.hasMoreTokens()) {
-				String knownStr = stringTokenizer.nextToken();
-				filterAttributes.add(knownStr);
+				String filterAttribute = stringTokenizer.nextToken();
+				filterAttributes.add(filterAttribute);
 			}
 		}
 
-		// filter action details		
+		// filter action details
 		ArrayList<ActionDetail> actionDetailsFiltered = new ArrayList<ActionDetail>();
 		actionDetailsFiltered.addAll(actionDetails);
 		for (String filterAttribute : filterAttributes) {
@@ -147,7 +167,7 @@ public class SpreadingActivation implements Serializable {
 			if (attributeSplitted.length == 2) {
 				value = attributeSplitted[1];
 			}
-			actionDetailsFiltered = filterActionDetails(actionDetailsFiltered, name, value);
+			actionDetailsFiltered = filterActionDetails(actionDetailsFiltered, name, value, timeOntology);
 		}
 
 		// calculate frequencies
@@ -155,7 +175,12 @@ public class SpreadingActivation implements Serializable {
 		HashMap<String, Integer> frequencies = new HashMap<String, Integer>();
 
 		for (ActionDetail actionDetail : actionDetailsFiltered) {
-			Object value = actionDetail.getValueByName(targetAttributeName);
+
+			AttributeItem attributeItem = new AttributeItem();
+			attributeItem.setName(targetAttributeName);
+			attributeItem.setValue(actionDetail.getValueByName(targetAttributeName), timeOntology);
+
+			Object value = attributeItem.getValue();
 
 			String valueStr = String.valueOf(value);
 			Integer frequency = frequencies.get(valueStr);
@@ -177,6 +202,7 @@ public class SpreadingActivation implements Serializable {
 		// update attributes
 		this.time = time;
 		this.filterAttributes = filterAttributes;
+		this.timeOntology = timeOntology;
 		this.targetAttributeName = targetAttributeName;
 		this.frequencies = frequencies;
 

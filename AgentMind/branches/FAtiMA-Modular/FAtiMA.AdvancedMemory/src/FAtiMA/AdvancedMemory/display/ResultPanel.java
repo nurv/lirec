@@ -98,14 +98,14 @@ public class ResultPanel extends JPanel {
 			String parameters = "";
 			parameters += "Filter Attributes: " + generalisation.getFilterAttributes();
 			parameters += " | ";
-			parameters += "Generalisation Attributes: " + generalisation.getAttributeNames();
+			parameters += "Attributes: " + generalisation.getAttributeNames();
 			parameters += " | ";
 			parameters += "Minimum Coverage: " + generalisation.getMinimumCoverage();
 			lbParameters.setText(parameters);
 		} else {
 			lbMechanism.setText("Unknown");
 			lbTime.setText("-");
-			lbParameters.setText("<>");
+			lbParameters.setText("-");
 		}
 
 		JButton btView = new JButton("View");

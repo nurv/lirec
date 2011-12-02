@@ -39,6 +39,7 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -49,6 +50,7 @@ import javax.swing.table.DefaultTableModel;
 
 import FAtiMA.AdvancedMemory.AdvancedMemoryComponent;
 import FAtiMA.AdvancedMemory.CompoundCue;
+import FAtiMA.AdvancedMemory.ontology.TimeOntology;
 import FAtiMA.Core.memory.episodicMemory.ActionDetail;
 import FAtiMA.Core.memory.episodicMemory.MemoryEpisode;
 
@@ -87,6 +89,9 @@ public class CompoundCuePanel extends JPanel {
 	private JCheckBox cbFilterTime;
 	private JTextField tfFilterTime;
 
+	private JCheckBox cbTimeOntology;
+	private JComboBox cbTimeAbstractionMode;
+
 	private JTextField tfTargetID;
 
 	private TableModelCompoundCue tmResults;
@@ -99,14 +104,10 @@ public class CompoundCuePanel extends JPanel {
 
 		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
-		JPanel pnSettings = new JPanel();
-		pnSettings.setLayout(new BoxLayout(pnSettings, BoxLayout.X_AXIS));
-		this.add(pnSettings);
-
 		JPanel pnFilter = new JPanel();
-		pnFilter.setLayout(new GridLayout(7, 4));
+		pnFilter.setLayout(new GridLayout(5, 6));
 		pnFilter.setBorder(BorderFactory.createTitledBorder("Filter"));
-		pnSettings.add(pnFilter);
+		this.add(pnFilter);
 
 		cbFilterSubject = new JCheckBox("Subject");
 		pnFilter.add(cbFilterSubject);
@@ -173,8 +174,31 @@ public class CompoundCuePanel extends JPanel {
 		tfFilterTime = new JTextField();
 		pnFilter.add(tfFilterTime);
 
+		JPanel pnSettings = new JPanel();
+		pnSettings.setLayout(new BoxLayout(pnSettings, BoxLayout.X_AXIS));
+		pnSettings.setBorder(BorderFactory.createEtchedBorder());
+		this.add(pnSettings);
+
+		JPanel pnOntology = new JPanel();
+		pnOntology.setLayout(new BoxLayout(pnOntology, BoxLayout.Y_AXIS));
+		pnOntology.setBorder(BorderFactory.createTitledBorder("Ontology"));
+		pnSettings.add(pnOntology);
+
+		cbTimeOntology = new JCheckBox("Use Time Ontology");
+		pnOntology.add(cbTimeOntology);
+
+		JLabel lbTimeAbstractionMode = new JLabel("Time Abstraction Mode:");
+		pnOntology.add(lbTimeAbstractionMode);
+
+		cbTimeAbstractionMode = new JComboBox();
+		cbTimeAbstractionMode.setMinimumSize(new Dimension(200, 26));
+		cbTimeAbstractionMode.setMaximumSize(new Dimension(200, 26));
+		cbTimeAbstractionMode.addItem("Part Of Day");
+		cbTimeAbstractionMode.addItem("Day Of Week");
+		pnOntology.add(cbTimeAbstractionMode);
+
 		JPanel pnMechanism = new JPanel();
-		pnMechanism.setLayout(new BoxLayout(pnMechanism, BoxLayout.Y_AXIS));
+		pnMechanism.setLayout(new BoxLayout(pnMechanism, BoxLayout.X_AXIS));
 		pnSettings.add(pnMechanism);
 
 		JPanel pnParameters = new JPanel();
@@ -203,14 +227,20 @@ public class CompoundCuePanel extends JPanel {
 		btStoreResult.addActionListener(new AlStoreResult());
 		pnActions.add(btStoreResult);
 
-		for (Component component : pnActions.getComponents())
+		for (Component component : pnSettings.getComponents())
+			((JComponent) component).setAlignmentY(Component.TOP_ALIGNMENT);
+
+		for (Component component : pnOntology.getComponents())
 			((JComponent) component).setAlignmentX(Component.LEFT_ALIGNMENT);
+
+		for (Component component : pnMechanism.getComponents())
+			((JComponent) component).setAlignmentY(Component.TOP_ALIGNMENT);
 
 		for (Component component : pnParameters.getComponents())
 			((JComponent) component).setAlignmentX(Component.LEFT_ALIGNMENT);
 
-		for (Component component : pnSettings.getComponents())
-			((JComponent) component).setAlignmentY(Component.TOP_ALIGNMENT);
+		for (Component component : pnActions.getComponents())
+			((JComponent) component).setAlignmentX(Component.LEFT_ALIGNMENT);
 
 		JPanel pnResults = new JPanel();
 		pnResults.setLayout(new BoxLayout(pnResults, BoxLayout.Y_AXIS));
@@ -282,6 +312,15 @@ public class CompoundCuePanel extends JPanel {
 		if (cbFilterTime.isSelected())
 			filterAttributesStr += "*time " + tfFilterTime.getText().trim();
 
+		// parse ontology usage
+		TimeOntology timeOntology = null;
+		if (cbTimeOntology.isSelected()) {
+			timeOntology = new TimeOntology();
+			// combo box indices must correspond to abstraction mode constants here
+			short abstractionMode = (short) cbTimeAbstractionMode.getSelectedIndex();
+			timeOntology.setAbstractionMode(abstractionMode);
+		}
+
 		// parse target ID
 		Integer targetID = null;
 		try {
@@ -295,30 +334,30 @@ public class CompoundCuePanel extends JPanel {
 		ActionDetail actionDetailTarget = null;
 		for (MemoryEpisode memoryEpisode : advancedMemoryComponent.getMemory().getEpisodicMemory().getAM().GetAllEpisodes()) {
 			for (ActionDetail actionDetail : memoryEpisode.getDetails()) {
-				if (actionDetail.getID() == targetID.intValue()) {
+				if (actionDetail.getID() == targetID) {
 					actionDetailTarget = actionDetail;
 				}
 			}
 		}
 		for (ActionDetail actionDetail : advancedMemoryComponent.getMemory().getEpisodicMemory().getSTEM().getDetails()) {
-			if (actionDetail.getID() == targetID.intValue()) {
+			if (actionDetail.getID() == targetID) {
 				actionDetailTarget = actionDetail;
 			}
 		}
 
 		// check if target action detail exists
 		if (actionDetailTarget == null) {
-			lbStatus.setText("Action Detail with target ID does not exist!");
-		} else {
-
-			// execute compound cue mechanism
-			CompoundCue compoundCue = new CompoundCue();
-			compoundCue.execute(advancedMemoryComponent.getMemory().getEpisodicMemory(), filterAttributesStr, actionDetailTarget);
-			this.compoundCue = compoundCue;
-
-			// update panel
-			updatePanel();
+			lbStatus.setText("Action Detail with Target ID does not exist!");
+			return;
 		}
+
+		// execute compound cue mechanism
+		CompoundCue compoundCue = new CompoundCue();
+		compoundCue.execute(advancedMemoryComponent.getMemory().getEpisodicMemory(), filterAttributesStr, actionDetailTarget, timeOntology);
+		this.compoundCue = compoundCue;
+
+		// update panel
+		updatePanel();
 
 	}
 
@@ -406,6 +445,17 @@ public class CompoundCuePanel extends JPanel {
 				tfFilterTime.setText(value);
 			}
 
+		}
+
+		// set ontology usage
+		TimeOntology timeOntology = compoundCue.getTimeOntology();
+		if (timeOntology == null) {
+			cbTimeOntology.setSelected(false);
+			cbTimeAbstractionMode.setSelectedIndex(0);
+		} else {
+			cbTimeOntology.setSelected(true);
+			// combo box indices must correspond to abstraction mode constants here			
+			cbTimeAbstractionMode.setSelectedIndex(timeOntology.getAbstractionMode());
 		}
 
 		// update target id

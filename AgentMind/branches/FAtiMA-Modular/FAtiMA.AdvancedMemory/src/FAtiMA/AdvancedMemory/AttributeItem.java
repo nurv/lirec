@@ -30,6 +30,7 @@ package FAtiMA.AdvancedMemory;
 
 import java.io.Serializable;
 
+import FAtiMA.AdvancedMemory.ontology.TimeOntology;
 import FAtiMA.Core.memory.episodicMemory.Time;
 
 public class AttributeItem implements Serializable {
@@ -52,11 +53,13 @@ public class AttributeItem implements Serializable {
 	}
 
 	public void setValue(Object value) {
-		// use abstracted time
-		if (value instanceof Time) {
-			this.value = ((Time) value).getStrRealTime();
-		} else {
-			this.value = value;
+		setValue(value, null);
+	}
+
+	public void setValue(Object value, TimeOntology timeOntology) {
+		this.value = value;
+		if (timeOntology != null && value instanceof Time && name.equals("time")) {
+			this.value = timeOntology.getAbstractedStr(((Time) value).getRealTime());
 		}
 	}
 

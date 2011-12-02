@@ -32,6 +32,7 @@ package FAtiMA.AdvancedMemory;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import FAtiMA.AdvancedMemory.ontology.TimeOntology;
 import FAtiMA.Core.memory.episodicMemory.ActionDetail;
 
 public class AttributeItemSet implements Serializable {
@@ -76,6 +77,10 @@ public class AttributeItemSet implements Serializable {
 	}
 
 	public int getCoverage(ArrayList<ActionDetail> actionDetails) {
+		return getCoverage(actionDetails, null);
+	}
+
+	public int getCoverage(ArrayList<ActionDetail> actionDetails, TimeOntology timeOntology) {
 		int coverage = 0;
 
 		for (ActionDetail actionDetail : actionDetails) {
@@ -87,7 +92,7 @@ public class AttributeItemSet implements Serializable {
 
 				AttributeItem item = new AttributeItem();
 				item.setName(attributeName);
-				item.setValue(actionDetail.getValueByName(attributeName));
+				item.setValue(actionDetail.getValueByName(attributeName), timeOntology);
 				Object value = item.getValue();
 
 				if (attributeValue == null) {

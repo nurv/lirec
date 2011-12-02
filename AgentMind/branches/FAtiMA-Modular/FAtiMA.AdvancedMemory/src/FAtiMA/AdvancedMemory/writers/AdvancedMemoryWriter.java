@@ -39,6 +39,7 @@ import FAtiMA.AdvancedMemory.CompoundCue;
 import FAtiMA.AdvancedMemory.GER;
 import FAtiMA.AdvancedMemory.Generalisation;
 import FAtiMA.AdvancedMemory.SpreadingActivation;
+import FAtiMA.AdvancedMemory.ontology.TimeOntology;
 
 public class AdvancedMemoryWriter {
 
@@ -81,6 +82,13 @@ public class AdvancedMemoryWriter {
 					}
 					xmlOutputter.endTag(); //FilterAttributes
 
+					TimeOntology timeOntology = compoundCue.getTimeOntology();
+					if (timeOntology != null) {
+						xmlOutputter.startTag("TimeOntology");
+						xmlOutputter.attribute("abstractionMode", String.valueOf(timeOntology.getAbstractionMode()));
+						xmlOutputter.endTag(); //TimeOntology						
+					}
+
 					xmlOutputter.startTag("EvaluationValues");
 					for (Integer id : compoundCue.getEvaluationValues().keySet()) {
 						xmlOutputter.startTag("EvaluationValue");
@@ -121,6 +129,13 @@ public class AdvancedMemoryWriter {
 					}
 					xmlOutputter.endTag(); //FilterAttributes
 
+					TimeOntology timeOntology = spreadingActivation.getTimeOntology();
+					if (timeOntology != null) {
+						xmlOutputter.startTag("TimeOntology");
+						xmlOutputter.attribute("abstractionMode", String.valueOf(timeOntology.getAbstractionMode()));
+						xmlOutputter.endTag(); //TimeOntology						
+					}
+
 					xmlOutputter.startTag("Frequencies");
 					for (String value : spreadingActivation.getFrequencies().keySet()) {
 						xmlOutputter.startTag("Frequency");
@@ -156,15 +171,22 @@ public class AdvancedMemoryWriter {
 						}
 						xmlOutputter.attribute("name", name);
 						xmlOutputter.attribute("value", value);
-						xmlOutputter.endTag(); //FilterAttribute			
+						xmlOutputter.endTag(); //FilterAttribute
 					}
 					xmlOutputter.endTag(); //FilterAttributes
+
+					TimeOntology timeOntology = generalisation.getTimeOntology();
+					if (timeOntology != null) {
+						xmlOutputter.startTag("TimeOntology");
+						xmlOutputter.attribute("abstractionMode", String.valueOf(timeOntology.getAbstractionMode()));
+						xmlOutputter.endTag(); //TimeOntology						
+					}
 
 					xmlOutputter.startTag("AttributeNames");
 					for (String attributeName : generalisation.getAttributeNames()) {
 						xmlOutputter.startTag("AttributeName");
 						xmlOutputter.attribute("name", attributeName);
-						xmlOutputter.endTag(); //AttributeName	
+						xmlOutputter.endTag(); //AttributeName
 					}
 					xmlOutputter.endTag(); //AttributeNames
 

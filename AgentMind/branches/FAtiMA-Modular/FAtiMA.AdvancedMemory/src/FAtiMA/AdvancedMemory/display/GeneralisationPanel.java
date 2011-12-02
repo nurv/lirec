@@ -39,6 +39,7 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -50,6 +51,7 @@ import javax.swing.table.DefaultTableModel;
 import FAtiMA.AdvancedMemory.AdvancedMemoryComponent;
 import FAtiMA.AdvancedMemory.GER;
 import FAtiMA.AdvancedMemory.Generalisation;
+import FAtiMA.AdvancedMemory.ontology.TimeOntology;
 
 public class GeneralisationPanel extends JPanel {
 
@@ -100,6 +102,9 @@ public class GeneralisationPanel extends JPanel {
 	private JCheckBox cbDesirability;
 	private JCheckBox cbTime;
 
+	private JCheckBox cbTimeOntology;
+	private JComboBox cbTimeAbstractionMode;
+
 	private JTextField tfMinimumCoverage;
 
 	private TableModelGeneralisation tmResults;
@@ -112,15 +117,10 @@ public class GeneralisationPanel extends JPanel {
 
 		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
-		JPanel pnSettings = new JPanel();
-		pnSettings.setLayout(new BoxLayout(pnSettings, BoxLayout.X_AXIS));
-		pnSettings.setBorder(BorderFactory.createEtchedBorder());
-		this.add(pnSettings);
-
 		JPanel pnFilter = new JPanel();
-		pnFilter.setLayout(new GridLayout(7, 4));
+		pnFilter.setLayout(new GridLayout(5, 6));
 		pnFilter.setBorder(BorderFactory.createTitledBorder("Filter"));
-		pnSettings.add(pnFilter);
+		this.add(pnFilter);
 
 		cbFilterSubject = new JCheckBox("Subject");
 		pnFilter.add(cbFilterSubject);
@@ -187,49 +187,72 @@ public class GeneralisationPanel extends JPanel {
 		tfFilterTime = new JTextField();
 		pnFilter.add(tfFilterTime);
 
-		JPanel pnAttributeSelection = new JPanel();
-		pnAttributeSelection.setLayout(new GridLayout(7, 6));
-		pnAttributeSelection.setBorder(BorderFactory.createTitledBorder("Attribute Selection"));
-		pnSettings.add(pnAttributeSelection);
+		JPanel pnSettings = new JPanel();
+		pnSettings.setLayout(new BoxLayout(pnSettings, BoxLayout.X_AXIS));
+		pnSettings.setBorder(BorderFactory.createEtchedBorder());
+		this.add(pnSettings);
+
+		JPanel pnOntology = new JPanel();
+		pnOntology.setLayout(new BoxLayout(pnOntology, BoxLayout.Y_AXIS));
+		pnOntology.setBorder(BorderFactory.createTitledBorder("Ontology"));
+		pnSettings.add(pnOntology);
+
+		cbTimeOntology = new JCheckBox("Use Time Ontology");
+		pnOntology.add(cbTimeOntology);
+
+		JLabel lbTimeAbstractionMode = new JLabel("Time Abstraction Mode:");
+		pnOntology.add(lbTimeAbstractionMode);
+
+		cbTimeAbstractionMode = new JComboBox();
+		cbTimeAbstractionMode.setMinimumSize(new Dimension(200, 26));
+		cbTimeAbstractionMode.setMaximumSize(new Dimension(200, 26));
+		cbTimeAbstractionMode.addItem("Part Of Day");
+		cbTimeAbstractionMode.addItem("Day Of Week");
+		pnOntology.add(cbTimeAbstractionMode);
+
+		JPanel pnGeneralisationAttributes = new JPanel();
+		pnGeneralisationAttributes.setLayout(new GridLayout(5, 3));
+		pnGeneralisationAttributes.setBorder(BorderFactory.createTitledBorder("Attributes"));
+		pnSettings.add(pnGeneralisationAttributes);
 
 		cbSubject = new JCheckBox("Subject");
-		pnAttributeSelection.add(cbSubject);
+		pnGeneralisationAttributes.add(cbSubject);
 
 		cbAction = new JCheckBox("Action");
-		pnAttributeSelection.add(cbAction);
+		pnGeneralisationAttributes.add(cbAction);
 
 		cbTarget = new JCheckBox("Target");
-		pnAttributeSelection.add(cbTarget);
+		pnGeneralisationAttributes.add(cbTarget);
 
 		cbObject = new JCheckBox("Object");
-		pnAttributeSelection.add(cbObject);
+		pnGeneralisationAttributes.add(cbObject);
 
 		cbLocation = new JCheckBox("Location");
-		pnAttributeSelection.add(cbLocation);
+		pnGeneralisationAttributes.add(cbLocation);
 
 		cbIntention = new JCheckBox("Intention");
-		pnAttributeSelection.add(cbIntention);
+		pnGeneralisationAttributes.add(cbIntention);
 
 		cbStatus = new JCheckBox("Status");
-		pnAttributeSelection.add(cbStatus);
+		pnGeneralisationAttributes.add(cbStatus);
 
 		cbEmotion = new JCheckBox("Emotion");
-		pnAttributeSelection.add(cbEmotion);
+		pnGeneralisationAttributes.add(cbEmotion);
 
 		cbSpeechActMeaning = new JCheckBox("Speech Act Meaning");
-		pnAttributeSelection.add(cbSpeechActMeaning);
+		pnGeneralisationAttributes.add(cbSpeechActMeaning);
 
 		cbMultimediaPath = new JCheckBox("Multimedia Path");
-		pnAttributeSelection.add(cbMultimediaPath);
+		pnGeneralisationAttributes.add(cbMultimediaPath);
 
 		cbPraiseworthiness = new JCheckBox("Praiseworthiness");
-		pnAttributeSelection.add(cbPraiseworthiness);
+		pnGeneralisationAttributes.add(cbPraiseworthiness);
 
 		cbDesirability = new JCheckBox("Desirability");
-		pnAttributeSelection.add(cbDesirability);
+		pnGeneralisationAttributes.add(cbDesirability);
 
 		cbTime = new JCheckBox("Time");
-		pnAttributeSelection.add(cbTime);
+		pnGeneralisationAttributes.add(cbTime);
 
 		JPanel pnMechanism = new JPanel();
 		pnMechanism.setLayout(new BoxLayout(pnMechanism, BoxLayout.Y_AXIS));
@@ -261,14 +284,20 @@ public class GeneralisationPanel extends JPanel {
 		btStoreResult.addActionListener(new AlStoreResult());
 		pnActions.add(btStoreResult);
 
-		for (Component component : pnActions.getComponents())
+		for (Component component : pnSettings.getComponents())
+			((JComponent) component).setAlignmentY(Component.TOP_ALIGNMENT);
+
+		for (Component component : pnOntology.getComponents())
+			((JComponent) component).setAlignmentX(Component.LEFT_ALIGNMENT);
+
+		for (Component component : pnMechanism.getComponents())
 			((JComponent) component).setAlignmentX(Component.LEFT_ALIGNMENT);
 
 		for (Component component : pnParameters.getComponents())
 			((JComponent) component).setAlignmentX(Component.LEFT_ALIGNMENT);
 
-		for (Component component : pnSettings.getComponents())
-			((JComponent) component).setAlignmentY(Component.TOP_ALIGNMENT);
+		for (Component component : pnActions.getComponents())
+			((JComponent) component).setAlignmentX(Component.LEFT_ALIGNMENT);
 
 		JPanel pnResults = new JPanel();
 		pnResults.setLayout(new BoxLayout(pnResults, BoxLayout.Y_AXIS));
@@ -339,34 +368,44 @@ public class GeneralisationPanel extends JPanel {
 			filterAttributesStr += "*desirability " + tfFilterDesirability.getText().trim();
 		if (cbFilterTime.isSelected())
 			filterAttributesStr += "*time " + tfFilterTime.getText().trim();
-		// create list of attributes to use for generalisation
-		ArrayList<String> attributeNames = new ArrayList<String>();
+
+		// parse ontology usage
+		TimeOntology timeOntology = null;
+		if (cbTimeOntology.isSelected()) {
+			timeOntology = new TimeOntology();
+			// combo box indices must correspond to abstraction mode constants here
+			short abstractionMode = (short) cbTimeAbstractionMode.getSelectedIndex();
+			timeOntology.setAbstractionMode(abstractionMode);
+		}
+
+		// build attributes names string
+		String attributeNamesStr = "";
 		if (cbSubject.isSelected())
-			attributeNames.add("subject");
+			attributeNamesStr += "*subject";
 		if (cbAction.isSelected())
-			attributeNames.add("action");
+			attributeNamesStr += "*action";
 		if (cbTarget.isSelected())
-			attributeNames.add("target");
+			attributeNamesStr += "*target";
 		if (cbObject.isSelected())
-			attributeNames.add("object");
+			attributeNamesStr += "*object";
 		if (cbLocation.isSelected())
-			attributeNames.add("location");
+			attributeNamesStr += "*location";
 		if (cbIntention.isSelected())
-			attributeNames.add("intention");
+			attributeNamesStr += "*intention";
 		if (cbStatus.isSelected())
-			attributeNames.add("status");
+			attributeNamesStr += "*status";
 		if (cbEmotion.isSelected())
-			attributeNames.add("emotion");
+			attributeNamesStr += "*emotion";
 		if (cbSpeechActMeaning.isSelected())
-			attributeNames.add("speechActMeaning");
+			attributeNamesStr += "*speechActMeaning";
 		if (cbMultimediaPath.isSelected())
-			attributeNames.add("multimediaPath");
+			attributeNamesStr += "*multimediaPath";
 		if (cbPraiseworthiness.isSelected())
-			attributeNames.add("praiseworthiness");
+			attributeNamesStr += "*praiseworthiness";
 		if (cbDesirability.isSelected())
-			attributeNames.add("desirability");
+			attributeNamesStr += "*desirability";
 		if (cbTime.isSelected())
-			attributeNames.add("time");
+			attributeNamesStr += "*time";
 
 		// parse minimum coverage
 		int minimumCoverage = 1;
@@ -379,7 +418,7 @@ public class GeneralisationPanel extends JPanel {
 
 		// execute Generalisation mechanism
 		Generalisation generalisation = new Generalisation();
-		generalisation.generalise(advancedMemoryComponent.getMemory().getEpisodicMemory(), filterAttributesStr, attributeNames, minimumCoverage);
+		generalisation.generalise(advancedMemoryComponent.getMemory().getEpisodicMemory(), filterAttributesStr, attributeNamesStr, minimumCoverage, timeOntology);
 		this.generalisation = generalisation;
 
 		// update panel
@@ -472,6 +511,17 @@ public class GeneralisationPanel extends JPanel {
 
 		}
 
+		// set ontology usage
+		TimeOntology timeOntology = generalisation.getTimeOntology();
+		if (timeOntology == null) {
+			cbTimeOntology.setSelected(false);
+			cbTimeAbstractionMode.setSelectedIndex(0);
+		} else {
+			cbTimeOntology.setSelected(true);
+			// combo box indices must correspond to abstraction mode constants here			
+			cbTimeAbstractionMode.setSelectedIndex(timeOntology.getAbstractionMode());
+		}
+
 		// clear check boxes
 		cbSubject.setSelected(false);
 		cbAction.setSelected(false);
@@ -487,7 +537,7 @@ public class GeneralisationPanel extends JPanel {
 		cbDesirability.setSelected(false);
 		cbTime.setSelected(false);
 
-		// set check boxes		
+		// set check boxes
 		ArrayList<String> attributeNames = generalisation.getAttributeNames();
 		for (String attributeName : attributeNames) {
 			if (attributeName.equals("subject")) {

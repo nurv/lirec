@@ -41,6 +41,7 @@ import FAtiMA.AdvancedMemory.CompoundCue;
 import FAtiMA.AdvancedMemory.GER;
 import FAtiMA.AdvancedMemory.Generalisation;
 import FAtiMA.AdvancedMemory.SpreadingActivation;
+import FAtiMA.AdvancedMemory.ontology.TimeOntology;
 import FAtiMA.Core.memory.episodicMemory.Time;
 import FAtiMA.Core.util.parsers.ReflectXMLHandler;
 
@@ -107,6 +108,19 @@ public class AdvancedMemoryHandler extends ReflectXMLHandler {
 		String name = attributes.getValue("name");
 		String value = attributes.getValue("value");
 		filterAttributes.add(name + " " + value);
+	}
+
+	public void TimeOntology(Attributes attributes) {
+		TimeOntology timeOntology = new TimeOntology();
+		short abstractionMode = Short.parseShort(attributes.getValue("abstractionMode"));
+		timeOntology.setAbstractionMode(abstractionMode);
+		if (result instanceof CompoundCue) {
+			compoundCue.setTimeOntology(timeOntology);
+		} else if (result instanceof SpreadingActivation) {
+			spreadingActivation.setTimeOntology(timeOntology);
+		} else if (result instanceof Generalisation) {
+			generalisation.setTimeOntology(timeOntology);
+		}
 	}
 
 	// Compound Cue

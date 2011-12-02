@@ -50,6 +50,7 @@ import javax.swing.table.DefaultTableModel;
 
 import FAtiMA.AdvancedMemory.AdvancedMemoryComponent;
 import FAtiMA.AdvancedMemory.SpreadingActivation;
+import FAtiMA.AdvancedMemory.ontology.TimeOntology;
 
 public class SpreadingActivationPanel extends JPanel {
 
@@ -86,6 +87,9 @@ public class SpreadingActivationPanel extends JPanel {
 	private JCheckBox cbFilterTime;
 	private JTextField tfFilterTime;
 
+	private JCheckBox cbTimeOntology;
+	private JComboBox cbTimeAbstractionMode;
+
 	private JComboBox cbTargetAttribute;
 
 	private TableModelSpreadingActivation tmResults;
@@ -98,15 +102,10 @@ public class SpreadingActivationPanel extends JPanel {
 
 		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
-		JPanel pnSettings = new JPanel();
-		pnSettings.setLayout(new BoxLayout(pnSettings, BoxLayout.X_AXIS));
-		pnSettings.setBorder(BorderFactory.createEtchedBorder());
-		this.add(pnSettings);
-
 		JPanel pnFilter = new JPanel();
-		pnFilter.setLayout(new GridLayout(7, 4));
+		pnFilter.setLayout(new GridLayout(5, 6));
 		pnFilter.setBorder(BorderFactory.createTitledBorder("Filter"));
-		pnSettings.add(pnFilter);
+		this.add(pnFilter);
 
 		cbFilterSubject = new JCheckBox("Subject");
 		pnFilter.add(cbFilterSubject);
@@ -173,8 +172,31 @@ public class SpreadingActivationPanel extends JPanel {
 		tfFilterTime = new JTextField();
 		pnFilter.add(tfFilterTime);
 
+		JPanel pnSettings = new JPanel();
+		pnSettings.setLayout(new BoxLayout(pnSettings, BoxLayout.X_AXIS));
+		pnSettings.setBorder(BorderFactory.createEtchedBorder());
+		this.add(pnSettings);
+
+		JPanel pnOntology = new JPanel();
+		pnOntology.setLayout(new BoxLayout(pnOntology, BoxLayout.Y_AXIS));
+		pnOntology.setBorder(BorderFactory.createTitledBorder("Ontology"));
+		pnSettings.add(pnOntology);
+
+		cbTimeOntology = new JCheckBox("Use Time Ontology");
+		pnOntology.add(cbTimeOntology);
+
+		JLabel lbTimeAbstractionMode = new JLabel("Time Abstraction Mode:");
+		pnOntology.add(lbTimeAbstractionMode);
+
+		cbTimeAbstractionMode = new JComboBox();
+		cbTimeAbstractionMode.setMinimumSize(new Dimension(200, 26));
+		cbTimeAbstractionMode.setMaximumSize(new Dimension(200, 26));
+		cbTimeAbstractionMode.addItem("Part Of Day");
+		cbTimeAbstractionMode.addItem("Day Of Week");
+		pnOntology.add(cbTimeAbstractionMode);
+
 		JPanel pnMechanism = new JPanel();
-		pnMechanism.setLayout(new BoxLayout(pnMechanism, BoxLayout.Y_AXIS));
+		pnMechanism.setLayout(new BoxLayout(pnMechanism, BoxLayout.X_AXIS));
 		pnSettings.add(pnMechanism);
 
 		JPanel pnParameters = new JPanel();
@@ -216,14 +238,20 @@ public class SpreadingActivationPanel extends JPanel {
 		btStoreResult.addActionListener(new AlStoreResult());
 		pnActions.add(btStoreResult);
 
-		for (Component component : pnActions.getComponents())
+		for (Component component : pnSettings.getComponents())
+			((JComponent) component).setAlignmentY(Component.TOP_ALIGNMENT);
+
+		for (Component component : pnOntology.getComponents())
 			((JComponent) component).setAlignmentX(Component.LEFT_ALIGNMENT);
+
+		for (Component component : pnMechanism.getComponents())
+			((JComponent) component).setAlignmentY(Component.TOP_ALIGNMENT);
 
 		for (Component component : pnParameters.getComponents())
 			((JComponent) component).setAlignmentX(Component.LEFT_ALIGNMENT);
 
-		for (Component component : pnSettings.getComponents())
-			((JComponent) component).setAlignmentY(Component.TOP_ALIGNMENT);
+		for (Component component : pnActions.getComponents())
+			((JComponent) component).setAlignmentX(Component.LEFT_ALIGNMENT);
 
 		JPanel pnResults = new JPanel();
 		pnResults.setLayout(new BoxLayout(pnResults, BoxLayout.Y_AXIS));
@@ -295,6 +323,15 @@ public class SpreadingActivationPanel extends JPanel {
 		if (cbFilterTime.isSelected())
 			filterAttributesStr += "*time " + tfFilterTime.getText().trim();
 
+		// parse ontology usage
+		TimeOntology timeOntology = null;
+		if (cbTimeOntology.isSelected()) {
+			timeOntology = new TimeOntology();
+			// combo box indices must correspond to abstraction mode constants here
+			short abstractionMode = (short) cbTimeAbstractionMode.getSelectedIndex();
+			timeOntology.setAbstractionMode(abstractionMode);
+		}
+
 		// parse target attribute
 		String targetAttributeStr = String.valueOf(cbTargetAttribute.getSelectedItem());
 		// remove spaces
@@ -304,7 +341,7 @@ public class SpreadingActivationPanel extends JPanel {
 
 		// execute spreading activation
 		SpreadingActivation spreadingActivation = new SpreadingActivation();
-		spreadingActivation.spreadActivation(advancedMemoryComponent.getMemory().getEpisodicMemory(), filterAttributesStr, targetAttributeName);
+		spreadingActivation.spreadActivation(advancedMemoryComponent.getMemory().getEpisodicMemory(), filterAttributesStr, targetAttributeName, timeOntology);
 		this.spreadingActivation = spreadingActivation;
 
 		// update panel
@@ -395,6 +432,17 @@ public class SpreadingActivationPanel extends JPanel {
 				tfFilterTime.setText(value);
 			}
 
+		}
+
+		// set ontology usage
+		TimeOntology timeOntology = spreadingActivation.getTimeOntology();
+		if (timeOntology == null) {
+			cbTimeOntology.setSelected(false);
+			cbTimeAbstractionMode.setSelectedIndex(0);
+		} else {
+			cbTimeOntology.setSelected(true);
+			// combo box indices must correspond to abstraction mode constants here			
+			cbTimeAbstractionMode.setSelectedIndex(timeOntology.getAbstractionMode());
 		}
 
 		String targetAttributeName = spreadingActivation.getTargetAttributeName();
