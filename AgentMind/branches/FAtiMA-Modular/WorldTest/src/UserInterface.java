@@ -38,6 +38,7 @@ import java.awt.event.*;
 public class UserInterface implements ActionListener {
 	JFrame _frame;
 	JTextArea textArea;
+	JTextField tfMessage;	
 	JComboBox inputList;
 	JComboBox _caseOptions;
 	JComboBox _userOptions;
@@ -91,6 +92,32 @@ public class UserInterface implements ActionListener {
                 JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 	    _frame.getContentPane().add(scrollPane);
 	    
+
+	    
+	    // sending messages
+	    
+	    JPanel pnMessage = new JPanel();
+	    pnMessage.setLayout(new BoxLayout(pnMessage, BoxLayout.X_AXIS));
+	    _frame.getContentPane().add(pnMessage);
+	    
+	    JLabel lbMessage = new JLabel("Message: ");
+	    pnMessage.add(lbMessage);
+	    
+        tfMessage = new JTextField();
+        pnMessage.add(tfMessage);
+	    
+        JButton btMessage = new JButton("Send");        
+        btMessage.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent arg0) {
+				String message = tfMessage.getText();
+				_world.SendPerceptionToAll(message);
+				System.out.println(message);
+			}
+		});
+        pnMessage.add(btMessage);
+
+        
+        
         // Create the combo box
         inputList = new JComboBox();
         
@@ -269,7 +296,8 @@ public class UserInterface implements ActionListener {
             userBox = new Box(BoxLayout.X_AXIS);
             userBox.add(new JLabel("User: "));
             userBox.add(_userOptions);         
-            _userSpeech = new JTextField();
+            _userSpeech = new JTextField();            
+
         }
        
     	
