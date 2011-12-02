@@ -111,7 +111,6 @@ public class UserInterface implements ActionListener {
 			public void actionPerformed(ActionEvent arg0) {
 				String message = tfMessage.getText();
 				_world.SendPerceptionToAll(message);
-				System.out.println(message);
 			}
 		});
         pnMessage.add(btMessage);
