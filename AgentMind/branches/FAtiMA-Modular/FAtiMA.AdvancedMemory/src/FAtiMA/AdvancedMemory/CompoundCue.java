@@ -34,8 +34,12 @@ package FAtiMA.AdvancedMemory;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.StringTokenizer;
 
+import edu.mit.jwi.item.IWord;
+
+import FAtiMA.AdvancedMemory.ontology.NounOntology;
 import FAtiMA.AdvancedMemory.ontology.TimeOntology;
 import FAtiMA.Core.memory.episodicMemory.ActionDetail;
 import FAtiMA.Core.memory.episodicMemory.EpisodicMemory;
@@ -49,11 +53,14 @@ public class CompoundCue implements Serializable {
 	public static final String NAME = "Compound Cue";
 
 	private static final double FACTOR_SAME = 1.0;
+	private static final double FACTOR_SIMILAR = 0.9;
 	private static final double FACTOR_DIFFERENT = 0.8;
 
 	private Time time;
 	private ArrayList<String> filterAttributes;
 	private TimeOntology timeOntology;
+	private NounOntology targetOntology;
+	private NounOntology objectOntology;
 	private int targetID;
 	private HashMap<Integer, Double> evaluationValues;
 
@@ -81,6 +88,22 @@ public class CompoundCue implements Serializable {
 		this.timeOntology = timeOntology;
 	}
 
+	public NounOntology getTargetOntology() {
+		return targetOntology;
+	}
+
+	public void setTargetOntology(NounOntology targetOntology) {
+		this.targetOntology = targetOntology;
+	}
+
+	public NounOntology getObjectOntology() {
+		return objectOntology;
+	}
+
+	public void setObjectOntology(NounOntology objectOntology) {
+		this.objectOntology = objectOntology;
+	}
+
 	public int getTargetID() {
 		return targetID;
 	}
@@ -97,55 +120,52 @@ public class CompoundCue implements Serializable {
 		this.evaluationValues = evaluationValues;
 	}
 
-	private ArrayList<ActionDetail> filterActionDetails(ArrayList<ActionDetail> actionDetails, String attributeName, Object attributeValue, TimeOntology timeOntology) {
-
-		ArrayList<ActionDetail> actionDetailsFiltered = new ArrayList<ActionDetail>();
-
-		for (ActionDetail actionDetail : actionDetails) {
-
-			AttributeItem attributeItem = new AttributeItem();
-			attributeItem.setName(attributeName);
-			attributeItem.setValue(actionDetail.getValueByName(attributeName), timeOntology);
-
-			Object attributeValueCurrent = attributeItem.getValue();
-
-			if (attributeValueCurrent != null && attributeValueCurrent.equals(attributeValue)) {
-				actionDetailsFiltered.add(actionDetail);
-			}
-		}
-
-		return actionDetailsFiltered;
+	private double getMultiplicationFactor(Object object1, Object object2) {
+		return getMultiplicationFactor(object1, object2, null);
 	}
 
-	private double getMultiplicationFactor(Object object1, Object object2) {
+	private double getMultiplicationFactor(Object object1, Object object2, NounOntology nounOntology) {
+
 		if (object1 == null) {
 			// null is always treated as a difference
 			return FACTOR_DIFFERENT;
-			/*
-			if (object2 == null) {
-				return FACTOR_SAME;
-			} else {
-				return FACTOR_DIFFERENT;
-			}
-			*/
+
 		} else {
 			if (object1.equals(object2)) {
 				return FACTOR_SAME;
+
 			} else {
+				if (nounOntology != null) {
+
+					String[] nouns = new String[2];
+					nouns[0] = String.valueOf(object1);
+					nouns[1] = String.valueOf(object2);
+
+					nounOntology.openDict();
+					LinkedList<IWord> nounsGeneralised = nounOntology.generaliseNouns(nouns);
+					nounOntology.closeDict();
+
+					if (nounsGeneralised.size() > 0) {
+						return FACTOR_SIMILAR;
+					}
+
+				}
 				return FACTOR_DIFFERENT;
+
 			}
 		}
 	}
 
 	public ActionDetail execute(EpisodicMemory episodicMemory, ActionDetail actionDetailTarget) {
-		return execute(episodicMemory, null, actionDetailTarget, null);
+		return execute(episodicMemory, null, actionDetailTarget, null, null, null);
 	}
 
 	public ActionDetail execute(ArrayList<ActionDetail> actionDetails, ActionDetail actionDetailTarget) {
-		return execute(actionDetails, null, actionDetailTarget, null);
+		return execute(actionDetails, null, actionDetailTarget, null, null, null);
 	}
 
-	public ActionDetail execute(EpisodicMemory episodicMemory, String filterAttributesStr, ActionDetail actionDetailTarget, TimeOntology timeOntology) {
+	public ActionDetail execute(EpisodicMemory episodicMemory, String filterAttributesStr, ActionDetail actionDetailTarget, TimeOntology timeOntology, NounOntology targetOntology,
+			NounOntology objectOntology) {
 
 		ArrayList<ActionDetail> actionDetails = new ArrayList<ActionDetail>();
 		for (MemoryEpisode memoryEpisode : episodicMemory.getAM().GetAllEpisodes()) {
@@ -159,11 +179,13 @@ public class CompoundCue implements Serializable {
 		// create search keys from filter attributes string
 		// use memory search to get list of action details (both past and recent)
 		// call generalise with these action details and an empty filter attributes string (or null)
+		// but: no ontology usage then
 
-		return execute(actionDetails, filterAttributesStr, actionDetailTarget, timeOntology);
+		return execute(actionDetails, filterAttributesStr, actionDetailTarget, timeOntology, targetOntology, objectOntology);
 	}
 
-	public ActionDetail execute(ArrayList<ActionDetail> actionDetails, String filterAttributesStr, ActionDetail actionDetailTarget, TimeOntology timeOntology) {
+	public ActionDetail execute(ArrayList<ActionDetail> actionDetails, String filterAttributesStr, ActionDetail actionDetailTarget, TimeOntology timeOntology, NounOntology targetOntology,
+			NounOntology objectOntology) {
 
 		// initialise
 		ActionDetail actionDetailMax = null;
@@ -190,8 +212,9 @@ public class CompoundCue implements Serializable {
 			if (attributeSplitted.length == 2) {
 				value = attributeSplitted[1];
 			}
-			actionDetailsFiltered = filterActionDetails(actionDetailsFiltered, name, value, timeOntology);
+			actionDetailsFiltered = ActionDetailFilter.filterActionDetails(actionDetailsFiltered, name, value, timeOntology, targetOntology, objectOntology);
 		}
+
 		// calculate evaluation values
 
 		HashMap<Integer, Double> evaluationValues = new HashMap<Integer, Double>();
@@ -203,8 +226,8 @@ public class CompoundCue implements Serializable {
 			// comparison of attribute values
 			evaluationValue += evaluationValue * getMultiplicationFactor(actionDetailTarget.getSubject(), actionDetail.getSubject());
 			evaluationValue += evaluationValue * getMultiplicationFactor(actionDetailTarget.getAction(), actionDetail.getAction());
-			evaluationValue += evaluationValue * getMultiplicationFactor(actionDetailTarget.getTarget(), actionDetail.getTarget());
-			evaluationValue += evaluationValue * getMultiplicationFactor(actionDetailTarget.getObject(), actionDetail.getObject());
+			evaluationValue += evaluationValue * getMultiplicationFactor(actionDetailTarget.getTarget(), actionDetail.getTarget(), targetOntology);
+			evaluationValue += evaluationValue * getMultiplicationFactor(actionDetailTarget.getObject(), actionDetail.getObject(), objectOntology);
 			evaluationValue += evaluationValue * getMultiplicationFactor(actionDetailTarget.getLocation(), actionDetail.getLocation());
 			evaluationValue += evaluationValue * getMultiplicationFactor(actionDetailTarget.getIntention(), actionDetail.getIntention());
 			evaluationValue += evaluationValue * getMultiplicationFactor(actionDetailTarget.getStatus(), actionDetail.getStatus());
@@ -225,6 +248,8 @@ public class CompoundCue implements Serializable {
 		this.time = time;
 		this.filterAttributes = filterAttributes;
 		this.timeOntology = timeOntology;
+		this.targetOntology = targetOntology;
+		this.objectOntology = objectOntology;
 		this.targetID = actionDetailTarget.getID();
 		this.evaluationValues = evaluationValues;
 

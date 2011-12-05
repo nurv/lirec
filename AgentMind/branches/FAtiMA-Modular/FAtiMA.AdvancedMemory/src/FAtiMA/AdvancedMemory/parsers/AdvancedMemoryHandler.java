@@ -31,6 +31,7 @@ package FAtiMA.AdvancedMemory.parsers;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import org.xml.sax.Attributes;
 
@@ -41,6 +42,7 @@ import FAtiMA.AdvancedMemory.CompoundCue;
 import FAtiMA.AdvancedMemory.GER;
 import FAtiMA.AdvancedMemory.Generalisation;
 import FAtiMA.AdvancedMemory.SpreadingActivation;
+import FAtiMA.AdvancedMemory.ontology.NounOntology;
 import FAtiMA.AdvancedMemory.ontology.TimeOntology;
 import FAtiMA.Core.memory.episodicMemory.Time;
 import FAtiMA.Core.util.parsers.ReflectXMLHandler;
@@ -58,6 +60,10 @@ public class AdvancedMemoryHandler extends ReflectXMLHandler {
 	private HashMap<Integer, Double> evaluationValues;
 	// Spreading Activation
 	private SpreadingActivation spreadingActivation;
+	private HashMap<String, HashSet<String>> targetHypernyms;
+	private HashSet<String> targetHypernymSet;
+	private HashMap<String, HashSet<String>> objectHypernyms;
+	private HashSet<String> objectHypernymSet;
 	private HashMap<String, Integer> frequencies;
 	// Generalisation
 	private Generalisation generalisation;
@@ -123,6 +129,28 @@ public class AdvancedMemoryHandler extends ReflectXMLHandler {
 		}
 	}
 
+	public void TargetOntology(Attributes attributes) {
+		NounOntology targetOntology = new NounOntology();
+		int depthMax = Integer.parseInt(attributes.getValue("depthMax"));
+		targetOntology.setDepthMax(depthMax);
+		if (result instanceof CompoundCue) {
+			compoundCue.setTargetOntology(targetOntology);
+		} else if (result instanceof SpreadingActivation) {
+			spreadingActivation.setTargetOntology(targetOntology);
+		}
+	}
+
+	public void ObjectOntology(Attributes attributes) {
+		NounOntology objectOntology = new NounOntology();
+		int depthMax = Integer.parseInt(attributes.getValue("depthMax"));
+		objectOntology.setDepthMax(depthMax);
+		if (result instanceof CompoundCue) {
+			compoundCue.setObjectOntology(objectOntology);
+		} else if (result instanceof SpreadingActivation) {
+			spreadingActivation.setObjectOntology(objectOntology);
+		}
+	}
+
 	// Compound Cue
 
 	public void CompoundCue(Attributes attributes) {
@@ -152,6 +180,38 @@ public class AdvancedMemoryHandler extends ReflectXMLHandler {
 		spreadingActivation.setTargetAttributeName(targetAttributeName);
 		result = spreadingActivation;
 		results.add(spreadingActivation);
+	}
+
+	public void TargetHypernyms(Attributes attributes) {
+		targetHypernyms = new HashMap<String, HashSet<String>>();
+		spreadingActivation.setTargetHypernyms(targetHypernyms);
+	}
+
+	public void TargetHypernymSet(Attributes attributes) {
+		String value = attributes.getValue("value");
+		targetHypernymSet = new HashSet<String>();
+		targetHypernyms.put(value, targetHypernymSet);
+	}
+
+	public void TargetHypernym(Attributes attributes) {
+		String value = attributes.getValue("value");
+		targetHypernymSet.add(value);
+	}
+
+	public void ObjectHypernyms(Attributes attributes) {
+		objectHypernyms = new HashMap<String, HashSet<String>>();
+		spreadingActivation.setObjectHypernyms(objectHypernyms);
+	}
+
+	public void ObjectHypernymSet(Attributes attributes) {
+		String value = attributes.getValue("value");
+		objectHypernymSet = new HashSet<String>();
+		objectHypernyms.put(value, objectHypernymSet);
+	}
+
+	public void ObjectHypernym(Attributes attributes) {
+		String value = attributes.getValue("value");
+		objectHypernymSet.add(value);
 	}
 
 	public void Frequencies(Attributes attributes) {

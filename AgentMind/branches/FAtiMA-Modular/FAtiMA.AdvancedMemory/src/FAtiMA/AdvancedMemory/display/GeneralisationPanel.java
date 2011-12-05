@@ -57,6 +57,8 @@ public class GeneralisationPanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 
+	private static final int MINIMUM_COVERAGE_DEFAULT = 1;
+
 	private AdvancedMemoryComponent advancedMemoryComponent;
 
 	private Generalisation generalisation;
@@ -197,17 +199,18 @@ public class GeneralisationPanel extends JPanel {
 		pnOntology.setBorder(BorderFactory.createTitledBorder("Ontology"));
 		pnSettings.add(pnOntology);
 
-		cbTimeOntology = new JCheckBox("Use Time Ontology");
+		cbTimeOntology = new JCheckBox("Time Ontology");
 		pnOntology.add(cbTimeOntology);
 
-		JLabel lbTimeAbstractionMode = new JLabel("Time Abstraction Mode:");
+		JLabel lbTimeAbstractionMode = new JLabel("Abstraction Mode:");
 		pnOntology.add(lbTimeAbstractionMode);
 
 		cbTimeAbstractionMode = new JComboBox();
-		cbTimeAbstractionMode.setMinimumSize(new Dimension(200, 26));
-		cbTimeAbstractionMode.setMaximumSize(new Dimension(200, 26));
+		cbTimeAbstractionMode.setMinimumSize(new Dimension(150, 26));
+		cbTimeAbstractionMode.setMaximumSize(new Dimension(150, 26));
 		cbTimeAbstractionMode.addItem("Part Of Day");
 		cbTimeAbstractionMode.addItem("Day Of Week");
+		cbTimeAbstractionMode.addItem("Year-Month-Day");
 		pnOntology.add(cbTimeAbstractionMode);
 
 		JPanel pnGeneralisationAttributes = new JPanel();
@@ -266,7 +269,7 @@ public class GeneralisationPanel extends JPanel {
 		JLabel lbMinimumCoverage = new JLabel("Mininum Coverage:");
 		pnParameters.add(lbMinimumCoverage);
 
-		tfMinimumCoverage = new JTextField("1");
+		tfMinimumCoverage = new JTextField(String.valueOf(MINIMUM_COVERAGE_DEFAULT));
 		tfMinimumCoverage.setMinimumSize(new Dimension(80, 26));
 		tfMinimumCoverage.setMaximumSize(new Dimension(80, 26));
 		pnParameters.add(tfMinimumCoverage);

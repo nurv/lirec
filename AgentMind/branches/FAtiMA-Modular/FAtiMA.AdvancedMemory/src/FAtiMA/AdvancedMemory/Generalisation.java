@@ -99,26 +99,6 @@ public class Generalisation implements Serializable {
 		this.gers = gers;
 	}
 
-	private ArrayList<ActionDetail> filterActionDetails(ArrayList<ActionDetail> actionDetails, String attributeName, Object attributeValue, TimeOntology timeOntology) {
-
-		ArrayList<ActionDetail> actionDetailsFiltered = new ArrayList<ActionDetail>();
-
-		for (ActionDetail actionDetail : actionDetails) {
-
-			AttributeItem attributeItem = new AttributeItem();
-			attributeItem.setName(attributeName);
-			attributeItem.setValue(actionDetail.getValueByName(attributeName), timeOntology);
-
-			Object attributeValueCurrent = attributeItem.getValue();
-
-			if (attributeValueCurrent != null && attributeValueCurrent.equals(attributeValue)) {
-				actionDetailsFiltered.add(actionDetail);
-			}
-		}
-
-		return actionDetailsFiltered;
-	}
-
 	private AttributeItemSet combineItemSets(AttributeItemSet itemSetA, AttributeItemSet itemSetB) {
 		AttributeItemSet itemSetCombined = new AttributeItemSet();
 
@@ -165,6 +145,7 @@ public class Generalisation implements Serializable {
 		// create search keys from filter attributes string
 		// use memory search to get list of action details (both past and recent)
 		// call generalise with these action details and an empty filter attributes string (or null)
+		// but: no ontology usage then
 
 		return generalise(actionDetails, filterAttributesStr, attributeNamesStr, minimumCoverage, timeOntology);
 	}
@@ -196,7 +177,7 @@ public class Generalisation implements Serializable {
 			if (attributeSplitted.length == 2) {
 				value = attributeSplitted[1];
 			}
-			actionDetailsFiltered = filterActionDetails(actionDetailsFiltered, name, value, timeOntology);
+			actionDetailsFiltered = ActionDetailFilter.filterActionDetails(actionDetailsFiltered, name, value, timeOntology, null, null);
 		}
 
 		// extract attribute names

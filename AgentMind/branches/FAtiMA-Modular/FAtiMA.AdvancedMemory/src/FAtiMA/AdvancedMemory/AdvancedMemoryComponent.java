@@ -38,6 +38,7 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import FAtiMA.AdvancedMemory.display.AdvancedMemoryPanel;
+import FAtiMA.AdvancedMemory.ontology.NounOntology;
 import FAtiMA.AdvancedMemory.ontology.TimeOntology;
 import FAtiMA.AdvancedMemory.parsers.AdvancedMemoryHandler;
 import FAtiMA.AdvancedMemory.writers.AdvancedMemoryWriter;
@@ -162,8 +163,9 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 			// perception format:
 
 			// different parameters are separated by $
-			// <target id>$<filter attributes>$<time ontology parameters>
-			// note: multiple successive $ are recognised as only one separator 
+			// <target id>$<filter attributes>$<time ontology parameters>$<target ontology parameters>$object ontology parameters>
+			// note: multiple successive $ are recognised as only one separator
+			//       use * between $ to indicate an empty parameter
 
 			// filter attributes are separated by *
 			// <filter attributes> = <filter attribute>*<filter attribute>*...
@@ -172,6 +174,12 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 
 			// <time ontology parameters> = <time abstraction mode>
 			// values for time abstraction mode are defined in TimeOntology
+
+			// <target ontology parameters> = <maximum depth>
+
+			// <object ontology parameters> = <maximum depth>
+
+			// 
 
 			// parse perception
 			StringTokenizer stringTokenizer = new StringTokenizer(perception, "$");
@@ -194,6 +202,18 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 				timeAbstractionModeStr = stringTokenizer.nextToken();
 			} catch (Exception e) {
 				// no time abstraction mode given
+			}
+			String targetDepthMaxStr = null;
+			try {
+				targetDepthMaxStr = stringTokenizer.nextToken();
+			} catch (Exception e) {
+				// no target ontology maximum depth given
+			}
+			String objectDepthMaxStr = null;
+			try {
+				objectDepthMaxStr = stringTokenizer.nextToken();
+			} catch (Exception e) {
+				// no object ontology maximum depth given
 			}
 
 			// parse target ID
@@ -230,9 +250,8 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 			TimeOntology timeOntology = null;
 			if (timeAbstractionModeStr != null) {
 				// parse time abstraction mode
-				Short timeAbstractionMode = null;
 				try {
-					timeAbstractionMode = Short.valueOf(timeAbstractionModeStr);
+					Short timeAbstractionMode = Short.valueOf(timeAbstractionModeStr);
 					// create time ontology
 					timeOntology = new TimeOntology();
 					timeOntology.setAbstractionMode(timeAbstractionMode);
@@ -241,9 +260,37 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 				}
 			}
 
+			// parse target ontology
+			NounOntology targetOntology = null;
+			if (targetDepthMaxStr != null) {
+				// parse target ontology maximum depth
+				try {
+					Integer depthMax = Integer.valueOf(targetDepthMaxStr);
+					// create target ontology
+					targetOntology = new NounOntology();
+					targetOntology.setDepthMax(depthMax);
+				} catch (Exception e) {
+					System.err.println("Error while parsing Target Ontology Maximum Depth!");
+				}
+			}
+
+			// parse object ontology
+			NounOntology objectOntology = null;
+			if (objectDepthMaxStr != null) {
+				// parse object ontology maximum depth
+				try {
+					Integer depthMax = Integer.valueOf(objectDepthMaxStr);
+					// create object ontology
+					objectOntology = new NounOntology();
+					objectOntology.setDepthMax(depthMax);
+				} catch (Exception e) {
+					System.err.println("Error while parsing Object Ontology Maximum Depth!");
+				}
+			}
+
 			// execute Spreading Activation mechanism
 			CompoundCue compoundCue = new CompoundCue();
-			compoundCue.execute(memory.getEpisodicMemory(), filterAttributesStr, actionDetailTarget, timeOntology);
+			compoundCue.execute(memory.getEpisodicMemory(), filterAttributesStr, actionDetailTarget, timeOntology, targetOntology, objectOntology);
 
 			// add to results
 			results.add(compoundCue);
@@ -254,8 +301,9 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 			// perception format:
 
 			// different parameters are separated by $
-			// <target attribute name>$<filter attributes>$<time ontology parameters>
-			// note: multiple successive $ are recognised as only one separator 
+			// <target attribute name>$<filter attributes>$<time ontology parameters>$<target ontology parameters>$<object ontology parameters>
+			// note: multiple successive $ are recognised as only one separator
+			//       use * between $ to indicate an empty parameter
 
 			// filter attributes are separated by *
 			// <filter attributes> = <filter attribute>*<filter attribute>*...
@@ -264,6 +312,12 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 
 			// <time ontology parameters> = <time abstraction mode>
 			// values for time abstraction mode are defined in TimeOntology
+
+			// <target ontology parameters> = <maximum depth>
+
+			// <object ontology parameters> = <maximum depth>
+
+			// 
 
 			// parse perception
 			StringTokenizer stringTokenizer = new StringTokenizer(perception, "$");
@@ -287,6 +341,18 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 			} catch (Exception e) {
 				// no time abstraction mode given
 			}
+			String targetDepthMaxStr = null;
+			try {
+				targetDepthMaxStr = stringTokenizer.nextToken();
+			} catch (Exception e) {
+				// no target ontology maximum depth given
+			}
+			String objectDepthMaxStr = null;
+			try {
+				objectDepthMaxStr = stringTokenizer.nextToken();
+			} catch (Exception e) {
+				// no object ontology maximum depth given
+			}
 
 			// parse time ontology
 			TimeOntology timeOntology = null;
@@ -303,9 +369,37 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 				}
 			}
 
+			// parse target ontology
+			NounOntology targetOntology = null;
+			if (targetDepthMaxStr != null) {
+				// parse target ontology maximum depth
+				try {
+					Integer depthMax = Integer.valueOf(targetDepthMaxStr);
+					// create target ontology
+					targetOntology = new NounOntology();
+					targetOntology.setDepthMax(depthMax);
+				} catch (Exception e) {
+					System.err.println("Error while parsing Target Ontology Maximum Depth!");
+				}
+			}
+
+			// parse object ontology
+			NounOntology objectOntology = null;
+			if (objectDepthMaxStr != null) {
+				// parse object ontology maximum depth
+				try {
+					Integer depthMax = Integer.valueOf(objectDepthMaxStr);
+					// create object ontology
+					objectOntology = new NounOntology();
+					objectOntology.setDepthMax(depthMax);
+				} catch (Exception e) {
+					System.err.println("Error while parsing Object Ontology Maximum Depth!");
+				}
+			}
+
 			// execute Spreading Activation mechanism
 			SpreadingActivation spreadingActivation = new SpreadingActivation();
-			spreadingActivation.spreadActivation(memory.getEpisodicMemory(), filterAttributesStr, targetAttributeName, timeOntology);
+			spreadingActivation.spreadActivation(memory.getEpisodicMemory(), filterAttributesStr, targetAttributeName, timeOntology, targetOntology, objectOntology);
 
 			// add to results
 			results.add(spreadingActivation);
@@ -318,6 +412,7 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 			// different parameters are separated by $
 			// <attribute names>$<minimum coverage>$<filter attributes>$<time ontology parameters>
 			// note: multiple successive $ are recognised as only one separator 
+			//       use * between $ to indicate an empty parameter
 
 			// attribute names are separated by *
 			// <attributes names> = <attribute name>*<attribute name>*...
@@ -329,6 +424,8 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 
 			// <time ontology parameters> = <time abstraction mode>
 			// values for time abstraction mode are defined in TimeOntology
+
+			// 
 
 			// parse perception
 			StringTokenizer stringTokenizer = new StringTokenizer(perception, "$");

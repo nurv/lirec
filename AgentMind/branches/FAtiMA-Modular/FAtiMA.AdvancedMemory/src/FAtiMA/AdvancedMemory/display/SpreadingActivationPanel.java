@@ -50,11 +50,15 @@ import javax.swing.table.DefaultTableModel;
 
 import FAtiMA.AdvancedMemory.AdvancedMemoryComponent;
 import FAtiMA.AdvancedMemory.SpreadingActivation;
+import FAtiMA.AdvancedMemory.ontology.NounOntology;
 import FAtiMA.AdvancedMemory.ontology.TimeOntology;
 
 public class SpreadingActivationPanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
+
+	private static final int TARGET_DEPTH_MAX_DEFAULT = 1;
+	private static final int OBJECT_DEPTH_MAX_DEFAULT = 1;
 
 	private AdvancedMemoryComponent advancedMemoryComponent;
 
@@ -89,6 +93,10 @@ public class SpreadingActivationPanel extends JPanel {
 
 	private JCheckBox cbTimeOntology;
 	private JComboBox cbTimeAbstractionMode;
+	private JCheckBox cbTargetOntology;
+	private JTextField tfTargetDepthMax;
+	private JCheckBox cbObjectOntology;
+	private JTextField tfObjectDepthMax;
 
 	private JComboBox cbTargetAttribute;
 
@@ -178,22 +186,60 @@ public class SpreadingActivationPanel extends JPanel {
 		this.add(pnSettings);
 
 		JPanel pnOntology = new JPanel();
-		pnOntology.setLayout(new BoxLayout(pnOntology, BoxLayout.Y_AXIS));
+		pnOntology.setLayout(new BoxLayout(pnOntology, BoxLayout.X_AXIS));
 		pnOntology.setBorder(BorderFactory.createTitledBorder("Ontology"));
 		pnSettings.add(pnOntology);
 
-		cbTimeOntology = new JCheckBox("Use Time Ontology");
-		pnOntology.add(cbTimeOntology);
+		JPanel pnTimeOntology = new JPanel();
+		pnTimeOntology.setLayout(new BoxLayout(pnTimeOntology, BoxLayout.Y_AXIS));
+		pnTimeOntology.setBorder(BorderFactory.createEtchedBorder());
+		pnOntology.add(pnTimeOntology);
 
-		JLabel lbTimeAbstractionMode = new JLabel("Time Abstraction Mode:");
-		pnOntology.add(lbTimeAbstractionMode);
+		cbTimeOntology = new JCheckBox("Time Ontology");
+		pnTimeOntology.add(cbTimeOntology);
+
+		JLabel lbTimeAbstractionMode = new JLabel("Abstraction Mode:");
+		pnTimeOntology.add(lbTimeAbstractionMode);
 
 		cbTimeAbstractionMode = new JComboBox();
-		cbTimeAbstractionMode.setMinimumSize(new Dimension(200, 26));
-		cbTimeAbstractionMode.setMaximumSize(new Dimension(200, 26));
+		cbTimeAbstractionMode.setMinimumSize(new Dimension(150, 26));
+		cbTimeAbstractionMode.setMaximumSize(new Dimension(150, 26));
 		cbTimeAbstractionMode.addItem("Part Of Day");
 		cbTimeAbstractionMode.addItem("Day Of Week");
-		pnOntology.add(cbTimeAbstractionMode);
+		cbTimeAbstractionMode.addItem("Year-Month-Day");
+		pnTimeOntology.add(cbTimeAbstractionMode);
+
+		JPanel pnTargetOntology = new JPanel();
+		pnTargetOntology.setLayout(new BoxLayout(pnTargetOntology, BoxLayout.Y_AXIS));
+		pnTargetOntology.setBorder(BorderFactory.createEtchedBorder());
+		pnOntology.add(pnTargetOntology);
+
+		cbTargetOntology = new JCheckBox("Target Ontology");
+		pnTargetOntology.add(cbTargetOntology);
+
+		JLabel lbTargetDepthMax = new JLabel("Maximum Depth:");
+		pnTargetOntology.add(lbTargetDepthMax);
+
+		tfTargetDepthMax = new JTextField(String.valueOf(TARGET_DEPTH_MAX_DEFAULT));
+		tfTargetDepthMax.setMinimumSize(new Dimension(40, 20));
+		tfTargetDepthMax.setMaximumSize(new Dimension(40, 20));
+		pnTargetOntology.add(tfTargetDepthMax);
+
+		JPanel pnObjectOntology = new JPanel();
+		pnObjectOntology.setLayout(new BoxLayout(pnObjectOntology, BoxLayout.Y_AXIS));
+		pnObjectOntology.setBorder(BorderFactory.createEtchedBorder());
+		pnOntology.add(pnObjectOntology);
+
+		cbObjectOntology = new JCheckBox("Object Ontology");
+		pnObjectOntology.add(cbObjectOntology);
+
+		JLabel lbObjectDepthMax = new JLabel("Maximum Depth:");
+		pnObjectOntology.add(lbObjectDepthMax);
+
+		tfObjectDepthMax = new JTextField(String.valueOf(OBJECT_DEPTH_MAX_DEFAULT));
+		tfObjectDepthMax.setMinimumSize(new Dimension(40, 20));
+		tfObjectDepthMax.setMaximumSize(new Dimension(40, 20));
+		pnObjectOntology.add(tfObjectDepthMax);
 
 		JPanel pnMechanism = new JPanel();
 		pnMechanism.setLayout(new BoxLayout(pnMechanism, BoxLayout.X_AXIS));
@@ -242,6 +288,15 @@ public class SpreadingActivationPanel extends JPanel {
 			((JComponent) component).setAlignmentY(Component.TOP_ALIGNMENT);
 
 		for (Component component : pnOntology.getComponents())
+			((JComponent) component).setAlignmentY(Component.TOP_ALIGNMENT);
+
+		for (Component component : pnTimeOntology.getComponents())
+			((JComponent) component).setAlignmentX(Component.LEFT_ALIGNMENT);
+
+		for (Component component : pnTargetOntology.getComponents())
+			((JComponent) component).setAlignmentX(Component.LEFT_ALIGNMENT);
+
+		for (Component component : pnObjectOntology.getComponents())
 			((JComponent) component).setAlignmentX(Component.LEFT_ALIGNMENT);
 
 		for (Component component : pnMechanism.getComponents())
@@ -324,12 +379,30 @@ public class SpreadingActivationPanel extends JPanel {
 			filterAttributesStr += "*time " + tfFilterTime.getText().trim();
 
 		// parse ontology usage
+
+		// time ontology
 		TimeOntology timeOntology = null;
 		if (cbTimeOntology.isSelected()) {
 			timeOntology = new TimeOntology();
 			// combo box indices must correspond to abstraction mode constants here
 			short abstractionMode = (short) cbTimeAbstractionMode.getSelectedIndex();
 			timeOntology.setAbstractionMode(abstractionMode);
+		}
+
+		// target ontology
+		NounOntology targetOntology = null;
+		if (cbTargetOntology.isSelected()) {
+			targetOntology = new NounOntology();
+			int depthMax = Integer.valueOf(tfTargetDepthMax.getText());
+			targetOntology.setDepthMax(depthMax);
+		}
+
+		// object ontology
+		NounOntology objectOntology = null;
+		if (cbObjectOntology.isSelected()) {
+			objectOntology = new NounOntology();
+			int depthMax = Integer.valueOf(tfObjectDepthMax.getText());
+			objectOntology.setDepthMax(depthMax);
 		}
 
 		// parse target attribute
@@ -341,7 +414,7 @@ public class SpreadingActivationPanel extends JPanel {
 
 		// execute spreading activation
 		SpreadingActivation spreadingActivation = new SpreadingActivation();
-		spreadingActivation.spreadActivation(advancedMemoryComponent.getMemory().getEpisodicMemory(), filterAttributesStr, targetAttributeName, timeOntology);
+		spreadingActivation.spreadActivation(advancedMemoryComponent.getMemory().getEpisodicMemory(), filterAttributesStr, targetAttributeName, timeOntology, targetOntology, objectOntology);
 		this.spreadingActivation = spreadingActivation;
 
 		// update panel
@@ -435,6 +508,8 @@ public class SpreadingActivationPanel extends JPanel {
 		}
 
 		// set ontology usage
+
+		// time ontology
 		TimeOntology timeOntology = spreadingActivation.getTimeOntology();
 		if (timeOntology == null) {
 			cbTimeOntology.setSelected(false);
@@ -443,6 +518,26 @@ public class SpreadingActivationPanel extends JPanel {
 			cbTimeOntology.setSelected(true);
 			// combo box indices must correspond to abstraction mode constants here			
 			cbTimeAbstractionMode.setSelectedIndex(timeOntology.getAbstractionMode());
+		}
+
+		// target ontology
+		NounOntology targetOntology = spreadingActivation.getTargetOntology();
+		if (targetOntology == null) {
+			cbTargetOntology.setSelected(false);
+			tfTargetDepthMax.setText(String.valueOf(TARGET_DEPTH_MAX_DEFAULT));
+		} else {
+			cbTargetOntology.setSelected(true);
+			tfTargetDepthMax.setText(String.valueOf(targetOntology.getDepthMax()));
+		}
+
+		// object ontology
+		NounOntology objectOntology = spreadingActivation.getObjectOntology();
+		if (objectOntology == null) {
+			cbObjectOntology.setSelected(false);
+			tfObjectDepthMax.setText(String.valueOf(OBJECT_DEPTH_MAX_DEFAULT));
+		} else {
+			cbObjectOntology.setSelected(true);
+			tfObjectDepthMax.setText(String.valueOf(objectOntology.getDepthMax()));
 		}
 
 		String targetAttributeName = spreadingActivation.getTargetAttributeName();
@@ -463,6 +558,12 @@ public class SpreadingActivationPanel extends JPanel {
 		for (String value : spreadingActivation.getFrequencies().keySet()) {
 			Object[] data = new Object[2];
 			data[0] = value;
+			if (targetOntology != null && targetAttributeName.equals("target")) {
+				data[0] = String.valueOf(data[0]) + " " + spreadingActivation.getTargetHypernyms().get(value);
+			}
+			if (objectOntology != null && targetAttributeName.equals("object")) {
+				data[0] = String.valueOf(data[0]) + " " + spreadingActivation.getObjectHypernyms().get(value);
+			}
 			data[1] = spreadingActivation.getFrequencies().get(value);
 			tmResults.addRow(data);
 		}

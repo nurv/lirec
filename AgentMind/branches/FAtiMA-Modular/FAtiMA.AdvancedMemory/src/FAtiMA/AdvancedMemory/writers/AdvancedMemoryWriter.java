@@ -30,6 +30,8 @@ package FAtiMA.AdvancedMemory.writers;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 
 import org.znerd.xmlenc.LineBreak;
 import org.znerd.xmlenc.XMLOutputter;
@@ -39,6 +41,7 @@ import FAtiMA.AdvancedMemory.CompoundCue;
 import FAtiMA.AdvancedMemory.GER;
 import FAtiMA.AdvancedMemory.Generalisation;
 import FAtiMA.AdvancedMemory.SpreadingActivation;
+import FAtiMA.AdvancedMemory.ontology.NounOntology;
 import FAtiMA.AdvancedMemory.ontology.TimeOntology;
 
 public class AdvancedMemoryWriter {
@@ -89,6 +92,20 @@ public class AdvancedMemoryWriter {
 						xmlOutputter.endTag(); //TimeOntology						
 					}
 
+					NounOntology targetOntology = compoundCue.getTargetOntology();
+					if (targetOntology != null) {
+						xmlOutputter.startTag("TargetOntology");
+						xmlOutputter.attribute("depthMax", String.valueOf(targetOntology.getDepthMax()));
+						xmlOutputter.endTag(); //TargetOntology
+					}
+
+					NounOntology objectOntology = compoundCue.getObjectOntology();
+					if (objectOntology != null) {
+						xmlOutputter.startTag("ObjectOntology");
+						xmlOutputter.attribute("depthMax", String.valueOf(objectOntology.getDepthMax()));
+						xmlOutputter.endTag(); //ObjectOntology
+					}
+
 					xmlOutputter.startTag("EvaluationValues");
 					for (Integer id : compoundCue.getEvaluationValues().keySet()) {
 						xmlOutputter.startTag("EvaluationValue");
@@ -134,6 +151,54 @@ public class AdvancedMemoryWriter {
 						xmlOutputter.startTag("TimeOntology");
 						xmlOutputter.attribute("abstractionMode", String.valueOf(timeOntology.getAbstractionMode()));
 						xmlOutputter.endTag(); //TimeOntology						
+					}
+
+					NounOntology targetOntology = spreadingActivation.getTargetOntology();
+					if (targetOntology != null) {
+						xmlOutputter.startTag("TargetOntology");
+						xmlOutputter.attribute("depthMax", String.valueOf(targetOntology.getDepthMax()));
+						xmlOutputter.endTag(); //TargetOntology
+					}
+
+					HashMap<String, HashSet<String>> targetHypernyms = spreadingActivation.getTargetHypernyms();
+					if (targetHypernyms != null) {
+						xmlOutputter.startTag("TargetHypernyms");
+						for (String value : targetHypernyms.keySet()) {
+							xmlOutputter.startTag("TargetHypernymSet");
+							xmlOutputter.attribute("value", value);
+							HashSet<String> targetHypernymSet = targetHypernyms.get(value);
+							for (String hypernym : targetHypernymSet) {
+								xmlOutputter.startTag("TargetHypernym");
+								xmlOutputter.attribute("value", hypernym);
+								xmlOutputter.endTag(); //TargetHypernym								
+							}
+							xmlOutputter.endTag(); //TargetHypernymSet							
+						}
+						xmlOutputter.endTag(); //TargetHypernyms
+					}
+
+					NounOntology objectOntology = spreadingActivation.getObjectOntology();
+					if (objectOntology != null) {
+						xmlOutputter.startTag("ObjectOntology");
+						xmlOutputter.attribute("depthMax", String.valueOf(objectOntology.getDepthMax()));
+						xmlOutputter.endTag(); //ObjectOntology
+					}
+
+					HashMap<String, HashSet<String>> objectHypernyms = spreadingActivation.getObjectHypernyms();
+					if (objectHypernyms != null) {
+						xmlOutputter.startTag("ObjectHypernyms");
+						for (String value : objectHypernyms.keySet()) {
+							xmlOutputter.startTag("ObjectHypernymSet");
+							xmlOutputter.attribute("value", value);
+							HashSet<String> objectHypernymSet = objectHypernyms.get(value);
+							for (String hypernym : objectHypernymSet) {
+								xmlOutputter.startTag("ObjectHypernym");
+								xmlOutputter.attribute("value", hypernym);
+								xmlOutputter.endTag(); //ObjectHypernym								
+							}
+							xmlOutputter.endTag(); //ObjectHypernymSet							
+						}
+						xmlOutputter.endTag(); //ObjectHypernyms
 					}
 
 					xmlOutputter.startTag("Frequencies");
