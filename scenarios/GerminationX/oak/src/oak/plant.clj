@@ -67,7 +67,7 @@
      (Math/round (+ 1 (rand 10))))))
 
 (defn ill-slow []
-  (= (rand-int 50) 0))
+  (= (rand-int ill-slow-amount) 0))
 
 (defn growing-season [season]
   (or (= season "spring")

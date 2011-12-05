@@ -82,7 +82,7 @@
         (db-update! :tiles tile (tile-clear-events tile))
         r))
     fatima-world
-    :tiles time 4)))
+    :tiles time server-db-items)))
 
 (defn game-world-summons->fatima
   "send a random summons fromt the list to fatima"

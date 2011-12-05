@@ -269,7 +269,7 @@
       (:spirits game-world))
      :tiles
      time
-     4))))
+     server-db-items))))
 
 (defn game-world-post-logs-to-players
   "dispatch messages to the players"
@@ -327,7 +327,7 @@
                      (game-world-get-tile-with-neighbours
                        game-world (:pos tile))))
       :tiles
-      time 4) ; only do 4 tiles per tick
+      time server-db-items) 
      (modify
       :rules ; load the rules each update so they can be changed
       (fn [r] ; easily while running
@@ -344,7 +344,7 @@
       (player-update player (:id-gen game-world)))
     :players
     time
-    4))
+    server-db-items))
   game-world)
 
 (defn game-world-clear

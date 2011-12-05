@@ -24,6 +24,7 @@
 (def min-health 10)
 (def max-health 90)
 (def start-health 20)
+(def ill-slow-amount 100) ; 1 in n chance of state change
 (def min-neighbours 2) ; not used
 (def max-neighbours 10)
 (def max-fruit 3)
@@ -33,6 +34,7 @@
 (def level0up 5)
 (def level1up 8)
 (def level2up 12)
+(def server-db-items 8) ; num items to process per tick
 
 (defn plant-type->layer [type]
   (cond
