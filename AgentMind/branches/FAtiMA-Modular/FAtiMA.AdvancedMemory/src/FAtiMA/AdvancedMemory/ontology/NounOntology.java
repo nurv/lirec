@@ -23,7 +23,13 @@
  * 
  * History: 
  * Matthias Keysermann: 02/12/11 - File created
- * 
+ * Matthias Keysermann: 05/12/11 - Changed generaliseNouns() iteratively increase depth limit
+ *                                 and stop when common hypernyms are found.
+ *                                 This way is more efficient as long as common hypernyms are
+ *                                 found at shallow depths. If no common hypernyms are found,
+ *                                 this way is less efficient, as previous depths will be
+ *                                 searched repeatedly after each increment.
+ *                                 ITERATIVE_DEPTH_LIMIT controls the use. 
  * **/
 
 package FAtiMA.AdvancedMemory.ontology;
@@ -46,6 +52,8 @@ import edu.mit.jwi.item.Pointer;
 public class NounOntology implements Serializable {
 
 	private static final long serialVersionUID = 1L;
+
+	private static final boolean ITERATIVE_DEPTH_LIMIT = true;
 
 	private static final String DICTIONARY_PATH = "data/characters/minds/wordnet/dict/";
 
@@ -78,8 +86,9 @@ public class NounOntology implements Serializable {
 	}
 
 	/**
-	 * Generalises nouns by finding a common hypernym, up to the given maximum
-	 * depth.
+	 * Generalises nouns by finding a common hypernym, iteratively increasing
+	 * the depth limit. Stops if common hypernyms are found for the current
+	 * depth limit or the given maximum depth is reached.
 	 * 
 	 * @param nouns
 	 *            nouns to generalise over
@@ -92,43 +101,64 @@ public class NounOntology implements Serializable {
 			return null;
 		}
 
-		// retrieve hypernyms of first noun
-		LinkedList<IWord> wordsMatching = getNounHypernyms(nouns[0], 0);
+		// initialise
+		LinkedList<IWord> wordsMatching = new LinkedList<IWord>();
 
-		// loop over remaining nouns
-		for (int i = 1; i < nouns.length; i++) {
+		// set starting depth
+		int depthLimitStart = depthMax;
+		if (ITERATIVE_DEPTH_LIMIT) {
+			depthLimitStart = 0;
+		}
 
-			// retrieve hypernyms
-			LinkedList<IWord> words = getNounHypernyms(nouns[i], 0);
+		// iteratively increase depth limit
+		for (int depthLimit = depthLimitStart; depthLimit <= depthMax; depthLimit++) {
 
-			// store new matching words
-			LinkedList<IWord> wordsMatchingNew = new LinkedList<IWord>();
+			// retrieve hypernyms of first noun
+			wordsMatching = getNounHypernyms(nouns[0], 0, depthLimit);
 
-			// compare matching words with
-			for (IWord word : words) {
-				if (wordsMatching.contains(word) && !wordsMatchingNew.contains(word)) {
-					wordsMatchingNew.add(word);
+			// loop over remaining nouns
+			for (int i = 1; i < nouns.length; i++) {
+
+				// retrieve hypernyms
+				LinkedList<IWord> words = getNounHypernyms(nouns[i], 0, depthLimit);
+
+				// store new matching words
+				LinkedList<IWord> wordsMatchingNew = new LinkedList<IWord>();
+
+				// compare matching words with
+				for (IWord word : words) {
+					if (wordsMatching.contains(word) && !wordsMatchingNew.contains(word)) {
+						wordsMatchingNew.add(word);
+					}
 				}
+
+				// update matching words
+				wordsMatching = wordsMatchingNew;
+
 			}
 
-			// update matching words
-			wordsMatching = wordsMatchingNew;
+			// stop if common hypernyms are found
+			if (wordsMatching.size() > 0) {
+				return wordsMatching;
+			}
+
 		}
 
 		return wordsMatching;
 	}
 
 	/**
-	 * Returns a list of noun hypernyms, up to the given maximum depth,
-	 * recursive
+	 * Returns a list of noun hypernyms, up to a given depth limit, recursive
 	 * 
 	 * @param noun
 	 *            noun to retrieve hypernyms for
 	 * @param depth
 	 *            current recursion depth
+	 * @param depthLimit
+	 *            depth limit for retrieving hypernyms
 	 * @return list of hypernyms
 	 */
-	public LinkedList<IWord> getNounHypernyms(String noun, int depth) {
+	public LinkedList<IWord> getNounHypernyms(String noun, int depth, int depthLimit) {
 		LinkedList<IWord> words = new LinkedList<IWord>();
 
 		// get word from dictionary
@@ -145,7 +175,7 @@ public class NounOntology implements Serializable {
 			words.add(word);
 
 			// check for max recursion depth
-			if (depth < depthMax) {
+			if (depth < depthLimit) {
 
 				// fetch hypernyms
 				ISynset synset = word.getSynset();
@@ -155,7 +185,7 @@ public class NounOntology implements Serializable {
 				for (ISynsetID hypernym : hypernyms) {
 					// loop over words
 					for (IWord hypernymword : dict.getSynset(hypernym).getWords()) {
-						words.addAll(getNounHypernyms(hypernymword.getLemma(), depth + 1));
+						words.addAll(getNounHypernyms(hypernymword.getLemma(), depth + 1, depthLimit));
 					}
 				}
 
