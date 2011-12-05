@@ -35,7 +35,6 @@ class Butterfly extends SkeletonEntity
     public function new(world:World,pos:Vec3,seed:Int)
     {
 	    super(world,pos);
-        Hide(true);
         NeedsUpdate=true;
         UpdateFreq=3;
         Speed=0.02;
@@ -50,8 +49,20 @@ class Butterfly extends SkeletonEntity
         RightWing.SetScale(new Vec2(-1,1));
         RightWing.Centre=new Vec2(11,9);
         LeftWing.AddChild(world,RightWing);
-        RightWing.Hide(true);
-        LeftWing.Hide(true);
+
+        RightWing.MouseDown(this,function(c){c.OverridePos=true;});
+        LeftWing.MouseDown(this,function(c){c.OverridePos=true;});
+        RightWing.MouseUp(this,function(c){c.OverridePos=false;});
+        LeftWing.MouseUp(this,function(c){c.OverridePos=false;});
+    }
+
+    override public function UpdateMouse(x, y)
+    {
+        if (OverridePos)
+        {
+            Pos=new Vec3(x,y,0);
+        }
+//        Update(0,w);
     }
 
     override function Update(frame:Int,world:World)
@@ -60,21 +71,27 @@ class Butterfly extends SkeletonEntity
         LeftWing.SetRotate(Rot+Rnd.RndRange(-10,10));
         RightWing.SetRotate(Rot*2);
 
-        if (Rnd.RndInt()%30==0)
-        {
+        if (!OverridePos && Rnd.RndInt()%10==0)
+        {            
+            var plant = world.Get("fungi.Plant",new Vec2(LogicalPos.x,LogicalPos.y));
+            if (plant!=null)
+            {
+//                trace(plant.Owner);
+            }
+
+
             // random walk
-            SetLogicalPos(world, LogicalPos.Add(new Vec3(Rnd.RndRange(-1,2),
-                                                         Rnd.RndRange(-1,2),0)));
-        }
+            var lp=LogicalPos.Add(new Vec3(Rnd.RndRange(-1,2),
+                                           Rnd.RndRange(-1,2),0));
+        
+            if (lp.x < 0) lp.x=0;
+            if (lp.y < 0) lp.y=0;
+            if (lp.x > 14) lp.x=14;
+            if (lp.y > 14) lp.y=14;
 
-        if (LogicalPos.x < 0 ||
-            LogicalPos.y < 0 ||
-            LogicalPos.x > 15 ||
-            LogicalPos.y > 15)
-        {
-            Hide(true);
+            SetLogicalPos(world,lp);
         }
-
+        
         super.Update(frame,world);
     }
 
@@ -87,7 +104,6 @@ class Bug extends SpriteEntity
     public function new(world:World,pos:Vec3,seed:Int)
     {
 	    super(world,pos,Resources.Get("spider-a"));
-        Hide(true);
         NeedsUpdate=true;
         UpdateFreq=3;
         Speed=0.02;
@@ -111,21 +127,18 @@ class Bug extends SpriteEntity
             var lp=LogicalPos.Add(new Vec3(Rnd.RndRange(-1,2),
                                            Rnd.RndRange(-1,2),0));
         
-            var cube = world.Get("Cube",new Vec2(LogicalPos.x,LogicalPos.y));
+            var cube = world.Get("fungi.Cube",new Vec2(LogicalPos.x,LogicalPos.y));
             if (cube!=null)
             {
                 lp.z=cube.LogicalPos.z+2;   
             }
 
-            SetLogicalPos(world,lp);
+            if (lp.x < 0) lp.x=0;
+            if (lp.y < 0) lp.y=0;
+            if (lp.x > 14) lp.x=14;
+            if (lp.y > 14) lp.y=14;
 
-            if (LogicalPos.x < 0 ||
-                LogicalPos.y < 0 ||
-                LogicalPos.x > 15 ||
-                LogicalPos.y > 15)
-            {
-                Hide(true);
-            }
+            SetLogicalPos(world,lp);
         }
 
         super.Update(frame,world);
@@ -146,16 +159,24 @@ class Critters
 
         for(i in 0...numcritters)
         {
-            var critter = new Butterfly(world,new Vec3(0,0,4), i);
+            var critter = new Butterfly(world,new Vec3(Rnd.RndInt()%15,Rnd.RndInt()%15,4), i);
             CritterList.push(critter);
-            var critter2 = new Bug(world,new Vec3(0,0,1), i);
+            var critter2 = new Bug(world,new Vec3(Rnd.RndInt()%15,Rnd.RndInt()%15,1), i);
             CritterList.push(critter2);
+        }
+    }
+
+    public function UpdateMouse(x,y)
+    {
+        for (c in CritterList)
+        {
+            c.UpdateMouse(x,y);
         }
     }
 
     public function Update()
     {
-        for (c in CritterList)
+/*        for (c in CritterList)
         {
             if (c.Hidden && Rnd.RndInt()%1000==0) 
             {
@@ -163,7 +184,7 @@ class Critters
                 c.LogicalPos.y=Rnd.RndInt()%15;
                 c.Hide(false);
             }
-        }
+        }*/
     }
 
 }

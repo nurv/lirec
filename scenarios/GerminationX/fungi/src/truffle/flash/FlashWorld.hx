@@ -105,6 +105,23 @@ class FlashWorld implements World, extends MovieClip
         return r;
 	}
 
+	public function InverseScreenTransform(pos:Vec2) : Vec2
+	{
+        var ox=pos.x-ScreenOffset.x;
+        var oy=pos.y-ScreenOffset.y;
+ 
+        var xp=ox/CosAlpha+oy/SinAlpha;
+        var yp=oy/CosAlpha-ox/SinAlpha;
+
+        var r= new Vec2(xp,
+                        yp/CosTheta
+                        );
+
+        r.x/=Scale.x;
+        r.y/=Scale.y;
+        return r;
+	}
+
     public function Add(e:Entity)
     {
         Scene.push(e);

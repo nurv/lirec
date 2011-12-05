@@ -29,6 +29,7 @@ class Entity
     public var MoveTime:Float;
     public var LastPos:Vec3;
     public var DestPos:Vec3;
+    public var OverridePos:Bool;
 	
 	public function new(w:World,pos:Vec3) 
 	{
@@ -42,6 +43,7 @@ class Entity
         MoveTime = 0;
         UpdateFreq=0;
         NeedsUpdate=false;
+        OverridePos=false;
         w.Add(this);
 	}
 
@@ -65,25 +67,32 @@ class Entity
 
 	public function Update(frame:Int, world:World)
 	{
-        if (Speed==0)
+        if (!OverridePos)
         {
-            Pos = world.ScreenTransform(LogicalPos);
-        }
-        else
-        {
-            if (MoveTime<1.0)
+            if (Speed==0)
             {
-                Pos = LastPos.Lerp(DestPos,MoveTime);
-                MoveTime += Speed;
+                Pos = world.ScreenTransform(LogicalPos);
             }
+            else
+            {
+                if (MoveTime<1.0)
+                {
+                    Pos = LastPos.Lerp(DestPos,MoveTime);
+                    MoveTime += Speed;
+                }
+            }
+            
+            Depth = Pos.z;
         }
-
-        Depth = Pos.z;
 	}
 
     public function GetRoot() : Dynamic
     {
         return null;
+    }
+
+    public function UpdateMouse(x,y)
+    {
     }
 
     public function OnSortScene(world:World, order:Int) : Int

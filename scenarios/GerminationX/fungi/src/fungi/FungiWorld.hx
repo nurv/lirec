@@ -183,7 +183,11 @@ class FungiWorld extends World
         addChild(arrow4);
 
         var c=this;
-        MouseMove(this, function(e) { c.GameGUI.Store.UpdateCarrying(e.stageX,e.stageY); });
+        // tell all the things that need to know the mouse
+        MouseMove(this, function(e) { 
+            c.GameGUI.Store.UpdateCarrying(e.stageX,e.stageY);
+            c.TheCritters.UpdateMouse(e.stageX,e.stageY);
+        });
 
         HighlightEntity = new SpriteEntity(this,new Vec3(0,0,0), Resources.Get("arr5"),false);
         Add(HighlightEntity);
