@@ -59,14 +59,24 @@
   (hash-map
    :msgs ()
    :max max
-   :notes ()))
+   :notes ()
+   :one-time-msgs ()))
 
 (defn log-add-msg [log msg]
-  (modify
-   :msgs
-   (fn [msgs]
-     (max-cons msg msgs (:max log)))
-   log))
+  (if (list-contains? (:one-time-msgs log) (:code msg))
+    log
+    (modify
+     :msgs
+     (fn [msgs]
+       (max-cons msg msgs (:max log)))
+     (if (.startsWith (:code msg) "one_time")
+       (modify
+        :one-time-msgs
+        (fn [ot]
+          (println "found one time message")
+          (cons (:code msg) ot))
+        log)
+       log))))
 
 (defn log-contains-msg? [log code]
   (reduce

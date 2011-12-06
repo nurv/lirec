@@ -134,6 +134,20 @@
                (Math/round (* (rand-gaussian) area))
                (Math/round (* (rand-gaussian) area)))))))))
 
+(defn game-world-find-player-id
+  "get the player id from the name (should only be used when logging in)"
+  [game-world name]
+  (:id (first (db-get :players {:name name}))))
+
+(defn game-world-find-player
+  "find player by id"
+  [game-world id]
+  (first (db-get :players {:id id})))
+
+(defn game-world-id->player-name [game-world id]
+  "helper to get the name from a player id"
+  (:name (game-world-find-player game-world id)))
+
 (defn game-world-db-build!
   "build a database from the world"
   [game-world]
@@ -161,17 +175,82 @@
   
   (db-add-index! :tiles [:index]))
 
+(defn upgrade-plant-owner-names! [world]
+  (db-map!
+   (fn [tile]
+     (modify
+      :entities
+      (fn [entities]
+        (map
+         (fn [plant]
+           (let [owner-name (game-world-id->player-name
+                             world (:owner-id plant))]
+             (println "upgrading plant" (:id plant) "to include owner" owner-name)
+             (merge plant {:owner owner-name})))
+         entities))
+      tile))
+   :tiles))
+
+(defn upgrade-log-one-time-msgs! [world]
+  ; logs on plants
+  (db-map!
+   (fn [tile]
+     (modify
+      :entities
+      (fn [entities]
+        (map
+         (fn [plant]
+           (modify
+            :log
+            (fn [log]
+              (println "upgrading plant" (:id plant) "to include one-time msgs")
+              (merge log {:one-time-msgs ()}))
+            plant))
+         entities))
+      tile))
+   :tiles)
+  ; logs on players
+  (db-map!
+   (fn [player]
+     (modify
+      :log
+      (fn [log]
+        (println "upgrading player" (:name player) "to include one-time msgs")
+        (merge log {:one-time-msgs ()}))
+      player))
+   :players))
+
+(defn game-world-set-db-version! [world current to]
+  (db-update!
+   :game current
+   (merge current {:value to})))
+
+(defn game-world-upgrade-db! [world]
+  (let [current-version (first (db-get :game {:name "version"}))]
+    (when (or (not current-version)
+              (> db-version (:value current-version)))
+      (cond
+       (= (:value current-version) 0)
+       (do
+         (upgrade-plant-owner-names! world)
+         (upgrade-log-one-time-msgs! world)
+         (game-world-set-db-version!
+          world current-version 1)
+         (game-world-upgrade-db! world))))))
+
 (defn make-empty-game-world
   "make a world for use with the database"
   []
-  (let [id-gen (make-id-generator)]
-     (hash-map
-      :version 1
-      :log (make-log 100)
-      :id-gen id-gen
-      :spirits ()
-      :summons {}
-      :rules (load-companion-rules "rules.txt"))))
+  (let [id-gen (make-id-generator)
+        world (hash-map
+               :version 1
+               :log (make-log 100)
+               :id-gen id-gen
+               :spirits ()
+               :summons {}
+               :rules (load-companion-rules "rules.txt"))]
+    (game-world-upgrade-db! world)
+    world))
 
 (defn game-world-save [game-world filename]
   (spit filename 
@@ -189,20 +268,6 @@
      (fn [id]
        (make-id-generator)) ; convert the id into the function
      w)))
-
-(defn game-world-find-player-id
-  "get the player id from the name (should only be used when logging in)"
-  [game-world name]
-  (:id (first (db-get :players {:name name}))))
-
-(defn game-world-find-player
-  "find player by id"
-  [game-world id]
-  (first (db-get :players {:id id})))
-
-(defn game-world-id->player-name [game-world id]
-  "helper to get the name from a player id"
-  (:name (game-world-find-player game-world id)))
 
 (defn game-world-process-msg
   "replace id numbers with strings for
@@ -274,20 +339,24 @@
 (defn game-world-post-logs-to-players
   "dispatch messages to the players"
   [game-world msgs]
-  (db-map!
-   (fn [player]
-     (modify
-      :log
-      (fn [log]
-        (reduce
-         (fn [log msg]
-           (if (= (:player msg) (:id player))
-             (log-add-msg log msg)
-             log))
-         log
-         msgs))
-      player))
-   :players)
+  ; todo, reduce over messages and send to player
+  ; rather than this way around (map over players)
+  (prof
+   :post-logs-map!
+   (db-map!
+    (fn [player]
+      (modify
+       :log
+       (fn [log]
+         (reduce
+          (fn [log msg]
+            (if (= (:player msg) (:id player))
+              (log-add-msg log msg)
+              log))
+          log
+          msgs))
+       player))
+    :players))
   game-world)
 
 (defn game-world-get-decayed-owners
@@ -323,9 +392,10 @@
    (do
      (db-partial-map!
       (fn [tile]
-        (tile-update tile time delta (:rules game-world)
-                     (game-world-get-tile-with-neighbours
-                       game-world (:pos tile))))
+        (prof :tile-update
+              (tile-update tile time delta (:rules game-world)
+                           (game-world-get-tile-with-neighbours
+                             game-world (:pos tile)))))
       :tiles
       time server-db-items) 
      (modify

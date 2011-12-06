@@ -17,7 +17,8 @@
    oak.vec2
    oak.plant
    oak.forms
-   oak.defs))
+   oak.defs
+   oak.profile))
 
 ; tiles are containers for all entities, their size is defined
 ; by tile-size in defs.clj. chunked together in 3X3 units for
@@ -99,20 +100,24 @@
   "get all neighbouring entities within range
    across neihbouring tile boundaries"
   [centre-tile-pos id pos neighbours]
-  (reduce
-   (fn [r tile] ; for each neighbours (includes current tile)
-     (reduce
-      (fn [r other] ; for each entity
-        (if (and (< (tile-distance
-                     centre-tile-pos pos
-                     (:pos tile) (:pos other))
-                    plant-influence-distance)
-                 (not (= id (:id other)))) ; don:t return ourselves
-          (cons other r) r))
-      r
-      (:entities tile)))
-   ()
-   neighbours))
+  (prof
+   :tile-get-neighbours
+   (reduce
+    (fn [r tile] ; for each neighbours (includes current tile)
+      (reduce
+       (fn [r other] ; for each entity
+         (prof
+          :neighbours_inner
+          (if (and (< (tile-distance
+                       centre-tile-pos pos
+                       (:pos tile) (:pos other))
+                      plant-influence-distance)
+                   (not (= id (:id other)))) ; don't return ourselves
+            (cons other r) r)))
+       r
+       (:entities tile)))
+    ()
+    neighbours)))
 
 (defn tiles-find-entity
   "search multiple tiles for entity using id"
@@ -168,12 +173,15 @@
               (map
                (fn [e]
                  ;; todo dispatch on entity type
-                 (plant-update
-                  e time delta
-                  (tile-get-neighbours
-                   (:pos tile) (:id e) (:pos e) neighbouring-tiles)
-                  rules
-                  season))
+                 (prof :plant-update
+                       (plant-update
+                        e time delta
+                        (prof
+                         :getting-plant-neighbours
+                         (tile-get-neighbours
+                          (:pos tile) (:id e) (:pos e) neighbouring-tiles))
+                        rules
+                        season)))
                (filter
                 (fn [e]
                   (not (= (:state e) "decayed")))

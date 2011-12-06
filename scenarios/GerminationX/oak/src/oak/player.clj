@@ -152,16 +152,14 @@
   (modify ; add notes on levelup
    :log 
    (fn [log]
-      (log-remove-msgs
-       (cond
-        (and (= (:layer player) 0) (= (:layer leveledup-player) 1))
-        (log-add-note log (make-note "levelup1" (list "ok"))) 
-        (and (= (:layer player) 1) (= (:layer leveledup-player) 2))
-        (log-add-note log (make-note "levelup2" (list "ok")))
-        (and (= (:layer player) 2) (= (:layer leveledup-player) 3))
-        (log-add-note log (make-note "levelup3" (list "ok")))
-        :else log)
-       "i_have_flowered_internal"))
+     (cond
+      (and (= (:layer player) 0) (= (:layer leveledup-player) 1))
+      (log-add-note log (make-note "levelup1" (list "ok"))) 
+      (and (= (:layer player) 1) (= (:layer leveledup-player) 2))
+      (log-add-note log (make-note "levelup2" (list "ok")))
+      (and (= (:layer player) 2) (= (:layer leveledup-player) 3))
+      (log-add-note log (make-note "levelup3" (list "ok")))
+      :else log)) 
    player))
  
 ; call after add notes (will clear messages) and finding new
@@ -210,19 +208,19 @@
             (set-add-message-to-flowered fp msg)
             fp))
         fp
-        (log-find-msgs (:log player) "i_have_flowered_internal"))))
+        (log-find-msgs (:log player) "one_time_i_have_flowered"))))
    player))
 
 (defn player-update [player id-gen]
   (let [leveledup-player (player-levelup player)]
     (merge
      (player-add-surprises
-      (player-add-flowered-msgs
+      ;(player-add-flowered-msgs
        (player-add-notes
         (player-update-flowered-plants
          (player-update-seeds player)
          leveledup-player)
         leveledup-player)
-       leveledup-player)
+      ; leveledup-player)
       leveledup-player id-gen)
      {:layer (:layer leveledup-player)})))

@@ -17,11 +17,12 @@
    oak.vec2
    oak.forms
    oak.log
-   oak.defs)
+   oak.defs
+   oak.profile)
   (:require
    clojure.contrib.math))
 
-(defn make-plant [id tile pos type owner-id size]
+(defn make-plant [id tile pos type owner owner-id size]
   (hash-map
    :version 1
    :id id
@@ -32,6 +33,7 @@
    :state "planted"
    :picked-by-ids ()
    :owner-id owner-id
+   :owner owner
    :size size
    :timer 9999 ; force a tick when created
    :tick (+ plant-tick (Math/floor (rand plant-tick-var)))
@@ -45,7 +47,7 @@
   [plant player-layer]
   (let [stripped (select-keys
                   plant
-                  [:id :state :type :layer :pos :fruit :owner-id])]
+                  [:id :state :type :layer :pos :fruit :owner-id :owner])]
     ; remove the fruit if the player hasn't reached the level yet
     (if (or (= player-layer "all")
             (= player-layer (:layer plant)))
@@ -56,14 +58,19 @@
   (println (str "picked-by: " (count (:picked-by-ids plant)))))
 
 (defn make-random-plant [id tile]
-  (let [type (rand-nth plant-types-wo-fungi)]
+  (let [type (rand-nth plant-types-wo-fungi)
+        owner (rand-nth
+               (list (list 97 "Charlie")
+                     (list 98 "Percy")
+                     (list 99 "Alan")))]
     (make-plant
      id
      tile
      (make-vec2 (Math/floor (rand tile-size))
                 (Math/floor (rand tile-size)))
      type
-     (rand-nth (list 97 98 99))
+     (second owner)
+     (first owner)
      (Math/round (+ 1 (rand 10))))))
 
 (defn ill-slow []
@@ -263,7 +270,7 @@
              (= (:state plant) "fruit-a"))
         ; we use this message to count flowered plants
         ; so add a little extra detail we need
-        (plant-add-to-log-extra plant log "i_have_flowered_internal"
+        (plant-add-to-log-extra plant log "one_time_i_have_flowered"
                                 (list (:id plant))) 
 
         (or
@@ -293,6 +300,7 @@
 
 (defn plant-update-events [plant old-state neighbours rules]    
   "add any special events that we need FAtiMA to be aware of"
+  (prof :plant-update-events
   (modify
    :event-occurred
    (fn [ev]
@@ -323,12 +331,13 @@
       (cons (str (:layer plant) "-finished-recovery#" (:id plant)) ev)
       
       :else ev))
-   plant))
+   plant)))
 
 (defn plant-update-from-changes
   "update the log and event-occurred from the
    current state and the last"
   [plant old-state neighbours rules]
+  (prof :plant-update-from-changes
   ; only if the state has acually changed
   (if (not (= (:state plant) old-state))
     ; update the log
@@ -336,9 +345,11 @@
      (plant-update-events
       plant old-state neighbours rules)
      old-state neighbours rules)
-    plant))
+    plant)))
 
 (defn plant-update-health [plant neighbours rules]
+  (prof
+   :plant-update-health
   (modify
    :health
    (fn [health] ; the main health algorithm
@@ -354,18 +365,22 @@
                                (> nn max-neighbours) (- max-neighbours nn)
                                :else 0))
                             neighbours)))))
-   plant))
+   plant)))
 
 (defn plant-update-fruit [plant]
-  (modify
+  (prof
+   :plant-update-fruit
+   (modify
    :fruit
    (fn [f]
      (if (= (:state plant) "fruit-c")
        (min max-fruit (+ f 1)) f))
-   plant))
+   plant)))
 
 (defn plant-update-state [plant time delta season]
-  (modify
+  (prof
+   :plant-update-state
+   (modify
    :timer
    (fn [timer]
      (+ timer delta))
@@ -382,7 +397,7 @@
                    (= (:layer plant) "fungi")))
       (modify
        :timer (fn [t] 0) plant))
-     plant)))
+     plant))))
 
 (defn plant-update [plant time delta neighbours rules season]
   ;(println (str season " " (:state plant) " " (:health plant) " " (:timer plant) " " (:tick plant)))

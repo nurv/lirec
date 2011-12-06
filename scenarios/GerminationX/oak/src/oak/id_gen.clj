@@ -14,13 +14,16 @@
 
 (ns oak.id-gen
   (:use
+   oak.defs
    oak.db))
 
 (defn check-&-build-id-gen []
   (let [id-gen (first (db-get :game {:name "id-gen"}))]
     (if (nil? id-gen)
       (db-build-collection! :game (list {:name "id-gen"
-                                         :value 100000})))))
+                                         :value 100000}
+                                        {:name "version"
+                                         :value db-version})))))
 
 (defn make-id-generator []
   (fn []

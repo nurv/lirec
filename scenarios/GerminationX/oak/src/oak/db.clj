@@ -51,6 +51,7 @@
   "run f on each item in the collection. loads in chunks
    to avoid blowing memory"
   [f coll]
+;  (println "warning - calling db-map!")
   (loop [skip 0]
     (let [limit db-limit 
           items (prof :db-map-fetch (fetch coll :limit limit :skip skip))]
@@ -78,6 +79,7 @@
 (defn db-reduce
   "run f on each item in the collection, in chunks"
   [f ret coll]
+  (println "warning - calling db-reduce!")
   (loop [skip 0 ret ret]
     (let [limit db-limit ; so we can store more than RAM
           items (prof :db-reduce-fetch (fetch coll :limit limit :skip skip))]

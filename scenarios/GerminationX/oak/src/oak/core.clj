@@ -56,8 +56,8 @@
 ; ****************************************************************
 ; Uncomment the two lines below and run once to create a new world
 ; ****************************************************************
-;(def my-game-world (ref (make-game-world 300 1)))
-;(game-world-db-build! (sym-replace2 (deref my-game-world)))
+; (def my-game-world (ref (make-game-world 100 1)))
+; (game-world-db-build! (sym-replace2 (deref my-game-world)))
 
 (def my-game-world (ref (make-empty-game-world)))
 
@@ -167,7 +167,7 @@
                        tile-pos
                        (make-plant
                         ((:id-gen (deref my-game-world)))
-                        tile-pos pos type owner-id size)
+                        tile-pos pos type (:name player) owner-id size)
                        (/ (.getTime (java.util.Date.)) 1000.0)
                        server-tick)
                       owner-id

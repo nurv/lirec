@@ -22,7 +22,8 @@
    oak.game-world
    oak.fatima-world
    oak.profile
-   oak.db))
+   oak.db
+   oak.defs))
 
 (defn game-world-entity-events->fatima
   "send entity events to fatima"

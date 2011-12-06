@@ -16,6 +16,7 @@
   (:require
    clojure.contrib.math))
 
+(def db-version 1)
 (def server-tick 1)
 (def tile-size 5)
 (def season-length (* 60 30)) 
@@ -34,7 +35,7 @@
 (def level0up 5)
 (def level1up 8)
 (def level2up 12)
-(def server-db-items 8) ; num items to process per tick
+(def server-db-items 4) ; num items to process per tick
 
 (defn plant-type->layer [type]
   (cond
