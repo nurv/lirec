@@ -38,8 +38,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.StringTokenizer;
 
-import edu.mit.jwi.item.IWord;
-
 import FAtiMA.AdvancedMemory.ontology.NounOntology;
 import FAtiMA.AdvancedMemory.ontology.TimeOntology;
 import FAtiMA.Core.memory.episodicMemory.ActionDetail;
@@ -256,7 +254,7 @@ public class SpreadingActivation implements Serializable {
 					nouns[1] = String.valueOf(value);
 
 					targetOntology.openDict();
-					LinkedList<IWord> nounsGeneralised = targetOntology.generaliseNouns(nouns);
+					LinkedList<String> nounsGeneralised = targetOntology.generaliseNouns(nouns);
 					targetOntology.closeDict();
 
 					// check if common hypernyms exist 
@@ -265,7 +263,7 @@ public class SpreadingActivation implements Serializable {
 						// update hypernym set
 						HashSet<String> hypernymSet = targetHypernyms.get(targetAttributeValue);
 						// add only the first common hypernym to set
-						hypernymSet.add(nounsGeneralised.getFirst().getLemma());
+						hypernymSet.add(nounsGeneralised.getFirst());
 						targetHypernyms.put(targetAttributeValue, hypernymSet);
 
 						// update freqency
@@ -323,7 +321,7 @@ public class SpreadingActivation implements Serializable {
 					nouns[1] = String.valueOf(value);
 
 					objectOntology.openDict();
-					LinkedList<IWord> nounsGeneralised = objectOntology.generaliseNouns(nouns);
+					LinkedList<String> nounsGeneralised = objectOntology.generaliseNouns(nouns);
 					objectOntology.closeDict();
 
 					// check if common hypernyms exist 
@@ -332,7 +330,7 @@ public class SpreadingActivation implements Serializable {
 						// update hypernym set
 						HashSet<String> hypernymSet = objectHypernyms.get(targetAttributeValue);
 						// add only the first common hypernym to set
-						hypernymSet.add(nounsGeneralised.getFirst().getLemma());
+						hypernymSet.add(nounsGeneralised.getFirst());
 						objectHypernyms.put(targetAttributeValue, hypernymSet);
 
 						// update freqency

@@ -32,8 +32,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
-import edu.mit.jwi.item.IWord;
-
 import FAtiMA.AdvancedMemory.ontology.NounOntology;
 import FAtiMA.AdvancedMemory.ontology.TimeOntology;
 import FAtiMA.Core.memory.episodicMemory.ActionDetail;
@@ -68,7 +66,7 @@ public class ActionDetailFilter implements Serializable {
 				nouns[1] = String.valueOf(attributeValueCurrent);
 
 				targetOntology.openDict();
-				LinkedList<IWord> nounsGeneralised = targetOntology.generaliseNouns(nouns);
+				LinkedList<String> nounsGeneralised = targetOntology.generaliseNouns(nouns);
 				targetOntology.closeDict();
 
 				if (nounsGeneralised.size() > 0) {
@@ -84,7 +82,7 @@ public class ActionDetailFilter implements Serializable {
 				nouns[1] = String.valueOf(attributeValueCurrent);
 
 				objectOntology.openDict();
-				LinkedList<IWord> nounsGeneralised = objectOntology.generaliseNouns(nouns);
+				LinkedList<String> nounsGeneralised = objectOntology.generaliseNouns(nouns);
 				objectOntology.closeDict();
 
 				if (nounsGeneralised.size() > 0) {

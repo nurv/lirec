@@ -37,8 +37,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.StringTokenizer;
 
-import edu.mit.jwi.item.IWord;
-
 import FAtiMA.AdvancedMemory.ontology.NounOntology;
 import FAtiMA.AdvancedMemory.ontology.TimeOntology;
 import FAtiMA.Core.memory.episodicMemory.ActionDetail;
@@ -142,7 +140,7 @@ public class CompoundCue implements Serializable {
 					nouns[1] = String.valueOf(object2);
 
 					nounOntology.openDict();
-					LinkedList<IWord> nounsGeneralised = nounOntology.generaliseNouns(nouns);
+					LinkedList<String> nounsGeneralised = nounOntology.generaliseNouns(nouns);
 					nounOntology.closeDict();
 
 					if (nounsGeneralised.size() > 0) {
