@@ -79,13 +79,15 @@ class FungiWorld extends World
         LogicalCameraPos=new Vec2(0,0);
 
         GUIFrameTextures.Init();
+        TheCritters = new Critters(this,3);
 
         // drop seeds if they are not on tiles...
-        MouseUp(this,function(c) {
+        MouseUp(this,function(c:FungiWorld) {
             if (c.GameGUI.Store.Carrying())
             {
                 c.GameGUI.Store.DropError();
             }
+            c.TheCritters.DropButterfly(c);
         });
         
 		for (y in 0...h)
@@ -134,8 +136,6 @@ class FungiWorld extends World
 
         Spiral = new Sprite(new Vec2(0,0), Resources.Get("spiral"), true);
         AddSprite(Spiral);
-
-        TheCritters = new Critters(this,3);
 
         Update(0);
         SortScene();

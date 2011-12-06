@@ -159,7 +159,6 @@ class Spirit extends ClusterEntity
         return order;
     }
 
-
     static function IntToColourTriple(col:Int) : Vec3
     {
         return new Vec3((col >> 16 & 0xFF)/255.0,
@@ -241,7 +240,7 @@ class Spirit extends ClusterEntity
             }
         }
 
-        if (!Debug.Hidden) UpdateDebug(e);
+        if (!Debug.IsHidden()) UpdateDebug(e);
     }
 
     override function Hide(s:Bool) : Void
@@ -256,7 +255,9 @@ class Spirit extends ClusterEntity
 
     override function Update(frame:Int, world:World)
     {
-        if (!Message.Hidden)
+        super.Update(frame,world);
+
+        if (!Message.IsHidden())
         {
             Rnd.Seed(0);
             var x = Math.floor(Root.Pos.x-(128+64));
@@ -304,7 +305,5 @@ class Spirit extends ClusterEntity
                              c.Emotions.JOY*0.1)) +
             ((world.MyRndGen.RndFlt()-0.5)*1*irritation));
         });
-
-        super.Update(frame,world);
     }
 }

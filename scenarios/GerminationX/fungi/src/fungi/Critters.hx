@@ -26,20 +26,44 @@ import truffle.SkeletonEntity;
 import truffle.SpriteEntity;
 import truffle.Bone;
 
+enum ButterflyState
+{
+    SearchingPlant;
+    ApproachingPlant;
+    ExaminePlant;
+    Wait;
+}
+
 class Butterfly extends SkeletonEntity
 {
     var LeftWing:Bone;
     var RightWing:Bone;
     var Rnd:RndGen;
+    var Message:Frame;
+    var MessageTime:Float;
+    var Seed:Int;
+    var State:ButterflyState;
 
     public function new(world:World,pos:Vec3,seed:Int)
     {
 	    super(world,pos);
         NeedsUpdate=true;
         UpdateFreq=3;
-        Speed=0.02;
+        Speed=0.1;
         Rnd=new RndGen();
+        Seed=seed;
         Rnd.Seed(seed);
+        MessageTime=-1;
+        State=SearchingPlant;
+
+        Message = new Frame("",0,0,64*2,64);
+        Message.SetTextSize(10);
+        Message.InitTextures(GUIFrameTextures.Get(),Rnd);
+        Message.R=1;
+        Message.G=1;
+        Message.B=0.8;
+        world.AddSprite(Message);
+        Message.Hide(true);
 
         LeftWing = new Bone(new Vec2(0,0), Resources.Get("wing"));
         Root = LeftWing;
@@ -50,10 +74,55 @@ class Butterfly extends SkeletonEntity
         RightWing.Centre=new Vec2(11,9);
         LeftWing.AddChild(world,RightWing);
 
-        RightWing.MouseDown(this,function(c){c.OverridePos=true;});
-        LeftWing.MouseDown(this,function(c){c.OverridePos=true;});
-        RightWing.MouseUp(this,function(c){c.OverridePos=false;});
-        LeftWing.MouseUp(this,function(c){c.OverridePos=false;});
+        var down=function(c) {
+            c.OverridePos=true;
+            c.LeftWing.EnableMouse(false);
+            c.RightWing.EnableMouse(false);
+            var ps=cast(world.Plants,Array<Dynamic>);
+            for (p in ps)
+            {
+                p.EnableSelection();
+            }
+        };
+
+        RightWing.MouseDown(this,down);
+        LeftWing.MouseDown(this,down);
+    }
+
+    public function Drop(world:World)
+    {
+        if (OverridePos)
+        {
+            OverridePos=false;
+            for (pp in cast(world.Plants,Array<Dynamic>))
+            {
+                pp.Spr.EnableMouse(false);
+                pp.GotSelect=false;
+            }
+            LeftWing.EnableMouse(true);
+            RightWing.EnableMouse(true);
+        }
+    }
+
+    public function AddMsg(text)
+    {
+        Message.UpdatePosition(Math.floor(Pos.x-64),
+                               Math.floor(Pos.y-100));
+        Message.UpdateText(text);
+        var s=Rnd.GetSeed();
+        Rnd.Seed(Seed);
+        Message.InitTextures(GUIFrameTextures.Get(),Rnd);
+        Rnd.Seed(s);
+        Message.Hide(false);    
+        MessageTime=Date.now().getSeconds()+10;
+    }
+
+    // todo put the message stuff in the entity base class
+    override function OnSortScene(world:World, order:Int) : Int
+    {
+        var order=super.OnSortScene(world,order);
+        Message.SetDepth(order++);
+        return order;
     }
 
     override public function UpdateMouse(x, y)
@@ -67,29 +136,76 @@ class Butterfly extends SkeletonEntity
 
     override function Update(frame:Int,world:World)
     {
+        if (!Message.IsHidden())
+        {
+            Message.UpdatePosition(Math.floor(Pos.x-64),
+                                   Math.floor(Pos.y-100));
+            var s=Rnd.GetSeed();
+            Rnd.Seed(Seed);
+            Message.InitTextures(GUIFrameTextures.Get(),Rnd);
+            Rnd.Seed(s);
+            if (Date.now().getSeconds()>MessageTime) 
+            {
+                Message.Hide(true);
+                State=SearchingPlant;
+            }
+        }
+
         var Rot = Rnd.RndRange(-45,45);
         LeftWing.SetRotate(Rot+Rnd.RndRange(-10,10));
         RightWing.SetRotate(Rot*2);
 
         if (!OverridePos && Rnd.RndInt()%10==0)
         {            
-            var plant = world.Get("fungi.Plant",new Vec2(LogicalPos.x,LogicalPos.y));
-            if (plant!=null)
+
+            switch (State)
             {
-//                trace(plant.Owner);
+            case SearchingPlant:
+                {
+                    if (world.Plants.length>0)
+                    {
+                        SetLogicalPos(world,Rnd.Choose(world.Plants).LogicalPos.Add(
+                            new Vec3(0,0,3)));
+                        State=ApproachingPlant;
+                    }
+                }
+            case ApproachingPlant:
+                {
+                    if (MoveTime>1.0) // have we arrived?
+                    {
+                        State=ExaminePlant;
+                    }
+                }
+            case ExaminePlant:
+                {
+                    var plant = world.Get("fungi.Plant",new Vec2(LogicalPos.x,LogicalPos.y));
+                    if (plant!=null)
+                    {
+                        AddMsg("This " + plant.PlantType + " was planted by " + plant.OwnerName);
+                        State=Wait;
+                    }
+                    else
+                    {
+                        State=SearchingPlant;
+                    }
+                }
+            case Wait:
+                {}
             }
+        }
 
-
-            // random walk
-            var lp=LogicalPos.Add(new Vec3(Rnd.RndRange(-1,2),
-                                           Rnd.RndRange(-1,2),0));
-        
-            if (lp.x < 0) lp.x=0;
-            if (lp.y < 0) lp.y=0;
-            if (lp.x > 14) lp.x=14;
-            if (lp.y > 14) lp.y=14;
-
-            SetLogicalPos(world,lp);
+        if (OverridePos)
+        {
+            // poll the plants for a selection
+            for (p in cast(world.Plants,Array<Dynamic>))
+            {
+                if (!p.Spr.IsMouseEnabled()) Drop(world);
+                if (p.GotSelect)
+                {
+                    AddMsg("This " + p.PlantType + " was planted by " + p.OwnerName);
+                    p.GotSelect=false;
+                }
+            }
         }
         
         super.Update(frame,world);
@@ -150,17 +266,19 @@ class Bug extends SpriteEntity
 class Critters
 {
     var CritterList:List<Entity>;
+    var ButterflyList:List<Butterfly>;
     var Rnd:RndGen;
 
     public function new(world:World,numcritters:Int)
     {
         CritterList=new List<Entity>();
+        ButterflyList=new List<Butterfly>();
         Rnd = new RndGen();
 
         for(i in 0...numcritters)
         {
             var critter = new Butterfly(world,new Vec3(Rnd.RndInt()%15,Rnd.RndInt()%15,4), i);
-            CritterList.push(critter);
+            ButterflyList.push(critter);
             var critter2 = new Bug(world,new Vec3(Rnd.RndInt()%15,Rnd.RndInt()%15,1), i);
             CritterList.push(critter2);
         }
@@ -168,23 +286,31 @@ class Critters
 
     public function UpdateMouse(x,y)
     {
-        for (c in CritterList)
+        for (c in ButterflyList)
         {
             c.UpdateMouse(x,y);
         }
     }
 
+    public function DropButterfly(world:World)
+    {
+        for (c in ButterflyList)
+        {
+            c.Drop(world);
+        }        
+    }
+
     public function Update()
     {
-/*        for (c in CritterList)
+        for (c in ButterflyList)
         {
-            if (c.Hidden && Rnd.RndInt()%1000==0) 
+            if (c.Hidden)
             {
-                c.LogicalPos.x=Rnd.RndInt()%15;
-                c.LogicalPos.y=Rnd.RndInt()%15;
+         //       c.LogicalPos.x=Rnd.RndInt()%15;
+         //       c.LogicalPos.y=Rnd.RndInt()%15;
                 c.Hide(false);
             }
-        }*/
+        }
     }
 
 }

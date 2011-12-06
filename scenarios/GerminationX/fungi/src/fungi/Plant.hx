@@ -34,9 +34,11 @@ class Plant extends SpriteEntity
     var Layer:String;
     var Star:Sprite;
     var Owned:Bool;
+    var OwnerName:String;
     var Rnd:RndGen;
     var ServerPos:Vec2;
     var ServerTile:Vec2;
+    public var GotSelect:Bool;
 
     static var CentrePositions = {
         { 
@@ -67,6 +69,7 @@ class Plant extends SpriteEntity
 		super(world,pos,Resources.Get(PlantType+"-"+State),false);
         Id=Std.parseInt(plant.id);
 		Owner=Std.parseInt(Reflect.field(plant,"owner-id"));
+        OwnerName=plant.owner;
         PlantScale=0;
         //NeedsUpdate=true;
         Fruits=[];
@@ -77,6 +80,7 @@ class Plant extends SpriteEntity
         Rnd.Seed(Id);
         ServerTile=new Vec2(servertile.x,servertile.y);
         ServerPos=new Vec2(plant.pos.x,plant.pos.y);
+        GotSelect=false;
 
         for (i in 0...Std.parseInt(plant.fruit)) 
         {
@@ -93,6 +97,14 @@ class Plant extends SpriteEntity
             Star.Update(0,Spr.Transform);
         }
 	}
+
+    // allow the butterflies to find us on mouse over
+    public function EnableSelection()
+    {
+        Spr.MouseOver(this,function(c) {
+            c.GotSelect=true;
+        });
+    }
 
     public function StateUpdate(world:World,plant)
     {

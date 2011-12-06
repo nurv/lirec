@@ -252,11 +252,8 @@ class GUI
             var pos=new Vec2(595,32);
             for (i in d) 
             {
-                if (i.code!="i_have_flowered_internal")
-                {
-                    BuildMessage(w,i,pos);
-                    pos.y+=90;
-                }
+                BuildMessage(w,i,pos);
+                pos.y+=90;
             }
         }
     }

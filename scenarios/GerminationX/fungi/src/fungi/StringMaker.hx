@@ -128,7 +128,7 @@ class StringMaker
                 else msg+=".";
                 return msg;
             },
-            i_have_flowered: function(from,to,owner,extra:Array<Dynamic>)
+            one_time_i_have_flowered: function(from,to,owner,extra:Array<Dynamic>)
             {
                 return to+", your "+from+" plant has flowered for the first time, and your score has increased!";
             },

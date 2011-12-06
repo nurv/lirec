@@ -234,6 +234,7 @@ class FlashWorld implements World, extends MovieClip
         ScreenOffset=amount;
         for (e in Scene)
         {
+            e.SetLogicalPos(cast(this,truffle.World),e.LogicalPos);
             e.Update(0,cast(this,truffle.World));
         }
     }

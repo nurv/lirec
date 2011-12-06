@@ -29,6 +29,11 @@ class RndGen
 		State=s;
         WarmUp();
 	}
+
+    public inline function GetSeed()
+    {
+        return State;
+    }
 	
     public inline function WarmUp()
     {

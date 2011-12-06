@@ -177,6 +177,11 @@ class FlashSprite implements truffle.interfaces.Sprite, extends flash.display.Sp
         mouseChildren=s;
     }
 
+    public function IsMouseEnabled()
+    {
+        return mouseEnabled;
+    }
+
 	public function ChangeBitmap(t:TextureDesc)
 	{
         var tex = cast(t,truffle.flash.FlashTextureDesc);
