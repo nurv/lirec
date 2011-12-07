@@ -61,6 +61,14 @@ public class SpreadingActivation implements Serializable {
 	private String targetAttributeName;
 	private HashMap<String, Integer> frequencies;
 
+	// If an ontology is used for target/object, then targetHypernyms/objectHypernyms
+	// maps corresponding values to a set of hypernyms which were successfully applied
+	// for generalising the corresponding value with another value. 
+	// If no hypernyms could be applied successfully (even if hypernyms exist), then
+	// no key for the corresponding value exists in targetHypernyms/objectHypernyms. 
+	// If no ontology was used for target/object, then targetHypernyms/objectHypernyms
+	// is null.
+
 	public Time getTime() {
 		return time;
 	}

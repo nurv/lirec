@@ -138,6 +138,7 @@ public class AttributeItemSet implements Serializable {
 										hypernymSet = new HashSet<String>();
 										attributeItem.setHypernymSet(hypernymSet);
 									}
+									// add only the first common hypernym to set
 									hypernymSet.add(nounsGeneralised.getFirst());
 
 								}

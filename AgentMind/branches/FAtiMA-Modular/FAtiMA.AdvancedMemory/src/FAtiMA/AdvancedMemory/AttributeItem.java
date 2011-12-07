@@ -42,6 +42,14 @@ public class AttributeItem implements Serializable {
 	private Object value;
 	private HashSet<String> hypernymSet;
 
+	// If an ontology is used and applicable to this attribute item, then
+	// hypernymSet contains hypernyms which were successfully applied for
+	// generalising the value of this attribute item with another value. 
+	// If no hypernyms could be applied successfully (even if hypernyms exist),
+	// then hypernymSet is null. 
+	// If no ontology was used or an ontology is not applicable for this
+	// attribute item, then hypernymSet is null.
+
 	public String getName() {
 		return name;
 	}
