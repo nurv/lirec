@@ -34,6 +34,7 @@ class Message
     public function new(w:World, i:Dynamic, pos:Vec2, GameGUI:GUI)
     {
         ShakeTime=0;
+        Type=i.type;
         Shaking=false;
         Rnd=new RndGen();
         OriginalPos=new Vec2(pos.x,pos.y);
@@ -81,7 +82,7 @@ class Message
             if (!GameGUI.Store.Carrying())
             {
                 w.SetWorldPos(new Vec3(i.tile.x,i.tile.y,0),
-                              new Vec2(i.pos.x,i.pos.y));
+                              new Vec2(0,0));
                 w.Highlight(new Vec2(i.pos.x+5,i.pos.y+5));
             }
         });
@@ -131,14 +132,13 @@ class Message
             Block.MouseOver(this,function(c){
                 if (GameGUI.Store.Carrying())
                 {
-                    c.Shake(w.Time);
                     if (IsGift(i.code))
                     {
                         ToolTip=new Frame("Give fruit to "+i.extra[0],x,y,100,20);
                     }
                     else
                     {
-                        ToolTip=new Frame("Give fruit to "+i.from,x,y,100,20);
+                        ToolTip=new Frame("Give fruit to the spirits",x,y,100,20);
                     }
 
                     w.AddSprite(ToolTip);
@@ -160,6 +160,7 @@ class Message
             Block.MouseUp(this,function(c){
                 if (GameGUI.Store.Carrying())
                 {
+                    c.Shake(w.Time);
                     var Fruit=GameGUI.Store.Drop(w);
                     if (IsGift(i.code))
                     {
@@ -220,7 +221,7 @@ class Message
         else return new Sprite(Pos,Resources.Get("test"));
     }
 
-    function Shake(time:Int)
+    public function Shake(time:Int)
     {
         Shaking=true;
         ShakeTime=time+10;
@@ -230,7 +231,7 @@ class Message
     {
         if (Shaking)
         {
-            Rnd.Seed(time*43);
+            Rnd.Seed(Seed+time*43);
             var Shake=Rnd.RndCircleVec2().Mul(4);
             
             var x:Int=Std.int(OriginalPos.x+Shake.x);

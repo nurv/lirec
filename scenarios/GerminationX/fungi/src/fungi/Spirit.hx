@@ -209,10 +209,10 @@ class Spirit extends ClusterEntity
         
         if (dst.x!=DesiredPos.x || dst.y!=DesiredPos.y)
         {
-            while (world.Get("Spirit",dst)!=null)
+            while (world.Get("fungi.Spirit",dst)!=null)
             {
-                dst = dst.Add(new Vec2(world.MyRndGen.Choose([-2,0,2]),
-                                       world.MyRndGen.Choose([-2,0,2])));
+                dst = dst.Add(new Vec2(world.MyRndGen.Choose([-1,0,1]),
+                                       world.MyRndGen.Choose([-1,0,1])));
             }
             SetLogicalPos(world,new Vec3(dst.x,dst.y,3));
         }

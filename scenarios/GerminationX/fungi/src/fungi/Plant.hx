@@ -101,7 +101,7 @@ class Plant extends SpriteEntity
     // allow the butterflies to find us on mouse over
     public function EnableSelection()
     {
-        Spr.MouseOver(this,function(c) {
+        Spr.MouseUp(this,function(c) {
             c.GotSelect=true;
         });
     }

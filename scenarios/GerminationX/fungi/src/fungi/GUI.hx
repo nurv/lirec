@@ -258,6 +258,14 @@ class GUI
         }
     }
 
+    public function ShakeSpiritMessages(w:World)
+    {
+        for (m in Msgs)
+        {
+            if (m.Type=="spirit") m.Shake(w.Time);
+        }
+    }
+
     public function UpdateMsgs(w:World,d:Dynamic,time:Int)
     {
         UpdateTopBox(w);

@@ -49,7 +49,7 @@ class Butterfly extends SkeletonEntity
 	    super(world,pos);
         NeedsUpdate=true;
         UpdateFreq=3;
-        Speed=0.1;
+        Speed=0.05;
         Rnd=new RndGen();
         Seed=seed;
         Rnd.Seed(seed);
@@ -59,9 +59,9 @@ class Butterfly extends SkeletonEntity
         Message = new Frame("",0,0,64*2,64);
         Message.SetTextSize(10);
         Message.InitTextures(GUIFrameTextures.Get(),Rnd);
-        Message.R=1;
+        Message.R=0.8;
         Message.G=1;
-        Message.B=0.8;
+        Message.B=1;
         world.AddSprite(Message);
         Message.Hide(true);
 
@@ -78,6 +78,7 @@ class Butterfly extends SkeletonEntity
             c.OverridePos=true;
             c.LeftWing.EnableMouse(false);
             c.RightWing.EnableMouse(false);
+            c.Message.Hide(true);
             var ps=cast(world.Plants,Array<Dynamic>);
             for (p in ps)
             {
@@ -87,21 +88,6 @@ class Butterfly extends SkeletonEntity
 
         RightWing.MouseDown(this,down);
         LeftWing.MouseDown(this,down);
-    }
-
-    public function Drop(world:World)
-    {
-        if (OverridePos)
-        {
-            OverridePos=false;
-            for (pp in cast(world.Plants,Array<Dynamic>))
-            {
-                pp.Spr.EnableMouse(false);
-                pp.GotSelect=false;
-            }
-            LeftWing.EnableMouse(true);
-            RightWing.EnableMouse(true);
-        }
     }
 
     public function AddMsg(text)
@@ -114,7 +100,7 @@ class Butterfly extends SkeletonEntity
         Message.InitTextures(GUIFrameTextures.Get(),Rnd);
         Rnd.Seed(s);
         Message.Hide(false);    
-        MessageTime=Date.now().getSeconds()+10;
+        MessageTime=Date.now().getSeconds()+5;
     }
 
     // todo put the message stuff in the entity base class
@@ -144,10 +130,9 @@ class Butterfly extends SkeletonEntity
             Rnd.Seed(Seed);
             Message.InitTextures(GUIFrameTextures.Get(),Rnd);
             Rnd.Seed(s);
-            if (Date.now().getSeconds()>MessageTime) 
+            if (Date.now().getSeconds()>MessageTime)
             {
                 Message.Hide(true);
-                State=SearchingPlant;
             }
         }
 
@@ -181,8 +166,18 @@ class Butterfly extends SkeletonEntity
                     var plant = world.Get("fungi.Plant",new Vec2(LogicalPos.x,LogicalPos.y));
                     if (plant!=null)
                     {
-                        AddMsg("This " + plant.PlantType + " was planted by " + plant.OwnerName);
-                        State=Wait;
+                        if (Rnd.RndInt()%10==7)
+                        {
+                            // advertising
+                            AddMsg(Rnd.Choose(["I know who planted this " + plant.PlantType +".",
+                                               "I am pretty smart, drag and drop me.",
+                                               "I can tell you who planted these plants."]));
+                            State=Wait;
+                        }
+                        else
+                        {
+                            State=SearchingPlant;
+                        }
                     }
                     else
                     {
@@ -190,28 +185,46 @@ class Butterfly extends SkeletonEntity
                     }
                 }
             case Wait:
-                {}
+                {
+                    if (Date.now().getSeconds()>MessageTime && 
+                        Rnd.RndInt()%10==7)
+                    {
+                        Message.Hide(true);
+                        State=SearchingPlant;
+                    }
+                }
             }
         }
 
+        super.Update(frame,world);
+    }
+
+    public function CheckPlants(world:World)
+    {
         if (OverridePos)
         {
             // poll the plants for a selection
             for (p in cast(world.Plants,Array<Dynamic>))
             {
-                if (!p.Spr.IsMouseEnabled()) Drop(world);
+                //if (!p.Spr.IsMouseEnabled()) Drop(world);
                 if (p.GotSelect)
                 {
                     AddMsg("This " + p.PlantType + " was planted by " + p.OwnerName);
-                    p.GotSelect=false;
                 }
+                p.Spr.EnableMouse(false);
+                p.GotSelect=false;
+
             }
+
+            OverridePos=false;
+            LeftWing.EnableMouse(true);
+            RightWing.EnableMouse(true);
         }
-        
-        super.Update(frame,world);
     }
 
 }
+
+
 
 class Bug extends SpriteEntity
 {
@@ -274,13 +287,12 @@ class Critters
         CritterList=new List<Entity>();
         ButterflyList=new List<Butterfly>();
         Rnd = new RndGen();
+        ButterflyList.push(new Butterfly(world,new Vec3(Rnd.RndInt()%15,Rnd.RndInt()%15,4), 12));
+        ButterflyList.push(new Butterfly(world,new Vec3(Rnd.RndInt()%15,Rnd.RndInt()%15,4), 1));
 
         for(i in 0...numcritters)
         {
-            var critter = new Butterfly(world,new Vec3(Rnd.RndInt()%15,Rnd.RndInt()%15,4), i);
-            ButterflyList.push(critter);
-            var critter2 = new Bug(world,new Vec3(Rnd.RndInt()%15,Rnd.RndInt()%15,1), i);
-            CritterList.push(critter2);
+            CritterList.push(new Bug(world,new Vec3(Rnd.RndInt()%15,Rnd.RndInt()%15,1), i));
         }
     }
 
@@ -292,11 +304,11 @@ class Critters
         }
     }
 
-    public function DropButterfly(world:World)
+    public function CheckPlants(world:World)
     {
         for (c in ButterflyList)
         {
-            c.Drop(world);
+            c.CheckPlants(world);
         }        
     }
 

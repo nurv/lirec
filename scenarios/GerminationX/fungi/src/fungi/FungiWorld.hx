@@ -87,7 +87,7 @@ class FungiWorld extends World
             {
                 c.GameGUI.Store.DropError();
             }
-            c.TheCritters.DropButterfly(c);
+            c.TheCritters.CheckPlants(c);
         });
         
 		for (y in 0...h)

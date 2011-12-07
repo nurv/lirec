@@ -52,7 +52,7 @@ class FlashWorld implements World, extends MovieClip
         Scene = [];
         CurrentTilePos=new Vec2(0,0); // perhaps
         ScreenScale=new Vec2(1,1);
-        ScreenCentre=new Vec2(-300,500);
+        ScreenCentre=new Vec2(-600,500);
         ScreenOffset=new Vec2(ScreenCentre.x,
                               ScreenCentre.y);
         

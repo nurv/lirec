@@ -214,29 +214,6 @@ class FlashSprite implements truffle.interfaces.Sprite, extends flash.display.Sp
 		graphics.beginBitmapFill(dupBitmap.bitmapData);
         graphics.drawRect(0,0,Width,Height);
 		graphics.endFill();   
-
-/*		graphics.lineStyle(1, 0x000000, 1);	
-        graphics.moveTo(0,0);
-        graphics.lineTo(Width/2,Height/2);
-        graphics.lineTo(Width,Height);
-        graphics.lineTo(0,Height);
-        graphics.lineTo(0,0);*/
-    }
-
-    /*public function ScreenPos() 
-    { 
-        var p:Point = Transform.transformPoint(new Point(0, 0)); 
-        return new Vec3(p.x,p.y,0);
-    }*/
-
-    public function SetClickThrough()
-    {
-        hitArea = new Sprite();
-    }
-
-    public function UnSetClickThrough()
-    {
-        hitArea = this;
     }
 
     public function SetPos(s:Vec2) { Pos=s; PreTransformDirty=true; }
