@@ -247,6 +247,20 @@ public class AdvancedMemoryWriter {
 						xmlOutputter.endTag(); //TimeOntology						
 					}
 
+					NounOntology targetOntology = generalisation.getTargetOntology();
+					if (targetOntology != null) {
+						xmlOutputter.startTag("TargetOntology");
+						xmlOutputter.attribute("depthMax", String.valueOf(targetOntology.getDepthMax()));
+						xmlOutputter.endTag(); //TargetOntology
+					}
+
+					NounOntology objectOntology = generalisation.getObjectOntology();
+					if (objectOntology != null) {
+						xmlOutputter.startTag("ObjectOntology");
+						xmlOutputter.attribute("depthMax", String.valueOf(objectOntology.getDepthMax()));
+						xmlOutputter.endTag(); //ObjectOntology
+					}
+
 					xmlOutputter.startTag("AttributeNames");
 					for (String attributeName : generalisation.getAttributeNames()) {
 						xmlOutputter.startTag("AttributeName");
@@ -264,6 +278,16 @@ public class AdvancedMemoryWriter {
 							xmlOutputter.startTag("AttributeItem");
 							xmlOutputter.attribute("name", attributeItem.getName());
 							xmlOutputter.attribute("value", String.valueOf(attributeItem.getValue()));
+							HashSet<String> hypernymSet = attributeItem.getHypernymSet();
+							if (hypernymSet != null) {
+								xmlOutputter.startTag("HypernymSet");
+								for (String hypernym : hypernymSet) {
+									xmlOutputter.startTag("Hypernym");
+									xmlOutputter.attribute("value", hypernym);
+									xmlOutputter.endTag(); //Hypernym									
+								}
+								xmlOutputter.endTag(); //HypernymSet
+							}
 							xmlOutputter.endTag(); //AttributeItem
 						}
 						xmlOutputter.endTag(); //AttributeItemSet						

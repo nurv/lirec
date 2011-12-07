@@ -71,6 +71,8 @@ public class AdvancedMemoryHandler extends ReflectXMLHandler {
 	private ArrayList<GER> gers;
 	private GER ger;
 	private AttributeItemSet attributeItemSet;
+	private AttributeItem attributeItem;
+	private HashSet<String> hypernymSet;
 
 	public AdvancedMemoryHandler(AdvancedMemoryComponent advancedMemoryComponent) {
 		this.advancedMemoryComponent = advancedMemoryComponent;
@@ -137,6 +139,8 @@ public class AdvancedMemoryHandler extends ReflectXMLHandler {
 			compoundCue.setTargetOntology(targetOntology);
 		} else if (result instanceof SpreadingActivation) {
 			spreadingActivation.setTargetOntology(targetOntology);
+		} else if (result instanceof Generalisation) {
+			generalisation.setTargetOntology(targetOntology);
 		}
 	}
 
@@ -148,6 +152,8 @@ public class AdvancedMemoryHandler extends ReflectXMLHandler {
 			compoundCue.setObjectOntology(objectOntology);
 		} else if (result instanceof SpreadingActivation) {
 			spreadingActivation.setObjectOntology(objectOntology);
+		} else if (result instanceof Generalisation) {
+			generalisation.setObjectOntology(objectOntology);
 		}
 	}
 
@@ -263,12 +269,22 @@ public class AdvancedMemoryHandler extends ReflectXMLHandler {
 	}
 
 	public void AttributeItem(Attributes attributes) {
-		AttributeItem attributeItem = new AttributeItem();
+		attributeItem = new AttributeItem();
 		String name = attributes.getValue("name");
 		String value = attributes.getValue("value");
 		attributeItem.setName(name);
 		attributeItem.setValue(value);
 		attributeItemSet.addToSet(attributeItem);
+	}
+
+	public void HypernymSet(Attributes attributes) {
+		hypernymSet = new HashSet<String>();
+		attributeItem.setHypernymSet(hypernymSet);
+	}
+
+	public void Hypernym(Attributes attributes) {
+		String value = attributes.getValue("value");
+		hypernymSet.add(value);
 	}
 
 }

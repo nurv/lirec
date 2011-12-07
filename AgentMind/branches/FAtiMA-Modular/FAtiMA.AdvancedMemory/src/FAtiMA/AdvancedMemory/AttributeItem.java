@@ -29,6 +29,7 @@
 package FAtiMA.AdvancedMemory;
 
 import java.io.Serializable;
+import java.util.HashSet;
 
 import FAtiMA.AdvancedMemory.ontology.TimeOntology;
 import FAtiMA.Core.memory.episodicMemory.Time;
@@ -39,6 +40,7 @@ public class AttributeItem implements Serializable {
 
 	private String name;
 	private Object value;
+	private HashSet<String> hypernymSet;
 
 	public String getName() {
 		return name;
@@ -61,6 +63,14 @@ public class AttributeItem implements Serializable {
 		if (timeOntology != null && value instanceof Time && name.equals("time")) {
 			this.value = timeOntology.getAbstractedStr(((Time) value).getRealTime());
 		}
+	}
+
+	public HashSet<String> getHypernymSet() {
+		return hypernymSet;
+	}
+
+	public void setHypernymSet(HashSet<String> hypernymSet) {
+		this.hypernymSet = hypernymSet;
 	}
 
 	public String toString() {

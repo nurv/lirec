@@ -31,7 +31,10 @@ package FAtiMA.AdvancedMemory;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedList;
 
+import FAtiMA.AdvancedMemory.ontology.NounOntology;
 import FAtiMA.AdvancedMemory.ontology.TimeOntology;
 import FAtiMA.Core.memory.episodicMemory.ActionDetail;
 
@@ -77,10 +80,10 @@ public class AttributeItemSet implements Serializable {
 	}
 
 	public int getCoverage(ArrayList<ActionDetail> actionDetails) {
-		return getCoverage(actionDetails, null);
+		return getCoverage(actionDetails, null, null, null);
 	}
 
-	public int getCoverage(ArrayList<ActionDetail> actionDetails, TimeOntology timeOntology) {
+	public int getCoverage(ArrayList<ActionDetail> actionDetails, TimeOntology timeOntology, NounOntology targetOntology, NounOntology objectOntology) {
 		int coverage = 0;
 
 		for (ActionDetail actionDetail : actionDetails) {
@@ -97,13 +100,98 @@ public class AttributeItemSet implements Serializable {
 
 				if (attributeValue == null) {
 					if (value != null) {
+						// no two null values
 						matching = false;
 						break;
+
 					}
+
 				} else {
+
 					if (!attributeValue.equals(value)) {
-						matching = false;
-						break;
+						// values are different
+
+						// ontology usage: check for common hypernyms
+
+						if (attributeName.equals("target")) {
+
+							if (targetOntology != null) {
+								// use target ontology
+
+								String[] nouns = new String[2];
+								nouns[0] = String.valueOf(attributeValue);
+								nouns[1] = String.valueOf(value);
+
+								targetOntology.openDict();
+								LinkedList<String> nounsGeneralised = targetOntology.generaliseNouns(nouns);
+								targetOntology.closeDict();
+
+								if (nounsGeneralised.size() == 0) {
+									// no common hypernyms found
+									matching = false;
+									break;
+
+								} else {
+									// common hypernyms found
+									HashSet<String> hypernymSet = attributeItem.getHypernymSet();
+									if (hypernymSet == null) {
+										hypernymSet = new HashSet<String>();
+										attributeItem.setHypernymSet(hypernymSet);
+									}
+									hypernymSet.add(nounsGeneralised.getFirst());
+
+								}
+
+							} else {
+								// no target ontology given
+								matching = false;
+								break;
+
+							}
+
+						} else if (attributeName.equals("object")) {
+
+							if (objectOntology != null) {
+								// use object ontology
+
+								String[] nouns = new String[2];
+								nouns[0] = String.valueOf(attributeValue);
+								nouns[1] = String.valueOf(value);
+
+								objectOntology.openDict();
+								LinkedList<String> nounsGeneralised = objectOntology.generaliseNouns(nouns);
+								objectOntology.closeDict();
+
+								if (nounsGeneralised.size() == 0) {
+									// no common hypernyms found
+									matching = false;
+									break;
+
+								} else {
+									// common hypernyms found
+									HashSet<String> hypernymSet = attributeItem.getHypernymSet();
+									if (hypernymSet == null) {
+										hypernymSet = new HashSet<String>();
+										attributeItem.setHypernymSet(hypernymSet);
+									}
+									hypernymSet.add(nounsGeneralised.getFirst());
+
+								}
+
+							} else {
+								// no object ontology given
+								matching = false;
+								break;
+
+							}
+
+						} else {
+							// no ontology for current attribute
+							matching = false;
+							break;
+
+						}
+
 					}
 				}
 			}
