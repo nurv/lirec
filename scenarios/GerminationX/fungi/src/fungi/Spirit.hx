@@ -138,7 +138,7 @@ class Spirit extends ClusterEntity
         Debug.Hide(true);
         c.addChild(Debug);
         
-        Sprites[0].MouseDown(this,function(c) { c.Debug.Hide(false); });
+        //Sprites[0].MouseDown(this,function(c) { c.Debug.Hide(false); });
 	}
 
     public function AddMsg(msg,text)
