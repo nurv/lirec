@@ -1,5 +1,5 @@
 <DomainActions>
-	<Action name="flower([target])">
+	<Action name="praise([target])">
 		<PreConditions>
 			<Property name="[AGENT](pose)" operator="=" value="standing"/>
 		</PreConditions>
@@ -10,7 +10,7 @@
 		</Effects>
 	</Action>
 
-	<Action name="drop-leaves([target])">
+	<Action name="complain([target])">
 		<PreConditions>
 			<Property name="[AGENT](pose)" operator="=" value="standing"/>
 		</PreConditions>

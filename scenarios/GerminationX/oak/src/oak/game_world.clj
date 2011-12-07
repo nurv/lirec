@@ -351,7 +351,7 @@
          (reduce
           (fn [log msg]
             (if (= (:player msg) (:id player))
-              (log-add-msg log msg)
+              (log-add-msg-ignore-one-time log msg)
               log))
           log
           msgs))

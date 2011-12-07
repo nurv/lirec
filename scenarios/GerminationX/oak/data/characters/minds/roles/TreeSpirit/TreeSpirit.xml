@@ -54,6 +54,8 @@
         <Relation target="tree-benefit" like="16" respect="20"/>
         <Relation target="tree-detriment" like="-16" respect="-20"/>
         <Relation target="tree-offering" like="20" respect="20"/>
+        <Relation target="shrub-offering" like="-20" respect="20"/>
+        <Relation target="cover-offering" like="-20" respect="20"/>
 	</InterpersonalRelations>
 	
 	<EventReactions>
@@ -65,7 +67,7 @@
 		</EmotionalReaction>
 
 		<EmotionalReaction desirability="-3" desirabilityForOther="-1" praiseworthiness="-2"> 
-			<Event subject="*" action="drop-leaves"/>
+			<Event subject="*" action="complain"/>
 		</EmotionalReaction>
 		
 	</EventReactions>
@@ -81,7 +83,7 @@
 			</ElicitingEmotion>
 		</ActionTendency>
 
-		<ActionTendency action="drop-leaves([Target])">
+		<ActionTendency action="complain([Target])">
 			<Preconditions>
             </Preconditions>
 			<ElicitingEmotion type="Hate" minIntensity="4">

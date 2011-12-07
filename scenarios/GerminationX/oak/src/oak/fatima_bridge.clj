@@ -104,13 +104,15 @@
    (fn [fw spirit]
      (reduce
       (fn [fw offering]
-        (world-add-object fw
-                          {"name" (str (:layer offering) "-offering")
-                           "owner" (:name spirit)
-                           "position" "nowhere"
-                           "tile" "none" ; will be seen by everyone
-                           "type" "object"
-                           "time" time}))
+        (let [player-id (first offering)
+              fruit (second offering)]
+          (world-add-object fw
+                            {"name" (str (:layer fruit) "-offering#" player-id)
+                             "owner" (:name spirit)
+                             "position" "nowhere"
+                             "tile" "none" ; will be seen by everyone
+                             "type" "object"
+                             "time" time})))
       fw
       (:offerings spirit)))
    fatima-world

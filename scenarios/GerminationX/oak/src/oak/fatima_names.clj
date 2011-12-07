@@ -42,3 +42,12 @@
                 (.length name))
     "unknown"))
 
+; shrub-detriment => shrub
+; shrub-ill-a => shrub
+(defn fatima-subject->name [name]
+  (if (.contains name "-")
+    (.substring name
+                0
+                (.indexOf name "-"))
+    "unknown"))
+

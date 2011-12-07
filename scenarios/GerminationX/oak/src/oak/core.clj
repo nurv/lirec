@@ -312,7 +312,7 @@
                              (modify
                               :offerings
                               (fn [offerings]
-                                (max-cons fruit offerings 5))
+                                (max-cons (list player-id fruit) offerings 5))
                               spirit)))
                           player-id
                           (fn [player]

@@ -210,41 +210,51 @@
        ;spirit)
      diagnosis plant rules)))
 
-(defn make-praise-msg [type spirit plant]
-  (make-spirit-msg
-   type
-   spirit
-   (:owner-id plant)
-   (:tile plant)
-   (:pos plant)
-   (list (:type plant))))
-
-(defn spirit-praise [spirit plant]
+; try doing the complaint differently, look at the reason
+; we got from fatima and pass it to the client
+(defn spirit-complain [spirit plant subject]
   (modify :log
           (fn [log]
             (log-add-msg
              log
-             ; we can:t exactly be sure why the fatima agent
-             ; has triggered the praise action, but we can make
-             ; an educated guess by looking at the plant
-             
-             ; if it:s not the same type as the spirit
-             (if (not (= (:name spirit)
-                         (layer->spirit-name (:layer plant))))
-               (make-praise-msg "spirit_helper_praise" spirit plant)
-               ; it:s the same type
-               (cond
-                (= (:state plant) "grow-a")
-                (make-praise-msg "spirit_growing_praise" spirit plant)
+             (make-spirit-msg
+              "spirit_complaint"
+              spirit
+              (:owner-id plant)
+              (:tile plant)
+              (:pos plant)
+              (list (:type plant)
+                    (fatima-subject->reason subject)))))
+          spirit))
 
-                (= (:state plant) "fruit-a")
-                (make-praise-msg "spirit_flowering_praise" spirit plant)
-                
-                (= (:state plant) "fruit-c")
-                (make-praise-msg "spirit_fruiting_praise" spirit plant)
+(defn spirit-praise [spirit plant subject]
+  (modify :log
+          (fn [log]
+            (log-add-msg
+             log
+             (make-spirit-msg
+              "spirit_praise"
+              spirit
+              (:owner-id plant)
+              (:tile plant)
+              (:pos plant)
+              (list (:type plant)
+                    (fatima-subject->reason subject)))))
+          spirit))
 
-                ; i give up!
-                :else (make-praise-msg "spirit_general_praise" spirit plant)))))
+(defn spirit-received-offering [spirit player-id type subject]
+  (modify :log
+          (fn [log]
+            (log-add-msg
+             log
+             (make-spirit-msg
+              "spirit_received_offering"
+              spirit
+              player-id
+              (make-vec2 0 0) ; hmm
+              (make-vec2 0 0) ; hmm
+              (list type
+                    (fatima-subject->name subject)))))  
           spirit))
 
 (defn spirit-update-from-actions [spirit tiles rules]
@@ -264,18 +274,31 @@
               (modify :pos (fn [pos] (:pos e))
                       (cond
                        ;(= type "look-at") (spirit-looking-at spirit tile e)
+
                        (and
                         (= type "diagnose")
                         (not (= reason "detriment")))
                        (do ;(println "attempting diagnosis")
                            ; don't want to diagnose plants that are detriments to our plants
-                           (spirit-diagnose spirit e rules tiles))
-                       (= type "praise") (spirit-praise spirit e)
+                         (spirit-diagnose spirit e rules tiles))
+                       
+                       (= type "praise") (spirit-praise spirit e subject)
+                       
+                       (= type "complain") (spirit-complain spirit e subject)
+                       
                        :else spirit))
-              spirit)) ; can happen if we have moved away from the tile
-          (do
-            (println "could not find id from fatima name" fullname)
-            spirit))))
+              
+              ; no plant found...
+              (if (and (= reason "offering") ; could be an offering
+                       (not (= type "look-at")))
+                ; in this context the id is a player id
+                (spirit-received-offering spirit id type subject)
+                spirit))) ; can happen if we have moved away from the tile
+
+            ; no id found
+            (do
+              (println "could not find id from fatima name" fullname)
+              spirit))))
     spirit
     (:fatactions spirit))))
 
@@ -287,14 +310,10 @@
    spirit))
 
 (defn spirit-clear
-  "clear stuff that need"
+  "clear stuff that needs it"
   [spirit]
   (modify :log (fn [log] (make-log 10))
-          spirit
-          ;(modify :offerings (fn [offerings]
-          ;                     (println "clearing offering")
-          ;                     ()) spirit)
-          ))
+          (modify :offerings (fn [offerings] ()) spirit)))
 
 (defn spirit-update-location
   "read the location from the fatima agent"

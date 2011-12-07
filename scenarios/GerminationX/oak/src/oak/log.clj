@@ -73,10 +73,16 @@
        (modify
         :one-time-msgs
         (fn [ot]
-          (println "found one time message")
           (cons (:code msg) ot))
         log)
        log))))
+
+(defn log-add-msg-ignore-one-time [log msg]
+  (modify
+   :msgs
+   (fn [msgs]
+     (max-cons msg msgs (:max log)))
+   log))
 
 (defn log-contains-msg? [log code]
   (reduce

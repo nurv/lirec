@@ -151,7 +151,7 @@
   (modify
    :log
    (fn [log]
-     (make-log 10))
+     (merge log {:msgs ()})) ; don't want to clear the one time list
    plant))
 
 (defn plant-clear-events
