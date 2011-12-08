@@ -38,6 +38,7 @@
  * Matthias Keysermann: 08/12/11 - Dictionary is opened when object is created,
  *                                 never closed explicitly.
  *                                 Methods openDict(), closeDict() have been removed.
+ * Matthias Keysermann: 08/12/11 - Added stemming.
  * **/
 
 package FAtiMA.AdvancedMemory.ontology;
@@ -56,12 +57,15 @@ import edu.mit.jwi.item.IWord;
 import edu.mit.jwi.item.IWordID;
 import edu.mit.jwi.item.POS;
 import edu.mit.jwi.item.Pointer;
+import edu.mit.jwi.morph.WordnetStemmer;
 
 public class NounOntology implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	private static final boolean ITERATIVE_DEPTH_LIMIT = false;
+
+	private static final boolean STEMMING = true;
 
 	private static final String DICTIONARY_PATH = "data/characters/minds/wordnet/dict/";
 
@@ -190,6 +194,16 @@ public class NounOntology implements Serializable {
 	 * @return list of hypernyms
 	 */
 	public LinkedList<IWord> getNounHypernyms(String noun, int depth, int depthLimit) {
+
+		// stemming
+		if (STEMMING) {
+			WordnetStemmer wnStemmer = new WordnetStemmer(dict);
+			List<String> stems = wnStemmer.findStems(noun, POS.NOUN);
+			if (stems.size() > 0) {
+				// use first stem
+				noun = stems.get(0);
+			}
+		}
 
 		// initialise
 		LinkedList<IWord> words = new LinkedList<IWord>();
