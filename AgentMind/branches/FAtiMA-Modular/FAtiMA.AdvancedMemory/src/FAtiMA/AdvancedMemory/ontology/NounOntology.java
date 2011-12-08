@@ -35,6 +35,9 @@
  *                                 words were returned which led to zero counts.
  *                                 Now the word itself is returned if all given words are
  *                                 the same, i.e. the word itself is the only hypernym.
+ * Matthias Keysermann: 08/12/11 - Dictionary is opened when object is created,
+ *                                 never closed explicitly.
+ *                                 Methods openDict(), closeDict() have been removed.
  * **/
 
 package FAtiMA.AdvancedMemory.ontology;
@@ -66,15 +69,7 @@ public class NounOntology implements Serializable {
 
 	private int depthMax;
 
-	public int getDepthMax() {
-		return depthMax;
-	}
-
-	public void setDepthMax(int depthMax) {
-		this.depthMax = depthMax;
-	}
-
-	public void openDict() {
+	public NounOntology() {
 		try {
 			URL url = new URL("file", null, DICTIONARY_PATH);
 			dict = new Dictionary(url);
@@ -84,10 +79,12 @@ public class NounOntology implements Serializable {
 		}
 	}
 
-	public void closeDict() {
-		if (dict != null) {
-			dict.close();
-		}
+	public int getDepthMax() {
+		return depthMax;
+	}
+
+	public void setDepthMax(int depthMax) {
+		this.depthMax = depthMax;
 	}
 
 	/**

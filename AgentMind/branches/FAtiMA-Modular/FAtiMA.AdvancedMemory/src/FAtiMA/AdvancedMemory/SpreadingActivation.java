@@ -260,10 +260,7 @@ public class SpreadingActivation implements Serializable {
 					String[] nouns = new String[2];
 					nouns[0] = targetAttributeValue;
 					nouns[1] = String.valueOf(value);
-
-					targetOntology.openDict();
 					LinkedList<String> nounsGeneralised = targetOntology.generaliseNouns(nouns);
-					targetOntology.closeDict();
 
 					// check if common hypernyms exist 
 					if (nounsGeneralised.size() > 0) {
@@ -327,10 +324,7 @@ public class SpreadingActivation implements Serializable {
 					String[] nouns = new String[2];
 					nouns[0] = targetAttributeValue;
 					nouns[1] = String.valueOf(value);
-
-					objectOntology.openDict();
 					LinkedList<String> nounsGeneralised = objectOntology.generaliseNouns(nouns);
-					objectOntology.closeDict();
 
 					// check if common hypernyms exist 
 					if (nounsGeneralised.size() > 0) {

@@ -121,10 +121,7 @@ public class AttributeItemSet implements Serializable {
 								String[] nouns = new String[2];
 								nouns[0] = String.valueOf(attributeValue);
 								nouns[1] = String.valueOf(value);
-
-								targetOntology.openDict();
 								LinkedList<String> nounsGeneralised = targetOntology.generaliseNouns(nouns);
-								targetOntology.closeDict();
 
 								if (nounsGeneralised.size() == 0) {
 									// no common hypernyms found
@@ -158,10 +155,7 @@ public class AttributeItemSet implements Serializable {
 								String[] nouns = new String[2];
 								nouns[0] = String.valueOf(attributeValue);
 								nouns[1] = String.valueOf(value);
-
-								objectOntology.openDict();
 								LinkedList<String> nounsGeneralised = objectOntology.generaliseNouns(nouns);
-								objectOntology.closeDict();
 
 								if (nounsGeneralised.size() == 0) {
 									// no common hypernyms found

@@ -138,10 +138,7 @@ public class CompoundCue implements Serializable {
 					String[] nouns = new String[2];
 					nouns[0] = String.valueOf(object1);
 					nouns[1] = String.valueOf(object2);
-
-					nounOntology.openDict();
 					LinkedList<String> nounsGeneralised = nounOntology.generaliseNouns(nouns);
-					nounOntology.closeDict();
 
 					if (nounsGeneralised.size() > 0) {
 						return FACTOR_SIMILAR;

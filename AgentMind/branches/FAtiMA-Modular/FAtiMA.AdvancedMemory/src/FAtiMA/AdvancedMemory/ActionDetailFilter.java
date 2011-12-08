@@ -64,10 +64,7 @@ public class ActionDetailFilter implements Serializable {
 				String[] nouns = new String[2];
 				nouns[0] = String.valueOf(attributeValue);
 				nouns[1] = String.valueOf(attributeValueCurrent);
-
-				targetOntology.openDict();
 				LinkedList<String> nounsGeneralised = targetOntology.generaliseNouns(nouns);
-				targetOntology.closeDict();
 
 				if (nounsGeneralised.size() > 0) {
 					actionDetailsFiltered.add(actionDetail);
@@ -80,10 +77,7 @@ public class ActionDetailFilter implements Serializable {
 				String[] nouns = new String[2];
 				nouns[0] = String.valueOf(attributeValue);
 				nouns[1] = String.valueOf(attributeValueCurrent);
-
-				objectOntology.openDict();
 				LinkedList<String> nounsGeneralised = objectOntology.generaliseNouns(nouns);
-				objectOntology.closeDict();
 
 				if (nounsGeneralised.size() > 0) {
 					actionDetailsFiltered.add(actionDetail);
