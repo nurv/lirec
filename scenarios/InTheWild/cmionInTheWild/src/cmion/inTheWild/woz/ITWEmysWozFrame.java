@@ -417,7 +417,12 @@ public class ITWEmysWozFrame extends javax.swing.JFrame implements ActionListene
 				{
 					ComboBoxModel comboBoxEmotionModel = 
 						new DefaultComboBoxModel(
-								new String[] { "neutral", "joy", "sadness", "anger", "surprise"});
+								new String[] { "Anger1", "Anger2", "Anger3", "Anger4", "Anger5",
+										"Disgust1", "Disgust2", "Disgust3", "Disgust4", "Disgust5",
+										"Joy1", "Joy2", "Joy3", "Joy4", "Joy5",
+										"Sadness1", "Sadness2", "Sadness3", "Sadness4", "Sadness5",
+										"Fear1", "Fear2", "Fear3", "Fear4", "Fear5",
+										"Surprise1", "Surprise2", "Surprise3", "Surprise4", "Surprise5"});
 					comboBoxEmotion = new JComboBox();
 					jPanel1.add(comboBoxEmotion);
 					comboBoxEmotion.setModel(comboBoxEmotionModel);
@@ -895,7 +900,6 @@ public class ITWEmysWozFrame extends javax.swing.JFrame implements ActionListene
 					p.setName(name);
 					phonebook.put(phoneNo, p);
 				}
-				
 				// remove all combo box listeners and empty templates
 				for (JComboBox comboBox : templateCategories.values())
 				{

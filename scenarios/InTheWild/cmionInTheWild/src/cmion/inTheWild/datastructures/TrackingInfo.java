@@ -1,6 +1,6 @@
 package cmion.inTheWild.datastructures;
 
-/** Kinect Tracking info for a single user or hand */
+/** Kinect Tracking info for a single user */
 public class TrackingInfo 
 {
 
@@ -9,26 +9,14 @@ public class TrackingInfo
 	private double y; 
 	private double z;
 	
-	// user id
-	private int userID;
 	
-	// hand id
-	private int handID;
-	
-	public TrackingInfo(int userID, double x, double y, double z)
+	public TrackingInfo(double x, double y, double z)
 	{
-		this.userID = userID;
 		this.x = x;
 		this.y = y;
 		this.z = z;
 	}
 	
-	public TrackingInfo(int handID, int userID, double x, double y, double z)
-	{
-		this(userID,x,y,z);
-		this.handID = handID;
-	}
-
 	public double getX() {
 		return x;
 	}
@@ -39,13 +27,5 @@ public class TrackingInfo
 
 	public double getZ() {
 		return z;
-	}
-
-	public int getUserID() {
-		return userID;
-	}
-	
-	public int getHandID() {
-		return handID;
 	}
 }

@@ -147,7 +147,7 @@
 			<Parameter No="1" Value="*" />
 		</MindAction>			
 		<CompetencyExecutionPlan>
-			<Competency ID="1" Type="TTS">
+			<Competency ID="1" Type="SimpleTalk">
 			 <CompetencyParameter Name="text" Value="$parameter1" />
 			</Competency>
 		</CompetencyExecutionPlan>
@@ -160,8 +160,8 @@
 			<Parameter No="1" Value="*" />
 		</MindAction>			
 		<CompetencyExecutionPlan>
-			<Competency ID="1" Type="EmysEmotion">
-			 <CompetencyParameter Name="emysEmotion" Value="$parameter1" />
+			<Competency ID="1" Type="SimpleAnimation">
+			 <CompetencyParameter Name="animation" Value="$parameter1" />
 			</Competency>
 		</CompetencyExecutionPlan>
 		

@@ -133,7 +133,7 @@ public class ITWEmysWoz extends AgentMindConnector {
 
 	@Override
 	protected void processPropertyChanged(String entityName,
-			String propertyName, String propertyValue) {}
+			String propertyName, String propertyValue, boolean persistent) {}
 
 	@Override
 	protected void processPropertyRemoved(String entityName, String propertyName) {}
@@ -163,6 +163,12 @@ public class ITWEmysWoz extends AgentMindConnector {
 
 	@Override
 	protected void processActionCancellation(MindAction a) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void processRawMessage(String message) {
 		// TODO Auto-generated method stub
 		
 	}
