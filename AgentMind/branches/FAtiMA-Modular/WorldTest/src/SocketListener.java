@@ -116,7 +116,8 @@ public abstract class SocketListener extends Thread {
                try
                {
             	   msg = reader.readLine();
-            	   processMessage(msg);
+            	   if(msg != null)
+            		   processMessage(msg);
                }
                catch (java.io.IOException ex) {            	  
             	   if(!(ex instanceof SocketException)) ex.printStackTrace();   	
