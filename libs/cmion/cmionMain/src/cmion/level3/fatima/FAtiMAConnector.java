@@ -29,6 +29,9 @@
 
 package cmion.level3.fatima;
 
+import ion.Meta.EventHandler;
+import ion.Meta.IEvent;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -41,6 +44,7 @@ import cmion.architecture.IArchitecture;
 import cmion.level2.migration.Migrating;
 import cmion.level2.migration.MigrationAware;
 import cmion.level3.AgentMindConnector;
+import cmion.level3.EventRemoteAction;
 import cmion.level3.MindAction;
 
 
@@ -427,4 +431,9 @@ public class FAtiMAConnector extends AgentMindConnector implements Migrating, Mi
 		this.newAction(mindAction);
 	}
 
+	@Override
+	protected void processRawMessage(String message) {
+		mindThread.send(message);
+	}
+	
 }

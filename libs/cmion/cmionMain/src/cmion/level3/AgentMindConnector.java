@@ -92,6 +92,9 @@ protected abstract void processPropertyChanged(String entityName,String property
 /** informs the mind that a property of an agent or object in the world model has been removed*/
 protected abstract void processPropertyRemoved(String entityName,String propertyName);
 
+/** in this message a mind can parse raw messages containing specialised communication / perceptions / requests */
+protected abstract void processRawMessage(String message);
+
 /** informs the mind that the architecture is ready for the mind executing actions */
 protected abstract void architectureReady();
 
@@ -120,6 +123,9 @@ public final void registerHandlers()
 	architecture.getWorldModel().registerEventHandlerWithSubContainers(new HandlePropertyChanged());
 	architecture.getWorldModel().registerEventHandlerWithSubContainers(new HandlePropertyRemoved());	
 
+	// register handler for raw message events
+	Simulation.instance.getEventHandlers().add(new HandleRawMessage());	
+	
 	// register handler for event architecture ready
 	Simulation.instance.getEventHandlers().add(new HandleArchitectureReady());
 }
@@ -295,6 +301,23 @@ private class HandlePropertyRemoved extends EventHandler {
     	}  	
     }
 }
+
+
+/** internal event handler class for listening to raw message events */
+private class HandleRawMessage extends EventHandler {
+
+    public HandleRawMessage() {
+        super(EventRawMessage.class);
+    }
+
+    @Override
+    public void invoke(IEvent evt) {
+        // since this is an event handler only for type EventPerception the following cast always works
+    	String message = ((EventRawMessage)evt).getMessage();
+    	processRawMessage(message);
+    }
+}	
+
 
 /** internal event handler class for listening to architecture ready events */
 private class HandleArchitectureReady extends EventHandler {

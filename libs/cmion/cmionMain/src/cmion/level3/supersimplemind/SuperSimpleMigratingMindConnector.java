@@ -233,4 +233,10 @@ public class SuperSimpleMigratingMindConnector extends AgentMindConnector implem
 			System.out.println("MIND-Migration resumed.");
 		}
 	}
+
+	@Override
+	protected void processRawMessage(String message) {
+		// TODO Auto-generated method stub
+		
+	}
 }

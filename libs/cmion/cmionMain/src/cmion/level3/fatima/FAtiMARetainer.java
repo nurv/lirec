@@ -100,6 +100,11 @@ public class FAtiMARetainer extends AgentMindConnector implements Migrating, Mig
 	}
 	
 	@Override
+	protected void processRawMessage(String message) {
+		
+	}
+	
+	@Override
 	protected void architectureReady() {
 		// TODO Auto-generated method stub
 		
@@ -196,4 +201,5 @@ public class FAtiMARetainer extends AgentMindConnector implements Migrating, Mig
 		// TODO Auto-generated method stub
 		
 	}
+
 }

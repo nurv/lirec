@@ -118,4 +118,11 @@ public class SuperSimpleMindConnector extends AgentMindConnector {
 		mind.sendAwake();
 	}
 
+
+	@Override
+	protected void processRawMessage(String message) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

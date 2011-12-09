@@ -187,4 +187,11 @@ public class SuperSimpleMigratingByInviteMindConnector extends AgentMindConnecto
 		System.out.println("MIND-Migration Success.");
 	}
 
+
+	@Override
+	protected void processRawMessage(String message) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
