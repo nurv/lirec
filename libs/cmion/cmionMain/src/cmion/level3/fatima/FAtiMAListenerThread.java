@@ -116,6 +116,16 @@ public class FAtiMAListenerThread extends SocketListener {
 			}
 			
 		}
+		else if(type.startsWith("<MemoryResult>")) {
+						
+			// extract memory result
+			int start = msg.indexOf("<MemoryResult>");
+			int end = msg.indexOf("</MemoryResult>");
+			String memoryResult = msg.substring(start+14, end);
+			
+			// and write it to blackboard
+			connector.getArchitecture().getBlackBoard().requestSetProperty("MemoryResult", memoryResult);			
+		}
 		else if(type.startsWith("<EmotionalState")) 
 		{
 			// FAtiMA agent updates us about its current emotional state

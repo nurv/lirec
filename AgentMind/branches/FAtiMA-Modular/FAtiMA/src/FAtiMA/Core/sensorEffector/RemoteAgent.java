@@ -358,27 +358,7 @@ public abstract class RemoteAgent extends SocketListener {
 			e.printStackTrace();
 		}
 	}
-	
-	/**
-	 * Extract known information
-	 * @param 
-	 * @return
-	 * added by Meiyii 19/11/09
-	 */
-	private ArrayList<String> ExtractKnownInfo(String known)
-	{
-		ArrayList<String> knownInfo = new ArrayList<String>();
-			
-		StringTokenizer st = new StringTokenizer(known, "*");
-		while(st.hasMoreTokens())
-		{
-			String knownStr = st.nextToken();
-			knownInfo.add(knownStr);
-			System.out.println("Known String " + knownStr);
-		}
-		return knownInfo;
-	}
-	
+		
 	protected final boolean Send(String msg) {
 		try {
 			String aux = msg + "\n";
@@ -398,6 +378,10 @@ public abstract class RemoteAgent extends SocketListener {
 	
 	public abstract void ReportInternalPropertyChange(String agentName, Name property, Object value);
 	
+	
+	public void ReportMemoryResult(String result) {		
+		Send("<MemoryResult>" + result + "</MemoryResult>");
+	}
 	
 	public void ReportInternalState(EmotionalState es)
 	{
