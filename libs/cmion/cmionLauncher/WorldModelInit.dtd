@@ -15,6 +15,7 @@
 <!ELEMENT Property EMPTY>
 <!--the name of the property-->
 <!ATTLIST Property Name CDATA #REQUIRED>
-<!--the name of the property-->
+<!--the value of the property-->
 <!ATTLIST Property Value CDATA #REQUIRED>
-
+<!--whether the property is persistent-->
+<!ATTLIST Property Persistent CDATA #IMPLIED>

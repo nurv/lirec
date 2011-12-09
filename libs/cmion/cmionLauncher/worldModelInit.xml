@@ -1,13 +1,13 @@
 <!DOCTYPE WorldModel SYSTEM "WorldModelInit.dtd">
 <WorldModel>
 	<Agent Name="UserA">
-		<Property Name = "speaksEnglish" Value="True"/>
-		<Property Name = "speaksChinese" Value="False"/>		
+		<Property Name = "speaksEnglish" Value="True" Persistent="True" />
+		<Property Name = "speaksChinese" Value="False" Persistent="True" />		
 	</Agent>
 	
 	<Agent Name="UserB">
-		<Property Name = "speaksEnglish" Value="False"/>
-		<Property Name = "speaksChinese" Value="True"/>		
+		<Property Name = "speaksEnglish" Value="False" Persistent="True"/>
+		<Property Name = "speaksChinese" Value="True" Persistent="True"/>		
 	</Agent>
 
 	<Object Name="Vase">
@@ -18,7 +18,7 @@
 
 	<Object Name="Cake">
 		<Property Name = "onTable"  Value="True" />
-		<Property Name = "chocolate"  Value="True" />
+		<Property Name = "chocolate"  Value="True" Persistent="True" />
 	</Object>
 
 </WorldModel>
