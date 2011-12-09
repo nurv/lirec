@@ -31,6 +31,7 @@ package cmion.addOns.manipulators;
 import ion.Meta.EventHandler;
 import ion.Meta.IEvent;
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -38,6 +39,7 @@ import java.awt.event.ActionListener;
 import java.util.HashMap;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -48,6 +50,7 @@ import javax.swing.JTree;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
@@ -127,14 +130,15 @@ public void removeEntity(final String entityName)
 }
 
 
-/** sets a property (Agent or Object) from the world model */
+/** sets a property (Agent or Object) from the world model 
+ * */
 public void setProperty(final String propertyName, final String propertyValue, 
-		final CmionStorageContainer parentContainer)
+		final boolean persistent, final CmionStorageContainer parentContainer)
 {
     javax.swing.SwingUtilities.invokeLater(new Runnable() {
         public void run() 
         {
-        	window.setProperty(propertyName,propertyValue,parentContainer);
+        	window.setProperty(propertyName,propertyValue,persistent,parentContainer);
         }
     });
 }
@@ -193,7 +197,7 @@ private class HandleAnyCmionEvent extends EventHandler {
     		EventPropertyChanged evt1 = (EventPropertyChanged) evt;
     		if (evt1.getParentContainer().getParentContainer() == architecture.getWorldModel())
     		{
-    			setProperty(evt1.getPropertyName(),evt1.getPropertyValue().toString(),evt1.getParentContainer());
+    			setProperty(evt1.getPropertyName(),evt1.getPropertyValue().toString(),evt1.isPersistent(),evt1.getParentContainer());
     		}
     	}
     	else if (evt instanceof EventPropertyRemoved)
@@ -216,12 +220,14 @@ private class SimulatorWindow extends JPanel implements ActionListener, TreeSele
 		
 		public String name;
 		public String value;
+		public boolean persistent;
 		private CmionStorageContainer parent;
 		
-		public Property(String name, String value, CmionStorageContainer parent)
+		public Property(String name, String value, boolean persistent, CmionStorageContainer parent)
 		{
 			this.name = name;
 			this.value = value;
+			this.persistent = persistent;
 			this.parent = parent;
 		}
 		
@@ -254,7 +260,7 @@ private class SimulatorWindow extends JPanel implements ActionListener, TreeSele
     protected JButton btnSetProperty;
     protected JButton btnRemoveProperty;
     protected JComboBox agentOrObject;
-
+    protected JCheckBox checkBoxPersistent;
     
     public SimulatorWindow() {
         super(new BorderLayout());
@@ -267,6 +273,7 @@ private class SimulatorWindow extends JPanel implements ActionListener, TreeSele
         tree = new JTree(treeModel);
         tree.getSelectionModel().setSelectionMode
                 (TreeSelectionModel.SINGLE_TREE_SELECTION);
+        tree.setCellRenderer(new CustomRenderer());
 
         //Listen for when the selection changes.
         tree.addTreeSelectionListener(this);
@@ -319,6 +326,9 @@ private class SimulatorWindow extends JPanel implements ActionListener, TreeSele
         txtPropertyValue.setPreferredSize(new Dimension(70,25));        
         toolBar.add(txtPropertyValue);
 
+        checkBoxPersistent = new JCheckBox(" persistent  ");
+        toolBar.add(checkBoxPersistent);
+        
         btnSetProperty = new JButton("set");
         btnSetProperty.addActionListener(this);
         toolBar.add(btnSetProperty);
@@ -356,7 +366,7 @@ private class SimulatorWindow extends JPanel implements ActionListener, TreeSele
     	}
 	}
 
-	public void setProperty(String propertyName, String propertyValue,
+	public void setProperty(String propertyName, String propertyValue,boolean persistent,
 			CmionStorageContainer parentContainer) 
 	{
     	DefaultMutableTreeNode node = containers.get(parentContainer.getContainerName());
@@ -372,6 +382,7 @@ private class SimulatorWindow extends JPanel implements ActionListener, TreeSele
     			if (prop.name.equals(propertyName))
     			{
     				prop.value = propertyValue;
+    				prop.persistent = persistent;
     				propNode = childNode;
     				break;
     			}
@@ -379,7 +390,7 @@ private class SimulatorWindow extends JPanel implements ActionListener, TreeSele
     	}
     	if (propNode == null)
     	{
-    		propNode = new DefaultMutableTreeNode(new Property(propertyName,propertyValue,parentContainer));
+    		propNode = new DefaultMutableTreeNode(new Property(propertyName,propertyValue,persistent,parentContainer));
     		node.add(propNode); 
     	}	
 		updateTree(node);
@@ -431,7 +442,9 @@ private class SimulatorWindow extends JPanel implements ActionListener, TreeSele
         	{
         		Property prop = (Property) selectedObject;
         		txtPropertyName.setText(prop.name);
+        		txtPropertyValue.setText(prop.value);
         		txtEntity.setText(prop.getParent().getContainerName()); 
+        		checkBoxPersistent.setSelected(prop.persistent);
         		agentOrObject.setSelectedItem(prop.getParent().getContainerType());
         	}
         	else if (selectedObject instanceof CmionStorageContainer)
@@ -472,7 +485,7 @@ private class SimulatorWindow extends JPanel implements ActionListener, TreeSele
 				String propertyValue = this.txtPropertyValue.getText().trim();
 				if ((propertyName.length()>0))
 					architecture.getWorldModel().getSubContainer(entityName).
-					             requestSetProperty(propertyName, propertyValue);
+					             requestSetProperty(propertyName, propertyValue,checkBoxPersistent.isSelected());
 			}	
 		}
 		else if (arg0.getSource() == this.btnRemoveProperty)
@@ -495,5 +508,45 @@ private class SimulatorWindow extends JPanel implements ActionListener, TreeSele
 		updateGui();
 	}
 
+	class CustomRenderer extends DefaultTreeCellRenderer {
+
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public Component getTreeCellRendererComponent(
+	                        JTree tree,
+	                        Object value,
+	                        boolean sel,
+	                        boolean expanded,
+	                        boolean leaf,
+	                        int row,
+	                        boolean hasFocus) {
+
+	        super.getTreeCellRendererComponent(
+	                        tree, value, sel,
+	                        expanded, leaf, row,
+	                        hasFocus);
+	        if (leaf && isPersistentProperty(value)) 
+	        {
+	        	setFont(new Font(getFont().getName(),Font.ITALIC,getFont().getSize()));
+	        } 
+	        else
+	        {
+	        	setFont(new Font(getFont().getName(),Font.PLAIN,getFont().getSize()));
+	     	}
+	        return this;
+	    }
+
+	    protected boolean isPersistentProperty(Object value) {
+	        if (value instanceof DefaultMutableTreeNode)
+	        {
+	        	Object userObject = ((DefaultMutableTreeNode)value).getUserObject();
+	        	if (userObject instanceof Property)
+	        		return ((Property)userObject).persistent;
+	        }
+	        return false;
+	    }
+	}
+	
 }
 }
