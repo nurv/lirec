@@ -34,6 +34,9 @@
 
 package FAtiMA.Core.memory.semanticMemory;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -254,6 +257,26 @@ public class KnowledgeSlot implements Serializable {
 	    return aux;
 	}
 	
+
+	/** remove all non persistent properties */
+	public void removeNonPersistent() {
+		Iterator<String> it = _children.keySet().iterator();
+		while (it.hasNext())
+		{
+			String key = it.next();
+			Object value = _children.get(key);
+			if(value instanceof KnowledgeSlot) 
+			{
+				KnowledgeSlot ks = (KnowledgeSlot) value;
+				ks.removeNonPersistent();								
+				if(!ks.getPersistent() && ks._children.isEmpty())
+					it.remove();
+			}
+		}
+		
+	}
+	
+	
 	public String toXML() {
 	    Iterator<Object> it;
 	    String aux;
@@ -275,4 +298,5 @@ public class KnowledgeSlot implements Serializable {
 	    }
 	    return aux;
 	}
+		
 }

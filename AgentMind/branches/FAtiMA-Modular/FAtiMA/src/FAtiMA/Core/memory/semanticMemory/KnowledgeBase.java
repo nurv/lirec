@@ -395,4 +395,18 @@ public class KnowledgeBase implements Serializable {
 		
 		return facts;
 	}
+
+	public void removeNonPersistent() {
+		
+		// remove non persistent knowledge from fact list
+		for(ListIterator<KnowledgeSlot> li = _factList.listIterator();li.hasNext();)
+		{
+			KnowledgeSlot slot = li.next();
+			if (!slot.getPersistent())
+				li.remove();
+		}		
+
+		// remove non persistent knowledge from kb
+		_kB.removeNonPersistent();
+	}
 }

@@ -435,4 +435,33 @@ public class WorkingMemory implements Serializable {
 		
 		return facts;
 	}
+
+	public void removeNonPersistent() {
+
+		// remove non persistent knowledge from fact list, new facts and change list
+		for(ListIterator<KnowledgeSlot> li = _factList.listIterator();li.hasNext();)
+		{
+			KnowledgeSlot slot = li.next();
+			if (!slot.getPersistent())
+				li.remove();
+		}
+		
+		for(ListIterator<KnowledgeSlot> li = _newFacts.listIterator();li.hasNext();)
+		{
+			KnowledgeSlot slot = li.next();
+			if (!slot.getPersistent())
+				li.remove();
+		}
+		
+		for(ListIterator<KnowledgeSlot> li = _changeList.listIterator();li.hasNext();)
+		{
+			KnowledgeSlot slot = li.next();
+			if (!slot.getPersistent())
+				li.remove();
+		}
+		
+		// and from wm
+		_wM.removeNonPersistent();
+		
+	}
 }

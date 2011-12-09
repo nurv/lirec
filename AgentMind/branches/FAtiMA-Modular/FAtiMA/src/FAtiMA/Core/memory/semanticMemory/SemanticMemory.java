@@ -358,6 +358,13 @@ public class SemanticMemory implements Serializable {
 	{
 		_stm = wm;
 	}
+
+	/** remove all non persistent properties from WM and KB*/
+	public void removeNonPersistent() {
+		_kb.removeNonPersistent();
+		_stm.removeNonPersistent();
+		
+	}
 	
 //	public KnowledgeSlot getKBMainSlot()
 //	{
