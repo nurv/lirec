@@ -60,11 +60,9 @@ public class AdvancedMemoryHandler extends ReflectXMLHandler {
 	private HashMap<Integer, Double> evaluationValues;
 	// Spreading Activation
 	private SpreadingActivation spreadingActivation;
-	private HashMap<String, HashSet<String>> targetHypernyms;
-	private HashSet<String> targetHypernymSet;
-	private HashMap<String, HashSet<String>> objectHypernyms;
-	private HashSet<String> objectHypernymSet;
 	private HashMap<String, Integer> frequencies;
+	private HashMap<String, HashSet<String>> targetAttributeHypernyms;
+	private HashSet<String> targetAttributeHypernymSet;
 	// Generalisation
 	private Generalisation generalisation;
 	private ArrayList<String> attributeNames;
@@ -188,38 +186,6 @@ public class AdvancedMemoryHandler extends ReflectXMLHandler {
 		results.add(spreadingActivation);
 	}
 
-	public void TargetHypernyms(Attributes attributes) {
-		targetHypernyms = new HashMap<String, HashSet<String>>();
-		spreadingActivation.setTargetHypernyms(targetHypernyms);
-	}
-
-	public void TargetHypernymSet(Attributes attributes) {
-		String value = attributes.getValue("value");
-		targetHypernymSet = new HashSet<String>();
-		targetHypernyms.put(value, targetHypernymSet);
-	}
-
-	public void TargetHypernym(Attributes attributes) {
-		String value = attributes.getValue("value");
-		targetHypernymSet.add(value);
-	}
-
-	public void ObjectHypernyms(Attributes attributes) {
-		objectHypernyms = new HashMap<String, HashSet<String>>();
-		spreadingActivation.setObjectHypernyms(objectHypernyms);
-	}
-
-	public void ObjectHypernymSet(Attributes attributes) {
-		String value = attributes.getValue("value");
-		objectHypernymSet = new HashSet<String>();
-		objectHypernyms.put(value, objectHypernymSet);
-	}
-
-	public void ObjectHypernym(Attributes attributes) {
-		String value = attributes.getValue("value");
-		objectHypernymSet.add(value);
-	}
-
 	public void Frequencies(Attributes attributes) {
 		frequencies = new HashMap<String, Integer>();
 		spreadingActivation.setFrequencies(frequencies);
@@ -229,6 +195,22 @@ public class AdvancedMemoryHandler extends ReflectXMLHandler {
 		String value = attributes.getValue("value");
 		Integer frequency = Integer.parseInt(attributes.getValue("frequency"));
 		frequencies.put(value, frequency);
+	}
+
+	public void TargetAttributeHypernyms(Attributes attributes) {
+		targetAttributeHypernyms = new HashMap<String, HashSet<String>>();
+		spreadingActivation.setTargetAttributeHypernyms(targetAttributeHypernyms);
+	}
+
+	public void TargetAttributeHypernymSet(Attributes attributes) {
+		String value = attributes.getValue("value");
+		targetAttributeHypernymSet = new HashSet<String>();
+		targetAttributeHypernyms.put(value, targetAttributeHypernymSet);
+	}
+
+	public void TargetAttributeHypernym(Attributes attributes) {
+		String value = attributes.getValue("value");
+		targetAttributeHypernymSet.add(value);
 	}
 
 	// Generalisation

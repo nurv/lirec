@@ -45,13 +45,21 @@ public class Generalisation implements Serializable {
 
 	public static final String NAME = "Generalisation";
 
+	// time when mechanism was executed
 	private Time time;
+	// attributes used for action detail filtering	
 	private ArrayList<String> filterAttributes;
+	// time ontology used for attribute time (null if not used)	
 	private TimeOntology timeOntology;
+	// noun ontology used for attribute target (null if not used)
 	private NounOntology targetOntology;
+	// noun ontology used for attribute object (null if not used)
 	private NounOntology objectOntology;
+	// names of attributes used for generalisation
 	private ArrayList<String> attributeNames;
+	// minimum coverage/frequency required for not being filtered out
 	private int minimumCoverage;
+	// GERs resulting from execution of mechanism
 	private ArrayList<GER> gers;
 
 	public Time getTime() {

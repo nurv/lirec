@@ -51,23 +51,30 @@ public class SpreadingActivation implements Serializable {
 
 	public static final String NAME = "Spreading Activation";
 
+	// time when mechanism was executed
 	private Time time;
+	// attributes used for action detail filtering	
 	private ArrayList<String> filterAttributes;
+	// time ontology used for attribute time (null if not used)
 	private TimeOntology timeOntology;
+	// noun ontology used for attribute target (null if not used)
 	private NounOntology targetOntology;
-	private HashMap<String, HashSet<String>> targetHypernyms;
+	// noun ontology used for attribute object (null if not used)
 	private NounOntology objectOntology;
-	private HashMap<String, HashSet<String>> objectHypernyms;
+	// name of attribute for whose values frequencies are calculated
 	private String targetAttributeName;
+	// attribute value and corresponding frequencies
 	private HashMap<String, Integer> frequencies;
+	// hypernyms successfully applied for generalising while calculating frequencies
+	private HashMap<String, HashSet<String>> targetAttributeHypernyms;
 
-	// If an ontology is used for target/object, then targetHypernyms/objectHypernyms
-	// maps corresponding values to a set of hypernyms which were successfully applied
-	// for generalising the corresponding value with another value. 
-	// If no hypernyms could be applied successfully (even if hypernyms exist), then
-	// no key for the corresponding value exists in targetHypernyms/objectHypernyms. 
-	// If no ontology was used for target/object, then targetHypernyms/objectHypernyms
-	// is null.
+	// If an ontology is used for target/object and target/object is the target attribute,
+	// then targetAttributeHypernyms maps corresponding values to a set of hypernyms which
+	// were successfully applied for generalising the corresponding value with another
+	// value. 
+	// If no hypernyms could be applied successfully (even if hypernyms exist), then no
+	// key for the corresponding value exists in targetAttributeHypernyms.
+	// If no ontology was used for target/object, then targetAttributeHypernyms is null.
 
 	public Time getTime() {
 		return time;
@@ -101,28 +108,12 @@ public class SpreadingActivation implements Serializable {
 		this.targetOntology = targetOntology;
 	}
 
-	public HashMap<String, HashSet<String>> getTargetHypernyms() {
-		return targetHypernyms;
-	}
-
-	public void setTargetHypernyms(HashMap<String, HashSet<String>> targetHypernyms) {
-		this.targetHypernyms = targetHypernyms;
-	}
-
 	public NounOntology getObjectOntology() {
 		return objectOntology;
 	}
 
 	public void setObjectOntology(NounOntology objectOntology) {
 		this.objectOntology = objectOntology;
-	}
-
-	public HashMap<String, HashSet<String>> getObjectHypernyms() {
-		return objectHypernyms;
-	}
-
-	public void setObjectHypernyms(HashMap<String, HashSet<String>> objectHypernyms) {
-		this.objectHypernyms = objectHypernyms;
 	}
 
 	public String getTargetAttributeName() {
@@ -139,6 +130,14 @@ public class SpreadingActivation implements Serializable {
 
 	public void setFrequencies(HashMap<String, Integer> frequencies) {
 		this.frequencies = frequencies;
+	}
+
+	public HashMap<String, HashSet<String>> getTargetAttributeHypernyms() {
+		return targetAttributeHypernyms;
+	}
+
+	public void setTargetAttributeHypernyms(HashMap<String, HashSet<String>> targetAttributeHypernyms) {
+		this.targetAttributeHypernyms = targetAttributeHypernyms;
 	}
 
 	public Object spreadActivation(EpisodicMemory episodicMemory, String targetAttributeName) {
@@ -235,7 +234,7 @@ public class SpreadingActivation implements Serializable {
 		if (targetOntology != null && targetAttributeName.equals("target")) {
 
 			// initialise
-			targetHypernyms = new HashMap<String, HashSet<String>>();
+			targetAttributeHypernyms = new HashMap<String, HashSet<String>>();
 			HashMap<String, Integer> frequenciesOntology = new HashMap<String, Integer>();
 			Object valueMaxOntology = null;
 			int frequencyMaxOntology = 0;
@@ -245,7 +244,7 @@ public class SpreadingActivation implements Serializable {
 
 				// initialise
 				frequenciesOntology.put(targetAttributeValue, 0);
-				targetHypernyms.put(targetAttributeValue, new HashSet<String>());
+				targetAttributeHypernyms.put(targetAttributeValue, new HashSet<String>());
 
 				// loop over action details
 				for (ActionDetail actionDetail : actionDetailsFiltered) {
@@ -266,10 +265,10 @@ public class SpreadingActivation implements Serializable {
 					if (nounsGeneralised.size() > 0) {
 
 						// update hypernym set
-						HashSet<String> hypernymSet = targetHypernyms.get(targetAttributeValue);
+						HashSet<String> hypernymSet = targetAttributeHypernyms.get(targetAttributeValue);
 						// add only the first common hypernym to set
 						hypernymSet.add(nounsGeneralised.getFirst());
-						targetHypernyms.put(targetAttributeValue, hypernymSet);
+						targetAttributeHypernyms.put(targetAttributeValue, hypernymSet);
 
 						// update freqency
 						Integer frequencyOntology = frequenciesOntology.get(targetAttributeValue);
@@ -299,7 +298,7 @@ public class SpreadingActivation implements Serializable {
 		if (objectOntology != null && targetAttributeName.equals("object")) {
 
 			// initialise
-			objectHypernyms = new HashMap<String, HashSet<String>>();
+			targetAttributeHypernyms = new HashMap<String, HashSet<String>>();
 			HashMap<String, Integer> frequenciesOntology = new HashMap<String, Integer>();
 			Object valueMaxOntology = null;
 			int frequencyMaxOntology = 0;
@@ -309,7 +308,7 @@ public class SpreadingActivation implements Serializable {
 
 				// initialise
 				frequenciesOntology.put(targetAttributeValue, 0);
-				objectHypernyms.put(targetAttributeValue, new HashSet<String>());
+				targetAttributeHypernyms.put(targetAttributeValue, new HashSet<String>());
 
 				// loop over action details
 				for (ActionDetail actionDetail : actionDetailsFiltered) {
@@ -330,10 +329,10 @@ public class SpreadingActivation implements Serializable {
 					if (nounsGeneralised.size() > 0) {
 
 						// update hypernym set
-						HashSet<String> hypernymSet = objectHypernyms.get(targetAttributeValue);
+						HashSet<String> hypernymSet = targetAttributeHypernyms.get(targetAttributeValue);
 						// add only the first common hypernym to set
 						hypernymSet.add(nounsGeneralised.getFirst());
-						objectHypernyms.put(targetAttributeValue, hypernymSet);
+						targetAttributeHypernyms.put(targetAttributeValue, hypernymSet);
 
 						// update freqency
 						Integer frequencyOntology = frequenciesOntology.get(targetAttributeValue);

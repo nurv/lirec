@@ -54,12 +54,19 @@ public class CompoundCue implements Serializable {
 	private static final double FACTOR_SIMILAR = 0.9;
 	private static final double FACTOR_DIFFERENT = 0.8;
 
+	// time when mechanism was executed
 	private Time time;
+	// attributes used for action detail filtering	
 	private ArrayList<String> filterAttributes;
+	// time ontology used for attribute time (null if not used)	
 	private TimeOntology timeOntology;
+	// noun ontology used for attribute target (null if not used)
 	private NounOntology targetOntology;
+	// noun ontology used for attribute object (null if not used)
 	private NounOntology objectOntology;
+	// ID of action detail to be compared against
 	private int targetID;
+	// IDs of action details and corresponding evaluation values
 	private HashMap<Integer, Double> evaluationValues;
 
 	public Time getTime() {

@@ -559,10 +559,10 @@ public class SpreadingActivationPanel extends JPanel {
 			Object[] data = new Object[2];
 			data[0] = value;
 			if (targetOntology != null && targetAttributeName.equals("target")) {
-				data[0] = String.valueOf(data[0]) + " " + spreadingActivation.getTargetHypernyms().get(value);
+				data[0] = value + " " + spreadingActivation.getTargetAttributeHypernyms().get(value);
 			}
 			if (objectOntology != null && targetAttributeName.equals("object")) {
-				data[0] = String.valueOf(data[0]) + " " + spreadingActivation.getObjectHypernyms().get(value);
+				data[0] = value + " " + spreadingActivation.getTargetAttributeHypernyms().get(value);
 			}
 			data[1] = spreadingActivation.getFrequencies().get(value);
 			tmResults.addRow(data);

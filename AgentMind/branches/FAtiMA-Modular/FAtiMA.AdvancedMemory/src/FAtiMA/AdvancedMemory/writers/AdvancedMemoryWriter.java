@@ -178,21 +178,21 @@ public class AdvancedMemoryWriter {
 					xmlOutputter.endTag(); //TargetOntology
 				}
 
-				HashMap<String, HashSet<String>> targetHypernyms = spreadingActivation.getTargetHypernyms();
-				if (targetHypernyms != null) {
-					xmlOutputter.startTag("TargetHypernyms");
-					for (String value : targetHypernyms.keySet()) {
-						xmlOutputter.startTag("TargetHypernymSet");
+				HashMap<String, HashSet<String>> targetAttributeHypernyms = spreadingActivation.getTargetAttributeHypernyms();
+				if (targetAttributeHypernyms != null) {
+					xmlOutputter.startTag("TargetAttributeHypernyms");
+					for (String value : targetAttributeHypernyms.keySet()) {
+						xmlOutputter.startTag("TargetAttributeHypernymSet");
 						xmlOutputter.attribute("value", value);
-						HashSet<String> targetHypernymSet = targetHypernyms.get(value);
+						HashSet<String> targetHypernymSet = targetAttributeHypernyms.get(value);
 						for (String hypernym : targetHypernymSet) {
-							xmlOutputter.startTag("TargetHypernym");
+							xmlOutputter.startTag("TargetAttributeHypernym");
 							xmlOutputter.attribute("value", hypernym);
-							xmlOutputter.endTag(); //TargetHypernym								
+							xmlOutputter.endTag(); //TargetAttributeHypernym								
 						}
-						xmlOutputter.endTag(); //TargetHypernymSet							
+						xmlOutputter.endTag(); //TargetAttributeHypernymSet							
 					}
-					xmlOutputter.endTag(); //TargetHypernyms
+					xmlOutputter.endTag(); //TargetAttributeHypernyms
 				}
 
 				NounOntology objectOntology = spreadingActivation.getObjectOntology();
@@ -200,23 +200,6 @@ public class AdvancedMemoryWriter {
 					xmlOutputter.startTag("ObjectOntology");
 					xmlOutputter.attribute("depthMax", String.valueOf(objectOntology.getDepthMax()));
 					xmlOutputter.endTag(); //ObjectOntology
-				}
-
-				HashMap<String, HashSet<String>> objectHypernyms = spreadingActivation.getObjectHypernyms();
-				if (objectHypernyms != null) {
-					xmlOutputter.startTag("ObjectHypernyms");
-					for (String value : objectHypernyms.keySet()) {
-						xmlOutputter.startTag("ObjectHypernymSet");
-						xmlOutputter.attribute("value", value);
-						HashSet<String> objectHypernymSet = objectHypernyms.get(value);
-						for (String hypernym : objectHypernymSet) {
-							xmlOutputter.startTag("ObjectHypernym");
-							xmlOutputter.attribute("value", hypernym);
-							xmlOutputter.endTag(); //ObjectHypernym								
-						}
-						xmlOutputter.endTag(); //ObjectHypernymSet							
-					}
-					xmlOutputter.endTag(); //ObjectHypernyms
 				}
 
 				xmlOutputter.startTag("Frequencies");
