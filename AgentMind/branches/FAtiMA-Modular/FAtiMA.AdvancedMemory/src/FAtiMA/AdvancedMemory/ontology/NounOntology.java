@@ -44,11 +44,9 @@
 package FAtiMA.AdvancedMemory.ontology;
 
 import java.io.Serializable;
-import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 
-import edu.mit.jwi.Dictionary;
 import edu.mit.jwi.IDictionary;
 import edu.mit.jwi.item.IIndexWord;
 import edu.mit.jwi.item.ISynset;
@@ -67,21 +65,7 @@ public class NounOntology implements Serializable {
 
 	private static final boolean STEMMING = true;
 
-	private static final String DICTIONARY_PATH = "data/characters/minds/wordnet/dict/";
-
-	private IDictionary dict;
-
 	private int depthMax;
-
-	public NounOntology() {
-		try {
-			URL url = new URL("file", null, DICTIONARY_PATH);
-			dict = new Dictionary(url);
-			dict.open();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
 
 	public int getDepthMax() {
 		return depthMax;
@@ -194,10 +178,11 @@ public class NounOntology implements Serializable {
 	 * @return list of hypernyms
 	 */
 	public LinkedList<IWord> getNounHypernyms(String noun, int depth, int depthLimit) {
+		IDictionary dictionary = WordnetDictionary.getInstance().getDictionary();
 
 		// stemming
 		if (STEMMING) {
-			WordnetStemmer wnStemmer = new WordnetStemmer(dict);
+			WordnetStemmer wnStemmer = new WordnetStemmer(dictionary);
 			List<String> stems = wnStemmer.findStems(noun, POS.NOUN);
 			if (stems.size() > 0) {
 				// use first stem
@@ -209,7 +194,7 @@ public class NounOntology implements Serializable {
 		LinkedList<IWord> words = new LinkedList<IWord>();
 
 		// get word from dictionary
-		IIndexWord indexWord = dict.getIndexWord(noun, POS.NOUN);
+		IIndexWord indexWord = dictionary.getIndexWord(noun, POS.NOUN);
 		if (indexWord == null) {
 			// word is not in dictionary
 			return null;
@@ -218,7 +203,7 @@ public class NounOntology implements Serializable {
 		// loop over word IDs
 		List<IWordID> wordIDs = indexWord.getWordIDs();
 		for (IWordID wordID : wordIDs) {
-			IWord word = dict.getWord(wordID);
+			IWord word = dictionary.getWord(wordID);
 			words.add(word);
 
 			// check for max recursion depth
@@ -231,7 +216,7 @@ public class NounOntology implements Serializable {
 				// loop over hypernyms
 				for (ISynsetID hypernym : hypernyms) {
 					// loop over words
-					for (IWord hypernymWord : dict.getSynset(hypernym).getWords()) {
+					for (IWord hypernymWord : dictionary.getSynset(hypernym).getWords()) {
 						words.addAll(getNounHypernyms(hypernymWord.getLemma(), depth + 1, depthLimit));
 					}
 				}
