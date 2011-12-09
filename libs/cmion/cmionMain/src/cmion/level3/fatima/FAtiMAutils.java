@@ -42,11 +42,19 @@ public class FAtiMAutils {
 	
 	/** returns a String listing all properties of a storage container in the format
 	 * specified by the FAtiMA protocol, which is for example "prop1:value1 prop2:value2 prop3:value3" */
-	public static String getPropertiesString(CmionStorageContainer entityContainer) {
+	public static String getPropertiesString(CmionStorageContainer entityContainer,boolean includePersistenceInformation) {
 		String propString="";
 		for (String propName : entityContainer.getPropertyNames())
 		{
-			propString += " " + propName + ":" + entityContainer.getPropertyValue(propName);
+			String persistenceString = "";
+			if (includePersistenceInformation)
+			{
+				if (entityContainer.isPropertyPersistent(propName))
+					persistenceString = "P:";
+				else
+					persistenceString = "NP:";
+			}
+			propString += " " + persistenceString + propName + ":" + entityContainer.getPropertyValue(propName);
 		}
 		return propString;
 	}

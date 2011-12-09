@@ -87,7 +87,7 @@ protected abstract void processEntityAdded(String entityName);
 protected abstract void processEntityRemoved(String entityName);
 
 /** informs the mind that a property of an agent or object in the world model has changed*/
-protected abstract void processPropertyChanged(String entityName,String propertyName,String propertyValue);
+protected abstract void processPropertyChanged(String entityName,String propertyName,String propertyValue,boolean persistent);
 
 /** informs the mind that a property of an agent or object in the world model has been removed*/
 protected abstract void processPropertyRemoved(String entityName,String propertyName);
@@ -275,7 +275,8 @@ private class HandlePropertyChanged extends EventHandler {
     	{
     		processPropertyChanged(evtSpecific.getParentContainer().getContainerName(),
     								evtSpecific.getPropertyName(),
-    								evtSpecific.getPropertyValue().toString());
+    								evtSpecific.getPropertyValue().toString(),
+    								evtSpecific.isPersistent());
     	}  	
     }
 }

@@ -32,6 +32,7 @@ package cmion.storage;
 import ion.Meta.Request;
 
 import java.util.HashMap;
+import java.util.HashSet;
 
 /** a request that can be made to any CMION Storage Container for adding a new
  *  sub container*/
@@ -47,19 +48,29 @@ public class RequestAddSubContainer extends Request
 	/** the initial properties of the sub container */
 	private HashMap<String,Object> initialProperties;
 	
+	/** which of the initial properties of the sub container are persistent */
+	private HashSet<String> persistentProperties;	
+	
 	public RequestAddSubContainer(String name, String type)
 	{
-		this.newContainerName = name;
-		this.newContainerType = type;
+		this(name,type,null,null);
 	}
 
-	public RequestAddSubContainer(String name, String type, HashMap<String,Object> properties)
+	public RequestAddSubContainer(String name, String type, HashMap<String,Object> initialProperties)
+	{
+		this(name,type,initialProperties,null);
+	}
+	
+	public RequestAddSubContainer(String name, String type,
+			HashMap<String, Object> initialProperties,
+			HashSet<String> persistentProperties) 
 	{
 		this.newContainerName = name;
 		this.newContainerType = type;
-		this.initialProperties = properties;
+		this.initialProperties = initialProperties;
+		this.persistentProperties = persistentProperties;
 	}
-	
+
 	/** returns the name of the sub container to be added */
 	public String getNewContainerName()
 	{
@@ -70,6 +81,12 @@ public class RequestAddSubContainer extends Request
 	public HashMap<String,Object> getInitialProperties()
 	{
 		return initialProperties;
+	}
+	
+	/** returns the set of persistent initial properties of the sub container to be added */
+	public HashSet<String> getPersistentProperties()
+	{
+		return persistentProperties;
 	}
 	
 	/** returns the name of the sub container to be added */

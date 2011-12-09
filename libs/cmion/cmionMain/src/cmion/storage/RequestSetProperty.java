@@ -42,11 +42,27 @@ private String propertyName;
 /** the value to set the property to */
 private Object propertyValue;
 
-/** create a new request to set a property of given name to given value*/
+/** is this property persistent or not, if this value is null do not make any changes
+ *  to the persistence */
+private Boolean persistent;
+
+/** create a new request to set a property of given name to given value
+ *  creating the property if it did not exist before
+ *  If the property did not exist before it will be created as non-persistent
+ *  If it existed before no changes to its persistent state are made*/
 public RequestSetProperty(String propertyName, Object propertyValue)
+{
+	this(propertyName,propertyValue,null);
+}
+
+/** create a new request to set a property of given name to given value
+ *  creating the property if it did not exist before
+ *  @param persistent Is the property persistent or not */
+public RequestSetProperty(String propertyName, Object propertyValue, Boolean persistent)
 {
 	this.propertyName = propertyName;
 	this.propertyValue = propertyValue;
+	this.persistent = persistent;
 }
 
 /** return the name of the property to set */
@@ -61,5 +77,11 @@ public Object getPropertyValue()
 	return propertyValue;
 }
 
+/** return whether to set the property to persistent (true), 
+ *  non-persistent (false) or leave the persistent state as it was (NULL) */
+public Boolean getPersistent()
+{
+	return persistent;
+}
 	
 }

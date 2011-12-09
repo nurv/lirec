@@ -35,7 +35,6 @@ import org.w3c.dom.Element;
 import cmion.architecture.IArchitecture;
 import cmion.level2.migration.Migrating;
 import cmion.level2.migration.MigrationAware;
-import cmion.level2.migration.MigrationUtils;
 import cmion.level3.AgentMindConnector;
 import cmion.level3.MindAction;
 
@@ -105,7 +104,7 @@ public class SuperSimpleMigratingByInviteMindConnector extends AgentMindConnecto
 
 	@Override
 	protected void processPropertyChanged(String entityName,
-			String propertyName, String propertyValue) {
+			String propertyName, String propertyValue, boolean persistent) {
 		mind.sendPropertyChanged(entityName,propertyName,propertyValue);
 	}
 

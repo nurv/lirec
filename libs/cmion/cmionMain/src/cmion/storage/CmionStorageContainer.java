@@ -38,6 +38,7 @@ import ion.Meta.TypeSet;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import cmion.architecture.IArchitecture;
 import cmion.architecture.CmionComponent;
@@ -81,6 +82,10 @@ public class CmionStorageContainer extends CmionComponent {
 	/** the event handlers that would like to be registered with sub components  */
 	private ArrayList<EventHandler> subContainerEventHandlers;
 
+	/** by default properties are non persistent, if the container has a persistent property
+	 *  it will be in this set here */
+	public HashSet<String> persistentProperties;	
+	
 		
 	/** create a new CMION Storage Container (this constructor is protected because it
 	 * should not be accessed from outside) to create a new top level container, use the 
@@ -99,6 +104,7 @@ public class CmionStorageContainer extends CmionComponent {
 		subContainers = new HashMap<String,CmionStorageContainer>();
 		properties = new HashMap<String, Object>();
 		subContainerEventHandlers = new ArrayList<EventHandler>();
+		persistentProperties = new HashSet<String>();
 	}	
 
 	/** create a new CMION Storage Container 
@@ -191,6 +197,13 @@ public class CmionStorageContainer extends CmionComponent {
 		 return a;
 	}
 	
+	/** returns whether a property is persistent or not
+	 * @return true if persistent, false if not */
+	public synchronized boolean isPropertyPersistent(String propertyName)
+	{
+		return persistentProperties.contains(propertyName);
+	}
+	
 	/** returns a list of names of all properties that are of a certain class
 	 * @param <T> the class we want to find properties of
 	 * @param propertyClass the class represented as a dynamic Class object
@@ -254,12 +267,18 @@ public class CmionStorageContainer extends CmionComponent {
 		} else return false;
 	}
 	
-	/** convenience method for scheduling a requestAddSubContainer with this container*/
+	/** convenience method for scheduling a requestAddSubContainer with this container */
+	public void requestAddSubContainer(String name, String type, HashMap<String,Object> initialProperties, HashSet<String> persistentProperties)
+	{
+		this.schedule(new RequestAddSubContainer(name,type,initialProperties,persistentProperties));
+	}
+
+	/** convenience method for scheduling a requestAddSubContainer with this container */	
 	public void requestAddSubContainer(String name, String type, HashMap<String,Object> initialProperties)
 	{
 		this.schedule(new RequestAddSubContainer(name,type,initialProperties));
 	}
-
+	
 	/** convenience method for scheduling a requestAddSubContainer with this container*/
 	public void requestAddSubContainer(String name, String type)
 	{
@@ -278,14 +297,21 @@ public class CmionStorageContainer extends CmionComponent {
 		this.schedule(new RequestSetProperty(name,value));
 	}
 	
+	/** convenience method for scheduling a requestSetProperty with this container*/
+	public void requestSetProperty(String name, Object value, boolean persistent)
+	{
+		this.schedule(new RequestSetProperty(name,value,persistent));
+	}	
+	
 	/** convenience method for scheduling a requestRemoveProperty with this container*/
 	public void requestRemoveProperty(String name)
 	{
 		this.schedule(new RequestRemoveProperty(name));
 	}
 	
-	/** add a new sub container (accessed from outside through request add sub container */
-	private synchronized void addSubContainer(String name, String type, HashMap<String,Object> initialProperties)
+	/** add a new sub container (accessed from outside through request add sub container 
+	 * @param persistentProperties */
+	private synchronized void addSubContainer(String name, String type, HashMap<String,Object> initialProperties, HashSet<String> persistentProperties)
 	{
 		// check if we already have a sub container with this name
 		if (!subContainers.containsKey(name))
@@ -317,8 +343,15 @@ public class CmionStorageContainer extends CmionComponent {
 			// and request setting the initial properties
 			if (initialProperties!=null)
 				for (String propertyName : initialProperties.keySet())
-					container.requestSetProperty(propertyName, initialProperties.get(propertyName));
-			
+				{	
+					if (persistentProperties!=null)
+					{
+						boolean persistent = persistentProperties.contains(propertyName);
+						container.requestSetProperty(propertyName, initialProperties.get(propertyName),persistent);					
+					}
+					else
+						container.requestSetProperty(propertyName, initialProperties.get(propertyName));
+				}
 		}	
 	}
 
@@ -345,6 +378,9 @@ public class CmionStorageContainer extends CmionComponent {
 		
 		// clear all properties
 		properties.clear();
+		
+		// clear all persistence data
+		persistentProperties.clear();
 		
 		// remove ourself from our parents subContainers List
 		if (parentContainer!=null) parentContainer.subContainers.remove(containerName);
@@ -377,14 +413,28 @@ public class CmionStorageContainer extends CmionComponent {
 		}
 	}
 	
-	/** set a property (accessed from outside through request set property) */
-	private synchronized void setProperty(String propertyName, Object propertyValue)
+	/** set a property (accessed from outside through request set property) 
+	 * @param persistent */
+	private synchronized void setProperty(String propertyName, Object propertyValue, Boolean persistent)
 	{
 		// change the value
 		properties.put(propertyName, propertyValue);
 		
+		// change the persistence
+		if (persistent!=null)
+		{
+			if (persistent)
+			{
+				persistentProperties.add(propertyName);
+			}
+			else
+			{
+				persistentProperties.remove(propertyName);
+			}
+		}
+		
 		// raise an event
-		this.raise(new EventPropertyChanged(propertyName,propertyValue, this));
+		this.raise(new EventPropertyChanged(propertyName,propertyValue, persistentProperties.contains(propertyName), this));
 		
 	}
 	
@@ -397,6 +447,9 @@ public class CmionStorageContainer extends CmionComponent {
 			// remove it
 			properties.remove(propertyName);
 		
+			// remove it from the persistence set (if it was in there)
+			persistentProperties.remove(propertyName);
+			
 			// raise an event
 			this.raise(new EventPropertyRemoved(propertyName, this));
 		}
@@ -417,7 +470,7 @@ public class CmionStorageContainer extends CmionComponent {
 	    	// iterate through requests
 	    	for (RequestAddSubContainer request : requests.get(RequestAddSubContainer.class))
 	    	{
-	    		addSubContainer(request.getNewContainerName(),request.getNewContainerType(), request.getInitialProperties());
+	    		addSubContainer(request.getNewContainerName(),request.getNewContainerType(), request.getInitialProperties(),request.getPersistentProperties());
 	    	}	
 	    }
 	    
@@ -463,7 +516,7 @@ public class CmionStorageContainer extends CmionComponent {
 	    		{
 	    			// only set if a property with the same name has not been set already
 	    			// during this simulation step
-	    			setProperty(request.getPropertyName(),request.getPropertyValue());
+	    			setProperty(request.getPropertyName(),request.getPropertyValue(),request.getPersistent());
 	    			propertiesSet.add(request.getPropertyName());
 	    		}
 	    	}	

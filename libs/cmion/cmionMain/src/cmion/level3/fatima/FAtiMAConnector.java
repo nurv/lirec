@@ -63,6 +63,9 @@ public class FAtiMAConnector extends AgentMindConnector implements Migrating, Mi
 	/** keeps track of whether the connected mind is the new modular version of Fatima or not*/
 	private boolean modular;
 	
+	/** keeps track of whether the connected mind is the new version of Fatima that distinguishes persistent properties or not*/
+	private boolean distinguishPersistent;	
+	
 	/** is the connected FAtiMA capable of migrating, i.e. can it send and receive
 	 *  its agent state through the socket connection with this connector 
 	 *  (this feature was added to FAtiMA on 15/04/10)*/
@@ -92,6 +95,7 @@ public class FAtiMAConnector extends AgentMindConnector implements Migrating, Mi
 		mindThread = null;
 		canMigrate = false;
 		modular = false;
+		distinguishPersistent = false;;
 		new ListenForConnectionThread().start();
 	}
 
@@ -102,6 +106,12 @@ public class FAtiMAConnector extends AgentMindConnector implements Migrating, Mi
 	 *   - "sleeping"  : immediately send this mind to sleep once it is connected, this
 	 *   				 is useful, if this platform is awaiting incoming migration and 
 	 *   				 currently inactive
+	 *   - "modular"  :  indicates the fatima connecting is expected to be the recent (2010+) modular version
+	 *   				 or an older one
+	 *    				 (see boolean modular) 
+	 *   - "persistent": indicates that the fatima connecting is expected to be the recent (15/11/2011+) version
+	 *   				 that can disinguish between persistent and non persistent knowledge
+	 *    				 (see boolean distinguishPersistent) 	 
 	 *    */
 	public FAtiMAConnector(IArchitecture architecture, String options) 
 	{
@@ -124,6 +134,11 @@ public class FAtiMAConnector extends AgentMindConnector implements Migrating, Mi
 			modular = true;
 		else
 			modular = false;
+		
+		if (optionsStr.contains("persistent"))
+			distinguishPersistent = true;
+		else
+			distinguishPersistent = false;
 
 		new ListenForConnectionThread().start();
 	}
@@ -199,12 +214,24 @@ public class FAtiMAConnector extends AgentMindConnector implements Migrating, Mi
 
 	@Override
 	protected void processPropertyChanged(String entityName,
-			String propertyName, String propertyValue) {
+			String propertyName, String propertyValue, boolean persistent) {
 		if (mindThread!=null) 
+		{					
 			if (modular) // the modular fatima version receives property change messages in a different format (because of ToM)
-				mindThread.send("PROPERTY-CHANGED SELF "+ entityName+ "(" + propertyName+ ") " + propertyValue);		
+			{	
+				String cmdName = "PROPERTY-CHANGED";
+				if  (distinguishPersistent)
+				{
+					if (persistent)
+						cmdName = "PROPERTY-CHANGED-PERSISTENT";
+					else
+						cmdName = "PROPERTY-CHANGED-NONPERSISTENT";
+				}
+				mindThread.send(cmdName+" SELF "+ entityName+ "(" + propertyName+ ") " + propertyValue);		
+			}
 			else
 				mindThread.send("PROPERTY-CHANGED "+ entityName+ "(" + propertyName+ ") " + propertyValue);		
+		}
 	}
 
 	@Override
@@ -429,6 +456,13 @@ public class FAtiMAConnector extends AgentMindConnector implements Migrating, Mi
 		this.lastAction=mindAction;
 		// and send it for execution
 		this.newAction(mindAction);
+	}
+	
+	/** returns whether the connected Fatima is expected to distinguish between persistent
+	 * and non persistent properties (true) or not (false) */
+	public boolean distinguishesPersistent()
+	{
+		return distinguishPersistent;
 	}
 
 	@Override

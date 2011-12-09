@@ -92,7 +92,7 @@ public class FAtiMARetainer extends AgentMindConnector implements Migrating, Mig
 
 	@Override
 	protected void processPropertyChanged(String entityName,
-			String propertyName, String propertyValue) {
+			String propertyName, String propertyValue, boolean persistent) {
 	}
 
 	@Override

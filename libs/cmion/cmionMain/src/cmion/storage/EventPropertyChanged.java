@@ -42,15 +42,20 @@ public class EventPropertyChanged extends CmionEvent {
 	/** the value the property was set to */
 	private Object propertyValue;
 	
+	/** whether the property is persistent or not */
+	private boolean persistent;	
+	
 	/** the container to which the changed property belongs */
 	private CmionStorageContainer parentContainer;
 
-	/** create a new event that a property of given name to given value*/
-	public EventPropertyChanged(String propertyName, Object propertyValue, CmionStorageContainer parentContainer)
+	/** create a new event that a property of given name was set to given value
+	 * @param persistent */
+	public EventPropertyChanged(String propertyName, Object propertyValue, boolean persistent, CmionStorageContainer parentContainer)
 	{
 		this.propertyName = propertyName;
 		this.propertyValue = propertyValue;
 		this.parentContainer = parentContainer;
+		this.persistent = persistent;
 	}
 
 	/** return the name of the property that was changed */
@@ -59,6 +64,12 @@ public class EventPropertyChanged extends CmionEvent {
 		return propertyName;
 	}
 
+	/** return whether the property is persistent */
+	public boolean isPersistent()
+	{
+		return persistent;
+	}	
+	
 	/** return the value the property was set to */
 	public Object getPropertyValue()
 	{

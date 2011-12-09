@@ -183,9 +183,9 @@ public class FAtiMAListenerThread extends SocketListener {
 		WorldModel worldModel = connector.getArchitecture().getWorldModel();
 		
 		if (worldModel.hasAgent(target))
-			response += FAtiMAutils.getPropertiesString(worldModel.getAgent(target));
+			response += FAtiMAutils.getPropertiesString(worldModel.getAgent(target), connector.distinguishesPersistent());
 		else if (worldModel.hasObject(target))
-			response += FAtiMAutils.getPropertiesString(worldModel.getObject(target));
+			response += FAtiMAutils.getPropertiesString(worldModel.getObject(target), connector.distinguishesPersistent());
 	
 		send(response);
 		

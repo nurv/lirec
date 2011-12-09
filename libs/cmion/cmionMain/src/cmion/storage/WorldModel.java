@@ -34,6 +34,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -69,6 +70,13 @@ public class WorldModel extends CmionStorageContainer {
 	{
 		this.requestAddSubContainer(name, AGENT_TYPE_NAME, initialProperties);
 	}
+
+	/** request adding an agent to the world model */
+	public void requestAddAgent(String name, HashMap<String,Object> initialProperties, HashSet<String> persistentProperties)
+	{
+		this.requestAddSubContainer(name, AGENT_TYPE_NAME, initialProperties,persistentProperties);
+	}
+
 	
 	/** request removing an agent from the world model */
 	public void requestRemoveAgent(String name)
@@ -88,6 +96,12 @@ public class WorldModel extends CmionStorageContainer {
 	{
 		this.requestAddSubContainer(name, OBJECT_TYPE_NAME, initialProperties);
 	}
+	
+	/** request adding an object to the world model */
+	public void requestAddObject(String name, HashMap<String,Object> initialProperties, HashSet<String> persistentProperties)
+	{
+		this.requestAddSubContainer(name, OBJECT_TYPE_NAME, initialProperties, persistentProperties);
+	}	
 	
 	/** request removing an object from the world model */
 	public void requestRemoveObject(String name)
@@ -186,6 +200,7 @@ public class WorldModel extends CmionStorageContainer {
 			names.add(name);
 			
 			HashMap<String,Object> properties = new HashMap<String,Object>();
+			HashSet<String> persistentProperties = new HashSet<String>();
 			
 			NodeList propNodes = tags.item(i).getChildNodes();
 						
@@ -208,15 +223,23 @@ public class WorldModel extends CmionStorageContainer {
 					
 					String propValue = propValueAttr.getNodeValue().trim();
 					
-					properties.put(propName, propValue);					
+					Node propPersistentAttr = propNodes.item(j).getAttributes().getNamedItem("Persistent");
 					
+					if (propPersistentAttr!=null)
+					{
+						String pValue = propPersistentAttr.getNodeValue().trim();
+						boolean persistent = Boolean.parseBoolean(pValue);
+						if (persistent) persistentProperties.add(propName);
+					}
+					
+					properties.put(propName, propValue);										
 				}
 			}
 			
 			if (agent)
-				this.requestAddAgent(name, properties);
+				this.requestAddAgent(name, properties, persistentProperties);
 			else
-				this.requestAddObject(name, properties);							
+				this.requestAddObject(name, properties,  persistentProperties);							
 		}				
 	}
 	

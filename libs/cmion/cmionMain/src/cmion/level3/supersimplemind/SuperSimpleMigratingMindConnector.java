@@ -105,7 +105,7 @@ public class SuperSimpleMigratingMindConnector extends AgentMindConnector implem
 
 	@Override
 	protected void processPropertyChanged(String entityName,
-			String propertyName, String propertyValue) {
+			String propertyName, String propertyValue, boolean persistent) {
 		mind.sendPropertyChanged(entityName,propertyName,propertyValue);
 	}
 
