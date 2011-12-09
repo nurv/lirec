@@ -296,6 +296,10 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 			results.add(compoundCue);
 			advancedMemoryPanel.getOverviewPanel().updateResultList();
 
+			// return result
+			String result = AdvancedMemoryWriter.getUnformattedXML(compoundCue);
+			am.getRemoteAgent().ReportMemoryResult(result);
+
 		} else if (msgType.equals(SA_MEMORY)) {
 
 			// perception format:
@@ -404,6 +408,10 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 			// add to results
 			results.add(spreadingActivation);
 			advancedMemoryPanel.getOverviewPanel().updateResultList();
+
+			// return result
+			String result = AdvancedMemoryWriter.getUnformattedXML(spreadingActivation);
+			am.getRemoteAgent().ReportMemoryResult(result);
 
 		} else if (msgType.equals(G_MEMORY)) {
 
@@ -533,6 +541,10 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 			results.add(generalisation);
 			advancedMemoryPanel.getOverviewPanel().updateResultList();
 
+			// return result
+			String result = AdvancedMemoryWriter.getUnformattedXML(generalisation);
+			am.getRemoteAgent().ReportMemoryResult(result);
+
 		} else if (msgType.equals(SAVE_ADV_MEMORY)) {
 			save(memory.getSaveDirectory() + FILENAME);
 
@@ -589,8 +601,7 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 	}
 
 	public void save(String fileName) {
-		AdvancedMemoryWriter advancedMemoryWriter = new AdvancedMemoryWriter();
-		advancedMemoryWriter.write(results, fileName);
+		AdvancedMemoryWriter.write(this, fileName);
 	}
 
 }
