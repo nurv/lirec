@@ -11,5 +11,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/FAtiMA.DeliberativeComponent"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/FAtiMA.EmotionalIntelligence"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/FAtiMA.culture"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/FAtiMA.AdvancedMemory"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
