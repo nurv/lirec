@@ -1,0 +1,34 @@
+<AmyHouse>
+	<GroundFloor>
+		<Entrance>
+		</Entrance>
+		<LivingRoom>
+			<LivingArea>
+				<Table>
+				</Table>
+				<Sofa>
+				</Sofa>
+			</LivingArea>
+			<DiningArea>
+				<Table>
+				</Table>
+			</DiningArea>
+		</LivingRoom>
+		<Kitchen>
+			<Cupboard>
+			</Cupboard>
+		</Kitchen>
+		<Toilet>
+		</Toilet>
+		<Garden>
+		</Garden>
+	</GroundFloor>
+	<FirstFloor>
+		<Office>
+		</Office>
+		<Bedroom>
+		</Bedroom>
+		<Bathroom>
+		</Bathroom>
+	</FirstFloor>
+</AmyHouse>
