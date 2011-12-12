@@ -42,6 +42,7 @@ import FAtiMA.AdvancedMemory.CompoundCue;
 import FAtiMA.AdvancedMemory.GER;
 import FAtiMA.AdvancedMemory.Generalisation;
 import FAtiMA.AdvancedMemory.SpreadingActivation;
+import FAtiMA.AdvancedMemory.ontology.TreeOntology;
 import FAtiMA.AdvancedMemory.ontology.NounOntology;
 import FAtiMA.AdvancedMemory.ontology.TimeOntology;
 
@@ -124,6 +125,13 @@ public class AdvancedMemoryWriter {
 					xmlOutputter.endTag(); //ObjectOntology
 				}
 
+				TreeOntology locationOntology = compoundCue.getLocationOntology();
+				if (locationOntology != null) {
+					xmlOutputter.startTag("LocationOntology");
+					xmlOutputter.attribute("depthMax", String.valueOf(locationOntology.getDepthMax()));
+					xmlOutputter.endTag(); //LocationOntology
+				}
+
 				xmlOutputter.startTag("EvaluationValues");
 				for (Integer id : compoundCue.getEvaluationValues().keySet()) {
 					xmlOutputter.startTag("EvaluationValue");
@@ -202,6 +210,13 @@ public class AdvancedMemoryWriter {
 					xmlOutputter.endTag(); //ObjectOntology
 				}
 
+				TreeOntology locationOntology = spreadingActivation.getLocationOntology();
+				if (locationOntology != null) {
+					xmlOutputter.startTag("LocationOntology");
+					xmlOutputter.attribute("depthMax", String.valueOf(locationOntology.getDepthMax()));
+					xmlOutputter.endTag(); //LocationOntology
+				}
+
 				xmlOutputter.startTag("Frequencies");
 				for (String value : spreadingActivation.getFrequencies().keySet()) {
 					xmlOutputter.startTag("Frequency");
@@ -260,6 +275,13 @@ public class AdvancedMemoryWriter {
 					xmlOutputter.startTag("ObjectOntology");
 					xmlOutputter.attribute("depthMax", String.valueOf(objectOntology.getDepthMax()));
 					xmlOutputter.endTag(); //ObjectOntology
+				}
+
+				TreeOntology locationOntology = generalisation.getLocationOntology();
+				if (locationOntology != null) {
+					xmlOutputter.startTag("LocationOntology");
+					xmlOutputter.attribute("depthMax", String.valueOf(locationOntology.getDepthMax()));
+					xmlOutputter.endTag(); //LocationOntology
 				}
 
 				xmlOutputter.startTag("AttributeNames");

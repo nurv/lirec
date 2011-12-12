@@ -32,6 +32,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
+import FAtiMA.AdvancedMemory.ontology.TreeOntology;
 import FAtiMA.AdvancedMemory.ontology.NounOntology;
 import FAtiMA.AdvancedMemory.ontology.TimeOntology;
 import FAtiMA.Core.memory.episodicMemory.ActionDetail;
@@ -41,7 +42,7 @@ public class ActionDetailFilter implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	public static ArrayList<ActionDetail> filterActionDetails(ArrayList<ActionDetail> actionDetails, String attributeName, Object attributeValue, TimeOntology timeOntology,
-			NounOntology targetOntology, NounOntology objectOntology) {
+			NounOntology targetOntology, NounOntology objectOntology, TreeOntology locationOntology) {
 
 		ArrayList<ActionDetail> actionDetailsFiltered = new ArrayList<ActionDetail>();
 
@@ -80,6 +81,17 @@ public class ActionDetailFilter implements Serializable {
 				LinkedList<String> nounsGeneralised = objectOntology.generaliseNouns(nouns);
 
 				if (nounsGeneralised.size() > 0) {
+					actionDetailsFiltered.add(actionDetail);
+				}
+
+			} else if (locationOntology != null && attributeName.equals("location")) {
+
+				// check if common ancestors exist
+				String location1 = String.valueOf(attributeValue);
+				String location2 = String.valueOf(attributeValueCurrent);
+				LinkedList<String> locationsGeneralised = locationOntology.getClosestCommonAncestors(location1, location2);
+
+				if (locationsGeneralised.size() > 0) {
 					actionDetailsFiltered.add(actionDetail);
 				}
 

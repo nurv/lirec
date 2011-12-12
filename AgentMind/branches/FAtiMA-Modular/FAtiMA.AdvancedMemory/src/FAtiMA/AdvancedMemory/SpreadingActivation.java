@@ -38,6 +38,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.StringTokenizer;
 
+import FAtiMA.AdvancedMemory.ontology.TreeOntology;
 import FAtiMA.AdvancedMemory.ontology.NounOntology;
 import FAtiMA.AdvancedMemory.ontology.TimeOntology;
 import FAtiMA.Core.memory.episodicMemory.ActionDetail;
@@ -61,6 +62,8 @@ public class SpreadingActivation implements Serializable {
 	private NounOntology targetOntology;
 	// noun ontology used for attribute object (null if not used)
 	private NounOntology objectOntology;
+	// location ontology used for attribute location (null if not used)
+	private TreeOntology locationOntology;
 	// name of attribute for whose values frequencies are calculated
 	private String targetAttributeName;
 	// attribute value and corresponding frequencies
@@ -75,6 +78,9 @@ public class SpreadingActivation implements Serializable {
 	// If no hypernyms could be applied successfully (even if hypernyms exist), then no
 	// key for the corresponding value exists in targetAttributeHypernyms.
 	// If no ontology was used for target/object, then targetAttributeHypernyms is null.
+
+	// If an ontology is used for location and location is the target attribute, then
+	// targetAttributeHypernyms stores ancestors (instead of hypernyms) in an analog way.
 
 	public Time getTime() {
 		return time;
@@ -116,6 +122,14 @@ public class SpreadingActivation implements Serializable {
 		this.objectOntology = objectOntology;
 	}
 
+	public TreeOntology getLocationOntology() {
+		return locationOntology;
+	}
+
+	public void setLocationOntology(TreeOntology locationOntology) {
+		this.locationOntology = locationOntology;
+	}
+
 	public String getTargetAttributeName() {
 		return targetAttributeName;
 	}
@@ -141,15 +155,15 @@ public class SpreadingActivation implements Serializable {
 	}
 
 	public Object spreadActivation(EpisodicMemory episodicMemory, String targetAttributeName) {
-		return spreadActivation(episodicMemory, null, targetAttributeName, null, null, null);
+		return spreadActivation(episodicMemory, null, targetAttributeName, null, null, null, null);
 	}
 
 	public Object spreadActivation(ArrayList<ActionDetail> actionDetails, String targetAttributeName) {
-		return spreadActivation(actionDetails, null, targetAttributeName, null, null, null);
+		return spreadActivation(actionDetails, null, targetAttributeName, null, null, null, null);
 	}
 
 	public Object spreadActivation(EpisodicMemory episodicMemory, String filterAttributesStr, String targetAttributeName, TimeOntology timeOntology, NounOntology targetOntology,
-			NounOntology objectOntology) {
+			NounOntology objectOntology, TreeOntology locationOntology) {
 
 		ArrayList<ActionDetail> actionDetails = new ArrayList<ActionDetail>();
 		for (MemoryEpisode memoryEpisode : episodicMemory.getAM().GetAllEpisodes()) {
@@ -165,11 +179,11 @@ public class SpreadingActivation implements Serializable {
 		// call generalise with these action details and an empty filter attributes string (or null)
 		// but: no ontology usage then
 
-		return spreadActivation(actionDetails, filterAttributesStr, targetAttributeName, timeOntology, targetOntology, objectOntology);
+		return spreadActivation(actionDetails, filterAttributesStr, targetAttributeName, timeOntology, targetOntology, objectOntology, locationOntology);
 	}
 
 	public Object spreadActivation(ArrayList<ActionDetail> actionDetails, String filterAttributesStr, String targetAttributeName, TimeOntology timeOntology, NounOntology targetOntology,
-			NounOntology objectOntology) {
+			NounOntology objectOntology, TreeOntology locationOntology) {
 
 		// initialise
 		Object valueMax = null;
@@ -196,7 +210,7 @@ public class SpreadingActivation implements Serializable {
 			if (attributeSplitted.length == 2) {
 				value = attributeSplitted[1];
 			}
-			actionDetailsFiltered = ActionDetailFilter.filterActionDetails(actionDetailsFiltered, name, value, timeOntology, targetOntology, objectOntology);
+			actionDetailsFiltered = ActionDetailFilter.filterActionDetails(actionDetailsFiltered, name, value, timeOntology, targetOntology, objectOntology, locationOntology);
 		}
 
 		// calculate frequencies
@@ -358,12 +372,76 @@ public class SpreadingActivation implements Serializable {
 
 		}
 
+		// location ontology
+		if (locationOntology != null && targetAttributeName.equals("location")) {
+
+			// initialise
+			targetAttributeHypernyms = new HashMap<String, HashSet<String>>();
+			HashMap<String, Integer> frequenciesOntology = new HashMap<String, Integer>();
+			Object valueMaxOntology = null;
+			int frequencyMaxOntology = 0;
+
+			// loop over target attribute values
+			for (String targetAttributeValue : frequencies.keySet()) {
+
+				// initialise
+				frequenciesOntology.put(targetAttributeValue, 0);
+				targetAttributeHypernyms.put(targetAttributeValue, new HashSet<String>());
+
+				// loop over action details
+				for (ActionDetail actionDetail : actionDetailsFiltered) {
+					AttributeItem attributeItem = new AttributeItem();
+					attributeItem.setName(targetAttributeName);
+					attributeItem.setValue(actionDetail.getValueByName(targetAttributeName), timeOntology);
+
+					Object value = attributeItem.getValue();
+
+					// find common ancestors for current target attribute value and value of current action detail
+
+					String locationA = targetAttributeValue;
+					String locationB = String.valueOf(value);
+					LinkedList<String> locationsGeneralised = locationOntology.getClosestCommonAncestors(locationA, locationB);
+
+					// check if common ancestors exist 
+					if (locationsGeneralised.size() > 0) {
+
+						// update hypernym set
+						HashSet<String> hypernymSet = targetAttributeHypernyms.get(targetAttributeValue);
+						// add only the first common hypernym to set
+						hypernymSet.add(locationsGeneralised.getFirst());
+						targetAttributeHypernyms.put(targetAttributeValue, hypernymSet);
+
+						// update freqency
+						Integer frequencyOntology = frequenciesOntology.get(targetAttributeValue);
+						frequencyOntology = frequencyOntology + 1;
+						frequenciesOntology.put(targetAttributeValue, frequencyOntology);
+
+						// update maximum
+						if (frequencyOntology > frequencyMaxOntology) {
+							frequencyMaxOntology = frequencyOntology;
+							valueMaxOntology = value;
+						}
+
+					}
+
+				}
+
+			}
+
+			// assign result to original variables
+			frequencies = frequenciesOntology;
+			frequencyMax = frequencyMaxOntology;
+			valueMax = valueMaxOntology;
+
+		}
+
 		// update attributes
 		this.time = time;
 		this.filterAttributes = filterAttributes;
 		this.timeOntology = timeOntology;
 		this.targetOntology = targetOntology;
 		this.objectOntology = objectOntology;
+		this.locationOntology = locationOntology;
 		this.targetAttributeName = targetAttributeName;
 		this.frequencies = frequencies;
 

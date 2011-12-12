@@ -53,6 +53,7 @@ import FAtiMA.AdvancedMemory.AdvancedMemoryComponent;
 import FAtiMA.AdvancedMemory.AttributeItem;
 import FAtiMA.AdvancedMemory.GER;
 import FAtiMA.AdvancedMemory.Generalisation;
+import FAtiMA.AdvancedMemory.ontology.TreeOntology;
 import FAtiMA.AdvancedMemory.ontology.NounOntology;
 import FAtiMA.AdvancedMemory.ontology.TimeOntology;
 
@@ -62,6 +63,7 @@ public class GeneralisationPanel extends JPanel {
 
 	private static final int TARGET_DEPTH_MAX_DEFAULT = 1;
 	private static final int OBJECT_DEPTH_MAX_DEFAULT = 1;
+	private static final int LOCATION_DEPTH_MAX_DEFAULT = 2;
 
 	private static final int MINIMUM_COVERAGE_DEFAULT = 1;
 
@@ -116,6 +118,8 @@ public class GeneralisationPanel extends JPanel {
 	private JTextField tfTargetDepthMax;
 	private JCheckBox cbObjectOntology;
 	private JTextField tfObjectDepthMax;
+	private JCheckBox cbLocationOntology;
+	private JTextField tfLocationDepthMax;
 
 	private JTextField tfMinimumCoverage;
 
@@ -308,6 +312,22 @@ public class GeneralisationPanel extends JPanel {
 		tfObjectDepthMax.setMaximumSize(new Dimension(40, 20));
 		pnObjectOntology.add(tfObjectDepthMax);
 
+		JPanel pnLocationOntology = new JPanel();
+		pnLocationOntology.setLayout(new BoxLayout(pnLocationOntology, BoxLayout.Y_AXIS));
+		pnLocationOntology.setBorder(BorderFactory.createEtchedBorder());
+		pnOntology.add(pnLocationOntology);
+
+		cbLocationOntology = new JCheckBox("Location Ontology");
+		pnLocationOntology.add(cbLocationOntology);
+
+		JLabel lbLocationDepthMax = new JLabel("Maximum Depth:");
+		pnLocationOntology.add(lbLocationDepthMax);
+
+		tfLocationDepthMax = new JTextField(String.valueOf(LOCATION_DEPTH_MAX_DEFAULT));
+		tfLocationDepthMax.setMinimumSize(new Dimension(40, 20));
+		tfLocationDepthMax.setMaximumSize(new Dimension(40, 20));
+		pnLocationOntology.add(tfLocationDepthMax);
+
 		JPanel pnMechanism = new JPanel();
 		pnMechanism.setLayout(new BoxLayout(pnMechanism, BoxLayout.X_AXIS));
 		pnOntologyMechanism.add(pnMechanism);
@@ -354,6 +374,9 @@ public class GeneralisationPanel extends JPanel {
 			((JComponent) component).setAlignmentX(Component.LEFT_ALIGNMENT);
 
 		for (Component component : pnObjectOntology.getComponents())
+			((JComponent) component).setAlignmentX(Component.LEFT_ALIGNMENT);
+
+		for (Component component : pnLocationOntology.getComponents())
 			((JComponent) component).setAlignmentX(Component.LEFT_ALIGNMENT);
 
 		for (Component component : pnMechanism.getComponents())
@@ -462,6 +485,14 @@ public class GeneralisationPanel extends JPanel {
 			objectOntology.setDepthMax(depthMax);
 		}
 
+		// location ontology
+		TreeOntology locationOntology = null;
+		if (cbLocationOntology.isSelected()) {
+			locationOntology = new TreeOntology();
+			int depthMax = Integer.valueOf(tfLocationDepthMax.getText());
+			locationOntology.setDepthMax(depthMax);
+		}
+
 		// build attributes names string
 		String attributeNamesStr = "";
 		if (cbSubject.isSelected())
@@ -502,7 +533,8 @@ public class GeneralisationPanel extends JPanel {
 
 		// execute Generalisation mechanism
 		Generalisation generalisation = new Generalisation();
-		generalisation.generalise(advancedMemoryComponent.getMemory().getEpisodicMemory(), filterAttributesStr, attributeNamesStr, minimumCoverage, timeOntology, targetOntology, objectOntology);
+		generalisation.generalise(advancedMemoryComponent.getMemory().getEpisodicMemory(), filterAttributesStr, attributeNamesStr, minimumCoverage, timeOntology, targetOntology, objectOntology,
+				locationOntology);
 		this.generalisation = generalisation;
 
 		// update panel
@@ -626,6 +658,16 @@ public class GeneralisationPanel extends JPanel {
 		} else {
 			cbObjectOntology.setSelected(true);
 			tfObjectDepthMax.setText(String.valueOf(objectOntology.getDepthMax()));
+		}
+
+		// location ontology
+		TreeOntology locationOntology = generalisation.getLocationOntology();
+		if (locationOntology == null) {
+			cbLocationOntology.setSelected(false);
+			tfLocationDepthMax.setText(String.valueOf(LOCATION_DEPTH_MAX_DEFAULT));
+		} else {
+			cbLocationOntology.setSelected(true);
+			tfLocationDepthMax.setText(String.valueOf(locationOntology.getDepthMax()));
 		}
 
 		// clear check boxes

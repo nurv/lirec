@@ -42,6 +42,7 @@ import FAtiMA.AdvancedMemory.CompoundCue;
 import FAtiMA.AdvancedMemory.GER;
 import FAtiMA.AdvancedMemory.Generalisation;
 import FAtiMA.AdvancedMemory.SpreadingActivation;
+import FAtiMA.AdvancedMemory.ontology.TreeOntology;
 import FAtiMA.AdvancedMemory.ontology.NounOntology;
 import FAtiMA.AdvancedMemory.ontology.TimeOntology;
 import FAtiMA.Core.memory.episodicMemory.Time;
@@ -152,6 +153,19 @@ public class AdvancedMemoryHandler extends ReflectXMLHandler {
 			spreadingActivation.setObjectOntology(objectOntology);
 		} else if (result instanceof Generalisation) {
 			generalisation.setObjectOntology(objectOntology);
+		}
+	}
+
+	public void LocationOntology(Attributes attributes) {
+		TreeOntology locationOntology = new TreeOntology();
+		int depthMax = Integer.parseInt(attributes.getValue("depthMax"));
+		locationOntology.setDepthMax(depthMax);
+		if (result instanceof CompoundCue) {
+			compoundCue.setLocationOntology(locationOntology);
+		} else if (result instanceof SpreadingActivation) {
+			spreadingActivation.setLocationOntology(locationOntology);
+		} else if (result instanceof Generalisation) {
+			generalisation.setLocationOntology(locationOntology);
 		}
 	}
 

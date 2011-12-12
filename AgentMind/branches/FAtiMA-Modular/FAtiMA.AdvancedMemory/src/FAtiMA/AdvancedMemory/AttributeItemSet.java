@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 
+import FAtiMA.AdvancedMemory.ontology.TreeOntology;
 import FAtiMA.AdvancedMemory.ontology.NounOntology;
 import FAtiMA.AdvancedMemory.ontology.TimeOntology;
 import FAtiMA.Core.memory.episodicMemory.ActionDetail;
@@ -80,10 +81,10 @@ public class AttributeItemSet implements Serializable {
 	}
 
 	public int getCoverage(ArrayList<ActionDetail> actionDetails) {
-		return getCoverage(actionDetails, null, null, null);
+		return getCoverage(actionDetails, null, null, null, null);
 	}
 
-	public int getCoverage(ArrayList<ActionDetail> actionDetails, TimeOntology timeOntology, NounOntology targetOntology, NounOntology objectOntology) {
+	public int getCoverage(ArrayList<ActionDetail> actionDetails, TimeOntology timeOntology, NounOntology targetOntology, NounOntology objectOntology, TreeOntology locationOntology) {
 		int coverage = 0;
 
 		for (ActionDetail actionDetail : actionDetails) {
@@ -111,7 +112,7 @@ public class AttributeItemSet implements Serializable {
 					if (!attributeValue.equals(value)) {
 						// values are different
 
-						// ontology usage: check for common hypernyms
+						// ontology usage: check for common hypernyms/ancestors
 
 						if (attributeName.equals("target")) {
 
@@ -175,6 +176,39 @@ public class AttributeItemSet implements Serializable {
 
 							} else {
 								// no object ontology given
+								matching = false;
+								break;
+
+							}
+
+						} else if (attributeName.equals("location")) {
+
+							if (locationOntology != null) {
+								// use location ontology
+
+								String locationA = String.valueOf(attributeValue);
+								String locationB = String.valueOf(value);
+								LinkedList<String> locationsGeneralised = locationOntology.getClosestCommonAncestors(locationA, locationB);
+
+								if (locationsGeneralised.size() == 0) {
+									// no common ancestors found
+									matching = false;
+									break;
+
+								} else {
+									// common ancestors found
+									HashSet<String> hypernymSet = attributeItem.getHypernymSet();
+									if (hypernymSet == null) {
+										hypernymSet = new HashSet<String>();
+										attributeItem.setHypernymSet(hypernymSet);
+									}
+									// add only the first common ancestor to set
+									hypernymSet.add(locationsGeneralised.getFirst());
+
+								}
+
+							} else {
+								// no location ontology given
 								matching = false;
 								break;
 

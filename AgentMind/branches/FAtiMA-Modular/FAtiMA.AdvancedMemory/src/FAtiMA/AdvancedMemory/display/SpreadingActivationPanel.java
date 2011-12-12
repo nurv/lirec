@@ -50,6 +50,7 @@ import javax.swing.table.DefaultTableModel;
 
 import FAtiMA.AdvancedMemory.AdvancedMemoryComponent;
 import FAtiMA.AdvancedMemory.SpreadingActivation;
+import FAtiMA.AdvancedMemory.ontology.TreeOntology;
 import FAtiMA.AdvancedMemory.ontology.NounOntology;
 import FAtiMA.AdvancedMemory.ontology.TimeOntology;
 
@@ -59,6 +60,7 @@ public class SpreadingActivationPanel extends JPanel {
 
 	private static final int TARGET_DEPTH_MAX_DEFAULT = 1;
 	private static final int OBJECT_DEPTH_MAX_DEFAULT = 1;
+	private static final int LOCATION_DEPTH_MAX_DEFAULT = 2;
 
 	private AdvancedMemoryComponent advancedMemoryComponent;
 
@@ -97,6 +99,8 @@ public class SpreadingActivationPanel extends JPanel {
 	private JTextField tfTargetDepthMax;
 	private JCheckBox cbObjectOntology;
 	private JTextField tfObjectDepthMax;
+	private JCheckBox cbLocationOntology;
+	private JTextField tfLocationDepthMax;
 
 	private JComboBox cbTargetAttribute;
 
@@ -241,8 +245,24 @@ public class SpreadingActivationPanel extends JPanel {
 		tfObjectDepthMax.setMaximumSize(new Dimension(40, 20));
 		pnObjectOntology.add(tfObjectDepthMax);
 
+		JPanel pnLocationOntology = new JPanel();
+		pnLocationOntology.setLayout(new BoxLayout(pnLocationOntology, BoxLayout.Y_AXIS));
+		pnLocationOntology.setBorder(BorderFactory.createEtchedBorder());
+		pnOntology.add(pnLocationOntology);
+
+		cbLocationOntology = new JCheckBox("Location Ontology");
+		pnLocationOntology.add(cbLocationOntology);
+
+		JLabel lbLocationDepthMax = new JLabel("Maximum Depth:");
+		pnLocationOntology.add(lbLocationDepthMax);
+
+		tfLocationDepthMax = new JTextField(String.valueOf(LOCATION_DEPTH_MAX_DEFAULT));
+		tfLocationDepthMax.setMinimumSize(new Dimension(40, 20));
+		tfLocationDepthMax.setMaximumSize(new Dimension(40, 20));
+		pnLocationOntology.add(tfLocationDepthMax);
+
 		JPanel pnMechanism = new JPanel();
-		pnMechanism.setLayout(new BoxLayout(pnMechanism, BoxLayout.X_AXIS));
+		pnMechanism.setLayout(new BoxLayout(pnMechanism, BoxLayout.Y_AXIS));
 		pnSettings.add(pnMechanism);
 
 		JPanel pnParameters = new JPanel();
@@ -299,8 +319,11 @@ public class SpreadingActivationPanel extends JPanel {
 		for (Component component : pnObjectOntology.getComponents())
 			((JComponent) component).setAlignmentX(Component.LEFT_ALIGNMENT);
 
+		for (Component component : pnLocationOntology.getComponents())
+			((JComponent) component).setAlignmentX(Component.LEFT_ALIGNMENT);
+
 		for (Component component : pnMechanism.getComponents())
-			((JComponent) component).setAlignmentY(Component.TOP_ALIGNMENT);
+			((JComponent) component).setAlignmentX(Component.LEFT_ALIGNMENT);
 
 		for (Component component : pnParameters.getComponents())
 			((JComponent) component).setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -405,6 +428,14 @@ public class SpreadingActivationPanel extends JPanel {
 			objectOntology.setDepthMax(depthMax);
 		}
 
+		// location ontology
+		TreeOntology locationOntology = null;
+		if (cbLocationOntology.isSelected()) {
+			locationOntology = new TreeOntology();
+			int depthMax = Integer.valueOf(tfLocationDepthMax.getText());
+			locationOntology.setDepthMax(depthMax);
+		}
+
 		// parse target attribute
 		String targetAttributeStr = String.valueOf(cbTargetAttribute.getSelectedItem());
 		// remove spaces
@@ -414,7 +445,8 @@ public class SpreadingActivationPanel extends JPanel {
 
 		// execute spreading activation
 		SpreadingActivation spreadingActivation = new SpreadingActivation();
-		spreadingActivation.spreadActivation(advancedMemoryComponent.getMemory().getEpisodicMemory(), filterAttributesStr, targetAttributeName, timeOntology, targetOntology, objectOntology);
+		spreadingActivation.spreadActivation(advancedMemoryComponent.getMemory().getEpisodicMemory(), filterAttributesStr, targetAttributeName, timeOntology, targetOntology, objectOntology,
+				locationOntology);
 		this.spreadingActivation = spreadingActivation;
 
 		// update panel
@@ -540,6 +572,16 @@ public class SpreadingActivationPanel extends JPanel {
 			tfObjectDepthMax.setText(String.valueOf(objectOntology.getDepthMax()));
 		}
 
+		// location ontology
+		TreeOntology locationOntology = spreadingActivation.getLocationOntology();
+		if (locationOntology == null) {
+			cbLocationOntology.setSelected(false);
+			tfLocationDepthMax.setText(String.valueOf(LOCATION_DEPTH_MAX_DEFAULT));
+		} else {
+			cbLocationOntology.setSelected(true);
+			tfLocationDepthMax.setText(String.valueOf(locationOntology.getDepthMax()));
+		}
+
 		String targetAttributeName = spreadingActivation.getTargetAttributeName();
 		// add spaces
 		String targetAttributeStr = targetAttributeName.replaceAll("[A-Z]", " $0");
@@ -562,6 +604,9 @@ public class SpreadingActivationPanel extends JPanel {
 				data[0] = value + " " + spreadingActivation.getTargetAttributeHypernyms().get(value);
 			}
 			if (objectOntology != null && targetAttributeName.equals("object")) {
+				data[0] = value + " " + spreadingActivation.getTargetAttributeHypernyms().get(value);
+			}
+			if (locationOntology != null && targetAttributeName.equals("location")) {
 				data[0] = value + " " + spreadingActivation.getTargetAttributeHypernyms().get(value);
 			}
 			data[1] = spreadingActivation.getFrequencies().get(value);

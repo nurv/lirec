@@ -38,6 +38,7 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import FAtiMA.AdvancedMemory.display.AdvancedMemoryPanel;
+import FAtiMA.AdvancedMemory.ontology.TreeOntology;
 import FAtiMA.AdvancedMemory.ontology.NounOntology;
 import FAtiMA.AdvancedMemory.ontology.TimeOntology;
 import FAtiMA.AdvancedMemory.parsers.AdvancedMemoryHandler;
@@ -163,7 +164,9 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 			// perception format:
 
 			// different parameters are separated by $
-			// <target id>$<filter attributes>$<time ontology parameters>$<target ontology parameters>$object ontology parameters>
+			// <target id>$<filter attributes>$<time ontology parameters>$
+			//   <target ontology parameters>$<object ontology parameters>$
+			//   <location ontology parameters>
 			// note: multiple successive $ are recognised as only one separator
 			//       use * between $ to indicate an empty parameter
 
@@ -178,6 +181,8 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 			// <target ontology parameters> = <maximum depth>
 
 			// <object ontology parameters> = <maximum depth>
+
+			// <location ontology parameters> = <maximum depth>
 
 			// 
 
@@ -214,6 +219,12 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 				objectDepthMaxStr = stringTokenizer.nextToken();
 			} catch (Exception e) {
 				// no object ontology maximum depth given
+			}
+			String locationDepthMaxStr = null;
+			try {
+				locationDepthMaxStr = stringTokenizer.nextToken();
+			} catch (Exception e) {
+				// no location ontology maximum depth given
 			}
 
 			// parse target ID
@@ -288,9 +299,23 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 				}
 			}
 
+			// parse location ontology
+			TreeOntology locationOntology = null;
+			if (locationDepthMaxStr != null) {
+				// parse location ontology maximum depth
+				try {
+					Integer depthMax = Integer.valueOf(locationDepthMaxStr);
+					// create location ontology
+					locationOntology = new TreeOntology();
+					locationOntology.setDepthMax(depthMax);
+				} catch (Exception e) {
+					System.err.println("Error while parsing Location Ontology Maximum Depth!");
+				}
+			}
+
 			// execute Spreading Activation mechanism
 			CompoundCue compoundCue = new CompoundCue();
-			compoundCue.execute(memory.getEpisodicMemory(), filterAttributesStr, actionDetailTarget, timeOntology, targetOntology, objectOntology);
+			compoundCue.execute(memory.getEpisodicMemory(), filterAttributesStr, actionDetailTarget, timeOntology, targetOntology, objectOntology, locationOntology);
 
 			// add to results
 			results.add(compoundCue);
@@ -305,7 +330,9 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 			// perception format:
 
 			// different parameters are separated by $
-			// <target attribute name>$<filter attributes>$<time ontology parameters>$<target ontology parameters>$<object ontology parameters>
+			// <target attribute name>$<filter attributes>$<time ontology parameters>$
+			//   <target ontology parameters>$<object ontology parameters>$
+			//   <location ontology parameters>
 			// note: multiple successive $ are recognised as only one separator
 			//       use * between $ to indicate an empty parameter
 
@@ -320,6 +347,8 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 			// <target ontology parameters> = <maximum depth>
 
 			// <object ontology parameters> = <maximum depth>
+
+			// <location ontology parameters> = <maximum depth>
 
 			// 
 
@@ -356,6 +385,12 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 				objectDepthMaxStr = stringTokenizer.nextToken();
 			} catch (Exception e) {
 				// no object ontology maximum depth given
+			}
+			String locationDepthMaxStr = null;
+			try {
+				locationDepthMaxStr = stringTokenizer.nextToken();
+			} catch (Exception e) {
+				// no location ontology maximum depth given
 			}
 
 			// parse time ontology
@@ -401,9 +436,23 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 				}
 			}
 
+			// parse location ontology
+			TreeOntology locationOntology = null;
+			if (locationDepthMaxStr != null) {
+				// parse location ontology maximum depth
+				try {
+					Integer depthMax = Integer.valueOf(locationDepthMaxStr);
+					// create location ontology
+					locationOntology = new TreeOntology();
+					locationOntology.setDepthMax(depthMax);
+				} catch (Exception e) {
+					System.err.println("Error while parsing Location Ontology Maximum Depth!");
+				}
+			}
+
 			// execute Spreading Activation mechanism
 			SpreadingActivation spreadingActivation = new SpreadingActivation();
-			spreadingActivation.spreadActivation(memory.getEpisodicMemory(), filterAttributesStr, targetAttributeName, timeOntology, targetOntology, objectOntology);
+			spreadingActivation.spreadActivation(memory.getEpisodicMemory(), filterAttributesStr, targetAttributeName, timeOntology, targetOntology, objectOntology, locationOntology);
 
 			// add to results
 			results.add(spreadingActivation);
@@ -418,7 +467,9 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 			// perception format:
 
 			// different parameters are separated by $
-			// <attribute names>$<minimum coverage>$<filter attributes>$<time ontology parameters>$<target ontology parameters>$<object ontology parameters>
+			// <attribute names>$<minimum coverage>$<filter attributes>$
+			//   <time ontology parameters>$<target ontology parameters>$
+			//   <object ontology parameters>$<location ontology parameters>
 			// note: multiple successive $ are recognised as only one separator 
 			//       use * between $ to indicate an empty parameter
 
@@ -436,6 +487,8 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 			// <target ontology parameters> = <maximum depth>
 
 			// <object ontology parameters> = <maximum depth>
+
+			// <location ontology parameters> = <maximum depth>
 
 			// 
 
@@ -479,6 +532,12 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 				objectDepthMaxStr = stringTokenizer.nextToken();
 			} catch (Exception e) {
 				// no object ontology maximum depth given
+			}
+			String locationDepthMaxStr = null;
+			try {
+				locationDepthMaxStr = stringTokenizer.nextToken();
+			} catch (Exception e) {
+				// no location ontology maximum depth given
 			}
 
 			// parse minimum coverage
@@ -533,9 +592,23 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 				}
 			}
 
+			// parse location ontology
+			TreeOntology locationOntology = null;
+			if (locationDepthMaxStr != null) {
+				// parse location ontology maximum depth
+				try {
+					Integer depthMax = Integer.valueOf(locationDepthMaxStr);
+					// create location ontology
+					locationOntology = new TreeOntology();
+					locationOntology.setDepthMax(depthMax);
+				} catch (Exception e) {
+					System.err.println("Error while parsing Location Ontology Maximum Depth!");
+				}
+			}
+
 			// execute Generalisation mechanism
 			Generalisation generalisation = new Generalisation();
-			generalisation.generalise(memory.getEpisodicMemory(), filterAttributesStr, attributeNamesStr, minimumCoverage, timeOntology, targetOntology, objectOntology);
+			generalisation.generalise(memory.getEpisodicMemory(), filterAttributesStr, attributeNamesStr, minimumCoverage, timeOntology, targetOntology, objectOntology, locationOntology);
 
 			// add to results
 			results.add(generalisation);

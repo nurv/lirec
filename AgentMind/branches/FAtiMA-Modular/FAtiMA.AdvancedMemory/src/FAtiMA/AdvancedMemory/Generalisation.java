@@ -32,6 +32,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
+import FAtiMA.AdvancedMemory.ontology.TreeOntology;
 import FAtiMA.AdvancedMemory.ontology.NounOntology;
 import FAtiMA.AdvancedMemory.ontology.TimeOntology;
 import FAtiMA.Core.memory.episodicMemory.ActionDetail;
@@ -55,6 +56,8 @@ public class Generalisation implements Serializable {
 	private NounOntology targetOntology;
 	// noun ontology used for attribute object (null if not used)
 	private NounOntology objectOntology;
+	// location ontology used for attribute location (null if not used)
+	private TreeOntology locationOntology;
 	// names of attributes used for generalisation
 	private ArrayList<String> attributeNames;
 	// minimum coverage/frequency required for not being filtered out
@@ -100,6 +103,14 @@ public class Generalisation implements Serializable {
 
 	public void setObjectOntology(NounOntology objectOntology) {
 		this.objectOntology = objectOntology;
+	}
+
+	public TreeOntology getLocationOntology() {
+		return locationOntology;
+	}
+
+	public void setLocationOntology(TreeOntology locationOntology) {
+		this.locationOntology = locationOntology;
 	}
 
 	public ArrayList<String> getAttributeNames() {
@@ -151,15 +162,15 @@ public class Generalisation implements Serializable {
 	}
 
 	public GER generalise(EpisodicMemory episodicMemory, String attributeNamesStr, int minimumCoverage) {
-		return generalise(episodicMemory, null, attributeNamesStr, minimumCoverage, null, null, null);
+		return generalise(episodicMemory, null, attributeNamesStr, minimumCoverage, null, null, null, null);
 	}
 
 	public GER generalise(ArrayList<ActionDetail> actionDetails, String attributeNamesStr, int minimumCoverage) {
-		return generalise(actionDetails, null, attributeNamesStr, minimumCoverage, null, null, null);
+		return generalise(actionDetails, null, attributeNamesStr, minimumCoverage, null, null, null, null);
 	}
 
 	public GER generalise(EpisodicMemory episodicMemory, String filterAttributesStr, String attributeNamesStr, int minimumCoverage, TimeOntology timeOntology, NounOntology targetOntology,
-			NounOntology objectOntology) {
+			NounOntology objectOntology, TreeOntology locationOntology) {
 
 		ArrayList<ActionDetail> actionDetails = new ArrayList<ActionDetail>();
 		for (MemoryEpisode memoryEpisode : episodicMemory.getAM().GetAllEpisodes()) {
@@ -175,11 +186,11 @@ public class Generalisation implements Serializable {
 		// call generalise with these action details and an empty filter attributes string (or null)
 		// but: no ontology usage then
 
-		return generalise(actionDetails, filterAttributesStr, attributeNamesStr, minimumCoverage, timeOntology, targetOntology, objectOntology);
+		return generalise(actionDetails, filterAttributesStr, attributeNamesStr, minimumCoverage, timeOntology, targetOntology, objectOntology, locationOntology);
 	}
 
 	public GER generalise(ArrayList<ActionDetail> actionDetails, String filterAttributesStr, String attributeNamesStr, int minimumCoverage, TimeOntology timeOntology, NounOntology targetOntology,
-			NounOntology objectOntology) {
+			NounOntology objectOntology, TreeOntology locationOntology) {
 
 		// initialise
 		GER gerMax = null;
@@ -206,7 +217,7 @@ public class Generalisation implements Serializable {
 			if (attributeSplitted.length == 2) {
 				value = attributeSplitted[1];
 			}
-			actionDetailsFiltered = ActionDetailFilter.filterActionDetails(actionDetailsFiltered, name, value, timeOntology, targetOntology, objectOntology);
+			actionDetailsFiltered = ActionDetailFilter.filterActionDetails(actionDetailsFiltered, name, value, timeOntology, targetOntology, objectOntology, locationOntology);
 		}
 
 		// extract attribute names
@@ -251,7 +262,7 @@ public class Generalisation implements Serializable {
 		// filter by coverage
 		for (int i = 0; i < attributeItemSets.size(); i++) {
 			AttributeItemSet attributeItemSet = attributeItemSets.get(i);
-			int coverage = attributeItemSet.getCoverage(actionDetails, timeOntology, targetOntology, objectOntology);
+			int coverage = attributeItemSet.getCoverage(actionDetails, timeOntology, targetOntology, objectOntology, locationOntology);
 			if (coverage < minimumCoverage) {
 				attributeItemSets.remove(i);
 				i--;
@@ -303,7 +314,7 @@ public class Generalisation implements Serializable {
 			// filter by coverage
 			for (int i = 0; i < attributeItemSets.size(); i++) {
 				AttributeItemSet attributeItemSet = attributeItemSets.get(i);
-				int coverage = attributeItemSet.getCoverage(actionDetails, timeOntology, targetOntology, objectOntology);
+				int coverage = attributeItemSet.getCoverage(actionDetails, timeOntology, targetOntology, objectOntology, locationOntology);
 				if (coverage < minimumCoverage) {
 					attributeItemSets.remove(i);
 					i--;
@@ -320,7 +331,7 @@ public class Generalisation implements Serializable {
 
 			GER ger = new GER();
 			ger.setAttributeItemSet(attributeItemSet);
-			int coverage = attributeItemSet.getCoverage(actionDetails, timeOntology, targetOntology, objectOntology);
+			int coverage = attributeItemSet.getCoverage(actionDetails, timeOntology, targetOntology, objectOntology, locationOntology);
 			ger.setCoverage(coverage);
 			gers.add(ger);
 
@@ -338,6 +349,7 @@ public class Generalisation implements Serializable {
 		this.timeOntology = timeOntology;
 		this.targetOntology = targetOntology;
 		this.objectOntology = objectOntology;
+		this.locationOntology = locationOntology;
 		this.attributeNames = attributeNames;
 		this.minimumCoverage = minimumCoverage;
 		this.gers = gers;

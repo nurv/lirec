@@ -50,6 +50,9 @@ public class AttributeItem implements Serializable {
 	// If no ontology was used or an ontology is not applicable for this
 	// attribute item, then hypernymSet is null.
 
+	// If an ontology is used for location and location is the target attribute,
+	// then hypernymSet stores ancestors (instead of hypernyms) in an analog way.
+
 	public String getName() {
 		return name;
 	}
@@ -84,4 +87,5 @@ public class AttributeItem implements Serializable {
 	public String toString() {
 		return name + ": " + value;
 	}
+
 }

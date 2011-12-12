@@ -166,18 +166,10 @@ public class NounOntology implements Serializable {
 		return null;
 	}
 
-	/**
+	/*
 	 * Returns a list of noun hypernyms, up to a given depth limit, recursive
-	 * 
-	 * @param noun
-	 *            noun to retrieve hypernyms for
-	 * @param depth
-	 *            current recursion depth, call with 0
-	 * @param depthLimit
-	 *            depth limit for retrieving hypernyms
-	 * @return list of hypernyms
 	 */
-	public LinkedList<IWord> getNounHypernyms(String noun, int depth, int depthLimit) {
+	private LinkedList<IWord> getNounHypernyms(String noun, int depth, int depthLimit) {
 		IDictionary dictionary = WordnetDictionary.getInstance().getDictionary();
 
 		// stemming
