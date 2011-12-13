@@ -38,8 +38,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import FAtiMA.Core.util.AgentLogger;
-
 public class TreeOntology implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -57,13 +55,17 @@ public class TreeOntology implements Serializable {
 		try {
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			DocumentBuilder db = dbf.newDocumentBuilder();
-			File file = new File(filename);
-			if (file.exists()) {
-				doc = db.parse(file);
-			} else {
-				AgentLogger.GetInstance().logAndPrint("File does not exist: " + filename);
-				// create empty document
+			if (filename == null) {
+				System.err.println("No filename for ontology provided!");
 				doc = db.newDocument();
+			} else {
+				File file = new File(filename);
+				if (!file.exists()) {
+					System.err.println("File does not exist: " + filename);
+					doc = db.newDocument();
+				} else {
+					doc = db.parse(file);
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

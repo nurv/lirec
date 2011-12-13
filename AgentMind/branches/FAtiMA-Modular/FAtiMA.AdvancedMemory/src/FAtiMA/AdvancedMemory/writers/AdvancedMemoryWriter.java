@@ -80,6 +80,8 @@ public class AdvancedMemoryWriter {
 				CompoundCue compoundCue = (CompoundCue) result;
 
 				xmlOutputter.startTag("CompoundCue");
+				xmlOutputter.attribute("numDaysProvided", String.valueOf(compoundCue.getNumDaysProvided()));
+				xmlOutputter.attribute("numWorkingDaysProvided", String.valueOf(compoundCue.getNumWorkingDaysProvided()));
 				xmlOutputter.attribute("targetID", String.valueOf(compoundCue.getTargetID()));
 
 				xmlOutputter.startTag("Time");
@@ -149,6 +151,8 @@ public class AdvancedMemoryWriter {
 				SpreadingActivation spreadingActivation = (SpreadingActivation) result;
 
 				xmlOutputter.startTag("SpreadingActivation");
+				xmlOutputter.attribute("numDaysProvided", String.valueOf(spreadingActivation.getNumDaysProvided()));
+				xmlOutputter.attribute("numWorkingDaysProvided", String.valueOf(spreadingActivation.getNumWorkingDaysProvided()));
 				xmlOutputter.attribute("targetAttributeName", spreadingActivation.getTargetAttributeName());
 
 				xmlOutputter.startTag("Time");
@@ -234,6 +238,8 @@ public class AdvancedMemoryWriter {
 				Generalisation generalisation = (Generalisation) result;
 
 				xmlOutputter.startTag("Generalisation");
+				xmlOutputter.attribute("numDaysProvided", String.valueOf(generalisation.getNumDaysProvided()));
+				xmlOutputter.attribute("numWorkingDaysProvided", String.valueOf(generalisation.getNumWorkingDaysProvided()));
 				xmlOutputter.attribute("minimumCoverage", String.valueOf(generalisation.getMinimumCoverage()));
 
 				xmlOutputter.startTag("Time");

@@ -201,6 +201,14 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 
 			// 
 
+			// usage examples:
+			// CC-MEMORY 15$subject Amy*action read$*$*$*$2
+			// CC-MEMORY 34$target John*time Afternoon$0
+			// CC-MEMORY 91
+			// CC-MEMORY 47$time 2012-08-19$2$1
+
+			//
+
 			// parse perception
 			StringTokenizer stringTokenizer = new StringTokenizer(perception, "$");
 			String targetIDStr = null;
@@ -367,6 +375,12 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 
 			// 
 
+			// usage examples:
+			// SA-MEMORY object$*$1$*$1
+			// SA-MEMORY action$subject SELF$2$1$*$2
+			// SA-MEMORY target
+			// SA-MEMORY location$*$*$*$*$2
+
 			// parse perception
 			StringTokenizer stringTokenizer = new StringTokenizer(perception, "$");
 			String targetAttributeName = null;
@@ -507,13 +521,19 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 
 			// 
 
+			// usage examples:
+			// G-MEMORY subject*action*$3
+			// G-MEMORY subject*action*target*time$1$subject SELF*action greet*target Amol*time Morning$0
+			// G-MEMORY subject*action*target*time$3$subject SELF*time Afternoon$0
+			// G-MEMORY subject*target*time$5$time Tuesday$1$1
+
 			// parse perception
 			StringTokenizer stringTokenizer = new StringTokenizer(perception, "$");
 			String attributeNamesStr = null;
 			try {
 				attributeNamesStr = stringTokenizer.nextToken();
 			} catch (Exception e) {
-				// no target id given
+				// no attribute names given
 				System.err.println("No Attribute Names given!");
 				return;
 			}

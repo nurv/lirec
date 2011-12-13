@@ -48,6 +48,10 @@ public class Generalisation implements Serializable {
 
 	// time when mechanism was executed
 	private Time time;
+	// number of days provided (before filtering)
+	private int numDaysProvided;
+	// number of working days provided (before filtering)
+	private int numWorkingDaysProvided;
 	// attributes used for action detail filtering	
 	private ArrayList<String> filterAttributes;
 	// time ontology used for attribute time (null if not used)	
@@ -71,6 +75,22 @@ public class Generalisation implements Serializable {
 
 	public void setTime(Time time) {
 		this.time = time;
+	}
+
+	public int getNumDaysProvided() {
+		return numDaysProvided;
+	}
+
+	public void setNumDaysProvided(int numDaysProvided) {
+		this.numDaysProvided = numDaysProvided;
+	}
+
+	public int getNumWorkingDaysProvided() {
+		return numWorkingDaysProvided;
+	}
+
+	public void setNumWorkingDaysProvided(int numWorkingDaysProvided) {
+		this.numWorkingDaysProvided = numWorkingDaysProvided;
 	}
 
 	public ArrayList<String> getFilterAttributes() {

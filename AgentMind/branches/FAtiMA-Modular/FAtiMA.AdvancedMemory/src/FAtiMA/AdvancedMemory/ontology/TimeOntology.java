@@ -133,7 +133,7 @@ public class TimeOntology implements Serializable {
 	private static int getDayOfWeek(long timeInMillis) {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTimeInMillis(timeInMillis);
-		return calendar.get(Calendar.DAY_OF_WEEK);
+		return calendar.get(Calendar.DAY_OF_WEEK) - 1;
 	}
 
 	/**
@@ -156,6 +156,36 @@ public class TimeOntology implements Serializable {
 	 */
 	public static String getDayOfWeekStr(long timeInMillis) {
 		return DAYS_OF_WEEK[getDayOfWeek(timeInMillis)];
+	}
+
+	/**
+	 * Returns true if given date/time is a working day, false otherwise.
+	 * 
+	 * @param timeInMillis
+	 * @return
+	 */
+	public static boolean isWorkingDay(long timeInMillis) {
+		int dayOfWeek = getDayOfWeek(timeInMillis);
+		if (dayOfWeek > 0 && dayOfWeek < 6) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * Returns true if given date/time is a weekend day, false otherwise.
+	 * 
+	 * @param timeInMillis
+	 * @return
+	 */
+	public static boolean isWeekendDay(long timeInMillis) {
+		int dayOfWeek = getDayOfWeek(timeInMillis);
+		if (dayOfWeek == 0 || dayOfWeek == 6) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	private static int getPartOfDay(long timeInMillis) {
@@ -230,15 +260,7 @@ public class TimeOntology implements Serializable {
 		}
 	}
 
-	/**
-	 * Takes a variable number of dates/times and the part of the day matching
-	 * all of them.
-	 * 
-	 * @param timesInMillis
-	 *            array of dates/times, use Calendar.getTimeInMillis()
-	 * @return part of day from 0 to 3 or -1 if dates/times are not matching
-	 */
-	public static int getGeneralisedPartOfDay(long[] timesInMillis) {
+	private static int getGeneralisedPartOfDay(long[] timesInMillis) {
 		if (timesInMillis == null || timesInMillis.length == 0) {
 			return -1;
 		} else {

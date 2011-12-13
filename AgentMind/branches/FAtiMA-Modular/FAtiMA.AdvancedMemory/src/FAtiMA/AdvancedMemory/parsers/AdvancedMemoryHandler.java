@@ -174,7 +174,11 @@ public class AdvancedMemoryHandler extends ReflectXMLHandler {
 
 	public void CompoundCue(Attributes attributes) {
 		compoundCue = new CompoundCue();
+		int numDaysProvided = Integer.parseInt(attributes.getValue("numDaysProvided"));
+		int numWorkingDaysProvided = Integer.parseInt(attributes.getValue("numWorkingDaysProvided"));
 		int targetID = Integer.parseInt(attributes.getValue("targetID"));
+		compoundCue.setNumDaysProvided(numDaysProvided);
+		compoundCue.setNumWorkingDaysProvided(numWorkingDaysProvided);
 		compoundCue.setTargetID(targetID);
 		result = compoundCue;
 		results.add(compoundCue);
@@ -195,7 +199,11 @@ public class AdvancedMemoryHandler extends ReflectXMLHandler {
 
 	public void SpreadingActivation(Attributes attributes) {
 		spreadingActivation = new SpreadingActivation();
+		int numDaysProvided = Integer.parseInt(attributes.getValue("numDaysProvided"));
+		int numWorkingDaysProvided = Integer.parseInt(attributes.getValue("numWorkingDaysProvided"));
 		String targetAttributeName = attributes.getValue("targetAttributeName");
+		spreadingActivation.setNumDaysProvided(numDaysProvided);
+		spreadingActivation.setNumWorkingDaysProvided(numWorkingDaysProvided);
 		spreadingActivation.setTargetAttributeName(targetAttributeName);
 		result = spreadingActivation;
 		results.add(spreadingActivation);
@@ -232,7 +240,11 @@ public class AdvancedMemoryHandler extends ReflectXMLHandler {
 
 	public void Generalisation(Attributes attributes) {
 		generalisation = new Generalisation();
+		int numDaysProvided = Integer.parseInt(attributes.getValue("numDaysProvided"));
+		int numWorkingDaysProvided = Integer.parseInt(attributes.getValue("numWorkingDaysProvided"));
 		int minimumCoverage = Integer.parseInt(attributes.getValue("minimumCoverage"));
+		generalisation.setNumDaysProvided(numDaysProvided);
+		generalisation.setNumWorkingDaysProvided(numWorkingDaysProvided);
 		generalisation.setMinimumCoverage(minimumCoverage);
 		result = generalisation;
 		results.add(generalisation);

@@ -33,7 +33,9 @@ package FAtiMA.AdvancedMemory;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.StringTokenizer;
 
@@ -57,6 +59,10 @@ public class CompoundCue implements Serializable {
 
 	// time when mechanism was executed
 	private Time time;
+	// number of days provided (before filtering)
+	private int numDaysProvided;
+	// number of working days provided (before filtering)
+	private int numWorkingDaysProvided;
 	// attributes used for action detail filtering	
 	private ArrayList<String> filterAttributes;
 	// time ontology used for attribute time (null if not used)	
@@ -78,6 +84,22 @@ public class CompoundCue implements Serializable {
 
 	public void setTime(Time time) {
 		this.time = time;
+	}
+
+	public int getNumDaysProvided() {
+		return numDaysProvided;
+	}
+
+	public void setNumDaysProvided(int numDaysProvided) {
+		this.numDaysProvided = numDaysProvided;
+	}
+
+	public int getNumWorkingDaysProvided() {
+		return numWorkingDaysProvided;
+	}
+
+	public void setNumWorkingDaysProvided(int numWorkingDaysProvided) {
+		this.numWorkingDaysProvided = numWorkingDaysProvided;
 	}
 
 	public ArrayList<String> getFilterAttributes() {
@@ -217,6 +239,27 @@ public class CompoundCue implements Serializable {
 	public ActionDetail execute(ArrayList<ActionDetail> actionDetails, String filterAttributesStr, ActionDetail actionDetailTarget, TimeOntology timeOntology, NounOntology targetOntology,
 			NounOntology objectOntology, TreeOntology locationOntology) {
 
+		// count total number of days provided
+		HashSet<Calendar> daysProvided = new HashSet<Calendar>();
+		HashSet<Calendar> workingDaysProvided = new HashSet<Calendar>();
+		for (ActionDetail actionDetail : actionDetails) {
+			// set date and time
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTimeInMillis(actionDetail.getTime().getRealTime());
+			// reset time
+			calendar.set(Calendar.HOUR, 0);
+			calendar.set(Calendar.MINUTE, 0);
+			calendar.set(Calendar.SECOND, 0);
+			calendar.set(Calendar.MILLISECOND, 0);
+			// add to sets
+			daysProvided.add(calendar);
+			if (TimeOntology.isWorkingDay(calendar.getTimeInMillis())) {
+				workingDaysProvided.add(calendar);
+			}
+		}
+		int numDaysProvided = daysProvided.size();
+		int numWorkingDaysProvided = workingDaysProvided.size();
+
 		// initialise
 		ActionDetail actionDetailMax = null;
 		double evaluationValueMax = 0;
@@ -276,6 +319,8 @@ public class CompoundCue implements Serializable {
 
 		// update attributes
 		this.time = time;
+		this.numDaysProvided = numDaysProvided;
+		this.numWorkingDaysProvided = numWorkingDaysProvided;
 		this.filterAttributes = filterAttributes;
 		this.timeOntology = timeOntology;
 		this.targetOntology = targetOntology;
@@ -286,5 +331,4 @@ public class CompoundCue implements Serializable {
 
 		return actionDetailMax;
 	}
-
 }
