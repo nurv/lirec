@@ -142,6 +142,9 @@ public class RemoteAgent extends SocketListener {
 		if(type.startsWith("<EmotionalState")) {
 
 		}
+		else if (type.startsWith("<MemoryResult")) {
+
+		}
 		else if (type.startsWith("<Relations"))
 		{
 
