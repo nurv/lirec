@@ -157,8 +157,9 @@ public class AdvancedMemoryHandler extends ReflectXMLHandler {
 	}
 
 	public void LocationOntology(Attributes attributes) {
-		TreeOntology locationOntology = new TreeOntology();
 		int depthMax = Integer.parseInt(attributes.getValue("depthMax"));
+		String filename = attributes.getValue("filename");
+		TreeOntology locationOntology = new TreeOntology(filename);
 		locationOntology.setDepthMax(depthMax);
 		if (result instanceof CompoundCue) {
 			compoundCue.setLocationOntology(locationOntology);

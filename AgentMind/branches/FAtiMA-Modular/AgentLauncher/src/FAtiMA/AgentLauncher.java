@@ -16,6 +16,7 @@ import FAtiMA.DeliberativeComponent.DeliberativeComponent;
 import FAtiMA.OCCAffectDerivation.OCCAffectDerivationComponent;
 import FAtiMA.ReactiveComponent.ReactiveComponent;
 import FAtiMA.ToM.ToMComponent;
+import FAtiMA.culture.CulturalDimensionsComponent;
 import FAtiMA.emotionalIntelligence.EmotionalIntelligenceComponent;
 import FAtiMA.motivationalSystem.MotivationalComponent;
 import FAtiMA.socialRelations.SocialRelationsComponent;
@@ -37,11 +38,12 @@ public class AgentLauncher {
 
 		AgentCore aG = initializeAgentCore(args);
 		ArrayList<String> extraFiles = new ArrayList<String>();
-		//String cultureFile = ConfigurationManager.getMindPath() + ConfigurationManager.getOptionalConfigurationValue("cultureName") + ".xml";
+		String cultureFile = ConfigurationManager.getMindPath() + ConfigurationManager.getOptionalConfigurationValue("cultureName") + ".xml";
 		String relationsFile = ConfigurationManager.getMindPath() + "relations.xml"; //fixed for now, read it as an optional configuration value latter
+		String locationOntologyFile = ConfigurationManager.getMindPath() + "locations/AmyHouse.xml";
 
 		if (!aG.getAgentLoad()) {
-			//extraFiles.add(cultureFile);
+			extraFiles.add(cultureFile);
 
 			//FAtiMA Light
 			aG.addComponent(new ReactiveComponent());
@@ -53,9 +55,8 @@ public class AgentLauncher {
 			//aG.addComponent(new SocialRelationsComponent(relationsFile, extraFiles));
 			//aG.addComponent(new ToMComponent(ConfigurationManager.getName()));
 			//aG.addComponent(new CulturalDimensionsComponent(cultureFile));
-			//aG.addComponent(new AdvancedMemoryComponent());
 			//aG.addComponent(new EmotionalIntelligenceComponent(extraFiles));
-			//aG.addComponent(new AdvancedMemoryComponent());
+			//aG.addComponent(new AdvancedMemoryComponent(locationOntologyFile));
 
 		}
 		aG.StartAgent();
@@ -71,7 +72,7 @@ public class AgentLauncher {
 		String scenarioName = args[1];
 		String agentName = args[2];
 
-		FAtiMA.Core.AgentCore agent = new AgentCore(agentName);
+		AgentCore agent = new AgentCore(agentName);
 		agent.initialize(scenarioFile, scenarioName, agentName);
 
 		return agent;

@@ -73,6 +73,8 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 
 	private Memory memory;
 
+	private String locationOntologyFilename;
+
 	private ArrayList<Object> results; // CompoundCue, SpreadingActivation, Generalisation
 
 	private AdvancedMemoryPanel advancedMemoryPanel;
@@ -81,12 +83,25 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 		results = new ArrayList<Object>();
 	}
 
+	public AdvancedMemoryComponent(String locationOntologyFilename) {
+		this();
+		this.locationOntologyFilename = locationOntologyFilename;
+	}
+
 	public Memory getMemory() {
 		return memory;
 	}
 
 	public void setMemory(Memory memory) {
 		this.memory = memory;
+	}
+
+	public String getLocationOntologyFile() {
+		return locationOntologyFilename;
+	}
+
+	public void setLocationOntologyFile(String locationOntologyFile) {
+		this.locationOntologyFilename = locationOntologyFile;
 	}
 
 	public ArrayList<Object> getResults() {
@@ -306,7 +321,7 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 				try {
 					Integer depthMax = Integer.valueOf(locationDepthMaxStr);
 					// create location ontology
-					locationOntology = new TreeOntology();
+					locationOntology = new TreeOntology(locationOntologyFilename);
 					locationOntology.setDepthMax(depthMax);
 				} catch (Exception e) {
 					System.err.println("Error while parsing Location Ontology Maximum Depth!");
@@ -443,7 +458,7 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 				try {
 					Integer depthMax = Integer.valueOf(locationDepthMaxStr);
 					// create location ontology
-					locationOntology = new TreeOntology();
+					locationOntology = new TreeOntology(locationOntologyFilename);
 					locationOntology.setDepthMax(depthMax);
 				} catch (Exception e) {
 					System.err.println("Error while parsing Location Ontology Maximum Depth!");
@@ -599,7 +614,7 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 				try {
 					Integer depthMax = Integer.valueOf(locationDepthMaxStr);
 					// create location ontology
-					locationOntology = new TreeOntology();
+					locationOntology = new TreeOntology(locationOntologyFilename);
 					locationOntology.setDepthMax(depthMax);
 				} catch (Exception e) {
 					System.err.println("Error while parsing Location Ontology Maximum Depth!");

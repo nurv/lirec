@@ -488,7 +488,7 @@ public class GeneralisationPanel extends JPanel {
 		// location ontology
 		TreeOntology locationOntology = null;
 		if (cbLocationOntology.isSelected()) {
-			locationOntology = new TreeOntology();
+			locationOntology = new TreeOntology(advancedMemoryComponent.getLocationOntologyFile());
 			int depthMax = Integer.valueOf(tfLocationDepthMax.getText());
 			locationOntology.setDepthMax(depthMax);
 		}

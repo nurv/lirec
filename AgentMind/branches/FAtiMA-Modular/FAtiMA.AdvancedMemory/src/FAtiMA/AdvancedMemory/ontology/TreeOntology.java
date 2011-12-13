@@ -38,27 +38,44 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import FAtiMA.Core.util.AgentLogger;
+
 public class TreeOntology implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	private static final boolean ITERATIVE_DEPTH_LIMIT = false;
 
+	private String filename;
+
 	private Document doc;
 
 	private int depthMax;
 
-	public TreeOntology() {
-		// TODO: properly pass filename for corresponding tree ontology
-		String filename = "data/characters/minds/locations/AmyHouse.xml";
+	public TreeOntology(String filename) {
+		this.filename = filename;
 		try {
-			File file = new File(filename);
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			DocumentBuilder db = dbf.newDocumentBuilder();
-			doc = db.parse(file);
+			File file = new File(filename);
+			if (file.exists()) {
+				doc = db.parse(file);
+			} else {
+				AgentLogger.GetInstance().logAndPrint("File does not exist: " + filename);
+				// create empty document
+				doc = db.newDocument();
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	public String getFilename() {
+		return filename;
+	}
+
+	public void setFilename(String filename) {
+		this.filename = filename;
 	}
 
 	public int getDepthMax() {
@@ -91,11 +108,12 @@ public class TreeOntology implements Serializable {
 		// iteratively increase depth limit
 		for (int depthLimit = depthLimitStart; depthLimit <= depthMax; depthLimit++) {
 
+			// initialise
 			LinkedList<String> ancestors = new LinkedList<String>();
 
 			// find all nodes with corresponding location names
-			NodeList nodeListA = doc.getDocumentElement().getElementsByTagName(nameA);
-			NodeList nodeListB = doc.getDocumentElement().getElementsByTagName(nameB);
+			NodeList nodeListA = doc.getElementsByTagName(nameA);
+			NodeList nodeListB = doc.getElementsByTagName(nameB);
 
 			// check if both such nodes exist
 			if (nodeListA.getLength() > 0 && nodeListB.getLength() > 0) {

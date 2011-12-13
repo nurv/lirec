@@ -129,6 +129,7 @@ public class AdvancedMemoryWriter {
 				if (locationOntology != null) {
 					xmlOutputter.startTag("LocationOntology");
 					xmlOutputter.attribute("depthMax", String.valueOf(locationOntology.getDepthMax()));
+					xmlOutputter.attribute("filename", locationOntology.getFilename());
 					xmlOutputter.endTag(); //LocationOntology
 				}
 
@@ -214,6 +215,7 @@ public class AdvancedMemoryWriter {
 				if (locationOntology != null) {
 					xmlOutputter.startTag("LocationOntology");
 					xmlOutputter.attribute("depthMax", String.valueOf(locationOntology.getDepthMax()));
+					xmlOutputter.attribute("filename", locationOntology.getFilename());
 					xmlOutputter.endTag(); //LocationOntology
 				}
 
@@ -281,6 +283,7 @@ public class AdvancedMemoryWriter {
 				if (locationOntology != null) {
 					xmlOutputter.startTag("LocationOntology");
 					xmlOutputter.attribute("depthMax", String.valueOf(locationOntology.getDepthMax()));
+					xmlOutputter.attribute("filename", locationOntology.getFilename());
 					xmlOutputter.endTag(); //LocationOntology
 				}
 
