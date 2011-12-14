@@ -1092,8 +1092,7 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 		// we need to recreate the memory writer because it holds a reference to the memory object
 		this._memoryWriter = new MemoryWriter(this._memory);
 		// we also want to delete all non-persistent facts from the KB
-		//this._memory.getSemanticMemory().removeNonPersistent();
-		
+		this._memory.getSemanticMemory().removeNonPersistent();		
 		this._goalLibrary = (GoalLibrary) s.readObject();
 		this._actionLibrary = (ActionLibrary) s.readObject();
 		//this._dialogManager = (DialogManager) s.readObject();
@@ -1270,7 +1269,7 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 			// we need to recreate the memory writer because it holds a reference to the memory object
 			this._memoryWriter = new MemoryWriter(this._memory);
 			// we also want to delete all non-persistent facts from the KB
-			//this._memory.getSemanticMemory().removeNonPersistent();
+			this._memory.getSemanticMemory().removeNonPersistent();
 			this._goalLibrary = (GoalLibrary) s.readObject();
 			this._actionLibrary = (ActionLibrary) s.readObject();
 			//this._dialogManager = (DialogManager) s.readObject();
