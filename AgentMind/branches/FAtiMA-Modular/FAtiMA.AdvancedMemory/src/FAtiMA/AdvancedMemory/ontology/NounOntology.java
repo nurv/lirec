@@ -61,6 +61,8 @@ public class NounOntology implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	private static final boolean USE_HYPERNYM_CACHE = true;
+
 	private static final boolean ITERATIVE_DEPTH_LIMIT = false;
 
 	private static final boolean STEMMING = true;
@@ -91,6 +93,14 @@ public class NounOntology implements Serializable {
 			return null;
 		}
 
+		// check if nouns have been generalised before
+		if (USE_HYPERNYM_CACHE) {
+			LinkedList<String> commonHypernyms = NounOntologyCache.getInstance().getCommonHypernyms(nouns, depthMax);
+			if (commonHypernyms != null) {
+				return commonHypernyms;
+			}
+		}
+
 		// set starting depth
 		int depthLimitStart = depthMax;
 		if (ITERATIVE_DEPTH_LIMIT) {
@@ -113,6 +123,8 @@ public class NounOntology implements Serializable {
 						// assume that not hypernyms exist.
 						// return an empty list
 						LinkedList<String> lemmas = new LinkedList<String>();
+						if (USE_HYPERNYM_CACHE)
+							NounOntologyCache.getInstance().addCommonHypernyms(nouns, depthMax, lemmas);
 						return lemmas;
 					}
 				}
@@ -121,6 +133,8 @@ public class NounOntology implements Serializable {
 				// return a list with only this noun
 				LinkedList<String> lemmas = new LinkedList<String>();
 				lemmas.add(nouns[0]);
+				if (USE_HYPERNYM_CACHE)
+					NounOntologyCache.getInstance().addCommonHypernyms(nouns, depthMax, lemmas);
 				return lemmas;
 			}
 
@@ -138,6 +152,8 @@ public class NounOntology implements Serializable {
 					// assume that not hypernyms exist.
 					// return an empty list
 					LinkedList<String> lemmas = new LinkedList<String>();
+					if (USE_HYPERNYM_CACHE)
+						NounOntologyCache.getInstance().addCommonHypernyms(nouns, depthMax, lemmas);
 					return lemmas;
 				}
 
@@ -158,6 +174,8 @@ public class NounOntology implements Serializable {
 				for (IWord wordMatching : hypernymsCommon) {
 					lemmas.add(wordMatching.getLemma());
 				}
+				if (USE_HYPERNYM_CACHE)
+					NounOntologyCache.getInstance().addCommonHypernyms(nouns, depthMax, lemmas);
 				return lemmas;
 			}
 
