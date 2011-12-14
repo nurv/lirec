@@ -30,6 +30,8 @@
 package FAtiMA.AdvancedMemory;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
@@ -77,7 +79,7 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 
 	private ArrayList<Object> results; // CompoundCue, SpreadingActivation, Generalisation
 
-	private AdvancedMemoryPanel advancedMemoryPanel;
+	private boolean resultsLoaded;
 
 	public AdvancedMemoryComponent() {
 		results = new ArrayList<Object>();
@@ -112,8 +114,12 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 		this.results = results;
 	}
 
-	public AdvancedMemoryPanel getAdvancedMemoryPanel() {
-		return advancedMemoryPanel;
+	public boolean isResultsLoaded() {
+		return resultsLoaded;
+	}
+
+	public void setResultsLoaded(boolean resultsLoaded) {
+		this.resultsLoaded = resultsLoaded;
 	}
 
 	@Override
@@ -143,8 +149,7 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 
 	@Override
 	public AgentDisplayPanel createDisplayPanel(AgentModel am) {
-		advancedMemoryPanel = new AdvancedMemoryPanel(this);
-		return advancedMemoryPanel;
+		return new AdvancedMemoryPanel(this);
 	}
 
 	@Override
@@ -342,7 +347,6 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 
 			// add to results
 			results.add(compoundCue);
-			advancedMemoryPanel.getOverviewPanel().updateResultList();
 
 			// return result
 			String result = AdvancedMemoryWriter.getUnformattedXML(compoundCue);
@@ -485,7 +489,6 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 
 			// add to results
 			results.add(spreadingActivation);
-			advancedMemoryPanel.getOverviewPanel().updateResultList();
 
 			// return result
 			String result = AdvancedMemoryWriter.getUnformattedXML(spreadingActivation);
@@ -647,7 +650,6 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 
 			// add to results
 			results.add(generalisation);
-			advancedMemoryPanel.getOverviewPanel().updateResultList();
 
 			// return result
 			String result = AdvancedMemoryWriter.getUnformattedXML(generalisation);
@@ -703,13 +705,18 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		if (advancedMemoryPanel != null) {
-			advancedMemoryPanel.getOverviewPanel().updateResultList();
-		}
+		// update result list on overview panel
+		resultsLoaded = true;
 	}
 
 	public void save(String fileName) {
 		AdvancedMemoryWriter.write(this, fileName);
+	}
+
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		in.defaultReadObject();
+		// update result list on overview panel
+		resultsLoaded = true;
 	}
 
 }

@@ -49,7 +49,7 @@ public class OverviewPanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 
-	private AdvancedMemoryComponent advancedMemoryComponent;
+	private AdvancedMemoryPanel advancedMemoryPanel;
 
 	private JTextField tfFileName;
 
@@ -57,9 +57,9 @@ public class OverviewPanel extends JPanel {
 
 	private JLabel lbStatus;
 
-	public OverviewPanel(AdvancedMemoryComponent advancedMemoryComponent) {
+	public OverviewPanel(AdvancedMemoryPanel advancedMemoryPanel) {
 		super();
-		this.advancedMemoryComponent = advancedMemoryComponent;
+		this.advancedMemoryPanel = advancedMemoryPanel;
 
 		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
@@ -71,7 +71,7 @@ public class OverviewPanel extends JPanel {
 		JLabel lbFileName = new JLabel("File Name:");
 		pnActions.add(lbFileName);
 
-		String fileName = advancedMemoryComponent.getMemory().getSaveDirectory() + AdvancedMemoryComponent.FILENAME;
+		String fileName = advancedMemoryPanel.getAdvancedMemoryComponent().getMemory().getSaveDirectory() + AdvancedMemoryComponent.FILENAME;
 		tfFileName = new JTextField(fileName);
 		tfFileName.setMinimumSize(new Dimension(320, 26));
 		tfFileName.setMaximumSize(new Dimension(320, 26));
@@ -98,15 +98,17 @@ public class OverviewPanel extends JPanel {
 		lbStatus = new JLabel(" ");
 		pnStatus.add(lbStatus);
 
-		updateResultList();
+	}
 
+	public AdvancedMemoryPanel getAdvancedMemoryPanel() {
+		return advancedMemoryPanel;
 	}
 
 	public void updateResultList() {
 
 		pnResults.removeAll();
-		for (Object result : advancedMemoryComponent.getResults()) {
-			pnResults.add(new ResultPanel(advancedMemoryComponent, result));
+		for (Object result : advancedMemoryPanel.getAdvancedMemoryComponent().getResults()) {
+			pnResults.add(new ResultPanel(this, result));
 		}
 		//pnResults.repaint();
 		// workaround
@@ -123,7 +125,7 @@ public class OverviewPanel extends JPanel {
 		public void actionPerformed(ActionEvent event) {
 			String fileName = tfFileName.getText();
 			Time time = new Time();
-			advancedMemoryComponent.load(fileName);
+			advancedMemoryPanel.getAdvancedMemoryComponent().load(fileName);
 			lbStatus.setText("Results loaded from \"" + fileName + "\" at " + time.getRealTimeFormatted());
 		}
 	}
@@ -132,7 +134,7 @@ public class OverviewPanel extends JPanel {
 		public void actionPerformed(ActionEvent event) {
 			String fileName = tfFileName.getText();
 			Time time = new Time();
-			advancedMemoryComponent.save(fileName);
+			advancedMemoryPanel.getAdvancedMemoryComponent().save(fileName);
 			lbStatus.setText("Results saved to \"" + fileName + "\" at " + time.getRealTimeFormatted());
 		}
 	}

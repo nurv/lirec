@@ -38,7 +38,6 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import FAtiMA.AdvancedMemory.AdvancedMemoryComponent;
 import FAtiMA.AdvancedMemory.CompoundCue;
 import FAtiMA.AdvancedMemory.Generalisation;
 import FAtiMA.AdvancedMemory.SpreadingActivation;
@@ -47,12 +46,13 @@ public class ResultPanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
 
-	private AdvancedMemoryComponent advancedMemoryComponent;
+	private OverviewPanel overviewPanel;
+
 	private Object result;
 
-	public ResultPanel(AdvancedMemoryComponent advancedMemoryComponent, Object result) {
+	public ResultPanel(OverviewPanel overviewPanel, Object result) {
 		super();
-		this.advancedMemoryComponent = advancedMemoryComponent;
+		this.overviewPanel = overviewPanel;
 		this.result = result;
 
 		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
@@ -121,28 +121,28 @@ public class ResultPanel extends JPanel {
 	private class AlView implements ActionListener {
 		public void actionPerformed(ActionEvent event) {
 			if (result instanceof CompoundCue) {
-				CompoundCuePanel compoundCuePanel = advancedMemoryComponent.getAdvancedMemoryPanel().getCompoundCuePanel();
+				CompoundCuePanel compoundCuePanel = overviewPanel.getAdvancedMemoryPanel().getCompoundCuePanel();
 				compoundCuePanel.setCompoundCue((CompoundCue) result);
 				compoundCuePanel.updatePanel();
-				advancedMemoryComponent.getAdvancedMemoryPanel().getTpMethods().setSelectedComponent(compoundCuePanel);
+				overviewPanel.getAdvancedMemoryPanel().getTpMethods().setSelectedComponent(compoundCuePanel);
 			} else if (result instanceof SpreadingActivation) {
-				SpreadingActivationPanel spreadingActivationPanel = advancedMemoryComponent.getAdvancedMemoryPanel().getSpreadingActivationPanel();
+				SpreadingActivationPanel spreadingActivationPanel = overviewPanel.getAdvancedMemoryPanel().getSpreadingActivationPanel();
 				spreadingActivationPanel.setSpreadingActivation((SpreadingActivation) result);
 				spreadingActivationPanel.updatePanel();
-				advancedMemoryComponent.getAdvancedMemoryPanel().getTpMethods().setSelectedComponent(spreadingActivationPanel);
+				overviewPanel.getAdvancedMemoryPanel().getTpMethods().setSelectedComponent(spreadingActivationPanel);
 			} else if (result instanceof Generalisation) {
-				GeneralisationPanel generalisationPanel = advancedMemoryComponent.getAdvancedMemoryPanel().getGeneralisationPanel();
+				GeneralisationPanel generalisationPanel = overviewPanel.getAdvancedMemoryPanel().getGeneralisationPanel();
 				generalisationPanel.setGeneralisation((Generalisation) result);
 				generalisationPanel.updatePanel();
-				advancedMemoryComponent.getAdvancedMemoryPanel().getTpMethods().setSelectedComponent(generalisationPanel);
+				overviewPanel.getAdvancedMemoryPanel().getTpMethods().setSelectedComponent(generalisationPanel);
 			}
 		}
 	}
 
 	private class AlDelete implements ActionListener {
 		public void actionPerformed(ActionEvent event) {
-			advancedMemoryComponent.getResults().remove(result);
-			advancedMemoryComponent.getAdvancedMemoryPanel().getOverviewPanel().updateResultList();
+			overviewPanel.getAdvancedMemoryPanel().getAdvancedMemoryComponent().getResults().remove(result);
+			overviewPanel.getAdvancedMemoryPanel().getOverviewPanel().updateResultList();
 		}
 	}
 

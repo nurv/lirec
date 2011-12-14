@@ -44,6 +44,8 @@ public class AdvancedMemoryPanel extends AgentDisplayPanel {
 
 	private static final long serialVersionUID = 1L;
 
+	private AdvancedMemoryComponent advancedMemoryComponent;
+
 	private OverviewPanel overviewPanel;
 	private CompoundCuePanel compoundCuePanel;
 	private SpreadingActivationPanel spreadingActivationPanel;
@@ -53,20 +55,25 @@ public class AdvancedMemoryPanel extends AgentDisplayPanel {
 
 	public AdvancedMemoryPanel(AdvancedMemoryComponent advancedMemoryComponent) {
 		super();
+		this.advancedMemoryComponent = advancedMemoryComponent;
 
 		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
 		tpMethods = new JTabbedPane();
 		this.add(tpMethods);
 
-		overviewPanel = new OverviewPanel(advancedMemoryComponent);
+		overviewPanel = new OverviewPanel(this);
 		tpMethods.addTab("Overview", overviewPanel);
-		compoundCuePanel = new CompoundCuePanel(advancedMemoryComponent);
+		compoundCuePanel = new CompoundCuePanel(this);
 		tpMethods.addTab(CompoundCue.NAME, compoundCuePanel);
-		spreadingActivationPanel = new SpreadingActivationPanel(advancedMemoryComponent);
+		spreadingActivationPanel = new SpreadingActivationPanel(this);
 		tpMethods.addTab(SpreadingActivation.NAME, spreadingActivationPanel);
-		generalisationPanel = new GeneralisationPanel(advancedMemoryComponent);
+		generalisationPanel = new GeneralisationPanel(this);
 		tpMethods.addTab(Generalisation.NAME, generalisationPanel);
+	}
+
+	public AdvancedMemoryComponent getAdvancedMemoryComponent() {
+		return advancedMemoryComponent;
 	}
 
 	public OverviewPanel getOverviewPanel() {
@@ -91,12 +98,21 @@ public class AdvancedMemoryPanel extends AgentDisplayPanel {
 
 	@Override
 	public boolean Update(AgentCore ag) {
+		if (advancedMemoryComponent.isResultsLoaded()) {
+			overviewPanel.updateResultList();
+			advancedMemoryComponent.setResultsLoaded(false);
+			return true;
+		}
 		return false;
 	}
 
 	@Override
 	public boolean Update(AgentModel am) {
+		if (advancedMemoryComponent.isResultsLoaded()) {
+			overviewPanel.updateResultList();
+			advancedMemoryComponent.setResultsLoaded(false);
+			return true;
+		}
 		return false;
 	}
-
 }

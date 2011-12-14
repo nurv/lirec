@@ -49,7 +49,6 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
-import FAtiMA.AdvancedMemory.AdvancedMemoryComponent;
 import FAtiMA.AdvancedMemory.AttributeItem;
 import FAtiMA.AdvancedMemory.GER;
 import FAtiMA.AdvancedMemory.Generalisation;
@@ -67,7 +66,7 @@ public class GeneralisationPanel extends JPanel {
 
 	private static final int MINIMUM_COVERAGE_DEFAULT = 1;
 
-	private AdvancedMemoryComponent advancedMemoryComponent;
+	private AdvancedMemoryPanel advancedMemoryPanel;
 
 	private Generalisation generalisation;
 
@@ -127,9 +126,9 @@ public class GeneralisationPanel extends JPanel {
 
 	private JLabel lbStatus;
 
-	public GeneralisationPanel(AdvancedMemoryComponent advancedMemoryComponent) {
+	public GeneralisationPanel(AdvancedMemoryPanel advancedMemoryPanel) {
 		super();
-		this.advancedMemoryComponent = advancedMemoryComponent;
+		this.advancedMemoryPanel = advancedMemoryPanel;
 
 		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
@@ -208,58 +207,10 @@ public class GeneralisationPanel extends JPanel {
 		pnSettings.setBorder(BorderFactory.createEtchedBorder());
 		this.add(pnSettings);
 
-		JPanel pnAttributes = new JPanel();
-		pnAttributes.setLayout(new GridLayout(5, 3));
-		pnAttributes.setBorder(BorderFactory.createTitledBorder("Attributes"));
-		pnSettings.add(pnAttributes);
-
-		cbSubject = new JCheckBox("Subject");
-		pnAttributes.add(cbSubject);
-
-		cbAction = new JCheckBox("Action");
-		pnAttributes.add(cbAction);
-
-		cbTarget = new JCheckBox("Target");
-		pnAttributes.add(cbTarget);
-
-		cbObject = new JCheckBox("Object");
-		pnAttributes.add(cbObject);
-
-		cbLocation = new JCheckBox("Location");
-		pnAttributes.add(cbLocation);
-
-		cbIntention = new JCheckBox("Intention");
-		pnAttributes.add(cbIntention);
-
-		cbStatus = new JCheckBox("Status");
-		pnAttributes.add(cbStatus);
-
-		cbEmotion = new JCheckBox("Emotion");
-		pnAttributes.add(cbEmotion);
-
-		cbSpeechActMeaning = new JCheckBox("Speech Act Meaning");
-		pnAttributes.add(cbSpeechActMeaning);
-
-		cbMultimediaPath = new JCheckBox("Multimedia Path");
-		pnAttributes.add(cbMultimediaPath);
-
-		cbPraiseworthiness = new JCheckBox("Praiseworthiness");
-		pnAttributes.add(cbPraiseworthiness);
-
-		cbDesirability = new JCheckBox("Desirability");
-		pnAttributes.add(cbDesirability);
-
-		cbTime = new JCheckBox("Time");
-		pnAttributes.add(cbTime);
-
-		JPanel pnOntologyMechanism = new JPanel();
-		pnOntologyMechanism.setLayout(new BoxLayout(pnOntologyMechanism, BoxLayout.Y_AXIS));
-		pnSettings.add(pnOntologyMechanism);
-
 		JPanel pnOntology = new JPanel();
-		pnOntology.setLayout(new BoxLayout(pnOntology, BoxLayout.X_AXIS));
+		pnOntology.setLayout(new GridLayout(2, 2));
 		pnOntology.setBorder(BorderFactory.createTitledBorder("Ontology"));
-		pnOntologyMechanism.add(pnOntology);
+		pnSettings.add(pnOntology);
 
 		JPanel pnTimeOntology = new JPanel();
 		pnTimeOntology.setLayout(new BoxLayout(pnTimeOntology, BoxLayout.Y_AXIS));
@@ -328,9 +279,53 @@ public class GeneralisationPanel extends JPanel {
 		tfLocationDepthMax.setMaximumSize(new Dimension(40, 20));
 		pnLocationOntology.add(tfLocationDepthMax);
 
+		JPanel pnAttributes = new JPanel();
+		pnAttributes.setLayout(new GridLayout(5, 3));
+		pnAttributes.setBorder(BorderFactory.createTitledBorder("Attributes"));
+		pnSettings.add(pnAttributes);
+
+		cbSubject = new JCheckBox("Subject");
+		pnAttributes.add(cbSubject);
+
+		cbAction = new JCheckBox("Action");
+		pnAttributes.add(cbAction);
+
+		cbTarget = new JCheckBox("Target");
+		pnAttributes.add(cbTarget);
+
+		cbObject = new JCheckBox("Object");
+		pnAttributes.add(cbObject);
+
+		cbLocation = new JCheckBox("Location");
+		pnAttributes.add(cbLocation);
+
+		cbIntention = new JCheckBox("Intention");
+		pnAttributes.add(cbIntention);
+
+		cbStatus = new JCheckBox("Status");
+		pnAttributes.add(cbStatus);
+
+		cbEmotion = new JCheckBox("Emotion");
+		pnAttributes.add(cbEmotion);
+
+		cbSpeechActMeaning = new JCheckBox("Speech Act Meaning");
+		pnAttributes.add(cbSpeechActMeaning);
+
+		cbMultimediaPath = new JCheckBox("Multimedia Path");
+		pnAttributes.add(cbMultimediaPath);
+
+		cbPraiseworthiness = new JCheckBox("Praiseworthiness");
+		pnAttributes.add(cbPraiseworthiness);
+
+		cbDesirability = new JCheckBox("Desirability");
+		pnAttributes.add(cbDesirability);
+
+		cbTime = new JCheckBox("Time");
+		pnAttributes.add(cbTime);
+
 		JPanel pnMechanism = new JPanel();
-		pnMechanism.setLayout(new BoxLayout(pnMechanism, BoxLayout.X_AXIS));
-		pnOntologyMechanism.add(pnMechanism);
+		pnMechanism.setLayout(new BoxLayout(pnMechanism, BoxLayout.Y_AXIS));
+		pnSettings.add(pnMechanism);
 
 		JPanel pnParameters = new JPanel();
 		pnParameters.setLayout(new BoxLayout(pnParameters, BoxLayout.Y_AXIS));
@@ -361,9 +356,6 @@ public class GeneralisationPanel extends JPanel {
 		for (Component component : pnSettings.getComponents())
 			((JComponent) component).setAlignmentY(Component.TOP_ALIGNMENT);
 
-		for (Component component : pnOntologyMechanism.getComponents())
-			((JComponent) component).setAlignmentX(Component.LEFT_ALIGNMENT);
-
 		for (Component component : pnOntology.getComponents())
 			((JComponent) component).setAlignmentY(Component.TOP_ALIGNMENT);
 
@@ -380,13 +372,13 @@ public class GeneralisationPanel extends JPanel {
 			((JComponent) component).setAlignmentX(Component.LEFT_ALIGNMENT);
 
 		for (Component component : pnMechanism.getComponents())
-			((JComponent) component).setAlignmentY(Component.TOP_ALIGNMENT);
+			((JComponent) component).setAlignmentX(Component.LEFT_ALIGNMENT);
 
 		for (Component component : pnParameters.getComponents())
 			((JComponent) component).setAlignmentX(Component.LEFT_ALIGNMENT);
 
 		for (Component component : pnActions.getComponents())
-			((JComponent) component).setAlignmentX(Component.LEFT_ALIGNMENT);
+			((JComponent) component).setAlignmentX(Component.CENTER_ALIGNMENT);
 
 		JPanel pnResults = new JPanel();
 		pnResults.setLayout(new BoxLayout(pnResults, BoxLayout.Y_AXIS));
@@ -488,7 +480,7 @@ public class GeneralisationPanel extends JPanel {
 		// location ontology
 		TreeOntology locationOntology = null;
 		if (cbLocationOntology.isSelected()) {
-			locationOntology = new TreeOntology(advancedMemoryComponent.getLocationOntologyFile());
+			locationOntology = new TreeOntology(advancedMemoryPanel.getAdvancedMemoryComponent().getLocationOntologyFile());
 			int depthMax = Integer.valueOf(tfLocationDepthMax.getText());
 			locationOntology.setDepthMax(depthMax);
 		}
@@ -533,8 +525,8 @@ public class GeneralisationPanel extends JPanel {
 
 		// execute Generalisation mechanism
 		Generalisation generalisation = new Generalisation();
-		generalisation.generalise(advancedMemoryComponent.getMemory().getEpisodicMemory(), filterAttributesStr, attributeNamesStr, minimumCoverage, timeOntology, targetOntology, objectOntology,
-				locationOntology);
+		generalisation.generalise(advancedMemoryPanel.getAdvancedMemoryComponent().getMemory().getEpisodicMemory(), filterAttributesStr, attributeNamesStr, minimumCoverage, timeOntology,
+				targetOntology, objectOntology, locationOntology);
 		this.generalisation = generalisation;
 
 		// update panel
@@ -755,8 +747,8 @@ public class GeneralisationPanel extends JPanel {
 	private class AlStoreResult implements ActionListener {
 		public void actionPerformed(ActionEvent event) {
 			if (generalisation != null) {
-				advancedMemoryComponent.getResults().add(generalisation);
-				advancedMemoryComponent.getAdvancedMemoryPanel().getOverviewPanel().updateResultList();
+				advancedMemoryPanel.getAdvancedMemoryComponent().getResults().add(generalisation);
+				advancedMemoryPanel.getOverviewPanel().updateResultList();
 				lbStatus.setText("Result stored!");
 			} else {
 				lbStatus.setText("Result is null and was not stored!");

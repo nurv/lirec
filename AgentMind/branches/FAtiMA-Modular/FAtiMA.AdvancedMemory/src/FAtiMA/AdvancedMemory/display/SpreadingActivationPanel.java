@@ -48,7 +48,6 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
-import FAtiMA.AdvancedMemory.AdvancedMemoryComponent;
 import FAtiMA.AdvancedMemory.SpreadingActivation;
 import FAtiMA.AdvancedMemory.ontology.TreeOntology;
 import FAtiMA.AdvancedMemory.ontology.NounOntology;
@@ -62,7 +61,7 @@ public class SpreadingActivationPanel extends JPanel {
 	private static final int OBJECT_DEPTH_MAX_DEFAULT = 1;
 	private static final int LOCATION_DEPTH_MAX_DEFAULT = 2;
 
-	private AdvancedMemoryComponent advancedMemoryComponent;
+	private AdvancedMemoryPanel advancedMemoryPanel;
 
 	private SpreadingActivation spreadingActivation;
 
@@ -108,9 +107,9 @@ public class SpreadingActivationPanel extends JPanel {
 
 	private JLabel lbStatus;
 
-	public SpreadingActivationPanel(AdvancedMemoryComponent advancedMemoryComponent) {
+	public SpreadingActivationPanel(AdvancedMemoryPanel advancedMemoryPanel) {
 		super();
-		this.advancedMemoryComponent = advancedMemoryComponent;
+		this.advancedMemoryPanel = advancedMemoryPanel;
 
 		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
@@ -262,7 +261,7 @@ public class SpreadingActivationPanel extends JPanel {
 		pnLocationOntology.add(tfLocationDepthMax);
 
 		JPanel pnMechanism = new JPanel();
-		pnMechanism.setLayout(new BoxLayout(pnMechanism, BoxLayout.Y_AXIS));
+		pnMechanism.setLayout(new BoxLayout(pnMechanism, BoxLayout.X_AXIS));
 		pnSettings.add(pnMechanism);
 
 		JPanel pnParameters = new JPanel();
@@ -323,13 +322,13 @@ public class SpreadingActivationPanel extends JPanel {
 			((JComponent) component).setAlignmentX(Component.LEFT_ALIGNMENT);
 
 		for (Component component : pnMechanism.getComponents())
-			((JComponent) component).setAlignmentX(Component.LEFT_ALIGNMENT);
+			((JComponent) component).setAlignmentY(Component.TOP_ALIGNMENT);
 
 		for (Component component : pnParameters.getComponents())
 			((JComponent) component).setAlignmentX(Component.LEFT_ALIGNMENT);
 
 		for (Component component : pnActions.getComponents())
-			((JComponent) component).setAlignmentX(Component.LEFT_ALIGNMENT);
+			((JComponent) component).setAlignmentX(Component.CENTER_ALIGNMENT);
 
 		JPanel pnResults = new JPanel();
 		pnResults.setLayout(new BoxLayout(pnResults, BoxLayout.Y_AXIS));
@@ -431,7 +430,7 @@ public class SpreadingActivationPanel extends JPanel {
 		// location ontology
 		TreeOntology locationOntology = null;
 		if (cbLocationOntology.isSelected()) {
-			locationOntology = new TreeOntology(advancedMemoryComponent.getLocationOntologyFile());
+			locationOntology = new TreeOntology(advancedMemoryPanel.getAdvancedMemoryComponent().getLocationOntologyFile());
 			int depthMax = Integer.valueOf(tfLocationDepthMax.getText());
 			locationOntology.setDepthMax(depthMax);
 		}
@@ -445,8 +444,8 @@ public class SpreadingActivationPanel extends JPanel {
 
 		// execute spreading activation
 		SpreadingActivation spreadingActivation = new SpreadingActivation();
-		spreadingActivation.spreadActivation(advancedMemoryComponent.getMemory().getEpisodicMemory(), filterAttributesStr, targetAttributeName, timeOntology, targetOntology, objectOntology,
-				locationOntology);
+		spreadingActivation.spreadActivation(advancedMemoryPanel.getAdvancedMemoryComponent().getMemory().getEpisodicMemory(), filterAttributesStr, targetAttributeName, timeOntology, targetOntology,
+				objectOntology, locationOntology);
 		this.spreadingActivation = spreadingActivation;
 
 		// update panel
@@ -621,8 +620,8 @@ public class SpreadingActivationPanel extends JPanel {
 	private class AlStoreResult implements ActionListener {
 		public void actionPerformed(ActionEvent event) {
 			if (spreadingActivation != null) {
-				advancedMemoryComponent.getResults().add(spreadingActivation);
-				advancedMemoryComponent.getAdvancedMemoryPanel().getOverviewPanel().updateResultList();
+				advancedMemoryPanel.getAdvancedMemoryComponent().getResults().add(spreadingActivation);
+				advancedMemoryPanel.getOverviewPanel().updateResultList();
 				lbStatus.setText("Result stored!");
 			} else {
 				lbStatus.setText("Result is null and was not stored!");
