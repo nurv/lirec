@@ -684,7 +684,10 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 			
 			//Start the remote agent socket
 			//this was moved from initialize method to here, because it has to be done after all parsing
-			_remoteAgent = createNewRemoteAgent(ConfigurationManager.getPlatform(), ConfigurationManager.getHost(), ConfigurationManager.getPort(), ConfigurationManager.getAgentProperties());
+			if (_remoteAgent==null)
+			{
+				_remoteAgent = createNewRemoteAgent(ConfigurationManager.getPlatform(), ConfigurationManager.getHost(), ConfigurationManager.getPort(), ConfigurationManager.getAgentProperties());
+			}
 			_remoteAgent.start();
 		}
 		catch(Exception e)
