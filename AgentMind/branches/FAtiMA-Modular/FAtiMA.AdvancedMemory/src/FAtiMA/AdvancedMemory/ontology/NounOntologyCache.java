@@ -27,16 +27,11 @@
 
 package FAtiMA.AdvancedMemory.ontology;
 
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 
-public class NounOntologyCache implements Serializable {
-
-	private static final long serialVersionUID = 1L;
+public class NounOntologyCache {
 
 	private static final NounOntologyCache instance = new NounOntologyCache();
 
@@ -99,11 +94,6 @@ public class NounOntologyCache implements Serializable {
 	public void clear() {
 		commonHypernyms.clear();
 		requestTimes.clear();
-	}
-
-	private void writeObject(ObjectOutputStream out) throws IOException {
-		clear();
-		out.defaultWriteObject();
 	}
 
 }
