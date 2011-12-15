@@ -79,7 +79,7 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 
 	private ArrayList<Object> results; // CompoundCue, SpreadingActivation, Generalisation
 
-	private boolean resultsLoaded;
+	private boolean resultsUpdated;
 
 	public AdvancedMemoryComponent() {
 		results = new ArrayList<Object>();
@@ -114,12 +114,12 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 		this.results = results;
 	}
 
-	public boolean isResultsLoaded() {
-		return resultsLoaded;
+	public boolean isResultsUpdated() {
+		return resultsUpdated;
 	}
 
-	public void setResultsLoaded(boolean resultsLoaded) {
-		this.resultsLoaded = resultsLoaded;
+	public void setResultsUpdated(boolean resultsUpdated) {
+		this.resultsUpdated = resultsUpdated;
 	}
 
 	@Override
@@ -347,6 +347,7 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 
 			// add to results
 			results.add(compoundCue);
+			setResultsUpdated(true);
 
 			// return result
 			String result = AdvancedMemoryWriter.getUnformattedXML(compoundCue);
@@ -489,7 +490,8 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 
 			// add to results
 			results.add(spreadingActivation);
-
+			setResultsUpdated(true);
+			
 			// return result
 			String result = AdvancedMemoryWriter.getUnformattedXML(spreadingActivation);
 			am.getRemoteAgent().ReportMemoryResult(result);
@@ -650,6 +652,7 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 
 			// add to results
 			results.add(generalisation);
+			setResultsUpdated(true);
 
 			// return result
 			String result = AdvancedMemoryWriter.getUnformattedXML(generalisation);
@@ -706,7 +709,7 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 			e.printStackTrace();
 		}
 		// update result list on overview panel
-		resultsLoaded = true;
+		resultsUpdated = true;
 	}
 
 	public void save(String fileName) {
@@ -716,7 +719,7 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
 		in.defaultReadObject();
 		// update result list on overview panel
-		resultsLoaded = true;
+		resultsUpdated = true;
 	}
 
 }

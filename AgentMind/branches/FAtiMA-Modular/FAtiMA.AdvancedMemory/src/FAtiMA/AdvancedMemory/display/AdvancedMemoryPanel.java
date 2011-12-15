@@ -98,9 +98,9 @@ public class AdvancedMemoryPanel extends AgentDisplayPanel {
 
 	@Override
 	public boolean Update(AgentCore ag) {
-		if (advancedMemoryComponent.isResultsLoaded()) {
+		if (advancedMemoryComponent.isResultsUpdated()) {
 			overviewPanel.updateResultList();
-			advancedMemoryComponent.setResultsLoaded(false);
+			advancedMemoryComponent.setResultsUpdated(false);
 			return true;
 		}
 		return false;
@@ -108,9 +108,9 @@ public class AdvancedMemoryPanel extends AgentDisplayPanel {
 
 	@Override
 	public boolean Update(AgentModel am) {
-		if (advancedMemoryComponent.isResultsLoaded()) {
+		if (advancedMemoryComponent.isResultsUpdated()) {
 			overviewPanel.updateResultList();
-			advancedMemoryComponent.setResultsLoaded(false);
+			advancedMemoryComponent.setResultsUpdated(false);
 			return true;
 		}
 		return false;
