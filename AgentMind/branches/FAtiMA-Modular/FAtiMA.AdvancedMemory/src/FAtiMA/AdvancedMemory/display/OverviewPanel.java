@@ -105,20 +105,20 @@ public class OverviewPanel extends JPanel {
 	}
 
 	public void updateResultList() {
+		synchronized (this) {
+			pnResults.removeAll();
+			for (Object result : advancedMemoryPanel.getAdvancedMemoryComponent().getResults()) {
+				pnResults.add(new ResultPanel(this, result));
+			}
+			//pnResults.repaint();
+			// workaround
+			pnResults.updateUI();
 
-		pnResults.removeAll();
-		for (Object result : advancedMemoryPanel.getAdvancedMemoryComponent().getResults()) {
-			pnResults.add(new ResultPanel(this, result));
+			for (Component component : pnResults.getComponents())
+				((JComponent) component).setAlignmentX(Component.LEFT_ALIGNMENT);
+
+			//lbStatus.setText("Result list updated at " + new Time().getRealTimeFormatted());		
 		}
-		//pnResults.repaint();
-		// workaround
-		pnResults.updateUI();
-
-		for (Component component : pnResults.getComponents())
-			((JComponent) component).setAlignmentX(Component.LEFT_ALIGNMENT);
-
-		//lbStatus.setText("Result list updated at " + new Time().getRealTimeFormatted());
-
 	}
 
 	private class AlLoad implements ActionListener {
