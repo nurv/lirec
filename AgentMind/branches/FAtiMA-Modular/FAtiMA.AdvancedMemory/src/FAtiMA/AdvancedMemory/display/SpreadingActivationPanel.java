@@ -596,6 +596,10 @@ public class SpreadingActivationPanel extends JPanel {
 		}
 
 		// update table model
+		Object[] columnNames = new Object[2];
+		columnNames[0] = spreadingActivation.getTargetAttributeName();
+		columnNames[1] = "Frequency";
+		tmResults.setColumnIdentifiers(columnNames);
 		for (String value : spreadingActivation.getFrequencies().keySet()) {
 			Object[] data = new Object[2];
 			data[0] = value;

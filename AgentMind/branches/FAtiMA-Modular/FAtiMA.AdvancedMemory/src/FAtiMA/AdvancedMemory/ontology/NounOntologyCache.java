@@ -64,10 +64,6 @@ public class NounOntologyCache {
 		commonHypernyms.put(nounsEncoded, lemmas);
 		requestTimes.put(nounsEncoded, System.currentTimeMillis());
 		if (commonHypernyms.size() > MAX_SIZE) {
-
-			// DEBUG
-			System.out.println("MAX SIZE EXCEEDED");
-
 			long requestTimeOldest = Long.MAX_VALUE;
 			String nounsEncodedOldest = null;
 			for (String nounsEncodedCurrent : requestTimes.keySet()) {
