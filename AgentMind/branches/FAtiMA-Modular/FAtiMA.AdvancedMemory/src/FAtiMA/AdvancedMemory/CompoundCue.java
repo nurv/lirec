@@ -239,7 +239,7 @@ public class CompoundCue implements Serializable {
 	public ActionDetail execute(ArrayList<ActionDetail> actionDetails, String filterAttributesStr, ActionDetail actionDetailTarget, TimeOntology timeOntology, NounOntology targetOntology,
 			NounOntology objectOntology, TreeOntology locationOntology) {
 
-		// count total number of days provided
+		// count number of days and number of working days provided
 		HashSet<Calendar> daysProvided = new HashSet<Calendar>();
 		HashSet<Calendar> workingDaysProvided = new HashSet<Calendar>();
 		for (ActionDetail actionDetail : actionDetails) {

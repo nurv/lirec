@@ -30,6 +30,8 @@ package FAtiMA.AdvancedMemory;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashSet;
 import java.util.StringTokenizer;
 
 import FAtiMA.AdvancedMemory.ontology.TreeOntology;
@@ -212,6 +214,27 @@ public class Generalisation implements Serializable {
 	public GER generalise(ArrayList<ActionDetail> actionDetails, String filterAttributesStr, String attributeNamesStr, int minimumCoverage, TimeOntology timeOntology, NounOntology targetOntology,
 			NounOntology objectOntology, TreeOntology locationOntology) {
 
+		// count number of days and number of working days provided
+		HashSet<Calendar> daysProvided = new HashSet<Calendar>();
+		HashSet<Calendar> workingDaysProvided = new HashSet<Calendar>();
+		for (ActionDetail actionDetail : actionDetails) {
+			// set date and time
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTimeInMillis(actionDetail.getTime().getRealTime());
+			// reset time
+			calendar.set(Calendar.HOUR, 0);
+			calendar.set(Calendar.MINUTE, 0);
+			calendar.set(Calendar.SECOND, 0);
+			calendar.set(Calendar.MILLISECOND, 0);
+			// add to sets
+			daysProvided.add(calendar);
+			if (TimeOntology.isWorkingDay(calendar.getTimeInMillis())) {
+				workingDaysProvided.add(calendar);
+			}
+		}
+		int numDaysProvided = daysProvided.size();
+		int numWorkingDaysProvided = workingDaysProvided.size();
+
 		// initialise
 		GER gerMax = null;
 		int coverageMax = 0;
@@ -365,6 +388,8 @@ public class Generalisation implements Serializable {
 
 		// update attributes
 		this.time = time;
+		this.numDaysProvided = numDaysProvided;
+		this.numWorkingDaysProvided = numWorkingDaysProvided;
 		this.filterAttributes = filterAttributes;
 		this.timeOntology = timeOntology;
 		this.targetOntology = targetOntology;

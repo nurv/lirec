@@ -39,6 +39,7 @@ public class TimeOntology implements Serializable {
 	public static final short ABSTRACTION_MODE_PART_OF_DAY = 0;
 	public static final short ABSTRACTION_MODE_DAY_OF_WEEK = 1;
 	public static final short ABSTRACTION_MODE_YEAR_MONTH_DAY = 2;
+	public static final short ABSTRACTION_MODE_HOUR_OF_DAY = 3;
 
 	private static final String[] PARTS_OF_DAY = { "Night", "Morning", "Afternoon", "Evening" };
 	private static final String[] DAYS_OF_WEEK = { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
@@ -227,7 +228,7 @@ public class TimeOntology implements Serializable {
 	}
 
 	/**
-	 * Returns year, month, day
+	 * Returns year, month, day.
 	 * 
 	 * @param timeInMillis
 	 *            date/time, use Calendar.getTimeInMillis()
@@ -238,6 +239,20 @@ public class TimeOntology implements Serializable {
 		calendar.setTimeInMillis(timeInMillis);
 		SimpleDateFormat sdfYearMonthDay = new SimpleDateFormat("yyyy-MM-dd");
 		return sdfYearMonthDay.format(calendar.getTime());
+	}
+
+	/**
+	 * Returns the hour of the day.
+	 * 
+	 * @param timeInMillis
+	 *            date/time, use Calendar.getTimeInMillis()
+	 * @return Hour of the day as String
+	 */
+	public static String getHourOfDayStr(long timeInMillis) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTimeInMillis(timeInMillis);
+		int hourOfDay = calendar.get(Calendar.HOUR_OF_DAY);
+		return String.valueOf(hourOfDay);
 	}
 
 	/**
@@ -255,6 +270,8 @@ public class TimeOntology implements Serializable {
 			return getDayOfWeekStr(timeInMillis);
 		case ABSTRACTION_MODE_YEAR_MONTH_DAY:
 			return getYearMonthDayStr(timeInMillis);
+		case ABSTRACTION_MODE_HOUR_OF_DAY:
+			return getHourOfDayStr(timeInMillis);
 		default:
 			return null;
 		}

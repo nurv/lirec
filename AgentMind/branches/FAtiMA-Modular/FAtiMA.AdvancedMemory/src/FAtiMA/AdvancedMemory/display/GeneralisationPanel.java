@@ -229,6 +229,7 @@ public class GeneralisationPanel extends JPanel {
 		cbTimeAbstractionMode.addItem("Part Of Day");
 		cbTimeAbstractionMode.addItem("Day Of Week");
 		cbTimeAbstractionMode.addItem("Year-Month-Day");
+		cbTimeAbstractionMode.addItem("Hour Of Day");
 		pnTimeOntology.add(cbTimeAbstractionMode);
 
 		JPanel pnTargetOntology = new JPanel();
