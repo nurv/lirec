@@ -186,7 +186,7 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 			// different parameters are separated by $
 			// <target id>$<filter attributes>$<time ontology parameters>$
 			//   <target ontology parameters>$<object ontology parameters>$
-			//   <location ontology parameters>
+			//   <location ontology parameters>$<result storage>
 			// note: multiple successive $ are recognised as only one separator
 			//       use * between $ to indicate an empty parameter
 
@@ -204,6 +204,9 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 
 			// <location ontology parameters> = <maximum depth>
 
+			// <result storage> = true | false
+			// true = store result, false = do not store result
+
 			// 
 
 			// usage examples:
@@ -211,6 +214,7 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 			// CC-MEMORY 34$target John*time Afternoon$0
 			// CC-MEMORY 91
 			// CC-MEMORY 47$time 2012-08-19$2$1
+			// CC-MEMORY 23$*$*$*$*$*$true
 
 			//
 
@@ -253,6 +257,12 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 				locationDepthMaxStr = stringTokenizer.nextToken();
 			} catch (Exception e) {
 				// no location ontology maximum depth given
+			}
+			String resultStorageStr = null;
+			try {
+				resultStorageStr = stringTokenizer.nextToken();
+			} catch (Exception e) {
+				// no result storage given
 			}
 
 			// parse target ID
@@ -341,13 +351,18 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 				}
 			}
 
+			// parse result storage
+			boolean resultStorage = Boolean.valueOf(resultStorageStr);
+
 			// execute Spreading Activation mechanism
 			CompoundCue compoundCue = new CompoundCue();
 			compoundCue.execute(memory.getEpisodicMemory(), filterAttributesStr, actionDetailTarget, timeOntology, targetOntology, objectOntology, locationOntology);
 
-			// add to results
-			results.add(compoundCue);
-			setResultsUpdated(true);
+			if (resultStorage) {
+				// add to results
+				results.add(compoundCue);
+				setResultsUpdated(true);
+			}
 
 			// return result
 			String result = AdvancedMemoryWriter.getUnformattedXML(compoundCue);
@@ -360,7 +375,7 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 			// different parameters are separated by $
 			// <target attribute name>$<filter attributes>$<time ontology parameters>$
 			//   <target ontology parameters>$<object ontology parameters>$
-			//   <location ontology parameters>
+			//   <location ontology parameters>$<result storage>
 			// note: multiple successive $ are recognised as only one separator
 			//       use * between $ to indicate an empty parameter
 
@@ -378,6 +393,9 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 
 			// <location ontology parameters> = <maximum depth>
 
+			// <result storage> = true | false
+			// true = store result, false = do not store result
+
 			// 
 
 			// usage examples:
@@ -385,6 +403,9 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 			// SA-MEMORY action$subject SELF$2$1$*$2
 			// SA-MEMORY target
 			// SA-MEMORY location$*$*$*$*$2
+			// SA-MEMORY location$*$*$*$*$*$true
+
+			//
 
 			// parse perception
 			StringTokenizer stringTokenizer = new StringTokenizer(perception, "$");
@@ -425,6 +446,12 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 				locationDepthMaxStr = stringTokenizer.nextToken();
 			} catch (Exception e) {
 				// no location ontology maximum depth given
+			}
+			String resultStorageStr = null;
+			try {
+				resultStorageStr = stringTokenizer.nextToken();
+			} catch (Exception e) {
+				// no result storage given
 			}
 
 			// parse time ontology
@@ -484,14 +511,19 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 				}
 			}
 
+			// parse result storage
+			boolean resultStorage = Boolean.valueOf(resultStorageStr);
+
 			// execute Spreading Activation mechanism
 			SpreadingActivation spreadingActivation = new SpreadingActivation();
 			spreadingActivation.spreadActivation(memory.getEpisodicMemory(), filterAttributesStr, targetAttributeName, timeOntology, targetOntology, objectOntology, locationOntology);
 
-			// add to results
-			results.add(spreadingActivation);
-			setResultsUpdated(true);
-			
+			if (resultStorage) {
+				// add to results
+				results.add(spreadingActivation);
+				setResultsUpdated(true);
+			}
+
 			// return result
 			String result = AdvancedMemoryWriter.getUnformattedXML(spreadingActivation);
 			am.getRemoteAgent().ReportMemoryResult(result);
@@ -503,7 +535,8 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 			// different parameters are separated by $
 			// <attribute names>$<minimum coverage>$<filter attributes>$
 			//   <time ontology parameters>$<target ontology parameters>$
-			//   <object ontology parameters>$<location ontology parameters>
+			//   <object ontology parameters>$<location ontology parameters>$
+			//   <result storage>
 			// note: multiple successive $ are recognised as only one separator 
 			//       use * between $ to indicate an empty parameter
 
@@ -524,6 +557,9 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 
 			// <location ontology parameters> = <maximum depth>
 
+			// <result storage> = true | false
+			// true = store result, false = do not store result			
+
 			// 
 
 			// usage examples:
@@ -531,6 +567,9 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 			// G-MEMORY subject*action*target*time$1$subject SELF*action greet*target Amol*time Morning$0
 			// G-MEMORY subject*action*target*time$3$subject SELF*time Afternoon$0
 			// G-MEMORY subject*target*time$5$time Tuesday$1$1
+			// G-MEMORY target$1$*$*$*$*$*$true
+
+			// 
 
 			// parse perception
 			StringTokenizer stringTokenizer = new StringTokenizer(perception, "$");
@@ -578,6 +617,12 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 				locationDepthMaxStr = stringTokenizer.nextToken();
 			} catch (Exception e) {
 				// no location ontology maximum depth given
+			}
+			String resultStorageStr = null;
+			try {
+				resultStorageStr = stringTokenizer.nextToken();
+			} catch (Exception e) {
+				// no result storage given
 			}
 
 			// parse minimum coverage
@@ -646,22 +691,29 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 				}
 			}
 
+			// parse result storage
+			boolean resultStorage = Boolean.valueOf(resultStorageStr);
+
 			// execute Generalisation mechanism
 			Generalisation generalisation = new Generalisation();
 			generalisation.generalise(memory.getEpisodicMemory(), filterAttributesStr, attributeNamesStr, minimumCoverage, timeOntology, targetOntology, objectOntology, locationOntology);
 
-			// add to results
-			results.add(generalisation);
-			setResultsUpdated(true);
+			if (resultStorage) {
+				// add to results
+				results.add(generalisation);
+				setResultsUpdated(true);
+			}
 
 			// return result
 			String result = AdvancedMemoryWriter.getUnformattedXML(generalisation);
 			am.getRemoteAgent().ReportMemoryResult(result);
 
 		} else if (msgType.equals(SAVE_ADV_MEMORY)) {
+
 			save(memory.getSaveDirectory() + FILENAME);
 
 		} else if (msgType.equals(LOAD_ADV_MEMORY)) {
+
 			load(memory.getSaveDirectory() + FILENAME);
 
 		}
