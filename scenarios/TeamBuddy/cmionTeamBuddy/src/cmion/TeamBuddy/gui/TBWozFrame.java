@@ -644,7 +644,7 @@ public class TBWozFrame extends javax.swing.JFrame implements ActionListener, Li
 		else if (arg0.getSource() == btnSetEmotion)
 		{
 			// first parameter: emotion to display
-			parameters.add(Integer.toString(comboBoxEmotion.getSelectedIndex()));
+			parameters.add(comboBoxEmotion.getSelectedItem().toString());
 			MindAction mindAction = new MindAction("Sarah", "wozEmotion", parameters);
 			parentMindConnector.newAction(mindAction);		
 		}	
