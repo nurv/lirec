@@ -29,16 +29,18 @@ public class Navigate extends SamgarCompetency {
 			System.out.println("Navigation finished " + location);
 
 			// set location in WorldModel			
-			String objectName = "CurrentPlatform";
-			String[] locationNames = { "Home", "Desk1", "Desk2", "Desk3", "Desk4", "Desk5", "Desk6", "Door", "RechargePosition", "VisitorPosition" };
-			WorldModel wm = getArchitecture().getWorldModel();
-			if (wm.hasObject(objectName)) {
-				wm.getObject(objectName).requestSetProperty("location", locationNames[location]);
-			} else {
-				HashMap<String, Object> properties = new HashMap<String, Object>();
-				properties.put("location", locationNames[location]);
-				wm.requestAddObject(objectName, properties);
+			String[] locationNames = { "Home", "Desk1", "Desk2", "Desk3", "Desk4", "Desk5", "Desk6", "Door", "DockPosition", "VisitorPosition", "UndockPosition" };
+			setWMObjectProperty("CurrentPlatform", "location", locationNames[location]);
+
+			// set charging status in WorldModel
+			if (location == 8) {
+				// robot was sent to dock position
+				setWMObjectProperty("CurrentPlatform", "charging", "True");
+			} else if (location == 10) {
+				// robot was sent to undock position
+				setWMObjectProperty("CurrentPlatform", "charging", "False");
 			}
+
 		}
 
 	}
@@ -75,12 +77,22 @@ public class Navigate extends SamgarCompetency {
 		}
 		return true;
 
-		
 	}
 
 	@Override
 	public boolean runsInBackground() {
 		return false;
+	}
+
+	private void setWMObjectProperty(String objectName, String propertyName, Object propertyValue) {
+		WorldModel wm = getArchitecture().getWorldModel();
+		if (wm.hasObject(objectName)) {
+			wm.getObject(objectName).requestSetProperty(propertyName, propertyValue);
+		} else {
+			HashMap<String, Object> properties = new HashMap<String, Object>();
+			properties.put(propertyName, propertyValue);
+			wm.requestAddObject(objectName, properties);
+		}
 	}
 
 }
