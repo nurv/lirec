@@ -38,6 +38,7 @@
 				<xs:attribute name="decayFactor" type="xs:double" use="required"/>
  				<xs:attribute name="weight" type="xs:double" use ="required" />
  				<xs:attribute name="intensity" type="xs:double" use ="required" />
+ 				<xs:attribute name="update" type="xs:string" use ="optional" />
   			</xs:complexType>
   		</xs:element>
   	</xs:sequence>
