@@ -9,5 +9,6 @@
 	<classpathentry kind="lib" path="google-collect-1.0-rc1.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/ION.Meta"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+	<classpathentry kind="lib" path="jetty-all-7.3.0.v20110203.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
