@@ -1,7 +1,6 @@
 package cmion.TeamBuddy.competencies;
 
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 
@@ -65,7 +64,6 @@ public class Cereproc extends SamgarCompetency {
 		else
 			System.out.println(text);
 		
-		/*
 		// check the text for variables (words strings starting with $)
 		StringTokenizer st = new StringTokenizer(text);
 		while (st.hasMoreTokens()) {
@@ -101,7 +99,6 @@ public class Cereproc extends SamgarCompetency {
 				return true;
 		}
 		
-		*/
 		return true;
 	}
 

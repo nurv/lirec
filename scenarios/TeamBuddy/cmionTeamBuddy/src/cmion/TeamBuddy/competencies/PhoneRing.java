@@ -54,7 +54,7 @@ public class PhoneRing extends SamgarCompetency {
 		// 2 phone picked up
 
 		phoneStatusOld = phoneStatus;
-		phoneStatus = 0;//bottleIn.get(0).asInt();
+		phoneStatus = bottleIn.get(0).asInt();
 
 		setWMObjectProperty(WM_CURRENT_PLATFORM, WM_PHONE_STATUS, PHONE_STATUS[phoneStatus]);
 
