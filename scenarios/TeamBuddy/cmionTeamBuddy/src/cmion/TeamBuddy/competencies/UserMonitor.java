@@ -25,7 +25,7 @@ public class UserMonitor extends Competency {
 		while (true) {
 
 			try {
-				Thread.sleep(60000);
+				Thread.sleep(10 * 1000);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

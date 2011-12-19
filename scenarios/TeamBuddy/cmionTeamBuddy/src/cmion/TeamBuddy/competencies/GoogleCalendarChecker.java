@@ -38,7 +38,7 @@ public class GoogleCalendarChecker extends Competency {
 	private HashMap<String,String> eventList;
 	
 	/** running id for events */
-	private int id;
+	private static int id;
 	
 	public GoogleCalendarChecker(IArchitecture architecture, String owner, String login, String pw, String feedURL) 
 	{
@@ -124,14 +124,15 @@ public class GoogleCalendarChecker extends Competency {
 					String eventName = entry.getTitle().getPlainText();
 					if (!eventList.containsKey(eventName))
 					{
-						addNewEvent(eventName);
+						addNewEvent(sdf.format(cal.getTime()),eventName);
 					}
 				
 				}
 				
 
 			} catch (Exception e) {
-				e.printStackTrace();
+				//e.printStackTrace();
+				System.err.println("PROBLEM WITH GOOGLE CALENDAR");
 			}
 			// sleep 1 minute after every query
 			try {
@@ -149,7 +150,7 @@ public class GoogleCalendarChecker extends Competency {
 		available = true;
 	}
 	
-	private void addNewEvent(String eventName)
+	private void addNewEvent(String timeNow, String eventName)
 	{	
 		// get a new id for the event
 		id ++;
@@ -157,7 +158,7 @@ public class GoogleCalendarChecker extends Competency {
 
 		eventList.put(eventName,eventId);
 
-		System.out.println("GoogleCalendarChecker: new event ("+ eventId +")for " + owner + ": "+ eventName );
+		System.out.println("GoogleCalendarChecker: new event ("+ eventId +")for " + owner + ": "+ eventName + ", current time: " + timeNow );
 		
 		// write event name to blackboard
 		if (architecture.getBlackBoard().hasSubContainer(EVENT_CONTAINER_BLACKBOARD))

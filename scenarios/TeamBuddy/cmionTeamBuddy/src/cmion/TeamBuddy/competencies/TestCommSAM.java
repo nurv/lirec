@@ -5,6 +5,7 @@ import java.util.HashMap;
 import yarp.Bottle;
 import cmion.addOns.samgar.SamgarCompetency;
 import cmion.architecture.IArchitecture;
+import cmion.storage.WorldModel;
 
 
 public class TestCommSAM  extends SamgarCompetency {
@@ -68,9 +69,13 @@ public class TestCommSAM  extends SamgarCompetency {
 	{
 		
 		try {
-			Thread.sleep(10000);
+			Thread.sleep(4000);
 		} catch (InterruptedException e) {}
-		
+		String task = "greet";
+		String target = "Michael";
+		setWMObjectProperty("CurrentPlatform", "avgPower,"+task+","+target, "6");
+
+		/*
 		// wait until finished or timed out (currently set to 500 sec  = 5000*100 ms sleep)
 		while(true)
 		{
@@ -89,8 +94,31 @@ public class TestCommSAM  extends SamgarCompetency {
 				//System.out.println("no reply for out count "+outcounter);
 			outcounter++;
 			
-		}
-		//return true;
+		}*/
+		return true;
 	}
+	
+	private void setWMAgentProperty(String agentName, String propertyName, Object propertyValue) {
+		WorldModel wm = this.getArchitecture().getWorldModel();
+		if (wm.hasAgent(agentName)) {
+			wm.getAgent(agentName).requestSetProperty(propertyName, propertyValue);
+		} else {
+			HashMap<String, Object> properties = new HashMap<String, Object>();
+			properties.put(propertyName, propertyValue);
+			wm.requestAddAgent(agentName, properties);
+		}
+		
+	}
+	
+	private void setWMObjectProperty(String objectName, String propertyName, Object propertyValue) {
+		WorldModel wm = this.getArchitecture().getWorldModel();
+		if (wm.hasObject(objectName)) {
+			wm.getObject(objectName).requestSetProperty(propertyName, propertyValue);
+		} else {
+			HashMap<String, Object> properties = new HashMap<String, Object>();
+			properties.put(propertyName, propertyValue);
+			wm.requestAddObject(objectName, properties);
+		}
+	}	
 
 }

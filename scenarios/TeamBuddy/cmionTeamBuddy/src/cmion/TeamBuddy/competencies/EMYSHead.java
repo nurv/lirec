@@ -18,12 +18,13 @@ import cmion.level2.migration.MigrationAware;
 import cmion.level2.migration.MigrationUtils;
 import cmion.storage.EventPropertyChanged;
 
-public class EMYSHead extends SamgarCompetency implements MigrationAware, Migrating{
+public class EMYSHead extends SamgarCompetency implements MigrationAware, Migrating
+{
 
-	public static float JOY_THRESHOLD = 3.0f;
+	public static float JOY_THRESHOLD =  4.0f;
 	public static float SAD_THRESHOLD = -2.0f;
 	
-	private int currentEmotion;
+	private String currentEmotion;
 	private String emotionToMigrate;
 	private boolean migrateFlag;
 	
@@ -33,7 +34,7 @@ public class EMYSHead extends SamgarCompetency implements MigrationAware, Migrat
 		//name and type of the competence
 		this.competencyName ="EMYSHead";
 		this.competencyType ="EMYSHead";
-		currentEmotion = -1; // -1 means no emotion is set
+		currentEmotion = "-1"; // -1 means no emotion is set
 		migrateFlag = false;
 	}
 
@@ -67,7 +68,7 @@ public class EMYSHead extends SamgarCompetency implements MigrationAware, Migrat
 	    		if (evt1.getPropertyName().equals("FatimaMood"))
 	    		{
 	    			float mood = Float.parseFloat(evt1.getPropertyValue().toString());
-	    			setMood(mood);
+	    			//setMood(mood);
 	    		}	    			    		
 	    	}
 	    }
@@ -82,32 +83,42 @@ public class EMYSHead extends SamgarCompetency implements MigrationAware, Migrat
 
 	private void setMood(float mood) 
 	{
-		if ((mood>JOY_THRESHOLD) && (currentEmotion!=3)) 
-			setEmotion(3);
-		else if ((mood<SAD_THRESHOLD) && (currentEmotion!=5)) 
-			setEmotion(5);
-		else if ((mood>SAD_THRESHOLD) && (mood<JOY_THRESHOLD) && (currentEmotion!=0))
-			setEmotion(0);
+		if ((mood>JOY_THRESHOLD) && (!currentEmotion.equals("3"))) 
+			setEmotion("3");
+		else if ((mood<SAD_THRESHOLD) && (!currentEmotion.equals("5"))) 
+			setEmotion("5");
+		else if ((mood>SAD_THRESHOLD) && (mood<JOY_THRESHOLD) && (!currentEmotion.equals("0")))
+			setEmotion("0");
 	}		
 	
-	private void setEmotion(int emotion) 
+	private void setEmotion(String emotion) 
 	{
 		if(migrateFlag==false)
 		{
 			System.out.println("emotion set to " + emotion);
-			if (emotion==6)
+			if (emotion.equals("6"))
 			{
 				migrateFlag=true;
 				emotionToMigrate = currentEmotionAsString();
 			} 
 			currentEmotion = emotion;
 			Bottle b = this.prepareBottle();
-			b.addInt(emotion);
+			b.addString(emotion);
 			this.sendBottle();
 			b.clear();
 		}			
 	}
 
+	private void setGaze(String target) 
+	{
+		Bottle b = this.prepareBottle();
+		b.addString("100");
+		b.addString(target);
+		this.sendBottle();
+		b.clear();
+	}
+	
+	
 	@Override
 	public boolean runsInBackground() 
 	{
@@ -116,12 +127,31 @@ public class EMYSHead extends SamgarCompetency implements MigrationAware, Migrat
 
 	@Override
 	protected boolean competencyCode(HashMap<String, String> parameters){
-		String emotion = parameters.get("emotion");
 		
-		int iEmotion = Integer.parseInt(emotion);
+		// first code to check if this was called to set gaze
+		
+		if (parameters.containsKey("gazeTarget"))
+		{
+			String gazeTarget = parameters.get("gazeTarget");
+			setGaze(gazeTarget);
+			return true;
+		}	
+		
+		// if we reach here we are not in gaze mode so assume we are in emotion mode
+		
+		String emotion="";
+		if (parameters.containsKey("emotion"))
+		{
+				emotion = parameters.get("emotion");
+		}
+		else if (parameters.containsKey("emotionAsStr"))
+		{
+				emotion = emotionStringAsInt(parameters.get("emotionAsStr"));
+		}
+		else return false;
 		
 		migrateFlag = false;
-		setEmotion(iEmotion);
+		setEmotion(emotion);
 
 		try {
 			Thread.sleep(200);
@@ -130,51 +160,52 @@ public class EMYSHead extends SamgarCompetency implements MigrationAware, Migrat
 		return true;
 	}
 
-	@Override
+	//@Override
 	public void onMigrationIn() 
 	{
 		migrateFlag=false;
 	}
 
-	@Override
+	//@Override
 	public void onMigrationOut() {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
+	//@Override
 	public void onMigrationSuccess() {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
+	//@Override
 	public void onMigrationFailure() {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
+	//@Override
 	public String getMessageTag() 
 	{
 		return "currentEmotion";
 	}
 
-	@Override
+	//@Override
 	public void restoreState(Element message) {
 		
 		migrateFlag=false;
 		
 		String emoString = message.getElementsByTagName("emotion").item(0).getChildNodes().item(0).getNodeValue();
-		
-		if (emoString.equals("neutral")) setEmotion(0);
-		else if (emoString.equals("anger")) setEmotion(1);
-		else if (emoString.equals("joy")) setEmotion(3);		
-		else if (emoString.equals("surprise")) setEmotion(4);
-		else if (emoString.equals("sadness")) setEmotion(5);
+		if (emoString.equals("neutral")) setEmotion("0");
+		else if (emoString.equals("anger")) setEmotion("1");
+		else if (emoString.equals("fear")) setEmotion("2");
+		else if (emoString.equals("joy")) setEmotion("3");		
+		else if (emoString.equals("surprise")) setEmotion("4");
+		else if (emoString.equals("sadness")) setEmotion("5");
+		else if (emoString.equals("sleeping")) setEmotion("6");
 	}
 
-	@Override
+	//@Override
 	public Element saveState(Document doc) {
 		Element parent = doc.createElement(getMessageTag());
 		
@@ -187,12 +218,25 @@ public class EMYSHead extends SamgarCompetency implements MigrationAware, Migrat
 	}
 
 	private String currentEmotionAsString() {
-		if (currentEmotion == 0) return "neutral";
-		if (currentEmotion == 1) return "anger";
-		if (currentEmotion == 3) return "joy";
-		if (currentEmotion == 4) return "surprise";
-		if (currentEmotion == 5) return "sadness";
+		if (currentEmotion.equals("0")) return "neutral";
+		if (currentEmotion.equals("1")) return "anger";
+		if (currentEmotion.equals("2")) return "fear";
+		if (currentEmotion.equals("3")) return "joy";
+		if (currentEmotion.equals("4")) return "surprise";
+		if (currentEmotion.equals("5")) return "sadness";
+		if (currentEmotion.equals("6")) return "sleeping";
 		return "neutral";
+	}
+
+	private String emotionStringAsInt(String emoString) {
+		if (emoString.equals("neutral")) return "0";
+		else if (emoString.equals("anger")) return "1";
+		else if (emoString.equals("fear")) return "2";
+		else if (emoString.equals("joy")) return "3";		
+		else if (emoString.equals("surprise")) return "4";
+		else if (emoString.equals("sadness")) return "5";
+		else if (emoString.equals("sleeping")) return "6";
+		return "1";
 	}
 
 }
