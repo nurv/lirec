@@ -623,7 +623,7 @@ public class ITWEmysWozFrame extends javax.swing.JFrame implements ActionListene
 				{
 					ComboBoxModel comboBoxGazeModel = 
 						new DefaultComboBoxModel(
-								new String[] { "user", "D1", "D2", "D3", "D4", "D5", "D6" });
+								new String[] { "user", "deskbob", "deskpaul", "screen" });
 					comboBoxGaze = new JComboBox();
 					jPanel1.add(comboBoxGaze);
 					comboBoxGaze.setModel(comboBoxGazeModel);
