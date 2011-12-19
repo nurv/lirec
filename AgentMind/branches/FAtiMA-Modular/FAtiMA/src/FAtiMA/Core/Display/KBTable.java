@@ -104,7 +104,7 @@ public class KBTable extends JTable {
 		Object[] rowData = new Object[_model.getColumnCount()];
 		
 		rowData[0] = name;
-		rowData[1] = value.toString();
+		rowData[1] = String.valueOf(value);
         
         this._model.addRow(rowData);
         if(highlighted)
