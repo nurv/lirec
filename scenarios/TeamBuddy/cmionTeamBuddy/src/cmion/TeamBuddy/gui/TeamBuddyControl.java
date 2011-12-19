@@ -1,7 +1,5 @@
 package cmion.TeamBuddy.gui;
 
-import ion.Meta.Simulation;
-
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -10,7 +8,6 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import cmion.architecture.CmionComponent;
 import cmion.architecture.IArchitecture;
-import cmion.level3.fatima.RequestGeneralise;
 
 public class TeamBuddyControl extends CmionComponent {
 
@@ -74,7 +71,7 @@ public class TeamBuddyControl extends CmionComponent {
 		{
 			if (arg0.getSource() == btnGeneralise)
 			{
-				Simulation.instance.schedule(new RequestGeneralise());
+				//Simulation.instance.schedule(new RequestGeneralise());
 			}
 		}
 	}

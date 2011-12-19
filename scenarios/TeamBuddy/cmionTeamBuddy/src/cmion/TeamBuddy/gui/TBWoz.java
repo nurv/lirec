@@ -126,10 +126,6 @@ protected void processEntityAdded(String entityName) {}
 protected void processEntityRemoved(String entityName) {}
 
 @Override
-protected void processPropertyChanged(String entityName,
-		String propertyName, String propertyValue) {}
-
-@Override
 protected void processPropertyRemoved(String entityName, String propertyName) {}
 
 
@@ -157,6 +153,18 @@ public void sendMindToSleep() {}
 
 @Override
 protected void processActionCancellation(MindAction a) {
+	// TODO Auto-generated method stub
+	
+}
+
+@Override
+protected void processPropertyChanged(String entityName, String propertyName, String propertyValue, boolean persistent) {
+	// TODO Auto-generated method stub
+	
+}
+
+@Override
+protected void processRawMessage(String message) {
 	// TODO Auto-generated method stub
 	
 }
