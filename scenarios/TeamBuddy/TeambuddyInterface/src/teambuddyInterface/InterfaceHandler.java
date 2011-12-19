@@ -47,6 +47,8 @@ public class InterfaceHandler extends AbstractHandler {
 
 	private static final String WM_CHARGING = "charging";
 
+	private static final String WM_LOCATION = "location";
+
 	private static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 
 	private static final String XML_FILENAME = "UserData.xml";
@@ -56,12 +58,6 @@ public class InterfaceHandler extends AbstractHandler {
 	private UserData userData;
 
 	private User loginUser;
-
-	private ArrayList<String> talkPresets;
-
-	private ArrayList<String> talkPresetSymbols;
-
-	private static final boolean ENABLE_QUICK_TALK = false;
 
 	private static final boolean ENABLE_SEND_HOME = false;
 
@@ -84,20 +80,6 @@ public class InterfaceHandler extends AbstractHandler {
 		xmlAccess = new XMLAccess();
 		userData = xmlAccess.loadXML(XML_FILENAME);
 
-		talkPresets = new ArrayList<String>();
-		talkPresetSymbols = new ArrayList<String>();
-
-		talkPresets.add("I am fine.");
-		talkPresetSymbols.add("IAmFine");
-
-		talkPresets.add("I feel bad.");
-		talkPresetSymbols.add("IFeelBad");
-
-		talkPresets.add("I am glad to see you.");
-		talkPresetSymbols.add("GladToSeeYou");
-
-		talkPresets.add("Please leave me alone.");
-		talkPresetSymbols.add("LeaveMeAlone");
 	}
 
 	public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
@@ -178,14 +160,6 @@ public class InterfaceHandler extends AbstractHandler {
 			ArrayList<String> parameters = new ArrayList<String>();
 			parameters.add("SELF");
 			raiseMindAction(sendHomeUsername, "sendHome", parameters);
-
-		} else if (action.equals("talk")) {
-			// talk to Teambuddy
-
-			//String talkUsername = request.getParameter("talkUsername");
-			String talkText = request.getParameter("talkText");
-			String talkSymbol = request.getParameter("talkSymbol");
-			talkReceived(talkText, talkSymbol);
 
 		} else if (action.equals("leaveMessage")) {
 			// leave a message
@@ -358,6 +332,22 @@ public class InterfaceHandler extends AbstractHandler {
 			parameters.add(chargingStatus);
 			raiseMindAction(loginUser.getUsername(), "setCharging", parameters);
 
+		} else if (action.equals("sendDocking")) {
+			// send to dock in docking station
+			
+			// raise remote action
+			ArrayList<String> parameters = new ArrayList<String>();
+			parameters.add("SELF");
+			raiseMindAction(loginUser.getUsername(), "sendDocking", parameters);
+
+		} else if (action.equals("sendUndocking")) {
+			// send to undock from docking station
+
+			// raise remote action
+			ArrayList<String> parameters = new ArrayList<String>();
+			parameters.add("SELF");
+			raiseMindAction(loginUser.getUsername(), "sendUndocking", parameters);
+
 		} else if (action.equals("history")) {
 			// view history of requests
 
@@ -449,11 +439,6 @@ public class InterfaceHandler extends AbstractHandler {
 				out.println(getStartPage());
 			} else if (page.equals("start")) {
 				out.println(getStartPage());
-			} else if (page.equals("talk")) {
-				out.println(getTalkPage());
-			} else if (page.equals("talked")) {
-				String talkText = request.getParameter("talkText");
-				out.println(getTalkedPage(talkText));
 			} else if (page.equals("message")) {
 				out.println(getMessagePage());
 			} else if (page.equals("messageLeft")) {
@@ -499,6 +484,8 @@ public class InterfaceHandler extends AbstractHandler {
 				out.println(getHistoryInfoPage(infoUsername, infoTypename));
 			} else if (page.equals("charging")) {
 				out.println(getChargingPage());
+			} else if (page.equals("docking")) {
+				out.println(getDockingPage());
 			} else if (page.equals("report")) {
 				out.println(getReportPage());
 			} else if (page.equals("reportInfo")) {
@@ -603,35 +590,6 @@ public class InterfaceHandler extends AbstractHandler {
 		html += "  </form>\n";
 		html += "</p>\n";
 
-		if (ENABLE_QUICK_TALK) {
-			html += "<p>For quickly talking to the Teambuddy, please click here:</p>\n";
-			html += "<table>\n";
-			html += "  <tr>\n";
-			html += "    <td valign=\"top\">\n";
-
-			for (int i = 0; i < talkPresets.size(); i++) {
-				String talkPreset = talkPresets.get(i);
-				String talkPresetSymbol = talkPresetSymbols.get(i);
-
-				if (i == Math.round((double) talkPresets.size() / 2)) {
-					html += "    </td>\n";
-					html += "    <td valign=\"top\">\n";
-				}
-
-				html += "      <form action=\"\" method=\"POST\">\n";
-				html += "        <input name=\"submit\" type=\"submit\" value=\"" + talkPreset + "\" />\n";
-				html += "        <input name=\"talkText\" type=\"hidden\" value=\"" + talkPreset + "\">\n";
-				html += "        <input name=\"talkSymbol\" type=\"hidden\" value=\"" + talkPresetSymbol + "\">\n";
-				html += "        <input name=\"action\" type=\"hidden\" value=\"talk\" />\n";
-				html += "        <input name=\"page\" type=\"hidden\" value=\"talked\" />\n";
-				html += "      </form>\n";
-			}
-
-			html += "    </td>\n";
-			html += "  </tr>\n";
-			html += "</table>\n";
-		}
-
 		if (ENABLE_SEND_HOME) {
 			html += "<p>\n";
 			html += "  <form action=\"\" method=\"POST\">\n";
@@ -655,11 +613,6 @@ public class InterfaceHandler extends AbstractHandler {
 		html += "  <tr>\n";
 
 		html += "    <td valign=\"top\">\n";
-
-		html += "      <form action=\"\" method=\"POST\">\n";
-		html += "        <input name=\"submit\" type=\"submit\" value=\"Talk to Teambuddy\" />\n";
-		html += "        <input name=\"page\" type=\"hidden\" value=\"talk\" />\n";
-		html += "      </form>\n";
 
 		html += "      <form action=\"\" method=\"POST\">\n";
 		html += "        <input name=\"submit\" type=\"submit\" value=\"Leave a message\" />\n";
@@ -699,9 +652,18 @@ public class InterfaceHandler extends AbstractHandler {
 			html += "        <input name=\"page\" type=\"hidden\" value=\"report\" />\n";
 			html += "      </form>\n";
 
+			html += "    </td>\n";
+
+			html += "    <td valign=\"top\">\n";
+
 			html += "      <form action=\"\" method=\"POST\">\n";
 			html += "        <input name=\"submit\" type=\"submit\" value=\"Set charging status\" />\n";
 			html += "        <input name=\"page\" type=\"hidden\" value=\"charging\" />\n";
+			html += "      </form>\n";
+
+			html += "      <form action=\"\" method=\"POST\">\n";
+			html += "        <input name=\"submit\" type=\"submit\" value=\"Send docking/undocking\" />\n";
+			html += "        <input name=\"page\" type=\"hidden\" value=\"docking\" />\n";
 			html += "      </form>\n";
 
 			html += "    </td>\n";
@@ -710,66 +672,6 @@ public class InterfaceHandler extends AbstractHandler {
 
 		html += "  </tr>\n";
 		html += "</table>\n";
-
-		return html;
-	}
-
-	private String getTalkPage() {
-		String html = "";
-
-		html += "<p>What do you want to tell the Teambuddy?</p>\n";
-
-		html += "<form action=\"\" method=\"POST\">\n";
-		html += "  <textarea name=\"talkText\" rows=\"2\" cols=\"40\"></textarea><br/>\n";
-		html += "  <input name=\"talkSymbol\" type=\"hidden\" value=\"FreeTalk\">\n";
-		html += "  <input name=\"submit\" type=\"submit\" value=\"Talk to Teambuddy\" />\n";
-		html += "  <input name=\"action\" type=\"hidden\" value=\"talk\" />\n";
-		html += "  <input name=\"page\" type=\"hidden\" value=\"talked\" />\n";
-		html += "  <input name=\"talkUsername\" type=\"hidden\" value=\"" + loginUser.getUsername() + "\" />\n";
-		html += "</form>\n";
-
-		html += "<p>Presets:</p>\n";
-		html += "<table>\n";
-		html += "  <tr>\n";
-		html += "    <td valign=\"top\">\n";
-
-		for (int i = 0; i < talkPresets.size(); i++) {
-			String talkPreset = talkPresets.get(i);
-			String talkPresetSymbol = talkPresetSymbols.get(i);
-
-			if (i == Math.round((double) talkPresets.size() / 2)) {
-				html += "    </td>\n";
-				html += "    <td valign=\"top\">\n";
-			}
-
-			html += "      <form action=\"\" method=\"POST\">\n";
-			html += "        <input name=\"submit\" type=\"submit\" value=\"" + talkPreset + "\" />\n";
-			html += "        <input name=\"talkText\" type=\"hidden\" value=\"" + talkPreset + "\">\n";
-			html += "        <input name=\"talkSymbol\" type=\"hidden\" value=\"" + talkPresetSymbol + "\">\n";
-			html += "        <input name=\"action\" type=\"hidden\" value=\"talk\" />\n";
-			html += "        <input name=\"page\" type=\"hidden\" value=\"talked\" />\n";
-			html += "        <input name=\"talkUsername\" type=\"hidden\" value=\"" + loginUser.getUsername() + "\" />\n";
-			html += "      </form>\n";
-		}
-
-		html += "    </td>\n";
-		html += "  </tr>\n";
-		html += "</table>\n";
-
-		return html;
-	}
-
-	private String getTalkedPage(String talkText) {
-		String html = "";
-
-		html += "<p>You told the Teambuddy:</p>\n";
-		//html += "<p>" + talkText + "</p>\n";
-		html += "<p>" + talkText.replaceAll("\n", "<br/>") + "</p>\n";
-
-		html += "<form action=\"\" method=\"POST\">\n";
-		html += "  <input name=\"submit\" type=\"submit\" value=\"Back\" />\n";
-		html += "  <input name=\"page\" type=\"hidden\" value=\"talk\" />\n";
-		html += "</form>\n";
 
 		return html;
 	}
@@ -1249,8 +1151,56 @@ public class InterfaceHandler extends AbstractHandler {
 		html += "  </tr>\n";
 		html += "</table>\n";
 		html += "<p class=\"small\">\n";
+		html += "  The charging status should only be set here if the robot fails to use the docking station for charing and needs to be charged with the cable.<br/>\n";
 		html += "  For charging please first select <i class=\"small\">Charging</i> and then plug the cable.<br/>\n";
 		html += "  For releasing please first unplug the cable and then select <i class=\"small\">Not charging</i>.<br/>\n";
+		html += "</p>\n";
+
+		html += "<form action=\"\" method=\"POST\">\n";
+		html += "  <input name=\"submit\" type=\"submit\" value=\"Back\" />\n";
+		html += "  <input name=\"page\" type=\"hidden\" value=\"start\" />\n";
+		html += "</form>\n";
+
+		return html;
+	}
+
+	private String getDockingPage() {
+		String html = "";
+
+		Object locationObject = getWMObjectProperty(WM_CURRENT_PLATFORM, WM_LOCATION);
+		if (locationObject != null && locationObject instanceof String) {
+			String location = (String) locationObject;
+			html += "<p>The current location is <b>" + location + "</b></p>\n";
+		}
+
+		html += "<form action=\"\" method=\"POST\">\n";
+		html += "  <input name=\"submit\" type=\"submit\" value=\"Check again\" />\n";
+		html += "  <input name=\"page\" type=\"hidden\" value=\"docking\" />\n";
+		html += "</form>\n";
+
+		html += "<table>\n";
+		html += "  <tr>\n";
+		html += "    <td>\n";
+		html += "      <form action=\"\" method=\"POST\">\n";
+		html += "        <input name=\"submit\" type=\"submit\" value=\"Send docking\" />\n";
+		html += "        <input name=\"action\" type=\"hidden\" value=\"sendDocking\" />\n";
+		html += "        <input name=\"page\" type=\"hidden\" value=\"docking\" />\n";
+		html += "      </form>\n";
+		html += "    </td>\n";
+		html += "  </tr>\n";
+		html += "  <tr>\n";
+		html += "    <td>\n";
+		html += "      <form action=\"\" method=\"POST\">\n";
+		html += "        <input name=\"submit\" type=\"submit\" value=\"Send undocking\" />\n";
+		html += "        <input name=\"action\" type=\"hidden\" value=\"sendUndocking\" />\n";
+		html += "        <input name=\"page\" type=\"hidden\" value=\"docking\" />\n";
+		html += "      </form>\n";
+		html += "    </td>\n";
+		html += "  </tr>\n";
+		html += "</table>\n";
+		html += "<p class=\"small\">\n";
+		html += "  Usually no <i class=\"small\">manual docking/undocking</i> is required as the robot should charge itself automatically.<br/>\n";
+		html += "  Manual undocking will only work if a certain <i class=\"small\">minimum voltage</i> has been reached.<br/>\n";
 		html += "</p>\n";
 
 		html += "<form action=\"\" method=\"POST\">\n";
@@ -1429,20 +1379,6 @@ public class InterfaceHandler extends AbstractHandler {
 			parameters.add(toUsername);
 			parameters.add(id);
 			raiseMindAction(fromUsername, "leaveMessage", parameters);
-		}
-	}
-
-	private void talkReceived(String talkText, String talkSymbol) {
-		if (interfaceCompetency != null) {
-			String talkUsername = USERNAME_UNKNOWN;
-			if (loginUser != null) {
-				talkUsername = loginUser.getUsername();
-			}
-			ArrayList<String> parameters = new ArrayList<String>();
-			parameters.add("SELF");
-			//parameters.add(talkText);
-			parameters.add(talkSymbol);
-			raiseMindAction(talkUsername, "talk", parameters);
 		}
 	}
 
