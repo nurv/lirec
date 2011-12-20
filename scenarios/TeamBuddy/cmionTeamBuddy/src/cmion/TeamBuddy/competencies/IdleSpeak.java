@@ -37,11 +37,11 @@ public class IdleSpeak extends Competency {
 	protected boolean competencyCode(HashMap<String, String> parameters) throws CompetencyCancelledException {
 
 		String idleSpeakUtterance = "";
-		double p = random.nextDouble();
+		double r = random.nextDouble();
 
-		if (p >= 0.0 && p < 0.5) {
+		if (r >= 0.0 && r < 0.5) {
 
-			// public information item
+			// public information
 
 			String publicInfo = "";
 			try {
@@ -57,15 +57,15 @@ public class IdleSpeak extends Competency {
 				e.printStackTrace();
 			}
 
-			if (publicInfo.equals("")) {
+			if (!publicInfo.equals("")) {
 				idleSpeakUtterance = publicInfo;
 			} else {
-				p = 0.5;
+				r = 0.5;
 			}
 
 		}
 
-		if (p >= 0.5 && p < 0.9) {
+		if (r >= 0.5 && r < 0.9) {
 
 			// news
 
@@ -78,12 +78,12 @@ public class IdleSpeak extends Competency {
 				idleSpeakUtterance = "Have you heard about this news? ";
 				idleSpeakUtterance += feed.items.get(index).title;
 			} else {
-				p = 0.9;
+				r = 0.9;
 			}
 
 		}
 
-		if (p >= 0.9 && p < 1.0) {
+		if (r >= 0.9 && r < 1.0) {
 
 			// jokes
 
