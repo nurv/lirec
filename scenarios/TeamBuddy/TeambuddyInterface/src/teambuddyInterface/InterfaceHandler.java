@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Random;
 import java.util.Timer;
 
 import javax.servlet.ServletException;
@@ -71,6 +72,8 @@ public class InterfaceHandler extends AbstractHandler {
 
 	private static final String WM_INTERFACE_INTERACTION = "interfaceInteraction";
 
+	private Random random;
+
 	public InterfaceHandler(InterfaceCompetency interfaceCompetency) {
 		this.interfaceCompetency = interfaceCompetency;
 
@@ -80,6 +83,7 @@ public class InterfaceHandler extends AbstractHandler {
 		xmlAccess = new XMLAccess();
 		userData = xmlAccess.loadXML(XML_FILENAME);
 
+		random = new Random();
 	}
 
 	public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
@@ -334,7 +338,7 @@ public class InterfaceHandler extends AbstractHandler {
 
 		} else if (action.equals("sendDocking")) {
 			// send to dock in docking station
-			
+
 			// raise remote action
 			ArrayList<String> parameters = new ArrayList<String>();
 			parameters.add("SELF");
@@ -422,6 +426,33 @@ public class InterfaceHandler extends AbstractHandler {
 			raiseMindAction(loginUser.getUsername(), "requestInformation", parameters);
 
 			xmlAccess.saveXML(userData, XML_FILENAME);
+
+		} else if (action.equals("publicInfo")) {
+
+			String utterance = "";
+
+			// get public information items
+			LinkedList<InformationItem> informationItems = userData.getInformationItemsPublic();
+
+			if (informationItems.size() > 0) {
+
+				// choose one item randomly
+				int index = Math.abs(random.nextInt()) % informationItems.size();
+				InformationItem informationItem = informationItems.get(index);
+
+				// build utterance		
+				String typeRealname = userData.getTypeRealname(informationItem.getTypename());
+				String userRealname = userData.getUser(informationItem).getRealname();
+				utterance = "Did you know about the " + typeRealname + " of " + userRealname + "? For example " + informationItem.getContent();
+
+			}
+
+			response.setContentType("text/plain");
+			PrintWriter out = response.getWriter();
+			out.println(utterance);
+			out.close();
+
+			return;
 		}
 
 		// start html response

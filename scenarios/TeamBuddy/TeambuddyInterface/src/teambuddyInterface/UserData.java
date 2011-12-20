@@ -325,6 +325,49 @@ public class UserData {
 		return null;
 	}
 
+	// return information items which are authorised to all roles
+	public LinkedList<InformationItem> getInformationItemsPublic() {
+		LinkedList<InformationItem> informationItemsPublic = new LinkedList<InformationItem>();
+
+		// loop over users
+		for (User user : users) {
+
+			// loop over information items
+			for (InformationItem informationItem : user.getInformationItems()) {
+
+				boolean authorised = true;
+
+				// loop over roles 
+				for (Role role : roles) {
+					if (!informationItem.getAuthorisedRoles().contains(role.getRolename())) {
+						authorised = false;
+						break;
+					}
+				}
+
+				if (authorised) {					
+					informationItemsPublic.add(informationItem);
+				}
+
+			}
+
+		}
+
+		return informationItemsPublic;
+	}
+
+	// returns the user for a specific information item
+	public User getUser(InformationItem informationItem) {
+		for (User user : users) {
+			for (InformationItem informationItemCurrent : user.getInformationItems()) {
+				if (informationItemCurrent == informationItem) {
+					return user;
+				}
+			}
+		}
+		return null;
+	}
+
 	// request information item with id provided by username for which loginUsername is authorised (creates a request)
 	public InformationItem requestAuthorisedInformationItem(String loginUsername, String username, long id) {
 
