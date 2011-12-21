@@ -28,7 +28,7 @@ public class PowerMonitor extends SamgarCompetency {
 		if (bottle_in.get(0).isString()) {
 			String voltageStr = bottle_in.get(0).asString().toString();
 			double voltage = Double.valueOf(voltageStr);
-			
+
 			voltageSum += voltage;
 			counter++;
 			if (counter == 5) {
@@ -40,9 +40,22 @@ public class PowerMonitor extends SamgarCompetency {
 				//String target = "Michael";
 				//setWMObjectProperty("CurrentPlatform", "avgPower,"+task+","+target, this.voltage);
 				//architecture.getWorldModel().getObject("CurrentPlatform").getPropertyValue("avgPower,"+task+","+target);
-				
+
 				setWMObjectProperty("CurrentPlatform", "voltage", averageVoltage);
-				//System.out.println("voltage " + presentVoltage + " this.voltage " + this.voltage + " avg" + averageVoltage);
+
+				// write energy to WorldModel
+				double minVoltage = 12.0;
+				double maxVoltage = 14.0;
+				// normalise into range from 0 to 1
+				double energy = (averageVoltage - minVoltage) / (maxVoltage - minVoltage);
+				// keep value in range
+				if (energy < 0)
+					energy = 0;
+				else if (energy > 1)
+					energy = 1;
+				// scale to FAtiMA range
+				energy *= 10;
+				setWMAgentProperty("Spirit", "Energy", String.valueOf(energy));
 			}
 		}
 
@@ -85,6 +98,17 @@ public class PowerMonitor extends SamgarCompetency {
 			HashMap<String, Object> properties = new HashMap<String, Object>();
 			properties.put(propertyName, propertyValue);
 			wm.requestAddObject(objectName, properties);
+		}
+	}
+
+	private void setWMAgentProperty(String agentName, String propertyName, Object propertyValue) {
+		WorldModel wm = this.getArchitecture().getWorldModel();
+		if (wm.hasAgent(agentName)) {
+			wm.getAgent(agentName).requestSetProperty(propertyName, propertyValue);
+		} else {
+			HashMap<String, Object> properties = new HashMap<String, Object>();
+			properties.put(propertyName, propertyValue);
+			wm.requestAddAgent(agentName, properties);
 		}
 	}
 

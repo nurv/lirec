@@ -10,7 +10,6 @@ import cmion.storage.WorldModel;
 public class Navigate extends SamgarCompetency {
 
 	private boolean finished;
-	int timeoutcounter = 0;
 
 	public Navigate(IArchitecture architecture) {
 		super(architecture);
@@ -34,7 +33,7 @@ public class Navigate extends SamgarCompetency {
 
 			// set charging status in WorldModel
 			if (location == 8) {
-				// robot was sent to dock position
+				// robot was sent to dock position and docked successfully
 				setWMObjectProperty("CurrentPlatform", "charging", "True");
 			} else if (location == 10) {
 				// robot was sent to undock position
@@ -66,6 +65,7 @@ public class Navigate extends SamgarCompetency {
 			}
 		}
 		// wait until finished or timed out (currently set to 500 sec = 5000*100 ms sleep)
+		int timeoutcounter = 0;
 		while (!finished) {
 			try {
 				Thread.sleep(100);
