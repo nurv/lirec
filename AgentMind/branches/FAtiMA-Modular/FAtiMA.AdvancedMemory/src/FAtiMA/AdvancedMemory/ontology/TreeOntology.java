@@ -114,8 +114,8 @@ public class TreeOntology implements Serializable {
 			LinkedList<String> ancestors = new LinkedList<String>();
 
 			// find all nodes with corresponding location names
-			NodeList nodeListA = doc.getElementsByTagName(nameA);
-			NodeList nodeListB = doc.getElementsByTagName(nameB);
+			NodeList nodeListA = doc.getDocumentElement().getElementsByTagName(nameA);
+			NodeList nodeListB = doc.getDocumentElement().getElementsByTagName(nameB);
 
 			// check if both such nodes exist
 			if (nodeListA.getLength() > 0 && nodeListB.getLength() > 0) {
