@@ -730,7 +730,7 @@ public class GeneralisationPanel extends JPanel {
 			Object[] data = new Object[attributeNames.size() + 1];
 			for (int i = 0; i < attributeNames.size(); i++) {
 				AttributeItem attributeItem = ger.getAttributeItem(attributeNames.get(i));
-				data[i] = attributeItem.getValue();
+				data[i] = attributeItem.getValue().toString();
 				HashSet<String> hypernymSet = attributeItem.getHypernymSet();
 				if (hypernymSet != null) {
 					data[i] = String.valueOf(data[i]) + " " + hypernymSet;
