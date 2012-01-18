@@ -183,8 +183,7 @@ public class UserData {
 	}
 
 	// provide information item for username
-	public boolean provideInformationItem(String username, String typename, String content, String[] authorisedRoles, String[] authorisedUsers) {
-		boolean added = false;
+	public InformationItem provideInformationItem(String username, String typename, String content, String[] authorisedRoles, String[] authorisedUsers) {
 
 		// create information item
 		InformationItem informationItem = new InformationItem();
@@ -211,9 +210,20 @@ public class UserData {
 
 		// add information item
 		getUser(username).getInformationItems().add(informationItem);
-		added = true;
 
-		return added;
+		return informationItem;
+	}
+
+	// delete information item for username 
+	public boolean deleteInformationItem(String username, long deleteId) {
+		User user = getUser(username);
+		for (InformationItem informationItem : user.getInformationItems()) {
+			if (deleteId == informationItem.getId()) {
+				user.getInformationItems().remove(informationItem);
+				return true;
+			}
+		}
+		return false;
 	}
 
 	// delete information items for username 
@@ -345,7 +355,7 @@ public class UserData {
 					}
 				}
 
-				if (authorised) {					
+				if (authorised) {
 					informationItemsPublic.add(informationItem);
 				}
 

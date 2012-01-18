@@ -60,6 +60,8 @@ public class InterfaceHandler extends AbstractHandler {
 
 	private User loginUser;
 
+	private static final String WM_USERDATA = "UserData";
+
 	private static final boolean ENABLE_SEND_HOME = false;
 
 	private static final boolean LOGIN_USERNAME_SELECT = true;
@@ -82,6 +84,16 @@ public class InterfaceHandler extends AbstractHandler {
 
 		xmlAccess = new XMLAccess();
 		userData = xmlAccess.loadXML(XML_FILENAME);
+
+		// write to WorldModel
+		for (User user : userData.getUsers()) {
+			for (InformationItem informationItem : user.getInformationItems()) {
+				setWMObjectProperty(WM_USERDATA, user.getUsername() + "," + informationItem.getTypename() + "," + informationItem.getId(), informationItem.getContent().replace(" ", "_"));
+			}
+		}
+		// Make sure the container for the UserData exists in the WorldModel,
+		// otherwise some items will not go to the WorldModel when loading sequentially.
+		// Create container already in WorldModelInit.xml.
 
 		random = new Random();
 	}
@@ -260,10 +272,11 @@ public class InterfaceHandler extends AbstractHandler {
 			} else {
 
 				// try to add the information item
-				boolean added = userData.provideInformationItem(infoUsername, infoTypename, infoContent, infoAuthorisedRoles, infoAuthorisedUsers);
-				if (added) {
+				InformationItem informationItem = userData.provideInformationItem(infoUsername, infoTypename, infoContent, infoAuthorisedRoles, infoAuthorisedUsers);
+				if (informationItem != null) {
 					utterance = "I have remembered this information of type '" + userData.getTypeRealname(infoTypename) + "'.";
 					xmlAccess.saveXML(userData, XML_FILENAME);
+					setWMObjectProperty(WM_USERDATA, infoUsername + "," + infoTypename + "," + informationItem.getId(), infoContent.replace(" ", "_"));
 				} else {
 					utterance = "I could not remember this information.";
 				}
@@ -288,14 +301,17 @@ public class InterfaceHandler extends AbstractHandler {
 			String utterance = "";
 
 			if (infoIds != null) {
-				LinkedList<Long> deleteIds = new LinkedList<Long>();
+				int deletedCount = 0;
 				for (String infoId : infoIds) {
-					deleteIds.add(Long.valueOf(infoId));
+					long deleteId = Long.valueOf(infoId);
+					if (userData.deleteInformationItem(infoUsername, deleteId)) {
+						deletedCount++;
+						xmlAccess.saveXML(userData, XML_FILENAME);
+						removeWMObjectProperty(WM_USERDATA, infoUsername + "," + infoTypename + "," + deleteId);
+					}
 				}
-				int deletedCount = userData.deleteInformationItems(infoUsername, deleteIds);
 				if (deletedCount > 0) {
 					utterance = "I have forgotten " + deletedCount + " items of type '" + userData.getTypeRealname(infoTypename) + "'.";
-					xmlAccess.saveXML(userData, XML_FILENAME);
 				} else {
 					utterance = "I have not forgotten any information.";
 				}
@@ -1427,13 +1443,15 @@ public class InterfaceHandler extends AbstractHandler {
 	}
 
 	private void setBBObjectProperty(String objectName, String propertyName, Object propertyValue) {
-		BlackBoard bb = interfaceCompetency.getArchitecture().getBlackBoard();
-		if (bb.hasSubContainer(objectName))
-			bb.getSubContainer(objectName).requestSetProperty(propertyName, propertyValue);
-		else {
-			HashMap<String, Object> properties = new HashMap<String, Object>();
-			properties.put(propertyName, propertyValue);
-			bb.requestAddSubContainer(objectName, objectName, properties);
+		if (interfaceCompetency != null) {
+			BlackBoard bb = interfaceCompetency.getArchitecture().getBlackBoard();
+			if (bb.hasSubContainer(objectName))
+				bb.getSubContainer(objectName).requestSetProperty(propertyName, propertyValue);
+			else {
+				HashMap<String, Object> properties = new HashMap<String, Object>();
+				properties.put(propertyName, propertyValue);
+				bb.requestAddSubContainer(objectName, objectName, properties);
+			}
 		}
 	}
 
@@ -1458,6 +1476,15 @@ public class InterfaceHandler extends AbstractHandler {
 			}
 		}
 		return null;
+	}
+
+	private void removeWMObjectProperty(String objectName, String propertyName) {
+		if (interfaceCompetency != null) {
+			WorldModel wm = interfaceCompetency.getArchitecture().getWorldModel();
+			if (wm.hasObject(objectName)) {
+				wm.getObject(objectName).requestRemoveProperty(propertyName);
+			}
+		}
 	}
 
 }
