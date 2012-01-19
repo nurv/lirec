@@ -123,7 +123,7 @@ test() {
 	di.speakText("Shall I be angered or surprised?");
 	String[] options = {"Angered!","Surprised!"};
 	String answer = di.multipleChoiceQuestion(2,options);
-	if (answer == "Angered!") {
+	if (answer.equals("Angered!")) {
 		System.out.println("ANGER");
 		di.showExpression(Expression.ANGER);
 	} else {
