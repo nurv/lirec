@@ -55,19 +55,26 @@ public class EpisodicMemoryTask extends TimerTask {
 		String strTime = sdf.format(cal.getTime());
 
 		// XML Memory export
-		System.out.println(strTime + ": saving XML Memory");
 		MemoryWriter memoryWriter = new MemoryWriter(memory);
+		System.out.println(strTime + ": saving XML Memory");
 		memoryWriter.outputMemorytoXML(filepath + "XMLMemory_" + strTime + ".xml");
 
+		/*
 		// Activation-Based Forgetting
 		System.out.println(strTime + ": performing AB Forgetting (20%)");
 		memory.getEpisodicMemory().calculateActivationValues();
+		// TODO:
+		// decide about forgetting method (count, ratio or threshold; which parameters settings?)
 		ArrayList<ActionDetail> forget = memory.getEpisodicMemory().activationBasedForgettingByAmount(0.2);
 		memory.getEpisodicMemory().applyActivationBasedForgetting(forget);
+		// TODO:
+		// log/write details of forgotten events (for forgetting experiment)
+		// -> ArrayList<ActionDetail> forget (see above)
 
 		// XML Memory export
 		System.out.println(strTime + ": saving XML Memory");
 		memoryWriter.outputMemorytoXML(filepath + "XMLMemory_" + strTime + "_AfterABForgetting" + ".xml");
+		*/
 
 		// start a new episode
 		memory.getEpisodicMemory().StartEpisode(memory);
