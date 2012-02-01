@@ -3,6 +3,7 @@ package uk.ac.hw.lirec.dialogsystem;
 import uk.ac.hw.lirec.emys3d.EmysModel;
 import uk.ac.hw.lirec.emys3d.EmysModel.Emotion;
 import uk.ac.hw.lirec.threedtest.ThreeDTestActivity;
+import android.app.Activity;
 
 /**
  * @author iw24
@@ -13,12 +14,14 @@ public class AndroidDialogInterface extends DialogInterface {
 
 	private static final long MOMENTARY_EXPRESSION_TIME = 600; //ms to show an expression 
 	
-	private ThreeDTestActivity mActivity;
+	private Activity mActivity;
+	private AndroidDialogProvider mProvider;
 	private boolean mInterrupted = false;
 	private boolean mWaiting = false;
 	
-	public AndroidDialogInterface(ThreeDTestActivity mainActivity ) {
+	public AndroidDialogInterface(Activity mainActivity, AndroidDialogProvider provider ) {
 		mActivity = mainActivity;
+		mProvider = provider;
 	}
 	@Override
 	public void speakText(final String text) {
@@ -27,7 +30,7 @@ public class AndroidDialogInterface extends DialogInterface {
 		mActivity.runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				mActivity.speakText(text);	
+				mProvider.speakText(text);	
 			}
 		});
 		waitForCallback();
@@ -40,14 +43,14 @@ public class AndroidDialogInterface extends DialogInterface {
 		mActivity.runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				mActivity.confirmDialog(infoText);	
+				mProvider.confirmDialog(infoText);	
 			}
 		});
 
 		waitForCallback();
 		if (mInterrupted) {
 			stopWaiting();
-			mActivity.dismissConfirmDialog();
+			mProvider.dismissConfirmDialog();
 		}
 	}
 	
@@ -89,14 +92,14 @@ public class AndroidDialogInterface extends DialogInterface {
 		mActivity.runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				mActivity.askMultiChoice(numChoices,options);	
+				mProvider.askMultiChoice(numChoices,options);	
 			}
 		});
 
 		waitForCallback();
 		if (mInterrupted) {
 			stopWaiting();
-			mActivity.dismissMultiDialog();
+			mProvider.dismissMultiDialog();
 		}
 		return multiChoiceAnswer;
 	}
@@ -128,15 +131,15 @@ public class AndroidDialogInterface extends DialogInterface {
 		if (mInterrupted)
 			return;
 		
-		mActivity.setExpression(mood2emotion(mood));
+		mProvider.setExpression(mood2emotion(mood));
 	}
 	@Override
 	public void showExpression(Expression expression) {
 		if (mInterrupted)
 			return;
 		
-		EmysModel.Emotion current = mActivity.getEmysEmotion();
-		mActivity.setExpression(expression2emotion(expression));
+		EmysModel.Emotion current = mProvider.getEmysEmotion();
+		mProvider.setExpression(expression2emotion(expression));
 		try {
 			Thread.sleep(MOMENTARY_EXPRESSION_TIME); //try 600 milli
 		} catch (InterruptedException e) {
@@ -145,7 +148,7 @@ public class AndroidDialogInterface extends DialogInterface {
 		} 
 		if (mInterrupted)
 			return; //check here too incase this was interrupted. 
-		mActivity.setExpression(current);
+		mProvider.setExpression(current);
 	}
 
 	
