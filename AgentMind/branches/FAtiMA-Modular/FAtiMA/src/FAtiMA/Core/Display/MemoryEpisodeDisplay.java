@@ -39,6 +39,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.table.DefaultTableModel;
 
 import FAtiMA.Core.memory.episodicMemory.ActionDetail;
 import FAtiMA.Core.memory.episodicMemory.MemoryEpisode;
@@ -54,14 +55,10 @@ public class MemoryEpisodeDisplay {
     JTextArea _location;
     JTextArea _objects;
     
-    JPanel _details;
+    MemoryTable _table;
     
-    int _numberOfDetails;
-    
-
     public MemoryEpisodeDisplay(MemoryEpisode episode) {
-    	_numberOfDetails = 0;
-		
+    			
     	_panel = new JPanel();
         _panel.setBorder(BorderFactory.createEtchedBorder());
         _panel.setLayout(new BoxLayout(_panel,BoxLayout.Y_AXIS));
@@ -75,28 +72,7 @@ public class MemoryEpisodeDisplay {
         JPanel pnl = new JPanel();
         pnl.setLayout(new BoxLayout(pnl,BoxLayout.X_AXIS));
         pnl.setMaximumSize(new Dimension(750,100));
-        
-        //ABSTRACT 
-        /*JPanel aux = new JPanel();
-        aux.setLayout(new BoxLayout(aux,BoxLayout.Y_AXIS));
-        aux.setMaximumSize(d2);  
-        aux.setMinimumSize(d2);
-        aux.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
-        JLabel lbl = new JLabel("Abstract");
-        lbl.setMaximumSize(d1);
-        lbl.setMinimumSize(d1);
-        aux.add(lbl);*/
-        
-        //_abstract = new JTextArea(episode.getAbstract());
-        /*_abstract = new JTextArea("");
-        _abstract.setLineWrap(true);
-        _abstract.setMaximumSize(d3);
-        _abstract.setMinimumSize(d3);
-        aux.add(_abstract);
-        pnl.add(aux);*/
-       
-        
-        
+         
         //TIME
         JPanel aux = new JPanel();
         aux.setLayout(new BoxLayout(aux,BoxLayout.Y_AXIS));
@@ -167,132 +143,15 @@ public class MemoryEpisodeDisplay {
         
         _panel.add(pnl);
         
-        //DETAILS
-        _details = new JPanel();
-        _details.setBorder(BorderFactory.createTitledBorder("Details"));
-        _details.setLayout(new BoxLayout(_details,BoxLayout.Y_AXIS));
+        _table = new MemoryTable(new DefaultTableModel());
+        JScrollPane scrollPane = new JScrollPane(_table);
+		_panel.add(scrollPane);
         
-        aux = new JPanel();
-        aux.setLayout(new BoxLayout(aux,BoxLayout.X_AXIS));
-        aux.setMinimumSize(new Dimension(750,30));
-        aux.setMaximumSize(new Dimension(750,30));
-        
-        lbl = new JLabel("ID");
-        lbl.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
-        lbl.setMinimumSize(new Dimension(30,30));
-        lbl.setMaximumSize(new Dimension(30,30));
-        aux.add(lbl);
-        
-        /*lbl = new JLabel("Ca.");
-        lbl.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
-        lbl.setMinimumSize(new Dimension(30,30));
-        lbl.setMaximumSize(new Dimension(30,30));
-        aux.add(lbl);
-        
-        lbl = new JLabel("Eff.");
-        lbl.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
-        lbl.setMinimumSize(new Dimension(30,30));
-        lbl.setMaximumSize(new Dimension(30,30));
-        aux.add(lbl);*/
-        
-        lbl = new JLabel("Subject"); // Who?
-        lbl.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
-        lbl.setMinimumSize(new Dimension(50,30));
-        lbl.setMaximumSize(new Dimension(50,30));
-        aux.add(lbl);
-        
-        lbl = new JLabel("Action"); // What?
-        lbl.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
-        lbl.setMinimumSize(new Dimension(80,30));
-        lbl.setMaximumSize(new Dimension(80,30));
-        aux.add(lbl);
-        
-        lbl = new JLabel("Intention"); // Goal?
-        lbl.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
-        lbl.setMinimumSize(new Dimension(80,30));
-        lbl.setMaximumSize(new Dimension(80,30));
-        aux.add(lbl);
-        
-        lbl = new JLabel("Target"); // Whom?
-        lbl.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
-        lbl.setMinimumSize(new Dimension(80,30));
-        lbl.setMaximumSize(new Dimension(80,30));
-        aux.add(lbl);
-        
-        lbl = new JLabel("Status"); // Activation, Success, Failure?
-        lbl.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
-        lbl.setMinimumSize(new Dimension(80,30));
-        lbl.setMaximumSize(new Dimension(80,30));
-        aux.add(lbl);
-        
-        lbl = new JLabel("Meaning"); // Which speechAct?
-        lbl.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
-        lbl.setMinimumSize(new Dimension(80,30));
-        lbl.setMaximumSize(new Dimension(80,30));
-        aux.add(lbl);
-        
-        lbl = new JLabel("Path"); // Multimedia directory
-        lbl.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
-        lbl.setMinimumSize(new Dimension(80,30));
-        lbl.setMaximumSize(new Dimension(80,30));
-        aux.add(lbl);
-        
-        lbl = new JLabel("Object"); // object/third person
-        lbl.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
-        lbl.setMinimumSize(new Dimension(80,30));
-        lbl.setMaximumSize(new Dimension(80,30));
-        aux.add(lbl);
-        
-        lbl = new JLabel("Desirability"); // Desirable?
-        lbl.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
-        lbl.setMinimumSize(new Dimension(80,30));
-        lbl.setMaximumSize(new Dimension(80,30));
-        aux.add(lbl);
-        
-        lbl = new JLabel("Praiseworthiness"); // Praiseworthy?
-        lbl.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
-        lbl.setMinimumSize(new Dimension(80,30));
-        lbl.setMaximumSize(new Dimension(80,30));
-        aux.add(lbl);
-        
-        /*lbl = new JLabel("Parameters"); // How?
-        lbl.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
-        lbl.setMinimumSize(new Dimension(100,30));
-        lbl.setMaximumSize(new Dimension(100,30));
-        aux.add(lbl);*/
-        
-        lbl = new JLabel("Feeling");
-        lbl.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
-        lbl.setMinimumSize(new Dimension(100,30));
-        lbl.setMaximumSize(new Dimension(100,30));
-        aux.add(lbl);
-        
-        lbl = new JLabel("Location");
-        lbl.setBorder(BorderFactory.createLineBorder(new Color(0,0,0)));
-        lbl.setMinimumSize(new Dimension(100,30));
-        lbl.setMaximumSize(new Dimension(100,30));
-        aux.add(lbl);
-        
-        _details.add(aux);
-        
-        JPanel prop = new JPanel();
-		prop.setLayout(new BoxLayout(prop,BoxLayout.Y_AXIS));
-		prop.setMaximumSize(new Dimension(750,150));
-		prop.setMinimumSize(new Dimension(750,150));
 		
-		JScrollPane propertiesScroll = new JScrollPane(prop);
-		
-		ListIterator<ActionDetail> li = episode.getDetails().listIterator();
-		while(li.hasNext())
-		{
-			prop.add(new MemoryDetailPanel((ActionDetail)li.next()));
-			_numberOfDetails ++;
-		}
-		
-		_details.add(propertiesScroll);
-        
-		_panel.add(_details);
-		
+        for(ActionDetail ad : episode.getDetails())
+        {
+        	_table.AddMemoryDetail(ad);
+        }
     }
     
     public JPanel getMemoryEpisodePanel()
@@ -302,7 +161,6 @@ public class MemoryEpisodeDisplay {
     
     public int countMemoryDetails()
     {
-    	return this._numberOfDetails;
+    	return this._table.getRowCount();
     }
-
 }
