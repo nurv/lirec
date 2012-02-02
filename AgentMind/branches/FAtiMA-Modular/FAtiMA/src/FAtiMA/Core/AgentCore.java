@@ -214,7 +214,12 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 				else
 				{
 					_memory.setMemoryLoad(false);
-				}				
+				}
+				
+				//Start the remote agent socket
+				//this was moved from initialize method to here, because it has to be done after all parsing
+				_remoteAgent = createNewRemoteAgent(ConfigurationManager.getPlatform(), ConfigurationManager.getHost(), ConfigurationManager.getPort(), ConfigurationManager.getAgentProperties());
+				_remoteAgent.start();
 			}
 			
 		}catch (Exception e) {
@@ -682,13 +687,6 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 				c.parseAdditionalFiles(this);
 			}
 			
-			//Start the remote agent socket
-			//this was moved from initialize method to here, because it has to be done after all parsing
-			if (_remoteAgent==null)
-			{
-				_remoteAgent = createNewRemoteAgent(ConfigurationManager.getPlatform(), ConfigurationManager.getHost(), ConfigurationManager.getPort(), ConfigurationManager.getAgentProperties());
-			}
-			_remoteAgent.start();
 		}
 		catch(Exception e)
 		{
@@ -707,14 +705,6 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 		//blocked while the remote agent is getting messages from the external world.
 		synchronized(_remoteAgent)
 		{
-			for(LookAtPerception p : this._perceivedLookAts)
-			{
-				for(IAdvancedPerceptionsComponent c : this._processPerceptionsComponents)
-				{
-					c.lookAtPerception(this, p.getSubject(), p.getTarget());
-				}
-			}
-			this._perceivedLookAts.clear();
 			
 			for(PropertyPerception p : this._perceivedProperties)
 			{
@@ -729,6 +719,14 @@ public class AgentCore implements Serializable, AgentModel, IGetModelStrategy {
 			}
 			this._perceivedProperties.clear();
 			
+			for(LookAtPerception p : this._perceivedLookAts)
+			{
+				for(IAdvancedPerceptionsComponent c : this._processPerceptionsComponents)
+				{
+					c.lookAtPerception(this, p.getSubject(), p.getTarget());
+				}
+			}
+			this._perceivedLookAts.clear();
 			
 			
 			for(PropertyRemovedPerception p : this._perceivedPropertiesRemoved)
