@@ -93,7 +93,6 @@ public class Event implements Cloneable, Serializable {
 	 * @return true if the events match, false otherwise
 	 */
 	public static boolean MatchEvent(Event matchRule, Event eventPerception) {
-		AgentLogger.GetInstance().log("Matching event " + matchRule + " with " + eventPerception);
 		if (matchRule._subject != null && eventPerception._subject != null) {
 			
 			if (!matchRule._subject.equals(eventPerception._subject)) 

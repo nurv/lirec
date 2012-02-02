@@ -133,6 +133,7 @@ public abstract class RemoteAgent extends SocketListener {
 	protected AgentCore _agent;
 	protected boolean _canAct;
 	protected boolean _canLook;
+	protected boolean _cancelingAction;
 	
 	//protected FileWriter _fileWriter;
 	//protected File _logFile;
@@ -152,7 +153,9 @@ public abstract class RemoteAgent extends SocketListener {
 		_actions = new ArrayList<ValuedAction>();
 		_canAct = true;
 		_canLook = true;
+		_cancelingAction = false;
 		_running = true;
+		
 		_processActionStrategy = new DefaultProcessActionStrategy();
 		
 		
@@ -191,6 +194,7 @@ public abstract class RemoteAgent extends SocketListener {
 	public final void Clear() {
 		_canAct = true;
 		_canLook = true;
+		_cancelingAction = false;
 		_actions.clear();
 	}
 	
@@ -233,8 +237,7 @@ public abstract class RemoteAgent extends SocketListener {
 		{
 			RemoteAction ra = new RemoteAction(_agent, _currentAction);
 			sendCancelActionMsg(ra);
-			_currentAction = null;
-			_canAct = true;
+			_cancelingAction = true;
 		}
 	}
 	

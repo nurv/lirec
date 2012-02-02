@@ -68,7 +68,7 @@ public class RemoteAction implements Serializable {
 	
 	protected String _subject;
 	protected String _actionType;
-	protected String _target;
+	protected String _target = null;
 	protected ArrayList<String> _parameters;
 	protected ActiveEmotion _emotion;
 	

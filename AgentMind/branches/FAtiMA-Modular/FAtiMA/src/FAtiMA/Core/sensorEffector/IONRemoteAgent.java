@@ -338,9 +338,11 @@ public class IONRemoteAgent extends RemoteAgent {
 		{
 			if(_currentAction.getAction().GetFirstLiteral().toString().equals(event.GetAction()))
 			{
-				_currentAction = null;
+				
 				AgentLogger.GetInstance().logAndPrint("SELF Action finished - can act again");
+				_currentAction = null;
 				_canAct = true;
+				_cancelingAction = false;
 			}
 		}
 	}
@@ -360,11 +362,25 @@ public class IONRemoteAgent extends RemoteAgent {
 		//the agent last action failed
 		if(rmAction.getSubject().equals(_agent.getName()))
 		{
-			AgentLogger.GetInstance().logAndPrint("Self action failed, agent can act again");
+			_currentAction = null;
 			_canAct = true;
+			if(_cancelingAction)
+			{
+				AgentLogger.GetInstance().logAndPrint("Self action canceled, agent can act again");
+				_cancelingAction = false;
+			}
+			else
+			{
+				AgentLogger.GetInstance().logAndPrint("Self action failed, agent can act again");
+				_agent.PerceiveActionFailed(rmAction.toEvent(ActionEvent.FAILURE));
+			}
+		}
+		else
+		{
+			_agent.PerceiveActionFailed(rmAction.toEvent(ActionEvent.FAILURE));
 		}
 		
-		_agent.PerceiveActionFailed(rmAction.toEvent(ActionEvent.FAILURE));
+		
 	}
 
 	public void handleSocketException() {

@@ -201,7 +201,7 @@ public class SpeechAct extends RemoteAction {
 		
 		_contextVariables = new ArrayList<Parameter>();
 		
-		//third literal of a speech acts corresponds to a third person or object,
+		//third literal of a speech act corresponds to a third person or object,
 //		if(li.hasNext())
 //		{
 //			String it = li.next().toString();
@@ -220,6 +220,7 @@ public class SpeechAct extends RemoteAction {
 		if(li.hasNext()){
 			String topic = li.next().toString();
 			_contextVariables.add(new Parameter("topic",topic));
+			_parameters.add(topic);
 		}
 		
 		

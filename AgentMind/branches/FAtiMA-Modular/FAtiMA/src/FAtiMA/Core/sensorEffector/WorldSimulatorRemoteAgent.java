@@ -62,6 +62,8 @@ public class WorldSimulatorRemoteAgent extends RemoteAgent {
 		String msg = CANCEL_ACTION + " " + ra.toPlainStringMessage();
 		AgentLogger.GetInstance().log("Canceling action: " + msg);
 		Send(msg);
+		_currentAction = null;
+		_canAct = true;
 	}
 
 
@@ -281,6 +283,7 @@ public class WorldSimulatorRemoteAgent extends RemoteAgent {
 			if(_currentAction.getAction().GetFirstLiteral().toString().equals(event.GetAction()))
 			{
 				AgentLogger.GetInstance().log("can act now!");
+				_cancelingAction = false;
 				_currentAction = null;
 				_canAct = true;
 			}
@@ -416,6 +419,7 @@ public class WorldSimulatorRemoteAgent extends RemoteAgent {
 			event.SetSubject(Constants.SELF);
 			_agent.PerceiveActionFailed(event);
 			_canAct = true;
+			_cancelingAction = false;
 		}	
 	}
 
