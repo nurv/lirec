@@ -17,7 +17,7 @@ public class LikeRelation extends Relation {
 
 	public String increment(Memory m, float intensity) {
 		float like = getValue(m);
-		like += intensity / 2;
+		like += intensity / 5;
 		if (like > 10) {
 			like = 10;
 		}
@@ -27,7 +27,7 @@ public class LikeRelation extends Relation {
 
 	public String decrement(Memory m, float intensity) {
 		float like = getValue(m);
-		like -= intensity / 2;
+		like -= intensity / 5;
 		if (like < -10) {
 			like = -10;
 		}
