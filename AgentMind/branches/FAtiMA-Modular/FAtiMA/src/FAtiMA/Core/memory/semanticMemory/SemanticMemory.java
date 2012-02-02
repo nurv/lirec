@@ -49,7 +49,7 @@ public class SemanticMemory implements Serializable {
 			KnowledgeSlot ks = (KnowledgeSlot) _stm.Ask(predicate);
 	        if (ks != null && ks.getValue() != null && ks.getValue().toString().equalsIgnoreCase("True"))
 	        {
-	        	_stm.RearrangeWorkingMemory(predicate,ks.getValue());
+	        	//_stm.RearrangeWorkingMemory(predicate,ks.getValue());
 	            return true;
 	        }
 	        else
@@ -85,7 +85,7 @@ public class SemanticMemory implements Serializable {
 			}
 			else
 			{
-				_stm.RearrangeWorkingMemory(property,prop.getValue());
+				//_stm.RearrangeWorkingMemory(property,prop.getValue());
 			}
 			return prop.getValue();
 		}

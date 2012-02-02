@@ -167,7 +167,8 @@ public class WorkingMemory implements Serializable {
 	/**
 	 * Rearrange the working memory entries so that the most current accessed entry comes last
 	 */
-	public void RearrangeWorkingMemory(Name predicate, Object value)
+    //this function is very inefficient 
+	/*public void RearrangeWorkingMemory(Name predicate, Object value)
 	{
 		KnowledgeSlot ks;
 		ArrayList<KnowledgeSlot> tempFactList = new ArrayList<KnowledgeSlot>(_factList); 
@@ -184,7 +185,7 @@ public class WorkingMemory implements Serializable {
 				}
 			}
 		}			
-	}
+	}*/
 	
 	public void ResetNewKnowledge()
     {
@@ -293,10 +294,12 @@ public class WorkingMemory implements Serializable {
 			else
 			{
 				
-				this.RearrangeWorkingMemory(property,value);
+				//this.RearrangeWorkingMemory(property,value);
 			}
 			
-			if(_factList.size() > WorkingMemory.MAXENTRY)
+			//I think this piece of code is causing huge memory problems with FAtiMA
+			//so I'm commenting it out for the moment
+			/*if(_factList.size() > WorkingMemory.MAXENTRY)
 			{
 				KnowledgeSlot temp = (KnowledgeSlot) _factList.get(0);
 				_factList.remove(0);
@@ -316,21 +319,22 @@ public class WorkingMemory implements Serializable {
 					else return;
 				}
 			
-				/*if (aux.CountElements() > 0)
-	            {
+				//if (aux.CountElements() > 0)
+	            //{
 	                //this means that there are elements under the aux node, and thus 
 	                //we cannot delete it, just put it null
-	                aux.setValue(null);
-	            }
-	            else if (l != null)
-	            {
-	                currentSlot.remove(l.toString());
-	            }*/
+	                //aux.setValue(null);
+	            //}
+	            //else if (l != null)
+	            //{
+	            //    currentSlot.remove(l.toString());
+	            //}
 				currentSlot.remove(l.toString());
 				
 				kb.Tell(temp.getPersistent(),tempName, aux.getValue());		
 				//_changeList.remove(temp);
 			}
+			*/
 		}
 	}
 	
