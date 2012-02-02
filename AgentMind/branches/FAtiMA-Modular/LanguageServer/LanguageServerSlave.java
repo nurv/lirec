@@ -1,7 +1,6 @@
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.StringTokenizer;
@@ -47,13 +46,13 @@ public class LanguageServerSlave extends SocketListener {
 		this.agentLanguageEngine = new LanguageEngine("name",agentSex,"Victim",new File(agentFileName));
 		System.out.println("Finished ALE initialization!");
 		
-		String userFileName = "data/characters/minds/" + userLanguageFile;
+		/*String userFileName = "data/characters/minds/" + userLanguageFile;
 		System.out.println("Initializing User Language Engine(ULE)... ");
 		System.out.println("Language File: " + userFileName);
 		System.out.println("Sex: " + userSex);
 		System.out.println("Role: User");
 		this.userLanguageEngine = new LanguageEngine("name",userSex,"User",new File(userFileName));
-		System.out.println("Finished ULE initialization!");
+		System.out.println("Finished ULE initialization!");*/
 		
 	}
 	
