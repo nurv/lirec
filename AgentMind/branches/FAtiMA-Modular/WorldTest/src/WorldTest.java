@@ -109,11 +109,19 @@ public class WorldTest {
 				_agentLanguage = this.initializeLanguageEngine("name", "victim", "M", agentLanguageFile);
 			}
 			
-			if(userLanguageFile != null){
+			/*if(userLanguageFile != null){
 				_userLanguage = this.initializeLanguageEngine("name", "user", "M", userLanguageFile);
-			}
+			}*/
 			
 			_userInterface.WriteLine("Finished ALE initialization!");
+			
+			//String test = _agentLanguage.Narrate("<ABMemory><Receiver>Uthgard</Receiver><Event><Location>valley</Location><Time count=\"0\">minute</Time><Subject>I</Subject><Action>look-at</Action><Status>succeed</Status><Target>bugbear0</Target></Event><Event><Subject>I</Subject><Intention>AreaElectricLoop</Intention><Status>succeed</Status><Target>bugbear2</Target><Emotion intensity=\"high\">SATISFACTION</Emotion></Event><Event><Subject>I</Subject><Intention>AreaElectricLoop</Intention><Status>activate</Status><Target>bugbear1</Target></Event></ABMemory>");
+			
+			//String test = _agentLanguage.Narrate("<ABMemory><Receiver>Uthgard</Receiver><Event><Location>palace</Location><Time count=\"2\">minute</Time><Subject>I</Subject><Action>UsePotion</Action><Status>succeed</Status><Emotion intensity=\"high\">DISTRESS</Emotion></Event><Event><Subject>I</Subject><Intention>UsePotion</Intention><Status>activate</Status><Target></Target></Event><Event><Subject>I</Subject><Action>FacialExpression</Action><Status>succeed</Status><Target>intense_sadness</Target></Event></ABMemory>");
+			
+			String test = _agentLanguage.Narrate("<ABMemory><Receiver>Uthgard</Receiver><Event><Location>palace</Location><Time count=\"2\">minute</Time><Subject>I</Subject><Action>UsePotion</Action><Status>succeed</Status><Emotion intensity=\"high\">DISTRESS</Emotion></Event><Event><Subject>Bugbear3</Subject><Action>Die</Action><Status>succeed</Status><Target>you</Target></Event></ABMemory>");
+			
+			System.out.println(test);
 		
 			LoadOperators(actionsFile, "[SELF]");
 			
@@ -352,14 +360,14 @@ public class WorldTest {
 
 	public void ChangeTime( String time ){
 		for( int i = 0, limit = _agents.size(); i != limit; ++i ){
-			SendPerceptionToAll( "PROPERTY-CHANGED " + "*" + ((RemoteAgent)_agents.get(i)).Name() + " time " + time );
+			SendPerceptionToAll( "PROPERTY-CHANGED " + "* " + ((RemoteAgent)_agents.get(i)).Name() + " time " + time );
 		}
 	}
 
 	public void ChangePlace( String location ){
 		for( int i = 0, limit = _agents.size(); i != limit; ++i ){
-			SendPerceptionToAll( "PROPERTY-CHANGED " + "*" + ((RemoteAgent)_agents.get(i)).Name() + " location " + location );
-			SendPerceptionToAll( "ACTION-FINISHED " + "*" + ((RemoteAgent)_agents.get(i)).Name() + " MoveTo " + location );
+			SendPerceptionToAll( "PROPERTY-CHANGED " + "* " + ((RemoteAgent)_agents.get(i)).Name() + " location " + location );
+			SendPerceptionToAll( "ACTION-FINISHED " + ((RemoteAgent)_agents.get(i)).Name() + " MoveTo " + location );
 		}
 	}
 
