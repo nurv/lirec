@@ -342,7 +342,7 @@ public abstract class Goal implements IGroundable, Cloneable, Serializable {
 	*/
 	protected Event generateEventDescription(short goalEventType)
 	{
-		String target = "";
+		String target = null;
 		String name;
 		ListIterator<Symbol> li = this._name.GetLiteralList().listIterator();
 		
