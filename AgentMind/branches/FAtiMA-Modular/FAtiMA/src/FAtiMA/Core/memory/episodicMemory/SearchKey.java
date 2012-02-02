@@ -48,6 +48,7 @@ public class SearchKey {
 	public static short STATUS = 11;
 	public static short SPEECHACTMEANING = 12;
 	public static short MULTIMEDIAPATH = 13;
+	public static short EMOTION = 14;
 
 	private short _field;
 	private Object _key;

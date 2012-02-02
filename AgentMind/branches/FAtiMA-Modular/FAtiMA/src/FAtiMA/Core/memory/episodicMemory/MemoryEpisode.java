@@ -71,13 +71,12 @@ public class MemoryEpisode implements Serializable {
 
 	public MemoryEpisode(String location, Time time) {
 		this._location = new ArrayList<String>();
-		if (!location.equals(""))
-			this._location.add(location);
+		if (!location.equals("")) this._location.add(location);
 		this._time = time;
 		this._people = new ArrayList<String>();
 		this._objects = new ArrayList<String>();
 		this._details = new ArrayList<ActionDetail>();
-		this._numberOfDominantActions = 3;
+		this._numberOfDominantActions = 2;
 		subjectIndex = new HashMap<String, ArrayList<ActionDetail>>();
 		actionIndex = new HashMap<String, ArrayList<ActionDetail>>();
 		targetIndex = new HashMap<String, ArrayList<ActionDetail>>();
@@ -467,7 +466,11 @@ public class MemoryEpisode implements Serializable {
 			if (action.getEmotion().GetPotential() > 0) {
 				AMSummary += "<Event>";
 				if (firstEvent) {
-					AMSummary += "<Location>" + this._location + "</Location>";
+					if(this._location.size() > 0)
+					{
+						AMSummary += "<Location>" + this._location.get(0) + "</Location>";
+					}
+					
 					AMSummary += SummaryGenerator.generateTimeDescription(this._time.getElapsedNarrativeTime());
 					firstEvent = false;
 				}

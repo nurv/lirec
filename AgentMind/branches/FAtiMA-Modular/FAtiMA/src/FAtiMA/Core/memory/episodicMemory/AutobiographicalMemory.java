@@ -72,6 +72,7 @@ public class AutobiographicalMemory implements Serializable {
 	}
 
 	public void StoreAction(ActionDetail actionDetail) {
+		String location;
 		synchronized (this) {
 
 			MemoryEpisode memoryEpisode;
@@ -80,8 +81,22 @@ public class AutobiographicalMemory implements Serializable {
 			int i = _memoryEpisodes.size() - 1;
 			if (i >= 0) {
 				memoryEpisode = _memoryEpisodes.get(i);
+				if(memoryEpisode.getLocation().size() == 0)
+				{
+					memoryEpisode.AddLocation(actionDetail.getLocation());
+				}
+				else
+				{
+					location = memoryEpisode.getLocation().get(0);
+					if(!actionDetail.getLocation().equals(location))
+					{
+						memoryEpisode = new MemoryEpisode(actionDetail.getLocation(), new Time());
+						_memoryEpisodes.add(memoryEpisode);
+						memoryEpisode.AddActionDetail(actionDetail);
+					}
+				}
+				
 				memoryEpisode.AddActionDetail(actionDetail);
-				memoryEpisode.AddLocation(actionDetail.getLocation());
 			}
 
 		}
@@ -276,7 +291,7 @@ public class AutobiographicalMemory implements Serializable {
 			//AgentLogger.GetInstance().logAndPrint("Average of the episode's emotions: " + avgEmotion);
 			//AgentLogger.GetInstance().logAndPrint("Std deviation of the episode's emotions: " + stdDev);
 			//if an hour passed since the user seen the last episode, we should report a summary
-			//we should also report if the episode is ambiguous, i.e if it is not very far from a neutral average
+			//we should also report  if the episode is ambiguous, i.e if it is not very far from a neutral average
 			//if(elapsedTime >= 36000000 || stdDev >= 2.5)
 			//{
 			AMSummary += episode.GenerateSummary(m);

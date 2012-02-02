@@ -40,10 +40,10 @@ public class EpisodicMemory implements Serializable {
 	private static final boolean AB_FORGETTING_AM = true;
 
 	// use indexed search?
-	private static final boolean INDEXED_SEARCH = true;
+	private static final boolean INDEXED_SEARCH = false;
 
 	// use cached search?
-	private static final boolean CACHED_SEARCH = true;
+	private static final boolean CACHED_SEARCH = false;
 	private SearchCache searchCacheSearchForPastEvents;
 	private SearchCache searchCacheSearchForRecentEvents;
 
@@ -324,6 +324,11 @@ public class EpisodicMemory implements Serializable {
 				// emotion
 				if (detail.getAction() != null) {
 					if (detail.getEmotion().getType() != NeutralEmotion.NAME) {
+						storeAction = true;
+					}
+					//for now, also storing events performed by self 
+					else if(detail.getSubject().equals(Constants.SELF))
+					{
 						storeAction = true;
 					}
 				}

@@ -498,9 +498,19 @@ public class ActionDetail implements Serializable {
 			else
 				return key.getKey().equals(this._status);
 		}
-
-		else
-			return false;
+		else if (key.getField() == SearchKey.EMOTION)
+		{
+			if(this._emotion == null)
+			{
+				return false;
+			}
+			else
+			{
+				return this._emotion.getType().equalsIgnoreCase(key.getKey().toString());
+			}
+		}
+				
+		else return false;
 	}
 
 	public boolean verifiesKeys(ArrayList<SearchKey> keys) {

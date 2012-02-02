@@ -67,10 +67,9 @@ public abstract class SummaryGenerator {
 		
 		actionName = action.getAction();
 		
-		actionSummary += "<Action>";
-		
 		if(actionName != null)
 		{
+			actionSummary += "<Action>";
 			
 			//normal action
 			if(SpeechAct.isSpeechAct(actionName))
@@ -101,13 +100,12 @@ public abstract class SummaryGenerator {
 			{
 				actionSummary += actionName;
 			}
-			
+			actionSummary += "</Action>";
 		}
 		else
 		{
-			actionSummary += action.getIntention();
+			actionSummary += "<Intention>"+action.getIntention()+"</Intention>";
 		}
-		actionSummary += "</Action>";
 		
 		status = action.getStatus();
 		
@@ -195,28 +193,36 @@ public abstract class SummaryGenerator {
 	
 	public static String generateTimeDescription(long time)
 	{
-		int months = Math.round(time/259200000); //months
+		int months = Math.round(time/2592000000l); //months
 		
 		if(months > 0)
 		{
 			return "<Time count=\"" + months + "\">month</Time>";
 		}
 		
-		int weeks = Math.round(time/60480000); //weeks
+		int weeks = Math.round(time/604800000l); //weeks
 		
 		if(weeks > 0)
 		{
 			return "<Time count=\"" + weeks + "\">week</Time>";
 		}
 		
-		int days = Math.round(time/8640000); //days
+		int days = Math.round(time/86400000l); //days
 		if(days > 0)
 		{
 			return "<Time count=\"" + days + "\">day</Time>";
 		}
 		
-		int hours = Math.round(time/360000); //hours 
-		return "<Time count=\"" + hours + "\">hour</Time>";
+		int hours = Math.round(time/3600000l); //hours
+		if(hours > 0)
+		{
+			return "<Time count=\"" + hours + "\">hour</Time>";
+		}
+		
+		int minutes = Math.round(time/60000l); //minutes
+		
+		return "<Time count=\"" + minutes + "\">minute</Time>";
+	
 	}
 	
 	public static String translateNameToDisplayName(Memory m, String name)
