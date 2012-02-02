@@ -15,8 +15,6 @@ import FAtiMA.Core.util.ConfigurationManager;
 import FAtiMA.DeliberativeComponent.DeliberativeComponent;
 import FAtiMA.OCCAffectDerivation.OCCAffectDerivationComponent;
 import FAtiMA.ReactiveComponent.ReactiveComponent;
-import FAtiMA.ToM.ToMComponent;
-import FAtiMA.culture.CulturalDimensionsComponent;
 import FAtiMA.emotionalIntelligence.EmotionalIntelligenceComponent;
 import FAtiMA.motivationalSystem.MotivationalComponent;
 import FAtiMA.socialRelations.SocialRelationsComponent;
