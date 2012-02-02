@@ -71,9 +71,9 @@ public class RecentEventCondition extends PastEventCondition {
 	}
 	
 	// not currently called
-	public RecentEventCondition(boolean occurred, short type, short status, Symbol subject, Symbol action, Symbol target, ArrayList<Symbol> parameters)
+	public RecentEventCondition(boolean occurred, short type, short status, Symbol subject, Symbol action, Symbol target, String emotion, ArrayList<Symbol> parameters)
 	{
-		super(occurred, type, status, subject, action, target, parameters);
+		super(occurred, type, status, subject, action, target, emotion, parameters);
 	}
 	
 	// not currently called
@@ -95,11 +95,15 @@ public class RecentEventCondition extends PastEventCondition {
 		
 		if(!getName().isGrounded()) return 0;
 		
+		if(!(getToM().isGrounded())) return 0;
+		
+		AgentModel perspective = am.getModelToTest(getToM());
+		
 		if(getPositive() == false){
 			System.out.print("");
 		}
 		
-		boolean result = getPositive() == am.getMemory().getEpisodicMemory().ContainsRecentEvent(GetSearchKeys()); 
+		boolean result = getPositive() == perspective.getMemory().getEpisodicMemory().ContainsRecentEvent(GetSearchKeys()); 
  
 		if(result)
 		{

@@ -38,6 +38,7 @@ import java.util.StringTokenizer;
 
 import org.xml.sax.Attributes;
 
+import FAtiMA.Core.AgentCore;
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.memory.episodicMemory.ActionDetail;
 import FAtiMA.Core.memory.episodicMemory.AutobiographicalMemory;
@@ -68,6 +69,7 @@ public class PastEventCondition extends PredicateCondition {
 	protected Symbol _action;
 	protected Symbol _target;
 	protected ArrayList<Symbol> _parameters;
+	protected String _emotion;
 	
 	//Meiyii - 12/01/10
 	protected short _type = -1;
@@ -81,9 +83,12 @@ public class PastEventCondition extends PredicateCondition {
 	 */
 	public static PastEventCondition ParseEvent(Attributes attributes) {
 		boolean occurred;
-		Symbol subject;
+		Symbol subject = null;
 		Symbol action;
 		Symbol target = null;
+		String emotion = null;
+		Symbol ToM;
+		PastEventCondition event;
 		ArrayList<Symbol> parameters = new ArrayList<Symbol>();
 		
 		String aux;
@@ -93,8 +98,13 @@ public class PastEventCondition extends PredicateCondition {
 			occurred = Boolean.parseBoolean(aux);
 		}
 		else occurred = true;
-
-		subject = new Symbol(attributes.getValue("subject"));
+		
+		aux = attributes.getValue("subject");
+		if(aux != null)
+		{
+			subject = new Symbol(aux);
+		}
+		
 		action = new Symbol(attributes.getValue("action"));
 		
 		aux = attributes.getValue("target");
@@ -111,15 +121,31 @@ public class PastEventCondition extends PredicateCondition {
 				parameters.add(new Symbol(st.nextToken()));
 			}
 		}
+		
+		emotion = attributes.getValue("emotion");
+		
 			
-		return new PastEventCondition(occurred,EventType.ACTION,ActionEvent.SUCCESS,subject,action,target,parameters);
+		event = new PastEventCondition(occurred,EventType.ACTION,ActionEvent.SUCCESS,subject,action,target,emotion,parameters);
+		
+		aux = attributes.getValue("ToM");
+		if(aux == null)
+		{
+			ToM = Constants.UNIVERSAL;
+		}
+		else
+		{
+			ToM = new Symbol(aux);
+		}
+		
+		event.setToM(ToM);
+		return event;
 	}
 
 	protected PastEventCondition()
 	{
 	}
 	
-	public PastEventCondition(boolean occurred, short type, short status, Symbol subject, Symbol action, Symbol target, ArrayList<Symbol> parameters)
+	public PastEventCondition(boolean occurred, short type, short status, Symbol subject, Symbol action, Symbol target, String emotion, ArrayList<Symbol> parameters)
 	{
 		super(occurred,null,Constants.UNIVERSAL);
 		this._type = type;
@@ -127,6 +153,7 @@ public class PastEventCondition extends PredicateCondition {
 		this._subject = subject;
 		this._action = action;
 		this._target = target;
+		this._emotion = emotion;
 		this._parameters = parameters;
 		
 		String aux = this._subject + "," + this._action;
@@ -156,6 +183,7 @@ public class PastEventCondition extends PredicateCondition {
 		//Meiyii - 12/01/10
 		this._type = e.GetType();
 		this._status = e.GetStatus();
+		this._emotion = null;
 		
 		String aux = this._subject + "," + this._action;
 		if(this._target != null)
@@ -196,6 +224,7 @@ public class PastEventCondition extends PredicateCondition {
 		
 		this._type = type;
 		this._status = status;
+		this._emotion = null;
 	}
 	
 	public PastEventCondition(PastEventCondition pEC){
@@ -203,8 +232,14 @@ public class PastEventCondition extends PredicateCondition {
 		
 		_type = pEC._type;
 		_status = pEC._status;
-		_subject = (Symbol) pEC._subject.clone();
 		_action = (Symbol) pEC._action.clone();
+		_emotion = pEC._emotion;
+		
+		if(pEC._subject != null)
+		{
+			_subject = (Symbol) pEC._subject.clone();
+		}
+		
 		if(pEC._target != null)
 		{
 			_target = (Symbol) pEC._target.clone();
@@ -223,10 +258,17 @@ public class PastEventCondition extends PredicateCondition {
 	
 	public boolean isGrounded()
 	{
-		if(!(super.isGrounded() && this._subject.isGrounded() && this._action.isGrounded()))
+		if(!super.isGrounded())
 		{
 			return false;
 		}
+		
+		if(this._subject != null)
+		{
+			if(!this._subject.isGrounded()) return false;
+		}
+			
+		if(!this._action.isGrounded()) return false;
 		
 		if(this._target != null)
 		{
@@ -247,7 +289,11 @@ public class PastEventCondition extends PredicateCondition {
 	public void ReplaceUnboundVariables(int variableID) {
 		super.ReplaceUnboundVariables(variableID);
 		
-		this._subject.ReplaceUnboundVariables(variableID);
+		if(this._subject != null)
+		{
+			this._subject.ReplaceUnboundVariables(variableID);
+		}
+		
 		this._action.ReplaceUnboundVariables(variableID);
 		if(this._target != null)
 		{
@@ -265,7 +311,10 @@ public class PastEventCondition extends PredicateCondition {
 	public void MakeGround(ArrayList<Substitution> bindings) {
 		super.MakeGround(bindings);
 	
-		this._subject.MakeGround(bindings);
+		if(this._subject != null)
+		{
+			this._subject.MakeGround(bindings);
+		}
 		this._action.MakeGround(bindings);
 		if(this._target != null)
 		{
@@ -282,7 +331,11 @@ public class PastEventCondition extends PredicateCondition {
 	public void MakeGround(Substitution subst) {
 		super.MakeGround(subst);
 		
-		this._subject.MakeGround(subst);
+		if(this._subject != null)
+		{
+			this._subject.MakeGround(subst);
+		}
+		
 		this._action.MakeGround(subst);
 		if(this._target != null)
 		{
@@ -312,6 +365,9 @@ public class PastEventCondition extends PredicateCondition {
 		Substitution sub;
 		SubstitutionSet subSet;
 		Symbol param;
+		String subject;
+		String target;
+		String parameter;
 		ArrayList<SubstitutionSet> bindingSets = new ArrayList<SubstitutionSet>();
 		ArrayList<ActionDetail> details;
 		
@@ -324,7 +380,10 @@ public class PastEventCondition extends PredicateCondition {
 			else return null;
 		}
 		
-		details = GetPossibleBindings(am);
+		AgentModel perspective = am.getModelToTest(getToM());
+		boolean perspectiveChange = !getToM().toString().equals(Constants.SELF);
+		
+		details = GetPossibleBindings(perspective);
 		
 		//we cannot determine bindings for negative event conditions,
 		//assume false
@@ -346,9 +405,15 @@ public class PastEventCondition extends PredicateCondition {
 			detail = (ActionDetail) it.next();
 			subSet = new SubstitutionSet();
 			
-			if(!this._subject.isGrounded())
+			if(this._subject != null && !this._subject.isGrounded())
 			{
-				sub = new Substitution(this._subject,new Symbol(detail.getSubject()));
+				subject = detail.getSubject();
+				if(perspectiveChange)
+				{
+					subject = AgentCore.removePerspective(subject, getToM().toString());
+					subject = AgentCore.applyPerspective(subject, am.getName());
+				}
+				sub = new Substitution(this._subject,new Symbol(subject));
 				subSet.AddSubstitution(sub);
 			}
 			// Meiyii 19/01/10
@@ -370,7 +435,14 @@ public class PastEventCondition extends PredicateCondition {
 			}
 			if(this._target != null && !this._target.isGrounded())
 			{
-				sub = new Substitution(this._target,new Symbol(detail	.getTarget()));
+				target = detail.getTarget();
+				if(perspectiveChange)
+				{
+					target = AgentCore.removePerspective(target, getToM().toString());
+					target = AgentCore.applyPerspective(target, am.getName());
+				}
+				
+				sub = new Substitution(this._target,new Symbol(target));
 				subSet.AddSubstitution(sub);
 			}
 			
@@ -379,7 +451,14 @@ public class PastEventCondition extends PredicateCondition {
 				param = (Symbol) this._parameters.get(i);
 				if(!param.isGrounded())
 				{
-					sub = new Substitution(param, new Symbol(detail.getParameters().get(i).toString()));
+					parameter = detail.getParameters().get(i).toString();
+					if(perspectiveChange)
+					{
+						parameter = AgentCore.removePerspective(parameter, getToM().toString());
+						parameter = AgentCore.applyPerspective(parameter, am.getName());
+					}
+					
+					sub = new Substitution(param, new Symbol(parameter));
 					subSet.AddSubstitution(sub);
 				}
 			}
@@ -395,9 +474,23 @@ public class PastEventCondition extends PredicateCondition {
 	 */
 	public float CheckCondition(AgentModel am) {
 		
+		//boolean perspectiveChange;
+		
 		if(!(getName().isGrounded())) return 0;
 		
-		if(getPositive() == am.getMemory().getEpisodicMemory().ContainsPastEvent(GetSearchKeys()))
+		if(!(getToM().isGrounded())) return 0;
+		
+		AgentModel perspective = am.getModelToTest(getToM());
+		
+		//TODO switch perspectives when searching in the AM of others
+		/*perspectiveChange = !getToM().equals(Constants.SELF);
+		
+		if(perspectiveChange)
+		{
+			
+		}*/
+		
+		if(getPositive() == perspective.getMemory().getEpisodicMemory().ContainsPastEvent(GetSearchKeys()))
 		{
 			return 1;
 		}
@@ -412,7 +505,7 @@ public class PastEventCondition extends PredicateCondition {
 		Symbol param;
 		
 		ArrayList<SearchKey> keys = new ArrayList<SearchKey>();
-		if(this._subject.isGrounded())
+		if(this._subject != null && this._subject.isGrounded())
 		{
 			keys.add(new SearchKey(SearchKey.SUBJECT,this._subject.toString()));
 		}
@@ -445,6 +538,13 @@ public class PastEventCondition extends PredicateCondition {
 		{
 			keys.add(new SearchKey(SearchKey.TARGET, this._target.toString()));
 		}
+		
+		if(this._emotion != null)
+		{
+			keys.add(new SearchKey(SearchKey.EMOTION,this._emotion));
+		}
+		
+		
 		if(this._parameters.size() > 0)
 		{
 			ArrayList<String> params = new ArrayList<String>();

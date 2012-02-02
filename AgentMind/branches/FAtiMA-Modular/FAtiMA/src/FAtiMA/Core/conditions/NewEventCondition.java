@@ -39,6 +39,9 @@ public class NewEventCondition extends RecentEventCondition {
 	public float CheckCondition(AgentModel am) {
 		boolean conditionVerified;
 		
+		if(!(getToM().isGrounded())) return 0;
+		
+		AgentModel perspective = am.getModelToTest(getToM());
 
 		if(!getName().isGrounded()){
 			return 0;
@@ -48,7 +51,7 @@ public class NewEventCondition extends RecentEventCondition {
 			return 1;
 		}
 	
-		conditionVerified = (getPositive() == am.getMemory().getEpisodicMemory().ContainsNewEvent(GetSearchKeys()));
+		conditionVerified = (getPositive() == perspective.getMemory().getEpisodicMemory().ContainsNewEvent(GetSearchKeys()));
 		
 		if(conditionVerified){
 			_conditionAlreadyVerified = true;
