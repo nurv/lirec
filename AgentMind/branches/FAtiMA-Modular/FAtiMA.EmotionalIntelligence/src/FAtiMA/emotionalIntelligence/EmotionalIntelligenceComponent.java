@@ -16,10 +16,15 @@ import FAtiMA.ToM.ToMComponent;
 
 public class EmotionalIntelligenceComponent implements IComponent {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	
 	public static final String NAME = "EmotionalIntelligence";
 	
 	//private ArrayList<String> _parsingFiles;
-	private EmotionalConditionsLoaderHandler _parser;
 	
 	public EmotionalIntelligenceComponent(ArrayList<String> extraFiles)
 	{
@@ -85,7 +90,6 @@ public class EmotionalIntelligenceComponent implements IComponent {
 			am.getActionLibrary().addAction(ActionTendencyOperatorFactory.CreateATOperator(am, at));
 		}
 		
-		this._parser = new EmotionalConditionsLoaderHandler(am);
 		//LoadOperators(am);
 	}
 
@@ -113,12 +117,12 @@ public class EmotionalIntelligenceComponent implements IComponent {
 
 	@Override
 	public ReflectXMLHandler getActionsParser(AgentModel am) {
-		return this._parser;
+		return new EmotionalConditionsLoaderHandler(am);
 	}
 
 	@Override
 	public ReflectXMLHandler getGoalsParser(AgentModel am) {
-		return this._parser;
+		return new EmotionalConditionsLoaderHandler(am);
 	}
 
 

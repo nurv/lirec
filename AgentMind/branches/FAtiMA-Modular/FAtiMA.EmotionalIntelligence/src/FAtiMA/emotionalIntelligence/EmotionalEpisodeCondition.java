@@ -220,7 +220,7 @@ public class EmotionalEpisodeCondition extends Condition {
 			}
 			
 			
-			emotion = stem.getStrongestEmotion();
+			/*emotion = stem.getStrongestEmotion();
 			{
 				if(emotion!= null && emotion.GetPotential() > this._value)
 				{
@@ -240,11 +240,19 @@ public class EmotionalEpisodeCondition extends Condition {
 						bindingSets.add(ss);
 					}	
 				}
-			}
+			}*/
 			
+			ArrayList<MemoryEpisode> episodes = am.getMemory().getEpisodicMemory().GetAllEpisodes();
 			i = 0;
-			for(MemoryEpisode ep : am.getMemory().getEpisodicMemory().GetAllEpisodes())
+			for(MemoryEpisode ep : episodes)
 			{
+				//this if is just to make sure that the last episode is not used for this condition
+				//the argument for this is that the last episode is still being created
+				//and we should wait for it to finish before doing any emotion sharing
+				/*if(i==episodes.size()-1)
+				{
+					break;
+				}*/
 				
 				emotion = ep.getStrongestEmotion();
 				if(emotion!= null && emotion.GetPotential() > this._value)
@@ -254,11 +262,9 @@ public class EmotionalEpisodeCondition extends Condition {
 					ss.AddSubstitution(s);
 					if(!_emotion.isGrounded())
 					{
-						
 						s = new Substitution(this._emotion,new Symbol(emotion.getType()));
 						ss.AddSubstitution(s);
-						bindingSets.add(ss);
-						
+						bindingSets.add(ss);	
 					}
 					else if(emotion.getType().equalsIgnoreCase(this._emotion.toString()))
 					{
