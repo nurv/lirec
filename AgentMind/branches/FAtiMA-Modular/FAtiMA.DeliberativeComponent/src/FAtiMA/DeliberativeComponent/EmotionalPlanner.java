@@ -250,7 +250,6 @@ public class EmotionalPlanner implements Serializable {
 			{
 				if (newStep)
 				{
-					
 					op = (IPlanningOperator) op.clone();
 					op.ReplaceUnboundVariables(_variableIdentifier);
 				}
@@ -317,8 +316,10 @@ public class EmotionalPlanner implements Serializable {
 								newPlan.CheckCausalConflicts();
 								newPlan.CheckProtectedConstraints();
 								if (newPlan.isValid()) {
+									
 									//System.out.println("Adding new plan from FindStep: " + newPlan);
 									intention.AddPlan(newPlan);
+									
 								}
 							}
 						}
@@ -385,7 +386,7 @@ public class EmotionalPlanner implements Serializable {
 		
 		af = intention.getAppraisalFrame();
 		p = intention.GetBestPlan(am); //gets the best plan so far to achieve the intention
-		AgentLogger.GetInstance().logAndPrint("Best plan: " + p);
+		//AgentLogger.GetInstance().logAndPrint("Best plan: " + p);
 		//System.out.println("BEST PLAN: " + p);
 
 		if (p == null) {

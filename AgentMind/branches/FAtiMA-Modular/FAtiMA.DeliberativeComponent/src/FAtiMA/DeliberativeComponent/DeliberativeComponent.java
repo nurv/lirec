@@ -910,6 +910,9 @@ public class DeliberativeComponent implements Serializable, IComponent,
 		}
 
 		if (maxGoal != null) {
+			
+			AgentLogger.GetInstance().log("Filter1, max goal utility: " + maxUtility + " Goal: " + maxGoal);
+			
 			if (maxUtility >= MINIMUMUTILITY) {
 				if (_currentIntention == null || maxUtility > _EUStrategy.getExpectedUtility(am,_currentIntention) * SELECTIONTHRESHOLD) 
 				{
