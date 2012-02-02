@@ -59,7 +59,7 @@ public class NeedsLoaderHandler  extends ReflectXMLHandler {
 		
 		MotivationalComponent ms = (MotivationalComponent)_agent.getComponent(MotivationalComponent.NAME);
 		
-		ms.AddMotivator(motivator);
+		ms.addMotivator(motivator);
 		
 		AgentLogger.GetInstance().logAndPrint("Motivator found: " + motivatorName);
 	}

@@ -167,7 +167,7 @@ public class MotivationalComponent implements Cloneable,
 	/**
 	 * Adds a motivator to the MotivationalState
 	 */
-	public void AddMotivator(Motivator motivator) {
+	public void addMotivator(Motivator motivator) {
 		_motivators.put(motivator.GetName(), motivator);
 	}
 
@@ -179,12 +179,19 @@ public class MotivationalComponent implements Cloneable,
 		desirability = _appraisals.get(e.toString());
 		_appraisals.remove(e.toString());	
 		
+		//this is a simple heuristic test to determine if the event was the cause of the last change in drives
+		//however, I've realized that this test is not enough, we need to receive explicit information about what
+		//action caused each change in drives
 		if(e.GetSubject().equals(Constants.SELF) || (e.GetTarget() != null && e.GetTarget().equals(Constants.SELF)))
 		{
-			if(desirability != null)
+			//this look-at test is another heuristic. A look-at action should not trigger changes in drives
+			if(e.GetAction() == null || !e.GetAction().equals("look-at"))
 			{
-				desirability += _contributionToNeeds;
-				_contributionToNeeds = 0;
+				if(desirability != null)
+				{
+					desirability += _contributionToNeeds;
+					_contributionToNeeds = 0;
+				}
 			}
 		}
 		
@@ -210,7 +217,7 @@ public class MotivationalComponent implements Cloneable,
 		for (Motivator m : _motivators.values()) {
 			m2 = (Motivator) m.clone();
 			m2.SetIntensity(m.GetInitialIntensity());
-			ms.AddMotivator(m2);
+			ms.addMotivator(m2);
 		}
 
 		ms._actionEffectsOnDrives = (HashMap<String, ActionEffectsOnDrives>) _actionEffectsOnDrives
@@ -313,10 +320,10 @@ public class MotivationalComponent implements Cloneable,
 
 		float EU = utility * probability * (1 + g.GetGoalUrgency());
 
-		AgentLogger.GetInstance().intermittentLog(
+		/*AgentLogger.GetInstance().intermittentLog(
 				"Goal: " + g.getName() + " Utilitity: " + utility
 						+ " Competence: " + probability + " Urgency: "
-						+ g.GetGoalUrgency() + " Total: " + EU);
+						+ g.GetGoalUrgency() + " Total: " + EU);*/
 		return EU;
 	}
 
@@ -665,7 +672,7 @@ public class MotivationalComponent implements Cloneable,
 				ratio = b.value/desirability;
 				if ((desirability >= 0) ? ratio > 0.3 : ratio > 0.3) {
 					
-					//AgentLogger.GetInstance().log("found a desired motivational effect torwards -" + b.target);
+					//AgentLogger.GetInstance().log("found a desired motivational effect towards -" + b.target);
 					//AgentLogger.GetInstance().log("appraising agent: "  + appraisingAgent);
 					actionName = (Name) actionEffects.getActionName().clone();
 					
@@ -747,7 +754,7 @@ public class MotivationalComponent implements Cloneable,
 		
 		Motivator motivator;
 		
-		if(ToM.equals(Constants.UNIVERSAL.toString()))
+		if(ToM.equals(Constants.UNIVERSAL.toString()) || ToM.equals(am.getName()))
 		{
 			String agent = propertyName.GetFirstLiteral().toString();
 			if(agent.equals(Constants.SELF))
