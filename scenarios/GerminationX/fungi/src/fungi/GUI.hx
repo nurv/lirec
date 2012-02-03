@@ -241,12 +241,12 @@ class GUI
     {
         if (d.length>0 && !MessagesEq(TopItem,d[0]))
         {
-            TopItem=d[0]; 
+/*            TopItem=d[0]; 
             if (TopItem.type=="spirit")
             {
                 w.AddSpiritMsg(TopItem,StrMkr.MsgToString(TopItem));
             }
-
+*/
             Clear(w);
             
             var pos=new Vec2(595,32);

@@ -166,7 +166,7 @@ class Butterfly extends SkeletonEntity
                     var plant = world.Get("fungi.Plant",new Vec2(LogicalPos.x,LogicalPos.y));
                     if (plant!=null)
                     {
-                        if (Rnd.RndInt()%10==7)
+                        if (Rnd.RndInt()%30==7)
                         {
                             // advertising
                             AddMsg(Rnd.Choose(["I know who planted this " + plant.PlantType +".",

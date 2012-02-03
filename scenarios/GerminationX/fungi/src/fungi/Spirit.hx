@@ -41,6 +41,7 @@ class Spirit extends ClusterEntity
     static var EmotionIndices:Dynamic;
     var HighestScore:Float;
     var MessageTime:Float;
+    var LastMsgTxt:String;
 
     function ToCol(r:Int,g:Int,b:Int)
     {
@@ -60,6 +61,7 @@ class Spirit extends ClusterEntity
         EmotionColour=0;
         HighestScore=0;
         MessageTime=-1;
+        LastMsgTxt="";
         
         Message = new Frame("",0,0,64*2,64);
         Message.SetTextSize(10);
@@ -149,7 +151,7 @@ class Spirit extends ClusterEntity
         Message.R=Col.x;
         Message.G=Col.y;
         Message.B=Col.z;
-        MessageTime=Date.now().getSeconds()+10;
+        MessageTime=Date.now().getSeconds()+30;
     }
 
     override function OnSortScene(world:World, order:Int) : Int
@@ -241,6 +243,17 @@ class Spirit extends ClusterEntity
         }
 
         if (!Debug.IsHidden()) UpdateDebug(e);
+        
+        var msg=Reflect.field(e,"last-message");
+        if (msg.code!=null)
+        {
+            var txt = world.GameGUI.StrMkr.MsgToString(msg);
+            if (txt!=LastMsgTxt)
+            {
+                AddMsg(msg,txt);
+                LastMsgTxt=txt;
+            }
+        }
     }
 
     override function Hide(s:Bool) : Void
