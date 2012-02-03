@@ -336,29 +336,6 @@
      time
      server-db-items))))
 
-(defn game-world-post-logs-to-players
-  "dispatch messages to the players"
-  [game-world msgs]
-  ; todo, reduce over messages and send to player
-  ; rather than this way around (map over players)
-  (prof
-   :post-logs-map!
-   (db-map!
-    (fn [player]
-      (modify
-       :log
-       (fn [log]
-         (reduce
-          (fn [log msg]
-            (if (= (:player msg) (:id player))
-              (log-add-msg-ignore-one-time log msg)
-              log))
-          log
-          msgs))
-       player))
-    :players))
-  game-world)
-
 (defn game-world-get-decayed-owners
   "find the owners of decayed plants so we can update the count"
   [game-world]
@@ -422,6 +399,52 @@
   [game-world]
   (modify :summons (fn [s] {}) game-world))
 
+(defn game-world-modify-player
+  "replace the specified player with the result of f"
+  [game-world id f]
+  (db-find-update! f :players {:id id})
+  game-world)
+
+(defn game-world-post-logs-to-players
+  "dispatch messages to the players"
+  [game-world msgs]
+  ; reduce over messages and send to players
+  (reduce
+   (fn [world msg]
+     (if (or
+          (= (:type msg) "plant")
+          (= (:code msg) "needs_help"))
+       (game-world-modify-player
+        world (:player msg)
+        (fn [player]
+          (modify
+           :log
+           (fn [log]
+             (log-add-msg-ignore-one-time log msg))
+           player)))
+       world))
+   game-world
+   msgs))
+           
+(comment
+  (prof
+   :post-logs-map!
+   (db-map!
+    (fn [player]
+      (modify
+       :log
+       (fn [log]
+         (reduce
+          (fn [log msg]
+            (if (= (:player msg) (:id player))
+              (log-add-msg-ignore-one-time log msg)
+              log))
+          log
+          msgs))
+       player))
+    :players))
+  game-world)
+
 (defn game-world-update
   "main update"
   [game-world time delta]
@@ -461,12 +484,6 @@
           (f spirit) spirit))
       spirits))
    game-world))
-
-(defn game-world-modify-player
-  "replace the specified player with the result of f"
-  [game-world id f]
-  (db-find-update! f :players {:id id})
-  game-world)
 
 (defn game-world-add-player
   "make a new player"

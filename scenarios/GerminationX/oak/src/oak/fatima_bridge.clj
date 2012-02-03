@@ -127,6 +127,17 @@
     game-world time)
    game-world))
 
+(defn process-spirit-msg
+  "need to substitute the player names and bits here"
+  [spirit game-world]
+  (if (:msg-needs-fixup spirit)
+    (modify
+     :last-message
+     (fn [m]
+       (game-world-process-msg game-world m))
+     spirit)
+    spirit))
+
 (defn game-world-sync<-fatima
   "update the game world from fatima"
   [game-world fatima-world]
@@ -138,12 +149,15 @@
                              game-world
                              (remote-agent-name agent))]
                  (if spirit
-                   (cons (spirit-update
-                          spirit agent
-                          (game-world-get-tile-with-neighbours
-                           game-world (:tile agent))
-                          (:rules game-world))
-                         spirits)
+                   (cons
+                    (process-spirit-msg
+                     (spirit-update
+                      spirit agent
+                      (game-world-get-tile-with-neighbours
+                        game-world (:tile agent))
+                      (:rules game-world))
+                     game-world)
+                    spirits)
                    (cons (make-spirit ((:id-gen game-world)) agent) spirits))))
              '()
              (world-agents fatima-world)))

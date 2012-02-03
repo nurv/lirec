@@ -43,7 +43,9 @@
    :fatactions ()
    :fatemotions ()
    :highest-emotion "NONE"
-   :log (make-log 10)))
+   :log (make-log 10)
+   :last-message {}
+   :msg-need-fixup false))
 
 (defn spirit-highest-emotion [spirit]
   (first
@@ -319,19 +321,36 @@
   "read the location from the fatima agent"
   [spirit remote-agent]
   (modify :tile (fn [t] (:tile remote-agent)) spirit))
-  
+
+(defn spirit-update-last-message
+  [spirit]
+  (let [msgs (:msgs (:log spirit))
+        new-msg
+        ; if we have a message and it's a different one
+        (if (and (not (empty? msgs))
+                 (not (= (first msgs) (:last-message spirit))))
+          (first msgs)
+          false)]
+    (if new-msg
+      (modify
+       :last-message
+       (fn [m] new-msg)
+       (modify :msg-needs-fixup (fn [n] true) spirit))
+      (modify :msg-needs-fixup (fn [n] false) spirit))))
+
 (defn spirit-update [spirit remote-agent tiles rules]
-  (spirit-update-highest-emotion
-   (spirit-update-from-actions
-    (spirit-update-emotionalloc
-     (spirit-update-emotions
-      (spirit-update-fatdebug
-       (spirit-update-location
-        (spirit-clear spirit)
+  (spirit-update-last-message
+   (spirit-update-highest-emotion
+    (spirit-update-from-actions
+     (spirit-update-emotionalloc
+      (spirit-update-emotions
+       (spirit-update-fatdebug
+        (spirit-update-location
+         (spirit-clear spirit)
+         remote-agent)
         remote-agent)
        remote-agent)
-      remote-agent)
-     remote-agent tiles) tiles rules)))
+      remote-agent tiles) tiles rules))))
           
 
   

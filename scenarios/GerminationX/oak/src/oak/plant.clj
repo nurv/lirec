@@ -357,8 +357,13 @@
                         (+ health
                            (reduce
                             (fn [r n] ; look at companion planting rules
-                              (+ r (get-relationship
-                                    (:type plant) (:type n) rules)))
+                              (let [rel (get-relationship
+                                         (:type plant) (:type n) rules)]
+                                ; only count positive if the plant is well
+                                (if (or (< rel 0)
+                                        (> (:health plant) min-health))
+                                  (+ r rel)
+                                  r)))
                             (let [nn (count neighbours)]
                               (cond ; general count of surrounding plants
                                (= 0 nn) -1
@@ -373,8 +378,11 @@
    (modify
    :fruit
    (fn [f]
-     (if (= (:state plant) "fruit-c")
-       (min max-fruit (+ f 1)) f))
+     (if (> f max-fruit)
+       0
+       (if (and (= (:state plant) "fruit-c")
+                (< (rand 1000) fruit-probability))
+         (min max-fruit (+ f 1)) f)))
    plant)))
 
 (defn plant-update-state [plant time delta season]

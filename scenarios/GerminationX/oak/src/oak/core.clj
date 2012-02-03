@@ -253,7 +253,7 @@
                               (player-add-msg ; add the recieved message
                                player
                                (make-spirit-msg ; make the message
-                                :gift_received ; this message doesn't get processed
+                                "gift_received" ; this message doesn't get processed
                                 (game-world-find-spirit
                                  (deref my-game-world)
                                  (layer->spirit-name (:layer fruit)))
@@ -265,7 +265,7 @@
                              (player-add-msg ; add the sent message
                               player
                               (make-spirit-msg ; make the message
-                               :gift_sent ; this message doesn't get processed
+                               "gift_sent" ; this message doesn't get processed
                                (game-world-find-spirit
                                 (deref my-game-world)
                                 (layer->spirit-name (:layer fruit)))

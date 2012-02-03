@@ -110,7 +110,7 @@
      :seeds-left
      (fn [s]
        (min (+ 1 s) (:seeds-capacity player)))
-     (modify :next-refresh (fn [r] (+ (current-time) (* 5 60 1000))) player))
+     (modify :next-refresh (fn [r] (+ (current-time) seeds-duration)) player))
     player))
 
 (defn player-get-allowed-layer

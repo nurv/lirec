@@ -19,7 +19,7 @@
 (def db-version 1)
 (def server-tick 1)
 (def tile-size 5)
-(def season-length (* 60 30)) 
+(def season-length (* 60 10)) 
 (def plant-tick 2) 
 (def plant-tick-var 3)
 (def min-health 10)
@@ -28,14 +28,15 @@
 (def ill-slow-amount 100) ; 1 in n chance of state change
 (def min-neighbours 2) ; not used
 (def max-neighbours 10)
-(def max-fruit 3)
+(def max-fruit 1)
+(def fruit-probability 5) ; out of 1000
 (def max-player-fruit 5) ; max a player can store
-(def seeds-duration (* 60 60 1000))
+(def seeds-duration (* 15 1000))
 (def plant-influence-distance 3)
 (def level0up 5)
 (def level1up 8)
 (def level2up 12)
-(def server-db-items 4) ; num items to process per tick
+(def server-db-items 8) ; num items to process per tick
 
 (defn plant-type->layer [type]
   (cond
