@@ -1,6 +1,7 @@
 package uk.ac.hw.lirec.dialogsystem;
 
 import java.io.Reader;
+import java.util.HashMap;
 
 import bsh.EvalError;
 import bsh.Interpreter;
@@ -66,5 +67,16 @@ public class DialogSystem {
 		}
 	}
 	
+	/**
+	 * @param dataIn data to migrate in to the agent.
+	 */
+	public void migrateDataIn(HashMap<String,String> dataIn) {
+		try {
+			mScriptInterpreter.set("migrationData", dataIn);
+		} catch (EvalError e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	
 }

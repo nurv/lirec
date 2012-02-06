@@ -1,7 +1,7 @@
 import uk.ac.hw.lirec.dialogsystem.DialogInterface;
 import uk.ac.hw.lirec.dialogsystem.DialogInterface.Moods;
 import uk.ac.hw.lirec.dialogsystem.DialogInterface.Expression;
-
+import java.util.HashMap;
 
 
 
@@ -14,6 +14,7 @@ import uk.ac.hw.lirec.dialogsystem.DialogInterface.Expression;
 
 
 DialogInterface di;
+HashMap migrationData = new HashMap();
 
 
 greetUser(String name) {
@@ -22,6 +23,13 @@ greetUser(String name) {
 
 saySomething(String speech) {
 	di.speakText(speech);
+}
+
+testMigrate() {
+	di.speakText("Stored name is: "+migrationData.get("name"));
+	migrationData.put("result","some data");
+	di.speakText("migrating out");
+	di.migrateDataOut("somewhere",migrationData);
 }
 
 /*

@@ -1,9 +1,11 @@
 package uk.ac.hw.lirec.dialogsystem;
 
+import java.util.HashMap;
+
 import uk.ac.hw.lirec.emys3d.EmysModel;
 import uk.ac.hw.lirec.emys3d.EmysModel.Emotion;
-import uk.ac.hw.lirec.threedtest.ThreeDTestActivity;
 import android.app.Activity;
+import android.util.Log;
 
 /**
  * @author iw24
@@ -23,6 +25,18 @@ public class AndroidDialogInterface extends DialogInterface {
 		mActivity = mainActivity;
 		mProvider = provider;
 	}
+	
+	public void startNav(final String from, final String to) {
+		if (mInterrupted)
+			return;
+		mActivity.runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				mProvider.navigateFromTo(from, to);	
+			}
+		});
+	}
+	
 	@Override
 	public void speakText(final String text) {
 		if (mInterrupted)
@@ -162,5 +176,12 @@ public class AndroidDialogInterface extends DialogInterface {
 				//e.printStackTrace();
 			}
 		}
+	}
+	@Override
+	public void migrateDataOut(String migrateTo,
+			HashMap<String, String> dataToMigrate) {
+		//TODO implement properly
+		//for testing just print this out
+		Log.v("MIGRATION OUT", dataToMigrate.toString());
 	}
 }

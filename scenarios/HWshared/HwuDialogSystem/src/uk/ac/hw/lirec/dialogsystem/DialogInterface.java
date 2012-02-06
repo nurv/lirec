@@ -1,5 +1,7 @@
 package uk.ac.hw.lirec.dialogsystem;
 
+import java.util.HashMap;
+
 /**
  * @author iw24
  * The purpose of this class, and its subclasses, is to define the 
@@ -78,5 +80,11 @@ public abstract class DialogInterface {
 	 * should be blocking.
 	 */
 	public abstract void showExpression(Expression expression);
+	
+	/**
+	 * @param migrateTo the IP/address (or some ID?) of the embodiment to migrate to
+	 * @param dataToMigrate data to send out to migrate, just keys and values.
+	 */
+	public abstract void migrateDataOut(String migrateTo, HashMap<String,String> dataToMigrate);
 
 }
