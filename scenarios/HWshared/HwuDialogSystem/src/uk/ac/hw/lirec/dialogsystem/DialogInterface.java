@@ -82,9 +82,18 @@ public abstract class DialogInterface {
 	public abstract void showExpression(Expression expression);
 	
 	/**
+	 * This should handle any screen blanking etc etc required.
 	 * @param migrateTo the IP/address (or some ID?) of the embodiment to migrate to
 	 * @param dataToMigrate data to send out to migrate, just keys and values.
+	 * @return if migration succeeded
 	 */
-	public abstract void migrateDataOut(String migrateTo, HashMap<String,String> dataToMigrate);
+	public abstract boolean migrateDataOut(String migrateTo, HashMap<String,String> dataToMigrate);
+	
+	/**
+	 * This should handled whatever's required to migrate in - switching the screen on etc.
+	 * @param migrateFrom where you want to invite migration from.
+	 * @return true if migration is happening.
+	 */
+	public abstract boolean inviteMigrate(String migrateFrom);
 
 }
