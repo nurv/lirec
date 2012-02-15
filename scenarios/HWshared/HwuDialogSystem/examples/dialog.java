@@ -32,6 +32,29 @@ giveDirections(String dir, String location) {
 	saySomething(dir);
 }
 
+//Script for demo video
+}
+
+startInteraction() {
+	saySomething("Hello, are you Max? I'm waiting for him.");
+	String[] options = {"Yes","No"};
+	di.multipleChoiceQuestion(2,options);
+	saySomething("Great, you're here to see Michael, do you know the way to the lab?");
+	di.multipleChoiceQuestion(2,options);
+	saySomething("OK, well I can tell you where to go or show you on your phone.")
+	String[] options2 = {"Phone","Tell me"};
+	di.multipleChoiceQuestion(2,options2);
+	saySomething("Load the app and press ready when it's loaded.");
+}
+
+startPhoneInteraction() {
+	di.blankScreen();
+	di.getResponse("Ready");
+	di.unBlankScreen();
+	saySomething("Right, we're off to the lab.");
+	di.startNav("Gnorth2","2.22");
+}
+
 /*
  * This shows up an issue in this "single episode" style, perhaps the answer is
  * to have blocking functions that return values? program/thread control might be a bit odd then...
