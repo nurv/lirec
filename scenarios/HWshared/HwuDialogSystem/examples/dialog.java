@@ -15,7 +15,7 @@ import java.util.HashMap;
 
 DialogInterface di;
 HashMap migrationData = new HashMap();
-String server = "192.168.1.21"
+String server = new String("192.168.1.21");
 
 greetUser(String name) {
 	di.speakText("Hello there, "+name);
@@ -33,7 +33,7 @@ giveDirections(String dir, String location) {
 }
 
 //Script for demo video
-}
+
 
 startInteraction() {
 	saySomething("Hello, are you Max? I'm waiting for him.");
