@@ -65,7 +65,7 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 
 	public static final String FILENAME = "XMLMemoryAdvanced";
 
-	private static final String NAME = "AdvancedMemory";
+	public static final String NAME = "AdvancedMemory";
 
 	private static final String SA_MEMORY = "SA-MEMORY";
 	private static final String CC_MEMORY = "CC-MEMORY";
@@ -76,6 +76,7 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 	private Memory memory;
 
 	private String locationOntologyFilename;
+	private boolean resultStorage;
 
 	private ArrayList<Object> results; // CompoundCue, SpreadingActivation, Generalisation
 
@@ -154,7 +155,7 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 
 	@Override
 	public ReflectXMLHandler getActionsParser(AgentModel am) {
-		return null;
+		return new ActionsLoaderHandler(am);
 	}
 
 	@Override
@@ -407,123 +408,17 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 
 			//
 
-			// parse perception
-			StringTokenizer stringTokenizer = new StringTokenizer(perception, "$");
-			String targetAttributeName = null;
-			try {
-				targetAttributeName = stringTokenizer.nextToken();
-			} catch (Exception e) {
-				// no target attribute name given
-				System.err.println("No Target Attribute Name given!");
-				return;
-			}
-			String filterAttributesStr = null;
-			try {
-				filterAttributesStr = stringTokenizer.nextToken();
-			} catch (Exception e) {
-				// no filter attributes given
-			}
-			String timeAbstractionModeStr = null;
-			try {
-				timeAbstractionModeStr = stringTokenizer.nextToken();
-			} catch (Exception e) {
-				// no time abstraction mode given
-			}
-			String targetDepthMaxStr = null;
-			try {
-				targetDepthMaxStr = stringTokenizer.nextToken();
-			} catch (Exception e) {
-				// no target ontology maximum depth given
-			}
-			String objectDepthMaxStr = null;
-			try {
-				objectDepthMaxStr = stringTokenizer.nextToken();
-			} catch (Exception e) {
-				// no object ontology maximum depth given
-			}
-			String locationDepthMaxStr = null;
-			try {
-				locationDepthMaxStr = stringTokenizer.nextToken();
-			} catch (Exception e) {
-				// no location ontology maximum depth given
-			}
-			String resultStorageStr = null;
-			try {
-				resultStorageStr = stringTokenizer.nextToken();
-			} catch (Exception e) {
-				// no result storage given
-			}
+			System.out.println(perception);
+			SpreadingActivation spreadingActivation = new SpreadingActivation();		
 
-			// parse time ontology
-			TimeOntology timeOntology = null;
-			if (timeAbstractionModeStr != null) {
-				// parse time abstraction mode
-				Short timeAbstractionMode = null;
-				try {
-					timeAbstractionMode = Short.valueOf(timeAbstractionModeStr);
-					// create time ontology
-					timeOntology = new TimeOntology();
-					timeOntology.setAbstractionMode(timeAbstractionMode);
-				} catch (Exception e) {
-					System.err.println("Error while parsing Time Abstraction Mode!");
-				}
-			}
-
-			// parse target ontology
-			NounOntology targetOntology = null;
-			if (targetDepthMaxStr != null) {
-				// parse target ontology maximum depth
-				try {
-					Integer depthMax = Integer.valueOf(targetDepthMaxStr);
-					// create target ontology
-					targetOntology = new NounOntology();
-					targetOntology.setDepthMax(depthMax);
-				} catch (Exception e) {
-					System.err.println("Error while parsing Target Ontology Maximum Depth!");
-				}
-			}
-
-			// parse object ontology
-			NounOntology objectOntology = null;
-			if (objectDepthMaxStr != null) {
-				// parse object ontology maximum depth
-				try {
-					Integer depthMax = Integer.valueOf(objectDepthMaxStr);
-					// create object ontology
-					objectOntology = new NounOntology();
-					objectOntology.setDepthMax(depthMax);
-				} catch (Exception e) {
-					System.err.println("Error while parsing Object Ontology Maximum Depth!");
-				}
-			}
-
-			// parse location ontology
-			TreeOntology locationOntology = null;
-			if (locationDepthMaxStr != null) {
-				// parse location ontology maximum depth
-				try {
-					Integer depthMax = Integer.valueOf(locationDepthMaxStr);
-					// create location ontology
-					locationOntology = new TreeOntology(locationOntologyFilename);
-					locationOntology.setDepthMax(depthMax);
-				} catch (Exception e) {
-					System.err.println("Error while parsing Location Ontology Maximum Depth!");
-				}
-			}
-
-			// parse result storage
-			boolean resultStorage = Boolean.valueOf(resultStorageStr);
-
-			// execute Spreading Activation mechanism
-			SpreadingActivation spreadingActivation = new SpreadingActivation();
-			spreadingActivation.spreadActivation(memory.getEpisodicMemory(), filterAttributesStr, targetAttributeName, timeOntology, targetOntology, objectOntology, locationOntology);
-
+			this.processSAPerception(perception, spreadingActivation);
+			
 			if (resultStorage) {
 				// add to results
 				results.add(spreadingActivation);
 				setResultsUpdated(true);
 			}
-
+			
 			// return result
 			String result = AdvancedMemoryWriter.getUnformattedXML(spreadingActivation);
 			am.getRemoteAgent().ReportMemoryResult(result);
@@ -774,4 +669,115 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 		resultsUpdated = true;
 	}
 
+	public Object processSAPerception(String perception, SpreadingActivation sa){
+		// parse perception
+		StringTokenizer stringTokenizer = new StringTokenizer(perception, "$");
+		String targetAttributeName = null;
+		try {
+			targetAttributeName = stringTokenizer.nextToken();
+		} catch (Exception e) {
+			// no target attribute name given
+			System.err.println("No Target Attribute Name given!");
+			return null;
+		}
+		String filterAttributesStr = null;
+		try {
+			filterAttributesStr = stringTokenizer.nextToken();
+		} catch (Exception e) {
+			// no filter attributes given
+		}
+		String timeAbstractionModeStr = null;
+		try {
+			timeAbstractionModeStr = stringTokenizer.nextToken();
+		} catch (Exception e) {
+			// no time abstraction mode given
+		}
+		String targetDepthMaxStr = null;
+		try {
+			targetDepthMaxStr = stringTokenizer.nextToken();
+		} catch (Exception e) {
+			// no target ontology maximum depth given
+		}
+		String objectDepthMaxStr = null;
+		try {
+			objectDepthMaxStr = stringTokenizer.nextToken();
+		} catch (Exception e) {
+			// no object ontology maximum depth given
+		}
+		String locationDepthMaxStr = null;
+		try {
+			locationDepthMaxStr = stringTokenizer.nextToken();
+		} catch (Exception e) {
+			// no location ontology maximum depth given
+		}
+		String resultStorageStr = null;
+		try {
+			resultStorageStr = stringTokenizer.nextToken();
+		} catch (Exception e) {
+			// no result storage given
+		}
+
+		// parse time ontology
+		TimeOntology timeOntology = null;
+		if (timeAbstractionModeStr != null) {
+			// parse time abstraction mode
+			Short timeAbstractionMode = null;
+			try {
+				timeAbstractionMode = Short.valueOf(timeAbstractionModeStr);
+				// create time ontology
+				timeOntology = new TimeOntology();
+				timeOntology.setAbstractionMode(timeAbstractionMode);
+			} catch (Exception e) {
+				System.err.println("Error while parsing Time Abstraction Mode!");
+			}
+		}
+
+		// parse target ontology
+		NounOntology targetOntology = null;
+		if (targetDepthMaxStr != null) {
+			// parse target ontology maximum depth
+			try {
+				Integer depthMax = Integer.valueOf(targetDepthMaxStr);
+				// create target ontology
+				targetOntology = new NounOntology();
+				targetOntology.setDepthMax(depthMax);
+			} catch (Exception e) {
+				System.err.println("Error while parsing Target Ontology Maximum Depth!");
+			}
+		}
+
+		// parse object ontology
+		NounOntology objectOntology = null;
+		if (objectDepthMaxStr != null) {
+			// parse object ontology maximum depth
+			try {
+				Integer depthMax = Integer.valueOf(objectDepthMaxStr);
+				// create object ontology
+				objectOntology = new NounOntology();
+				objectOntology.setDepthMax(depthMax);
+			} catch (Exception e) {
+				System.err.println("Error while parsing Object Ontology Maximum Depth!");
+			}
+		}
+
+		// parse location ontology
+		TreeOntology locationOntology = null;
+		if (locationDepthMaxStr != null) {
+			// parse location ontology maximum depth
+			try {
+				Integer depthMax = Integer.valueOf(locationDepthMaxStr);
+				// create location ontology
+				locationOntology = new TreeOntology(locationOntologyFilename);
+				locationOntology.setDepthMax(depthMax);
+			} catch (Exception e) {
+				System.err.println("Error while parsing Location Ontology Maximum Depth!");
+			}
+		}
+
+		// parse result storage
+		resultStorage = Boolean.valueOf(resultStorageStr);
+		
+		// execute Spreading Activation mechanism
+		return sa.spreadActivation(memory.getEpisodicMemory(), filterAttributesStr, targetAttributeName, timeOntology, targetOntology, objectOntology, locationOntology);
+	}
 }

@@ -489,6 +489,7 @@ public class SpreadingActivation implements Serializable {
 		this.targetAttributeName = targetAttributeName;
 		this.frequencies = frequencies;
 
+		System.out.println("ValueMax " + valueMax);
 		return valueMax;
 	}
 }
