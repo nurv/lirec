@@ -352,7 +352,26 @@ public class CmionStorageContainer extends CmionComponent {
 					else
 						container.requestSetProperty(propertyName, initialProperties.get(propertyName));
 				}
-		}	
+		} 
+		else if (initialProperties!=null) // the container already exists, however we will still add the properties
+		{
+			CmionStorageContainer container = subContainers.get(name);
+			
+			// don't do this if the conatainer types don't match
+			if (!type.equals(container.getContainerType())) return;
+			
+			// go through all properties and set them
+			for (String propertyName : initialProperties.keySet())
+			{	
+				if (persistentProperties!=null)
+				{
+					boolean persistent = persistentProperties.contains(propertyName);
+					container.requestSetProperty(propertyName, initialProperties.get(propertyName),persistent);					
+				}
+				else
+					container.requestSetProperty(propertyName, initialProperties.get(propertyName));
+			}
+		}
 	}
 
 	/** returns the top container of the storage hierarchy that this container is part of, 
@@ -507,7 +526,7 @@ public class CmionStorageContainer extends CmionComponent {
 	    {
 	    	// create an array list for remembering the properties that were
 	    	// requested to change during this simulation step
-	    	ArrayList<String> propertiesSet = new ArrayList<String>();
+	    	HashSet<String> propertiesSet = new HashSet<String>();
 	    	
 	    	// iterate through requests
 	    	for (RequestSetProperty request : requests.get(RequestSetProperty.class))

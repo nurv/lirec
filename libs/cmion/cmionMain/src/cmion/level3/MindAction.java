@@ -30,6 +30,7 @@
 package cmion.level3;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.HashMap;
 
 import org.w3c.dom.NamedNodeMap;
@@ -42,7 +43,7 @@ public class MindAction
 
 	/** create a new mind action with the specified name and parameters, if the action has
 	 * no parameters, the second parameter of this constructor may be null*/
-	public MindAction(String subject, String name, ArrayList<String> parameters)
+	public MindAction(String subject, String name, List<String> parameters)
 	{
 		this.subject = subject;
 		this.name = name;
@@ -170,7 +171,7 @@ public class MindAction
 	protected String subject;
 	
 	/** the parameters of this action */
-	protected ArrayList<String> parameters;
+	protected List<String> parameters;
 	
 	/** returns the name/identifier of this action */
 	public String getName()
@@ -185,7 +186,7 @@ public class MindAction
 	}
 
 	/** returns the parameters of this action */
-	public ArrayList<String> getParameters()
+	public List<String> getParameters()
 	{
 		return parameters;
 	}
