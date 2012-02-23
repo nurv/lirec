@@ -90,6 +90,7 @@ import FAtiMA.Core.AgentSimulationTime;
 import FAtiMA.Core.ValuedAction;
 import FAtiMA.Core.componentTypes.IProcessExternalRequestComponent;
 import FAtiMA.Core.emotionalState.EmotionalState;
+import FAtiMA.Core.memory.semanticMemory.KnowledgeSlot;
 import FAtiMA.Core.util.AgentLogger;
 import FAtiMA.Core.util.parsers.SocketListener;
 import FAtiMA.Core.wellFormedNames.Name;
@@ -105,9 +106,18 @@ import FAtiMA.Core.wellFormedNames.Symbol;
  */
 public abstract class RemoteAgent extends SocketListener {
 	
-	
-	protected static final String SHUTDOWN = "SHUTDOWN";
+	//Command messages, these correspond to requests from the external world (ION,WorldSim)
+	//examples are CMD Start, CMD Stop, CMD Reset, CMD GET-STATE, etc etc.
 	protected static final String CMD = "CMD";
+	protected static final String GET_STATE = "GET-STATE";
+	protected static final String SET_STATE = "SET-STATE";
+	protected static final String DA_QUERY = "DA_QUERY";
+	protected static final String START = "Start";
+	protected static final String STOP = "Stop";
+	protected static final String RESET = "Reset";
+	protected static final String SAVE = "Save";
+	protected static final String GET_PROPERTIES = "GET-PROPERTIES";
+	
 	protected static final String AGENTS = "AGENTS";
 	protected static final String LOOK_AT = "LOOK-AT";
 	protected static final String ENTITY_ADDED = "ENTITY-ADDED";
@@ -123,8 +133,8 @@ public abstract class RemoteAgent extends SocketListener {
 	protected static final String ADVANCE_TIME = "ADVANCE-TIME";
 	protected static final String STOP_TIME = "STOP-TIME";
 	protected static final String RESUME_TIME = "RESUME-TIME";
-	protected static final String GET_STATE = "GET-STATE";
-	protected static final String SET_STATE = "SET-STATE";
+	protected static final String SHUTDOWN = "SHUTDOWN";
+	
 	protected static final String CANCEL_ACTION = "CANCEL-ACTION";
 	protected static final String IDENTIFY_USER = "IDENTIFY-USER";
 	
@@ -678,32 +688,48 @@ public abstract class RemoteAgent extends SocketListener {
 		_agent.getMemory().getEpisodicMemory().applySubstitution(new Substitution(new Symbol(id),new Symbol(userName)));
 	}
 	
-	
-	
 	protected void CmdPerception(String perc)
 	{
 		//corresponds to an external command from the stagemanager
 		String action = perc;
-		if(action.equals("Start")) 
+		if(action.equals(START)) 
 		{
 			_running = true;
 			AgentSimulationTime.GetInstance().Resume();
 		}
-		else if(action.equals("Stop")) 
+		else if(action.equals(STOP)) 
 		{
 			_running = false;
 			AgentSimulationTime.GetInstance().Stop();
 		}
-		else if(action.equals("Reset")) 
+		else if(action.equals(RESET)) 
 		{
 			_agent.Reset();
 			_canAct = true;
 			_canLook = true;
 			//_running = true;
 		}
-		else if(action.equals("Save"))
+		else if(action.equals(SAVE))
 		{
 			_agent.RequestAgentSave();
+		}
+		else if(action.equals(GET_PROPERTIES))
+		{
+			String semanticMemory = "<SemanticMemory>";
+			semanticMemory+= "<STM>";
+			for(KnowledgeSlot ks: _agent.getMemory().getSemanticMemory().GetFactList())
+			{
+				semanticMemory+= ks.toXML();
+			}
+			semanticMemory+= "</STM>";
+			semanticMemory+= "<LTM>";
+			for(KnowledgeSlot ks: _agent.getMemory().getSemanticMemory().GetKnowledgeBaseFacts())
+			{
+				semanticMemory+= ks.toXML();
+			}
+			semanticMemory+= "</LTM></SemanticMemory>";
+			
+			this.Send(semanticMemory);
 		}
 		else if(action.startsWith("DA_QUERY"))
 		{

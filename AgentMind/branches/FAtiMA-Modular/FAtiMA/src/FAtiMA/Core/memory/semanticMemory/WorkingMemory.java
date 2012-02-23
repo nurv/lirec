@@ -433,7 +433,7 @@ public class WorkingMemory implements Serializable {
 		for(ListIterator<KnowledgeSlot> li = _factList.listIterator();li.hasNext();)
 		{
 			slot = li.next();
-			facts += slot.toXML();
+			facts += slot.toString();
 		}
 		facts += "</WMFact>\n";
 		
