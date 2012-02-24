@@ -227,7 +227,9 @@ public class FAtiMAConnector extends AgentMindConnector implements Migrating, Mi
 					else
 						cmdName = "PROPERTY-CHANGED-NONPERSISTENT";
 				}
-				mindThread.send(cmdName+" SELF "+ entityName+ "(" + propertyName+ ") " + propertyValue);		
+				//updated as " SELF " does not update the value for prperty
+				//mindThread.send(cmdName+" SELF "+ entityName+ "(" + propertyName+ ") " + propertyValue);		
+				mindThread.send(cmdName+" * "+ entityName+ "(" + propertyName+ ") " + propertyValue);
 			}
 			else
 				mindThread.send("PROPERTY-CHANGED "+ entityName+ "(" + propertyName+ ") " + propertyValue);		
