@@ -48,13 +48,13 @@ public abstract class SocketListener extends Thread {
 
     protected boolean stopped = false;
 
-    public SocketListener() {
-    }
-    
+    Object sendLock;
+       
     /** Creates new SocketListener */
     public SocketListener(Socket socket) {
     	super("SocketListener");
         this.socket = socket;
+        sendLock = new Object();
     }
     
     public void initialize()
@@ -127,18 +127,21 @@ public abstract class SocketListener extends Thread {
         }
     }
     
-	public synchronized boolean send(String msg) {
-		try {
-			String aux = msg + "\n";
-			OutputStream out = this.socket.getOutputStream();
-			out.write(aux.getBytes("UTF-8"));
-			out.flush();
-			return true;
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-			this.stopped = true;
-			return false;
+	public boolean send(String msg) {
+		synchronized(sendLock)
+		{
+			try {
+				String aux = msg + "\n";
+				OutputStream out = this.socket.getOutputStream();
+				out.write(aux.getBytes("UTF-8"));
+				out.flush();
+				return true;
+			}
+			catch (IOException e) {
+				e.printStackTrace();
+				this.stopped = true;
+				return false;
+			}
 		}
 	}
 }

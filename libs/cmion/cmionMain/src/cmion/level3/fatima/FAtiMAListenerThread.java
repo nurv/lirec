@@ -56,6 +56,7 @@ public class FAtiMAListenerThread extends SocketListener {
 	 * FAtiMA data folder) */
 	private String agentRole;
 	
+	private volatile boolean initialised;
 	
 	/** create a new FAtiMAListenerThread */
 	public FAtiMAListenerThread(Socket socket, FAtiMAConnector connector)
@@ -63,9 +64,17 @@ public class FAtiMAListenerThread extends SocketListener {
 		super(socket);
 		this.connector = connector;
 		messageCounter = 0;	
+		initialised = false;
 	}
 	
-	
+	@Override 
+	public boolean send(String msg) 
+	{
+		if (initialised)
+			return super.send(msg);
+		else return false;
+	}
+		
 	/** this method processes messages that FAtiMA has sent */
 	@Override
 	protected synchronized void processMessage(String msg) {
@@ -97,8 +106,9 @@ public class FAtiMAListenerThread extends SocketListener {
 			
 			connector.notifyAgentConnected(agentName,properties);
 			
-			this.send("OK");
+			super.send("OK");
 			
+			initialised = true;
 			// if agent should be sleeping, tell it to pause
 			if (connector.isMindSleeping())
 				this.send("CMD Stop");
