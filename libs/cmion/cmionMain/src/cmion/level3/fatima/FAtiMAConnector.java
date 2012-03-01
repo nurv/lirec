@@ -29,23 +29,30 @@
 
 package cmion.level3.fatima;
 
-import ion.Meta.EventHandler;
-import ion.Meta.IEvent;
-
 import java.io.IOException;
+import java.io.StringReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
+import java.util.HashSet;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+
 import cmion.architecture.IArchitecture;
 import cmion.level2.migration.Migrating;
 import cmion.level2.migration.MigrationAware;
 import cmion.level3.AgentMindConnector;
-import cmion.level3.EventRemoteAction;
 import cmion.level3.MindAction;
+import cmion.storage.CmionStorageContainer;
+import cmion.storage.WorldModel;
 
 
 public class FAtiMAConnector extends AgentMindConnector implements Migrating, MigrationAware {
@@ -342,7 +349,7 @@ public class FAtiMAConnector extends AgentMindConnector implements Migrating, Mi
 					try {
 						Thread.sleep(100);
 					} catch (InterruptedException e) {}
-				}
+				}			
 				
 				// now that the state is set awake the mind
 				awakeMind();
@@ -361,6 +368,8 @@ public class FAtiMAConnector extends AgentMindConnector implements Migrating, Mi
 				for (String objectName: architecture.getWorldModel().getObjectNames())
 					mindThread.sendLookAtPerception(objectName);
 				
+				// now that we have done this, update world model with fatima properties
+				mindThread.send("CMD GET-PROPERTIES");				
 			}
 			
 		} 
@@ -470,6 +479,89 @@ public class FAtiMAConnector extends AgentMindConnector implements Migrating, Mi
 	@Override
 	protected void processRawMessage(String message) {
 		mindThread.send(message);
+	}
+
+	/** parse the xml message containing the semantic memory of the connected agent,
+	 *  use it to update the world model */
+	public void parseSemanticMemory(String msg)
+	{
+		final class Container
+		{
+			public HashMap<String,Object> properties;
+			public HashSet<String> persistentProperties;
+		
+			public Container()
+			{
+				properties = new HashMap<String,Object>();
+				persistentProperties = new HashSet<String>();
+			}
+		
+		}
+		
+		try
+		{
+			HashMap<String,Container> containers = new HashMap<String,Container>(); 
+			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+			DocumentBuilder db = dbf.newDocumentBuilder();
+			InputSource is = new InputSource();
+			is.setCharacterStream(new StringReader(msg));
+			Document doc = db.parse(is);
+			NodeList nodes = doc.getElementsByTagName("Property");
+			for (int i=0; i<nodes.getLength(); i++)
+			{
+				NamedNodeMap attribs = nodes.item(i).getAttributes();
+				boolean persistent = Boolean.parseBoolean(attribs.getNamedItem("persistent").getNodeValue());
+				String fullName = attribs.getNamedItem("persistent").getNodeValue();
+				String propValue = attribs.getNamedItem("persistent").getNodeValue();
+				
+				// extract propOwner and Name
+				String propOwner = fullName.substring(0,fullName.indexOf("("));
+				String propName = fullName.substring(fullName.indexOf("("),fullName.length()-1);
+				
+				// write all properties into temporary container structure
+				Container container = containers.get(propOwner);
+				if (container==null)
+				{	
+					container = new Container();
+					containers.put(propOwner, container);
+				}
+				container.properties.put(propName, propValue);
+				if (persistent)	container.persistentProperties.add(propName);
+			}
+		
+			WorldModel wm = architecture.getWorldModel();
+			// now write the values for all containers to the world model
+			for (String containerName : containers.keySet())
+			{
+				Container container = containers.get(containerName);
+				// if the container already exists, just add the properties to it, 
+				// we dont need to worry about the agent/object distinction
+				if (wm.hasSubContainer(containerName)) 
+				{
+					CmionStorageContainer csc = wm.getSubContainer(containerName);
+					for (String propName: container.properties.keySet())
+					{
+						csc.requestSetProperty(propName, 
+											   container.properties.get(propName), 
+											   container.persistentProperties.contains(propName));
+					}	
+				} else // this is the trickier case, we dont know if this is an agent or object
+					// for now use this policy: make it an agent unless it has a property called isObject set to true
+				{
+					String type = WorldModel.AGENT_TYPE_NAME;
+					if (container.properties.containsKey("isObject")) 
+					{
+						boolean isObject = Boolean.parseBoolean(container.properties.get("isObject").toString());
+						if (isObject) type = WorldModel.OBJECT_TYPE_NAME;
+					}
+					wm.requestAddSubContainer(containerName, type, container.properties, container.persistentProperties);			
+				}		
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 	
 }

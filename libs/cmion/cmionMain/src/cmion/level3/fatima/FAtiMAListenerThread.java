@@ -160,7 +160,11 @@ public class FAtiMAListenerThread extends SocketListener {
 		{
 			// ignore this for now as well, normally the mind should not change properties by itself anyway
 			// they should be changed outside in the world simulation, i.e. in this application here
-		} 
+		}
+		else if (type.startsWith("<SemanticMemory>"))
+		{
+			connector.parseSemanticMemory(type);
+		}
 		// FAtiMA agent wants to look at something, i.e. requests information about the properties of a certain object or another agent
 		else if (type.equals("look-at")) {
 			String target = st.nextToken();		
