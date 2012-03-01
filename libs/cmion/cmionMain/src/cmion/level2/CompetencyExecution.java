@@ -508,7 +508,7 @@ public class CompetencyExecution extends CmionComponent {
 	        // since this is an event handler only for type EventCompetencySucceeded the following casts always work
 	    	Competency competency = ((EventCompetencySucceeded)evt).getCompetency();
 	    	HashMap<String,String> parameters = ((EventCompetencySucceeded)evt).getParameters();
-	    	long executionID = ((EventCompetencyCancelled)evt).getExecutionID();
+	    	long executionID = ((EventCompetencySucceeded)evt).getExecutionID();
 	    	processCompetencySuccess(competency, parameters,executionID);
 	    }
 	}
@@ -525,7 +525,7 @@ public class CompetencyExecution extends CmionComponent {
 	        // since this is an event handler only for type EventCompetencyFailed the following casts always work
 	    	Competency competency = ((EventCompetencyFailed)evt).getCompetency();
 	    	HashMap<String,String> parameters = ((EventCompetencyFailed)evt).getParameters();
-	    	long executionID = ((EventCompetencyCancelled)evt).getExecutionID();
+	    	long executionID = ((EventCompetencyFailed)evt).getExecutionID();
 	    	processCompetencyFailure(competency, parameters, executionID);
 	    }
 	}
