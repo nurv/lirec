@@ -53,6 +53,9 @@ public abstract class Competency extends CmionComponent implements Runnable
 	
 	/** the concrete values of parameters when running this competence */
 	private HashMap<String, String> parameters;
+
+	/** the id identifying this particular execution of this competency */
+	private long executionID;	
 	
 	/** this boolean indicates whether the competency is running or not */
 	protected boolean running;
@@ -117,7 +120,7 @@ public abstract class Competency extends CmionComponent implements Runnable
 	public final void run()
 	{
 		// raise event that we are starting this competency
-		this.raise(new EventCompetencyStarted(this, parameters, plan));
+		this.raise(new EventCompetencyStarted(this, parameters, plan, executionID));
 		
 		// start competency code and when finished store the return value
 		boolean succeeded = false;
@@ -136,11 +139,11 @@ public abstract class Competency extends CmionComponent implements Runnable
 		synchronized(this)
 		{			
 			if (cancelled)
-				this.raise(new EventCompetencyCancelled(this, parameters, plan));
+				this.raise(new EventCompetencyCancelled(this, parameters, plan, executionID));
 			else if (succeeded) 
-				this.raise(new EventCompetencySucceeded(this, parameters, plan));
+				this.raise(new EventCompetencySucceeded(this, parameters, plan, executionID));
 			else 
-				this.raise(new EventCompetencyFailed(this, parameters, plan));
+				this.raise(new EventCompetencyFailed(this, parameters, plan, executionID));
 			
 			this.running = false;
 			// note: although it is conceptually wrong to set running false 
@@ -163,15 +166,17 @@ public abstract class Competency extends CmionComponent implements Runnable
 	 * should work with
 	 * @param cep the competency execution plan, as part of which this competency was started, 
 	 * 		  or null if the competency was not started by the execution system
+	 * @param executionID 
 	 */
-	public void requestStartCompetency(HashMap<String,String> parameters, CompetencyExecutionPlan cep)
+	public void requestStartCompetency(HashMap<String,String> parameters, CompetencyExecutionPlan cep, long executionID)
 	{
-		this.schedule(new RequestStartCompetency(parameters,cep));
+		this.schedule(new RequestStartCompetency(parameters,cep,executionID));
 	}
 	
 	/** internal method for starting the competence 
+	 * @param executionID 
 	 * @param competencyExecutionPlan */
-	private synchronized void startCompetence(HashMap<String,String> parameters, CompetencyExecutionPlan plan)
+	private synchronized void startCompetence(HashMap<String,String> parameters, CompetencyExecutionPlan plan, long executionID)
 	{
 		// check if the competence is available and not already running
 		if (!isRunning() && isAvailable())
@@ -184,6 +189,9 @@ public abstract class Competency extends CmionComponent implements Runnable
 			
 			// copy current plan
 			this.plan = plan;
+			
+			// copy execution id
+			this.executionID = executionID;
 			
 			// run competency in a new thread			
 			new Thread(this,getCompetencyName()).start();
@@ -218,7 +226,7 @@ public abstract class Competency extends CmionComponent implements Runnable
 	    	for (RequestStartCompetency request : requests.get(RequestStartCompetency.class))
 	    	{
 	    		// if there are more than one request, only the first one will normally succeed
-	    		startCompetence(request.getParameters(), request.getPlan());
+	    		startCompetence(request.getParameters(), request.getPlan(), request.getExecutionID());
 	    	}	
 	    }
 	}

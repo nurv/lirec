@@ -307,7 +307,7 @@ public class CompetencyLibrary extends CmionComponent {
 							// it is available, so we can start it and add it to the started competencies list
 							// note: competency start parameters are empty, if something needs to be passed to
 							// the competency, the constructor can be used
-							competency.requestStartCompetency(new HashMap<String,String>(),null);
+							competency.requestStartCompetency(new HashMap<String,String>(),null,0);
 							alreadyStartedCompetencies.add(competency);
 						}
 						else allStarted = false;
@@ -396,7 +396,7 @@ public class CompetencyLibrary extends CmionComponent {
 		    	// safe cast because competencies to start only contains competency objects
 	    		Competency comp = (Competency) whatAdded;
 	    		// request start now
-	    		comp.requestStartCompetency(new HashMap<String,String>(),null);
+	    		comp.requestStartCompetency(new HashMap<String,String>(),null,0);
 	    		// remove object from list
 	    		competenciesToStart.remove(whatAdded);
 	    	}

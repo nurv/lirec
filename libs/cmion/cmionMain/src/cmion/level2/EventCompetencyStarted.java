@@ -32,8 +32,6 @@ package cmion.level2;
 
 import java.util.HashMap;
 
-import cmion.architecture.CmionEvent;
-
 /** this event signifies that the execution of a competency has started */
 public class EventCompetencyStarted extends CompetencyEvent  {
 
@@ -43,14 +41,18 @@ public class EventCompetencyStarted extends CompetencyEvent  {
 	/** the parameters the competency was running with, when started */
 	private HashMap<String, String> parameters;
 	
+	/** execution id */
+	private long executionID;
+	
 	/** the competency execution plan as part of which this competency was started */
 	protected CompetencyExecutionPlan plan;	
 	
 	public EventCompetencyStarted(Competency competency,
-			HashMap<String, String> parameters, CompetencyExecutionPlan plan) 
+			HashMap<String, String> parameters, CompetencyExecutionPlan plan, long executionID) 
 	{
 		this.competency = competency;
 		this.parameters = parameters;
+		this.executionID = executionID;
 		this.plan = plan;		
 	}
 
@@ -58,6 +60,11 @@ public class EventCompetencyStarted extends CompetencyEvent  {
 	public Competency getCompetency()
 	{
 		return competency;
+	}
+		
+	public long getExecutionID()
+	{
+		return executionID;
 	}
 	
 	/** returns the parameters the competency was running with when started*/
@@ -78,7 +85,7 @@ public class EventCompetencyStarted extends CompetencyEvent  {
 	@Override
 	public String toString()
 	{
-		String evtString =  "Competency started: " + competency.getCompetencyName();
+		String evtString =  "Competency "+executionID+" started: " + competency.getCompetencyName();
 		evtString += ", parameters:";
 		if (parameters.size()==0) evtString += " none";
 		else for (String parameterName : parameters.keySet())

@@ -42,15 +42,19 @@ public class RequestStartCompetency extends Request {
 	/** the competency execution plan, as part of which this competency was started*/
 	private CompetencyExecutionPlan cep;
 	
+	/** the execution id for the competency */
+	private long executionID;
 	
 	/** create a new request to start a competency
 	 * 
 	 * @param parameters the parameters for starting the competency
 	 * @param cep the competency execution plan, as part of which this competency was started
+	 * @param executionID 
 	 */
-	public RequestStartCompetency(HashMap<String, String> parameters, CompetencyExecutionPlan cep) {
+	public RequestStartCompetency(HashMap<String, String> parameters, CompetencyExecutionPlan cep, long executionID) {
 		this.parameters = parameters;
 		this.cep = cep;
+		this.executionID = executionID;
 	}
 
 	/** returns the parameters */
@@ -63,6 +67,12 @@ public class RequestStartCompetency extends Request {
 	public CompetencyExecutionPlan getPlan()
 	{
 		return cep;
+	}
+	
+	/** returns the execution id for this competency*/
+	public long getExecutionID()
+	{
+		return executionID;
 	}
 	
 }

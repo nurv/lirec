@@ -39,9 +39,11 @@ import ion.Meta.TypeSet;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.StringTokenizer;
 
 import cmion.architecture.IArchitecture;
 import cmion.architecture.CmionComponent;
+import cmion.storage.CmionStorageContainer;
 
 
 /** this component is responsible for executing plans of competencies it has received 
@@ -196,8 +198,14 @@ public class CompetencyExecution extends CmionComponent {
 				// also remember that this is one of the competencies currently executing
 				runningCompetencies.put(competency,cep);
 				
+				// get parameters for executing the competency and replace black board / world model variables 
+				HashMap<String,String> parameters =  replaceVariables(step.getCompetencyParameters());				
+				
+				// assign an execution id to the step
+				step.assignExecutionID();
+				
 				// request the competency to start
-				competency.requestStartCompetency(step.getCompetencyParameters(),cep);
+				competency.requestStartCompetency(parameters,cep,step.getExecutionID());
 				
 				break;
 			}
@@ -206,6 +214,95 @@ public class CompetencyExecution extends CmionComponent {
 		if (!foundSuitableCompetency) planFailed(cep);
 	}
 
+	/** replace variables in comptetency execution parameters */
+	private HashMap<String, String> replaceVariables(
+			HashMap<String, String> parameters) 
+	{
+		HashMap<String, String> copiedParameters = new HashMap<String, String>();
+		
+		// copy all parameters 
+		for (String parameterName : parameters.keySet())
+		{
+			// retrieve original value
+			String value = parameters.get(parameterName);
+			
+	
+			// Check if there are any blackboard variables to replace
+			// this means search for $BB, variables look like this $BB(utterance) reads the value
+			// of the blackboard property utterance, $BB(messages.1) reads the value of the property 1
+			// in the sub container 1, etc.
+
+			value = replaceStorageContainerVars(value,"$BB",architecture.getBlackBoard());
+			
+			// do exactly the same for world model variables ($WM)
+			
+			value = replaceStorageContainerVars(value,"$WM",architecture.getWorldModel());
+						
+			// add parameter and value
+			copiedParameters.put(parameterName, value);			
+		}
+
+		
+		return copiedParameters;
+	}
+
+	/** method for retrieving the String contents of a storage container slot 
+	 * @param input the expression to evaluate 
+	 * @param varIdentifier  the String used to identify the topContainer
+	 * @param topContainer the top container to read the value from 
+	 * */
+	private String replaceStorageContainerVars(String input, String varIdentifier,
+			CmionStorageContainer topContainer) 
+	{
+		String value = input;
+		while (value.contains(varIdentifier))
+		{
+			int idx = value.indexOf(varIdentifier);
+			String substring = "";
+			for (int i=idx; value.charAt(i)!=')'; i++)
+				substring += value.charAt(i);
+			
+			// substring should now contain the $BB/WM expression, excluding the closing bracket,
+			// next we split on the '.' and '(' characters
+			StringTokenizer st = new StringTokenizer(substring,".(");
+			ArrayList<String> tokens = new ArrayList<String>();
+			if (st.hasMoreTokens()) st.nextToken(); // discard the first token
+			while (st.hasMoreTokens()) tokens.add(st.nextToken()); // store the rest in the array list
+			
+			// now add the closing bracket to the substring, so that when we replace it, it gets replaced completely
+			substring += ")";
+			
+			// if there isnt at least one token this variable is malformed, remove from string
+			if (tokens.size()<1) 
+				value = value.replace(substring, "");
+			else
+			{
+				// last token is the name of the property
+				String propName = tokens.remove(tokens.size()-1);
+				CmionStorageContainer csc = topContainer;
+				while (tokens.size()>0)
+				{
+					String containerName = tokens.remove(tokens.size()-1);
+					if (csc!=null)
+						csc = csc.getSubContainer(containerName);
+				}
+				if (csc==null)
+					value = value.replace(substring, "");
+				else
+				{
+					Object propValue = csc.getPropertyValue(propName);
+					if (propValue==null)
+						value = value.replace(substring, "");
+					else
+						value = value.replace(substring, propValue.toString());
+				}
+			}
+		}
+
+		return value;
+	}
+	
+	
 	/** this method should be called when an execution plan has failed */
 	private synchronized void planFailed(CompetencyExecutionPlan cep)
 	{
@@ -244,7 +341,7 @@ public class CompetencyExecution extends CmionComponent {
 	}
 	
 	/** process the success of a competency*/
-	private synchronized void processCompetencySuccess(Competency competency, HashMap<String,String> parameters)
+	private synchronized void processCompetencySuccess(Competency competency, HashMap<String,String> parameters, long executionID)
 	{
 		// get the plan that this competency is part of realizing
 		CompetencyExecutionPlan plan = runningCompetencies.get(competency);
@@ -261,8 +358,8 @@ public class CompetencyExecution extends CmionComponent {
 		// find the plan step that has completed		
 		for (CompetencyExecutionPlanStep step : plan.getStepsCurrentlyExecuted())
 			if (step.getCompetencyType().equals(competency.getCompetencyType()))
-				// compare parameters to make sure this competency was what the plan step required
-				if (parameters.equals(step.getCompetencyParameters()))
+				// compare execution ids to find out this competency was what the plan step required
+				if (executionID == step.getExecutionID())
 				{
 					s = step;
 				}
@@ -279,7 +376,7 @@ public class CompetencyExecution extends CmionComponent {
 	}
 
 	/** process the failure of a competency*/
-	private synchronized void processCompetencyFailure(Competency competency, HashMap<String,String> parameters)
+	private synchronized void processCompetencyFailure(Competency competency, HashMap<String,String> parameters, long executionID)
 	{
 		// get the plan that this competency is part of realizing
 		CompetencyExecutionPlan plan = runningCompetencies.get(competency);
@@ -295,8 +392,8 @@ public class CompetencyExecution extends CmionComponent {
 		// find the plan step that has failed because this competency has failed		
 		for (CompetencyExecutionPlanStep step : plan.getStepsCurrentlyExecuted())
 			if (step.getCompetencyType().equals(competency.getCompetencyType()))
-				// compare parameters to make sure this competency was what the plan step required
-				if (parameters.equals(step.getCompetencyParameters()))
+				// compare execution ids to find out this competency was what the plan step required
+				if (executionID == step.getExecutionID())
 				{
 					s = step;
 				}
@@ -315,7 +412,7 @@ public class CompetencyExecution extends CmionComponent {
 	}
 
 	/** process the cancelation of a competency*/
-	private synchronized void processCompetencyCancel(Competency competency, HashMap<String,String> parameters)
+	private synchronized void processCompetencyCancel(Competency competency, HashMap<String,String> parameters, long executionID)
 	{
 		// get the plan that this competency is part of realizing
 		CompetencyExecutionPlan plan = runningCompetencies.get(competency);
@@ -332,8 +429,8 @@ public class CompetencyExecution extends CmionComponent {
 		// find the plan step that was cancelled		
 		for (CompetencyExecutionPlanStep step : plan.getStepsCurrentlyExecuted())
 			if (step.getCompetencyType().equals(competency.getCompetencyType()))
-				// compare parameters to make sure this competency was what the plan step required
-				if (parameters.equals(step.getCompetencyParameters()))
+				// compare execution ids to find out this competency was what the plan step required
+				if (executionID == step.getExecutionID())
 				{
 					s = step;
 				}
@@ -411,7 +508,8 @@ public class CompetencyExecution extends CmionComponent {
 	        // since this is an event handler only for type EventCompetencySucceeded the following casts always work
 	    	Competency competency = ((EventCompetencySucceeded)evt).getCompetency();
 	    	HashMap<String,String> parameters = ((EventCompetencySucceeded)evt).getParameters();
-	    	processCompetencySuccess(competency, parameters);
+	    	long executionID = ((EventCompetencyCancelled)evt).getExecutionID();
+	    	processCompetencySuccess(competency, parameters,executionID);
 	    }
 	}
 	
@@ -427,7 +525,8 @@ public class CompetencyExecution extends CmionComponent {
 	        // since this is an event handler only for type EventCompetencyFailed the following casts always work
 	    	Competency competency = ((EventCompetencyFailed)evt).getCompetency();
 	    	HashMap<String,String> parameters = ((EventCompetencyFailed)evt).getParameters();
-	    	processCompetencyFailure(competency, parameters);
+	    	long executionID = ((EventCompetencyCancelled)evt).getExecutionID();
+	    	processCompetencyFailure(competency, parameters, executionID);
 	    }
 	}
 
@@ -443,7 +542,8 @@ public class CompetencyExecution extends CmionComponent {
 	        // since this is an event handler only for type EventCompetencyCancelled the following casts always work
 	    	Competency competency = ((EventCompetencyCancelled)evt).getCompetency();
 	    	HashMap<String,String> parameters = ((EventCompetencyCancelled)evt).getParameters();
-	    	processCompetencyCancel(competency, parameters);
+	    	long executionID = ((EventCompetencyCancelled)evt).getExecutionID();
+	    	processCompetencyCancel(competency, parameters, executionID);
 	    }
 	}
 

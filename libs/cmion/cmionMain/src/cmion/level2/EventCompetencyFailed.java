@@ -31,8 +31,6 @@ package cmion.level2;
 
 import java.util.HashMap;
 
-import cmion.architecture.CmionEvent;
-
 /** this event signifies that the execution of a competency has failed */
 public class EventCompetencyFailed extends CompetencyEvent 
 {
@@ -44,13 +42,17 @@ public class EventCompetencyFailed extends CompetencyEvent
 	private HashMap<String, String> parameters;
 	
 	/** the competency execution plan as part of which this competency was started */
-	protected CompetencyExecutionPlan plan;		
+	protected CompetencyExecutionPlan plan;	
+	
+	/** execution id */
+	private long executionID;
 	
 	public EventCompetencyFailed(Competency competency,
-			HashMap<String, String> parameters, CompetencyExecutionPlan plan) 
+			HashMap<String, String> parameters, CompetencyExecutionPlan plan, long executionID) 
 	{
 		this.competency = competency;
 		this.parameters = parameters;
+		this.executionID = executionID;
 		this.plan = plan;			
 	}
 
@@ -74,11 +76,16 @@ public class EventCompetencyFailed extends CompetencyEvent
 		return plan;
 	}	
 	
+	public long getExecutionID()
+	{
+		return executionID;
+	}
+	
 	/** displays information about this event */
 	@Override
 	public String toString()
 	{
-		String evtString =  "Competency failed: " + competency.getCompetencyName();
+		String evtString =  "Competency "+executionID+" failed: " + competency.getCompetencyName();
 		evtString += ", parameters:";
 		if (parameters.size()==0) evtString += " none";
 		else for (String parameterName : parameters.keySet())
