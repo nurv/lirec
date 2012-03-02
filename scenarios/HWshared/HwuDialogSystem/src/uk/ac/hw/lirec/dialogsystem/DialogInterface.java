@@ -19,7 +19,7 @@ public abstract class DialogInterface {
 	/**
 	 * this as basically momentary moods/expressions/emotions
 	 */
-	public enum Expression { ANGER, SURPRISE, JOY };
+	public enum Expression { ANGER, SURPRISE, JOY, FEAR, SADNESS };
 	
 	/**
 	 *  Stop the current dialog.
