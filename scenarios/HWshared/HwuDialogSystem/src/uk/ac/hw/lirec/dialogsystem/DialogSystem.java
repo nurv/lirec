@@ -21,6 +21,7 @@ public class DialogSystem {
 	 * called from the UI, so dangerous!
 	 */
 	public void interruptDialogEvent() {
+		System.out.println("DialogSystem: interrupting");
 		mDI.interruptDialog(); 
 		//then wait for the evaluation to finish - we can use the lock
 		//TODO WARNING not ideal, cos this might block the UI thread.
