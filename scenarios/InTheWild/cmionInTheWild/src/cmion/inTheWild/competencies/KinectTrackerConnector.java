@@ -41,7 +41,7 @@ public class KinectTrackerConnector extends SamgarCompetency {
 				double y = bottleIn.get(2).asDouble();
 				double z = bottleIn.get(3).asDouble();
 				TrackingInfo userInfo = new TrackingInfo(x,y,z);
-				if (z<700)
+				if (z<1200)
 				{
 					if (timeElapsed()>7000)
 					{

@@ -1,0 +1,249 @@
+import uk.ac.hw.lirec.dialogsystem.DialogInterface;
+import uk.ac.hw.lirec.dialogsystem.DialogInterface.Moods;
+import uk.ac.hw.lirec.dialogsystem.DialogInterface.Expression;
+import java.util.HashMap;
+import java.text.SimpleDateFormat;
+
+
+
+
+/*
+ * GENERAL HELP
+ * Watch you don't miss a ; off the end of a line, can lead to silent failing to 
+ * do anything!
+ */
+
+
+DialogInterface di;
+HashMap migrationData = new HashMap();
+
+greetUser(String name) {
+	di.speakText("Hello there, "+name);
+}
+
+saySomething(String speech) {
+	di.speakText(speech);
+}
+
+startInteraction() 
+{
+	Calendar cal = Calendar.getInstance();
+	SimpleDateFormat sdf = new SimpleDateFormat("MM-dd HH:mm:ss");
+	di.log("\n" + sdf.format(cal.getTime()));
+	long timeStart = System.currentTimeMillis();
+	
+	di.showExpression(Expression.SURPRISE);
+	di.speakText("Oh. Hi There. I'm an experiment advertising agent.");
+	di.speakText("I'm not as smart as I look but could I still bother you for a second?");
+	String answer = di.multipleChoiceQuestion(2,new String[]{"Yes","No"});
+	if (answer.equals("Yes")) 
+	{
+			di.log(" q1Yes " + (System.currentTimeMillis()-timeStart)/1000);
+			di.showExpression(Expression.JOY);
+			di.speakText("Nice, I like you.");
+			di.speakText("And because I like you I'm going to let you in on a little secret.");
+			di.speakText("Are you ready for it?");
+			di.getResponse("Yes");
+			di.log(" c2 " + (System.currentTimeMillis()-timeStart)/1000);
+			di.showExpression(Expression.JOY);
+			di.speakText("See what I did there, didn't really give you a choice. hahaha");
+			di.speakText("Anyway here's the thing. There's a treasure hidden in this building.");
+			di.getResponse("Wow, really?");
+			di.log(" c3 " + (System.currentTimeMillis()-timeStart)/1000);
+			di.speakText("Yes, amazing isn't it? Do you want to know where it is?");
+			di.getResponse("Where?");
+			di.log(" c4 " + (System.currentTimeMillis()-timeStart)/1000);
+			di.speakText("Slow down, you should know it's a dangerous buisness.");
+			di.showExpression(Expression.FEAR);
+			di.speakText("Are you brave enough to risk your life for fame and riches?");
+			String answer2 = di.multipleChoiceQuestion(2,new String[]{"Yes","No"});
+			if (answer2.equals("Yes"))
+			{
+				di.log(" q5Yes " + (System.currentTimeMillis()-timeStart)/1000);
+				di.speakText("That's the spirit!");				
+			} else
+			{
+				di.log(" q5No " + (System.currentTimeMillis()-timeStart)/1000);
+				di.speakText("I was just joking, of course it's not dangerous. Health and safety regulations, you know.");				
+			}			
+			di.speakText("So here's how to find the treasure");
+			di.getResponse("Tell me");
+			di.log(" c6 " + (System.currentTimeMillis()-timeStart)/1000);
+			String answer3 = "No";
+			do 
+			{
+				di.speakText("My colleagues are recruiting a group of treasure hunters like yourself.");
+				di.speakText("Just write your email adress on the sheet below and they will be in touch with you.");
+				di.speakText("Got that?");
+				answer3 = di.multipleChoiceQuestion(2,new String[]{"Yes","No"});
+				if (answer3.equals("No"))
+				{	
+					di.log(" q7No " + (System.currentTimeMillis()-timeStart)/1000);
+					di.speakText("Alright, again, but please pay more attention this time.");
+				}
+				else
+				{
+					di.log(" q7Yes " + (System.currentTimeMillis()-timeStart)/1000);
+					di.speakText("You're real smart. I'm sure you're going to be the one to find it.");
+				}
+			} while (answer3.equals("No"));
+				di.speakText("Go, get them tiger!");
+				di.showExpression(Expression.JOY);
+				Thread.sleep(10000);	
+	} 
+	else 
+	{
+		di.log(" q1No " + (System.currentTimeMillis()-timeStart)/1000);
+		di.showExpression(Expression.ANGER);
+		di.speakText("Alright, then please leave me alone. ");		
+		Thread.sleep(10000);	
+	}
+}
+
+/*
+ * This shows up an issue in this "single episode" style, perhaps the answer is
+ * to have blocking functions that return values? program/thread control might be a bit odd then...
+ * 
+ * need a policy and stick with it (or does it not matter?)
+ * 
+ * There's an issue here where getResponse was resulting in a call to evaluate something else
+ * on this script, was calling the same interpreter, when it hadn't finished the previous evaluation...
+ * ...etc. Seems to cause issues. Need to be careful to prevent this (or avoid with new interp instances
+ * but then the issue is might end up with many cos of recursion!)
+ * 
+ * To make this work correctly, getResponse should:
+ * 	not call the interpreter
+ * 	return immediately, (as it's UI stuff).
+ * 
+ * THIS IS THE UNUSED APPROACH
+ *
+tellJoke() {
+	System.out.println("tellJoke called");
+	di.speakText("Here's a joke.");
+	di.speakText("knock knock");
+	di.getResponse("Who's there?","jokePart2()");
+}
+
+jokePart2() {
+	di.speakText("Sherwood");
+	di.getResponse("Sherwood who?","jokePart3()");
+}
+
+jokePart3() {
+	di.speakText("sherwood like to meet you!");
+}
+*/
+
+/*
+ * There's a need to be careful with threading, e.g. the below might be acceptable if
+ * this is run in a different thread to UI stuff
+ * This shows how the timing could be played with.
+ */
+
+boolean wait = true;
+
+blockingJoke() {
+	di.speakText("knock knock");
+	di.getResponse("Who's there?");
+	Thread.sleep(3000);
+	di.speakText("Sherwood");
+	//just the first part to test this.
+}
+
+
+
+
+/*
+	Here's a mk2 version, where the "actions" don't result in calls to the interpreter before
+	they return - this is much safer, avoids the issue, but perhaps awkward?
+	
+	This relies on the getresponse calls blocking till the response is given, which they
+	don't, as android's all about asynchronous dialog/ui in general.
+*/
+tellJokeBlocking() {
+	di.speakText("knock knock");
+	di.getResponse("Who's there?");
+	jokePart2();
+}
+
+jokePart2() {
+	di.speakText("Sherwood");
+	di.getResponse("Sherwood who?");
+	jokePart3();
+}
+
+jokePart3() {
+	di.speakText("sherwood like to meet you!");
+}
+
+//of course this can be combined:
+
+combinedJoke() {
+	di.speakText("knock knock");
+	di.getResponse("Who's there?");
+	di.speakText("Sherwood");
+	di.getResponse("Sherwood who?");
+	di.speakText("sherwood like to meet you!");
+}
+
+//some waffle to test interruptions
+waffle() {
+	di.speakText("Cutting edge robot technology is being used to enhance the ancient tradition of whisky barrel cooperage. The hi-tech systems have been installed at a new custom-designed £10m cooperage near Alloa in Clackmannanshire.");
+	di.getResponse("Speech finished?");
+	di.speakText("more waffle waffle waffle waffle waffle.");
+}
+
+int counter = 0;
+boolean yesorno = false;
+
+comeClose() {
+	counter++;
+	if (counter <= 1)
+	{
+		di.showExpression(Expression.SURPRISE);
+		di.speakText("Oh. Hi There. Could I bother you for a second?");
+		String[] options = {"Yes","No"};
+		String answer = di.multipleChoiceQuestion(2,options);
+		if (answer.equals("Yes")) {
+			yesorno = true;
+			di.showExpression(Expression.JOY);
+			di.speakText("Thank you! I'm preparing a treasure hunt in this building.");
+			di.speakText("Please come and help out.");		
+		} else {
+			yesorno = false;
+			di.showExpression(Expression.ANGER);
+			di.speakText("Alright, I guess you're too busy to talk to a boring robot, eh?");		
+		}
+	} else
+		if (yesorno) di.showExpression(Expression.JOY);
+		else di.showExpression(Expression.ANGER);
+}
+
+migrationOut()
+{
+	di.setEmysInvisible();
+	di.migrateDataOut("target",migrationData);
+}
+
+migrationIn()
+{
+	di.setEmysVisible();
+	testInOutScreen();
+}
+
+startScreenMigrateTest() {
+	migrationData.put("migrationNum","5");
+	//di.speakText("Hello there");
+	di.speakText("This is migration "+migrationData.get("migrationNum") );
+	//di.speakText("Press ready on the phone when you're ready to go.");
+}
+
+testInOutScreen() {
+	//di.speakText("Hello there");
+	Integer num = Integer.parseInt(migrationData.get("migrationNum"));
+	num++;
+	migrationData.put("migrationNum",num.toString());
+	di.speakText("This is migration "+migrationData.get("migrationNum") );
+	//di.speakText("Press ready on the phone when you're ready to go.");
+}
+

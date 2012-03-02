@@ -10,13 +10,34 @@ b) optional parameters that should be passed to the competency during
 construction (assumed parameter type is String, parameters are seperated by comma).
 " -->
 
-<Competency ClassName="cmion.inTheWild.competencies.EmysAskBinaryQuestion" />
+<!-- Crush Area   
+<Competency ClassName="cmion.emysTK.SimpleTalk" ConstructorParameters="137.195.141.101,2729" />
+<Competency ClassName="cmion.emysTK.SimpleAnimation" ConstructorParameters="137.195.141.101,2729" />
+-->
+<!--  Entrance
+<Competency ClassName="cmion.emysTK.SimpleTalk" ConstructorParameters="137.195.141.104,2729" />
+<Competency ClassName="cmion.emysTK.SimpleAnimation" ConstructorParameters="137.195.141.104,2729" />
+ -->
+
+<!-- Localhost -->
+<Competency ClassName="cmion.emysTK.SimpleTalk" ConstructorParameters="localhost,2729" />
+<Competency ClassName="cmion.emysTK.SimpleAnimation" ConstructorParameters="localhost,2729" />
+
+<!-- Inition 3D Wow  
+<Competency ClassName="cmion.emysTK.SimpleTalk" ConstructorParameters="137.195.27.102,2729" />
+<Competency ClassName="cmion.emysTK.SimpleAnimation" ConstructorParameters="137.195.27.102,2729" />
+ --> 
+<Competency ClassName="cmion.inTheWild.competencies.EmysAskQuestion" />
+
+<SamgarCompetency ClassName="cmion.inTheWild.competencies.VirtualEmysConnector" Port="Emys"/>
+<!--
 <Competency ClassName="cmion.inTheWild.competencies.EmysEmotion" />
 <Competency ClassName="cmion.inTheWild.competencies.EmysGaze" />
-<Competency ClassName="cmion.level2.competencies.Migration" ConstructorParameters="MigrationConfigVirtEmys.xml" />
+ -->
 <!-- Competency ClassName="cmion.inTheWild.competencies.SMSReceiver" ConstructorParameters="modem.com15,COM15,115200,WAVECOM MODEM,MULTIBAND 900E 1800"/ --> 
+<!-- 
 <SamgarCompetency ClassName="cmion.inTheWild.competencies.Cereproc" Port="TTS"/>
-<SamgarCompetency ClassName="cmion.inTheWild.competencies.VirtualEmysConnector" Port="Emys"/>
+ -->
 <SamgarCompetency ClassName="cmion.inTheWild.competencies.KinectTrackerConnector" Port="Kinect"/>
 
 

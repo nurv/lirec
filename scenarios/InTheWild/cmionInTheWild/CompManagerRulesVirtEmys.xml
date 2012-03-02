@@ -147,8 +147,15 @@
 			<Parameter No="1" Value="*" />
 		</MindAction>			
 		<CompetencyExecutionPlan>
-			<Competency ID="1" Type="SimpleTalk">
-			 <CompetencyParameter Name="text" Value="$parameter1" />
+			<Competency ID="1" Type="VirtualEmys">
+			  <CompetencyParameter Name="Command" Value="SetSubtitle" />
+			  <CompetencyParameter Name="Subtitle" Value="$parameter1" />
+			</Competency>
+			<Competency ID="2" Type="SimpleTalk" Dependency="1">
+			  <CompetencyParameter Name="text" Value="$parameter1" />
+			</Competency>
+			<Competency ID="3" Type="VirtualEmys" Dependency="2">
+			  <CompetencyParameter Name="Command" Value="RemoveSubtitle" />
 			</Competency>
 		</CompetencyExecutionPlan>
 		
@@ -168,20 +175,98 @@
 	</Rule>
 
 	<Rule>
-		
+		<MindAction Name="wozQuestion">
+			<Parameter No="1" Value="*" />
+		</MindAction>			
+		<CompetencyExecutionPlan>
+			<Competency ID="1" Type="EmysAskQuestion">
+			 <CompetencyParameter Name="choice1" Value="$parameter1" />
+ 			 <CompetencyParameter Name="question" Value="question" />
+ 			 <CompetencyParameter Name="person" Value="wizard" /> 			 
+			</Competency>
+		</CompetencyExecutionPlan>		
+	</Rule>
+
+
+	<Rule>	
 		<MindAction Name="wozQuestion">
 			<Parameter No="1" Value="*" />
 			<Parameter No="2" Value="*" />
 		</MindAction>			
 		<CompetencyExecutionPlan>
-			<Competency ID="1" Type="EmysAskBinaryQuestion">
+			<Competency ID="1" Type="EmysAskQuestion">
 			 <CompetencyParameter Name="choice1" Value="$parameter1" />
- 			 <CompetencyParameter Name="choice2" Value="$parameter2" />
+			 <CompetencyParameter Name="choice2" Value="$parameter2" />
  			 <CompetencyParameter Name="question" Value="question" />
  			 <CompetencyParameter Name="person" Value="wizard" /> 			 
 			</Competency>
 		</CompetencyExecutionPlan>
-		
+	</Rule>
+
+	<Rule>	
+		<MindAction Name="wozQuestion">
+			<Parameter No="1" Value="*" />
+			<Parameter No="2" Value="*" />
+			<Parameter No="3" Value="*" />
+		</MindAction>			
+		<CompetencyExecutionPlan>
+			<Competency ID="1" Type="EmysAskQuestion">
+			 <CompetencyParameter Name="choice1" Value="$parameter1" />
+			 <CompetencyParameter Name="choice2" Value="$parameter2" />
+			 <CompetencyParameter Name="choice3" Value="$parameter3" />
+ 			 <CompetencyParameter Name="question" Value="question" />
+ 			 <CompetencyParameter Name="person" Value="wizard" /> 			 
+			</Competency>
+		</CompetencyExecutionPlan>
+	</Rule>
+	
+	<Rule>	
+		<MindAction Name="wozQuestion">
+			<Parameter No="1" Value="*" />
+			<Parameter No="2" Value="*" />
+			<Parameter No="3" Value="*" />
+			<Parameter No="4" Value="*" />
+		</MindAction>			
+		<CompetencyExecutionPlan>
+			<Competency ID="1" Type="EmysAskQuestion">
+			 <CompetencyParameter Name="choice1" Value="$parameter1" />
+			 <CompetencyParameter Name="choice2" Value="$parameter2" />
+			 <CompetencyParameter Name="choice3" Value="$parameter3" />
+			 <CompetencyParameter Name="choice4" Value="$parameter4" />
+ 			 <CompetencyParameter Name="question" Value="question" />
+ 			 <CompetencyParameter Name="person" Value="wizard" /> 			 
+			</Competency>
+		</CompetencyExecutionPlan>
+	</Rule>
+
+	<Rule>	
+		<MindAction Name="wozCancelQuestion">
+		</MindAction>			
+		<CompetencyExecutionPlan>
+			<Competency ID="1" Type="VirtualEmys">
+			 <CompetencyParameter Name="Command" Value="CancelQuestion" />
+			</Competency>
+		</CompetencyExecutionPlan>
+	</Rule>
+
+	<Rule>	
+		<MindAction Name="wozSetVisible">
+		</MindAction>			
+		<CompetencyExecutionPlan>
+			<Competency ID="1" Type="VirtualEmys">
+			 <CompetencyParameter Name="Command" Value="SetVisible" />
+			</Competency>
+		</CompetencyExecutionPlan>
+	</Rule>
+
+	<Rule>	
+		<MindAction Name="wozSetInvisible">
+		</MindAction>			
+		<CompetencyExecutionPlan>
+			<Competency ID="1" Type="VirtualEmys">
+			 <CompetencyParameter Name="Command" Value="SetInvisible" />
+			</Competency>
+		</CompetencyExecutionPlan>
 	</Rule>
 	
 	<Rule>
@@ -192,6 +277,37 @@
 		<CompetencyExecutionPlan>
 			<Competency ID="1" Type="EmysGaze">
 			 <CompetencyParameter Name="gazeTarget" Value="$parameter1" />
+			</Competency>
+		</CompetencyExecutionPlan>
+		
+	</Rule>
+	
+	<Rule>
+		
+		<MindAction Name="testbug">
+			<Parameter No="1" Value="*" />
+		</MindAction>			
+		<CompetencyExecutionPlan>
+			<Competency ID="1" Type="SimpleAnimation">
+			 <CompetencyParameter Name="animation" Value="Anger5" />
+			</Competency>
+			<Competency ID="2" Type="VirtualEmys">
+			 <CompetencyParameter Name="Command" Value="SetVisible" />
+			</Competency>
+			<Competency ID="3" Type="SimpleAnimation" Dependency = "2">
+			 <CompetencyParameter Name="animation" Value="Joy5" />
+			</Competency>
+		</CompetencyExecutionPlan>
+		
+	</Rule>	
+	
+	<Rule>
+		
+		<MindAction Name="greet">
+			<Parameter No="1" Value="*" />
+		</MindAction>			
+		<CompetencyExecutionPlan>
+			<Competency ID="1" Type="TestType7">
 			</Competency>
 		</CompetencyExecutionPlan>
 		
