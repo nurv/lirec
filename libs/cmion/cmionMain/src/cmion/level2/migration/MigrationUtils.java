@@ -53,12 +53,15 @@ public class MigrationUtils {
 	}
 	
 	public static void registerMigratingComponent(Migration competency, Migrating component){
-		
-		EventHandler handler = new SaveStateHandler(competency, component);
-		competency.getEventHandlers().add(handler);
-		
-		handler = new RestoreStateHandler(competency, component);
-		competency.getEventHandlers().add(handler);
+
+		if (competency!= null)
+		{
+			EventHandler handler = new SaveStateHandler(competency, component);
+			competency.getEventHandlers().add(handler);
+
+			handler = new RestoreStateHandler(competency, component);
+			competency.getEventHandlers().add(handler);
+		}
 	}
 	
 	public static void registerMigrationAwareComponents(){
@@ -88,18 +91,20 @@ public class MigrationUtils {
 	}
 	
 	public static void registerMigrationAwareComponent(Migration competency, MigrationAware component){
+		if (competency!= null)
+		{
+			EventHandler handler = new MigrationReceivedHandler(competency, component);
+			competency.getEventHandlers().add(handler);
 
-		EventHandler handler = new MigrationReceivedHandler(competency, component);
-		competency.getEventHandlers().add(handler);
-		
-		handler = new SendingMigrationHandler(competency, component);
-		competency.getEventHandlers().add(handler);
-		
-		handler = new MigrationSucceededHandler(competency, component);
-		competency.getEventHandlers().add(handler);
-		
-		handler = new MigrationFailedHandler(competency, component);
-		competency.getEventHandlers().add(handler);
+			handler = new SendingMigrationHandler(competency, component);
+			competency.getEventHandlers().add(handler);
+
+			handler = new MigrationSucceededHandler(competency, component);
+			competency.getEventHandlers().add(handler);
+
+			handler = new MigrationFailedHandler(competency, component);
+			competency.getEventHandlers().add(handler);
+		}
 	}
 	
 	public static void haltMigration(Object lockingObject){
