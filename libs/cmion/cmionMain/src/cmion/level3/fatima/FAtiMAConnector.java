@@ -195,7 +195,8 @@ public class FAtiMAConnector extends AgentMindConnector implements Migrating, Mi
 	protected void processRemoteAction(MindAction remoteAction) {
 		String msg = "ACTION-FINISHED " + remoteAction.getSubject() + " "
         +  FAtiMAutils.mindActiontoFatimaMessage(remoteAction);	
-		if (mindThread!=null) mindThread.send(msg);	
+		//if (mindThread!=null) mindThread.send(msg);	
+		mindThread.send("CMD GET-PROPERTIES");
 	}
 
 	/** send a message to FAtiMA telling the mind to pause */
@@ -511,22 +512,34 @@ public class FAtiMAConnector extends AgentMindConnector implements Migrating, Mi
 			{
 				NamedNodeMap attribs = nodes.item(i).getAttributes();
 				boolean persistent = Boolean.parseBoolean(attribs.getNamedItem("persistent").getNodeValue());
-				String fullName = attribs.getNamedItem("persistent").getNodeValue();
-				String propValue = attribs.getNamedItem("persistent").getNodeValue();
+				String fullName = attribs.getNamedItem("name").getNodeValue();
+				String propValue = attribs.getNamedItem("value").getNodeValue();
 				
-				// extract propOwner and Name
-				String propOwner = fullName.substring(0,fullName.indexOf("("));
-				String propName = fullName.substring(fullName.indexOf("("),fullName.length()-1);
-				
-				// write all properties into temporary container structure
-				Container container = containers.get(propOwner);
-				if (container==null)
-				{	
-					container = new Container();
-					containers.put(propOwner, container);
+				// there are certain properties we are not interested in, filter those out
+				if (!fullName.equals("ActionContext()"))
+				{
+
+					// extract propOwner and Name
+					String propOwner = fullName.substring(0,fullName.indexOf("("));
+					String propName = fullName.substring(fullName.indexOf("(")+1,fullName.length()-1);
+
+					// filter out some more, we don't need the ProbBias stuff
+					if (!propOwner.equals("ProbBias"))
+					{
+						// change SELF to agent's name
+						if (propOwner.equals("SELF")) propOwner = mindThread.getAgentName();
+						
+						// write all properties into temporary container structure
+						Container container = containers.get(propOwner);
+						if (container==null)
+						{	
+							container = new Container();
+							containers.put(propOwner, container);
+						}
+						container.properties.put(propName, propValue);
+						if (persistent)	container.persistentProperties.add(propName);
+					}
 				}
-				container.properties.put(propName, propValue);
-				if (persistent)	container.persistentProperties.add(propName);
 			}
 		
 			WorldModel wm = architecture.getWorldModel();

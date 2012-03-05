@@ -163,7 +163,7 @@ public class FAtiMAListenerThread extends SocketListener {
 		}
 		else if (type.startsWith("<SemanticMemory>"))
 		{
-			connector.parseSemanticMemory(type);
+			connector.parseSemanticMemory(msg);
 		}
 		// FAtiMA agent wants to look at something, i.e. requests information about the properties of a certain object or another agent
 		else if (type.equals("look-at")) {
