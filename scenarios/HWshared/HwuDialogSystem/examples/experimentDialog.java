@@ -1,7 +1,10 @@
 import uk.ac.hw.lirec.dialogsystem.DialogInterface;
 import uk.ac.hw.lirec.dialogsystem.DialogInterface.Moods;
 import uk.ac.hw.lirec.dialogsystem.DialogInterface.Expression;
+
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 /*
  * TODO list
@@ -88,6 +91,28 @@ migrateOut(String to) {
 }
 
 /* now plans specific to the dialogue.*/
+
+//setup stuff
+
+setup(String participantID) {
+	migrationData.clear();
+	migrationData.put("participant",participantID);
+	//remember to end on a comma!
+	migrationData.put("memory","1,2,3,4,5,6,7,8,");//a number present means it should remember, missing means forget previous
+	/*
+	 * What if we forget on 4 say, then need to remember from 2 in 8? shouldn't, it was
+	 * forgotten in 4. Don't want to actually remove it from memory...
+	 */
+}
+
+boolean remembers(int episode, int currentEpisode) {
+	String memory migrationData.get("memory");
+	for (int i = (episode); i <= (currentEpisode);i++) {
+		if (!memory.contains(i.toString() + ","))
+			return false;
+	}
+	return true;
+}
 
 //EPISODE 1
 
@@ -200,16 +225,45 @@ waitForReturnToScreenEp2() {
 
 /***********************************************/
 //Episode 3
-
-episode3screenMemory() {
+//TODO there's an issue here. A difference between remembering phone embodiment
+//and remembering the previous screen embodiment too...
+//maybe we need to just condition on things being in the memory?
+episode3screen() {
 	//TODO whatever should happen to wait for a migration
 	//should this be called AFTER the migrate out above?
-	speak("Ok, we've got the first part of the answer.");
-	speak("According to you, hermit is a "+ migrateData.get("clue1_answer");
-	speak("We'll find out at the end if that's right.");
-	speak("For now there are 3 more clues to work through.");
-	speak("Which one do you want to try next?");
-	
+	if (remembers(2,3)) {
+		speak("Ok, we've got the first part of the answer.");
+		speak("According to you, hermit is a "+ migrateData.get("clue1_answer");
+		speak("We'll find out at the end if that's right.");
+	}
+	String first_clue = migrationDate.get("first_clue");
+	if (remembers(1,3)) { //remembers which clue we picked before
+		speak("For now there are 3 more clues to work through.");
+		speak("Which one do you want to try next?");
+		String[] optionsClues = {"clue a","clue b","clue c","clue d"};
+		List<String> options = Arrays.asList("clue a","clue b","clue c","clue d");
+		options.remove("first_clue");
+		String second_clue = di.multipleChoiceQuestion(3,options.toArray());
+		migrationData.put("second_clue",second_clue);
+		
+	} else { //don't remember the previous clue
+		speak("Hi there, would you like to get a clue?");
+		String[] optionsClues = {"clue a","clue b","clue c","clue d"};
+		String second_clue = di.multipleChoiceQuestion(4,optionsClues);
+		//TODO do we actually let them choose hermit?
+		while (second_clue.equals(first_clue)) {
+			speak("This clue is \"hermit\"");
+			speak("Do you want this clue, or to choose again?");
+			di.multipleChoiceQuestion(2,{"Choose again","keep it"});
+			speak("Ok, here are the choices again:");
+			second_clue = di.multipleChoiceQuestion(4,optionsClues);
+		}
+		migrationData.put("second_clue",second_clue);
+	}
+	//reveal the clue now
+	speak("OK, this clue is \"Angus\"."); //TODO or should it be submarine?
+	speak("Remember that, it's important. Angus.");
+	speak("Now start the app if you need to, and press the ready button to get going");
 }
 
 
