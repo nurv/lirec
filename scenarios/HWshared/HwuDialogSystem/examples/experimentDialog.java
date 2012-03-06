@@ -20,7 +20,7 @@ import java.util.List;
 
 DialogInterface di;
 HashMap migrationData = new HashMap();
-String server;//TODO SET THIS
+String server = "137.195.27.138";//TODO SET THIS
 
 
 speak(String speech) {
@@ -74,19 +74,19 @@ migrateInDone() {
 	
 }
 
-requestMigration(String from) {
+requestMigration() {
 	di.blankScreen();
 	Thread.sleep(500);
 	di.getResponse("Ready");
-	while(!di.inviteMigrate(from)) {
+	while(!di.inviteMigrate(server)) {
 		System.out.println("ERROR MIGRATING");
 		di.getResponse("Ready");
 	}
 }
-migrateOut(String to) {
+migrateOut() {
 	Thread.sleep(500);
 	int retries = 5;
-	while(!di.migrateDataOut(to,migrationData) && retries > 0) {
+	while(!di.migrateDataOut(server,migrationData) && retries > 0) {
 		System.out.println("ERROR MIGRATING");
 		retries--;
 		Thread.sleep(1000);
@@ -123,9 +123,9 @@ setup(String participantID, char track) {
 	migrationData.clear();
 	migrationData.put("participant",participantID);
 	String memory = "1,2,3,4,5,6,7,8,";
-	if (char == 'b') {
+	if (track == 'b') {
 		memory = "TODO";
-	} else if (char == 'c') {
+	} else if (track == 'c') {
 		memory = "TODO";
 	}
 	
