@@ -20,7 +20,7 @@ import java.util.List;
 
 DialogInterface di;
 HashMap migrationData = new HashMap();
-String server = "137.195.27.138";//TODO SET THIS
+String server;//TODO SET THIS
 
 
 speak(String speech) {
@@ -74,19 +74,19 @@ migrateInDone() {
 	
 }
 
-requestMigration() {
+requestMigration(String from) {
 	di.blankScreen();
 	Thread.sleep(500);
 	di.getResponse("Ready");
-	while(!di.inviteMigrate(server)) {
+	while(!di.inviteMigrate(from)) {
 		System.out.println("ERROR MIGRATING");
 		di.getResponse("Ready");
 	}
 }
-migrateOut() {
+migrateOut(String to) {
 	Thread.sleep(500);
 	int retries = 5;
-	while(!di.migrateDataOut(server,migrationData) && retries > 0) {
+	while(!di.migrateDataOut(to,migrationData) && retries > 0) {
 		System.out.println("ERROR MIGRATING");
 		retries--;
 		Thread.sleep(1000);
@@ -141,7 +141,7 @@ setup(String participantID, char track) {
 }
 
 boolean remembers(int episode, int currentEpisode) {
-	String memory migrationData.get("memory");
+	String memory = migrationData.get("memory");
 	for (int i = (episode); i <= (currentEpisode);i++) {
 		if (!memory.contains(i.toString() + ","))
 			return false;
@@ -217,7 +217,7 @@ episode2PhoneCommon() {
 	} else {
 		speak("Why did you choose that colour?");
 		String responseWhy = di.getFreetext();
-		speak("Hmm, I can't seem to set the colour, never mind."):
+		speak("Hmm, I can't seem to set the colour, never mind.");
 		speak("No time for this, time for treasure!");
 		migrationData.put("firstWhy",responseWhy);
 	}
@@ -278,7 +278,7 @@ episode3screen() {
 	migrationData.put("episode","3");
 	if (remembers(2,3)) {
 		speak("Ok, we've got the first part of the answer.");
-		speak("According to you, hermit is "+ migrateData.get("clue1_answer");
+		speak("According to you, hermit is "+ migrateData.get("clue1_answer"));
 		speak("We'll find out at the end if that's right.");
 	}
 	String first_clue = migrationDate.get("first_clue");
@@ -286,7 +286,7 @@ episode3screen() {
 		speak("For now there are 3 more clues to work through.");
 		speak("Which one do you want to try next?");
 		String[] optionsClues = {"clue a","clue b","clue c","clue d"};
-		List<String> options = Arrays.asList("clue a","clue b","clue c","clue d");
+		List options = Arrays.asList("clue a","clue b","clue c","clue d");
 		options.remove("first_clue");
 		String second_clue = di.multipleChoiceQuestion(3,options.toArray());
 		migrationData.put("second_clue",second_clue);
@@ -299,7 +299,7 @@ episode3screen() {
 		while (second_clue.equals(first_clue)) {
 			speak("This clue is \"hermit\"");
 			speak("Do you want this clue, or to choose again?");
-			di.multipleChoiceQuestion(2,{"Choose again","keep it"});
+			di.multipleChoiceQuestion(2,new String[]{"Choose again","keep it"});
 			speak("Ok, here are the choices again:");
 			second_clue = di.multipleChoiceQuestion(4,optionsClues);
 		}
