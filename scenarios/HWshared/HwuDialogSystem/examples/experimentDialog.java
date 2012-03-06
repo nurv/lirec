@@ -74,19 +74,19 @@ migrateInDone() {
 	
 }
 
-requestMigration(String from) {
+requestMigration() {
 	di.blankScreen();
 	Thread.sleep(500);
 	di.getResponse("Ready");
-	while(!di.inviteMigrate(from)) {
+	while(!di.inviteMigrate(server)) {
 		System.out.println("ERROR MIGRATING");
 		di.getResponse("Ready");
 	}
 }
-migrateOut(String to) {
+migrateOut() {
 	Thread.sleep(500);
 	int retries = 5;
-	while(!di.migrateDataOut(to,migrationData) && retries > 0) {
+	while(!di.migrateDataOut(server,migrationData) && retries > 0) {
 		System.out.println("ERROR MIGRATING");
 		retries--;
 		Thread.sleep(1000);
