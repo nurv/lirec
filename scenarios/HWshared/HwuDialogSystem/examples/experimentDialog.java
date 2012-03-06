@@ -64,20 +64,13 @@ failure() {
 }
 
 
-/* Migration related code*/
+/* Migration related code - phone side*/
 
 migrateInDone() {
-	unBlankScreen();
+	di.unBlankScreen();
 	
 	if (migrationData.get("episode").equals("1"))
 		episode2startPhone();
-	
-}
-migrateInDone() {
-	unBlankScreen();
-	
-	if (migrationData.get("episode").equals("2"))
-		episode3screen();
 	
 }
 
@@ -105,6 +98,22 @@ migrateOut(String to) {
 	//TODO need something to retry more maybe?
 	di.blankScreen();
 }
+
+/* Migration related code - screen side*/
+
+migrationOut()
+{
+	di.setEmysInvisible();
+	di.migrateDataOut("target",migrationData);
+}
+
+migrationIn()
+{
+	di.setEmysVisible();
+	if (migrationData.get("episode").equals("2"))
+		episode3screen();
+}
+
 
 /* now plans specific to the dialogue.*/
 
