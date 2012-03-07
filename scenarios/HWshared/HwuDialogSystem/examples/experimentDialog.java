@@ -60,7 +60,13 @@ failure() {
 		migrationData.remove("phoneColourChoice");
 		migrationData.remove("firstWhy");
 		episode2startPhone();
-	}else
+	} else if (latest.equals("episode4")) {
+		episode4startPhone();
+	} else if (latest.equals("episode6")) {
+		episode6startPhone();
+	} else if (latest.equals("episode8")) {
+		episode8startPhone();
+	} else
 		speak("Speak to Iain or Michael");	
 }
 
@@ -72,6 +78,12 @@ migrateInDone() {
 	
 	if (migrationData.get("episode").equals("1"))
 		episode2startPhone();
+	else if  (migrationData.get("episode").equals("3"))
+		episode4startPhone();
+	else if  (migrationData.get("episode").equals("5"))
+		episode6startPhone();
+	else if  (migrationData.get("episode").equals("7"))
+		episode8startPhone();
 	
 }
 
@@ -319,7 +331,47 @@ episode3screen() {
 	speak("Now start the app if you need to, and press the ready button to get going");
 }
 
+/***********************************************/
+//Episode 4
+episode4startPhone() {
+	migrationData.put("episode","4");
+	if (remembers(3,4)) {
+		speak("OK, angus, great.");
+	} else {
+		speak("Hello there, you're here to find a treasure, right?");
+		speak("Can you let me know the clue please?");
+		String userClue = di.getFreetext();
+		while (!userClue.equalsIgnoreCase("angus")) {
+			speak("That doesn't make sense, try again:");
+			userClue = di.getFreetext();
+		}
+		speak("Right, I think I know what that's about");
+	}
+	speak("I'll take you to find Angus.");
+	di.getResponse("OK");
+	latest = "episode4";
+	di.startNav("1.54","gwest3","episode4Arrived()");
 
+}
+episode4Arrived() {
+	Thread.sleep(3000);
+	speak("I've seen angus down here.");
+	speak("It's written on a submarine.");
+	Thread.sleep(3000);
+	speak("Have you found it?");
+	di.getResponse("Yes");
+	speak("Great, I think the question is, what colour's the submarine?");
+	if (remembers(3,4)) {
+		//freetext entry
+		String clue2_answer =  di.getFreetext();;
+		migrationData.put("clue2_answer",clue2_answer);
+	} else {
+		String[] optionsAnswer= {"Orange","Green","Purple","White", "Blue"};
+		String clue2_answer = di.multipleChoiceQuestion(5,optionsAnswer);
+		migrationData.put("clue2_answer",clue2_answer);
+	}
+	ep2return();
+}
 /***********************************************/
 //Episode 5
 
@@ -375,7 +427,47 @@ episode5screen() {
 	speak("Now start the app if you need to, and press the ready button to get going");
 }
 
+/***********************************************/
+//Episode 6 -- helmet
+episode6startPhone() {
+	migrationData.put("episode","6");
+	if (remembers(5,6)) {
+		speak("Hmmmm, helmet. I know where to find one of those.");
+	} else {
+		speak("Hello there, you're here to find a treasure, right?");
+		speak("Can you let me know the clue please?");
+		String userClue = di.getFreetext();
+		while (!userClue.equalsIgnoreCase("helmet")) {
+			speak("That doesn't make sense, try again:");
+			userClue = di.getFreetext();
+		}
+		speak("Hmmmm, helmet. I know where to find one of those.");
+	}
+	speak("Let's go find the helmet.");
+	di.getResponse("OK");
+	latest = "episode6";
+	di.startNav("1.54","2north1","episode6Arrived()");
 
+}
+episode6Arrived() {
+	Thread.sleep(3000);
+	speak("I've seen a helmet in this corridor.");
+	speak("It's on a poster somewhere.");
+	Thread.sleep(3000);
+	speak("Have you found it?");
+	di.getResponse("Yes");
+	speak("Great, I think the question is, where would you need the helmet to live?");
+	if (remembers(5,6)) {
+		//freetext entry
+		String clue3_answer =  di.getFreetext();;
+		migrationData.put("clue3_answer",clue3_answer);
+	} else {
+		String[] optionsAnswer= {"Mars","Underwater","Space","Scotland"};
+		String clue3_answer = di.multipleChoiceQuestion(4,optionsAnswer);
+		migrationData.put("clue3_answer",clue3_answer);
+	}
+	ep2return();
+}
 /***********************************************/
 //Episode 7
 
@@ -439,6 +531,47 @@ episode7screen() {
 	speak("OK, this clue is \"map\"."); 
 	speak("Remember that, it's important. Map.");
 	speak("Now start the app if you need to, and press the ready button to get going");
+}
+/***********************************************/
+//Episode 8 -- map
+episode8startPhone() {
+	migrationData.put("episode","6");
+	if (remembers(7,8)) {
+		speak("Right, map, I think I know what that's about.");
+	} else {
+		speak("Hello there, you're here to find a treasure, right?");
+		speak("Can you let me know the clue please?");
+		String userClue = di.getFreetext();
+		while (!userClue.equalsIgnoreCase("map")) {
+			speak("That doesn't make sense, try again:");
+			userClue = di.getFreetext();
+		}
+		speak("Right, I think I know what that's about");
+	}
+	speak("So now I'll take you to find the map.");
+	di.getResponse("OK");
+	latest = "episode8";
+	di.startNav("1.54","gsouth1","episode8Arrived()");
+
+}
+episode8Arrived() {
+	Thread.sleep(3000);
+	speak("I've seen a map down here.");
+	speak("It's a map of an island.");
+	Thread.sleep(3000);
+	speak("Have you found it?");
+	di.getResponse("Yes");
+	speak("Great, I think the question is, what island is it a map of?");
+	if (remembers(7,8)) {
+		//freetext entry
+		String clue4_answer =  di.getFreetext();;
+		migrationData.put("clue4_answer",clue4_answer);
+	} else {
+		String[] optionsAnswer= {"Japan","Mull","Lewis","Orkney", "Iceland"};
+		String clue4_answer = di.multipleChoiceQuestion(5,optionsAnswer);
+		migrationData.put("clue4_answer",clue4_answer);
+	}
+	ep2return();
 }
 
 
