@@ -4,6 +4,7 @@ import uk.ac.hw.lirec.dialogsystem.DialogInterface.Expression;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 
 /*
@@ -124,9 +125,9 @@ setup(String participantID, char track) {
 	migrationData.put("participant",participantID);
 	String memory = "1,2,3,4,5,6,7,8,";
 	if (track == 'b') {
-		memory = "TODO";
+		memory = "9,";;
 	} else if (track == 'c') {
-		memory = "TODO";
+		memory = "1,2,5,6,";
 	}
 	
 	
@@ -248,7 +249,7 @@ episode2PhoneMemoryArrived() {
 episode2PhoneForgetArrived() {
 	episode2ArrivedCommon();
 	String[] optionsAnswer= {"A lonely man","the singer of a band","a frog","a crab", "a pizza"};
-	String clue1_answer = di.multipleChoiceQuestion(5,optionsClues);
+	String clue1_answer = di.multipleChoiceQuestion(5,optionsAnswer);
 
 	migrationData.put("clue1_answer",clue1_answer);
 	ep2return();
@@ -271,7 +272,6 @@ waitForReturnToScreenEp2() {
 /***********************************************/
 //Episode 3
 
-
 episode3screen() {
 	//TODO whatever should happen to wait for a migration
 	//should this be called AFTER the migrate out above?
@@ -281,13 +281,13 @@ episode3screen() {
 		speak("According to you, hermit is "+ migrationData.get("clue1_answer"));
 		speak("We'll find out at the end if that's right.");
 	}
-	String first_clue = migrationDate.get("first_clue");
+	String first_clue = migrationData.get("first_clue");
 	if (remembers(1,3)) { //remembers which clue we picked before
 		speak("For now there are 3 more clues to work through.");
 		speak("Which one do you want to try next?");
-		List options = Arrays.asList("clue b","clue a","clue d","clue c");
-		options.remove("first_clue");
-		String second_clue = di.multipleChoiceQuestion(3,options.toArray());
+		ArrayList options = new ArrayList(Arrays.asList(new String[]{"clue b","clue a","clue d","clue c"}));
+		options.remove(first_clue);
+		String second_clue = di.multipleChoiceQuestionList(3,options);
 		migrationData.put("second_clue",second_clue);
 		
 	} else { //don't remember the previous clue
