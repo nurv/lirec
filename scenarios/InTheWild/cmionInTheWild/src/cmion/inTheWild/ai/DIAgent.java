@@ -12,10 +12,8 @@ import java.io.PrintWriter;
 import java.io.StreamCorruptedException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
@@ -78,6 +76,15 @@ public class DIAgent extends AgentMindConnector {
 		else if (remoteAction.getName().equals("migrationIn"))
 		{
 			evaluate("migrationIn()");	
+		}
+		else if (remoteAction.getName().equals("setup"))
+		{
+			if (remoteAction.getParameters().size()>=2)
+			{
+				String participantID = remoteAction.getParameters().get(0);
+				char track = remoteAction.getParameters().get(1).charAt(0);				
+				evaluate("setup("+participantID+","+track+")");
+			}
 		}
 		else 
 		{
@@ -429,7 +436,7 @@ public class DIAgent extends AgentMindConnector {
 				{}
 			}
 			// if we have not timed out, stop the time out counter by interrupting it
-			if (mTimedOut) timeOutThread.interrupt();	
+			if (!mTimedOut) timeOutThread.interrupt();	
 		}
 		
 		public synchronized void provideAnswerAndNotify(String answer)
@@ -476,6 +483,7 @@ public class DIAgent extends AgentMindConnector {
 				}
 				// if we reach this point we should signal time out
 				timeOutAndNotify();
+				System.out.println("timed out");
 			}
 		}
 
