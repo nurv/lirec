@@ -20,7 +20,7 @@ import java.util.List;
 
 DialogInterface di;
 HashMap migrationData = new HashMap();
-String server;//TODO SET THIS
+String server = "137.195.27.138";//TODO SET THIS
 
 
 speak(String speech) {
@@ -165,7 +165,7 @@ episode1Screen() {
 	speak("There are 4 words that you need to find to complete the hunt");
 	speak("I have the clues here that lead you to each of them.");
 	speak("Which one do you want to try first?");
-	String[] optionsClues = {"clue a","clue b","clue c","clue d"};
+	String[] optionsClues = {"clue b","clue a","clue d","clue c"};
 	String first_clue = di.multipleChoiceQuestion(4,optionsClues);
 	speak("Good choice, the clue is \"hermit\"");
 	//removed the option to choose another clue for now
@@ -208,8 +208,8 @@ episode2PhoneNoMemory() {
 episode2PhoneCommon() {
 	migrationData.put("episode","2");
 	speak("before we go, it's a bit dark in here, I don't like that.");
-	speak("Can you set the backgrounf to my favourite colour?");
-	String[] optionsColours = {"Red","Blue","Yellow","Green","Purple","Pink","Orange","What's your favourite?"};
+	speak("Can you set the background to my favourite colour?");
+	String[] optionsColours = {"What's your favourite?","Red","Blue","Yellow","Green","Purple","Pink","Orange"};
 	String colour = di.multipleChoiceQuestion(8,optionsColours);
 	migrationData.put("phoneColourChoice","colour");
 	if (colour.contains("favourite")) {
@@ -256,7 +256,7 @@ episode2PhoneForgetArrived() {
 
 ep2return() {	
 	speak("Ok, let's go back to the screen for another clue.");
-	speak("I'll just let you find your way yourself?");
+	speak("I'll just let you find the way yourself?");
 	di.getResponse("OK");
 	waitForReturnToScreenEp2();
 }
@@ -265,7 +265,7 @@ ep2return() {
 waitForReturnToScreenEp2() {
 	speak("When you're back at the screen, let me know.");
 	di.getResponse("We're there");
-	migrateOut(server);
+	migrateOut();
 }
 
 /***********************************************/
@@ -278,22 +278,21 @@ episode3screen() {
 	migrationData.put("episode","3");
 	if (remembers(2,3)) {
 		speak("Ok, we've got the first part of the answer.");
-		speak("According to you, hermit is "+ migrateData.get("clue1_answer"));
+		speak("According to you, hermit is "+ migrationData.get("clue1_answer"));
 		speak("We'll find out at the end if that's right.");
 	}
 	String first_clue = migrationDate.get("first_clue");
 	if (remembers(1,3)) { //remembers which clue we picked before
 		speak("For now there are 3 more clues to work through.");
 		speak("Which one do you want to try next?");
-		String[] optionsClues = {"clue a","clue b","clue c","clue d"};
-		List options = Arrays.asList("clue a","clue b","clue c","clue d");
+		List options = Arrays.asList("clue b","clue a","clue d","clue c");
 		options.remove("first_clue");
 		String second_clue = di.multipleChoiceQuestion(3,options.toArray());
 		migrationData.put("second_clue",second_clue);
 		
 	} else { //don't remember the previous clue
 		speak("Hi there, would you like to get a clue?");
-		String[] optionsClues = {"clue a","clue b","clue c","clue d"};
+		String[] optionsClues = {"clue b","clue a","clue d","clue c"};
 		String second_clue = di.multipleChoiceQuestion(4,optionsClues);
 		//TODO do we actually let them choose hermit?
 		while (second_clue.equals(first_clue)) {
