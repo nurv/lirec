@@ -107,9 +107,11 @@ migrateOut() {
 	if (retries == 0) {
 		speak("Oh dear, something's gone wrong.");
 		speak("Speak to Michael or Iain.");
+	} else {
+		//TODO need something to retry more maybe?
+		requestMigration();
+		di.blankScreen();
 	}
-	//TODO need something to retry more maybe?
-	di.blankScreen();
 }
 
 /* Migration related code - screen side*/
@@ -476,7 +478,7 @@ episode7screen() {
 	if (remembers(6,7)) {
 		if (remembers(1,7))
 			speak("Ok, we've got the third answer.");
-		speak("According to you, " + migrationData.get("clue3_answer") + " is where you need the helmet.)");
+		speak("According to you, " + migrationData.get("clue3_answer") + " is where you need the helmet.");
 		speak("We'll find out at the end if that's right.");
 	}
 	String first_clue = migrationData.get("first_clue");
@@ -535,7 +537,7 @@ episode7screen() {
 /***********************************************/
 //Episode 8 -- map
 episode8startPhone() {
-	migrationData.put("episode","6");
+	migrationData.put("episode","8");
 	if (remembers(7,8)) {
 		speak("Right, map, I think I know what that's about.");
 	} else {
