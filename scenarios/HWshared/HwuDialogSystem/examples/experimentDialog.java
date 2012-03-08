@@ -163,7 +163,7 @@ setup(String participantID, char track) {
 
 boolean remembers(int episode, int currentEpisode) {
 	String memory = migrationData.get("memory");
-	for (int i = (episode); i <= (currentEpisode);i++) {
+	for (int i = (episode+1); i <= (currentEpisode);i++) {
 		if (!memory.contains(i.toString() + ","))
 			return false;
 	}
