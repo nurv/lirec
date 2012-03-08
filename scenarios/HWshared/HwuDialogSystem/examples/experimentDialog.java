@@ -218,7 +218,7 @@ episode2PhoneMemory() {
 episode2PhoneNoMemory() {
 	speak("Hello there, you're here to find a treasure, right?");
 	speak("Can you let me know the clue please?");
-	String userClue = di.getFreetext();
+	String userClue = di.getFreetext().trim();
 	while (!userClue.equalsIgnoreCase("hermit")) {
 		speak("That doesn't make sense, try again:");
 		userClue = di.getFreetext();
@@ -253,7 +253,7 @@ episode2PhoneCommon() {
 episode2ArrivedCommon() {
 	Thread.sleep(3000);
 	speak("Hermit's mentioned round here somewhere.");
-	speak("On a poster about You Tunes I think.");
+	speak("On a poster about You Tunes, I think.");
 	Thread.sleep(3000);
 	speak("Have you found the poster?");
 	di.getResponse("Yes");
@@ -342,7 +342,7 @@ episode4startPhone() {
 	} else {
 		speak("Hello there, you're here to find a treasure, right?");
 		speak("Can you let me know the clue please?");
-		String userClue = di.getFreetext();
+		String userClue = di.getFreetext().trim();
 		while (!userClue.equalsIgnoreCase("angus")) {
 			speak("That doesn't make sense, try again:");
 			userClue = di.getFreetext();
@@ -399,6 +399,15 @@ episode5screen() {
 		else speak("Let's give you the next clue");
 		speak("Which one do you want to try next?");
 		String third_clue = di.multipleChoiceQuestionList(options.size(),options);
+		while (third_clue.equals(first_clue))
+		{
+			speak("This clue is \"hermit\"");	
+			if (remembers(2,5)) speak("You've done this one before.");
+			speak("Do you want this clue, or to choose again?");
+			di.multipleChoiceQuestion(2,new String[]{"choose again","keep it"});
+			speak("Ok, here are the choices again:");
+			third_clue = di.multipleChoiceQuestionList(options.size(),options);
+		}
 		migrationData.put("third_clue",third_clue);
 	}
 	} else { //don't remember any previous clue
@@ -406,19 +415,20 @@ episode5screen() {
 		String[] optionsClues = {"clue b","clue a","clue d","clue c"};
 		String third_clue = di.multipleChoiceQuestion(4,optionsClues);
 		while (third_clue.equals(first_clue) || third_clue.equals(second_clue)) {
-			speak("This clue is \""+ third_clue + "\"");
-			if (remembers(4,5) && third_clue.equals(second_clue))
+			if (third_clue.equals(second_clue))
 			{
-				speak("You've just done this one.");
+				speak("This clue is \"Angus\"");
+				if (remembers(4,5)) speak("You've just done this one.");
 			} 
-			else if (remembers(2,5) && third_clue.equals(first_clue))
+			else if (third_clue.equals(first_clue))
 			{
-				speak("You've done this one before.");
+				speak("This clue is \"hermit\"");	
+				if (remembers(2,5)) speak("You've done this one before.");
 			}
 			speak("Do you want this clue, or to choose again?");
 			di.multipleChoiceQuestion(2,new String[]{"choose again","keep it"});
 			speak("Ok, here are the choices again:");
-			second_clue = di.multipleChoiceQuestion(4,optionsClues);
+			third_clue = di.multipleChoiceQuestion(4,optionsClues);
 		}
 		migrationData.put("third_clue",third_clue);
 		//TODO log this stuff
@@ -434,16 +444,16 @@ episode5screen() {
 episode6startPhone() {
 	migrationData.put("episode","6");
 	if (remembers(5,6)) {
-		speak("Hmmmm, helmet. I know where to find one of those.");
+		speak("Hmmmm helmet, I know where to find one of those.");
 	} else {
 		speak("Hello there, you're here to find a treasure, right?");
 		speak("Can you let me know the clue please?");
-		String userClue = di.getFreetext();
+		String userClue = di.getFreetext().trim();
 		while (!userClue.equalsIgnoreCase("helmet")) {
 			speak("That doesn't make sense, try again:");
 			userClue = di.getFreetext();
 		}
-		speak("Hmmmm, helmet. I know where to find one of those.");
+		speak("Hmmmm helmet, I know where to find one of those.");
 	}
 	speak("Let's go find the helmet.");
 	di.getResponse("OK");
@@ -501,6 +511,22 @@ episode7screen() {
 			speak("Let's give you the next clue");
 			speak("Which one do you want to try next?");
 			fourth_clue = di.multipleChoiceQuestionList(options.size(),options);
+			while (fourth_clue.equals(first_clue) || fourth_clue.equals(second_clue))
+			{
+				if (fourth_clue.equals(first_clue))
+				{
+					speak("This clue is \"hermit\"");	
+					if (remembers(2,7)) speak("You've done this one before.");
+				}
+				else if (fourth_clue.equals(second_clue))
+				{
+					speak("This clue is \"Angus\"");	
+					speak("Do you want this clue, or to choose again?");
+				}
+				di.multipleChoiceQuestion(2,new String[]{"choose again","keep it"});
+				speak("Ok, here are the choices again:");
+				fourth_clue = di.multipleChoiceQuestionList(options.size(),options);
+			}
 		}
 		migrationData.put("fourth_clue",fourth_clue);
 	} else { //don't remember any previous clue
@@ -508,23 +534,25 @@ episode7screen() {
 		String[] optionsClues = {"clue b","clue a","clue d","clue c"};
 		String fourth_clue = di.multipleChoiceQuestion(4,optionsClues);
 		while (fourth_clue.equals(first_clue) || fourth_clue.equals(second_clue) || fourth_clue.equals(third_clue)) {
-			speak("The clue is \""+ fourth_clue + "\"");
-			if (remembers(6,7) && fourth_clue.equals(third_clue))
+			if (fourth_clue.equals(third_clue))
 			{
-				speak("You've just done this one.");
+				speak("The clue is \"helmet\"");
+				if (remembers(6,7)) speak("You've just done this one.");
 			} 
-			else if (remembers(4,7) && fourth_clue.equals(second_clue))
+			else if (fourth_clue.equals(second_clue))
 			{
-				speak("You've done this one before.");
+				speak("The clue is \"Angus\"");
+				if (remembers(4,7)) speak("You've done this one before.");
 			}
-			else if (remembers(2,7) && fourth_clue.equals(first_clue))
+			else if (fourth_clue.equals(first_clue))
 			{
-				speak("You've done this one before.");
+				speak("The clue is \"hermit\"");
+				if (remembers(2,7)) speak("You've done this one before.");
 			}
 			speak("Do you want this clue, or to choose again?");
 			di.multipleChoiceQuestion(2,new String[]{"choose again","keep it"});
 			speak("Ok, here are the choices again:");
-			second_clue = di.multipleChoiceQuestion(4,optionsClues);
+			fourth_clue = di.multipleChoiceQuestion(4,optionsClues);
 		}
 		migrationData.put("fourth_clue",fourth_clue);
 		//TODO log this stuff
@@ -543,7 +571,7 @@ episode8startPhone() {
 	} else {
 		speak("Hello there, you're here to find a treasure, right?");
 		speak("Can you let me know the clue please?");
-		String userClue = di.getFreetext();
+		String userClue = di.getFreetext().trim();
 		while (!userClue.equalsIgnoreCase("map")) {
 			speak("That doesn't make sense, try again:");
 			userClue = di.getFreetext();
