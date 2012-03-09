@@ -147,7 +147,7 @@ setup(String participantID, char track) {
 	if (track == 'b') {
 		memory = "9,";;
 	} else if (track == 'c') {
-		memory = "1,2,5,6,";
+		memory = "1,2,5,6,9,";
 	}
 	
 	
@@ -310,7 +310,7 @@ episode3screen() {
 		migrationData.put("second_clue",second_clue);
 		
 	} else { //don't remember the previous clue
-		speak("Hi there, would you like to get a clue?");
+		speak("Would you like to get a clue?");
 		String[] optionsClues = {"clue b","clue a","clue d","clue c"};
 		String second_clue = di.multipleChoiceQuestion(4,optionsClues);
 		while (second_clue.equals(first_clue)) {
@@ -411,7 +411,7 @@ episode5screen() {
 		migrationData.put("third_clue",third_clue);
 	}
 	} else { //don't remember any previous clue
-		speak("Hi there, would you like to get a clue?");
+		speak("Please choose your next clue.");
 		String[] optionsClues = {"clue b","clue a","clue d","clue c"};
 		String third_clue = di.multipleChoiceQuestion(4,optionsClues);
 		while (third_clue.equals(first_clue) || third_clue.equals(second_clue)) {
@@ -530,7 +530,7 @@ episode7screen() {
 		}
 		migrationData.put("fourth_clue",fourth_clue);
 	} else { //don't remember any previous clue
-		speak("Hi there, would you like to get a clue?");
+		speak("Would you like to get a clue?");
 		String[] optionsClues = {"clue b","clue a","clue d","clue c"};
 		String fourth_clue = di.multipleChoiceQuestion(4,optionsClues);
 		while (fourth_clue.equals(first_clue) || fourth_clue.equals(second_clue) || fourth_clue.equals(third_clue)) {
@@ -601,9 +601,23 @@ episode8Arrived() {
 		String clue4_answer = di.multipleChoiceQuestion(5,optionsAnswer);
 		migrationData.put("clue4_answer",clue4_answer);
 	}
-	ep2return();
+	ep8return();
 }
 
+
+ep8return() {	
+	if (remembers(2,8))
+	{
+		speak("Ok, this was the last clue.");
+		speak("Let's go back to the screen.");
+	}
+	else
+		speak("Ok, let's go back to the screen for another clue.");
+
+	speak("I'll just let you find the way yourself?");
+	di.getResponse("OK");
+	waitForReturnToScreenEp2();
+}
 
 /***********************************************/
 //Episode 9
