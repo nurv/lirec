@@ -523,8 +523,8 @@ public class FAtiMAConnector extends AgentMindConnector implements Migrating, Mi
 					String propOwner = fullName.substring(0,fullName.indexOf("("));
 					String propName = fullName.substring(fullName.indexOf("(")+1,fullName.length()-1);
 
-					// filter out some more, we don't need the ProbBias stuff
-					if (!propOwner.equals("ProbBias"))
+					// filter out some more, we don't need the ProbBias stuff, or goal importances
+					if (!propOwner.equals("ProbBias") && !propOwner.equals("IOS")  && !propOwner.equals("IOF"))
 					{
 						// change SELF to agent's name
 						if (propOwner.equals("SELF")) propOwner = mindThread.getAgentName();
