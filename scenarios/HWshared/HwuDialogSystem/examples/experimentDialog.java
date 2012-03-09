@@ -158,11 +158,11 @@ migrationIn()
 setup(String participantID, char track) {
 	migrationData.clear();
 	migrationData.put("participant",participantID);
-	String memory = "1,2,3,4,5,6,7,8,";
+	String memory = "2,3,4,5,6,7,8,";
 	if (track == 'b') {
 		memory = "9,";;
 	} else if (track == 'c') {
-		memory = "1,2,5,6,9,";
+		memory = "2,3,6,7,";
 	}
 	
 	
@@ -257,7 +257,7 @@ episode2PhoneCommon() {
 		speak("No time for this, time for treasure!");
 		migrationData.put("firstWhy",responseWhy);
 	}
-	speak("So now I'll take you to the place where you'll find the hermit");
+	speak("So, now I'll take you to the place where you'll find the hermit");
 	di.getResponse("OK");
 	latest = "episode2";
 	if (remembers(1,2))
@@ -356,7 +356,7 @@ episode3screen() {
 episode4startPhone() {
 	migrationData.put("episode","4");
 	if (remembers(3,4)) {
-		speak("OK, angus, great.");
+		speak("Okay, angus, great.");
 	} else {
 		speak("Hello there, you're here to find a treasure, right?");
 		speak("Can you let me know the clue please?");
@@ -703,7 +703,7 @@ ep8return() {
 	
 	// 2nd recall test asking about agent's home town
 	speak(migrationData.get("clue4_answer")+" is a pretty small island.");
-	speak("Being Irish, I much prefere Ireland");
+	speak("Being Irish, I much prefer Ireland");
 	speak("Where in Ireland do you think I'm from?");
 	String[] optionsTowns = {"I have no idea.","Dublin","Cork","Limerick","Galway"};
 	String town = di.multipleChoiceQuestion(5,optionsTowns);
@@ -835,18 +835,18 @@ episode9screen() {
 	speak("First, which clue do you think is the furthest away from here?");
 	String[] optionsAnswer= {"Hermit","Angus","Helmet","Map"};
 	answer_furthest = di.multipleChoiceQuestion(4,optionsAnswer);	
-	migration_data.put("furthest",answer_furthest);
+	migrationData.put("furthest",answer_furthest);
 	speak("Ah, interesting you should say that.");
 
 	speak("And finally, how many metres do you think I have travelled today?");	
 	String[] optionsAnswer= {"0","327","612","2566"};
 	answer_distance = di.multipleChoiceQuestion(4,optionsAnswer);	
-	migration_data.put("DISTANCE",answer_distance);
+	migrationData.put("DISTANCE",answer_distance);
 	speak("Not everyone gets that right.");		
 	
 	// wrapping up
 	speak("Right, back to the treasure.");
-	migration_data.put("noCorrect",noCorrect.toString());
+	migrationData.put("noCorrect",noCorrect.toString());
 	speak("You have found " + noCorrect + " out of four answers.");
 	if (noCorrect == 4)
 	{
