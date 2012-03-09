@@ -38,12 +38,27 @@ giveDirections(String dir, String location, String direction) {
 	} else if (location.contains("Gnorth2") && direction.equals("R") && dir.contains("2 sets")) {
 		speak("Go down this corridor to the junction, then turn right");
 		return;
+	} else if (location.contains("Gnorth2") ) {
+		//comment about stairs
+		if (migrationData.get("episode").equals("8") &&  remembers(4,8))
+			speak("And we're back here again!");
+		else {
+			speak("Have you been here before?");
+			speak("Some people don't know there's an entrance at this end.");
+		}
 	} else if (location.contains("Gliftarea") && direction.equals("D")) {
 		speak("Follow this corridor, then turn right into the stairwell.");
 		return;
 	} else if (location.contains("1north3") && direction.equals("R") && dir.contains("3 sets of double doors then turn left")) {
 		speak("Go straight on to the crush area, then turn left");
 		return;
+	} else if (dir.contains("turn right along the corridor")) {
+		Integer cur = Integer.parseInt(migrationData.get("episode"));
+		if ( remembers(cur-2,cur)) {
+			speak(dir);
+			speak("Here we go again!");
+			return;
+		}
 	}
 	speak(dir);
 }
@@ -232,7 +247,7 @@ episode2PhoneCommon() {
 	speak("Can you set the background to my favourite colour?");
 	String[] optionsColours = {"What's your favourite?","Red","Blue","Yellow","Green","Purple","Pink","Orange"};
 	String colour = di.multipleChoiceQuestion(8,optionsColours);
-	migrationData.put("phoneColourChoice","colour");
+	migrationData.put("phoneColourChoice",colour);
 	if (colour.contains("favourite")) {
 		speak("Ah, never mind, no time for this, time for treasure!");		
 	} else {
@@ -310,7 +325,10 @@ episode3screen() {
 		migrationData.put("second_clue",second_clue);
 		
 	} else { //don't remember the previous clue
-		speak("Would you like to get a clue?");
+		speak("Do you have all 4 answers or do you need another clue?");
+		String[] needClues = {"have all","need clue"};
+		String answerOrClues = di.multipleChoiceQuestion(2,needClues);
+		speak("Here are the clues. Please pick the next one.");		
 		String[] optionsClues = {"clue b","clue a","clue d","clue c"};
 		String second_clue = di.multipleChoiceQuestion(4,optionsClues);
 		while (second_clue.equals(first_clue)) {
@@ -372,8 +390,25 @@ episode4Arrived() {
 		String clue2_answer = di.multipleChoiceQuestion(5,optionsAnswer);
 		migrationData.put("clue2_answer",clue2_answer);
 	}
-	ep2return();
+	ep4return();
 }
+
+ep4return() {	
+	speak("Ok, let's go back to the screen for another clue.");
+	speak("I'll just let you find the way yourself?");
+	di.getResponse("OK");
+	
+	// some chat about distance
+	Thread.sleep(3000);
+	speak("These corridors are a bit boring.");
+	speak("Do you also find all this walking a bit tedious?");
+	speak("You're only doing this once, I have to take lots of people around.");
+	speak("Just with you I've walked around 300 metres.");
+	speak("And we're not done yet.");
+	
+	waitForReturnToScreenEp2();
+}
+
 /***********************************************/
 //Episode 5
 
@@ -387,7 +422,7 @@ episode5screen() {
 	}
 	String first_clue = migrationData.get("first_clue");
 	String second_clue = migrationData.get("second_clue");
-	if (remembers(3,5)) { //remembers at least one clue we picked before
+	if (remembers(3,5))  //remembers at least one clue we picked before
 	{
 		ArrayList options = new ArrayList(Arrays.asList(new String[]{"clue b","clue a","clue d","clue c"}));
 		options.remove(second_clue);
@@ -395,8 +430,13 @@ episode5screen() {
 		{	
 			speak("You have 2 clues left to choose from.");
 			options.remove(first_clue);
+		} else
+		{
+			speak("Do you have all 4 answers or do you need another clue?");
+			String[] needClues = {"have all","need clue"};
+			String answerOrClues = di.multipleChoiceQuestion(2,needClues);
+			speak("Ok. Let's give you the next clue");
 		}
-		else speak("Let's give you the next clue");
 		speak("Which one do you want to try next?");
 		String third_clue = di.multipleChoiceQuestionList(options.size(),options);
 		while (third_clue.equals(first_clue))
@@ -409,8 +449,10 @@ episode5screen() {
 			third_clue = di.multipleChoiceQuestionList(options.size(),options);
 		}
 		migrationData.put("third_clue",third_clue);
-	}
 	} else { //don't remember any previous clue
+		speak("Do you have all 4 answers or do you need another clue?");
+		String[] needClues = {"have all","need clue"};
+		String answerOrClues = di.multipleChoiceQuestion(2,needClues);
 		speak("Please choose your next clue.");
 		String[] optionsClues = {"clue b","clue a","clue d","clue c"};
 		String third_clue = di.multipleChoiceQuestion(4,optionsClues);
@@ -436,6 +478,17 @@ episode5screen() {
 	//reveal the clue now
 	speak("OK, this clue is \"helmet\"."); 
 	speak("Remember that, it's important. Helmet.");
+	
+	// reveal my home town
+	speak("By the way, how are you doing so far,");
+	speak("I'm from Cork in Ireland, I hope your able to understand my accent ok?");
+	String understand = di.multipleChoiceQuestion(2,new String[]{"it's fine","struggling a bit","you're subtitled"});
+	migrationData.put("understand",understand);
+	if (understand.equals("it's fine")) speak("Good to hear that.");
+	else if (understand.equals("struggling a bit")) speak("Sorry. But you can always read my subtitles you know.");
+	else speak("Bit of a joker, are you?");
+	
+	speak("Good, back to business, as I've told you the clue is helmet.");
 	speak("Now start the app if you need to, and press the ready button to get going");
 }
 
@@ -466,7 +519,7 @@ episode6Arrived() {
 	speak("I've seen a helmet in this corridor.");
 	speak("It's on a poster somewhere.");
 	Thread.sleep(3000);
-	speak("Have you found it?");
+	speak("Have you found the helmet?");
 	di.getResponse("Yes");
 	speak("Great, I think the question is, where would you need the helmet to live?");
 	if (remembers(5,6)) {
@@ -478,7 +531,19 @@ episode6Arrived() {
 		String clue3_answer = di.multipleChoiceQuestion(4,optionsAnswer);
 		migrationData.put("clue3_answer",clue3_answer);
 	}
-	ep2return();
+	ep6return();
+}
+ep6return() {	
+	speak("Ok, let's go back to the screen for another clue.");
+	speak("I'll just let you find the way yourself?");
+	di.getResponse("OK");
+	
+	//chat time!
+	speak("Did you know I'm part of the Lirec project?");
+	speak("It's researching artificial companions, like myself! ");
+	speak("There are ten different institutes involved");
+	
+	waitForReturnToScreenEp2();
 }
 /***********************************************/
 //Episode 7
@@ -508,6 +573,9 @@ episode7screen() {
 		}
 		else
 		{
+			speak("Do you have all 4 answers or do you need another clue?");
+			String[] needClues = {"have all","need clue"};
+			String answerOrClues = di.multipleChoiceQuestion(2,needClues);			
 			speak("Let's give you the next clue");
 			speak("Which one do you want to try next?");
 			fourth_clue = di.multipleChoiceQuestionList(options.size(),options);
@@ -530,7 +598,10 @@ episode7screen() {
 		}
 		migrationData.put("fourth_clue",fourth_clue);
 	} else { //don't remember any previous clue
-		speak("Would you like to get a clue?");
+		speak("Do you have all 4 answers or do you need another clue?");
+		String[] needClues = {"have all","need clue"};
+		String answerOrClues = di.multipleChoiceQuestion(2,needClues);			
+		speak("Alright, please choose the next clue then.");
 		String[] optionsClues = {"clue b","clue a","clue d","clue c"};
 		String fourth_clue = di.multipleChoiceQuestion(4,optionsClues);
 		while (fourth_clue.equals(first_clue) || fourth_clue.equals(second_clue) || fourth_clue.equals(third_clue)) {
@@ -560,6 +631,18 @@ episode7screen() {
 	//reveal the clue now
 	speak("OK, this clue is \"map\"."); 
 	speak("Remember that, it's important. Map.");
+	
+	if (remembers(6,7)) {
+		speak("Lirec is spread all over the map, as it were.");
+		speak("the partners are in 6 different countries.");
+	} else {
+		speak("This reminds me, did you know I'm part of the Lirec project?");
+		speak("It's researching artificial companions, like myself! ");
+		speak("There are ten different institutes involved");
+		speak("They are spread all over the map, as it were.");
+	}
+	speak("Anyway, I get distracted so easily.");
+	speak("We've got a clue to hunt, map");
 	speak("Now start the app if you need to, and press the ready button to get going");
 }
 /***********************************************/
@@ -606,6 +689,7 @@ episode8Arrived() {
 
 
 ep8return() {	
+	
 	if (remembers(2,8))
 	{
 		speak("Ok, this was the last clue.");
@@ -616,6 +700,23 @@ ep8return() {
 
 	speak("I'll just let you find the way yourself?");
 	di.getResponse("OK");
+	
+	// 2nd recall test asking about agent's home town
+	speak(migrationData.get("clue4_answer")+" is a pretty small island.");
+	speak("Being Irish, I much prefere Ireland");
+	speak("Where in Ireland do you think I'm from?");
+	String[] optionsTowns = {"I have no idea.","Dublin","Cork","Limerick","Galway"};
+	String town = di.multipleChoiceQuestion(5,optionsTowns);
+	migrationData.put("townChoice",town);
+	if (town.contains("idea")) {
+		speak("Typical!");		
+	} else {
+		speak("Why did you choose that town?");
+		String responseWhy = di.getFreetext();
+		speak("Oh, of course.");
+		migrationData.put("secondWhy",responseWhy);
+	}
+	
 	waitForReturnToScreenEp2();
 }
 
@@ -633,50 +734,133 @@ episode9screen() {
 	String clue3_answer = migrationData.get("clue3_answer");
 	String clue4_answer = migrationData.get("clue4_answer");
 
+	if (remembers(8,9)) {
+		if (remembers(1,9))
+			speak("Ok, we've got the last answer.");
+		speak("According to you, " + clue4_answer + " is the island on the map.");
+		speak("We'll find out at the end if that's right.");
+	}
+		
+	if (!remembers(1,9))
+	{
+		speak("Do you have all 4 answers or do you need another clue?");
+		String[] needClues = {"have all","need clue"};
+		String answerOrClues = di.multipleChoiceQuestion(2,needClues);
+	}
+		
 	speak("Ok, you've chased after all the clues. Let's see what you got right");
 	int noCorrect = 0;
+
 	
-	speak("First you went for "+first_clue);
+	if (remembers(2,9))
+	{
+		speak("First you went for hermit");	
+	}
+	else
+	{
+		speak("What is hermit?");
+		String[] optionsAnswer= {"A lonely man","the singer of a band","a frog","a crab"};
+		clue1_answer = di.multipleChoiceQuestion(4,optionsAnswer);	
+	}
 	if (clue1_answer.contains("rog"))
 	{
-		speak("The clue was hermit, you gave the correct answer."); 
+		speak("You gave the correct answer: frog"); 
 		noCorrect ++;
 	}
 	else
-		speak("The clue was hermit, you didn't find the correct answer.");
-	speak("Hermit the frog is a song by Marina and the Diamonds.");
-	
-	speak("Next you went for "+second_clue);	
+		speak("You didn't find the correct answer, it was frog.");	
+	speak("Hermit the frog is a song title on the poster.");
+
+
+	if (remembers(4,9))
+	{
+		speak("Next you went for Angus");	
+	}
+	else
+	{
+		speak("Moving on. What colour is Angus?");
+		String[] optionsAnswer= {"Orange","Green","Purple","White"};
+		clue2_answer = di.multipleChoiceQuestion(4,optionsAnswer);	
+	}
 	if (clue2_answer.contains("range"))
 	{
-		speak("The clue was Angus, you gave the correct answer.");
+		speak("You gave the correct answer: orange"); 
 		noCorrect ++;
 	}
 	else
-		speak("The clue was Angus, you didn't find the correct answer.");
+		speak("You didn't find the correct answer, it was orange.");	
 	speak("Angus is a submarine and his colour is orange.");
 	
-	speak("Your third pick was "+third_clue);	
+	
+	if (remembers(6,9))
+	{
+		speak("Your third pick was helmet");	
+	}
+	else
+	{
+		speak("Next question. Where would you need the helmet?");
+		String[] optionsAnswer= {"Mars","Underwater","Space","Scotland"};
+		clue3_answer = di.multipleChoiceQuestion(4,optionsAnswer);	
+	}
 	if (clue3_answer.contains("ars"))
 	{
-		speak("The clue was helmet, you gave the correct answer.");
+		speak("You gave the correct answer: Mars"); 
 		noCorrect ++;
 	}
 	else
-		speak("The clue was helmet, you didn't find the correct answer.");
+		speak("You didn't find the correct answer, it was Mars.");	
 	speak("You need a helmet on Mars.");	
-	
-	speak("Finally you investigated "+fourth_clue);	
+
+	if (remembers(8,9))
+	{
+		speak("Finally you investigated the clue map");	
+	}
+	else
+	{
+		speak("Last one. Which island is on the map?");
+		String[] optionsAnswer= {"Japan","Mull","Lewis","Orkney"};
+		clue4_answer = di.multipleChoiceQuestion(4,optionsAnswer);	
+	}
 	if (clue4_answer.contains("ull"))
 	{
-		speak("The clue was map, you gave the correct answer.");
+		speak("You gave the correct answer: Mull"); 
 		noCorrect ++;
 	}
 	else
-		speak("The clue was map, you didn't find the correct answer.");
+		speak("You didn't find the correct answer, it was Mull.");	
 	speak("The island on the map is Mull.");
 	
-	speak("You have correctly found " + noCorrect + " out of four answers.");
+	// questions to check user's mental model and diversion questions
+	speak("Nearly there. I have just 2 more questions for you.");
+	speak("First, which clue do you think is the furthest away from here?");
+	String[] optionsAnswer= {"Hermit","Angus","Helmet","Map"};
+	answer_furthest = di.multipleChoiceQuestion(4,optionsAnswer);	
+	migration_data.put("furthest",answer_furthest);
+	speak("Ah, interesting you should say that.");
+
+	speak("And finally, how many metres do you think I have travelled today?");	
+	String[] optionsAnswer= {"0","327","612","2566"};
+	answer_distance = di.multipleChoiceQuestion(4,optionsAnswer);	
+	migration_data.put("DISTANCE",answer_distance);
+	speak("Not everyone gets that right.");		
+	
+	// wrapping up
+	speak("Right, back to the treasure.");
+	migration_data.put("noCorrect",noCorrect.toString());
+	speak("You have found " + noCorrect + " out of four answers.");
+	if (noCorrect == 4)
+	{
+		speak("Well done. You've passed the test.");
+		speak("The treasure is almost possibly yours. Please speak to the human.");		
+	} else
+	{
+		speak("Sorry, you failed.");
+		speak("Don't worry, the treasure was not that great anyway, don't be sad.");
+		speak("Please speak to the human.");	
+	}
+	speak("Bye for now, I've enjoyed your company.");
+	
+
 }
 
 
