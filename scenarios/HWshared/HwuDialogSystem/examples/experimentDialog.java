@@ -361,7 +361,7 @@ episode4startPhone() {
 		speak("Hello there, you're here to find a treasure, right?");
 		speak("Can you let me know the clue please?");
 		String userClue = di.getFreetext().trim();
-		while (!userClue.equalsIgnoreCase("angus")) {
+		while (!userClue.contains("ngus")) {
 			speak("That doesn't make sense, try again:");
 			userClue = di.getFreetext();
 		}
@@ -668,7 +668,7 @@ episode8startPhone() {
 
 }
 episode8Arrived() {
-	Thread.sleep(3000);
+	Thread.sleep(8000);
 	speak("I've seen a map down here.");
 	speak("It's a map of an island.");
 	Thread.sleep(3000);
@@ -839,7 +839,7 @@ episode9screen() {
 	speak("Ah, interesting you should say that.");
 
 	speak("And finally, how many metres do you think I have travelled today?");	
-	String[] optionsAnswer= {"0","327","612","2566"};
+	String[] optionsAnswer= {"327","0","2566","612"};
 	answer_distance = di.multipleChoiceQuestion(4,optionsAnswer);	
 	migrationData.put("DISTANCE",answer_distance);
 	speak("Not everyone gets that right.");		
@@ -847,7 +847,7 @@ episode9screen() {
 	// wrapping up
 	speak("Right, back to the treasure.");
 	migrationData.put("noCorrect",noCorrect.toString());
-	speak("You have found " + noCorrect + " out of four answers.");
+	speak("You have found " + noCorrect + " out of 4 answers.");
 	if (noCorrect == 4)
 	{
 		speak("Well done. You've passed the test.");
