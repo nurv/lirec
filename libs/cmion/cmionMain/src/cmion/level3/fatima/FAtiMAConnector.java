@@ -195,8 +195,7 @@ public class FAtiMAConnector extends AgentMindConnector implements Migrating, Mi
 	protected void processRemoteAction(MindAction remoteAction) {
 		String msg = "ACTION-FINISHED " + remoteAction.getSubject() + " "
         +  FAtiMAutils.mindActiontoFatimaMessage(remoteAction);	
-		//if (mindThread!=null) mindThread.send(msg);	
-		mindThread.send("CMD GET-PROPERTIES");
+		if (mindThread!=null) mindThread.send(msg);	
 	}
 
 	/** send a message to FAtiMA telling the mind to pause */
