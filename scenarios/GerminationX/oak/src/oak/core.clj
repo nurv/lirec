@@ -56,8 +56,8 @@
 ; ****************************************************************
 ; Uncomment the two lines below and run once to create a new world
 ; ****************************************************************
-; (def my-game-world (ref (make-game-world 100 1)))
-; (game-world-db-build! (sym-replace2 (deref my-game-world)))
+;(def my-game-world (ref (make-game-world 2000 2)))
+;(game-world-db-build! (sym-replace2 (deref my-game-world)))
 
 (def my-game-world (ref (make-empty-game-world)))
 
@@ -149,8 +149,8 @@
                  (json (:msgs (:log player)))
                  (json {:error (str "no player " id " found")})))))))
            
-  (GET "/make-plant/:tilex/:tiley/:posx/:posy/:type/:owner-id/:size/:fruit-id/:iefix"
-       [tilex tiley posx posy type owner-id size fruit-id iefix]
+  (GET "/make-plant/:tilex/:tiley/:posx/:posy/:type/:owner-id/:soil/:fruit-id/:iefix"
+       [tilex tiley posx posy type owner-id soil fruit-id iefix]
        (let [tile-pos (make-vec2 (parse-number tilex) (parse-number tiley))
              pos (make-vec2 (parse-number posx) (parse-number posy))
              owner-id (parse-number owner-id)
@@ -167,7 +167,7 @@
                        tile-pos
                        (make-plant
                         ((:id-gen (deref my-game-world)))
-                        tile-pos pos type (:name player) owner-id size)
+                        tile-pos pos type (:name player) owner-id (parse-number soil))
                        (/ (.getTime (java.util.Date.)) 1000.0)
                        server-tick)
                       owner-id
@@ -212,7 +212,28 @@
                                player-id))))))))
              (json {:ok true})) 
            (json {:ok false}))))
-         
+
+  (GET "/soil/:tilex/:tiley/:plant-id/:soil/:iefix" [tilex tiley plant-id soil iefix]
+       (let [tile-pos (make-vec2 (parse-number tilex) (parse-number tiley))
+             plant-id (parse-number plant-id)]
+         (dosync
+          (ref-set my-game-world
+                   (game-world-modify-tile
+                    (deref my-game-world)
+                    tile-pos
+                    (fn [tile]
+                      (tile-modify-entity
+                       tile plant-id
+                       (fn [plant]
+                         (if (< (:version plant) 2)
+                           (do
+                             (println "updating soil:" soil)
+                             (modify :version (fn [v] 2)
+                                     (merge
+                                      {:soil (parse-number soil)} plant)))
+                           plant)))))))
+         (json {:ok true})))
+  
   (GET "/spirit-sprites/:name/:iefix" [name iefix]
        ;(update-islands (str "./" name) (str "./" name))
        (read-islands (str "./public/" name)))

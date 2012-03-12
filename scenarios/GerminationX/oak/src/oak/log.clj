@@ -42,7 +42,7 @@
    :display "none"                   ; *** will be replaced by name
    :owner "none"                     ; not used
    :from (:name spirit)              ; which spirit to display
-   :emotion (:highest-emotion spirit); how it's said!
+   :emotion (:highest-emotion spirit); how it's said
    :tile tile                        ; subject location
    :pos pos                          ; subject location
    :extra extra                      ; random info for text (depending on context)

@@ -19,13 +19,13 @@
 (def db-version 1)
 (def server-tick 1)
 (def tile-size 5)
-(def season-length (* 60 10)) 
+(def season-length (* 60 20)) 
 (def plant-tick 2) 
 (def plant-tick-var 3)
 (def min-health 10)
 (def max-health 90)
 (def start-health 20)
-(def ill-slow-amount 100) ; 1 in n chance of state change
+(def ill-slow-amount 100) ; 100 1 in n chance of state change
 (def min-neighbours 2) ; not used
 (def max-neighbours 10)
 (def max-fruit 1)
@@ -37,6 +37,7 @@
 (def level1up 8)
 (def level2up 12)
 (def server-db-items 8) ; num items to process per tick
+(def max-plant-events 5)
 
 (defn plant-type->layer [type]
   (cond
@@ -96,6 +97,15 @@
    (= layer "shrub") "ShrubSpirit"
    :else "UnknownSpirit"))
 
+(defn spirit-name->layer [name]
+  (cond
+   (= name "CanopySpirit") "canopy"
+   (= name "VerticalSpirit") "vertical"
+   (= name "CoverSpirit") "cover"
+   (= name "TreeSpirit") "tree"
+   (= name "ShrubSpirit") "shrub"
+   :else "unknown"))
+
 (defn emotion-map []
   { "LOVE" 0
     "HATE" 0
@@ -107,7 +117,7 @@
     "DISAPPOINTMENT" 0
     "JOY" 0
     "DISTRESS" 0
-	"HAPPY-FOR" 0
+	"HAPPY_FOR" 0
 	"PITTY" 0
 	"RESENTMENT" 0
 	"GLOATING" 0

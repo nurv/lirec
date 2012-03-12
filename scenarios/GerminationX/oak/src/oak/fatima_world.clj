@@ -45,7 +45,7 @@
 (defn world-add-agent [world agent]
   (merge world {:agents (cons agent (world-agents world))})) 
 
-(defn load-operators
+(comment defn load-operators
   "not used any more with fatima modular"
   [xml self]
 		(let [op (new ActionsLoaderHandler self)
@@ -115,6 +115,20 @@
     (world-objects world))
    (world-agents world)))
 
+(defn world-find-agent [world agent-name]
+  (reduce
+   (fn [r agent]
+     (if (and (not r) (= (:name agent) agent-name))
+       agent r))
+   false
+   (world-agents world)))
+
+(defn world-send-to [world agent-name msg]
+  "send a message only to this agent"
+  (send-msg
+   (remote-agent-socket
+    (world-find-agent world agent-name)) msg))
+
 (defn world-broadcast-all
   "send a message to all agents"
   [world msg]
@@ -160,6 +174,18 @@
       (world-broadcast-all world (str "ENTITY-ADDED " (get object "name")))
       ;(println (str "added " (get object "name") " " (get object "position") " "
       ;              (count (world-objects world)) " objects stored"))
+      (merge world {:objects (cons object (world-objects world))}))
+    world))
+
+(defn world-give-object [world agent-name object]
+  "show an object to a particular agent, others won't see it"
+  (if (not (world-get-object world (get object "name")))
+    (do
+      ;(println (str "added gift " (get object "name") " " (get object "position") " "
+      ;              (count (world-objects world)) " objects stored"))
+      (world-send-to
+       world agent-name
+       (str "ENTITY-ADDED " (get object "name")))
       (merge world {:objects (cons object (world-objects world))}))
     world))
 
@@ -223,30 +249,45 @@
      (.startsWith type "PROPERTY-CHANGED") agent
      (= type "look-at")
      (do
+;       (println msg)
        (let [object-name (nth toks 1)
-             object-tile (world-get-location world object-name)]
+             object-tile (world-get-location world object-name)
+             object-properties (world-get-properties world object-name)]
+         
          ; is the agent on the same tile as the object?
-         (if (in-location? (:tile agent) object-tile)
+         (if (and object-properties
+                  (in-location? (:tile agent) object-tile))
            (do
              ;(println "looking at" object-name "at" object-tile "from" (:tile agent))
+             
              (send-msg (remote-agent-socket agent)
                        (str "LOOK-AT " object-name " "
-                            (hash-map-to-string
-                             (world-get-properties world (nth toks 1)))))
+                            (hash-map-to-string object-properties)))
+           
              (world-broadcast-all
               world
               (str "ACTION-FINISHED "
                    (remote-agent-name agent) " " msg))
+             (merge
+              agent {;:tile object-tile ; move to tile we are looking at
+                     :done
+                     (cons {:time (world-time world)
+                            :msg msg}
+                           (remote-agent-done agent))}))
+           (do
+             (when (not object-properties) (println "MISSING OBJECT" object-name))
+             (send-msg (remote-agent-socket agent)
+                       (str "LOOK-AT " object-name))
              
-             (merge agent {;:tile object-tile ; move to tile we are looking at
-                           :done (cons {:time (world-time world)
-                                        :msg msg}
-                                       (remote-agent-done agent))}))
-           agent)))
+             (world-broadcast-all
+              world
+              (str "ACTION-FAILED "
+                   (remote-agent-name agent) " " msg))
+             agent))))
      :else
      (do
        ;(println "action")
-       ;(println msg)
+;       (println msg)
        (update-action-effects
         world agent
         (convert-to-action-name
@@ -257,13 +298,17 @@
                            (second toks)
                            (map (fn [s] (str s " ")) (rest (rest toks))))
                           '())))))
+
        (world-broadcast-all
         world
-        (apply str (concat "ACTION-FINISHED " (remote-agent-name agent) " "
-                           (map (fn [s] (str s " ")) toks))))
-       (merge agent {:done (cons {:time (world-time world)
-                                  :msg msg}
-                                 (remote-agent-done agent))})))))
+        (str "ACTION-FINISHED "
+             (remote-agent-name agent) " "
+             (apply str (map (fn [s] (str s " ")) toks))))
+       
+       (merge
+        agent {:done (cons {:time (world-time world)
+                            :msg msg}
+                           (remote-agent-done agent))})))))
 
 (defn world-summon-agent
   "call a spirit to a new tile"
@@ -295,14 +340,34 @@
   (doseq [a (world-agents world)]
     (world-perceive world a)))
 
+; todo - not needed
+(defn world-process-delayed-msgs [world agent]
+  (modify
+   :delayed-msgs
+   (fn [dm]
+     (filter
+      (fn [delayed]
+        (if (> (:time delayed) (:time world))
+          (do
+;            (println "SENDING DELAYED:" (:msg delayed))
+            (world-broadcast-all
+             world (:msg delayed))
+              false)
+          true))
+      dm))
+   agent))   
+
 (defn world-update-agent [world agent]
   (let [msgs (read-msg (remote-agent-socket agent))]
-    (if msgs
-      (reduce
-       (fn [agent msg]
-         (world-process-agent world agent msg))
-       (modify :done (fn [d] ()) agent) ; clear out actions done list
-       (.split msgs "\n")))))
+    (world-process-delayed-msgs
+     world
+     (if msgs
+       (reduce
+        (fn [agent msg]
+          (world-process-agent world agent msg))
+        (modify :done (fn [d] ()) agent) ; clear out actions done list
+        (.split msgs "\n"))
+       agent))))
 
 (defn world-update-agents [world]
   (comment (println "updating: "
@@ -323,7 +388,10 @@
          {:objects
           (filter
            (fn [obj]
-             (< (- time (get obj "time")) object-max-age))
+             (let [kept (< (- time (get obj "time")) object-max-age)]
+               (when (not kept)
+                 (world-broadcast-all world (str "ENTITY-REMOVED " (get obj "name"))))
+               kept))
            (world-objects world))}))
 
 (defn world-run [world time]

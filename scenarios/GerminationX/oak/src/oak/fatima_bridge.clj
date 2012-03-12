@@ -34,7 +34,7 @@
      (world-add-object
       fw
       {"name" event 
-       "owner" (:layer entity)
+       "owner" (layer->spirit-name (:layer entity))
        "position" (str (:x (:pos entity)) "," (:y (:pos entity)))
        "tile" (:pos tile)
        "type" "object"
@@ -47,18 +47,20 @@
   [fw entity tile time]
   (if (or ; filter out most states
        (= (:state entity) "grow-a")
-       (= (:state entity) "fruit-c")
+;       (= (:state entity) "fruit-c")
        (= (:state entity) "ill-a")
        (= (:state entity) "ill-b")
        (= (:state entity) "ill-c"))
-       ; stops duplicates for us automatically
-    (world-add-object fw
-                      {"name" (str (:layer entity) "-" (:state entity) "#" (:id entity))
-                       "owner" (:layer entity)
-                       "position" (str (:x (:pos entity)) "," (:y (:pos entity)))
-                       "tile" (:pos tile)
-                       "type" "object"
-                       "time" time})
+    ;stops duplicates for us automatically
+    (do
+;      (println "adding object for state" (:state entity))
+      (world-add-object fw
+                        {"name" (str (:layer entity) "-" (:state entity) "#" (:id entity))
+                         "owner" (layer->spirit-name (:layer entity))
+                         "position" (str (:x (:pos entity)) "," (:y (:pos entity)))
+                         "tile" (:pos tile)
+                         "type" "object"
+                         "time" time}))
     fw))
 
 (defn game-world-entity->fatima
@@ -69,21 +71,30 @@
     entity tile time))
 
 (defn game-world-tiles->fatima
+  "gather entity info from tiles surrounding spirits"
   [fatima-world game-world time]
-  (prof
-   :game-world-tiles->fatima
-   (db-partial-reduce
-    (fn [fw tile]
-      (let [r (reduce
-               (fn [fw entity]
-                 (game-world-entity->fatima fw entity tile time))
-               fw
-               (:entities tile))]
-        ; need to clear the entity of events now
-        (db-update! :tiles tile (tile-clear-events tile))
-        r))
-    fatima-world
-    :tiles time server-db-items)))
+  (let [tiles (reduce
+               (fn [r spirit]
+                 (concat
+                  (game-world-get-tile-with-neighbours
+                    game-world
+                    (:tile spirit)) r))
+               ()
+               (:spirits game-world))]
+    (reduce
+     (fn [fatima-world tile]
+       (let [fatima-world
+             (reduce
+              (fn [fatima-world entity]
+                (game-world-entity->fatima
+                 fatima-world entity tile time))
+              fatima-world
+              (:entities tile))]
+         ; clear events to avoid repeat messages
+         (db-update! :tiles tile (tile-clear-events tile))
+         fatima-world))
+     fatima-world
+     tiles)))
 
 (defn game-world-summons->fatima
   "send a random summons fromt the list to fatima"
@@ -106,7 +117,7 @@
       (fn [fw offering]
         (let [player-id (first offering)
               fruit (second offering)]
-          (world-add-object fw
+          (world-give-object fw (:name spirit)
                             {"name" (str (:layer fruit) "-offering#" player-id)
                              "owner" (:name spirit)
                              "position" "nowhere"

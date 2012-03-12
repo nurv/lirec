@@ -269,6 +269,22 @@
        (make-id-generator)) ; convert the id into the function
      w)))
 
+(defn send-msg-to-twitter [msg]
+  (spit 
+   (str "broadcast/" (:from msg) "/msg")
+   (str
+    (:display msg) "\n"
+    (:from msg) "\n"
+    (:emotion msg) "\n"
+    (:code msg) "\n"
+    (count (:extra msg)) "\n"
+    (apply
+     str
+     (map
+      (fn [s]
+        (str s "\n"))
+      (:extra msg))))))
+
 (defn game-world-process-msg
   "replace id numbers with strings for
    the client to make sense of - add information"
@@ -306,12 +322,14 @@
        :extra extra})
      
      (= (:type msg) "spirit")
-     (merge
-      msg
-      {:display (game-world-id->player-name
-                 game-world (:player msg))
-       :extra extra})
-     
+     (let [ret (merge
+                msg
+                {:display (game-world-id->player-name
+                           game-world (:player msg))
+                 :extra extra})]
+       (send-msg-to-twitter ret)
+       ret)
+           
      :else msg)))
 
 (defn game-world-collect-all-msgs

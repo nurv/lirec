@@ -31,4 +31,49 @@
 			</Effect>
 		</Effects>
 	</Action>
+
+	<Action name="happy-for([target])">
+		<PreConditions>
+			<Property name="[AGENT](pose)" operator="=" value="standing"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="0.8">
+		<!--		<Property name="[target](annoyed)" operator="=" value="True"/> -->
+			</Effect>
+		</Effects>
+	</Action>
+
+	<Action name="pity([target])">
+		<PreConditions>
+			<Property name="[AGENT](pose)" operator="=" value="standing"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="0.8">
+		<!--		<Property name="[target](annoyed)" operator="=" value="True"/> -->
+			</Effect>
+		</Effects>
+	</Action>
+
+	<Action name="gloat([target])">
+		<PreConditions>
+			<Property name="[AGENT](pose)" operator="=" value="standing"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="0.8">
+		<!--		<Property name="[target](annoyed)" operator="=" value="True"/> -->
+			</Effect>
+		</Effects>
+	</Action>
+
+	<Action name="resent([target])">
+		<PreConditions>
+			<Property name="[AGENT](pose)" operator="=" value="standing"/>
+		</PreConditions>
+		<Effects>
+			<Effect probability="0.8">
+		<!--		<Property name="[target](annoyed)" operator="=" value="True"/> -->
+			</Effect>
+		</Effects>
+	</Action>
+
 </DomainActions>

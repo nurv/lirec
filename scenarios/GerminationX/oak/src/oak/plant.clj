@@ -22,9 +22,9 @@
   (:require
    clojure.contrib.math))
 
-(defn make-plant [id tile pos type owner owner-id size]
+(defn make-plant [id tile pos type owner owner-id soil]
   (hash-map
-   :version 1
+   :version 2
    :id id
    :tile tile
    :pos pos
@@ -34,7 +34,8 @@
    :picked-by-ids ()
    :owner-id owner-id
    :owner owner
-   :size size
+   :size 0
+   :soil soil
    :timer 9999 ; force a tick when created
    :tick (+ plant-tick (Math/floor (rand plant-tick-var)))
    :health start-health
@@ -63,15 +64,20 @@
                (list (list 97 "Charlie")
                      (list 98 "Percy")
                      (list 99 "Alan")))]
-    (make-plant
-     id
-     tile
-     (make-vec2 (Math/floor (rand tile-size))
-                (Math/floor (rand tile-size)))
-     type
-     (second owner)
-     (first owner)
-     (Math/round (+ 1 (rand 10))))))
+    ; fudge to cause soil input from client
+    (merge
+     (dissoc
+      (make-plant
+       id
+       tile
+       (make-vec2 (Math/floor (rand tile-size))
+                  (Math/floor (rand tile-size)))
+       type
+       (second owner)
+       (first owner)
+       0)
+      :soil)
+     {:version 1})))
 
 (defn ill-slow []
   (= (rand-int ill-slow-amount) 0))
@@ -294,58 +300,80 @@
   [events-list plant type plants]
   (reduce
    (fn [r other]
-     (cons (str (:layer other) "-" type "#" (:id plant)) r))
+     (max-cons (str (:layer other) "-" type "#" (:id plant)) r max-plant-events))
    events-list
    plants))
 
-(defn plant-update-events [plant old-state neighbours rules]    
+(defn plant-first-flower? [plant old-plant]
+  (and
+   (not (log-contains-msg?
+         (:log old-plant)
+         "one_time_i_have_flowered"))
+   (log-contains-msg?
+    (:log plant)
+    "one_time_i_have_flowered")))
+  
+(defn plant-update-events [plant old-plant neighbours rules]    
   "add any special events that we need FAtiMA to be aware of"
-  (prof :plant-update-events
-  (modify
-   :event-occurred
-   (fn [ev]
-     (cond
-      ; when first planted, need to tell fatima about
-      ; our relationships with the plants around us
-      (and (= old-state "planted")
-           (= (:state plant) "grow-a"))
-      (events-from-relationship
-       (events-from-relationship
-        ev plant "benefit"
-        (neighbours-relationship plant neighbours rules >))
-       plant "detriment"
-       (neighbours-relationship plant neighbours rules <))
-      
-      (and
-       (= old-state "ill-c")
-       (= (:state plant) "ill-b"))
-      (cons (str (:layer plant) "-recovery-to-b#" (:id plant)) ev)
-      
-      (and
-       (= old-state "ill-b")
-       (= (:state plant) "ill-a"))
-      (cons (str (:layer plant) "-recovery-to-a#" (:id plant)) ev)
-      
-      (and (= old-state "ill-a")
-           (= (:state plant) "grown"))
-      (cons (str (:layer plant) "-finished-recovery#" (:id plant)) ev)
-      
-      :else ev))
-   plant)))
+  (let [old-state (:state old-plant)]
+    (prof :plant-update-events
+    (modify
+     :event-occurred
+     (fn [ev]
+       (cond
+        ; when first planted, need to tell fatima about
+        ; our relationships with the plants around us
+        (and (= old-state "planted")
+             (= (:state plant) "grow-a"))
+        (events-from-relationship
+         (events-from-relationship
+          ev plant "benefit"
+          (neighbours-relationship plant neighbours rules >))
+         plant "detriment"
+         (neighbours-relationship plant neighbours rules <))
+        
+        (and
+         (= old-state "ill-c")
+         (= (:state plant) "ill-b"))
+        (max-cons (str (:layer plant) "-recovery-to-b#" (:id plant)) ev max-plant-events)
+        
+        (and
+         (= old-state "ill-b")
+         (= (:state plant) "ill-a"))
+        (max-cons (str (:layer plant) "-recovery-to-a#" (:id plant)) ev max-plant-events)
+        
+        (and (= old-state "ill-a")
+             (= (:state plant) "grown"))
+        (max-cons (str (:layer plant) "-finished-recovery#" (:id plant)) ev max-plant-events)
 
+        (> (:fruit plant)
+           (:fruit old-plant))
+        (max-cons (str (:layer plant) "-new-fruit#" (:id plant)) ev max-plant-events)
+
+        (plant-first-flower? plant old-plant) 
+        (do
+          (println "first flower")
+          (max-cons (str (:layer plant) "-first-flower#" (:id plant)) ev max-plant-events)
+          )
+        :else ev))
+     plant))))
+  
 (defn plant-update-from-changes
   "update the log and event-occurred from the
    current state and the last"
-  [plant old-state neighbours rules]
+  [plant old-plant neighbours rules]
   (prof :plant-update-from-changes
-  ; only if the state has acually changed
-  (if (not (= (:state plant) old-state))
-    ; update the log
-    (plant-update-log
-     (plant-update-events
-      plant old-state neighbours rules)
-     old-state neighbours rules)
-    plant)))
+        ; only need to carry on if something has changed
+        (if (or
+             (not (= (:state plant) (:state old-plant)))
+             (not (= (:fruit plant) (:fruit old-plant)))
+             (plant-first-flower? plant old-plant))        
+          ; update the log
+          (plant-update-log
+           (plant-update-events
+            plant old-plant neighbours rules)
+           (:state old-plant) neighbours rules)
+          plant)))
 
 (defn plant-update-health [plant neighbours rules]
   (prof
@@ -364,11 +392,18 @@
                                         (> (:health plant) min-health))
                                   (+ r rel)
                                   r)))
-                            (let [nn (count neighbours)]
-                              (cond ; general count of surrounding plants
-                               (= 0 nn) -1
-                               (> nn max-neighbours) (- max-neighbours nn)
-                               :else 0))
+                            ; starting health change
+                            (+
+                             ; soil type, if included
+                             (if (> (:version plant) 1)
+                               (* (:soil plant) 0.1)
+                               0)
+                             
+                             (let [nn (count neighbours)]
+                               (cond ; general count of surrounding plants
+                                (= 0 nn) -1
+                                (> nn max-neighbours) (- max-neighbours nn)
+                                :else 0)))
                             neighbours)))))
    plant)))
 
@@ -409,7 +444,7 @@
 
 (defn plant-update [plant time delta neighbours rules season]
   ;(println (str season " " (:state plant) " " (:health plant) " " (:timer plant) " " (:tick plant)))
-  (let [old-state (:state plant)]
+  (let [old-plant plant]
     (plant-update-from-changes
      (plant-update-health
       (plant-update-fruit
@@ -417,7 +452,7 @@
         plant
         time delta season))
       neighbours rules)
-     old-state neighbours rules)))
+     old-plant neighbours rules)))
 
 (defn plant-diagnose
  "returns a list containing:
@@ -459,4 +494,10 @@
        "i_have_been_picked_by"
        plant (:owner-id plant)
        (list (:name player)))))
-   (modify :fruit (fn [f] (- f 1)) plant)))
+   (modify :fruit (fn [f] (- f 1))
+           (modify ; add an event on
+            :event-occurred
+            (fn [ev]
+              (cons (str (:layer plant) "-picked-fruit#"
+                         (:id plant)) ev))
+            plant))))

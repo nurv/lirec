@@ -36,15 +36,12 @@
 	</Goals>
 	
 	<InterpersonalRelations>
-		<Relation target="ShrubSpirit" like="3" respect="5"/>
-		<Relation target="TreeSpirit" like="-3" respect="10"/>
-        <Relation target="cover-grow-a" like="6" respect="1"/>
-        <Relation target="cover-fruit-a" like="1" respect="1"/>
-        <Relation target="cover-fruit-b" like="2" respect="1"/>
-        <Relation target="cover-fruit-c" like="3" respect="1"/>
-        <Relation target="cover-ill-a" like="-4" respect="1"/>
-        <Relation target="cover-ill-b" like="-6" respect="1"/>
-        <Relation target="cover-ill-c" like="-8" respect="1"/>
+		<Relation target="ShrubSpirit" like="10" respect="5"/>
+		<Relation target="TreeSpirit" like="-10" respect="8"/>
+        <Relation target="cover-grow-a" like="5" respect="1"/> 
+        <Relation target="cover-ill-a" like="-10" respect="1"/>
+        <Relation target="cover-ill-b" like="-10" respect="1"/>
+        <Relation target="cover-ill-c" like="-10" respect="1"/>
  <!--       <Relation target="cover-decay-a" like="-1" respect="1"/>
         <Relation target="cover-decay-b" like="-2" respect="1"/>
         <Relation target="cover-decay-c" like="-3" respect="1"/>
@@ -56,29 +53,53 @@
         <Relation target="cover-offering" like="20" respect="20"/>
         <Relation target="tree-offering" like="-20" respect="20"/>
         <Relation target="shrub-offering" like="-20" respect="20"/>
+        <Relation target="tree-new-fruit" like="-2" respect="20"/>
+        <Relation target="shrub-new-fruit" like="-2" respect="20"/>
+        <Relation target="cover-new-fruit" like="10" respect="20"/>
+        <Relation target="tree-picked-fruit" like="-5" respect="20"/>
+        <Relation target="shrub-picked-fruit" like="-5" respect="20"/>
+        <Relation target="cover-picked-fruit" like="10" respect="20"/>
 	</InterpersonalRelations>
 	
 	<EventReactions>
 
-		<!-- General emotional reactions used in more than one episode -->
-	
-		<EmotionalReaction desirability="3" desirabilityForOther="1" praiseworthiness="5"> 
+		<!-- General emotional reactions used in more than one episode -->	
+		<EmotionalReaction desirability="0" desirabilityForOther="10" praiseworthiness="10"> 
 			<Event subject="*" action="praise"/>
 		</EmotionalReaction>
-
-		<EmotionalReaction desirability="-3" desirabilityForOther="-1" praiseworthiness="-2"> 
+	
+        <EmotionalReaction desirability="0" desirabilityForOther="-10" praiseworthiness="0"> 
 			<Event subject="*" action="complain"/>
 		</EmotionalReaction>
-		
+
+        <EmotionalReaction desirability="0" desirabilityForOther="-10" praiseworthiness="10"> 
+			<Event subject="*" action="diagnose"/>
+		</EmotionalReaction>
+<!--
+        <EmotionalReaction desirability="2" desirabilityForOther="5" praiseworthiness="10"> 
+			<Event subject="*" action="happy-for"/>
+		</EmotionalReaction>
+
+        <EmotionalReaction desirability="5" desirabilityForOther="5" praiseworthiness="10"> 
+			<Event subject="*" action="pity"/>
+		</EmotionalReaction>
+
+        <EmotionalReaction desirability="-5" desirabilityForOther="-5" praiseworthiness="-5"> 
+			<Event subject="*" action="gloat"/>
+		</EmotionalReaction>
+
+        <EmotionalReaction desirability="-5" desirabilityForOther="-5" praiseworthiness="-10"> 
+			<Event subject="*" action="resent"/>
+		</EmotionalReaction>
+	-->
 	</EventReactions>
 	
 	<ActionTendencies>
 		
-		<!-- Generic action tendencies -->
 		<ActionTendency action="praise([Target])">
 			<Preconditions>
             </Preconditions>
-			<ElicitingEmotion type="Love" minIntensity="4">
+			<ElicitingEmotion type="Love" minIntensity="1">
 				<CauseEvent/>
 			</ElicitingEmotion>
 		</ActionTendency>
@@ -86,7 +107,7 @@
 		<ActionTendency action="complain([Target])">
 			<Preconditions>
             </Preconditions>
-			<ElicitingEmotion type="Hate" minIntensity="4">
+			<ElicitingEmotion type="Hate" minIntensity="1">
 				<CauseEvent/>
 			</ElicitingEmotion>
 		</ActionTendency>
@@ -95,6 +116,38 @@
 			<Preconditions>
             </Preconditions>
 			<ElicitingEmotion type="Hate" minIntensity="1">
+				<CauseEvent/>
+			</ElicitingEmotion>
+		</ActionTendency>
+
+		<ActionTendency action="happy-for([Target])">
+			<Preconditions>
+            </Preconditions>
+			<ElicitingEmotion type="Happy-For" minIntensity="1">
+				<CauseEvent/>
+			</ElicitingEmotion>
+		</ActionTendency>
+
+		<ActionTendency action="gloat([Target])">
+			<Preconditions>
+            </Preconditions>
+			<ElicitingEmotion type="Gloating" minIntensity="1">
+				<CauseEvent/>
+			</ElicitingEmotion>
+		</ActionTendency>
+
+		<ActionTendency action="resent([Target])">
+			<Preconditions>
+            </Preconditions>
+			<ElicitingEmotion type="Resentment" minIntensity="1">
+				<CauseEvent/>
+			</ElicitingEmotion>
+		</ActionTendency>
+
+		<ActionTendency action="pity([Target])">
+			<Preconditions>
+            </Preconditions>
+			<ElicitingEmotion type="Pitty" minIntensity="1">
 				<CauseEvent/>
 			</ElicitingEmotion>
 		</ActionTendency>

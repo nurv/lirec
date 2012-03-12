@@ -35,6 +35,7 @@
    :tile (make-vec2 0 0)
    :pos (make-vec2 5 5)
    :id id
+   :layer (spirit-name->layer (remote-agent-name remote-agent))
    :name (remote-agent-name remote-agent)
    :offerings ()
    :emotions (emotion-map)
@@ -95,9 +96,11 @@
       (fn [r emotion]
         (let [e (:attrs emotion)]
           (if e
-            (merge r {(:type e)
-                      (+ (parse-float (:intensity e))
-                         (get r (:type e)))})
+            (do
+;              (println e)
+              (merge r {(:type e)
+                        (+ (parse-float (:intensity e))
+                           (get r (:type e)))}))
             r)))
       (emotion-map)
       (:content (remote-agent-emotions remote-agent))))
@@ -244,6 +247,28 @@
                     (fatima-subject->reason subject)))))
           spirit))
 
+(defn spirit-fortune-of-others [fortune spirit plant subject]
+  ; filter out fortunes of our selves - not sure why here
+  (if (not (= (:layer plant)
+              (spirit-name->layer (:name spirit))))
+    (modify :log
+            (fn [log]
+              (log-add-msg
+               log
+               (make-spirit-msg
+                "spirit_fortune_of_other"
+                spirit
+                (:owner-id plant)
+                (:tile plant)
+                (:pos plant)
+                (list
+                 fortune
+                 (:type plant)
+                 (fatima-subject->reason subject)
+                 (:layer plant)))))
+            spirit)
+    spirit))
+
 (defn spirit-received-offering [spirit player-id type subject]
   (modify :log
           (fn [log]
@@ -279,15 +304,17 @@
 
                        (and
                         (= type "diagnose")
-                        (not (= reason "detriment")))
-                       (do ;(println "attempting diagnosis")
-                           ; don't want to diagnose plants that are detriments to our plants
-                         (spirit-diagnose spirit e rules tiles))
+                        (= (:layer e) (:layer spirit))) ; only diagnose our plants
+                       (spirit-diagnose spirit e rules tiles)
                        
                        (= type "praise") (spirit-praise spirit e subject)
-                       
                        (= type "complain") (spirit-complain spirit e subject)
-                       
+
+                       (= type "happy-for") (spirit-fortune-of-others "happy-for" spirit e subject)
+                       (= type "pity") (spirit-fortune-of-others "pity" spirit e subject)
+                       (= type "resent") (spirit-fortune-of-others "resent" spirit e subject)
+                       (= type "gloat") (spirit-fortune-of-others "gloat" spirit e subject)
+
                        :else spirit))
               
               ; no plant found...
@@ -297,10 +324,11 @@
                 (spirit-received-offering spirit id type subject)
                 spirit))) ; can happen if we have moved away from the tile
 
-            ; no id found
-            (do
-              (println "could not find id from fatima name" fullname)
-              spirit))))
+          ; no id found
+          (do
+;            (println (:msg action) type fullname id subject reason)
+            (println "could not find id from fatima name" fullname)
+            spirit))))
     spirit
     (:fatactions spirit))))
 

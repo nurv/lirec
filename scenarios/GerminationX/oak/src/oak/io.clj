@@ -103,7 +103,9 @@
         (.flip buf)
         (let [bytearr (byte-array (.remaining buf))]
           (.get buf bytearr)
-          (new String bytearr)))
+          (let [msg (new String bytearr)]
+            ;(println "<-- " msg)
+            msg)))
       false)))
 
 (comment defn read-msg [reader]
@@ -124,7 +126,7 @@
     r))
 
 (defn send-msg [sc msg]
-  ;(println "----------------> " msg)
+  ;(println "--> " msg)
   (let [msg (str msg "\n")
         enc (.newEncoder (Charset/forName "US-ASCII"))]  
     (.write sc (.encode enc (CharBuffer/wrap msg)))))

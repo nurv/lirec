@@ -1,16 +1,16 @@
 ;          cherry    apple   aronia   dandelion   clover  boletus  chanterelle  fly-agaric
 (
 ; cherry     
-(            -1       -1       0          1         1       1          1            1       )     
+(            -2       -1       0          1         1       1          1            1       )     
 
 ; apple      
-(            -1       -1       0          0         1       1          1            1       )
+(            -1       -2       0          0         1       1          1            1       )
 
 ; aronia     
-(            0        -1      -1          0         1       1          1            1       )
+(            0        -1      -2          0         1       1          1            1       )
 
 ; dandelion  
-(            1         0      -1         -1         0       1          1            1       )
+(            1         0      -1         -2         0       1          1            1       )
 
 ; clover     
 (            1         1       0         -1         0       1          1            1       )

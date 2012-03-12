@@ -66,5 +66,6 @@
      :done '()
      :random (new java.util.Random)
      :reader reader
-     :tile (make-vec2 0 0))))
+     :tile (make-vec2 0 0)
+     :delayed-msgs [])))
 
