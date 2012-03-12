@@ -39,11 +39,16 @@ class FlashFrame implements Frame, extends MovieClip
     var Figures:Shape;
     var Textures:FrameTextures;
     var UsingTextures:Bool;
-    var TextSize:Int;
+    var TextFormat:flash.text.TextFormat;
     public var R:Float;
     public var G:Float;
     public var B:Float;
     public var ExpandLeft:Int;
+    var YOff:Int;
+    var X:Int;
+    var Y:Int;
+    var Width:Int;
+    var Height:Int;
     var MouseDownFunc:Dynamic -> Void;
     var MouseDownContext:Dynamic;
     var MouseUpFunc:Dynamic -> Void;
@@ -58,28 +63,34 @@ class FlashFrame implements Frame, extends MovieClip
         super();
         Textures =  new FrameTextures();
         UsingTextures = false;
-        TextSize=8;
         ExpandLeft=0;
         EnableMouse(false);
+
+        X=Std.int(x);
+        Y=Std.int(y);
+        Width=w;
+        Height=h;
+        YOff=0;
 
         TextField = new flash.text.TextField();
         TextField.text = text;
         TextField.x=x;
-        TextField.y=y;
+        TextField.y=y+YOff;
         TextField.height=h;
-        TextField.width=w;
+        TextField.width=w-7;
         TextField.background = false;
         //TextField.autoSize = flash.text.TextFieldAutoSize.LEFT;
         //TextField.backgroundColor = 0x8dd788;
-        TextField.border = true;
+        //TextField.border = true;
         TextField.wordWrap = true;
         TextField.selectable = false;
 
-        var t = new flash.text.TextFormat();
-        t.font = "Verdana"; 
-        t.size = TextSize;                
-        t.color= 0x000000;    
-        TextField.setTextFormat(t);
+        TextFormat = new flash.text.TextFormat();
+        TextFormat.font = "Verdana"; 
+        TextFormat.size = 8;                
+        TextFormat.color= 0x000000;  
+        TextFormat.leading = -2;
+        TextField.setTextFormat(TextFormat);
         R=1.0;
         G=1.0;
         B=1.0;
@@ -87,8 +98,7 @@ class FlashFrame implements Frame, extends MovieClip
         Figures = new Shape();
         BG = Figures.graphics;
         BG.beginFill(0xffffff,1);
-        BG.drawRect(TextField.x,TextField.y,
-                    TextField.width,TextField.height);
+        BG.drawRect(X,Y,Width,Height);
         BG.endFill();
         Figures.visible=false;
 
@@ -127,65 +137,54 @@ class FlashFrame implements Frame, extends MovieClip
 
     public function SetTextSize(s:Int)
     {
-        TextSize=s;
+        TextFormat.size = s;                
     }
 
     public function UpdatePosition(x:Int,y:Int) : Void
     {
         TextField.x=x;
-        TextField.y=y;
+        TextField.y=y+YOff;
+        X=x;
+        Y=y;
         BG.clear();
         BG.beginFill(0xffffff,0.5);
-        BG.drawRect(TextField.x,TextField.y,
-                    TextField.width,TextField.height);
+        BG.drawRect(X,Y,Width,Height);
         BG.endFill();
     }
 
     public function UpdateText(text:String) : Void
     { 
         TextField.text=text;
-
-        var t = new flash.text.TextFormat();
-        t.font = "Verdana"; 
-        t.size = TextSize;                
-        t.color= 0x000000;           
-        TextField.setTextFormat(t);
- 
+        TextField.setTextFormat(TextFormat);
         BG.clear();
         BG.beginFill(0xffffff,0.5);
-        BG.drawRect(TextField.x,TextField.y,
-                    TextField.width,TextField.height);
+        BG.drawRect(X,Y,Width,Height);
         BG.endFill();
     }
 
     public function UpdateHTMLText(text:String) : Void
     { 
         TextField.htmlText=text;
-
-        var t = new flash.text.TextFormat();
-        t.font = "Verdana"; 
-        t.size = TextSize;                
-        t.color= 0x000000;           
-        TextField.setTextFormat(t);
- 
+        TextField.setTextFormat(TextFormat);
         BG.clear();
         BG.beginFill(0xffffff,0.5);
-        BG.drawRect(TextField.x,TextField.y,
-                    TextField.width,TextField.height);
+        BG.drawRect(X,Y,Width,Height);
         BG.endFill();
     }
 
     public function InitTextures(t:FrameTextures,r:RndGen)
     {
+        YOff=-7;
+        TextField.y=Y+YOff;
         Textures=t;
         UsingTextures=true;
         TextField.border = false;
 
         var TileSize=64;
-        var XPos=TextField.x-(TileSize/2)-10-ExpandLeft;
-        var YPos=TextField.y-(TileSize/2)-10;
-        var XCount=Std.int((TextField.width+ExpandLeft)/TileSize)+1;
-        var YCount=Std.int(TextField.height/TileSize)+1;
+        var XPos=X-(TileSize/2)-10-ExpandLeft;
+        var YPos=Y-(TileSize/2)-10;
+        var XCount=Std.int((Width+ExpandLeft)/TileSize)+1;
+        var YCount=Std.int(Height/TileSize)+1;
 
         // dirty dirty hack
         if (ExpandLeft>0) XPos+=10;

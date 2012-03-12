@@ -21,6 +21,8 @@ import truffle.Vec3;
 import truffle.SpriteEntity;
 import truffle.RndGen;
 
+import flash.filters.GlowFilter;
+
 class Plant extends SpriteEntity 
 {
     public var Id:Int;
@@ -33,11 +35,11 @@ class Plant extends SpriteEntity
     var Fruits:Array<Fruit>;
     var Layer:String;
     var Star:Sprite;
-    var Owned:Bool;
     var OwnerName:String;
     var Rnd:RndGen;
     var ServerPos:Vec2;
     var ServerTile:Vec2;
+    var GlowColour:Int;
     public var GotSelect:Bool;
 
     static var CentrePositions = {
@@ -74,7 +76,7 @@ class Plant extends SpriteEntity
         //NeedsUpdate=true;
         Fruits=[];
         Layer=plant.layer;
-        Owned=false;
+        GlowColour=0x000000;
         Spr.Hide(false);
         Rnd=new RndGen();
         Rnd.Seed(Id);
@@ -87,15 +89,7 @@ class Plant extends SpriteEntity
             Fruit(world);
         }
 
-        // display stars next to plants owned by the player
-        if (!Owned && Owner==world.MyID)
-        {
-            Star = new Sprite(Reflect.field(CentrePositions,PlantType),
-                              Resources.Get("star"));
-            world.AddSprite(Star);
-            Owned=true;
-            Star.Update(0,Spr.Transform);
-        }
+        OwnerUpdate(world);
 	}
 
     // allow the butterflies to find us on mouse over
@@ -106,6 +100,32 @@ class Plant extends SpriteEntity
         });
     }
 
+    public function OwnerUpdate(world:World)
+    {
+        // glow plants owned by the player
+        if (Owner==world.MyID)
+        {            
+            var CurrentCol=0x99ff99;
+            
+            // different colours look confusing
+            // summer colour
+/*            var CurrentCol=0x77ff77;
+            if (world.Season=="winter" ||
+                world.Season=="autumn")
+            {
+                CurrentCol=0xffffff;
+            }
+*/
+            if (GlowColour!=CurrentCol)
+            {
+                GlowColour=CurrentCol;
+                Spr.filters=[new GlowFilter(GlowColour,0.75,20,20,5,1,false,false)];
+                Spr.OffsetColour=new Vec3(32,32,32);
+                Spr.Update(0,null);
+            }
+        }
+    }
+    
     public function StateUpdate(world:World,plant)
     {
         var s=FixState(plant.state);
@@ -128,15 +148,7 @@ class Plant extends SpriteEntity
                     f.ChangeState(plant.state);
                 }
             };
-            // display stars next to plants owned by the player
-            if (!Owned && Owner==world.MyID)
-            {
-                Star = new Sprite(Reflect.field(CentrePositions,PlantType),
-                                  Resources.Get("star"));
-                world.AddSprite(Star);
-                Owned=true;
-                Star.Update(0,Spr.Transform);
-            }
+            OwnerUpdate(world);
         }
 
         // see if any fruit have been picked or arrived
@@ -161,7 +173,6 @@ class Plant extends SpriteEntity
         {
             world.RemoveSprite(fruit.Spr);
         }
-        if (Owned) world.RemoveSprite(Star);
     }
 	
 	public override function Update(frame:Int, world:World)
@@ -171,9 +182,7 @@ class Plant extends SpriteEntity
         {
             fruit.Spr.Update(frame,Spr.Transform);
         }
-        
-        if (Owned) Star.Update(frame,Spr.Transform);
-	}
+   	}
 
     override function OnSortScene(world:World, order:Int) : Int
     {
@@ -182,7 +191,6 @@ class Plant extends SpriteEntity
         {
             world.setChildIndex(fruit.Spr,order++);
         }        
-        if (Owned) Star.SetDepth(order++);
         return order;
     }
 

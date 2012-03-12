@@ -42,6 +42,7 @@ class Spirit extends ClusterEntity
     var HighestScore:Float;
     var MessageTime:Float;
     var LastMsgTxt:String;
+    var Mood:Float;
 
     function ToCol(r:Int,g:Int,b:Int)
     {
@@ -62,6 +63,7 @@ class Spirit extends ClusterEntity
         HighestScore=0;
         MessageTime=-1;
         LastMsgTxt="";
+        Mood=0;
         
         Message = new Frame("",0,0,64*2,64);
         Message.SetTextSize(10);
@@ -140,7 +142,7 @@ class Spirit extends ClusterEntity
         Debug.Hide(true);
         c.addChild(Debug);
         
-        //Sprites[0].MouseDown(this,function(c) { c.Debug.Hide(false); });
+        Sprites[0].MouseDown(this,function(c) { c.Debug.Hide(false); });
 	}
 
     public function AddMsg(msg,text)
@@ -172,7 +174,7 @@ class Spirit extends ClusterEntity
     {
         var ee = e.fatemotions.content;
         if (ee==null) return;
-        var mood=Std.parseFloat(ee[0].content[0]);
+        Mood=Std.parseFloat(ee[0].content[0]);
 
         var text=Name+"\nMood:"+ee[0].content[0]+"\n";
         text+="Highest Emotion:"+HighestEmotion+"="+HighestScore+"\n";
@@ -211,8 +213,8 @@ class Spirit extends ClusterEntity
         
         if (dst.x!=DesiredPos.x || dst.y!=DesiredPos.y)
         {
-            while (world.Get("fungi.Spirit",dst)!=null)
-            {
+            if (world.GetOther(this,"fungi.Spirit",dst))
+            {       
                 dst = dst.Add(new Vec2(world.MyRndGen.Choose([-1,0,1]),
                                        world.MyRndGen.Choose([-1,0,1])));
             }
@@ -300,17 +302,21 @@ class Spirit extends ClusterEntity
         Root.Recurse(function(b:Bone,depth:Int) 
         {    
             // pull the colour from the emotion map
-            b.Colour=
-                IntToColourTriple(
-                    EmotionMap.getPixel(
-                        EmotionIndex,
-                        (depth+IE)%8))
-                .Lerp(IntToColourTriple(
-                    EmotionMap.getPixel(
-                        EmotionIndex,
-                        (depth+1+IE)%8)),
-                      c.EmotionColour-IE);
-            
+            if (c.HighestScore>0.01)
+            {
+                b.Colour=
+                    IntToColourTriple(
+                        EmotionMap.getPixel(
+                            EmotionIndex,
+                            (depth+IE)%8))
+                    .Lerp(IntToColourTriple(
+                        EmotionMap.getPixel(
+                            EmotionIndex,
+                            (depth+1+IE)%8)),
+                          c.EmotionColour-IE);
+            }
+            else b.Colour=new Vec3(0.5,0.5,0.5);
+
             // change speed of movement by gratitude and joy with
             // this insane formula which needs rewriting
             b.SetRotate((excitement*5+1)*Math.sin(

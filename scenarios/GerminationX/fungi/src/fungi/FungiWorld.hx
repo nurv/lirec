@@ -300,6 +300,12 @@ class FungiWorld extends World
 		                   c.MyName=c.PlayerInfo.name;
 		                   c.removeChild(c.MyTextEntry);
                            c.TickTime=0; // force refresh
+                           // update the plants to reflect
+                           // that we now have an owner
+                           for (plant in cast(c.Plants,Array<Dynamic>))
+                           {
+                               plant.OwnerUpdate(c);
+                           }
                        });
 
 		//WorldClient.GetPlants(cast(WorldPos.x,Int),cast(WorldPos.y,Int));
@@ -334,19 +340,65 @@ class FungiWorld extends World
 				}
 			}
 		}
-		
+
+		var colcircles = [];
+        var cols=[new Vec3(30,-15,-15),
+                  new Vec3(-30,60,-30),
+                  new Vec3(20,-10,-10),
+                  new Vec3(20,25,-45)];
+
+        for (x in -8...9)
+		{
+			for (y in -8...9)
+			{
+				MyRndGen.Seed(cast((WorldPos.x+x)+(WorldPos.y+y)*130,Int));
+				if (MyRndGen.RndFlt()>0.85)
+				{
+					var pos = new Vec3((MyRndGen.RndFlt()*TileSize+x*TileSize)+5,
+                                       (MyRndGen.RndFlt()*TileSize+y*TileSize)+5,
+									   0);
+					colcircles.push(
+                        {colour:MyRndGen.Choose(cols),
+                         circle:new Circle(pos, MyRndGen.RndFlt()*30)});
+				}
+			}
+		}
 		
 		for (i in 0...Objs.length)
 		{
 			var pos=new Vec3(i%Width,Math.floor(i/Width),-1);
-			for (c in circles)
+			MyRndGen.Seed(cast((pos.x%5)*236+(pos.y%5)*139,Int));			
+            var col=new Vec3(1,1,1);
+ 
+			for (c in colcircles)
 			{
-				if (c.Inside(pos)) pos.z=0;
+				if (c.circle.Inside(pos)) 
+                {
+                    col.x=c.colour.x;
+                    col.y=c.colour.y;
+                    col.z=c.colour.z;                    
+                }
 			}
 
+
+			for (c in circles)
+			{
+				if (c.Inside(pos)) 
+                {
+                    pos.z=0;
+                }
+			}
+
+            if (pos.z!=0)
+            {
+                col.x-=60;
+                col.y-=60;
+                col.z-=60;
+            }
+
             // seed the rng for this position
-			MyRndGen.Seed(cast((pos.x%5)*236+(pos.y%5)*139,Int));			
 			Objs[i].LogicalPos=pos;
+            Objs[i].Spr.OffsetColour=col;
 			Objs[i].UpdateTex(MyRndGen);
             Objs[i].Update(0,this);
 		}
@@ -373,7 +425,7 @@ class FungiWorld extends World
                            Std.string(PlantPosY)+"/"+
                            type+"/"+
                            MyID+"/"+
-                           Math.round(size*100)+"/"+
+                           GetSoilState(GetCube(pos))+"/"+
                            Std.string(FruitID),
             this, function (c,data) {});       
         }
@@ -418,6 +470,16 @@ class FungiWorld extends World
 	{
 		return Objs[cast(pos.x+pos.y*Width,Int)];
 	}
+
+    public function GetSoilState(cube:Cube) : Int
+    {
+        // "greeness"
+        var base=new Vec3(133,143,124); // base colour from cube tex
+        // apply the offset colour
+        base=base.Add(cube.Spr.OffsetColour);
+        // get resultant greeness
+        return Std.int(base.y-((base.x+base.z*0.5)));
+    }
 		
     public function SpaceClear(pos:Vec3)
     {
@@ -476,6 +538,18 @@ class FungiWorld extends World
                     var cube = Get("fungi.Cube",WorldPos);
                     if (cube!=null)
                     {
+                        if (plant.version<2)
+                        {
+                            // temp - add back the soil health
+                            Server.Request("soil/"+
+                                           Std.string(cast(plant.tile.x,Int))+"/"+
+                                           Std.string(cast(plant.tile.y,Int))+"/"+
+                                           Std.string(plant.id)+"/"+
+                                           GetSoilState(cube),
+                                           this,
+                                           function(c,d){});
+                        }
+                            
                         var pos = new Vec3(WorldPos.x,WorldPos.y,cube.LogicalPos.z+1);   
                         Plants.push(new Plant(this,plant,pos,tile.pos));
                     }

@@ -100,8 +100,11 @@ class StringMaker
             spirit_complaint: function(from,to,owner,extra:Array<Dynamic>,emotion)
             {
                 var e="";
-                if (emotion=="LOVE") e="I am happy, but ";
-                if (emotion=="HATE") e="I am sad, because ";
+                if (emotion=="LOVE" || 
+                    emotion=="HAPPY_FOR" ||
+                    emotion=="GLOATING") e="I am happy, but ";
+                if (emotion=="HATE" || 
+                    emotion=="PITTY") e="I am sad, because ";
                 if (emotion=="PRIDE") e="I am great, but ";
                 if (emotion=="DISTRESS") e="This is awful, ";
                 if (emotion=="ADMIRATION") e="Everythings fine, but ";
@@ -114,18 +117,23 @@ class StringMaker
                 if (extra[1]=="ill-b") return msg+"quite ill";
                 if (extra[1]=="ill-c") return msg+"very ill";
                 if (extra[1]=="detriment") return msg+"harming my plants.";
+                if (extra[1]=="new-fruit") return msg+"has fruited.";
+                if (extra[1]=="picked-fruit") return msg+"has been picked.";
                 return msg+"... something. (bug: "+extra[1]+")";
             },
             spirit_praise: function(from,to,owner,extra:Array<Dynamic>,emotion)
             {
                 var e="";
-                if (emotion=="LOVE") e="I am happy that ";
-                if (emotion=="HATE") e="I am sad, but ";
-                if (emotion=="PRIDE") e="I am great, ";
+                if (emotion=="LOVE" || 
+                    emotion=="HAPPY_FOR" ||
+                    emotion=="GLOATING") e="I am happy that ";
+                if (emotion=="HATE" || 
+                    emotion=="PITTY") e="I am sad, but ";
+                if (emotion=="PRIDE") e="I am proud, ";
                 if (emotion=="DISTRESS") e="Things are awful, but ";
                 if (emotion=="ADMIRATION") e="It's great, ";
                 if (emotion=="JOY") e="Wow! - ";
-                if (emotion=="SHAME") e="I'm useless but, ";
+                if (emotion=="SHAME") e="I'm ashamed, ";
                 if (emotion=="RESENTMENT") e="Things are bad, but ";
 
                 var msg=e+to+"'s " + extra[0] + " plant ";
@@ -137,7 +145,33 @@ class StringMaker
                 if (extra[1]=="recovery-to-a") return msg+"is recovering.";
                 if (extra[1]=="finished-recovery") return msg+"has fully recovered.";
                 if (extra[1]=="benefit") return msg+"is helping my plants.";
+                if (extra[1]=="new-fruit") return msg+"has fruited.";
+                if (extra[1]=="picked-fruit") return msg+"has been picked.";
                 return msg+"... something. (bug: "+extra[1]+")";
+            },
+            spirit_fortune_of_other: function(from,to,owner,extra:Array<Dynamic>,emotion)
+            {   
+                var other="TreeSpirit";
+                if (extra[3]=="cover") other="CoverSpirit";
+                if (extra[3]=="shrub") other="ShrubSpirit";
+
+                if (extra[0]=="happy-for")
+                {
+                    return other+", you must be pleased with "+to+"'s " + extra[1] + " plant!";
+                }
+                if (extra[0]=="pity")
+                {
+                    return "Oh dear "+other+", I'm sorry about "+to+"'s " + extra[1] + " plant.";
+                }
+                if (extra[0]=="gloat")
+                {
+                    return "Haha "+other+", "+to+"'s " + extra[1] + " plant is ruining your day!";
+                }
+                if (extra[0]=="resent")
+                {
+                    return other+", it's only luck that "+to+" planted a " + extra[1] + " plant there.";
+                }
+                else return "spirit_fortune_of_other error!";
             },
             spirit_received_offering: function(from,to,owner,extra:Array<Dynamic>,emotion)
             {
@@ -147,7 +181,7 @@ class StringMaker
                     extra[0]=="diagnose")
                     feeling="annoyingly";
                    
-                return to+" has " + feeling + " given us all a " + extra[1] + " layer fruit gift.";
+                return to+" has " + feeling + " given me a " + extra[1] + " layer fruit gift!";
             },
             ive_asked_x_for_help: function(from,to,owner,extra:Array<Dynamic>,emotion)
             {
@@ -160,7 +194,7 @@ class StringMaker
             },
             one_time_i_have_flowered: function(from,to,owner,extra:Array<Dynamic>,emotion)
             {
-                return to+", your "+from+" plant has flowered for the first time, and your score has increased!";
+                return to+", your "+from+" plant has flowered, and your score has increased!";
             },
             gift_received: function(from,to,owner,extra:Array<Dynamic>,emotion)
             {

@@ -45,6 +45,7 @@ class FlashSprite implements truffle.interfaces.Sprite, extends flash.display.Sp
     public var PreTransform:Matrix;
     public var Transform:Matrix;
     public var Colour:Vec3;
+    public var OffsetColour:Vec3;
     var PostTransform:Matrix;
     var Depth:Int;
     var MouseDownFunc:Dynamic -> Void;
@@ -76,6 +77,7 @@ class FlashSprite implements truffle.interfaces.Sprite, extends flash.display.Sp
         ChangeBitmap(t);
         EnableMouse(false);
         Colour=null;
+        OffsetColour=null;
         Update(0,null); // <-- calls inherited class update???
 
         cacheAsBitmap=true; // optimisation!!! - turn off if rotating
@@ -254,6 +256,11 @@ class FlashSprite implements truffle.interfaces.Sprite, extends flash.display.Sp
         if (Colour!=null)
         {
             transform.colorTransform = new ColorTransform(Colour.x,Colour.y,Colour.z,1,0,0,0,0);
+	    }
+
+        if (OffsetColour!=null)
+        {
+            transform.colorTransform = new ColorTransform(1,1,1,1,OffsetColour.x,OffsetColour.y,OffsetColour.z,0);
 	    }
     }
 }

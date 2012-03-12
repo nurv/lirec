@@ -147,6 +147,21 @@ class FlashWorld implements World, extends MovieClip
         return null;
     }
 
+    public function GetOther(me:Entity, type:String, p:Vec2) : Dynamic
+    {
+        for (e in Scene)
+        {
+            if (p.x==e.LogicalPos.x &&
+                p.y==e.LogicalPos.y &&
+                Type.getClassName(Type.getClass(e))==type &&
+                e!=me)
+            {
+                return e;
+            }
+        }
+        return null;
+    }
+
     public function AddSprite(s:Dynamic)
     {
         addChild(s);
