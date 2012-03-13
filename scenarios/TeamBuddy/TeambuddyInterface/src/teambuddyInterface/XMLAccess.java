@@ -1,6 +1,12 @@
 package teambuddyInterface;
 
 import java.io.*;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Iterator;
+
 import org.w3c.dom.*;
 import javax.xml.parsers.*;
 import javax.xml.transform.*;
@@ -9,10 +15,199 @@ import javax.xml.transform.stream.*;
 
 public class XMLAccess {
 
+	public static final String INTERACTION_FILENAME = "data/characters/minds/Interactions.xml";
+	public static final String REMARKS_FILENAME = "data/characters/minds/Remarks.xml";
 	private final static boolean WRITE_BAK = true;
 	private final static String SUFFIX_BAK = ".bak";
+	private final static String GUEST = "Guest";
+	private int maxID;
+	
+	public HashMap<String,String> loadRemarksXML() {
+		HashMap<String,String> remarks = new HashMap<String,String>();
+		
+		try {
+			File file = new File(REMARKS_FILENAME);
+			if (file.exists()){
+				DocumentBuilderFactory dbFac = DocumentBuilderFactory.newInstance();
+				DocumentBuilder docBuilder = dbFac.newDocumentBuilder();
+				Document doc = docBuilder.parse(file);
+				remarks = readRemarksDocument(doc);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return remarks;
+	}
 
-	public UserData loadXML(String inputFilename) {
+	public ArrayList<Interaction> loadInteractionsXML() {
+		ArrayList<Interaction> interactions = new ArrayList<Interaction>();
+		maxID = -1;
+	
+		try {
+			File file = new File(INTERACTION_FILENAME);
+			if (file.exists()){
+				DocumentBuilderFactory dbFac = DocumentBuilderFactory.newInstance();
+				DocumentBuilder docBuilder = dbFac.newDocumentBuilder();
+				Document doc = docBuilder.parse(file);
+				interactions = readInteractionsDocument(doc);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return interactions;
+	}
+	
+	private HashMap<String,String> readRemarksDocument(Document doc) {
+
+		String remarkName = "";
+		String remarkText = "";
+		
+		HashMap<String,String> remarks = new HashMap<String,String>();
+		Node remarksNode = doc.getElementsByTagName("Remarks").item(0);
+	
+		// parse remarks children nodes
+		NodeList remarkChildNodes = remarksNode.getChildNodes();
+		for (int i = 0; i < remarkChildNodes.getLength(); i++) {
+			Node remarkChildNode = remarkChildNodes.item(i);
+				// parse remark
+				if (remarkChildNode.getNodeName().equals("Remark")) {
+					// parse remark attributes
+					NamedNodeMap remarkAttributes = remarkChildNode.getAttributes();
+					for (int k = 0; k < remarkAttributes.getLength(); k++) {
+						Node remarkAttributeNode = remarkAttributes.item(k);
+						if (remarkAttributeNode.getNodeName().equals("name")) {
+							remarkName = remarkAttributeNode.getNodeValue();
+						} else if (remarkAttributeNode.getNodeName().equals("text")) {
+							remarkText = remarkAttributeNode.getNodeValue();
+						}
+					}
+				}
+				
+				if (!remarkName.equals("") && !remarkText.equals("")){
+					System.out.println("Remark " + remarkName + ": " + remarkText);
+					remarks.put(remarkName, remarkText);
+					remarkName = "";
+					remarkText = "";
+				}				
+			}
+		return remarks;
+	}
+	
+	private ArrayList<Interaction> readInteractionsDocument(Document doc) {
+		
+		ArrayList<Interaction> interactions = new ArrayList<Interaction>();
+		Node interactionsNode = doc.getElementsByTagName("Interactions").item(0);
+	
+		// parse remarks children nodes
+		NodeList interactionsChildNodes = interactionsNode.getChildNodes();
+		for (int i = 0; i < interactionsChildNodes.getLength(); i++) {
+			Node interactionChildNode = interactionsChildNodes.item(i);
+				// parse remark
+				Interaction interaction = new Interaction();
+				if (interactionChildNode.getNodeName().equals("Interaction")) {
+					// parse remark attributes
+					NamedNodeMap interactionAttributes = interactionChildNode.getAttributes();
+					for (int k = 0; k < interactionAttributes.getLength(); k++) {
+						Node interactionAttributeNode = interactionAttributes.item(k);
+						if (interactionAttributeNode.getNodeName().equals("id")) {
+							interaction.setID(Integer.valueOf(interactionAttributeNode.getNodeValue()));
+						} else if (interactionAttributeNode.getNodeName().equals("user")) {
+							interaction.setUser(interactionAttributeNode.getNodeValue());
+						} else if (interactionAttributeNode.getNodeName().equals("remark")) {
+							interaction.setRemark(interactionAttributeNode.getNodeValue());
+						} else if (interactionAttributeNode.getNodeName().equals("reply")) {
+							interaction.setReply(interactionAttributeNode.getNodeValue());
+						} else if (interactionAttributeNode.getNodeName().equals("timeStamp")) {
+							interaction.setTimeStamp(interactionAttributeNode.getNodeValue());
+						}
+						
+						if(interaction.getID() > maxID)
+							maxID = interaction.getID();
+					}
+				}
+				
+				if ((interaction != null) && !(interactions.contains(interaction))){
+					interactions.add(interaction);
+				}				
+			}
+		return interactions;
+	}
+	
+	public int getMaxID(){
+		return maxID;
+	}
+	
+	public void saveInteractionsXML(ArrayList<Interaction> interactions) {
+		try {
+			TransformerFactory transFac = TransformerFactory.newInstance();
+			Transformer transformer = transFac.newTransformer();
+			transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+			StringWriter stringWriter = new StringWriter();
+			StreamResult result = new StreamResult(stringWriter);
+			Document doc = writeInteractionsDocument(interactions);
+			DOMSource source = new DOMSource(doc);
+			transformer.transform(source, result);
+			String xmlString = stringWriter.toString();
+			BufferedWriter out = new BufferedWriter(new FileWriter(INTERACTION_FILENAME));
+			out.write(xmlString);
+			out.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		if (WRITE_BAK) {
+			copyFile(INTERACTION_FILENAME, INTERACTION_FILENAME + SUFFIX_BAK);
+		}
+	}
+	
+	private Document writeInteractionsDocument(ArrayList<Interaction> interactions) {
+
+		// document
+		Document doc = null;
+
+		try {
+			DocumentBuilderFactory dbFac = DocumentBuilderFactory.newInstance();
+			DocumentBuilder docBuilder = dbFac.newDocumentBuilder();
+			doc = docBuilder.newDocument();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		// user replies		
+		Element userRepliesElement = doc.createElement("Interactions");
+		doc.appendChild(userRepliesElement);
+
+		// replies
+		for (Interaction interaction: interactions){
+			Element replyElement = doc.createElement("Interaction");
+			replyElement.setAttribute("id", String.valueOf(interaction.getID()));
+			replyElement.setAttribute("user", interaction.getUser());
+			replyElement.setAttribute("remark", interaction.getRemark());
+			replyElement.setAttribute("reply", interaction.getReply());
+			replyElement.setAttribute("timeStamp", interaction.getTimeStamp());
+			userRepliesElement.appendChild(replyElement);						
+		}
+		return doc;	
+	}
+
+	private void copyFile(String filenameSrc, String filenameDst) {
+		try {
+			BufferedReader in = new BufferedReader(new FileReader(filenameSrc));
+			BufferedWriter out = new BufferedWriter(new FileWriter(filenameDst));
+			String line;
+			while ((line = in.readLine()) != null) {
+				out.write(line);
+				out.newLine();
+			}
+			out.close();
+			in.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	
+	/*public UserData loadXML(String inputFilename) {
 		UserData userData = null;
 		try {
 			DocumentBuilderFactory dbFac = DocumentBuilderFactory.newInstance();
@@ -29,7 +224,7 @@ public class XMLAccess {
 
 		// create user data
 		Node userDataNode = doc.getElementsByTagName("UserData").item(0);
-		UserData userData = new UserData();
+		UserData userData = null; //new UserData();
 
 		// parse user data
 		NamedNodeMap userDataAttributes = userDataNode.getAttributes();
@@ -37,7 +232,7 @@ public class XMLAccess {
 			Node userDataAttributeNode = userDataAttributes.item(i);
 			if (userDataAttributeNode.getNodeName().equals("nextId")) {
 				long nextId = Long.valueOf(userDataAttributeNode.getNodeValue());
-				userData.setNextId(nextId);
+				//userData.setNextId(nextId);
 			}
 		}
 
@@ -61,7 +256,7 @@ public class XMLAccess {
 						// create role
 						Node roleNode = rolesChildNode;
 						Role role = new Role();
-						userData.getRoles().add(role);
+						//**userData.getRoles().add(role);
 
 						// parse role attributes
 						NamedNodeMap roleAttributes = roleNode.getAttributes();
@@ -93,7 +288,7 @@ public class XMLAccess {
 						// create information type
 						Node informationTypeNode = informationTypesChildNode;
 						InformationType informationType = new InformationType();
-						userData.getInformationTypes().add(informationType);
+						//**userData.getInformationTypes().add(informationType);
 
 						// parse information type attributes
 						NamedNodeMap informationTypeAttributes = informationTypeNode.getAttributes();
@@ -141,7 +336,7 @@ public class XMLAccess {
 						// create guest user
 						Node guestUserNode = usersChildNode;
 						User guestUser = new User();
-						userData.setGuestUser(guestUser);
+						//**userData.setGuestUser(guestUser);
 
 						// parse guest user attributes
 						NamedNodeMap guestUserAttributes = guestUserNode.getAttributes();
@@ -169,7 +364,8 @@ public class XMLAccess {
 						// create user
 						Node userNode = usersChildNode;
 						User user = new User();
-						userData.getUsers().add(user);
+						//Meiyii
+						//userData.getUsers().add(user);
 
 						// parse user attributes
 						NamedNodeMap userAttributes = userNode.getAttributes();
@@ -304,34 +500,17 @@ public class XMLAccess {
 
 		// user data
 		Element userDataElement = doc.createElement("UserData");
-		userDataElement.setAttribute("nextId", String.valueOf(userData.getNextId()));
+		//userDataElement.setAttribute("nextId", String.valueOf(userData.getNextId()));
 		doc.appendChild(userDataElement);
 
 		// roles
 		Element rolesElement = doc.createElement("Roles");
 		userDataElement.appendChild(rolesElement);
-		for (Role role : userData.getRoles()) {
+		for (String role : userData.getRoles()) {
 			Element roleElement = doc.createElement("Role");
-			roleElement.setAttribute("rolename", role.getRolename());
-			roleElement.setAttribute("realname", role.getRealname());
+			roleElement.setAttribute("rolename", userData.getRolename(role));
+			roleElement.setAttribute("realname", userData.getRoleRealname(role));
 			rolesElement.appendChild(roleElement);
-		}
-
-		// information types
-		Element informationTypesElement = doc.createElement("InformationTypes");
-		userDataElement.appendChild(informationTypesElement);
-		for (InformationType informationType : userData.getInformationTypes()) {
-			Element informationTypeElement = doc.createElement("InformationType");
-			informationTypeElement.setAttribute("typename", informationType.getTypename());
-			informationTypeElement.setAttribute("realname", informationType.getRealname());
-			informationTypesElement.appendChild(informationTypeElement);
-
-			// default authorised roles
-			for (String authorisedRoleDefault : informationType.getAuthorisedRolesDefault()) {
-				Element authorisedRoleDefaultElement = doc.createElement("AuthorisedRoleDefault");
-				authorisedRoleDefaultElement.setTextContent(authorisedRoleDefault);
-				informationTypeElement.appendChild(authorisedRoleDefaultElement);
-			}
 		}
 
 		Element usersElement = doc.createElement("Users");
@@ -339,26 +518,28 @@ public class XMLAccess {
 
 		// guest user
 		Element guestUserElement = doc.createElement("GuestUser");
-		guestUserElement.setAttribute("username", userData.getGuestUser().getUsername());
-		guestUserElement.setAttribute("password", userData.getGuestUser().getPassword());
-		guestUserElement.setAttribute("realname", userData.getGuestUser().getRealname());
-		guestUserElement.setAttribute("rolename", userData.getGuestUser().getRolename());
-		guestUserElement.setAttribute("timeLastLogin", String.valueOf(userData.getGuestUser().getTimeLastLogin()));
-		guestUserElement.setAttribute("timeLastLogout", String.valueOf(userData.getGuestUser().getTimeLastLogout()));
+		guestUserElement.setAttribute("username", userData.getUsername(GUEST));
+		guestUserElement.setAttribute("password", userData.getPassword(GUEST));
+		guestUserElement.setAttribute("realname", userData.getUserRealname(GUEST));
+		guestUserElement.setAttribute("rolename", userData.getRolename(GUEST));
+		guestUserElement.setAttribute("timeLastLogin", String.valueOf(userData.getTimeLastLogin(GUEST)));
+		guestUserElement.setAttribute("timeLastLogout", String.valueOf(userData.getTimeLastLogout(GUEST)));
 		usersElement.appendChild(guestUserElement);
 
 		// users
-		for (User user : userData.getUsers()) {
+		//Meiyii
+		for (String user : userData.getUsers()) {
 			Element userElement = doc.createElement("User");
-			userElement.setAttribute("username", user.getUsername());
-			userElement.setAttribute("password", user.getPassword());
-			userElement.setAttribute("realname", user.getRealname());
-			userElement.setAttribute("rolename", user.getRolename());
-			userElement.setAttribute("timeLastLogin", String.valueOf(user.getTimeLastLogin()));
-			userElement.setAttribute("timeLastLogout", String.valueOf(user.getTimeLastLogout()));
+			userElement.setAttribute("username", user);
+			userElement.setAttribute("password", userData.getPassword(user));
+			userElement.setAttribute("realname", userData.getUserRealname(user));
+			userElement.setAttribute("rolename", userData.getRolename(user));
+			userElement.setAttribute("timeLastLogin", String.valueOf(userData.getTimeLastLogin(user)));
+			userElement.setAttribute("timeLastLogout", String.valueOf(userData.getTimeLastLogout(user)));
 			usersElement.appendChild(userElement);
 
-			// information items
+		}
+		/* // information items
 			for (InformationItem informationItem : user.getInformationItems()) {
 				Element informationItemElement = doc.createElement("InformationItem");
 				informationItemElement.setAttribute("id", String.valueOf(informationItem.getId()));
@@ -436,6 +617,5 @@ public class XMLAccess {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-
+	}*/
 }

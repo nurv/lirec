@@ -23,7 +23,7 @@ import cmion.storage.BlackBoard;
 import cmion.storage.WorldModel;
 
 public class InterfaceHandler extends AbstractHandler {
-
+	
 	private InterfaceCompetency interfaceCompetency;
 
 	private static final String BB_INFORMATION_NEEDS = "InformationNeeds";
@@ -58,7 +58,8 @@ public class InterfaceHandler extends AbstractHandler {
 
 	private UserData userData;
 
-	private User loginUser;
+	//private User loginUser;
+	private String loginUser;
 
 	private static final String WM_USERDATA = "UserData";
 
@@ -70,27 +71,48 @@ public class InterfaceHandler extends AbstractHandler {
 
 	private Timer timer;
 
-	private static final long INTERACTION_TIMEOUT = 60000;
+	private static final long INTERACTION_TIMEOUT = 20000;
+	private static final long NON_INTERACTION_TIMEOUT = 15000;
 
 	private static final String WM_INTERFACE_INTERACTION = "interfaceInteraction";
+	private static int nextID = 0;
 
 	private Random random;
+	
+	private WorldModel wm;
+	
+	private String remarkUser;
+	private String remark;
+	private String remarkText;
+	private long remarkTimeStamp;
+	private ArrayList<Interaction> interactions;
 
+	//private String interactionFile = "fatima-bin/data/characters/minds/Interactions.xml";
+	
 	public InterfaceHandler(InterfaceCompetency interfaceCompetency) {
 		this.interfaceCompetency = interfaceCompetency;
 
 		setWMObjectProperty(WM_CURRENT_PLATFORM, WM_INTERFACE_INTERACTION, "False");
 		timer = new Timer();
-
+		wm = interfaceCompetency.getArchitecture().getWorldModel();
 		xmlAccess = new XMLAccess();
-		userData = xmlAccess.loadXML(XML_FILENAME);
-
+		interactions = new ArrayList<Interaction>();
+		interactions = xmlAccess.loadInteractionsXML();
+		nextID = xmlAccess.getMaxID() + 1;
+		userData = new UserData(wm);	
+		
+		remarkUser = "";
+		remark = "";
+		remarkText = "";
+		remarkTimeStamp = 0;
+		loginUser = "";
 		// write to WorldModel
-		for (User user : userData.getUsers()) {
+		/*for (User user : userData.getUsers()) {
 			for (InformationItem informationItem : user.getInformationItems()) {
-				setWMObjectProperty(WM_USERDATA, user.getUsername() + "," + informationItem.getTypename() + "," + informationItem.getId(), informationItem.getContent().replace(" ", "_"));
+				//setWMObjectProperty(WM_USERDATA, user.getUsername() + "," + informationItem.getTypename() + "," + informationItem.getId(), informationItem.getContent().replace(" ", "_"));
+				setWMObjectProperty(user.getUsername(), informationItem.getTypename(), informationItem.getContent().replace(" ", "_"));
 			}
-		}
+		}*/
 		// Make sure the container for the UserData exists in the WorldModel,
 		// otherwise some items will not go to the WorldModel when loading sequentially.
 		// Create container already in WorldModelInit.xml.
@@ -100,6 +122,7 @@ public class InterfaceHandler extends AbstractHandler {
 
 	public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
+		System.out.println("Interaction timer set ");
 		// schedule timeout task
 		timer.cancel();
 		timer.purge();
@@ -109,368 +132,279 @@ public class InterfaceHandler extends AbstractHandler {
 
 		// process action
 		String action = request.getParameter("action");
+		// page
+		String page = request.getParameter("page");
 
-		if (action == null) {
-			// do nothing
-
-		} else if (action.equals("login")) {
-			// login
-
-			String loginUsername = request.getParameter("loginUsername");
-			String loginPassword = request.getParameter("loginPassword");
-			if (userData.getGuestUser().getUsername().equals(loginUsername)) {
-
-				// guest login
-				if (userData.getGuestUser().getPassword().equals(loginPassword)) {
-					loginUser = userData.getGuestUser();
-				}
-
-			} else {
-
-				// user login
-				for (User user : userData.getUsers()) {
-					if (user.getUsername().equals(loginUsername)) {
-						if (user.getPassword().equals(loginPassword)) {
-							loginUser = user;
-						}
-					}
-				}
-
-			}
-
-			if (loginUser != null) {
-				// a user is logged in
-
+		if (!loginUser.equals("")){
+			if (action == null) {
+				// do nothing
+	
+			} else if (action.equals("logout")) {
+				// logout
+	
 				// raise remote action
 				ArrayList<String> parameters = new ArrayList<String>();
 				parameters.add("SELF");
-				raiseMindAction(loginUser.getUsername(), "login", parameters);
-
-				loginUser.setTimeLastLogin(Calendar.getInstance().getTimeInMillis());
-
-				xmlAccess.saveXML(userData, XML_FILENAME);
-			}
-
-		} else if (action.equals("logout")) {
-			// logout
-
-			// raise remote action
-			ArrayList<String> parameters = new ArrayList<String>();
-			parameters.add("SELF");
-			raiseMindAction(loginUser.getUsername(), "logout", parameters);
-
-			loginUser.setTimeLastLogout(Calendar.getInstance().getTimeInMillis());
-
-			xmlAccess.saveXML(userData, XML_FILENAME);
-
-			loginUser = null;
-
-		} else if (action.equals("sendHome")) {
-			// send Teambuddy back to home position
-
-			// raise remote action
-			String sendHomeUsername = USERNAME_UNKNOWN;
-			if (loginUser != null) {
-				sendHomeUsername = loginUser.getUsername();
-			}
-			ArrayList<String> parameters = new ArrayList<String>();
-			parameters.add("SELF");
-			raiseMindAction(sendHomeUsername, "sendHome", parameters);
-
-		} else if (action.equals("leaveMessage")) {
-			// leave a message
-
-			//String messageFromRealname = request.getParameter("messageFromRealname");
-			String messageFromUsername = request.getParameter("messageFromUsername");
-			String messageToUsername = request.getParameter("messageToUsername");
-			String messageText = request.getParameter("messageText");
-			if (messageText == null || messageText.trim().equals("")) {
+				raiseMindAction(loginUser, "logout", parameters);
+				loginUser = "";							
+			} else if (action.equals("sendHome")) {
+				// send Teambuddy back to home position
+	
+				// raise remote action
 				ArrayList<String> parameters = new ArrayList<String>();
 				parameters.add("SELF");
-				raiseMindAction(messageFromUsername, "leaveEmptyMessage", parameters);
-			} else {
-				if (messageFromUsername.equals(userData.getGuestUser().getUsername())) {
-					// problem with FAtiMA event when name contains spaces
-					//msgReceived(messageFromRealname, messageToUsername, messageText);
-					leaveMessage(messageFromUsername, messageToUsername, messageText);
+				raiseMindAction(loginUser, "sendHome", parameters);
+	
+			} else if (action.equals("leaveMessage")) {
+				// leave a message
+				String messageFromRealname = request.getParameter("messageFromRealname");
+				String messageFromUsername = request.getParameter("messageFromUsername");
+				String messageToUsername = request.getParameter("messageToUsername");
+				String messageText = request.getParameter("messageText");
+				if (messageText == null || messageText.trim().equals("")) {
+					ArrayList<String> parameters = new ArrayList<String>();
+					parameters.add("SELF");
+					raiseMindAction(messageFromUsername, "leaveEmptyMessage", parameters);
 				} else {
-					leaveMessage(messageFromUsername, messageToUsername, messageText);
-				}
-			}
-
-		} else if (action.equals("requestInfo")) {
-			// request information
-
-			String infoUsername = request.getParameter("infoUsername");
-			String infoTypename = request.getParameter("infoTypename");
-
-			String utterance = "";
-
-			// check if information exists
-			LinkedList<InformationItem> informationItems = userData.getInformationItems(infoUsername, infoTypename);
-			if (informationItems.size() > 0) {
-				// information exists
-
-				// check if authorised information exists
-				LinkedList<InformationItem> informationItemsAuthorised = userData.requestAuthorisedInformationItems(infoUsername, infoTypename, loginUser.getUsername());
-				if (informationItemsAuthorised.size() > 0) {
-					// authorised information exists
-
-					utterance = "'" + userData.getTypeRealname(infoTypename) + "' for '" + userData.getUserRealname(infoUsername) + "':";
-					for (InformationItem informationItemAuthorised : informationItemsAuthorised) {
-						utterance += " " + informationItemAuthorised.getContent() + ".";
-					}
-
-				} else {
-					// no authorised information exists
-					utterance = "I am not authorised to give this information.";
-
-				}
-
-			} else {
-				// no information exists
-
-				if (infoUsername.equals(loginUser.getUsername())) {
-					utterance = "I have not remembered any information of type '" + userData.getTypeRealname(infoTypename) + "' for you.";
-
-				} else {
-					utterance = "I cannot give this information.";
-
-					// register as needed information
-					// attention: gatherInformation can disrupt current iPad interaction when activated to early
-					needInformation(loginUser.getUsername(), infoUsername, userData.getTypeRealname(infoTypename));
-				}
-
-			}
-
-			// write utterance to blackboard
-			setBBProperty(BB_INTERFACE_UTTERANCE, utterance);
-
-			// raise remote action
-			ArrayList<String> parameters = new ArrayList<String>();
-			parameters.add("SELF");
-			parameters.add(infoUsername);
-			raiseMindAction(loginUser.getUsername(), "requestInformation", parameters);
-
-			xmlAccess.saveXML(userData, XML_FILENAME);
-
-		} else if (action.equals("provideInfo")) {
-			// provide information
-
-			String infoUsername = request.getParameter("infoUsername");
-			String infoTypename = request.getParameter("infoTypename");
-			String infoContent = request.getParameter("infoContent");
-			String[] infoAuthorisedRoles = request.getParameterValues("infoAuthorisedRoles");
-			String[] infoAuthorisedUsers = request.getParameterValues("infoAuthorisedUsers");
-			String utterance = "";
-
-			// check if content is empty
-			if (infoContent == null || infoContent.trim().equals("")) {
-
-				utterance = "This information did not contain any content.";
-
-			} else {
-
-				// try to add the information item
-				InformationItem informationItem = userData.provideInformationItem(infoUsername, infoTypename, infoContent, infoAuthorisedRoles, infoAuthorisedUsers);
-				if (informationItem != null) {
-					utterance = "I have remembered this information of type '" + userData.getTypeRealname(infoTypename) + "'.";
-					xmlAccess.saveXML(userData, XML_FILENAME);
-					setWMObjectProperty(WM_USERDATA, infoUsername + "," + infoTypename + "," + informationItem.getId(), infoContent.replace(" ", "_"));
-				} else {
-					utterance = "I could not remember this information.";
-				}
-
-			}
-
-			// write utterance to blackboard
-			setBBProperty(BB_INTERFACE_UTTERANCE, utterance);
-
-			// raise remote action
-			ArrayList<String> parameters = new ArrayList<String>();
-			parameters.add("SELF");
-			parameters.add(infoUsername);
-			raiseMindAction(loginUser.getUsername(), "provideInformation", parameters);
-
-		} else if (action.equals("deleteInfo")) {
-			// delete information
-
-			String infoUsername = request.getParameter("infoUsername");
-			String infoTypename = request.getParameter("infoTypename");
-			String[] infoIds = request.getParameterValues("infoId");
-			String utterance = "";
-
-			if (infoIds != null) {
-				int deletedCount = 0;
-				for (String infoId : infoIds) {
-					long deleteId = Long.valueOf(infoId);
-					if (userData.deleteInformationItem(infoUsername, deleteId)) {
-						deletedCount++;
-						xmlAccess.saveXML(userData, XML_FILENAME);
-						removeWMObjectProperty(WM_USERDATA, infoUsername + "," + infoTypename + "," + deleteId);
+					if (messageFromUsername.equals(userData.getGuestUser())) {
+						// problem with FAtiMA event when name contains spaces
+						//msgReceived(messageFromRealname, messageToUsername, messageText);
+						leaveMessage(messageFromRealname.replace(" ", "_"), messageToUsername, messageText);
+					} else {
+						leaveMessage(messageFromUsername, messageToUsername, messageText);
 					}
 				}
-				if (deletedCount > 0) {
-					utterance = "I have forgotten " + deletedCount + " items of type '" + userData.getTypeRealname(infoTypename) + "'.";
+	
+			} else if (action.equals("askIsAround")) {
+				
+				//check if the user is around
+				String username = request.getParameter("username");
+				String utterance = "";
+	
+				// check if the user is around
+				if (userData.userIsAround(username)) {
+					utterance = userData.getUsername(username) + " is around today.";
 				} else {
-					utterance = "I have not forgotten any information.";
+					utterance = "I have not seen " + userData.getUsername(username) + " today.";
 				}
-
-			} else {
-				utterance = "I have not forgotten any information.";
-			}
-
-			// write utterance to blackboard
-			setBBProperty(BB_INTERFACE_UTTERANCE, utterance);
-
-			// raise remote action
-			ArrayList<String> parameters = new ArrayList<String>();
-			parameters.add("SELF");
-			parameters.add(infoUsername);
-			raiseMindAction(loginUser.getUsername(), "deleteInformation", parameters);
-
-		} else if (action.equals("charging")) {
-			// set charging status
-
-			String chargingStatus = request.getParameter("chargingStatus");
-			if (chargingStatus.equals("true")) {
-				setWMObjectProperty(WM_CURRENT_PLATFORM, WM_CHARGING, "True");
-			} else if (chargingStatus.equals("false")) {
-				setWMObjectProperty(WM_CURRENT_PLATFORM, WM_CHARGING, "False");
-			}
-
-			// wait for property to be changed
-			try {
-				Thread.sleep(500);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-			// raise remote action
-			ArrayList<String> parameters = new ArrayList<String>();
-			parameters.add("SELF");
-			parameters.add(chargingStatus);
-			raiseMindAction(loginUser.getUsername(), "setCharging", parameters);
-
-		} else if (action.equals("sendDocking")) {
-			// send to dock in docking station
-
-			// raise remote action
-			ArrayList<String> parameters = new ArrayList<String>();
-			parameters.add("SELF");
-			raiseMindAction(loginUser.getUsername(), "sendDocking", parameters);
-
-		} else if (action.equals("sendUndocking")) {
-			// send to undock from docking station
-
-			// raise remote action
-			ArrayList<String> parameters = new ArrayList<String>();
-			parameters.add("SELF");
-			raiseMindAction(loginUser.getUsername(), "sendUndocking", parameters);
-
-		} else if (action.equals("history")) {
-			// view history of requests
-
-			// raise remote action
-			ArrayList<String> parameters = new ArrayList<String>();
-			parameters.add("SELF");
-			parameters.add(loginUser.getUsername());
-			raiseMindAction(loginUser.getUsername(), "viewRequestHistory", parameters);
-
-		} else if (action.equals("report")) {
-			// view report
-
-			// raise remote action
-			ArrayList<String> parameters = new ArrayList<String>();
-			parameters.add("SELF");
-			parameters.add(loginUser.getUsername());
-			raiseMindAction(loginUser.getUsername(), "viewUpdateReport", parameters);
-
-		} else if (action.equals("reportInfo")) {
-			// request information item from report			
-
-			String infoUsername = request.getParameter("infoUsername");
-			String infoTypename = request.getParameter("infoTypename");
-			String infoId = request.getParameter("infoId");
-			long id = Long.valueOf(infoId);
-
-			// the following checks are normally not required here
-			// normally only an information item (via id) should be passed
-			// which exists and which the logged in user is authorised to receive
-
-			String utterance = "";
-
-			// check if information exists
-			InformationItem informationItem = userData.getInformationItem(infoUsername, id);
-			if (informationItem != null) {
-				// information exists
-
-				// check if authorised information exists
-				InformationItem informationItemAuthorised = userData.requestAuthorisedInformationItem(loginUser.getUsername(), infoUsername, id);
-				if (informationItemAuthorised != null) {
-					// authorised information exists
-
-					utterance = "New information item of type '" + userData.getTypeRealname(infoTypename) + "' for '" + userData.getUserRealname(infoUsername) + "':";
-					utterance += " " + informationItemAuthorised.getContent() + ".";
-
+	
+				System.out.println(utterance);
+				// write utterance to blackboard
+				setBBProperty(BB_INTERFACE_UTTERANCE, utterance);
+	
+				// raise remote action
+				ArrayList<String> parameters = new ArrayList<String>();
+				parameters.add("SELF");
+				parameters.add(username);
+				raiseMindAction(loginUser, "askIsAround", parameters);
+			} else if (action.equals("askWhereabout")) {
+				
+				//check for the user's location
+				String username = request.getParameter("username");
+				String utterance = "";
+				String userWhereabout = userData.getUserWhereabout(username);
+	
+				// check if the user is around
+				if (userWhereabout.equals("Unknown")){
+					utterance = "I am sorry, I don't know where " + userData.getUsername(username) + " is.";
+				}
+				else if (userWhereabout.equals("Office")){
+					utterance = userData.getUsername(username) + " is in the office.";
+				}
+				else {
+					if (userWhereabout.equals("Others")) {
+						utterance = "I am sorry, " + userData.getUsername(username) + " didn't leave a note.";
+					}
+					else {
+						utterance = userData.getUsername(username) + " is at " + userWhereabout + ".";
+					}
+				}
+	
+				System.out.println(utterance);
+				// write utterance to blackboard
+				setBBProperty(BB_INTERFACE_UTTERANCE, utterance);
+	
+				// raise remote action
+				ArrayList<String> parameters = new ArrayList<String>();
+				parameters.add("SELF");
+				parameters.add(username);
+				raiseMindAction(loginUser, "askWhereabout", parameters);
+			} else if (action.equals("informWhereabout")) {
+				
+				//check for the user's location
+				String whereabout = request.getParameter("whereabout").toLowerCase();
+				String utterance = "";
+	
+				// check if the user is around
+				if (!whereabout.equals("")) {
+					if (whereabout.equals("Others")) {
+						utterance = "Thanks for telling me that you will be away.";
+					}
+					else {
+						utterance = "Thanks for telling me that you will be at " + whereabout + ".";
+					}
+					userData.setUserWhereabout(loginUser,whereabout);
+				}
+	
+				System.out.println(utterance);
+				// write utterance to blackboard
+				setBBProperty(BB_INTERFACE_UTTERANCE, utterance);
+	
+				// raise remote action
+				ArrayList<String> parameters = new ArrayList<String>();
+				parameters.add("SELF");
+				parameters.add(whereabout);
+				raiseMindAction(loginUser, "informWhereabout", parameters);
+	
+			} else if (action.equals("reply")) {
+				// answer to team buddy's remark
+				String reply = request.getParameter("answer");
+				String utterance = "";
+	
+				// check if content is empty
+				if (reply == null || reply.trim().equals("")) {
+					utterance = "You didn't provide any comment.";		
 				} else {
-					// no authorised information exists
-					utterance = "I am not authorised to give this information.";
-
+					utterance = "You said " + reply + ".";
 				}
-
-			} else {
-				// no information exists
-
-				if (infoUsername.equals(loginUser.getUsername())) {
-					utterance = "I have not remembered this information for you.";
-
+	
+				// write utterance to blackboard
+				setBBProperty(BB_INTERFACE_UTTERANCE, utterance);
+	
+				// create the interaction to be logged
+				Interaction interaction = new Interaction(nextID, loginUser, remark, reply);
+				interactions.add(interaction);
+				
+				// raise remote action
+				ArrayList<String> parameters = new ArrayList<String>();
+				parameters.add("SELF");
+				parameters.add(remark);
+				parameters.add(String.valueOf(nextID++));
+				raiseMindAction(loginUser, "reply", parameters);			
+				
+				// reset the remark time stamp
+				remarkTimeStamp = 0;
+				xmlAccess.saveInteractionsXML(interactions);	
+			} else if (action.equals("charging")) {
+				// set charging status
+	
+				String chargingStatus = request.getParameter("chargingStatus");
+				if (chargingStatus.equals("true")) {
+					setWMObjectProperty(WM_CURRENT_PLATFORM, WM_CHARGING, "True");
+				} else if (chargingStatus.equals("false")) {
+					setWMObjectProperty(WM_CURRENT_PLATFORM, WM_CHARGING, "False");
+				}
+	
+				// wait for property to be changed
+				try {
+					Thread.sleep(500);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+	
+				// raise remote action
+				ArrayList<String> parameters = new ArrayList<String>();
+				parameters.add("SELF");
+				parameters.add(chargingStatus);
+				raiseMindAction(loginUser, "setCharging", parameters);
+	
+			} else if (action.equals("sendDocking")) {
+				// send to dock in docking station
+	
+				// raise remote action
+				ArrayList<String> parameters = new ArrayList<String>();
+				parameters.add("SELF");
+				raiseMindAction(loginUser, "sendDocking", parameters);
+	
+			} else if (action.equals("sendUndocking")) {
+				// send to undock from docking station
+	
+				// raise remote action
+				ArrayList<String> parameters = new ArrayList<String>();
+				parameters.add("SELF");
+				raiseMindAction(loginUser, "sendUndocking", parameters);
+			}
+		} else {
+			if (action == null) {
+				// do nothing
+			} else if (action.equals("login")) {
+				// login
+				
+				String loginUsername = request.getParameter("loginUsername");
+				String loginPassword = request.getParameter("loginPassword");
+				
+				//User login
+				if (userData.getGuestUser().equals(loginUsername)) {
+					// guest login
+					if (userData.getPassword(userData.getGuestUser()).equals(loginPassword)) {
+						loginUser = userData.getGuestUser();
+					}
+	
 				} else {
-					utterance = "I cannot give this information.";
-
+					for (String user : userData.getUsers()) {
+						if (user.equals(loginUsername)) {
+							if (userData.getPassword(user).equals(loginPassword)) {
+								loginUser = user;
+							}
+						}
+					}
 				}
-
+			
+				if (!(loginUser.equals(""))) {
+					// a user is logged in
+					// raise remote action
+					ArrayList<String> parameters = new ArrayList<String>();
+					parameters.add("SELF");
+					raiseMindAction(loginUser, "login", parameters);
+				}
+			} else if (action.equals("sendHome")) {
+					// send Teambuddy back to home position
+					ArrayList<String> parameters = new ArrayList<String>();
+					parameters.add("SELF");
+					raiseMindAction(USERNAME_UNKNOWN, "sendHome", parameters);
+		
 			}
-
-			// write utterance to blackboard
-			setBBProperty(BB_INTERFACE_UTTERANCE, utterance);
-
-			// raise remote action
-			ArrayList<String> parameters = new ArrayList<String>();
-			parameters.add("SELF");
-			parameters.add(infoUsername);
-			raiseMindAction(loginUser.getUsername(), "requestInformation", parameters);
-
-			xmlAccess.saveXML(userData, XML_FILENAME);
-
-		} else if (action.equals("publicInfo")) {
-
-			String utterance = "";
-
-			// get public information items
-			LinkedList<InformationItem> informationItems = userData.getInformationItemsPublic();
-
-			if (informationItems.size() > 0) {
-
-				// choose one item randomly
-				int index = Math.abs(random.nextInt()) % informationItems.size();
-				InformationItem informationItem = informationItems.get(index);
-
-				// build utterance		
-				String typeRealname = userData.getTypeRealname(informationItem.getTypename());
-				String userRealname = userData.getUser(informationItem).getRealname();
-				utterance = "Did you know about the " + typeRealname + " of " + userRealname + "? For example " + informationItem.getContent();
-
+			else if (action.equals("charging")) {
+				// set charging status
+	
+				String chargingStatus = request.getParameter("chargingStatus");
+				if (chargingStatus.equals("true")) {
+					setWMObjectProperty(WM_CURRENT_PLATFORM, WM_CHARGING, "True");
+				} else if (chargingStatus.equals("false")) {
+					setWMObjectProperty(WM_CURRENT_PLATFORM, WM_CHARGING, "False");
+				}
+	
+				// wait for property to be changed
+				try {
+					Thread.sleep(500);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+	
+				// raise remote action
+				ArrayList<String> parameters = new ArrayList<String>();
+				parameters.add("SELF");
+				parameters.add(chargingStatus);
+				raiseMindAction(USERNAME_UNKNOWN, "setCharging", parameters);
+	
+			} else if (action.equals("sendDocking")) {
+				// send to dock in docking station
+	
+				// raise remote action
+				ArrayList<String> parameters = new ArrayList<String>();
+				parameters.add("SELF");
+				raiseMindAction(USERNAME_UNKNOWN, "sendDocking", parameters);
+	
+			} else if (action.equals("sendUndocking")) {
+				// send to undock from docking station
+	
+				// raise remote action
+				ArrayList<String> parameters = new ArrayList<String>();
+				parameters.add("SELF");
+				raiseMindAction(USERNAME_UNKNOWN, "sendUndocking", parameters);
 			}
-
-			response.setContentType("text/plain");
-			PrintWriter out = response.getWriter();
-			out.println(utterance);
-			out.close();
-
-			return;
-		}
-
+		} 
+		
 		// start html response
 		response.setContentType("text/html");
 		PrintWriter out = response.getWriter();
@@ -478,12 +412,20 @@ public class InterfaceHandler extends AbstractHandler {
 		out.println(getLoginForm());
 
 		// process page
-		if (loginUser == null) {
+		if (loginUser.equals("")){
 			out.println(getLoginRequestPage());
 		} else {
-			String page = request.getParameter("page");
 			if (page == null) {
-				out.println(getStartPage());
+				out.println(getLoginRequestPage());
+				/*if (remarkTimeStamp > 0)
+				{
+					out.println(getDisplayRemarkPage());
+				}
+				else
+				{
+					out.println(getStartPage());
+					//out.println(getLoginRequestPage());
+				}*/
 			} else if (page.equals("start")) {
 				out.println(getStartPage());
 			} else if (page.equals("message")) {
@@ -494,64 +436,62 @@ public class InterfaceHandler extends AbstractHandler {
 				String messageToRealname = userData.getUserRealname(messageToUsername);
 				String messageText = request.getParameter("messageText");
 				out.println(getMessageLeftPage(messageFromRealname, messageToRealname, messageText));
-			} else if (page.equals("requestUser")) {
-				out.println(getRequestUserPage());
-			} else if (page.equals("requestType")) {
-				String infoUsername = request.getParameter("infoUsername");
-				out.println(getRequestTypePage(infoUsername));
-			} else if (page.equals("requestInfo")) {
-				String infoUsername = request.getParameter("infoUsername");
-				String infoTypename = request.getParameter("infoTypename");
-				out.println(getRequestInfoPage(infoUsername, infoTypename));
-			} else if (page.equals("provide")) {
-				out.println(getProvidePage());
-			} else if (page.equals("provideInfo")) {
-				String infoUsername = request.getParameter("infoUsername");
-				String infoTypename = request.getParameter("infoTypename");
-				out.println(getProvideInfoPage(infoUsername, infoTypename));
-			} else if (page.equals("providedInfo")) {
-				String infoUsername = request.getParameter("infoUsername");
-				String infoTypename = request.getParameter("infoTypename");
-				out.println(getProvidedInfoPage(infoUsername, infoTypename));
-			} else if (page.equals("delete")) {
-				out.println(getDeletePage());
-			} else if (page.equals("deleteInfo")) {
-				String infoUsername = request.getParameter("infoUsername");
-				String infoTypename = request.getParameter("infoTypename");
-				out.println(getDeleteInfoPage(infoUsername, infoTypename));
-			} else if (page.equals("deletedInfo")) {
-				String infoUsername = request.getParameter("infoUsername");
-				String infoTypename = request.getParameter("infoTypename");
-				out.println(getDeletedInfoPage(infoUsername, infoTypename));
-			} else if (page.equals("history")) {
-				out.println(getHistoryPage());
-			} else if (page.equals("historyInfo")) {
-				String infoUsername = request.getParameter("infoUsername");
-				String infoTypename = request.getParameter("infoTypename");
-				out.println(getHistoryInfoPage(infoUsername, infoTypename));
-			} else if (page.equals("charging")) {
+			} else if (page.equals("askIsAround")) {
+				out.println(getUsernamesPage("askIsAround"));
+			} else if (page.equals("askWhereabout")) {
+				out.println(getUsernamesPage("askWhereabout"));
+			} else if (page.equals("informWhereabout")) {
+				out.println(getWhereaboutPage());
+			} else if (page.equals("displayRemark")) {
+				out.println(getDisplayRemarkPage());
+			} else if (page.equals("reply")) {
+				String reply = request.getParameter("answer");
+				out.println(getReplyPage(reply));
+			}else if (page.equals("charging")) {
 				out.println(getChargingPage());
 			} else if (page.equals("docking")) {
 				out.println(getDockingPage());
-			} else if (page.equals("report")) {
-				out.println(getReportPage());
-			} else if (page.equals("reportInfo")) {
-				String infoUsername = request.getParameter("infoUsername");
-				String infoTypename = request.getParameter("infoTypename");
-				String infoTimeProvided = request.getParameter("infoTimeProvided");
-				long timeProvided = Long.valueOf(infoTimeProvided);
-				out.println(getReportInfoPage(infoUsername, infoTypename, timeProvided));
 			}
 		}
-
 		out.println(getFooter());
 		out.close();
 	}
+	
+	public void setRemark(String username, String remark, String remarkText) {
+		this.remarkTimeStamp = System.currentTimeMillis();
+		/*if (!(loginUser.equals("")) && (previousUser.equals("")))
+			previousUser = loginUser;
+		this.loginUser = username;*/
+		this.remarkUser = username;
+		this.remark = remark;
+		this.remarkText = remarkText;
+		userData.setMadeRemark(username,"True");
+		
+		System.out.println("Remark timer set ");
+		timer.cancel();
+		timer.purge();
+		timer = new Timer();
+		timer.schedule(new TimeoutTask(interfaceCompetency, WM_CURRENT_PLATFORM, WM_INTERFACE_INTERACTION), NON_INTERACTION_TIMEOUT);
+		setWMObjectProperty(WM_CURRENT_PLATFORM, WM_INTERFACE_INTERACTION, "True");
+	}
 
+	// reset all values in case the previous user didn't log out
+	public void resetAll(){
+		System.out.println("Reset all!");
+		timer.cancel();
+		timer.purge();
+		loginUser = "";
+		remarkTimeStamp = 0;
+		remarkUser = "";
+		remark = "";
+		remarkText = "";
+	}
+	
 	private String getHeader() {
 		String html = "";
 		html += "<html>\n";
 		html += "  <head>\n";
+		//html += "<META HTTP-EQUIV=\"refresh\" CONTENT=\"8\">";
 		html += "    <title>Teambuddy Information Sharing Interface</title>\n";
 		// disable caching
 		//html += "    <meta http-equiv=\"Pragma\" content=\"no-cache\">";
@@ -569,48 +509,27 @@ public class InterfaceHandler extends AbstractHandler {
 		html += "  <body>\n";
 		return html;
 	}
-
+	
 	private String getLoginForm() {
 		String html = "";
 		html += "<table>\n";
 		html += "  <tr>\n";
 		html += "    <td valign=\"bottom\">\n";
-		if (loginUser == null) {
+		
+		if (!loginUser.equals("")) {
 			html += "      <form action=\"\" method=\"POST\">\n";
-
-			if (LOGIN_USERNAME_SELECT) {
-				html += "        <a class=\"small\">Username: </a>\n";
-				html += "        <select class=\"small\" name=\"loginUsername\">\n";
-				for (User user : userData.getUsers()) {
-					html += "          <option class=\"small\" value=\"" + user.getUsername() + "\">" + user.getUsername() + "</option>\n";
-				}
-				html += "        </select>\n";
-			} else {
-				html += "        <a class=\"small\">Username: </a><input class=\"small\" name=\"loginUsername\" type=\"text\" />\n";
+			if (!loginUser.equals(USERNAME_UNKNOWN)){
+				html += "        <a class=\"small\">You are " + loginUser + " (" + userData.getUserRealname(loginUser).replace("_", " ") + ")</a>\n";
+				html += "        <input class=\"small\" name=\"submit\" type=\"submit\" value=\"Back\" />\n";
+				html += "        <input class=\"small\" name=\"action\" type=\"hidden\" value=\"logout\" />\n";
+				html += "        <input class=\"small\" name=\"page\" type=\"hidden\" value=\"start\" />\n";
+				html += "      </form>\n";
 			}
-
-			html += "        <a class=\"small\">Password: </a><input class=\"small\" name=\"loginPassword\" type=\"password\" />\n";
-			html += "        <input class=\"small\" name=\"submit\" type=\"submit\" value=\"Login\" />\n";
-			html += "        <input class=\"small\" name=\"action\" type=\"hidden\" value=\"login\" />\n";
-			html += "        <input class=\"small\" name=\"page\" type=\"hidden\" value=\"start\" />\n";
-			html += "      </form>\n";
-		} else {
-			html += "      <form action=\"\" method=\"POST\">\n";
-			html += "        <a class=\"small\">logged in as: " + loginUser.getRealname() + " (" + userData.getRoleRealname(loginUser.getRolename()) + ")</a>\n";
-			html += "        <input class=\"small\" name=\"submit\" type=\"submit\" value=\"Logout\" />\n";
-			html += "        <input class=\"small\" name=\"action\" type=\"hidden\" value=\"logout\" />\n";
-			html += "        <input class=\"small\" name=\"page\" type=\"hidden\" value=\"start\" />\n";
-			html += "      </form>\n";
 		}
-		html += "    </td>\n";
-		html += "    <td valign=\"bottom\">\n";
-		html += "      <form action=\"\" method=\"POST\">\n";
-		html += "        <input class=\"small\" name=\"submit\" type=\"submit\" value=\"Go to start page\" />\n";
-		html += "        <input class=\"small\" name=\"page\" type=\"hidden\" value=\"start\" />\n";
-		html += "      </form>\n";
 		html += "    </td>\n";
 		html += "  </tr>\n";
 		html += "</table>\n";
+		
 		return html;
 	}
 
@@ -622,25 +541,45 @@ public class InterfaceHandler extends AbstractHandler {
 
 	private String getLoginRequestPage() {
 		String html = "";
-
-		html += "<p>Welcome to the Teambuddy iPad interface!</p>\n";
-		html += "<p>In order to interact with the Teambuddy, please log in with your username and password!</p>\n";
-
+		
+		html += "<p>In order to interact with me, please click on your name!</p>\n";
+		html += "<table>\n";
+		html += "  <tr>\n";
+	
+		for (int i = 0; i < userData.getUsers().size(); i++) {	
+			if (i == userData.getUsers().size()/2){
+				html += "  </tr>\n";
+				html += "  <tr>\n";
+			}
+			String user = userData.getUsers().get(i);
+			html += "    <td>\n";	
+			html += "  <form action=\"\" method=\"POST\">\n";
+			html += "    <input name=\"submit\" type=\"submit\" value=\"" + userData.getUserRealname(user).replace("_", " ") + "\" />\n";
+			html += "    <input name=\"action\" type=\"hidden\" value=\"login\" />\n";
+			html += "    <input name=\"page\" type=\"hidden\" value=\"start\" />\n";
+			html += "    <input name=\"loginUsername\" type=\"hidden\" value=\"" + userData.getUsername(user) + "\" /></td>\n";
+			html += "    <input name=\"loginPassword\" type=\"hidden\" value=\"" + userData.getPassword(user) + "\" /></td>\n";
+			html += "  </form>\n";
+			html += "    </td>\n";
+		}		
+		html += "  </tr>\n";
+		html += "</table>\n";	
+		
 		html += "<p>\n";
 		html += "  <form action=\"\" method=\"POST\">\n";
-		html += "    For a guest login, please click here: \n";
+		html += "    If you are guest, please click here: \n";
 		html += "    <input name=\"submit\" type=\"submit\" value=\"Guest Login\" />\n";
 		html += "    <input name=\"action\" type=\"hidden\" value=\"login\" />\n";
 		html += "    <input name=\"page\" type=\"hidden\" value=\"start\" />\n";
-		html += "    <input name=\"loginUsername\" type=\"hidden\" value=\"" + userData.getGuestUser().getUsername() + "\" /></td>\n";
-		html += "    <input name=\"loginPassword\" type=\"hidden\" value=\"" + userData.getGuestUser().getPassword() + "\" /></td>\n";
+		html += "    <input name=\"loginUsername\" type=\"hidden\" value=\"" + userData.getGuestUser() + "\" /></td>\n";
+		html += "    <input name=\"loginPassword\" type=\"hidden\" value=\"" + userData.getPassword(userData.getGuestUser()) + "\" /></td>\n";
 		html += "  </form>\n";
 		html += "</p>\n";
-
+	
 		if (ENABLE_SEND_HOME) {
 			html += "<p>\n";
 			html += "  <form action=\"\" method=\"POST\">\n";
-			html += "    For sending the Teambuddy back, please click here: \n";
+			html += "    For sending the me back, please click here: \n";
 			html += "    <input name=\"submit\" type=\"submit\" value=\"Send Home\" />\n";
 			html += "    <input name=\"action\" type=\"hidden\" value=\"sendHome\" />\n";
 			html += "    <input name=\"page\" type=\"hidden\" value=\"start\" />\n";
@@ -665,60 +604,51 @@ public class InterfaceHandler extends AbstractHandler {
 		html += "        <input name=\"submit\" type=\"submit\" value=\"Leave a message\" />\n";
 		html += "        <input name=\"page\" type=\"hidden\" value=\"message\" />\n";
 		html += "      </form>\n";
+		
+		html += "    </td>\n";
+
+		html += "    <td valign=\"top\">\n";
 
 		html += "      <form action=\"\" method=\"POST\">\n";
-		html += "        <input name=\"submit\" type=\"submit\" value=\"Request information\" />\n";
-		html += "        <input name=\"page\" type=\"hidden\" value=\"requestUser\" />\n";
+		html += "        <input name=\"submit\" type=\"submit\" value=\"Have you seen ...\" />\n";
+		html += "        <input name=\"page\" type=\"hidden\" value=\"askIsAround\" />\n";
+		html += "      </form>\n";
+
+		html += "      <form action=\"\" method=\"POST\">\n";
+		html += "        <input name=\"submit\" type=\"submit\" value=\"Where is ...\" />\n";
+		html += "        <input name=\"page\" type=\"hidden\" value=\"askWhereabout\" />\n";
+		html += "      </form>\n";
+		
+		html += "      <form action=\"\" method=\"POST\">\n";
+		html += "        <input name=\"submit\" type=\"submit\" value=\"I will be at ...\" />\n";
+		html += "        <input name=\"page\" type=\"hidden\" value=\"informWhereabout\" />\n";
+		html += "      </form>\n";
+		
+		html += "    </td>\n";
+
+		html += "    <td valign=\"top\">\n";
+
+		html += "      <form action=\"\" method=\"POST\">\n";
+		html += "        <input name=\"submit\" type=\"submit\" value=\"Set charging status\" />\n";
+		html += "        <input name=\"page\" type=\"hidden\" value=\"charging\" />\n";
+		html += "      </form>\n";
+
+		html += "      <form action=\"\" method=\"POST\">\n";
+		html += "        <input name=\"submit\" type=\"submit\" value=\"Send docking/undocking\" />\n";
+		html += "        <input name=\"page\" type=\"hidden\" value=\"docking\" />\n";
 		html += "      </form>\n";
 
 		html += "    </td>\n";
 
-		if (loginUser != userData.getGuestUser()) {
-
-			html += "    <td valign=\"top\">\n";
-
-			html += "      <form action=\"\" method=\"POST\">\n";
-			html += "        <input name=\"submit\" type=\"submit\" value=\"Provide information\" />\n";
-			html += "        <input name=\"page\" type=\"hidden\" value=\"provide\" />\n";
-			html += "      </form>\n";
-
-			html += "      <form action=\"\" method=\"POST\">\n";
-			html += "        <input name=\"submit\" type=\"submit\" value=\"Delete information\" />\n";
-			html += "        <input name=\"page\" type=\"hidden\" value=\"delete\" />\n";
-			html += "      </form>\n";
-
-			html += "      <form action=\"\" method=\"POST\">\n";
-			html += "        <input name=\"submit\" type=\"submit\" value=\"View history of requests\" />\n";
-			html += "        <input name=\"action\" type=\"hidden\" value=\"history\" />\n";
-			html += "        <input name=\"page\" type=\"hidden\" value=\"history\" />\n";
-			html += "      </form>\n";
-
-			html += "      <form action=\"\" method=\"POST\">\n";
-			html += "        <input name=\"submit\" type=\"submit\" value=\"View report of updates\" />\n";
-			html += "        <input name=\"action\" type=\"hidden\" value=\"report\" />\n";
-			html += "        <input name=\"page\" type=\"hidden\" value=\"report\" />\n";
-			html += "      </form>\n";
-
-			html += "    </td>\n";
-
-			html += "    <td valign=\"top\">\n";
-
-			html += "      <form action=\"\" method=\"POST\">\n";
-			html += "        <input name=\"submit\" type=\"submit\" value=\"Set charging status\" />\n";
-			html += "        <input name=\"page\" type=\"hidden\" value=\"charging\" />\n";
-			html += "      </form>\n";
-
-			html += "      <form action=\"\" method=\"POST\">\n";
-			html += "        <input name=\"submit\" type=\"submit\" value=\"Send docking/undocking\" />\n";
-			html += "        <input name=\"page\" type=\"hidden\" value=\"docking\" />\n";
-			html += "      </form>\n";
-
-			html += "    </td>\n";
-
-		}
-
 		html += "  </tr>\n";
 		html += "</table>\n";
+		
+		html += "	<p>To reply to my remark, please click here: </p> ";
+		html += "      <form action=\"\" method=\"POST\">\n";
+		html += "        <input name=\"submit\" type=\"submit\" value=\"Reply Me\" />\n";
+		//html += "        <input name=\"action\" type=\"hidden\" value=\"interact\" />\n";
+		html += "        <input name=\"page\" type=\"hidden\" value=\"displayRemark\" />\n";
+		html += "      </form>\n";
 
 		return html;
 	}
@@ -735,20 +665,20 @@ public class InterfaceHandler extends AbstractHandler {
 			html += "      <input name=\"messageFromRealname\" type=\"text\" />\n";
 		} else {
 			html += "    <td>\n";
-			html += "      <input name=\"messageFromRealname\" type=\"text\" value=\"" + loginUser.getRealname() + "\" readonly=\"readonly\" />\n";
+			html += "      <input name=\"messageFromRealname\" type=\"text\" value=\"" + userData.getUserRealname(loginUser).replace("_", " ") + "\" readonly=\"readonly\" />\n";
 		}
-		html += "      <input name=\"messageFromUsername\" type=\"hidden\" value=\"" + loginUser.getUsername() + "\" />\n";
+		html += "      <input name=\"messageFromUsername\" type=\"hidden\" value=\"" + loginUser + "\" />\n";
 		html += "    </td>\n";
 		html += "  </tr>\n";
 		html += "  <tr>\n";
 		html += "    <td>to:</td>\n";
 		html += "    <td>\n";
 		html += "      <select name=\"messageToUsername\">\n";
-		for (User user : userData.getUsers()) {
-			if (user != loginUser) {
-				String username = user.getUsername();
-				String realname = user.getRealname();
-				html += "        <option value=\"" + username + "\">" + realname + "</option>\n";
+		for (String user : userData.getUsers()) {
+			if (!user.equals(loginUser)) {
+				String username = userData.getUsername(user);
+				String realname = userData.getUserRealname(user);
+				html += "        <option value=\"" + username + "\">" + realname.replace("_", " ") + "</option>\n";
 			}
 		}
 		html += "      </select>\n";
@@ -788,17 +718,17 @@ public class InterfaceHandler extends AbstractHandler {
 		return html;
 	}
 
-	private String getRequestUserPage() {
+	private String getUsernamesPage(String question) {
 		String html = "";
 
-		html += "<p>For which person do you want to request information?</p>\n";
+		html += "<p>Who are you looking for?</p>\n";
 
 		html += "<table>\n";
 		html += "  <tr>\n";
 		html += "    <td valign=\"top\">\n";
 
 		for (int i = 0; i < userData.getUsers().size(); i++) {
-			User user = userData.getUsers().get(i);
+			String user = userData.getUsers().get(i);
 
 			if (i == Math.round((double) userData.getUsers().size() / 2)) {
 				html += "    </td>\n";
@@ -806,9 +736,10 @@ public class InterfaceHandler extends AbstractHandler {
 			}
 
 			html += "      <form action=\"\" method=\"POST\">\n";
-			html += "        <input name=\"submit\" type=\"submit\" value=\"" + user.getRealname() + "\" />\n";
-			html += "        <input name=\"page\" type=\"hidden\" value=\"requestType\" />\n";
-			html += "        <input name=\"infoUsername\" type=\"hidden\" value=\"" + user.getUsername() + "\" />\n";
+			html += "        <input name=\"submit\" type=\"submit\" value=\"" + userData.getUserRealname(user).replace("_", " ") + "\" />\n";
+			html += "        <input name=\"action\" type=\"hidden\" value=\"" + question + "\" />\n";
+			html += "        <input name=\"page\" type=\"hidden\" value=\"start\" />\n";
+			html += "        <input name=\"username\" type=\"hidden\" value=\"" + userData.getUsername(user) + "\" />\n";
 			html += "      </form>\n";
 		}
 
@@ -819,343 +750,101 @@ public class InterfaceHandler extends AbstractHandler {
 		return html;
 	}
 
-	private String getRequestTypePage(String username) {
+	private String getWhereaboutPage() {
 		String html = "";
+		ArrayList<String> whereabout = new ArrayList<String>();
+		whereabout.add("A meeting");
+		whereabout.add("Coffee");
+		whereabout.add("Others");
 
-		html += "<p>Which type of information do you want to request?</p>\n";
+		html += "<p>Where will you be?</p>\n";
 
 		html += "<table>\n";
 		html += "  <tr>\n";
-		html += "    <td>\n";
 
-		for (int i = 0; i < userData.getInformationTypes().size(); i++) {
-			InformationType informationType = userData.getInformationTypes().get(i);
+		html += "    <td valign=\"top\">\n";
 
-			if (i == Math.round((double) userData.getInformationTypes().size() / 2)) {
-				html += "    </td>\n";
-				html += "    <td valign=\"top\">\n";
-			}
-
+		for (String at: whereabout) {
 			html += "      <form action=\"\" method=\"POST\">\n";
-			html += "        <input name=\"submit\" type=\"submit\" value=\"" + informationType.getRealname() + "\" />\n";
-			html += "        <input name=\"action\" type=\"hidden\" value=\"requestInfo\" />\n";
-			html += "        <input name=\"page\" type=\"hidden\" value=\"requestInfo\" />\n";
-			html += "        <input name=\"infoUsername\" type=\"hidden\" value=\"" + username + "\" />\n";
-			html += "        <input name=\"infoTypename\" type=\"hidden\" value=\"" + informationType.getTypename() + "\" />\n";
+			html += "        <input name=\"submit\" type=\"submit\" value=\"" + at  + "\" />\n";
+			html += "        <input name=\"page\" type=\"hidden\" value=\"start\" />\n";
+			html += "        <input name=\"action\" type=\"hidden\" value=\"informWhereabout\" />\n";
+			html += "        <input name=\"whereabout\" type=\"hidden\" value=\"" + at  + "\" />\n";
 			html += "      </form>\n";
 		}
-
+		
 		html += "    </td>\n";
+
 		html += "  </tr>\n";
 		html += "</table>\n";
 
 		return html;
 	}
-
-	private String getRequestInfoPage(String username, String typename) {
+	
+	private String getDisplayRemarkPage() {
 		String html = "";
-
-		html += "<p>Requesting <i>" + userData.getTypeRealname(typename) + "</i> for <i>" + userData.getUserRealname(username) + "</i>...</p>\n";
-		html += "<form action=\"\" method=\"POST\">\n";
-		html += "  <input name=\"submit\" type=\"submit\" value=\"Back\" />\n";
-		html += "  <input name=\"page\" type=\"hidden\" value=\"requestType\" />\n";
-		html += "  <input name=\"infoUsername\" type=\"hidden\" value=\"" + username + "\" />\n";
-		html += "</form>\n";
-
-		return html;
-	}
-
-	private String getProvidePage() {
-		String html = "";
-
-		html += "<p>Which type of information do you want to provide?</p>\n";
-
-		html += "<table>\n";
-		html += "  <tr>\n";
-		html += "    <td>\n";
-
-		for (int i = 0; i < userData.getInformationTypes().size(); i++) {
-			InformationType informationType = userData.getInformationTypes().get(i);
-
-			if (i == Math.round((double) userData.getInformationTypes().size() / 2)) {
-				html += "    </td>\n";
-				html += "    <td valign=\"top\">\n";
-			}
-
-			html += "      <form action=\"\" method=\"POST\">\n";
-			html += "        <input name=\"submit\" type=\"submit\" value=\"" + informationType.getRealname() + "\" />\n";
-			html += "        <input name=\"page\" type=\"hidden\" value=\"provideInfo\" />\n";
-			html += "        <input name=\"infoUsername\" type=\"hidden\" value=\"" + loginUser.getUsername() + "\" />\n";
-			html += "        <input name=\"infoTypename\" type=\"hidden\" value=\"" + informationType.getTypename() + "\" />\n";
-			html += "      </form>\n";
-		}
-
-		html += "    </td>\n";
-		html += "  </tr>\n";
-		html += "</table>\n";
-
-		return html;
-	}
-
-	private String getProvideInfoPage(String username, String typename) {
-		String html = "";
-
-		html += "<p>Which information of type '" + userData.getTypeRealname(typename) + "' do you want to provide?</p>\n";
-
-		html += "<form action=\"\" method=\"POST\">\n";
-		html += "  <textarea name=\"infoContent\" rows=\"2\" cols=\"40\"></textarea><br/>\n";
-		html += "<table>\n";
-		html += "  <tr>\n";
-		html += "    <td>Authorised roles:</td>\n";
-		html += "    <td width=\"50\"></td>\n";
-		html += "    <td>Authorised users:</td>\n";
-		html += "  </tr>\n";
-		html += "  <tr>\n";
-		html += "    <td valign=\"top\">\n";
-		for (Role role : userData.getRoles()) {
-			if (userData.getType(typename).getAuthorisedRolesDefault().contains(role.getRolename())) {
-				html += "  <input name=\"infoAuthorisedRoles\" type=\"checkbox\" value=\"" + role.getRolename() + "\" checked=\"checked\" />" + role.getRealname() + "<br/>\n";
-			} else {
-				html += "  <input name=\"infoAuthorisedRoles\" type=\"checkbox\" value=\"" + role.getRolename() + "\" />" + role.getRealname() + "<br/>\n";
-			}
-		}
-		html += "    </td>\n";
-		html += "    <td>\n";
-		html += "    </td>\n";
-		html += "    <td valign=\"top\">\n";
-		for (User user : userData.getUsers()) {
-			if (!user.getUsername().equals(loginUser.getUsername())) {
-				html += "  <input name=\"infoAuthorisedUsers\" type=\"checkbox\" value=\"" + user.getUsername() + "\" />" + user.getRealname() + "<br/>\n";
-			}
-		}
-		html += "    </td>\n";
-		html += "  </tr>\n";
-		html += "</table>\n";
-		html += "<table>\n";
-		html += "  <tr>\n";
-		html += "    <td valign=\"top\">\n";
-		html += "  <input name=\"submit\" type=\"submit\" value=\"Provide information\" />\n";
-		html += "  <input name=\"action\" type=\"hidden\" value=\"provideInfo\" />\n";
-		html += "  <input name=\"page\" type=\"hidden\" value=\"providedInfo\" />\n";
-		html += "  <input name=\"infoUsername\" type=\"hidden\" value=\"" + username + "\" />\n";
-		html += "  <input name=\"infoTypename\" type=\"hidden\" value=\"" + typename + "\" />\n";
-		html += "</form>\n";
-		html += "    </td>\n";
-		html += "    <td valign=\"top\">\n";
-		html += "      <form action=\"\" method=\"POST\">\n";
-		html += "        <input name=\"submit\" type=\"submit\" value=\"Back\" />\n";
-		html += "        <input name=\"page\" type=\"hidden\" value=\"provide\" />\n";
-		html += "      </form>\n";
-		html += "    </td>\n";
-		html += "  </tr>\n";
-		html += "</table>\n";
-		return html;
-	}
-
-	private String getProvidedInfoPage(String username, String typename) {
-		String html = "";
-
-		html += "<p>Provided information of type <i>" + userData.getTypeRealname(typename) + "</i> for <i>" + userData.getUserRealname(username) + "</i>.</p>\n";
-		html += "<form action=\"\" method=\"POST\">\n";
-		html += "  <input name=\"submit\" type=\"submit\" value=\"Back\" />\n";
-		html += "  <input name=\"page\" type=\"hidden\" value=\"provide\" />\n";
-		html += "</form>\n";
-
-		return html;
-	}
-
-	private String getDeletePage() {
-		String html = "";
-
-		html += "<p>From which type of information do you want to delete?</p>\n";
-
-		html += "<table>\n";
-		html += "  <tr>\n";
-		html += "    <td>\n";
-
-		for (int i = 0; i < userData.getInformationTypes().size(); i++) {
-			InformationType informationType = userData.getInformationTypes().get(i);
-
-			if (i == Math.round((double) userData.getInformationTypes().size() / 2)) {
-				html += "    </td>\n";
-				html += "    <td valign=\"top\">\n";
-			}
-
-			html += "      <form action=\"\" method=\"POST\">\n";
-			html += "        <input name=\"submit\" type=\"submit\" value=\"" + informationType.getRealname() + "\" />\n";
-			html += "        <input name=\"page\" type=\"hidden\" value=\"deleteInfo\" />\n";
-			html += "        <input name=\"infoUsername\" type=\"hidden\" value=\"" + loginUser.getUsername() + "\" />\n";
-			html += "        <input name=\"infoTypename\" type=\"hidden\" value=\"" + informationType.getTypename() + "\" />\n";
-			html += "      </form>\n";
-		}
-
-		html += "    </td>\n";
-		html += "  </tr>\n";
-		html += "</table>\n";
-
-		return html;
-	}
-
-	private String getDeleteInfoPage(String username, String typename) {
-		String html = "";
-
-		LinkedList<InformationItem> informationItems = userData.getInformationItems(username, typename);
-		if (informationItems.size() > 0) {
-
-			html += "<p>Which information of type '" + userData.getTypeRealname(typename) + "' do you want to delete?</p>\n";
-			html += "<form action=\"\" method=\"POST\">\n";
-
-			html += "<table>\n";
-			for (InformationItem informationItem : informationItems) {
-				html += "  <tr>\n";
-				html += "    <td>\n";
-				html += "  <input name=\"infoId\" type=\"checkbox\" value=\"" + informationItem.getId() + "\" />\n";
-				html += "    </td>\n";
-				//html += "    <td>" + informationItem.getContent() + "</td>\n";
-				html += "    <td>" + informationItem.getContent().replaceAll("\n", "<br/>") + "</td>\n";
-				html += "  </tr>\n";
-			}
-			html += "</table>\n";
-
-			html += "<table>\n";
-			html += "  <tr>\n";
-			html += "    <td valign=\"top\">\n";
-			html += "  <input name=\"submit\" type=\"submit\" value=\"Delete information\" />\n";
-			html += "  <input name=\"action\" type=\"hidden\" value=\"deleteInfo\" />\n";
-			html += "  <input name=\"page\" type=\"hidden\" value=\"deletedInfo\" />\n";
-			html += "  <input name=\"infoUsername\" type=\"hidden\" value=\"" + username + "\" />\n";
-			html += "  <input name=\"infoTypename\" type=\"hidden\" value=\"" + typename + "\" />\n";
-			html += "</form>\n";
-
-			html += "    </td>\n";
-			html += "    <td valign=\"top\">\n";
+	
+		/*if (System.currentTimeMillis() - remarkTimeStamp > 5 * 60 * 1000){
+			html += "<p>I have no pending question for you.</p>\n";
 			html += "      <form action=\"\" method=\"POST\">\n";
 			html += "        <input name=\"submit\" type=\"submit\" value=\"Back\" />\n";
-			html += "        <input name=\"page\" type=\"hidden\" value=\"delete\" />\n";
+			html += "        <input name=\"action\" type=\"hidden\" value=\"endInteract\" />\n";
+			html += "        <input name=\"page\" type=\"hidden\" value=\"start\" />\n";
 			html += "      </form>\n";
-			html += "    </td>\n";
-			html += "  </tr>\n";
-			html += "</table>\n";
-
-		} else {
-
-			html += "<p>No corresponding information exists.</p>\n";
-			html += "<form action=\"\" method=\"POST\">\n";
-			html += "  <input name=\"submit\" type=\"submit\" value=\"Back\" />\n";
-			html += "  <input name=\"page\" type=\"hidden\" value=\"delete\" />\n";
-			html += "</form>\n";
-		}
-
-		return html;
-	}
-
-	private String getDeletedInfoPage(String username, String typename) {
-		String html = "";
-
-		html += "<p>Deleted information of type <i>" + userData.getTypeRealname(typename) + "</i> for <i>" + userData.getUserRealname(username) + "</i>.</p>\n";
-		html += "<form action=\"\" method=\"POST\">\n";
-		html += "  <input name=\"submit\" type=\"submit\" value=\"Back\" />\n";
-		html += "  <input name=\"page\" type=\"hidden\" value=\"delete\" />\n";
-		html += "</form>\n";
-
-		return html;
-	}
-
-	private String getHistoryPage() {
-		String html = "";
-
-		html += "<p>For which type of information do you want to view the history of requests?</p>\n";
-
+		} else {*/
+		
+		// Displaying the remark if there is one
+		if (remarkTimeStamp > 0 && remarkUser.equals(loginUser))
+			html += "<p>Hi " + loginUser + ", " + remarkText + "</p>\n";
+		else
+			html += "<p>Hi " + loginUser + ", what would you like to tell me? </p>\n";
+		
 		html += "<table>\n";
 		html += "  <tr>\n";
+
+		html += "    <td valign=\"top\">\n";
+		
+		// User's reply
+		html += "      <form action=\"\" method=\"POST\">\n";
+
+		html += "  <tr>\n";
+		html += "    <td valign=\"top\">Reply:</td>\n";
 		html += "    <td>\n";
-
-		for (int i = 0; i < userData.getInformationTypes().size(); i++) {
-			InformationType informationType = userData.getInformationTypes().get(i);
-
-			if (i == Math.round((double) userData.getInformationTypes().size() / 2)) {
-				html += "    </td>\n";
-				html += "    <td valign=\"top\">\n";
-			}
-
-			html += "      <form action=\"\" method=\"POST\">\n";
-			html += "        <input name=\"submit\" type=\"submit\" value=\"" + informationType.getRealname() + "\" />\n";
-			html += "        <input name=\"page\" type=\"hidden\" value=\"historyInfo\" />\n";
-			html += "        <input name=\"infoUsername\" type=\"hidden\" value=\"" + loginUser.getUsername() + "\" />\n";
-			html += "        <input name=\"infoTypename\" type=\"hidden\" value=\"" + informationType.getTypename() + "\" />\n";
-			html += "      </form>\n";
-		}
-
+		html += "      <textarea name=\"answer\" rows=\"5\" cols=\"40\"></textarea>\n";
 		html += "    </td>\n";
 		html += "  </tr>\n";
+		html += "  <tr>\n";
+		html += "    <td></td>\n";
+		html += "    <td>\n";
+		html += "      <input name=\"submit\" type=\"submit\" value=\"Submit\" />\n";
+		html += "      <input name=\"action\" type=\"hidden\" value=\"reply\" />\n";
+		html += "      <input name=\"page\" type=\"hidden\" value=\"start\" />\n";
+		html += "    </td>\n";
+		html += "  </tr>\n";
+		html += "      </form>\n";
+		
+		html += "    </td>\n";
+
+		html += "  </tr>\n";
 		html += "</table>\n";
-
+	
 		return html;
 	}
-
-	private String getHistoryInfoPage(String username, String typename) {
+	
+	private String getReplyPage(String reply) {
 		String html = "";
-		html += "<p>History of requests for information of type <i>" + userData.getTypeRealname(typename) + "</i>:</p>\n";
-		LinkedList<InformationItem> informationItems = userData.getInformationItems(username, typename);
-		if (informationItems.size() > 0) {
-			for (InformationItem informationItem : informationItems) {
-				html += "<p>\n";
-				//html += informationItem.getContent() + "<br/>\n";
-				html += informationItem.getContent().replaceAll("\n", "<br/>") + "<br/>\n";
-				Calendar calendar = Calendar.getInstance();
-				calendar.setTimeInMillis(informationItem.getTimeProvided());
-				html += "  <a class=\"small\">\n";
-				html += "    Provided at: " + SIMPLE_DATE_FORMAT.format(calendar.getTime()) + "<br/>\n";
-				html += "    Authorised roles: ";
-				if (informationItem.getAuthorisedRoles().size() > 0) {
-					for (String authorisedRole : informationItem.getAuthorisedRoles()) {
-						if (authorisedRole != informationItem.getAuthorisedRoles().get(0)) {
-							html += ", ";
-						}
-						html += userData.getRoleRealname(authorisedRole);
-					}
-				} else {
-					html += "-";
-				}
-				html += "<br/>\n";
-				html += "    Authorised users: ";
-				if (informationItem.getAuthorisedUsers().size() > 0) {
-					for (String authorisedUser : informationItem.getAuthorisedUsers()) {
-						if (authorisedUser != informationItem.getAuthorisedUsers().get(0)) {
-							html += ", ";
-						}
-						html += userData.getUserRealname(authorisedUser);
-					}
-				} else {
-					html += "-";
-				}
-				html += "<br/>\n";
-				if (informationItem.getRequests().size() > 0) {
-					for (teambuddyInterface.Request request : informationItem.getRequests()) {
-						calendar.setTimeInMillis(request.getTime());
-						String strTimeRequested = SIMPLE_DATE_FORMAT.format(calendar.getTime());
-						html += "    &raquo; requested " + strTimeRequested + " by " + userData.getUserRealname(request.getUsername());
-						if (!request.isAuthorised()) {
-							html += " <i class=\"small\">(not authorised)</i>";
-						}
-						html += "<br/>\n";
-					}
-				} else {
-					html += "    <i class=\"small\">No requests</i>\n";
-				}
-				html += "  </a>\n";
-				html += "</p>\n";
-			}
-		} else {
-			html += "<p>No corresponding information exists.</p>\n";
-		}
-		html += "<form action=\"\" method=\"POST\">\n";
-		html += "  <input name=\"submit\" type=\"submit\" value=\"Back\" />\n";
-		html += "  <input name=\"page\" type=\"hidden\" value=\"history\" />\n";
-		html += "</form>\n";
+	
+		html += "<p>You said: </p>\n";
+		html += "<p>" + reply + "</p>\n";
+		html += "      <form action=\"\" method=\"POST\">\n";
+		html += "        <input name=\"submit\" type=\"submit\" value=\"Back\" />\n";
+		html += "        <input name=\"action\" type=\"hidden\" value=\"logout\" />\n";
+		html += "        <input name=\"page\" type=\"hidden\" value=\"start\" />\n";
+		html += "      </form>\n";
+		loginUser = "";
 		return html;
 	}
-
+	
 	private String getChargingPage() {
 		String html = "";
 
@@ -1258,152 +947,6 @@ public class InterfaceHandler extends AbstractHandler {
 		return html;
 	}
 
-	private String getReportPage() {
-		String html = "";
-
-		// calculate time difference since last logout
-		Calendar calendar = Calendar.getInstance();
-		long timeNow = calendar.getTimeInMillis();
-		long timeLastLogout = loginUser.getTimeLastLogout();
-		long hoursDiff = Math.round((double) (timeNow - timeLastLogout) / 1000 / 60 / 60);
-
-		// build difference string
-		String strDiff = null;
-		if (hoursDiff < 24) {
-			strDiff = hoursDiff + " hour";
-			if (hoursDiff != 1) {
-				strDiff += "s";
-			}
-		} else {
-			long daysDiff = Math.round((double) hoursDiff / 24);
-			strDiff = daysDiff + " day";
-			if (daysDiff != 1) {
-				strDiff += "s";
-			}
-		}
-
-		// format last logout time
-		calendar.setTimeInMillis(timeLastLogout);
-		String strTimeLastLogout = SIMPLE_DATE_FORMAT.format(calendar.getTime());
-
-		// get information items and requests since last logout
-		String loginUsername = loginUser.getUsername();
-		LinkedList<InformationItem> newInformationItems = userData.getAuthorisedInformationItemsProvidedSince(loginUsername, timeLastLogout);
-		LinkedList<InformationItem> informationItemsNewRequests = userData.getInformationItemsRequestedSince(loginUsername, timeLastLogout);
-
-		html += "<p>Your last session ended <b>" + strTimeLastLogout + " (about " + strDiff + " ago)</b>.</p>\n";
-
-		html += "<hr/>\n";
-
-		html += "<p>\n";
-		html += "Since then <b>" + newInformationItems.size() + " information items</b> were provided.<br/>\n";
-		html += "<a class=\"small\">This excludes information you are not authorised to receive.</a>\n";
-		html += "</p>\n";
-
-		html += "<p>Since then <b>" + userData.countRequestsSince(informationItemsNewRequests, timeLastLogout) + " requests</b> happened on information provided by you.</p>\n";
-
-		html += "<hr/>\n";
-		html += "<b>New information:</b>\n";
-
-		for (InformationItem newInformationItem : newInformationItems) {
-			User userProvided = userData.getUserProvided(newInformationItem);
-			html += "<form action=\"\" method=\"POST\">\n";
-			html += "<p>\n";
-			calendar.setTimeInMillis(newInformationItem.getTimeProvided());
-			html += "  Information of type '" + userData.getTypeRealname(newInformationItem.getTypename()) + "'<br/>\n";
-			html += "  <a class=\"small\">";
-			String strTimeProvided = SIMPLE_DATE_FORMAT.format(calendar.getTime());
-			html += "    &raquo; provided " + strTimeProvided + " by " + userProvided.getRealname();
-			html += "  </a>\n";
-			html += "  <br/>\n";
-			html += "  <input name=\"submit\" type=\"submit\" value=\"Request this information\" />\n";
-			html += "  <input name=\"action\" type=\"hidden\" value=\"reportInfo\" />\n";
-			html += "  <input name=\"page\" type=\"hidden\" value=\"reportInfo\" />\n";
-			html += "  <input name=\"infoUsername\" type=\"hidden\" value=\"" + userProvided.getUsername() + "\" />\n";
-			html += "  <input name=\"infoTypename\" type=\"hidden\" value=\"" + newInformationItem.getTypename() + "\" />\n";
-			html += "  <input name=\"infoId\" type=\"hidden\" value=\"" + newInformationItem.getId() + "\" />\n";
-			html += "  <input name=\"infoTimeProvided\" type=\"hidden\" value=\"" + newInformationItem.getTimeProvided() + "\" />\n";
-			html += "</p>\n";
-			html += "</form>\n";
-		}
-
-		html += "<hr/>\n";
-		html += "<b>New requests:</b>\n";
-
-		for (InformationItem informationItemNewRequests : informationItemsNewRequests) {
-			html += "<p>\n";
-			html += "  <a class=\"small\">" + userData.getTypeRealname(informationItemNewRequests.getTypename()) + "</a><br/>\n";
-			//html += informationItemNewRequests.getContent() + "<br/>\n";
-			html += informationItemNewRequests.getContent().replaceAll("\n", "<br/>") + "<br/>\n";
-			html += "  <a class=\"small\">\n";
-			for (teambuddyInterface.Request newRequest : userData.getRequestsSince(informationItemNewRequests, timeLastLogout)) {
-				calendar.setTimeInMillis(newRequest.getTime());
-				String strTimeRequested = SIMPLE_DATE_FORMAT.format(calendar.getTime());
-				html += "    &raquo; requested " + strTimeRequested + " by " + userData.getUserRealname(newRequest.getUsername());
-				if (!newRequest.isAuthorised()) {
-					html += " <i class=\"small\">(not authorised)</i>";
-				}
-				html += "<br/>\n";
-			}
-			html += "  </a>\n";
-			html += "</p>\n";
-		}
-
-		html += "<hr/>\n";
-
-		html += "<form action=\"\" method=\"POST\">\n";
-		html += "  <input name=\"submit\" type=\"submit\" value=\"Back\" />\n";
-		html += "  <input name=\"page\" type=\"hidden\" value=\"start\" />\n";
-		html += "</form>\n";
-
-		return html;
-	}
-
-	private String getReportInfoPage(String username, String typename, long timeProvided) {
-		String html = "";
-
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTimeInMillis(timeProvided);
-		String strTimeProvided = SIMPLE_DATE_FORMAT.format(calendar.getTime());
-
-		html += "<p>\n";
-		html += "  Requesting new information item of type <i>" + userData.getTypeRealname(typename) + "</i>...<br/>\n";
-		html += "  <a class=\"small\">\n";
-		html += "  &raquo; provided " + strTimeProvided + " by " + userData.getUserRealname(username) + "</p>\n";
-		html += "  </a>\n";
-		html += "</p>\n";
-		html += "<form action=\"\" method=\"POST\">\n";
-		html += "  <input name=\"submit\" type=\"submit\" value=\"Back\" />\n";
-		html += "  <input name=\"page\" type=\"hidden\" value=\"report\" />\n";
-		html += "</form>\n";
-
-		return html;
-	}
-
-	private void needInformation(String loginUsername, String username, String typeRealname) {
-		if (interfaceCompetency != null) {
-
-			// obtain an id for the needed information		
-			informationNeedId++;
-			String id = new Integer(informationNeedId).toString();
-
-			// write needed information to blackboard
-			setBBObjectProperty(BB_INFORMATION_NEEDS, id, typeRealname);
-
-			// write requester to WorldModel
-			setWMObjectProperty(WM_INFORMATION_REQUESTERS, id, loginUsername);
-
-			// write provider to WorldModel
-			setWMObjectProperty(WM_INFORMATION_PROVIDERS, id, username);
-
-			// raise remote action
-			ArrayList<String> parameters = new ArrayList<String>();
-			parameters.add(username);
-			parameters.add(id);
-			raiseMindAction(loginUsername, "needInformation", parameters);
-		}
-	}
-
 	private void leaveMessage(String fromUsername, String toUsername, String messageText) {
 		if (interfaceCompetency != null) {
 
@@ -1487,4 +1030,5 @@ public class InterfaceHandler extends AbstractHandler {
 		}
 	}
 
+	
 }

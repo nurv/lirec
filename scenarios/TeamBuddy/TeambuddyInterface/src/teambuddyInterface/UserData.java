@@ -2,460 +2,195 @@ package teambuddyInterface;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.StringTokenizer;
+
+import cmion.storage.WorldModel;
 
 public class UserData {
 
 	private long nextId;
 
-	private ArrayList<InformationType> informationTypes;
+	//private ArrayList<InformationType> informationTypes;
 
-	private ArrayList<Role> roles;
+	//private ArrayList<Role> roles;
 
-	private ArrayList<User> users;
+	//private ArrayList<User> users;
 
-	private User guestUser;
-
-	public UserData() {
-		informationTypes = new ArrayList<InformationType>();
-		roles = new ArrayList<Role>();
-		users = new ArrayList<User>();
+	//private User guestUser;
+	private static final String GUEST = "Guest";
+	//private static final String INFOID = "infoId";
+	//private static final String NEXTID = "nextId";
+	
+	private ArrayList<String> informationTypes;
+	private ArrayList<String> roles;
+	private ArrayList<String> users;
+	
+	private WorldModel wm;
+	
+	public UserData(WorldModel wm) {
+		this.wm = wm;
+		informationTypes = new ArrayList<String>();
+		roles = new ArrayList<String>();
+		users = new ArrayList<String>();
+		/*if (this.getWMObjectProperty(INFOID, NEXTID) != null)
+			nextId = (Long)this.getWMObjectProperty(INFOID, NEXTID);
+		else
+			nextId = 0;*/
 	}
-
-	public long getNextId() {
-		return nextId;
-	}
-
-	public void setNextId(long nextId) {
-		this.nextId = nextId;
-	}
-
-	public ArrayList<InformationType> getInformationTypes() {
-		return informationTypes;
-	}
-
-	public void setInformationTypes(ArrayList<InformationType> informationTypes) {
-		this.informationTypes = informationTypes;
-	}
-
-	public ArrayList<Role> getRoles() {
-		return roles;
-	}
-
-	public void setRoles(ArrayList<Role> roles) {
-		this.roles = roles;
-	}
-
-	public ArrayList<User> getUsers() {
+	
+	public ArrayList<String> getUsers() {
+		ArrayList<String> agents = wm.getAgentNames();
+		users = new ArrayList<String>();
+		
+		for (String agent : agents)
+		{
+			String isUser = (String)this.getWMAgentProperty(agent, "isUser");
+			if(Boolean.valueOf(isUser) && !agent.equals("Guest"))
+			{
+				users.add(agent);
+			}				
+		}
 		return users;
 	}
-
-	public void setUsers(ArrayList<User> users) {
-		this.users = users;
-	}
-
-	public User getGuestUser() {
-		return guestUser;
-	}
-
-	public void setGuestUser(User guestUser) {
-		this.guestUser = guestUser;
-	}
-
-	public User getUser(String username) {
-		if (guestUser.getUsername().equals(username)) {
-			return guestUser;
-		} else {
-			for (User user : users) {
-				if (user.getUsername().equals(username)) {
-					return user;
-				}
-			}
+	
+	public ArrayList<String> getRoles() {
+		ArrayList<String> objects = wm.getObjectNames();
+		roles = new ArrayList<String>();
+		
+		for (String object: objects)
+		{
+			if (Boolean.valueOf((String)this.getWMObjectProperty(object, "isRole"))) {
+				roles.add(object);
+			}				
 		}
-		return null;
+		return roles;
+	}
+	
+	public String getUsername(String user) {
+		if (this.getWMAgentProperty(user, "username") != null) {
+			return (String)this.getWMAgentProperty(user, "username");
+		}
+		return "";
 	}
 
-	public String getUserRealname(String username) {
-		if (guestUser.getUsername().equals(username)) {
-			return guestUser.getRealname();
-		} else {
-			for (User user : users) {
-				if (user.getUsername().equals(username)) {
-					return user.getRealname();
-				}
-			}
-		}
-		return null;
+	public void setUsername(String user, String username) {
+		this.setWMAgentProperty(user, "username", username);
 	}
 
-	public String getUserRolename(String username) {
-		if (guestUser.getUsername().equals(username)) {
-			return guestUser.getRolename();
-		} else {
-			for (User user : users) {
-				if (user.getUsername().equals(username)) {
-					return user.getRolename();
-				}
-			}
-		}
-		return null;
-	}
-
-	public String getRoleRealname(String rolename) {
-		for (Role role : roles) {
-			if (role.getRolename().equals(rolename)) {
-				return role.getRealname();
-			}
-		}
-		return null;
-	}
-
-	public String getTypeRealname(String typename) {
-		for (InformationType informationType : informationTypes) {
-			if (informationType.getTypename().equals(typename)) {
-				return informationType.getRealname();
-			}
-		}
-		return null;
-	}
-
-	public InformationType getType(String typename) {
-		for (InformationType informationType : informationTypes) {
-			if (informationType.getTypename().equals(typename)) {
-				return informationType;
-			}
-		}
-		return null;
-	}
-
-	// return user who provided informationItem
-	public User getUserProvided(InformationItem informationItem) {
-
-		// loop over users
-		for (User user : users) {
-			if (user.getInformationItems().contains(informationItem)) {
-				return user;
-			}
-		}
-
-		return null;
-	}
-
-	// request information items of typename provided by username for which loginUser is authorised (creates a request) 
-	public LinkedList<InformationItem> requestAuthorisedInformationItems(String username, String typename, String loginUsername) {
-		LinkedList<InformationItem> authorisedInformationItems = new LinkedList<InformationItem>();
-
-		for (InformationItem informationItem : getUser(username).getInformationItems()) {
-			if (informationItem.getTypename().equals(typename)) {
-
-				// add request
-				Request request = new Request();
-				request.setTime(Calendar.getInstance().getTimeInMillis());
-				request.setUsername(loginUsername);
-				request.setAuthorised(false);
-				informationItem.getRequests().add(request);
-
-				// check for authorisation
-				boolean authorised = false;
-				if (username.equals(loginUsername)) {
-					authorised = true;
-				} else {
-					for (String authorisedRole : informationItem.getAuthorisedRoles()) {
-						if (authorisedRole.equals(getUserRolename(loginUsername))) {
-							authorised = true;
-						}
-					}
-					for (String authorisedUser : informationItem.getAuthorisedUsers()) {
-						if (authorisedUser.equals(loginUsername)) {
-							authorised = true;
-						}
-					}
-				}
-
-				if (authorised) {
-					authorisedInformationItems.add(informationItem);
-					request.setAuthorised(true);
-				}
-			}
-		}
-
-		return authorisedInformationItems;
-	}
-
-	// provide information item for username
-	public InformationItem provideInformationItem(String username, String typename, String content, String[] authorisedRoles, String[] authorisedUsers) {
-
-		// create information item
-		InformationItem informationItem = new InformationItem();
-		informationItem.setId(nextId++);
-		informationItem.setTypename(typename);
-		informationItem.setTimeProvided(Calendar.getInstance().getTimeInMillis());
-
-		// authorised roles
-		if (authorisedRoles != null) {
-			for (String authorisedRole : authorisedRoles) {
-				informationItem.getAuthorisedRoles().add(authorisedRole);
-			}
-		}
-
-		// authorised users
-		if (authorisedUsers != null) {
-			for (String authorisedUser : authorisedUsers) {
-				informationItem.getAuthorisedUsers().add(authorisedUser);
-			}
-		}
-
-		// content
-		informationItem.setContent(content);
-
-		// add information item
-		getUser(username).getInformationItems().add(informationItem);
-
-		return informationItem;
-	}
-
-	// delete information item for username 
-	public boolean deleteInformationItem(String username, long deleteId) {
-		User user = getUser(username);
-		for (InformationItem informationItem : user.getInformationItems()) {
-			if (deleteId == informationItem.getId()) {
-				user.getInformationItems().remove(informationItem);
-				return true;
-			}
+	public boolean userIsAround(String user) {
+		if (this.getWMAgentProperty(user, "around") != null) {
+			return Boolean.valueOf((String)this.getWMAgentProperty(user, "around"));
 		}
 		return false;
 	}
-
-	// delete information items for username 
-	public int deleteInformationItems(String username, LinkedList<Long> deleteIds) {
-		int deletedCount = 0;
-
-		User user = getUser(username);
-		for (int i = user.getInformationItems().size() - 1; i >= 0; i--) {
-			InformationItem informationItem = user.getInformationItems().get(i);
-			if (deleteIds.contains(informationItem.getId())) {
-				user.getInformationItems().remove(informationItem);
-				deletedCount++;
-			}
+	
+	public String getUserWhereabout(String user) {
+		if (this.getWMAgentProperty(user, "whereabout") != null) {
+			return (String)this.getWMAgentProperty(user, "whereabout");
 		}
-
-		return deletedCount;
+		return "";
 	}
 
-	// get information items of typename for username
-	public LinkedList<InformationItem> getInformationItems(String username, String typename) {
-		LinkedList<InformationItem> informationItems = new LinkedList<InformationItem>();
-
-		for (InformationItem informationItem : getUser(username).getInformationItems()) {
-			if (informationItem.getTypename().equals(typename)) {
-				informationItems.add(informationItem);
-			}
-		}
-
-		return informationItems;
+	public void setUserWhereabout(String user, String whereabout) {
+		this.setWMAgentProperty(user, "whereabout", whereabout);
 	}
 
-	// return information items provided since timeSince for which loginUsername is authorised
-	public LinkedList<InformationItem> getAuthorisedInformationItemsProvidedSince(String loginUsername, long timeSince) {
-		LinkedList<InformationItem> authorisedInformationItemsSince = new LinkedList<InformationItem>();
-
-		// loop over users
-		for (User user : users) {
-			String username = user.getUsername();
-
-			// loop over information items			
-			for (InformationItem informationItem : user.getInformationItems()) {
-
-				// check if information was provided after timeSince
-				if (informationItem.getTimeProvided() > timeSince) {
-
-					// check for authorisation
-					boolean authorised = false;
-					if (username.equals(loginUsername)) {
-						authorised = true;
-					} else {
-						for (String authorisedRole : informationItem.getAuthorisedRoles()) {
-							if (authorisedRole.equals(getUserRolename(loginUsername))) {
-								authorised = true;
-							}
-						}
-						for (String authorisedUser : informationItem.getAuthorisedUsers()) {
-							if (authorisedUser.equals(loginUsername)) {
-								authorised = true;
-							}
-						}
-					}
-
-					if (authorised) {
-						authorisedInformationItemsSince.add(informationItem);
-					}
-
-				}
-			}
-
+	public String getPassword(String user) {
+		if (this.getWMAgentProperty(user, "password") != null) {
+			return (String)this.getWMAgentProperty(user, "password");
 		}
-
-		return authorisedInformationItemsSince;
+		return "";
+	}
+	
+	public void setPassword(String user, String password) {
+		this.setWMAgentProperty(user, "password", password);
 	}
 
-	// return information items requested since timeSince which were provided by username
-	public LinkedList<InformationItem> getInformationItemsRequestedSince(String username, long timeSince) {
-		LinkedList<InformationItem> informationItemsRequestedSince = new LinkedList<InformationItem>();
-
-		// loop over information items
-		for (InformationItem informationItem : getUser(username).getInformationItems()) {
-
-			// loop over requests
-			for (Request request : informationItem.getRequests()) {
-
-				// check if requests happened after timeSince
-				if (request.getTime() > timeSince) {
-					informationItemsRequestedSince.add(informationItem);
-					// add information item only once
-					break;
-				}
-
-			}
+	public String getGuestUser() {
+		return GUEST;
+	}
+	
+	public String getUserRealname(String user) {
+		if (this.getWMAgentProperty(user, "realname") != null) {
+			return (String)this.getWMAgentProperty(user, "realname");
 		}
-
-		return informationItemsRequestedSince;
+		return "";
 	}
 
-	// return information item with id provided by username
-	public InformationItem getInformationItem(String username, long id) {
-
-		// loop over information items
-		for (InformationItem informationItem : getUser(username).getInformationItems()) {
-
-			if (informationItem.getId() == id) {
-				return informationItem;
-			}
-		}
-
-		return null;
+	public void setUserRealname(String user, String realname) {
+		this.setWMAgentProperty(user, "realname", realname);
 	}
 
-	// return information items which are authorised to all roles
-	public LinkedList<InformationItem> getInformationItemsPublic() {
-		LinkedList<InformationItem> informationItemsPublic = new LinkedList<InformationItem>();
-
-		// loop over users
-		for (User user : users) {
-
-			// loop over information items
-			for (InformationItem informationItem : user.getInformationItems()) {
-
-				boolean authorised = true;
-
-				// loop over roles 
-				for (Role role : roles) {
-					if (!informationItem.getAuthorisedRoles().contains(role.getRolename())) {
-						authorised = false;
-						break;
-					}
-				}
-
-				if (authorised) {
-					informationItemsPublic.add(informationItem);
-				}
-
-			}
-
+	public String getRolename(String user) {
+		if (this.getWMAgentProperty(user, "rolename") != null) {
+			return (String)this.getWMAgentProperty(user, "rolename");
 		}
-
-		return informationItemsPublic;
+		return "";
 	}
 
-	// returns the user for a specific information item
-	public User getUser(InformationItem informationItem) {
-		for (User user : users) {
-			for (InformationItem informationItemCurrent : user.getInformationItems()) {
-				if (informationItemCurrent == informationItem) {
-					return user;
-				}
-			}
+	public String getRoleRealname(String role) {
+		if (this.getWMObjectProperty(role, "realname") != null) {
+			return (String)this.getWMObjectProperty(role, "realname");
+		}
+		return "";
+	}
+	
+	public void setMadeRemark(String user, String madeRemark) {
+		this.setWMAgentProperty(user, "madeRemark", madeRemark);
+	}
+
+	public String getMadeRemark(String user) {
+		if (this.getWMAgentProperty(user, "madeRemark") != null) {
+			return (String)this.getWMAgentProperty(user, "madeRemark");
+		}
+		return "";
+	}
+	
+	public long getTimeLastLogin(String user) {
+		if (this.getWMAgentProperty(user, "timeLastLogin") != null){
+			return (Long)this.getWMAgentProperty(user, "timeLastLogin");
+		}
+		return -1;
+	}
+
+	public void setTimeLastLogin(String user, long timeLastLogin) {
+		this.setWMAgentProperty(user, "timeLastLogin", timeLastLogin);
+	}
+
+	public long getTimeLastLogout(String user) {
+		if (this.getWMAgentProperty(user, "timeLastLogout") != null){
+			return (Long)this.getWMAgentProperty(user, "timeLastLogout");
+		}
+		return -1;
+	}
+
+	public void setTimeLastLogout(String user, long timeLastLogout) {
+		this.setWMAgentProperty(user, "timeLastLogout", timeLastLogout);
+	}
+
+	private Object getWMObjectProperty(String objectName, String propertyName) {
+		if (wm.hasObject(objectName)) {
+			return wm.getObject(objectName).getPropertyValue(propertyName);
 		}
 		return null;
 	}
-
-	// request information item with id provided by username for which loginUsername is authorised (creates a request)
-	public InformationItem requestAuthorisedInformationItem(String loginUsername, String username, long id) {
-
-		// loop over information items
-		for (InformationItem informationItem : getUser(username).getInformationItems()) {
-
-			if (informationItem.getId() == id) {
-
-				// add request
-				Request request = new Request();
-				request.setTime(Calendar.getInstance().getTimeInMillis());
-				request.setUsername(loginUsername);
-				request.setAuthorised(false);
-				informationItem.getRequests().add(request);
-
-				// check for authorisation
-				boolean authorised = false;
-				if (username.equals(loginUsername)) {
-					authorised = true;
-				} else {
-					for (String authorisedRole : informationItem.getAuthorisedRoles()) {
-						if (authorisedRole.equals(getUserRolename(loginUsername))) {
-							authorised = true;
-						}
-					}
-					for (String authorisedUser : informationItem.getAuthorisedUsers()) {
-						if (authorisedUser.equals(loginUsername)) {
-							authorised = true;
-						}
-					}
-				}
-
-				if (authorised) {
-					request.setAuthorised(true);
-					return informationItem;
-				}
-
-			}
-
+	
+	private void setWMAgentProperty(String agentName, String propertyName, Object propertyValue) {
+		if (wm.hasAgent(agentName)) {
+			wm.getAgent(agentName).requestSetProperty(propertyName, propertyValue);
+		} else {
+			HashMap<String, Object> properties = new HashMap<String, Object>();
+			properties.put(propertyName, propertyValue);
+			wm.requestAddAgent(agentName, properties);
+		}		
+	}
+	
+	private Object getWMAgentProperty(String agentName, String propertyName) {
+		if (wm.hasAgent(agentName)) {
+			return wm.getAgent(agentName).getPropertyValue(propertyName);
 		}
-
 		return null;
-	}
-
-	// return requests since timeSince for informationItem
-	public LinkedList<Request> getRequestsSince(InformationItem informationItem, long timeSince) {
-		LinkedList<Request> requestsSince = new LinkedList<Request>();
-
-		// loop over requests
-		for (Request request : informationItem.getRequests()) {
-
-			// check if requests happened after timeSince
-			if (request.getTime() > timeSince) {
-				requestsSince.add(request);
-			}
-		}
-
-		return requestsSince;
-	}
-
-	// return request count since timeSince for informationItems
-	public int countRequestsSince(LinkedList<InformationItem> informationItems, long timeSince) {
-		int count = 0;
-
-		// loop over information items
-		for (InformationItem informationItem : informationItems) {
-
-			// loop over requests
-			for (Request request : informationItem.getRequests()) {
-
-				// check if requests happened after timeSince
-				if (request.getTime() > timeSince) {
-					count++;
-				}
-			}
-		}
-
-		return count;
-	}
-
+	}	
 }

@@ -20,6 +20,7 @@ public class TimeoutTask extends TimerTask {
 
 	public void run() {
 		setWMObjectProperty(wmCurrentPlatform, wmInterfaceInteraction, "False");
+		interfaceCompetency.resetAll();
 	}
 
 	private void setWMObjectProperty(String objectName, String propertyName, Object propertyValue) {
