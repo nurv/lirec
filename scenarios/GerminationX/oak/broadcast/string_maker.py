@@ -33,6 +33,7 @@ class string_maker:
             "thanks_for_helping": self.thanks_for_helping,
             "spirit_complaint": self.spirit_complaint,
             "spirit_praise": self.spirit_praise,
+            "spirit_fortune_of_other" : self.spirit_fortune_of_other,
             "spirit_received_offering": self.spirit_received_offering,
             "ive_asked_x_for_help": self.ive_asked_x_for_help,
             "one_time_i_have_flowered": self.one_time_i_have_flowered,
@@ -89,13 +90,16 @@ class string_maker:
     
     def spirit_complaint(self,fromm,to,owner,extra,emotion):
         e="";
-        if (emotion=="LOVE"): e="I am happy, but ";
-        if (emotion=="HATE"): e="I am sad, because ";
-        if (emotion=="PRIDE"): e="I am great, but ";
+        if (emotion=="LOVE" or 
+            emotion=="HAPPY_FOR" or
+            emotion=="GLOATING"): e="I am happy, but ";
+        if (emotion=="HATE" or
+            emotion=="PITTY"): e="I am sad, because ";
+        if (emotion=="PRIDE"): e="I am proud, but ";
         if (emotion=="DISTRESS"): e="This is awful, ";
         if (emotion=="ADMIRATION"): e="Everythings fine, but ";
         if (emotion=="JOY"): e="I'm too happy to care, but ";
-        if (emotion=="SHAME"): e="I'm so useless, ";
+        if (emotion=="SHAME"): e="I'm ashamed that ";
         if (emotion=="RESENTMENT"): e="It sucks that ";
         
         msg=e+to+"'s " + extra[0] + " plant is ";
@@ -109,9 +113,12 @@ class string_maker:
     
     def spirit_praise(self,fromm,to,owner,extra,emotion):
         e="";
-        if (emotion=="LOVE"): e="I am happy that ";
-        if (emotion=="HATE"): e="I am sad, but ";
-        if (emotion=="PRIDE"): e="I am great, ";
+        if (emotion=="LOVE" or 
+            emotion=="HAPPY_FOR" or
+            emotion=="GLOATING"): e="I am happy that ";
+        if (emotion=="HATE" or 
+            emotion=="PITTY"): e="I am sad, but ";
+        if (emotion=="PRIDE"): e="I am proud that ";
         if (emotion=="DISTRESS"): e="Things are awful, but ";
         if (emotion=="ADMIRATION"): e="It's great, ";
         if (emotion=="JOY"): e="Wow! - ";
@@ -130,7 +137,26 @@ class string_maker:
         if (extra[1]=="new-fruit"): return msg+"has fruited.";
         if (extra[1]=="picked-fruit"): return msg+"has been picked.";
         return msg+"... something. (bug: "+extra[1]+")";
-    
+
+    def spirit_fortune_of_other(self,fromm,to,owner,extra,emotion):
+        other="@GXTreeSpirit";
+        if (extra[3]=="cover"): other="@GrndCoverSpirit";
+        if (extra[3]=="shrub"): other="@ShrubSpirit";
+
+        if (extra[0]=="happy-for"):    
+            return "."+other+", you must be pleased with "+to+"'s " + extra[1] + " plant!";
+        
+        if (extra[0]=="pity"):
+            return "Oh dear "+other+", I'm sorry about "+to+"'s " + extra[1] + " plant.";
+        
+        if (extra[0]=="gloat"):    
+            return "Haha "+other+", "+to+"'s " + extra[1] + " plant is ruining your day!";
+                
+        if (extra[0]=="resent"):    
+            return "."+other+", it's only luck that "+to+" planted a " + extra[1] + " plant there.";
+                
+        return "spirit_fortune_of_other error!";
+            
     def spirit_received_offering(self,fromm,to,owner,extra,emotion):
         # what caused this message?
         feeling="kindly"; # praise
