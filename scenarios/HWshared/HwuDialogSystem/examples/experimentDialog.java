@@ -69,8 +69,11 @@ String latest = "start";
 //called when dialog/nav has failed
 failure() {
 	speak("Never mind");
+	di.setMood(Moods.SADNESS);
 	speak("Just head back to 1.54");
 	di.getResponse("I'm back");
+	di.setMood(Moods.NEUTRAL);
+	di.showExpression(Expression.JOY);
 	
 	Integer fails = Integer.parseInt(migrationData.get(latest +"Failures"));
 	fails++;
@@ -247,9 +250,11 @@ episode2PhoneNoMemory() {
 	speak("Can you let me know the clue please?");
 	String userClue = di.getFreetext().trim();
 	while (!userClue.equalsIgnoreCase("hermit")) {
+		di.showExpression(Expression.SADNESS);
 		speak("That doesn't make sense, try again:");
 		userClue = di.getFreetext();
 	}
+	di.showExpression(Expression.JOY);
 	speak("Right, I think I know what that's about");
 	episode2PhoneCommon();
 }
@@ -267,6 +272,7 @@ episode2PhoneCommon() {
 		speak("Why did you choose that colour?");
 		String responseWhy = di.getFreetext();
 		speak("Hmm, I can't seem to set the colour, never mind.");
+		di.showExpression(Expression.SADNESS);
 		speak("No time for this, time for treasure!");
 		migrationData.put("firstWhy",responseWhy);
 	}
@@ -286,7 +292,7 @@ episode2ArrivedCommon() {
 	speak("Hermit's mentioned round here somewhere.");
 	speak("On a poster about You Tunes, I think.");
 	Thread.sleep(3000);
-	speak("Have you found the poster?");
+	speak("Have you found the You Tunes poster?");
 	di.getResponse("Yes");
 	speak("Great, so tell me, what is hermit?");
 }
@@ -374,6 +380,7 @@ episode4startPhone() {
 	migrationData.put("episode","4");
 	if (remembers(3,4)) {
 		speak("Okay, angus, great.");
+		
 	} else {
 		speak("Hello there, you're here to find a treasure, right?");
 		speak("Can you let me know the clue please?");
@@ -384,6 +391,7 @@ episode4startPhone() {
 		}
 		speak("Right, I think I know what that's about");
 	}
+	di.showExpression(Expression.JOY);
 	speak("I'll take you to find Angus.");
 	di.getResponse("OK");
 	latest = "episode4";
@@ -398,7 +406,7 @@ episode4Arrived() {
 	speak("I've seen angus down here.");
 	speak("It's written on a submarine.");
 	Thread.sleep(3000);
-	speak("Have you found it?");
+	speak("Have you found the submarine?");
 	di.getResponse("Yes");
 	speak("Great, I think the question is, what colour's the submarine?");
 	if (remembers(3,4)) {
@@ -504,9 +512,9 @@ episode5screen() {
 	speak("I'm from Cork in Ireland, I hope your able to understand my accent ok?");
 	String understand = di.multipleChoiceQuestion(2,new String[]{"it's fine","struggling a bit","you're subtitled"});
 	migrationData.put("understand",understand);
-	if (understand.equals("it's fine")) speak("Good to hear that.");
-	else if (understand.equals("struggling a bit")) speak("Sorry. But you can always read my subtitles you know.");
-	else speak("Bit of a joker, are you?");
+	if (understand.equals("it's fine")) { di.showExpression(Expression.JOY); speak("Good to hear that.");}
+	else if (understand.equals("struggling a bit")) {di.showExpression(Expression.SADNESS); speak("Sorry. But you can always read my subtitles you know.");}
+	else {di.showExpression(Expression.SURPRISE); speak("Bit of a joker, are you?");}
 	
 	speak("Good, back to business, as I've told you the clue is helmet.");
 	speak("Now start the app if you need to, and press the ready button to get going");
@@ -660,10 +668,12 @@ episode7screen() {
 		speak("the partners are in 6 different countries.");
 	} else {
 		speak("This reminds me, did you know I'm part of the Lirec project?");
+		di.showExpression(Expression.JOY);
 		speak("It's researching artificial companions, like myself! ");
 		speak("There are ten different institutes involved");
 		speak("They are spread all over the map, as it were.");
 	}
+	di.showExpression(Expression.JOY);
 	speak("Anyway, I get distracted so easily.");
 	speak("We've got a clue to hunt, map");
 	speak("Now start the app if you need to, and press the ready button to get going");
@@ -680,6 +690,7 @@ episode8startPhone() {
 		String userClue = di.getFreetext().trim();
 		while (!userClue.equalsIgnoreCase("map")) {
 			speak("That doesn't make sense, try again:");
+			di.showExpression(Expression.SADNESS);
 			userClue = di.getFreetext();
 		}
 		speak("Right, I think I know what that's about");
@@ -698,7 +709,7 @@ episode8Arrived() {
 	speak("I've seen a map down here.");
 	speak("It's a map of an island.");
 	Thread.sleep(3000);
-	speak("Have you found it?");
+	speak("Have you found the map?");
 	di.getResponse("Yes");
 	speak("Great, I think the question is, what island is it a map of?");
 	if (remembers(7,8)) {
@@ -774,7 +785,8 @@ episode9screen() {
 		String[] needClues = {"have all","need clue"};
 		String answerOrClues = di.multipleChoiceQuestion(2,needClues);
 	}
-		
+	
+	di.showExpression(Expression.JOY);
 	speak("Ok, you've chased after all the clues. Let's see what you got right");
 	int noCorrect = 0;
 
@@ -791,11 +803,14 @@ episode9screen() {
 	}
 	if (clue1_answer.contains("rog"))
 	{
+		di.showExpression(Expression.JOY);
 		speak("You gave the correct answer: frog"); 
 		noCorrect ++;
 	}
-	else
-		speak("You didn't find the correct answer, it was frog.");	
+	else {
+		speak("You didn't find the correct answer, it was frog.");
+		di.showExpression(Expression.SADNESS);
+	}
 	speak("Hermit the frog is a song title on the poster.");
 
 
@@ -811,11 +826,14 @@ episode9screen() {
 	}
 	if (clue2_answer.contains("range"))
 	{
+		di.showExpression(Expression.JOY);
 		speak("You gave the correct answer: orange"); 
 		noCorrect ++;
 	}
-	else
-		speak("You didn't find the correct answer, it was orange.");	
+	else {
+		di.showExpression(Expression.SADNESS);
+		speak("You didn't find the correct answer, it was orange.");
+	}
 	speak("Angus is a submarine and his colour is orange.");
 	
 	
@@ -831,11 +849,14 @@ episode9screen() {
 	}
 	if (clue3_answer.contains("ars"))
 	{
+		di.showExpression(Expression.JOY);
 		speak("You gave the correct answer: Mars"); 
 		noCorrect ++;
 	}
-	else
+	else {
+		di.showExpression(Expression.SADNESS);
 		speak("You didn't find the correct answer, it was Mars.");	
+	}
 	speak("You need a helmet on Mars.");	
 
 	if (remembers(8,9))
@@ -850,11 +871,14 @@ episode9screen() {
 	}
 	if (clue4_answer.contains("ull"))
 	{
+		di.showExpression(Expression.JOY);
 		speak("You gave the correct answer: Mull"); 
 		noCorrect ++;
 	}
-	else
-		speak("You didn't find the correct answer, it was Mull.");	
+	else {
+		di.showExpression(Expression.SADNESS);
+		speak("You didn't find the correct answer, it was Mull.");
+	}
 	speak("The island on the map is Mull.");
 	
 	// questions to check user's mental model and diversion questions
@@ -877,11 +901,13 @@ episode9screen() {
 	speak("You have found " + noCorrect + " out of 4 answers.");
 	if (noCorrect == 4)
 	{
+		di.showExpression(Expression.JOY);
 		speak("Well done. You've passed the test.");
 		speak("The treasure is almost possibly yours. Please speak to the human.");		
 	} else
 	{
 		speak("Sorry, you failed.");
+		di.showExpression(Expression.SADNESS);
 		speak("Don't worry, the treasure was not that great anyway, don't be sad.");
 		speak("Please speak to the human.");	
 	}
