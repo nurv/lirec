@@ -514,9 +514,9 @@ episode5screen() {
 	speak("I'm from Cork in Ireland, I hope your able to understand my accent ok?");
 	String understand = di.multipleChoiceQuestion(2,new String[]{"it's fine","struggling a bit","you're subtitled"});
 	migrationData.put("understand",understand);
-	if (understand.equals("it's fine")) { di.showExpression(Expression.JOY); speak("Good to hear that.");}
-	else if (understand.equals("struggling a bit")) {di.showExpression(Expression.SADNESS); speak("Sorry. But you can always read my subtitles you know.");}
-	else {di.showExpression(Expression.SURPRISE); speak("Bit of a joker, are you?");}
+	if (understand.equals("it's fine")) { di.showExpressionNoWait(Expression.JOY); speak("Good to hear that.");}
+	else if (understand.equals("struggling a bit")) {di.showExpressionNoWait(Expression.SADNESS); speak("Sorry. But you can always read my subtitles you know.");}
+	else {di.showExpressionNoWait(Expression.SURPRISE); speak("Bit of a joker, are you?");}
 	
 	speak("Good, back to business, as I've told you the clue is helmet.");
 	speak("Now start the app if you need to, and press the ready button to get going");
@@ -670,12 +670,12 @@ episode7screen() {
 		speak("the partners are in 6 different countries.");
 	} else {
 		speak("This reminds me, did you know I'm part of the Lirec project?");
-		di.showExpression(Expression.JOY);
+		di.showExpressionNoWait(Expression.JOY);
 		speak("It's researching artificial companions, like myself! ");
 		speak("There are ten different institutes involved");
 		speak("They are spread all over the map, as it were.");
 	}
-	di.showExpression(Expression.JOY);
+	di.showExpressionNoWait(Expression.JOY);
 	speak("Anyway, I get distracted so easily.");
 	speak("We've got a clue to hunt, map");
 	speak("Now start the app if you need to, and press the ready button to get going");
@@ -788,7 +788,7 @@ episode9screen() {
 		String answerOrClues = di.multipleChoiceQuestion(2,needClues);
 	}
 	
-	di.showExpression(Expression.JOY);
+	di.showExpressionNoWait(Expression.JOY);
 	speak("Ok, you've chased after all the clues. Let's see what you got right");
 	int noCorrect = 0;
 
@@ -805,13 +805,13 @@ episode9screen() {
 	}
 	if (clue1_answer.contains("rog"))
 	{
-		di.showExpression(Expression.JOY);
+		di.showExpressionNoWait(Expression.JOY);
 		speak("You gave the correct answer: frog"); 
 		noCorrect ++;
 	}
 	else {
 		speak("You didn't find the correct answer, it was frog.");
-		di.showExpression(Expression.SADNESS);
+		di.showExpressionNoWait(Expression.SADNESS);
 	}
 	speak("Hermit the frog is a song title on the poster.");
 
@@ -828,12 +828,12 @@ episode9screen() {
 	}
 	if (clue2_answer.contains("range"))
 	{
-		di.showExpression(Expression.JOY);
+		di.showExpressionNoWait(Expression.JOY);
 		speak("You gave the correct answer: orange"); 
 		noCorrect ++;
 	}
 	else {
-		di.showExpression(Expression.SADNESS);
+		di.showExpressionNoWait(Expression.SADNESS);
 		speak("You didn't find the correct answer, it was orange.");
 	}
 	speak("Angus is a submarine and his colour is orange.");
@@ -851,12 +851,12 @@ episode9screen() {
 	}
 	if (clue3_answer.contains("ars"))
 	{
-		di.showExpression(Expression.JOY);
+		di.showExpressionNoWait(Expression.JOY);
 		speak("You gave the correct answer: Mars"); 
 		noCorrect ++;
 	}
 	else {
-		di.showExpression(Expression.SADNESS);
+		di.showExpressionNoWait(Expression.SADNESS);
 		speak("You didn't find the correct answer, it was Mars.");	
 	}
 	speak("You need a helmet on Mars.");	
@@ -873,12 +873,12 @@ episode9screen() {
 	}
 	if (clue4_answer.contains("ull"))
 	{
-		di.showExpression(Expression.JOY);
+		di.showExpressionNoWait(Expression.JOY);
 		speak("You gave the correct answer: Mull"); 
 		noCorrect ++;
 	}
 	else {
-		di.showExpression(Expression.SADNESS);
+		di.showExpressionNoWait(Expression.SADNESS);
 		speak("You didn't find the correct answer, it was Mull.");
 	}
 	speak("The island on the map is Mull.");
@@ -903,13 +903,13 @@ episode9screen() {
 	speak("You have found " + noCorrect + " out of 4 answers.");
 	if (noCorrect == 4)
 	{
-		di.showExpression(Expression.JOY);
+		di.showExpressionNoWait(Expression.JOY);
 		speak("Well done. You've passed the test.");
 		speak("The treasure is almost possibly yours. Please speak to the human.");		
 	} else
 	{
 		speak("Sorry, you failed.");
-		di.showExpression(Expression.SADNESS);
+		di.showExpressionNoWait(Expression.SADNESS);
 		speak("Don't worry, the treasure was not that great anyway, don't be sad.");
 		speak("Please speak to the human.");	
 	}
