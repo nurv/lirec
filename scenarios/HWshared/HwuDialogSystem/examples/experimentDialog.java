@@ -4,6 +4,7 @@ import uk.ac.hw.lirec.dialogsystem.DialogInterface.Expression;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.TreeMap;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +23,7 @@ import java.util.List;
 DialogInterface di;
 HashMap migrationData = new HashMap();
 String server = "137.195.27.138";//TODO SET THIS
-
+long startTime;
 
 speak(String speech) {
 	di.speakText(speech);
@@ -70,6 +71,12 @@ failure() {
 	speak("Never mind");
 	speak("Just head back to 1.54");
 	di.getResponse("I'm back");
+	
+	Integer fails = Integer.parseInt(migrationData.get(latest +"Failures"));
+	fails++;
+	migrationData.put(latest +"Failures",fails.toString());
+	
+	timeStamp("XXXfailure_"+latest+"_"+fails.toString());
 	
 	if (latest.equals("episode2")) {
 		migrationData.remove("phoneColourChoice");
@@ -134,11 +141,15 @@ migrateOut() {
 migrationOut()
 {
 	di.setEmysInvisible();
+	
+	timeStamp("ts_ScreenEpisodeEnds_"+migrationData.get("episode"));
+	
 	di.migrateDataOut("target",migrationData);
 }
 
 migrationIn()
 {
+	timeStamp("ts_ScreenEpisodeStarts_"+migrationData.get("episode"));
 	di.setEmysVisible();
 	if (migrationData.get("episode").equals("2"))
 		episode3screen();
@@ -173,6 +184,7 @@ setup(String participantID, char track) {
 	 * What if we forget on 4 say, then need to remember from 2 in 8? shouldn't, it was
 	 * forgotten in 4. Don't want to actually remove it from memory...
 	 */
+	startTime = System.currentTimeMillis();
 	episode1Screen();
 }
 
@@ -250,6 +262,7 @@ episode2PhoneCommon() {
 	migrationData.put("phoneColourChoice",colour);
 	if (colour.contains("favourite")) {
 		speak("Ah, never mind, no time for this, time for treasure!");		
+		migrationData.put("firstWhy","asked for fav");
 	} else {
 		speak("Why did you choose that colour?");
 		String responseWhy = di.getFreetext();
@@ -260,12 +273,15 @@ episode2PhoneCommon() {
 	speak("So, now I'll take you to the place where you'll find the hermit");
 	di.getResponse("OK");
 	latest = "episode2";
+	migrationData.put(latest +"Failures","0");
+	timeStamp("ts_PhoneNav_"+migrationData.get("episode"));
 	if (remembers(1,2))
 		di.startNav("1.54","1east1","episode2PhoneMemoryArrived()");
 	else
 		di.startNav("1.54","1east1","episode2PhoneForgetArrived()");
 }
 episode2ArrivedCommon() {
+	timeStamp("ts_PhoneNavArrived_"+migrationData.get("episode"));
 	Thread.sleep(3000);
 	speak("Hermit's mentioned round here somewhere.");
 	speak("On a poster about You Tunes, I think.");
@@ -299,6 +315,7 @@ ep2return() {
 
 
 waitForReturnToScreenEp2() {
+	timeStamp("ts_PhoneNavReturning_"+migrationData.get("episode"));
 	speak("When you're back at the screen, let me know.");
 	di.getResponse("We're there");
 	migrateOut();
@@ -370,10 +387,13 @@ episode4startPhone() {
 	speak("I'll take you to find Angus.");
 	di.getResponse("OK");
 	latest = "episode4";
+	migrationData.put(latest +"Failures","0");
+	timeStamp("ts_PhoneNav_"+migrationData.get("episode"));
 	di.startNav("1.54","gwest3","episode4Arrived()");
 
 }
 episode4Arrived() {
+	timeStamp("ts_PhoneNavArrived_"+migrationData.get("episode"));
 	Thread.sleep(3000);
 	speak("I've seen angus down here.");
 	speak("It's written on a submarine.");
@@ -511,10 +531,13 @@ episode6startPhone() {
 	speak("Let's go find the helmet.");
 	di.getResponse("OK");
 	latest = "episode6";
+	migrationData.put(latest +"Failures","0");
+	timeStamp("ts_PhoneNav_"+migrationData.get("episode"));
 	di.startNav("1.54","2north1","episode6Arrived()");
 
 }
 episode6Arrived() {
+	timeStamp("ts_PhoneNavArrived_"+migrationData.get("episode"));
 	Thread.sleep(3000);
 	speak("I've seen a helmet in this corridor.");
 	speak("It's on a poster somewhere.");
@@ -664,10 +687,13 @@ episode8startPhone() {
 	speak("So now I'll take you to find the map.");
 	di.getResponse("OK");
 	latest = "episode8";
+	migrationData.put(latest +"Failures","0");
+	timeStamp("ts_PhoneNav_"+migrationData.get("episode"));
 	di.startNav("1.54","gsouth1","episode8Arrived()");
 
 }
 episode8Arrived() {
+	timeStamp("ts_PhoneNavArrived_"+migrationData.get("episode"));
 	Thread.sleep(8000);
 	speak("I've seen a map down here.");
 	speak("It's a map of an island.");
@@ -709,7 +735,8 @@ ep8return() {
 	String town = di.multipleChoiceQuestion(5,optionsTowns);
 	migrationData.put("townChoice",town);
 	if (town.contains("idea")) {
-		speak("Typical!");		
+		speak("Typical!");
+		migrationData.put("secondWhy","have no idea");
 	} else {
 		speak("Why did you choose that town?");
 		String responseWhy = di.getFreetext();
@@ -859,8 +886,19 @@ episode9screen() {
 		speak("Please speak to the human.");	
 	}
 	speak("Bye for now, I've enjoyed your company.");
-	
+	timeStamp("ts_EndOfExperiment");
+	writeLog();
+}
 
+timeStamp(String key) {
+	long timeSinceStart = (long)((System.currentTimeMillis() - startTime)/1000);
+	migrationData.put(key,timeSinceStart.toString());
+}
+
+writeLog() {
+	// SORT THIS INTO NEW DATA STRUCTURE
+	TreeMap output = new TreeMap(migrationData);
+	di.log("\n"+output.toString());
 }
 
 
