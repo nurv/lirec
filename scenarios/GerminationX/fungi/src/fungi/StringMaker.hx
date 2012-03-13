@@ -105,11 +105,11 @@ class StringMaker
                     emotion=="GLOATING") e="I am happy, but ";
                 if (emotion=="HATE" || 
                     emotion=="PITTY") e="I am sad, because ";
-                if (emotion=="PRIDE") e="I am great, but ";
+                if (emotion=="PRIDE") e="I am proud, but ";
                 if (emotion=="DISTRESS") e="This is awful, ";
                 if (emotion=="ADMIRATION") e="Everythings fine, but ";
                 if (emotion=="JOY") e="I'm too happy to care, but ";
-                if (emotion=="SHAME") e="I'm so useless, ";
+                if (emotion=="SHAME") e="I'm ashamed that ";
                 if (emotion=="RESENTMENT") e="It sucks that ";
                 
                 var msg=e+to+"'s " + extra[0] + " plant is ";
