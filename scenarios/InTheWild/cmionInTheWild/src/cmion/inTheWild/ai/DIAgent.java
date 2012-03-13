@@ -35,7 +35,7 @@ public class DIAgent extends AgentMindConnector {
 	
 	private static Object logLock = new Object();
 	
-	private boolean busy = false;
+	private boolean userPresent = false;
 	
 	public DIAgent(IArchitecture architecture, String scriptFile) {
 		super(architecture);
@@ -67,7 +67,7 @@ public class DIAgent extends AgentMindConnector {
 	{
 		if (remoteAction.getName().equals("comeClose"))
 		{
-			if (!busy) evaluate("startInteraction()");
+			//if (!busy) evaluate("startInteraction()");
 		}
 		else if (remoteAction.getName().equals("answer"))
 		{
@@ -83,7 +83,7 @@ public class DIAgent extends AgentMindConnector {
 			{
 				String participantID = remoteAction.getParameters().get(0);
 				char track = remoteAction.getParameters().get(1).charAt(0);				
-				evaluate("setup("+participantID+","+track+")");
+				evaluate("setup(\""+participantID+"\",\'"+track+"\')");
 			}
 		}
 		else 
@@ -115,7 +115,18 @@ public class DIAgent extends AgentMindConnector {
 
 	@Override
 	protected void processPropertyChanged(String entityName,
-			String propertyName, String propertyValue, boolean persistent) {}
+			String propertyName, String propertyValue, boolean persistent) 
+	{
+		if (entityName.equals("user") && propertyName.equals("present"))
+		{
+			boolean newUserPresent = Boolean.parseBoolean(propertyValue.toString());
+			if (newUserPresent!=userPresent)
+			{
+				dialogInterface.notifyUserPresent();
+				userPresent = newUserPresent;
+			}
+		}	
+	}
 
 	@Override
 	protected void processPropertyRemoved(String entityName, String propertyName) {}
@@ -142,9 +153,7 @@ public class DIAgent extends AgentMindConnector {
 	            new Runnable() {
 	                public void run() 
 	                {
-	                	busy = true;
 	                	dialogSystem.evaluateEvent(command);
-	                	busy = false;
 	                }
 	            }).start();
 
@@ -179,7 +188,9 @@ public class DIAgent extends AgentMindConnector {
 			try 
 			{
 				serverSocket  = new ServerSocket(port);
+				System.out.println("Listening for new migration connection");
 				clientSocket = serverSocket.accept();
+				System.out.println("Migration client has connected");
 				ObjectOutputStream out_object = new ObjectOutputStream(clientSocket.getOutputStream());
 				ObjectInputStream in_object = new ObjectInputStream(clientSocket.getInputStream());
 				// read the first line (containing the command)
@@ -266,13 +277,14 @@ public class DIAgent extends AgentMindConnector {
 		private boolean mInterrupted = false;
 		private boolean mWaiting = false;
 		private boolean mTimedOut = false;
+		private boolean mWaitingForUserPresent = false;
 		private String answer;
 		
 		public synchronized boolean isBusy()
 		{
-			return mWaiting;
+			return mWaiting || mWaitingForUserPresent;
 		}
-		
+
 		@Override
 		public synchronized void interruptDialog() {
 			mInterrupted = true;
@@ -284,6 +296,7 @@ public class DIAgent extends AgentMindConnector {
 			mWaiting = false;
 			mInterrupted = false;
 			mTimedOut = false;
+			mWaitingForUserPresent = false;
 		}
 
 		public void setEmysInvisible()
@@ -307,6 +320,24 @@ public class DIAgent extends AgentMindConnector {
 			parameters.add(text);
 			executeAction(new MindAction("DIAgent","wozTalk",parameters));
 			waitForCallbackOrInterrupt();	
+		}
+		
+		public synchronized void blockUntilUserPresent()
+		{
+			if (userPresent) return;
+			mWaitingForUserPresent = true;
+			while (!userPresent && mWaitingForUserPresent && !mInterrupted && !mTimedOut)
+			{
+				try {
+					this.wait();
+				} catch (InterruptedException e) {}
+			}
+		}
+		
+		public synchronized void notifyUserPresent() 
+		{
+			mWaitingForUserPresent = false;
+			this.notify();
 		}
 		
 		public void log(String message)
@@ -352,6 +383,13 @@ public class DIAgent extends AgentMindConnector {
 			multipleChoiceQuestion(1, args);	
 		}
 
+		public String multipleChoiceQuestionList(Integer numChoices, List<String> options)
+		{	
+			String [] strOptions = new String[numChoices];
+			for (int i=0; i<numChoices; i++) strOptions[i] = options.get(i);
+			return multipleChoiceQuestion(numChoices, strOptions);
+		}
+		
 		@Override
 		public String multipleChoiceQuestion(Integer numChoices,
 				String[] options) 
@@ -402,6 +440,18 @@ public class DIAgent extends AgentMindConnector {
 			ArrayList<String> parameters = new ArrayList<String>(1);
 			parameters.add(expressionName(expression));
 			executeAction(new MindAction("DIAgent","wozEmotion",parameters));
+			
+			waitForCallbackOrInterrupt();			
+		}
+		
+		public void showExpressionNoWait(Expression expression) 
+		{
+			if (mInterrupted || mTimedOut)
+				return;			
+			
+			ArrayList<String> parameters = new ArrayList<String>(1);
+			parameters.add(expressionName(expression));
+			executeAction(new MindAction("DIAgent","wozEmotionNoWait",parameters));
 			
 			waitForCallbackOrInterrupt();			
 		}
@@ -469,7 +519,7 @@ public class DIAgent extends AgentMindConnector {
 		private class AnswerTimeOutThread extends Thread
 		{
 			// duration of time out in ms
-			private long timeOutDuration = 200000;
+			private long timeOutDuration = 200000000;
 			
 			@Override
 			public void run()

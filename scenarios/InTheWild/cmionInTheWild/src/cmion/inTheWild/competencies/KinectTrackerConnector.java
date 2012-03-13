@@ -1,5 +1,6 @@
 package cmion.inTheWild.competencies;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import yarp.Bottle;
 import cmion.addOns.samgar.SamgarCompetency;
@@ -49,17 +50,37 @@ public class KinectTrackerConnector extends SamgarCompetency {
 						MindAction ma = new MindAction("Anonymous","comeClose",null);
 						this.raise(new EventRemoteAction(ma));
 					}
-				}					
+				}
+				if (z<3000)
+				{
+					setUserPresent(true);
+				}
 				architecture.getBlackBoard().requestSetProperty("UserTracking", userInfo);					
 			}
 			else if (bottleIn.get(0).asInt()==1) // user has disappeared
 			{
+				setUserPresent(false);
 			}
 
 		}
 	
 	}
 	
+	private void setUserPresent(boolean b) 
+	{
+		String present = Boolean.toString(b);
+		if (architecture.getWorldModel().hasAgent("user")) {
+			architecture.getWorldModel().getAgent("user").requestSetProperty("present", present);
+		}
+		else 
+		{
+			HashMap<String,Object> initialProperties = new HashMap<String,Object>();
+			initialProperties.put("present", present);
+			architecture.getWorldModel().requestAddAgent("user",initialProperties);
+		}
+		
+	}
+
 	private synchronized long timeElapsed()
 	{
 		return System.currentTimeMillis() - lastTimeClose;

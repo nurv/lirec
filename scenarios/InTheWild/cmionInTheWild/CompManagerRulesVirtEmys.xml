@@ -175,6 +175,20 @@
 	</Rule>
 
 	<Rule>
+		
+		<MindAction Name="wozEmotionNoWait">
+			<Parameter No="1" Value="*" />
+		</MindAction>			
+		<CompetencyExecutionPlan>
+			<Competency ID="1" Type="SimpleAnimation">
+			 <CompetencyParameter Name="animation" Value="$parameter1" />
+			 <CompetencyParameter Name="returnImmediately" Value="true" />
+			</Competency>
+		</CompetencyExecutionPlan>
+		
+	</Rule>
+
+	<Rule>
 		<MindAction Name="wozQuestion">
 			<Parameter No="1" Value="*" />
 		</MindAction>			

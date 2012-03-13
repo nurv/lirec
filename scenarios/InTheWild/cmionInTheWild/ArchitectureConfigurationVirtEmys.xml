@@ -24,10 +24,10 @@
  <ArchitectureComponent ClassName="cmion.inTheWild.woz.ITWEmysWoz" />
 
  
- <ArchitectureComponent ClassName="cmion.inTheWild.ai.DIAgent" ConstructorParameters="advert.bsh" />
+ <ArchitectureComponent ClassName="cmion.inTheWild.ai.DIAgent" ConstructorParameters="../../HwuDialogSystem/examples/experimentDialog.java" />
  
  <ArchitectureComponent ClassName="cmion.addOns.samgar.SamgarConnector" />
  <ArchitectureComponent ClassName="cmion.addOns.manipulators.RemoteActionSimulator" /> 
- <ArchitectureComponent ClassName="cmion.addOns.manipulators.AgentSimulator" /> 
+ <!-- ArchitectureComponent ClassName="cmion.addOns.manipulators.AgentSimulator" /> --> 
  <ArchitectureComponent ClassName="cmion.addOns.monitors.CmionEventMonitor" />
 </ArchitectureConfiguration>
