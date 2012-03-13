@@ -114,15 +114,10 @@ public class FAtiMAListenerThread extends SocketListener {
 				this.send("CMD Stop");
 			else
 			{
-				// notify agent about every agent or object on the world model
-				// first agents
-				for (String agentName: connector.getArchitecture().getWorldModel().getAgentNames())
-					this.send("ENTITY-ADDED "+agentName);
+				this.send("CMD GET-PROPERTIES");	
 				
-				// and now objects
-				for (String objectName: connector.getArchitecture().getWorldModel().getObjectNames())
-					this.send("ENTITY-ADDED "+objectName);
-				
+				// start a thread in which we wait a while and then notify the agent about the contents of the world model	
+				new LookAtThread().start();
 			}
 			
 		}
@@ -188,6 +183,29 @@ public class FAtiMAListenerThread extends SocketListener {
 			connector.execute(FAtiMAutils.fatimaMessageToMindAction(agentName,msg));
 		}
 		
+	}
+	
+	public class LookAtThread extends Thread 
+	{
+		@Override
+		public void run()
+		{
+			// wait 5 seconds
+			try {
+				Thread.sleep(5000);
+			} catch (InterruptedException e) {}
+			
+			
+			// notify agent about every agent or object on the world model
+			// first agents
+			for (String agentName: connector.getArchitecture().getWorldModel().getAgentNames())
+				send("ENTITY-ADDED "+agentName);
+			
+			// and now objects
+			for (String objectName: connector.getArchitecture().getWorldModel().getObjectNames())
+				send("ENTITY-ADDED "+objectName);
+
+		}
 	}
 	
 	public void sendLookAtPerception(String target)
