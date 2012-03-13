@@ -154,6 +154,7 @@ migrationIn()
 {
 	timeStamp("ts_ScreenEpisodeStarts_"+migrationData.get("episode"));
 	di.setEmysVisible();
+	di.blockUntilUserPresent();
 	if (migrationData.get("episode").equals("2"))
 		episode3screen();
 	else if (migrationData.get("episode").equals("4"))
@@ -188,6 +189,7 @@ setup(String participantID, char track) {
 	 * forgotten in 4. Don't want to actually remove it from memory...
 	 */
 	startTime = System.currentTimeMillis();
+	di.blockUntilUserPresent();
 	episode1Screen();
 }
 
