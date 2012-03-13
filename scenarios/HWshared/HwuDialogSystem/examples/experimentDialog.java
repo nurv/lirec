@@ -22,7 +22,7 @@ import java.util.List;
 
 DialogInterface di;
 HashMap migrationData = new HashMap();
-String server = "137.195.27.138";//TODO SET THIS
+String server = "137.195.27.102";//102 is the big screen IP
 long startTime;
 
 speak(String speech) {
