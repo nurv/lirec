@@ -65,9 +65,17 @@
 
 (defn spirit-update-emotionalloc [spirit remote-agent tiles]
   (modify
-   :emotionalloc ; get the object causing the highest emotion
+   :emotionalloc 
    (fn [emotionalloc]
-     (first
+     ; go to the location of the current message source
+     (let [msg (:last-message spirit)]
+       (if (not (= msg {}))
+         {:tile (:tile msg) :pos (:pos msg)}
+         {:tile (make-vec2 0 0) :pos (make-vec2 0 0) })))
+   spirit))
+
+     ; get the object causing the highest emotion
+     (comment first
       (reduce
        (fn [r emotion]
          (let [e (:attrs emotion)]
@@ -85,8 +93,7 @@
                  r))
              r)))
        (list emotionalloc 0)
-       (:content (remote-agent-emotions remote-agent)))))
-   spirit))
+       (:content (remote-agent-emotions remote-agent))))
 
 (defn spirit-update-emotions [spirit remote-agent]
   (modify
