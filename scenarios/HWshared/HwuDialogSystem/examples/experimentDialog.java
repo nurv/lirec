@@ -273,8 +273,9 @@ episode2PhoneCommon() {
 	} else {
 		speak("Why did you choose that colour?");
 		String responseWhy = di.getFreetext();
-		speak("Hmm, I can't seem to set the colour, never mind.");
 		di.showExpression(Expression.SADNESS);
+		speak("Hmm, I can't seem to set the colour, never mind.");
+		
 		speak("No time for this, time for treasure!");
 		migrationData.put("firstWhy",responseWhy);
 	}
