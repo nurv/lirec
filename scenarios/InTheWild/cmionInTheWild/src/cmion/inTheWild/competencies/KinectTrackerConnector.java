@@ -50,10 +50,10 @@ public class KinectTrackerConnector extends SamgarCompetency {
 						this.raise(new EventRemoteAction(ma));
 					}
 				}
-				if (z<3000)
-				{
+				if (z<2000)
 					setUserPresent(true);
-				}
+				else
+					setUserPresent(false);
 				architecture.getBlackBoard().requestSetProperty("UserTracking", userInfo);					
 			}
 			else if (bottleIn.get(0).asInt()==1) // user has disappeared
