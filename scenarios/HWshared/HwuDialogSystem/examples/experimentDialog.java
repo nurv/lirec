@@ -804,7 +804,7 @@ episode9screen() {
 	else
 	{
 		speak("What is hermit?");
-		String[] optionsAnswer= {"A lonely man","the singer of a band","a frog","a crab"};
+		String[] optionsAnswer= {"a lonely man","singer of a band","a frog","a crab"};
 		clue1_answer = di.multipleChoiceQuestion(4,optionsAnswer);	
 	}
 	if (clue1_answer.contains("rog"))
