@@ -121,7 +121,7 @@ requestMigration() {
 }
 migrateOut() {
 	Thread.sleep(500);
-	int retries = 5;
+	int retries = 10;
 	while(!di.migrateDataOut(server,migrationData) && retries > 0) {
 		System.out.println("ERROR MIGRATING");
 		retries--;
