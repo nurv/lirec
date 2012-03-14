@@ -126,21 +126,26 @@ requestMigration() {
 		di.getResponse("Ready");
 	}
 }
+int outerLoop = 0;
+
 migrateOut() {
 	Thread.sleep(500);
-	int retries = 60;
+	int retries = 5;
 	while(!di.migrateDataOut(server,migrationData) && retries > 0) {
 		System.out.println("ERROR MIGRATING");
 		retries--;
-		Thread.sleep(1000);
+		Thread.sleep(950);
 	}
-	if (retries == 0) {
-		speak("Oh dear, something's gone wrong.");
-		speak("Speak to Michael or Iain.");
+	if ((retries == 0) && (outerLoop < 10)){
+		speak("Oh dear, I can't connect to the wifi");
+		di.getResponse("Try again");
+		outerLoop++;
+		migrateOut();
+		outerLoop = 0;
 	} else {
-		//TODO need something to retry more maybe?
-		requestMigration();
-		di.blankScreen();
+		speak("Oh dear, something's gone wrong!");
+		speak("Speak to a human!");
+		
 	}
 }
 
