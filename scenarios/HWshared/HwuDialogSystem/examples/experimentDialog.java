@@ -28,6 +28,7 @@ long startTime;
 speak(String speech) {
 	di.speakText(speech);
 }
+boolean saidEntrance = false;
 
 giveDirections(String dir, String location, String direction) {
 	System.out.println("DS: loc string: "+location+ "\n   dir: "+ direction+ "\n  string: "+dir);
@@ -38,12 +39,18 @@ giveDirections(String dir, String location, String direction) {
 		return;
 	} else if (location.contains("Gnorth2") && direction.equals("R") && dir.contains("2 sets")) {
 		speak("Go down this corridor to the junction, then turn right");
+		saidEntrance = false;//bit of ahack putting this here
 		return;
 	} else if (location.contains("Gnorth2") ) {
 		//comment about stairs
-		if (migrationData.get("episode").equals("8") &&  remembers(4,8))
+		if (saidEntrance) {
+			speak(dir);
+			return;
+		} else if (migrationData.get("episode").equals("8") &&  remembers(4,8))
 			speak("And we're back here again!");
+			saidEntrance = true;
 		else {
+			saidEntrance = true;
 			speak("Have you been here before?");
 			speak("Some people don't know there's an entrance at this end.");
 		}
@@ -121,7 +128,7 @@ requestMigration() {
 }
 migrateOut() {
 	Thread.sleep(500);
-	int retries = 10;
+	int retries = 60;
 	while(!di.migrateDataOut(server,migrationData) && retries > 0) {
 		System.out.println("ERROR MIGRATING");
 		retries--;
