@@ -123,6 +123,7 @@ public class DIAgent extends AgentMindConnector {
 			boolean newUserPresent = Boolean.parseBoolean(propertyValue.toString());
 			if (newUserPresent!=userPresent)
 			{
+				System.out.println("user present state changed to "+newUserPresent);
 				dialogInterface.notifyUserPresent();
 				userPresent = newUserPresent;
 			}
