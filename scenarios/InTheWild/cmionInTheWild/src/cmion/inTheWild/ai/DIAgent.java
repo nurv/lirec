@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.TreeMap;
 
 import uk.ac.hw.lirec.dialogsystem.DialogInterface;
 import uk.ac.hw.lirec.dialogsystem.DialogSystem;
@@ -224,6 +225,8 @@ public class DIAgent extends AgentMindConnector {
 					
 					// push the migration in data into the dialog system
 					dialogSystem.interruptDialogEvent();
+					TreeMap<String,String> tm = new TreeMap<String,String>(migrateDataIn);
+					System.out.println("migrating in: "+tm);
 					dialogSystem.migrateDataIn(migrateDataIn);
 					
 					// raise an event relating to the incoming migration
@@ -265,7 +268,9 @@ public class DIAgent extends AgentMindConnector {
 
 
 		public synchronized void setMigrationData(HashMap<String, String> dataToMigrate) {
-			this.dataToMigrate = dataToMigrate;		
+			this.dataToMigrate = dataToMigrate;
+			TreeMap<String,String> tm = new TreeMap<String,String>(dataToMigrate);
+			System.out.println("migrating out: "+tm);
 		}
 		
 	}
