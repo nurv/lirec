@@ -43,7 +43,9 @@ public class SendCommandThread extends Thread {
 			} catch (IOException e) {
 				System.err.println("ERRROR! host = "+host +", port = "+port);
 				System.err.println(msg);
-				e.printStackTrace();
+				try {
+					Thread.sleep(50);
+				} catch (InterruptedException e1) {}
 			}
 		}		
 	}
