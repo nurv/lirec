@@ -131,6 +131,36 @@ public class FAtiMAListenerThread extends SocketListener {
 			// and write it to blackboard
 			connector.getArchitecture().getBlackBoard().requestSetProperty("MemoryResult", memoryResult);			
 		}
+		else if(type.startsWith("<GERResult>")) {
+			boolean isAction = false;
+			String action = null;
+			
+			// extract memory result
+			int start = msg.indexOf("<GERResult>");
+			int end = msg.indexOf("</GERResult>");
+			
+			String result = msg;
+			while(!isAction){
+				String filterAttr = "<FilterAttribute name=\"";
+				int indexStart = result.indexOf(filterAttr) + filterAttr.length();
+				int indexEnd = indexStart + result.substring(indexStart).indexOf('"');
+				String name = result.substring(indexStart,indexEnd);
+				if (name.equals("action")){
+					indexStart = indexEnd + 9;
+					indexEnd = indexStart + result.substring(indexStart).indexOf('"');
+					action = result.substring(indexStart,indexEnd);
+					isAction = true;
+				}else {
+					result = result.substring(indexEnd, end);
+				}
+			}
+	
+			String gerResult = msg.substring(start+11, end);
+			//System.out.println("GERResult " + gerResult);
+			
+			// and write it to blackboard
+			connector.getArchitecture().getBlackBoard().requestSetProperty("GERResult " + action, gerResult);			
+		}
 		else if(type.startsWith("<EmotionalState")) 
 		{
 			// FAtiMA agent updates us about its current emotional state
