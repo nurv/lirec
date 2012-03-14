@@ -1,6 +1,5 @@
 package cmion.inTheWild.competencies;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import yarp.Bottle;
 import cmion.addOns.samgar.SamgarCompetency;
@@ -31,7 +30,7 @@ public class KinectTrackerConnector extends SamgarCompetency {
 
 	
 	@Override
-	public synchronized void onRead(Bottle bottleIn) 
+	public void onRead(Bottle bottleIn) 
 	{
 		if (bottleIn.size()>0)
 		{
@@ -81,7 +80,7 @@ public class KinectTrackerConnector extends SamgarCompetency {
 		
 	}
 
-	private synchronized long timeElapsed()
+	private long timeElapsed()
 	{
 		return System.currentTimeMillis() - lastTimeClose;
 	}
