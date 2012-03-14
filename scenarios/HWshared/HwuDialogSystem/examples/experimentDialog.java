@@ -515,7 +515,7 @@ episode5screen() {
 	
 	// reveal my home town
 	speak("By the way, how are you doing so far,");
-	speak("I'm from Cork in Ireland, I hope your able to understand my accent ok?");
+	speak("I'm from Cork in Ireland, I hope you're able to understand my accent ok?");
 	String understand = di.multipleChoiceQuestion(2,new String[]{"it's fine","struggling a bit","you're subtitled"});
 	migrationData.put("understand",understand);
 	if (understand.equals("it's fine")) { di.showExpressionNoWait(Expression.JOY); speak("Good to hear that.");}
