@@ -171,6 +171,7 @@ migrationIn()
 setup(String participantID, char track) {
 	migrationData.clear();
 	migrationData.put("participant",participantID);
+	migrationData.put("memoryTrack",track.toString());
 	String memory = "2,3,4,5,6,7,8,";
 	if (track == 'b') {
 		memory = "9,";;
