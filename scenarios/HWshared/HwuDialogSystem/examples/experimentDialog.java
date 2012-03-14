@@ -82,15 +82,13 @@ failure() {
 	timeStamp("XXXfailure_"+latest+"_"+fails.toString());
 	
 	if (latest.equals("episode2")) {
-		migrationData.remove("phoneColourChoice");
-		migrationData.remove("firstWhy");
-		episode2startPhone();
+		di.startNav("1.54","1east1","episode2PhoneArrived()");
 	} else if (latest.equals("episode4")) {
-		episode4startPhone();
+		di.startNav("1.54","gwest3","episode4Arrived()");
 	} else if (latest.equals("episode6")) {
-		episode6startPhone();
+		di.startNav("1.54","2north1","episode6Arrived()");
 	} else if (latest.equals("episode8")) {
-		episode8startPhone();
+		di.startNav("1.54","gsouth1","episode8Arrived()");
 	} else
 		speak("Speak to Iain or Michael");	
 }
@@ -284,10 +282,13 @@ episode2PhoneCommon() {
 	latest = "episode2";
 	migrationData.put(latest +"Failures","0");
 	timeStamp("ts_PhoneNav_"+migrationData.get("episode"));
+	di.startNav("1.54","1east1","episode2PhoneArrived()");
+}
+episode2PhoneArrived() {
 	if (remembers(1,2))
-		di.startNav("1.54","1east1","episode2PhoneMemoryArrived()");
+		episode2PhoneMemoryArrived();
 	else
-		di.startNav("1.54","1east1","episode2PhoneForgetArrived()");
+		episode2PhoneForgetArrived();
 }
 episode2ArrivedCommon() {
 	timeStamp("ts_PhoneNavArrived_"+migrationData.get("episode"));
