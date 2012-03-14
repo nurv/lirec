@@ -737,7 +737,8 @@ ep8return() {
 	if (remembers(2,8))
 	{
 		speak("Ok, this was the last clue.");
-		speak("Let's go back to the screen.");
+		speak("Let's go back to the screen to finish");
+		
 	}
 	else
 		speak("Ok, let's go back to the screen for another clue.");
@@ -761,7 +762,10 @@ ep8return() {
 		speak("Oh, of course.");
 		migrationData.put("secondWhy",responseWhy);
 	}
-	
+	if (remembers(2,8))
+	{
+		speak("Nearly done, no more clues and walking about");
+	}
 	waitForReturnToScreenEp2();
 }
 
@@ -784,6 +788,8 @@ episode9screen() {
 			speak("Ok, we've got the last answer.");
 		speak("According to you, " + clue4_answer + " is the island on the map.");
 		speak("We'll find out at the end if that's right.");
+		di.showExpressionNoWait(Expression.JOY);
+		speak("I still reckon Ireland is the best island though!");
 	}
 		
 	if (!remembers(1,9))
