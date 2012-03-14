@@ -48,7 +48,7 @@ public class AdvancedMemoryTask extends TimerTask {
 		String strTime = sdf.format(cal.getTime());
 
 		// initialise
-		String attributeNamesStr;
+		/*String attributeNamesStr;
 		int minimumCoverage;
 
 		// generalise
@@ -59,10 +59,10 @@ public class AdvancedMemoryTask extends TimerTask {
 		generalisation.generalise(advancedMemoryComponent.getMemory().getEpisodicMemory(), attributeNamesStr, minimumCoverage);
 
 		// add to results
-		advancedMemoryComponent.getResults().add(generalisation);
+		advancedMemoryComponent.getResults().add(generalisation);*/
 
 		// write to XML
-		String fileName = advancedMemoryComponent.getMemory().getSaveDirectory() + AdvancedMemoryComponent.FILENAME + strTime;
+		String fileName = advancedMemoryComponent.getMemory().getSaveDirectory() + AdvancedMemoryComponent.FILENAME + "_" + strTime;
 		advancedMemoryComponent.save(fileName);
 
 	}

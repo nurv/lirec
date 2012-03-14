@@ -75,6 +75,7 @@ public class SpreadingActivation implements Serializable {
 	private HashMap<String, Integer> frequencies;
 	// hypernyms successfully applied for generalising while calculating frequencies
 	private HashMap<String, HashSet<String>> targetAttributeHypernyms;
+	// the attribute value with maximum frequency
 
 	// If an ontology is used for target/object and target/object is the target attribute,
 	// then targetAttributeHypernyms maps corresponding values to a set of hypernyms which
@@ -489,7 +490,7 @@ public class SpreadingActivation implements Serializable {
 		this.targetAttributeName = targetAttributeName;
 		this.frequencies = frequencies;
 
-		System.out.println("ValueMax " + valueMax);
+		//System.out.println("ValueMax " + valueMax);
 		return valueMax;
 	}
 }

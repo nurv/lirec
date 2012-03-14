@@ -66,8 +66,8 @@ public class AdvancedMemoryWriter {
 
 			xmlOutputter.endTag(); //AdvancedMemory			
 			xmlOutputter.endDocument();
-			xmlOutputter.getWriter().close();
-
+			xmlOutputter.getWriter().flush();
+			xmlOutputter.getWriter().close();       
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -328,7 +328,6 @@ public class AdvancedMemoryWriter {
 				xmlOutputter.endTag(); //GERs
 
 				xmlOutputter.endTag(); //Generalisation
-
 			}
 
 		} catch (Exception e) {

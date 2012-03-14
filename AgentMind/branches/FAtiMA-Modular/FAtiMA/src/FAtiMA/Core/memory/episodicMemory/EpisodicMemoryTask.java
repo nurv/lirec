@@ -39,46 +39,73 @@ public class EpisodicMemoryTask extends TimerTask {
 	private final static String filepath = "data/characters/minds/state/";
 
 	private Memory memory;
+	private boolean start = true;
 
 	public EpisodicMemoryTask(Memory memory) {
 		this.memory = memory;
 	}
 
 	public void run() {
-
-		// move events to LTM
-		memory.getEpisodicMemory().MoveSTEMtoAM();
-
-		// set date format
-		Calendar cal = Calendar.getInstance();
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
-		String strTime = sdf.format(cal.getTime());
-
-		// XML Memory export
-		MemoryWriter memoryWriter = new MemoryWriter(memory);
-		System.out.println(strTime + ": saving XML Memory");
-		memoryWriter.outputMemorytoXML(filepath + "XMLMemory_" + strTime + ".xml");
-
-		/*
-		// Activation-Based Forgetting
-		System.out.println(strTime + ": performing AB Forgetting (20%)");
-		memory.getEpisodicMemory().calculateActivationValues();
-		// TODO:
-		// decide about forgetting method (count, ratio or threshold; which parameters settings?)
-		ArrayList<ActionDetail> forget = memory.getEpisodicMemory().activationBasedForgettingByAmount(0.2);
-		memory.getEpisodicMemory().applyActivationBasedForgetting(forget);
-		// TODO:
-		// log/write details of forgotten events (for forgetting experiment)
-		// -> ArrayList<ActionDetail> forget (see above)
-
-		// XML Memory export
-		System.out.println(strTime + ": saving XML Memory");
-		memoryWriter.outputMemorytoXML(filepath + "XMLMemory_" + strTime + "_AfterABForgetting" + ".xml");
-		*/
-
-		// start a new episode
-		memory.getEpisodicMemory().StartEpisode(memory);
-
+		
+		if(!start) {
+			// set date format
+			Calendar cal = Calendar.getInstance();
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+			String strTime = sdf.format(cal.getTime());		
+			
+			if (cal.get(Calendar.HOUR_OF_DAY) == 16){
+				// move events to LTM
+				memory.getEpisodicMemory().MoveSTEMtoAM();
+				//System.out.println(Calendar.HOUR_OF_DAY + " Moved memory");
+				
+				//EpisodicMemory tempEM = (EpisodicMemory) memory.getEpisodicMemory().clone();				
+				// Activation-Based Forgetting
+				//System.out.println(strTime + ": performing AB Forgetting (20%)");
+				memory.getEpisodicMemory().calculateActivationValues();
+				// forgetting based on threshold
+				ArrayList<ActionDetail> forget = memory.getEpisodicMemory().activationBasedForgettingByThreshold(-8);
+				
+				// log/write details of forgotten events (for forgetting experiment)
+				// -> ArrayList<ActionDetail> forget (see above)
+				// XML Memory export
+				MemoryWriter adWriter = new MemoryWriter(forget);
+				System.out.println(strTime + ": saving XML Forgotten Events");
+				adWriter.outputForgottenADtoXML(filepath + "XML_" + strTime + "_ForgettingByThreshold" + ".xml");
+				
+				forget = memory.getEpisodicMemory().activationBasedForgettingByAmount(0.2);
+				adWriter.outputForgottenADtoXML(filepath + "XML_" + strTime + "_ForgettingByAmount " + ".xml");
+				
+				forget = memory.getEpisodicMemory().activationBasedForgettingByCount(20);
+				adWriter.outputForgottenADtoXML(filepath + "XML_" + strTime + "_ForgettingByAmount " + ".xml");
+			} 
+			// XML Memory export		
+			MemoryWriter memoryWriter = new MemoryWriter(memory);
+			System.out.println(strTime + ": saving XML Memory");
+			memoryWriter.outputMemorytoXML(filepath + "XMLMemory_" + strTime + ".xml");
+				
+			/*
+			// Activation-Based Forgetting
+			System.out.println(strTime + ": performing AB Forgetting (20%)");
+			memory.getEpisodicMemory().calculateActivationValues();
+			// TODO:
+			// decide about forgetting method (count, ratio or threshold; which parameters settings?)
+			ArrayList<ActionDetail> forget = memory.getEpisodicMemory().activationBasedForgettingByAmount(0.2);
+			memory.getEpisodicMemory().applyActivationBasedForgetting(forget);
+			// TODO:
+			// log/write details of forgotten events (for forgetting experiment)
+			// -> ArrayList<ActionDetail> forget (see above)
+	
+			// XML Memory export
+			System.out.println(strTime + ": saving XML Memory");
+			memoryWriter.outputMemorytoXML(filepath + "XMLMemory_" + strTime + "_AfterABForgetting" + ".xml");
+			*/
+	
+			if (cal.get(Calendar.HOUR_OF_DAY) == 16){
+				// start a new episode
+				memory.getEpisodicMemory().StartEpisode(memory);
+			}
+		}
+		start = false;
 	}
 
 }

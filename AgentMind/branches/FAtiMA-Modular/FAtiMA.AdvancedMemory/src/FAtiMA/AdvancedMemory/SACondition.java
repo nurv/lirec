@@ -1,16 +1,11 @@
 package FAtiMA.AdvancedMemory;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 
 import org.xml.sax.Attributes;
 
-import FAtiMA.AdvancedMemory.ontology.NounOntology;
-import FAtiMA.AdvancedMemory.ontology.TimeOntology;
-import FAtiMA.AdvancedMemory.ontology.TreeOntology;
-import FAtiMA.AdvancedMemory.writers.AdvancedMemoryWriter;
 import FAtiMA.Core.AgentModel;
 import FAtiMA.Core.componentTypes.IComponent;
 import FAtiMA.Core.conditions.Condition;
@@ -27,7 +22,7 @@ import FAtiMA.Core.wellFormedNames.Symbol;
  *  2010-04-18
  */
 
-public class SACondition extends Condition{
+public class SACondition extends Condition {
 
 	/**
 	 * 
@@ -37,6 +32,7 @@ public class SACondition extends Condition{
 	public static final String TARGET_ONTOLOGY = "targetOntology";
 	public static final String OBJECT_ONTOLOGY = "objectOntology";
 	public static final String LOCATION_ONTOLOGY = "locationOntology";
+	public static int TIME_DIFFERENCE = 9;
 	
 	/**
 	 * Parses a SpreadActivateCondition given a XML attribute list
@@ -49,7 +45,7 @@ public class SACondition extends Condition{
 
 		query = attributes.getValue("query");		
 		value = new Symbol(attributes.getValue("value"));
-		System.out.println("query " + query + " " + value);
+		//System.out.println("query " + query + " " + value);
 		return new SACondition(query,value);
 	}
 	
@@ -106,11 +102,17 @@ public class SACondition extends Condition{
 	
 	@Override
 	public float CheckCondition(AgentModel am) {
-		if(this._value.isGrounded())
+		
+		if(!this._value.isGrounded()) return 0;
+		
+		String resultStr = this.SpreadActivate(am);
+		
+		if(resultStr!=null && resultStr.equalsIgnoreCase(this._value.toString()))
 		{
 			return 1;
 		}
 		else return 0;
+			
 	}
 
 	@Override
@@ -134,7 +136,21 @@ public class SACondition extends Condition{
 	public ArrayList<SubstitutionSet> GetValidBindings(AgentModel am) {
 		SubstitutionSet sset;
 		ArrayList<SubstitutionSet> subs = new ArrayList<SubstitutionSet>();
-		int timeDiff = 0;
+		
+		String resultStr = this.SpreadActivate(am);
+		if(resultStr != null)
+		{	
+			sset = new SubstitutionSet();
+			sset.AddSubstitution(new Substitution(this._value, new Symbol(resultStr)));
+			subs.add(sset);
+		}	
+		
+		return subs;
+	}
+	
+	private String SpreadActivate(AgentModel am)
+	{
+		int timeDifference = 0;
 		
 		String saPerception = "";
 		
@@ -160,14 +176,14 @@ public class SACondition extends Condition{
 			else
 			{
 				if(value.toString().equals("Exit")){
-					timeDiff = 8;
+					timeDifference = TIME_DIFFERENCE;
 				}
 				saPerception += key.trim() + " " + value.toString().trim();
 				if (it.hasNext())
 					saPerception += "*";
 				else
 					saPerception +="$";
-				System.out.println("SAKnown " + key + " " + value.toString());
+				//System.out.println("SAKnown " + key + " " + value.toString());
 			}
 		}
 		
@@ -195,26 +211,23 @@ public class SACondition extends Condition{
 		
 		// execute Spreading Activation mechanism
 		SpreadingActivation spreadingActivation = new SpreadingActivation();
-		Object saResult = mc.processSAPerception(saPerception, spreadingActivation);
+		Object saResult = mc.processSAPerception(am, saPerception, spreadingActivation);
 		if (saResult  != null)
 		{
 			String resultStr = (String) saResult;
 			if (_query.equals("time")){
 					int resultValue = Integer.valueOf(resultStr);
-					if (resultValue < timeDiff)
+					if (resultValue < timeDifference)
 						resultValue += 24;
-					//resultValue -= timeDiff;
+					resultValue -= timeDifference;
 				resultStr = String.valueOf(resultValue);
 			}
-			System.out.println("saPerception " + saPerception);
-			System.out.println("saResult " + resultStr);
+			//System.out.println("saPerception " + saPerception);
+			//System.out.println("saResult " + resultStr);
 			
-			sset = new SubstitutionSet();
-			sset.AddSubstitution(new Substitution(this._value, new Symbol(resultStr)));
-			subs.add(sset);
-		}	
-		
-		return subs;
+			return resultStr;
+		}		
+		return null;
 	}
 
 	@Override
@@ -264,5 +277,4 @@ public class SACondition extends Condition{
 		}
 		return true;
 	}
-
 }

@@ -39,6 +39,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.Writer;
+import java.util.ArrayList;
 
 import org.znerd.xmlenc.LineBreak;
 import org.znerd.xmlenc.XMLOutputter;
@@ -46,6 +47,7 @@ import org.znerd.xmlenc.XMLOutputter;
 import FAtiMA.Core.AgentSimulationTime;
 import FAtiMA.Core.memory.Memory;
 import FAtiMA.Core.memory.episodicMemory.ActionDetail;
+import FAtiMA.Core.memory.episodicMemory.EpisodicMemory;
 import FAtiMA.Core.memory.episodicMemory.MemoryEpisode;
 import FAtiMA.Core.memory.episodicMemory.Time;
 import FAtiMA.Core.memory.semanticMemory.KnowledgeSlot;
@@ -62,11 +64,18 @@ public class MemoryWriter implements Serializable {
 	private Writer _writer;
 	private XMLOutputter _outputter;
 	private Memory _memory;
+	private ArrayList<ActionDetail> _ads;
 	
 	public MemoryWriter(Memory memory)
 	{
 		_outputter = new XMLOutputter();	
 		_memory = memory;
+	}
+	
+	public MemoryWriter(ArrayList<ActionDetail> ads)
+	{
+		_outputter = new XMLOutputter();	
+		_ads = ads;
 	}
 	
 	public void outputMemorytoXML(String file)
@@ -165,6 +174,36 @@ public class MemoryWriter implements Serializable {
 			_outputter.endTag(); //EpisodicMemory
 			
 			_outputter.endTag(); //Memory
+			_outputter.endDocument(); 
+		    _outputter.getWriter().flush();
+            _outputter.getWriter().close();            
+		}
+		catch(IOException e)
+		{
+			e.printStackTrace();
+		}
+	}
+	
+	public void outputForgottenADtoXML(String file)
+	{
+		try{
+			_writer = new FileWriter(file); // new BufferedWriter(new FileWriter(file));
+			//_writer = new OutputStreamWriter(System.out, encoding);
+		    _outputter = new XMLOutputter(_writer, encoding);
+		    
+		    _outputter.startTag("ForgottenEvents");	
+		    _outputter.setLineBreak(LineBreak.DOS);
+			_outputter.setIndentation("   ");
+				
+			// episode events
+			for (ActionDetail ad: _ads)
+			{
+				_outputter.startTag("Event");
+				_outputter.attribute("eventID", Integer.toString(ad.getID()));	
+				_outputter.endTag();	//Event
+			}
+			
+			_outputter.endTag(); //Events
 			_outputter.endDocument(); 
 		    _outputter.getWriter().flush();
             _outputter.getWriter().close();            

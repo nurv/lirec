@@ -69,6 +69,14 @@ public class ShortTermEpisodicMemory implements Serializable {
 		this._details = new ArrayList<ActionDetail>(MAXRECORDS);
 	}
 
+	public ShortTermEpisodicMemory(ShortTermEpisodicMemory stem) {
+		if (stem._details != null) {
+			this._details = (ArrayList<ActionDetail>) stem._details.clone();
+		} else {
+			this._details = new ArrayList<ActionDetail>(MAXRECORDS);
+		}
+	}
+	
 	public ArrayList<ActionDetail> getDetails() {
 		return this._details;
 	}
@@ -404,5 +412,11 @@ public class ShortTermEpisodicMemory implements Serializable {
 		record += "</STEpisodicMemory>\n";
 
 		return record;
+	}
+	
+	//Meiyii 12/02/27
+	@Override
+	public Object clone() {
+		return new ShortTermEpisodicMemory(this);
 	}
 }

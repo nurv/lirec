@@ -64,6 +64,14 @@ public class AutobiographicalMemory implements Serializable {
 	public AutobiographicalMemory() {
 		this._memoryEpisodes = new ArrayList<MemoryEpisode>();
 	}
+	
+	public AutobiographicalMemory(AutobiographicalMemory am) {
+		if (am._memoryEpisodes != null) {
+			this._memoryEpisodes = (ArrayList<MemoryEpisode>) am._memoryEpisodes.clone();
+		} else {
+			this._memoryEpisodes = new ArrayList<MemoryEpisode>();
+		}
+	}
 
 	public void applySubstitution(Substitution s) {
 		for (MemoryEpisode mem : _memoryEpisodes) {
@@ -319,6 +327,11 @@ public class AutobiographicalMemory implements Serializable {
 		return am;
 	}
 
+	@Override
+	public Object clone() {
+		return new AutobiographicalMemory(this);
+	}
+	
 	/*public ArrayList Reconstruct(ArrayList searchKeys)
 	{
 		ArrayList reconstruction = new ArrayList();

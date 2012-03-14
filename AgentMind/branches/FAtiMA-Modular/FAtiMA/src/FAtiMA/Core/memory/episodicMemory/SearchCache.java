@@ -77,7 +77,6 @@ public class SearchCache implements Serializable {
 			}
 			cachedSearches.remove(searchKeysStrOldest);
 		}
-
 	}
 
 	public ArrayList<ActionDetail> getSearchResult(ArrayList<SearchKey> searchKeys) {

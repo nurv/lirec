@@ -147,11 +147,12 @@ public class MemoryLoaderHandler extends ReflectXMLHandler {
 				value = attributes.getValue("value");			
 			}
 						
-			_currentWM.Tell(persistent, _currentKB, Name.ParseName(name), value); 
+			_currentWM.Tell(persistent, _currentKB, Name.ParseName(name), value);
+			//System.out.println(displayName + " " + value);
 		}
 		
 		//System.out.println("WMSlot");
-	    //System.out.println(name + " " + value);
+	    //System.out.println(displayName + " " + value);
 	}
 	
 	public void Episode(Attributes attributes) {

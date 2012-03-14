@@ -34,7 +34,10 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.StringTokenizer;
+import java.util.Timer;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -52,6 +55,7 @@ import FAtiMA.Core.componentTypes.IProcessExternalRequestComponent;
 import FAtiMA.Core.emotionalState.AppraisalFrame;
 import FAtiMA.Core.memory.Memory;
 import FAtiMA.Core.memory.episodicMemory.ActionDetail;
+import FAtiMA.Core.memory.episodicMemory.EpisodicMemoryTask;
 import FAtiMA.Core.memory.episodicMemory.MemoryEpisode;
 import FAtiMA.Core.sensorEffector.Event;
 import FAtiMA.Core.util.AgentLogger;
@@ -76,6 +80,7 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 	private Memory memory;
 
 	private String locationOntologyFilename;
+	private TreeOntology locationOntology;
 	private boolean resultStorage;
 
 	private ArrayList<Object> results; // CompoundCue, SpreadingActivation, Generalisation
@@ -84,11 +89,18 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 
 	public AdvancedMemoryComponent() {
 		results = new ArrayList<Object>();
+		locationOntology = null;
 	}
 
 	public AdvancedMemoryComponent(String locationOntologyFilename) {
 		this();
 		this.locationOntologyFilename = locationOntologyFilename;
+		try {
+			// create location ontology
+			locationOntology = new TreeOntology(locationOntologyFilename);
+		} catch (Exception e) {
+			System.err.println("Error while parsing Location Ontology!");
+		}
 	}
 
 	public Memory getMemory() {
@@ -134,6 +146,17 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 		if (ConfigurationManager.getMemoryLoad()) {
 			load(memory.getSaveDirectory() + FILENAME);
 		}
+		/*AdvancedMemoryTask advancedMemoryTask = new AdvancedMemoryTask(this, memory);
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTimeInMillis(calendar.getTimeInMillis() + 2 * 60 * 1000);
+		calendar.set(Calendar.HOUR_OF_DAY, 6); // 6 am
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 0);
+		calendar.set(Calendar.MILLISECOND, 0);
+		Date firstTime = calendar.getTime();
+		long period = 2 * 60 * 1000;
+		Timer timer = new Timer();
+		timer.schedule(advancedMemoryTask, firstTime, period);*/
 	}
 
 	@Override
@@ -339,17 +362,15 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 			}
 
 			// parse location ontology
-			TreeOntology locationOntology = null;
+			//TreeOntology locationOntology = null;
 			if (locationDepthMaxStr != null) {
-				// parse location ontology maximum depth
-				try {
-					Integer depthMax = Integer.valueOf(locationDepthMaxStr);
-					// create location ontology
-					locationOntology = new TreeOntology(locationOntologyFilename);
-					locationOntology.setDepthMax(depthMax);
-				} catch (Exception e) {
-					System.err.println("Error while parsing Location Ontology Maximum Depth!");
-				}
+				Integer depthMax = Integer.valueOf(locationDepthMaxStr);
+				// create location ontology
+				//locationOntology = new TreeOntology(locationOntologyFilename);
+				locationOntology.setDepthMax(depthMax);
+			
+			} else {
+				locationOntology.setDepthMax(0);
 			}
 
 			// parse result storage
@@ -408,21 +429,11 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 
 			//
 
-			System.out.println(perception);
+			//System.out.println(perception);
 			SpreadingActivation spreadingActivation = new SpreadingActivation();		
 
-			this.processSAPerception(perception, spreadingActivation);
+			this.processSAPerception(am, perception, spreadingActivation);
 			
-			if (resultStorage) {
-				// add to results
-				results.add(spreadingActivation);
-				setResultsUpdated(true);
-			}
-			
-			// return result
-			String result = AdvancedMemoryWriter.getUnformattedXML(spreadingActivation);
-			am.getRemoteAgent().ReportMemoryResult(result);
-
 		} else if (msgType.equals(G_MEMORY)) {
 
 			// perception format:
@@ -464,8 +475,7 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 			// G-MEMORY subject*target*time$5$time Tuesday$1$1
 			// G-MEMORY target$1$*$*$*$*$*$true
 
-			// 
-
+			//System.out.println("Perception " + perception);
 			// parse perception
 			StringTokenizer stringTokenizer = new StringTokenizer(perception, "$");
 			String attributeNamesStr = null;
@@ -573,17 +583,15 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 			}
 
 			// parse location ontology
-			TreeOntology locationOntology = null;
+			//TreeOntology locationOntology = null;
 			if (locationDepthMaxStr != null) {
-				// parse location ontology maximum depth
-				try {
-					Integer depthMax = Integer.valueOf(locationDepthMaxStr);
-					// create location ontology
-					locationOntology = new TreeOntology(locationOntologyFilename);
-					locationOntology.setDepthMax(depthMax);
-				} catch (Exception e) {
-					System.err.println("Error while parsing Location Ontology Maximum Depth!");
-				}
+				Integer depthMax = Integer.valueOf(locationDepthMaxStr);
+				// create location ontology
+				//locationOntology = new TreeOntology(locationOntologyFilename);
+				locationOntology.setDepthMax(depthMax);
+			
+			} else {
+				locationOntology.setDepthMax(0);
 			}
 
 			// parse result storage
@@ -601,18 +609,25 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 
 			// return result
 			String result = AdvancedMemoryWriter.getUnformattedXML(generalisation);
-			am.getRemoteAgent().ReportMemoryResult(result);
+			//am.getRemoteAgent().ReportMemoryResult(result);
+			am.getRemoteAgent().ReportGeneralisationResult(result);
+			/*ArrayList<GER> gers = generalisation.getGers();
+			for(GER ger: gers) {
+				for(int i = 0; i < ger.getAttributeItemSet().size(); i++) {
+					System.out.println("Attribute item " + i + " " + ger.getAttributeItem(i));
+					//System.out.println("Coverage " + ger.);
+				}				
+			}*/			
 
 		} else if (msgType.equals(SAVE_ADV_MEMORY)) {
 
 			save(memory.getSaveDirectory() + FILENAME);
+			save(memory.getSaveDirectory() + FILENAME + ".bak");
 
 		} else if (msgType.equals(LOAD_ADV_MEMORY)) {
 
 			load(memory.getSaveDirectory() + FILENAME);
-
 		}
-
 	}
 
 	@Override
@@ -669,7 +684,7 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 		resultsUpdated = true;
 	}
 
-	public Object processSAPerception(String perception, SpreadingActivation sa){
+	public Object processSAPerception(AgentModel am, String perception, SpreadingActivation sa){
 		// parse perception
 		StringTokenizer stringTokenizer = new StringTokenizer(perception, "$");
 		String targetAttributeName = null;
@@ -761,23 +776,33 @@ public class AdvancedMemoryComponent implements Serializable, IProcessExternalRe
 		}
 
 		// parse location ontology
-		TreeOntology locationOntology = null;
+		//TreeOntology locationOntology = null;
 		if (locationDepthMaxStr != null) {
-			// parse location ontology maximum depth
-			try {
-				Integer depthMax = Integer.valueOf(locationDepthMaxStr);
-				// create location ontology
-				locationOntology = new TreeOntology(locationOntologyFilename);
-				locationOntology.setDepthMax(depthMax);
-			} catch (Exception e) {
-				System.err.println("Error while parsing Location Ontology Maximum Depth!");
-			}
+			Integer depthMax = Integer.valueOf(locationDepthMaxStr);
+			// create location ontology
+			//locationOntology = new TreeOntology(locationOntologyFilename);
+			locationOntology.setDepthMax(depthMax);
+		
+		} else {
+			locationOntology.setDepthMax(0);
 		}
 
+		Object saObject = sa.spreadActivation(memory.getEpisodicMemory(), filterAttributesStr, targetAttributeName, timeOntology, targetOntology, objectOntology, locationOntology);
+		
 		// parse result storage
 		resultStorage = Boolean.valueOf(resultStorageStr);
 		
+		if (resultStorage) {
+			// add to results
+			results.add(sa);
+			setResultsUpdated(true);
+		}
+
+		// return result
+		String result = AdvancedMemoryWriter.getUnformattedXML(sa);
+		am.getRemoteAgent().ReportMemoryResult(result);		
+		
 		// execute Spreading Activation mechanism
-		return sa.spreadActivation(memory.getEpisodicMemory(), filterAttributesStr, targetAttributeName, timeOntology, targetOntology, objectOntology, locationOntology);
+		return saObject;
 	}
 }
