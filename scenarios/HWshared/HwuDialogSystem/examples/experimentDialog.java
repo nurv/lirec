@@ -79,7 +79,7 @@ failure() {
 	fails++;
 	migrationData.put(latest +"Failures",fails.toString());
 	
-	timeStamp("XXXfailure_"+latest+"_"+fails.toString());
+	timeStamp("xxxfailure_"+latest+"_"+fails.toString());
 	
 	if (latest.equals("episode2")) {
 		di.startNav("1.54","1east1","episode2PhoneArrived()");
@@ -186,8 +186,9 @@ setup(String participantID, char track) {
 	 * What if we forget on 4 say, then need to remember from 2 in 8? shouldn't, it was
 	 * forgotten in 4. Don't want to actually remove it from memory...
 	 */
-	startTime = System.currentTimeMillis();
 	di.blockUntilUserPresent();
+	startTime = System.currentTimeMillis();
+	migrationData.put("startTimeMillis",startTime.toString());
 	episode1Screen();
 }
 
@@ -235,6 +236,7 @@ episode1Screen() {
 //Episode 2
 
 episode2startPhone() {
+	startTime = Long.parseLong(migrationData.get("startTimeMillis"));
 	if (remembers(1,2))
 		episode2PhoneMemory();
 	else
@@ -921,7 +923,7 @@ episode9screen() {
 }
 
 timeStamp(String key) {
-	long timeSinceStart = (long)((System.currentTimeMillis() - startTime)/1000);
+	double timeSinceStart = ((System.currentTimeMillis() - startTime)/1000);
 	migrationData.put(key,timeSinceStart.toString());
 }
 
