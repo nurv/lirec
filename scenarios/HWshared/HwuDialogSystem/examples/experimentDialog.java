@@ -117,13 +117,16 @@ requestMigration() {
 	di.blankScreen();
 	Thread.sleep(500);
 	di.getResponse("Ready");
-	while(!di.inviteMigrate(server)) {
-		//System.out.println("ERROR MIGRATING");
+	while(!di.inviteMigrate(server) & !isInterrupted()) {
+		System.out.println("ERROR MIGRATING");
 		di.getResponse("Ready");
 	}
 }
 
 migrateOut() {
+	if (isInterrupted())
+		return;
+	
 	Thread.sleep(500);
 	int retries = 5;
 	while(!di.migrateDataOut(server,migrationData) && retries > 0) {
