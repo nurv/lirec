@@ -577,7 +577,7 @@ episode6Arrived() {
 		String clue3_answer =  di.getFreetext();;
 		migrationData.put("clue3_answer",clue3_answer);
 	} else {
-		String[] optionsAnswer= {"Mars","Underwater","Space","Scotland"};
+		String[] optionsAnswer= {"Mars","Underwater","A Battle","Scotland"};
 		String clue3_answer = di.multipleChoiceQuestion(4,optionsAnswer);
 		migrationData.put("clue3_answer",clue3_answer);
 	}
@@ -869,7 +869,7 @@ episode9screen() {
 	else
 	{
 		speak("Next question. Where would you need the helmet?");
-		String[] optionsAnswer= {"Mars","Underwater","Space","Scotland"};
+		String[] optionsAnswer= {"Mars","Underwater","A Battle","Scotland"};
 		clue3_answer = di.multipleChoiceQuestion(4,optionsAnswer);	
 	}
 	if (clue3_answer.contains("ars"))
