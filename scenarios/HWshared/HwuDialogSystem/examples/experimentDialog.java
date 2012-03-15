@@ -126,7 +126,6 @@ requestMigration() {
 		di.getResponse("Ready");
 	}
 }
-int outerLoop = 0;
 
 migrateOut() {
 	Thread.sleep(500);
@@ -136,17 +135,17 @@ migrateOut() {
 		retries--;
 		Thread.sleep(950);
 	}
-	if ((retries == 0) && (outerLoop < 10)){
+	if (retries == 0){
 		speak("Oh dear, I can't connect to the wifi");
 		di.getResponse("Try again");
 		outerLoop++;
 		migrateOut();
-		outerLoop = 0;
 	} else {
-		speak("Oh dear, something's gone wrong!");
-		speak("Speak to a human!");
+		requestMigration();
+		di.blankScreen();
 		
 	}
+	
 }
 
 /* Migration related code - screen side*/
