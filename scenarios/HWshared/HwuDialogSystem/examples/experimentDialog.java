@@ -46,9 +46,10 @@ giveDirections(String dir, String location, String direction) {
 		if (saidEntrance) {
 			speak(dir);
 			return;
-		} else if (migrationData.get("episode").equals("8") &&  remembers(4,8))
+		} else if (migrationData.get("episode").equals("8") &&  remembers(4,8)) {
 			speak("And we're back here again!");
 			saidEntrance = true;
+		}
 		else {
 			saidEntrance = true;
 			speak("Have you been here before?");
