@@ -10,12 +10,7 @@ import java.util.List;
 
 /*
  * TODO list
- * 
- * How do we set participant ID so we can match logs to interviews etc?
- * Am I missing any screen specific stuff?
- * How are we specifying memory case, or not? Somewhere in the migrationData?
- * Add some emotions/expressions in
- * need logging
+
  */
 
 /*utility stuff up first */
@@ -123,7 +118,7 @@ requestMigration() {
 	Thread.sleep(500);
 	di.getResponse("Ready");
 	while(!di.inviteMigrate(server)) {
-		System.out.println("ERROR MIGRATING");
+		//System.out.println("ERROR MIGRATING");
 		di.getResponse("Ready");
 	}
 }
