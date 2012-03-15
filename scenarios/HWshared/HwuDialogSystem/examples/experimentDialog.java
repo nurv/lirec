@@ -719,7 +719,7 @@ episode8startPhone() {
 }
 episode8Arrived() {
 	timeStamp("ts_PhoneNavArrived_"+migrationData.get("episode"));
-	Thread.sleep(8000);
+	Thread.sleep(16000);
 	speak("I've seen a map down here.");
 	speak("It's a map of an island.");
 	Thread.sleep(3000);
