@@ -124,23 +124,21 @@ requestMigration() {
 }
 
 migrateOut() {
-	if (di.isInterrupted())
-		return;
-	
 	Thread.sleep(500);
 	int retries = 5;
 	boolean done = false;
 	while (!done) {
+		if (di.isInterrupted())
+			return;
+		retries = 5;
 		while(!di.migrateDataOut(server,migrationData) && retries > 0) {
-			System.out.println("ERROR MIGRATING");
+			System.out.println("ERROR MIGRATING, retries: "+retries);
 			retries--;
 			Thread.sleep(950);
 		}
 		if (retries == 0){
 			speak("Oh dear, I can't connect to the wifi");
 			di.getResponse("Try again");
-			outerLoop++;
-			migrateOut();
 		} else {
 			done = true;
 			requestMigration();	
